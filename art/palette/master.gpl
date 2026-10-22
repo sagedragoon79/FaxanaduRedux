@@ -1,0 +1,68 @@
+GIMP Palette
+Name: Faxanadu Redux Master
+Columns: 8
+#
+ 18  15  25	night-0
+ 44  37  65	night-1
+ 68  56 107	night-2
+ 93  73 151	night-3
+130 101 184	night-4
+175 146 201	night-5
+210 189 219	night-6
+239 229 240	night-7
+ 19  18  23	stone-0
+ 47  44  58	stone-1
+ 74  70  93	stone-2
+100  94 130	stone-3
+134 123 162	stone-4
+172 161 186	stone-5
+206 197 211	stone-6
+236 232 237	stone-7
+ 28  13  15	bark-0
+ 72  32  30	bark-1
+120  60  43	bark-2
+170  99  54	bark-3
+205 140  81	bark-4
+214 174 132	bark-5
+227 205 181	bark-6
+243 236 226	bark-7
+ 13  28  18	leaf-0
+ 30  72  37	leaf-1
+ 43 120  44	leaf-2
+ 73 170  54	leaf-3
+116 205  81	leaf-4
+161 214 132	leaf-5
+200 227 181	leaf-6
+234 243 226	leaf-7
+ 13  19  28	sky-0
+ 30  49  72	sky-1
+ 43  82 120	sky-2
+ 54 119 170	sky-3
+ 81 165 205	sky-4
+132 203 214	sky-5
+181 227 225	sky-6
+226 243 239	sky-7
+ 31  10  17	ember-0
+ 80  22  35	ember-1
+134  29  37	ember-2
+192  42  32	ember-3
+229  84  57	ember-4
+230 140 117	ember-5
+236 189 172	ember-6
+246 230 223	ember-7
+ 32  11   9	gold-0
+ 84  37  18	gold-1
+141  78  22	gold-2
+203 141  22	gold-3
+240 192  46	gold-4
+237 206 110	gold-5
+240 223 168	gold-6
+247 241 222	gold-7
+ 25  13  28	crystal-0
+ 66  30  72	crystal-1
+113  43 120	crystal-2
+167  54 170	crystal-3
+205  81 197	crystal-4
+214 132 198	crystal-5
+227 181 212	crystal-6
+243 226 235	crystal-7

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot
+        run: |
+          VERSION="$(cat tools/godot-version.txt)"
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${VERSION}/Godot_v${VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${VERSION}_linux.x86_64" "$HOME/godot"
+          chmod +x "$HOME/godot"
+          "$HOME/godot" --version
+
+      - name: Run tests
+        run: GODOT="$HOME/godot" tools/run_tests.sh
+
+      - name: Capture gym screenshots
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri >/dev/null
+          mkdir -p shots
+          export GODOT="$HOME/godot"
+          tools/screenshot.sh shots/gym-start.png
+          tools/screenshot.sh shots/gym-pogo-corridor.png 36,39
+          tools/screenshot.sh shots/gym-shaft.png 83,30
+          tools/screenshot.sh shots/gym-thorn-bulbs.png 134,17
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: shots/
+          if-no-files-found: ignore
