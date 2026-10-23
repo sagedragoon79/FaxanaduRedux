@@ -403,6 +403,10 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			var curtain := MistCurtain.new()
 			curtain.flag_id = "curtain:" + id
 			_spawn(curtain, center)
+		"Z":
+			var seal := FireSeal.new()
+			seal.flag_id = "seal:" + id
+			_spawn(seal, center)
 		"N":
 			var heart := RootHeart.new()
 			heart.room = self
@@ -421,7 +425,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "L", "W", "F", "*":
+		"G", "X", "O", "L", "W", "F", "*":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()

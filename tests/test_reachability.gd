@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GXLWF*$SN"
+const PICKUPS := "GXOLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
@@ -17,7 +17,7 @@ const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
-	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow"]
+	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall"]
 
 
 func _texts() -> Dictionary:
@@ -134,7 +134,7 @@ func test_amber_keeps_everything_reachable() -> void:
 func test_with_the_mattock_everything_is_reachable() -> void:
 	# The Act I set: glove, Mattock (from the Foreman), keys, the Spring restored,
 	# Zoradohna beaten (the winch opens the flue damper) and Ripasheiku's Lantern Key.
-	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}, true)
+	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
@@ -168,7 +168,7 @@ func test_bound_fog_holds_until_the_lantern_key() -> void:
 func test_wing_boots_reach_the_high_perch() -> void:
 	# Bible 4.1 (A3): the Wing Boots wait in Feather Hollow, reachable without
 	# them; the Life Fruit on the perch above is six rows up, past any single jump.
-	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
 	check(bare.touchable(nodes, "mist/feather_hollow", 30, 15), "the Wing Boots can be reached without them")
@@ -184,6 +184,20 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
 	check(stuck.is_empty(), "with the Wing Boots, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+func test_fire_seal_holds_until_deluge() -> void:
+	# Bible 4.1 (A4) and 4.5: the Deluge scroll lies on the Marsh Road before
+	# the fire seal, and the seal keeps the Scorched Hall shut until water douses it.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
+	var dry := Reach.new(_texts(), set, true)
+	var nodes := dry.reachable(dry.spot_of(START_ROOM, "P"))
+	var rooms := _rooms_reached(nodes)
+	check(rooms.has("mist/marsh_road") and dry.touchable(nodes, "mist/marsh_road", 21, 14), "the Deluge scroll can be reached without it")
+	check(not rooms.has("mist/scorched_hall"), "but the fire seal keeps the Scorched Hall shut")
+	set["deluge"] = true
+	var wet := Reach.new(_texts(), set, true)
+	check(_rooms_reached(wet.reachable(wet.spot_of(START_ROOM, "P"))).has("mist/scorched_hall"), "with Deluge the road east opens")
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
