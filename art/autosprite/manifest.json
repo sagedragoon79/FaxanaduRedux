@@ -29,6 +29,8 @@
  },
  "monodron": {
   "dir": "monodron",
+  "colors": 40,
+  "density": 2,
   "ramps": ["night", "crystal", "gold", "stone"],
   "height": 20,
   "reference": "idle",
@@ -41,6 +43,8 @@
  },
  "hornet": {
   "dir": "hornet",
+  "colors": 40,
+  "density": 2,
   "ramps": ["night", "gold", "bark", "sky", "ember", "stone"],
   "height": 28,
   "reference": "fly",
@@ -52,6 +56,8 @@
  },
  "rot_dwarf": {
   "dir": "rot_dwarf",
+  "colors": 40,
+  "density": 2,
   "ramps": ["night", "stone", "bark", "leaf"],
   "height": 36,
   "reference": "walk",
