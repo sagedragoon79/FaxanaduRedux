@@ -20,6 +20,7 @@ prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, sprin
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
+surface: stone     (optional: the ground's footstep sound if not the zone's: stone, moss, plank, iron, sap)
 ---
 ##########
 #P.......#

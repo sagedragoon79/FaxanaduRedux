@@ -6,6 +6,8 @@ extends CharacterBody2D
 signal health_changed(hp: int, max_hp: int)
 signal jumped(kind: String)
 signal landed(fall_speed: float)
+## A footstep (or the scuff under a landing) on `surface`: see Room.surface_at.
+signal footstep(surface: String)
 signal died
 signal respawned
 
@@ -641,16 +643,28 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 		if impact > 120.0:
 			_spawn_dust(Vector2.ZERO, "land")
 			Sfx.play("land", 0.08, lerpf(-8.0, 0.0, k))
+			_footstep(lerpf(-10.0, -4.0, k))
 		if impact > 450.0:
 			Feel.add_trauma(0.12)
 		landed.emit(impact)
 		_peak_fall_speed = 0.0
 	if on_floor and absf(velocity.x) > 40.0 and _step_timer <= 0.0:
 		_step_timer = 0.26
-		Sfx.play("step", 0.15, -10.0)
+		_footstep(-10.0)
 	if on_floor and not _hazard_near():
 		safe_position = global_position
 	_was_on_floor = on_floor
+
+
+## Plays the step sound for the ground underfoot (design bible 11), falling back
+## to the plain step outside a room.
+func _footstep(volume_db: float) -> void:
+	var surface := ""
+	var room := get_tree().get_first_node_in_group("room") as Room
+	if room != null:
+		surface = room.surface_at(global_position + Vector2(0, 2))
+	Sfx.play("step_" + surface if surface != "" else "step", 0.15, volume_db)
+	footstep.emit(surface)
 
 
 # --- Shield, potion and spells -------------------------------------------------
