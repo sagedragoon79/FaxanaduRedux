@@ -17,7 +17,8 @@ const WOOD := Color("8a5a34")
 const WOOD_DARK := Color("5e3b22")
 
 
-static func build() -> TileSet:
+## Builds the tileset. Without collision it is used for fake walls (secrets).
+static func build(with_collision := true) -> TileSet:
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(TILE, TILE)
 	ts.add_physics_layer()
@@ -35,6 +36,8 @@ static func build() -> TileSet:
 	for tile: int in [Tile.INNER, Tile.TOP, Tile.ONE_WAY]:
 		var coords := Vector2i(tile, 0)
 		src.create_tile(coords)
+		if not with_collision:
+			continue
 		var data := src.get_tile_data(coords, 0)
 		data.add_collision_polygon(0)
 		if tile == Tile.ONE_WAY:

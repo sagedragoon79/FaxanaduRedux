@@ -10,6 +10,7 @@ const SUITES := [
 	preload("res://tests/test_combat.gd"),
 	preload("res://tests/test_enemies.gd"),
 	preload("res://tests/test_soak.gd"),
+	preload("res://tests/test_rooms.gd"),
 ]
 
 var _passed := 0
