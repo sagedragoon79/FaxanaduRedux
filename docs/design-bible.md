@@ -139,7 +139,7 @@ All story triggers check items, not route order.
 | Trigger | Change |
 |---------|--------|
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
-| Zoradohna defeated | Forepaw dwarves freed; elevator to Eolis; dwarf smith opens (weapon upgrades) |
+| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface; fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
@@ -183,7 +183,7 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret) |
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
 
-Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards.
+Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered. The Meteor Shard cost joins when shards are placed in the world.)
 
 You start with no shield: Block and parry come with the Small Shield, the first purchase most players make in Eolis. Gear values live in `data/items.json`:
 

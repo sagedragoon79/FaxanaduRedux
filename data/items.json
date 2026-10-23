@@ -9,5 +9,7 @@
 	"life_fruit": {"name": "Life Fruit", "kind": "stat", "desc": "Two fruits grow a new mask of health."},
 	"mana_dew": {"name": "Mana Dew", "kind": "stat", "desc": "Your magic grows by 10."},
 	"ointment": {"name": "Ointment", "kind": "ointment", "desc": "Rub it on from the pause menu: nothing can hurt you for 10 seconds. You can carry three."},
-	"elixir": {"name": "Elixir", "kind": "elixir", "desc": "If you fall, it revives you where you stand. You can carry one."}
+	"elixir": {"name": "Elixir", "kind": "elixir", "desc": "If you fall, it revives you where you stand. You can carry one."},
+	"temper_1": {"name": "Temper Blade I", "kind": "temper", "level": 1, "desc": "The smith folds your blade in dwarf fire: +15% damage."},
+	"temper_2": {"name": "Temper Blade II", "kind": "temper", "level": 2, "desc": "A second folding, quenched in spring water: another +15%."}
 }

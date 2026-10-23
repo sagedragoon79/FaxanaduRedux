@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "amb_trunk", "amb_eolis", "amb_tower"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "amb_trunk", "amb_eolis", "amb_tower"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -444,6 +444,10 @@ const LIFT_ROOM := "tower/forepaw_lift"
 func _zora_world(cell := Vector2i(30, 19)) -> Array:
 	var w := make_world({}, LIFT_ROOM, cell_feet(4, 19))
 	GameState.set_flag("boss:zoradohna")  # keep the arena from starting its own fight
+	await frames(1)
+	var arena := _arena(w)
+	for n: int in w.room.doors:
+		arena._seal(n)  # as in the real fight: both doorways barred
 	var z := Zoradohna.new()
 	z.arena = Rect2(16, 64, 608, 256)
 	z.position = cell_feet(cell.x, cell.y)

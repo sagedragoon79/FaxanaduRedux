@@ -29,11 +29,16 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 				right = "Full"
 			elif st == "sold out":
 				right = "Sold out"
+			elif st == "locked":
+				right = "Needs I"
 			var detail: String = item.desc
 			if item.kind == "key":
 				detail += "  You have %d." % GameState.key_count(String(entry.item).trim_suffix("_key"))
 			elif item.kind == "ointment":
 				detail += "  You have %d." % p.ointments
+			elif item.kind == "temper":
+				var blade := String(GameState.data.equipment.blade)
+				detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
 			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
 		return out
 	var on_select := func(i: int) -> void:

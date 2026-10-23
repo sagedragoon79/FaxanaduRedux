@@ -18,6 +18,8 @@ const VERSION := 1
 ## The original's 16 ranks. Each rank after Novice gives a skill point.
 const RANKS := ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
 	"Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"]
+## Damage each smith temper adds to a blade (design bible 5.2).
+const TEMPER_BONUS := 0.15
 const RANK_XP := [0, 40, 100, 180, 300, 460, 660, 900, 1200, 1560, 2000, 2500, 3100, 3800, 4600, 5500]
 const LIFE_FRUIT_HP := 10
 const MANA_DEW_MP := 10.0
@@ -61,6 +63,8 @@ static func fresh() -> Dictionary:
 		"skills": [],
 		"respecs": 0,
 		"equipment": {"blade": "hand_dagger", "armor": "", "shield": ""},
+		## Smith tempers per blade id (0 to 2): each adds TEMPER_BONUS to its damage.
+		"tempers": {},
 		"keys": {},
 		"rings": [],
 		"potion_shards": 0,
@@ -169,6 +173,11 @@ func name_title() -> String:
 	return rank_name()
 
 
+## How many times the Forepaw smith has tempered blade `blade_id` (0 to 2).
+func temper_level(blade_id: String) -> int:
+	return int(data.get("tempers", {}).get(blade_id, 0))
+
+
 func key_count(kind: String) -> int:
 	return int(data.keys.get(kind, 0))
 
@@ -202,8 +211,9 @@ func refresh_stats(p: Player) -> void:
 	var blade := GameData.item(eq.blade)
 	if blade.is_empty():
 		blade = GameData.item("hand_dagger")
-	p.slash_damage = int(blade.slash)
-	p.heavy_damage = int(blade.heavy)
+	var temper := 1.0 + TEMPER_BONUS * temper_level(String(eq.blade))
+	p.slash_damage = roundi(int(blade.slash) * temper)
+	p.heavy_damage = roundi(int(blade.heavy) * temper)
 	p.reach_bonus = float(blade.reach)
 	p.defense = float(GameData.item(eq.armor).get("defense", 0.0))
 	p.has_shield = eq.shield != ""

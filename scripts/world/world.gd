@@ -249,6 +249,28 @@ func use_door(n: int) -> void:
 	busy = false
 
 
+## Moves the player to `pos` in room `room_id` (the Forepaw lift), with a fade.
+func travel(room_id: String, pos: Vector2) -> void:
+	if busy or not has_room(room_id):
+		return
+	busy = true
+	player.frozen = true
+	if fader != null and not instant:
+		await _fade(1.0, FADE_OUT)
+	if use_game_state:
+		GameState.capture(player)
+	if room_id != room.id:
+		_enter(room_id)
+	player.teleport(pos)
+	player.velocity = Vector2.ZERO
+	player.safe_position = pos
+	camera.snap_to_target()
+	player.frozen = false
+	if fader != null and not instant:
+		await _fade(0.0, FADE_IN)
+	busy = false
+
+
 ## "scroll" for an edge door into a room of the same zone, otherwise "fade".
 func transition_kind(d: Dictionary) -> String:
 	if d.edge == "inner":

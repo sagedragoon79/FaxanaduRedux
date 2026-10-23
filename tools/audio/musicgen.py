@@ -377,6 +377,53 @@ def track_miniboss():
     return s.render(reverb=0.3)
 
 
+def track_zoradohna():
+    """Zoradohna: the drill engine. A relentless sixteenth-note bass in E minor
+    that churns like a gearbox, kick on every beat, the anvil on every
+    off-beat, and a minor-key lead from bar 5. The tower's boss theme."""
+    rng = np.random.default_rng(61)
+    s = Song(bpm=144, bars=16)
+    root, scale = 40, SCALES["minor"]
+    prog = [0, 0, 5, 6, 0, 0, 3, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root + 12, scale, deg)
+        base = scale_note(root - 12, scale, deg)
+        for k in range(16):
+            # The engine: root, root, octave, fifth, churning.
+            m = base + [0, 0, 12, 7][k % 4]
+            s.add(bass(midi_hz(m), s.beat * 0.22), b * 4 + k * 0.25, 0, 0.7)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.02), b * 4, rng.uniform(-0.5, 0.5), 0.2)
+        for k in range(4):
+            s.add(kick(0.25), b * 4 + k, 0, 0.95)
+            s.add(anvil(rng, rng.choice([1240.0, 1400.0]), 0.3), b * 4 + k + 0.5, rng.uniform(-0.6, 0.6), 0.35)
+        for k in (1, 3):
+            s.add(snare(rng), b * 4 + k, -0.1, 0.85)
+        for k in range(8):
+            s.add(hat(rng), b * 4 + k * 0.5 + 0.25, 0.3, 0.3)
+    melody(s, rng, root, scale, prog, lead, start_bar=4, octave=24, pan=-0.1, gain=0.8, density=0.75)
+    return s.render(reverb=0.28)
+
+
+def track_forepaw():
+    """Forepaw freed: the dwarves' city breathes again. A warm work song in G
+    major, anvils ringing in time, a plucked tune over a slow pad."""
+    rng = np.random.default_rng(67)
+    s = Song(bpm=96, bars=16)
+    root, scale = 43, SCALES["major"]
+    prog = [0, 3, 4, 0, 5, 3, 4, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root + 12, scale, deg)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 1.6), b * 4, 0, 0.7)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg) + 7), s.beat * 1.6), b * 4 + 2, 0, 0.55)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, rng.uniform(-0.4, 0.4), 0.3)
+        for k in (0, 2):
+            s.add(anvil(rng, rng.choice([1180.0, 1320.0, 1480.0]), 0.5), b * 4 + k + 1, rng.uniform(-0.6, 0.6), 0.3)
+    melody(s, rng, root, scale, prog, pluck, start_bar=2, octave=24, pan=0.15, gain=0.7, density=0.55)
+    return s.render(reverb=0.35)
+
+
 def amb_trunk():
     rng = np.random.default_rng(71)
     dur = 24.0
@@ -458,6 +505,8 @@ TRACKS = {
     "tower": track_tower,
     "boss": track_boss,
     "miniboss": track_miniboss,
+    "zoradohna": track_zoradohna,
+    "forepaw": track_forepaw,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
