@@ -181,6 +181,38 @@ func test_foreman_fight_soak_stays_lean() -> void:
 	await frames(2)
 
 
+## The HUD redraws every frame: health draining and refilling through every
+## part-filled mask, poisoned half the time, a Life Fruit's half mask, the
+## magic bar and the flasks changing. It must draw each frame and stay cheap.
+func test_hud_soak_draws_every_frame_and_stays_lean() -> void:
+	var w := make_world({}, "tower/winch_hall")
+	var hud := GameHud.new()
+	hud.player = w.player
+	arena.add_child(hud)
+	w.player.max_hp = 110
+	await frames(2)
+	var start := hud.draws
+	var total_usec := 0
+	const HUD_FRAMES := 600
+	for f in HUD_FRAMES:
+		w.player.hp = int(absf(sin(f * 0.05)) * w.player.max_hp)
+		w.player.mp = fmod(f * 3.0, w.player.max_mp + 1.0)
+		w.player.poison_left = 1.0 if (f / 60) % 2 == 1 else 0.0
+		w.player.flask_charges = f % (w.player.flask_max + 1)
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		total_usec += Time.get_ticks_usec() - t0
+	var drawn := hud.draws - start
+	var avg_ms := total_usec / 1000.0 / HUD_FRAMES
+	print("  HUD soak: %.2f ms a frame on average, %d draws" % [avg_ms, drawn])
+	check(drawn >= HUD_FRAMES - 2, "the HUD redraws every frame (%d of %d)" % [drawn, HUD_FRAMES])
+	check(avg_ms < 16.6, "a frame with the HUD averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	w.player.poison_left = 0.0
+	hud.queue_free()
+	w.queue_free()
+	await frames(2)
+
+
 func _count_nodes(w: World) -> int:
 	return w.room.get_child_count() if w.room != null else 0
 
