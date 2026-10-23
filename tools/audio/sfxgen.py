@@ -178,5 +178,32 @@ def main():
     save("hurt", lowpass(osc(slide(420, 140, d, 0.7), "square", 0.5), 3000) * env(int(RATE * d), 0.002, 1.0), 0.6)
 
 
+    # --- World and UI (M3) ---
+    def arpeggio(notes, step, shape="square", duty=0.5, tail=0.25):
+        dur = step * len(notes) + tail
+        n = int(RATE * dur)
+        out = np.zeros(n)
+        for i, f in enumerate(notes):
+            start = int(RATE * i * step)
+            seg = n - start
+            out[start:] += osc(np.full(seg, float(f)), shape, duty) * env(seg, 0.002, 2.2)
+        return out
+
+    save("item", lowpass(arpeggio([523, 659, 784, 1047, 1319], 0.07, "square", 0.25, 0.5), 5000), 0.5)
+    save("secret", lowpass(arpeggio([392, 494, 587, 740, 988], 0.06, "tri", 0.5, 0.4), 6000), 0.55)
+    save("save", arpeggio([523, 784, 1047, 1568], 0.09, "sine", 0.5, 0.7), 0.5)
+
+    d = 0.3
+    creak = lowpass(osc(slide(90, 70, d) + 6 * np.sin(2 * np.pi * 23 * t_axis(d)), "saw"), 900) * env(int(RATE * d), 0.03, 1.2)
+    save("door", mix(creak, lowpass(noise(d), 600) * env(int(RATE * d), 0.01, 2.0) * 0.5), 0.55)
+
+    d = 0.35
+    thunk = lowpass(osc(slide(160, 90, 0.12), "square", 0.4), 1500) * env(int(RATE * 0.12), 0.001, 1.5)
+    save("chest", mix(thunk, np.concatenate([np.zeros(int(RATE * 0.1)), arpeggio([784, 1047, 1319], 0.05, "square", 0.5, 0.1) * 0.5])), 0.55)
+
+    d = 0.03
+    save("blip", lowpass(osc(np.full(int(RATE * d), 880.0), "square", 0.5), 3000) * env(int(RATE * d), 0.001, 1.0), 0.3)
+
+
 if __name__ == "__main__":
     main()

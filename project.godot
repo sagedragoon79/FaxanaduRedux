@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 Feel="*res://scripts/autoload/feel.gd"
 Controls="*res://scripts/autoload/controls.gd"
 Sfx="*res://scripts/autoload/sfx.gd"
+GameState="*res://scripts/autoload/game_state.gd"
 
 [display]
 

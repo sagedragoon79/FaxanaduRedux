@@ -20,7 +20,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_t += delta
 	var p := get_tree().get_first_node_in_group("player") as Player
-	if p != null and not p.dead and p.body_rect().grow(4.0).has_point(global_position + Vector2(0, -6)):
+	if p != null and not p.dead and not p.frozen and p.body_rect().grow(4.0).has_point(global_position + Vector2(0, -6)):
 		p.add_gold(value)
 		Sfx.play("coin", 0.0, 2.0)
 		var d := Dust.new()
@@ -29,6 +29,7 @@ func _physics_process(delta: float) -> void:
 		d.global_position = global_position + Vector2(0, -6)
 		if p.purse == self:
 			p.purse = null
+		GameState.data.purse = {}
 		queue_free()
 		return
 	queue_redraw()

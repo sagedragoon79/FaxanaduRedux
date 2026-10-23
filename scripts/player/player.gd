@@ -30,8 +30,10 @@ var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true,
 
 var max_hp := 100
 var hp := 100
+var max_mp := 60.0
 var mp := 60.0
 var gold := 0
+var flask_max := 2
 var flask_charges := 2
 var equipped_spell := "deluge"
 var dead := false
@@ -57,6 +59,11 @@ var invulnerable: bool:
 
 var spawn_point := Vector2.ZERO
 var safe_position := Vector2.ZERO
+## When set, called instead of the default respawn at `spawn_point` (the World
+## uses it to return the player to the last save shrine, in any room).
+var respawn_handler: Callable
+## While frozen (room transitions, dialog, menus) the controller does nothing.
+var frozen := false
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -116,13 +123,18 @@ func _ready() -> void:
 	add_child(visual)
 
 	air_dash_charges = tuning.air_dash_charges
-	mp = combat.max_mp
-	flask_charges = combat.flask_charges
+	max_mp = max_mp
+	mp = max_mp
+	flask_max = combat.flask_charges
+	flask_charges = flask_max
 	spawn_point = global_position
 	safe_position = global_position
 
 
 func _physics_process(delta: float) -> void:
+	if frozen:
+		input.clear()
+		return
 	if dead:
 		_dead_timer -= delta
 		input.clear()
@@ -131,7 +143,7 @@ func _physics_process(delta: float) -> void:
 		return
 	input.poll()
 	_tick_timers(delta)
-	mp = minf(mp + combat.mp_regen_per_second * delta, combat.max_mp)
+	mp = minf(mp + combat.mp_regen_per_second * delta, max_mp)
 
 	var on_floor := is_on_floor()
 	if on_floor:
@@ -143,6 +155,9 @@ func _physics_process(delta: float) -> void:
 	if input.attack_pressed:
 		_attack_buffer_timer = combat.attack_buffer
 
+	if _try_interact(on_floor):
+		input.end_frame()
+		return
 	_update_wall_contact(on_floor)
 	_update_block()
 	_update_drink(delta, on_floor)
@@ -488,7 +503,7 @@ func _process_attack_hits() -> void:
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_something = true
 			if collider.is_in_group("enemy"):
-				mp = minf(mp + combat.mp_per_melee_hit, combat.max_mp)
+				mp = minf(mp + combat.mp_per_melee_hit, max_mp)
 		if attack_kind == "down" and collider.is_in_group("pogo") and not bounced:
 			bounced = true
 			_pogo_bounce()
@@ -654,7 +669,7 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 	if parryable and _parry_timer > 0.0 and from_front:
 		_parry_timer = 0.0
 		_invuln_timer = maxf(_invuln_timer, 0.25)
-		mp = minf(mp + combat.parry_mp_gain, combat.max_mp)
+		mp = minf(mp + combat.parry_mp_gain, max_mp)
 		Feel.hitstop(combat.parry_hitstop)
 		Feel.add_trauma(0.2)
 		Feel.rumble(0.6, 0.2, 0.1)
@@ -731,9 +746,12 @@ func _die(where: Vector2) -> void:
 func _respawn() -> void:
 	dead = false
 	hp = max_hp
-	mp = combat.max_mp
-	flask_charges = combat.flask_charges
-	teleport(spawn_point)
+	mp = max_mp
+	flask_charges = flask_max
+	if respawn_handler.is_valid():
+		respawn_handler.call()
+	else:
+		teleport(spawn_point)
 	_invuln_timer = 1.0
 	health_changed.emit(hp, max_hp)
 	respawned.emit()
@@ -741,6 +759,42 @@ func _respawn() -> void:
 
 func add_gold(amount: int) -> void:
 	gold += amount
+
+
+## Refills health, magic and potion charges (save shrines, the Guru).
+func restore() -> void:
+	hp = max_hp
+	mp = max_mp
+	flask_charges = flask_max
+	health_changed.emit(hp, max_hp)
+
+
+## Pressing Up on the ground next to an interactable (shrine, sign, NPC, door)
+## uses it. Returns true if something was used this frame.
+func _try_interact(on_floor: bool) -> bool:
+	if not input.up_pressed or not on_floor or is_attacking or is_dashing or is_drinking:
+		return false
+	var best: Node2D = null
+	var best_dist := INF
+	for n: Node in get_tree().get_nodes_in_group("interactable"):
+		var it := n as Node2D
+		if it == null or not it.has_method("interact") or not can_reach(it):
+			continue
+		var d := absf(it.global_position.x - global_position.x)
+		if d < best_dist:
+			best = it
+			best_dist = d
+	if best == null:
+		return false
+	velocity.x = 0.0
+	best.call("interact", self)
+	return true
+
+
+## True if `node` is close enough to interact with (about one tile either side).
+func can_reach(node: Node2D) -> bool:
+	var d := node.global_position - global_position
+	return absf(d.x) <= 22.0 and absf(d.y) <= 24.0
 
 
 func teleport(pos: Vector2) -> void:

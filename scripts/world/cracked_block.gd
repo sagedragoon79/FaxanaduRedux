@@ -9,6 +9,8 @@ const CRACK := Color("2a2538")
 const HIGHLIGHT := Color("8d84a3")
 
 @export var respawns := true
+## When set, breaking the block is remembered in GameState (it stays broken).
+var persist_id := ""
 
 var _broken := false
 var _timer := 0.0
@@ -31,6 +33,8 @@ func break_block() -> void:
 		return
 	_broken = true
 	_timer = RESPAWN_TIME
+	if persist_id != "":
+		GameState.collect(persist_id)
 	_shape.set_deferred("disabled", true)
 	visible = false
 	var d := Dust.new()

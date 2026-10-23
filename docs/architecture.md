@@ -3,9 +3,30 @@
 ## Scene flow
 
 `scenes/main.tscn` runs `scripts/game.gd`, which creates a 642x362 `SubViewport` for the
-world, loads a room file into a `Room` inside it, spawns the `Player` and a `GameCamera`, and
-adds the `GameHud` and `DebugHud` in the main viewport. Autoloads: `Feel` (hit-stop, shake,
-rumble), `Controls` (input map built in code), `Sfx` (pooled sound player).
+world and puts a `World` in it. The UI layer (main viewport, native resolution) holds the
+`GameHud` (masks, MP, potions, gold, banners, toasts), the `DialogBox`, the `MapScreen` and a
+fade rectangle. The game node runs while paused; the viewport with the world does not.
+
+Autoloads: `Feel` (hit-stop, shake, rumble), `Controls` (input map built in code), `Sfx`
+(pooled sound player), `GameState` (everything persistent, plus JSON saves).
+
+## World and rooms
+
+`scripts/world/world.gd` owns the current `Room`, the `Player` and the `GameCamera`. It loads
+rooms by id from `levels/<zone>/<room>.room`, moves the player through doors (edge doors on
+touch, inner doors on Up), fades between rooms, saves at shrines, and respawns the player at
+the last save after death. `build_catalog()` reads every room's header and doors for the map.
+Tests register rooms in `World.texts` instead of writing files, and set `instant` to skip fades.
+
+`GameState.data` holds abilities, max stats, gold, keys, shard counts, collected pickup ids
+(`room_id:x,y`), visited rooms, world flags, the dropped gold purse and the save point.
+`apply(player)` and `capture(player)` copy stats between it and the live player; the World
+captures on every room change and save. The gym (`zone: gym`) ignores GameState so every
+ability stays on.
+
+Interactables (`scripts/world/interactable.gd`: shrines, tablets, inner doors, chests, later
+NPCs) are in the `interactable` group. The player uses the nearest one in reach when Up is
+pressed on the ground. Text goes through `GameState.say()`, `banner` and `toast` signals.
 
 ## Player
 
@@ -43,7 +64,7 @@ Visuals are placeholders drawn in code (`player_visual.gd`) plus a verlet-chain 
 | 4 | 8 | Enemy | Enemies and dummies (groups `enemy`, `pogo`) |
 
 Groups: `pogo` (down-strike bounces), `hazard` (hurts on touch), `breakable` (Mattock),
-`room`, `player`.
+`room`, `player`, `world`, `interactable`, `purse`.
 
 ## Rendering
 

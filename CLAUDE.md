@@ -16,7 +16,9 @@ bible changes substantially (link in the project memory).
 ## Conventions
 
 - Most nodes are built in code (`class_name` scripts), not hand-edited `.tscn` files.
-- Rooms are text files in `levels/` loaded by `scripts/world/room.gd`. Legend in `levels/README.md`.
+- Rooms are text files in `levels/` loaded by `scripts/world/room.gd`. Legend, doors and map
+  placement in `levels/README.md`. `World` moves the player between rooms.
+- Anything that must survive a room change or a save lives in `GameState.data`, not on nodes.
   The gym is generated: edit `tools/levels/gen_gym.py`, then run it.
 - Enemies extend `Enemy` and must telegraph attacks for at least `Enemy.MIN_TELEGRAPH`.
 - Combat numbers live in `scripts/player/combat_tuning.gd` (design bible 5.3).
