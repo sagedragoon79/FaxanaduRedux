@@ -26,7 +26,7 @@ parallax backgrounds still drew every pixel as a 2x2 block.
 ## Automated verification
 
 New test: both decor atlases are 2x and hold four rows of cells, and both Trunk background
-layers are 2x images that still cover 640x480 world pixels. Full suite: 408 checks pass.
+layers are 2x images that still cover 640x480 world pixels. Full suite: 412 checks pass.
 Screenshots reviewed: the Eolis plaza, Lantern Grotto, Fungus Shaft, the Trunk entrance and
 the title screen, plus the decor atlases and the far layer at 4x beside the old 1x version.
 
