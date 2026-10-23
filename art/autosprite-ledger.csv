@@ -36,3 +36,4 @@ date,asset,operation,credits,result,notes
 2026-10-23,Rokusutahn tail base,create_character pro,3,ok (cmvki8x2y00941g8yjbshrtxp),glowing weak-point tail; balance 139 after
 2026-10-23,Rokusutahn head/plate/tail,import (spin + state frames by code),0,ok (art/autosprite/rokusutahn),HD boss parts at 2x density; balance 139
 2026-10-23,monodron / hornet / rot_dwarf at 2x,re-import (density 2 + own palette),0,ok,free: same clips at double detail; balance 139
+2026-10-23,hero rim light,re-import (rim on top/back edges),0,ok,free: readability against brown trees; balance 139

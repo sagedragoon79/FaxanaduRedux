@@ -42,7 +42,10 @@ animations of which sheet they replace:
                "erase_white": true,      also cut out the glow's near-white core
                "height": 38}             this animation's own figure height (world px) and middle,
                                          for a part drawn apart from the reference (boss segments)
-    }
+    },
+    "rim": {"color": [r, g, b],       a cool rim light (12.2: readability): the figure's top and
+            "mix": 0.5}               back edges (left, the sheets face right) lifted toward this
+                                      color, so a brown figure stands off brown trees
   }
 
 pixelrig.write_sheet() calls imported() for every sheet it writes, so spritegen.py and
@@ -193,6 +196,17 @@ class Importer:
                       for spec in cfg["animations"].values()
                       if spec is not ref and (self.dir / spec["file"]).exists()]
             self.own = self.own_palette(frames + others, int(cfg["colors"]))
+        self.rim = []
+        if cfg.get("rim"):
+            # Rim shades: the sheet's tones lifted toward the rim color, cut to a few colors.
+            self.rim_color = np.array(cfg["rim"]["color"], float)
+            self.rim_mix = float(cfg["rim"].get("mix", 0.4))
+            tones = np.array(list(self.own.values()) or [(80, 80, 80)], float)
+            lifted = (tones * (1 - self.rim_mix) + self.rim_color * self.rim_mix).round().astype(np.uint8)
+            img = Image.fromarray(lifted.reshape(1, -1, 3), "RGB").quantize(8, Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+            for c in np.array(img.getpalette()[:24], np.uint8).reshape(-1, 3):
+                self.own[f"rim-{len(self.rim)}"] = tuple(int(v) for v in c)
+                self.rim.append(f"rim-{len(self.rim)}")
         self.use_ramps(cfg["ramps"])
 
     def set_reference(self, frame, height):
@@ -209,6 +223,8 @@ class Importer:
         self.keys = list(self.own) + [k for k in PAL if k.split("-")[0] in ramps]
         self.colors = np.array([self.own.get(k) or PAL[k] for k in self.keys], np.uint8)
         self.lab = _lab(self.colors)
+        # Ordinary pixels never take a rim shade; rim pixels only take one.
+        self.is_rim = np.array([k in self.rim for k in self.keys])
         # Shades as dark as the outline's neighbor: the anti-aliased rim the outline replaces.
         self.dark = [i for i, k in enumerate(self.keys) if k in ("night-0", "night-1")
                      or (k in self.own and self.lab[i][0] <= _lab(np.array([PAL["night-1"]], np.uint8))[0][0])]
@@ -235,8 +251,10 @@ class Importer:
         pal = pal[np.argsort(_lab(pal)[:, 0])]
         return {f"own-{i}": tuple(int(v) for v in c) for i, c in enumerate(pal)}
 
-    def quantize(self, rgb):
+    def quantize(self, rgb, rim=False):
         d = ((_lab(rgb)[:, None, :] - self.lab[None, :, :]) ** 2).sum(-1)
+        if self.is_rim.any():
+            d[:, self.is_rim != rim] = np.inf
         return d.argmin(1)
 
     @staticmethod
@@ -277,6 +295,12 @@ class Importer:
         rim = solid & _n4(~solid) & dark
         solid &= ~rim
         outline = _n4(solid) & ~solid
+        if self.rim:
+            # Lit from above and behind: solid pixels with open space over them or at their back.
+            # One sheet pixel: a thin highlight just inside the outline.
+            lit = solid & (~_shifted(solid, 0, 1) | ~_shifted(solid, 1, 0))
+            lifted = self.colors[keys[lit]] * (1 - self.rim_mix) + self.rim_color * self.rim_mix
+            keys[lit] = self.quantize(lifted, rim=True)
         img = np.zeros((ch, cw, 4), np.uint8)
         img[solid, :3] = self.colors[keys[solid]]
         img[solid, 3] = 255
@@ -417,6 +441,37 @@ def selftest():
         overlap = (before & after).sum() / float((before | after).sum())
     print(f"selftest: silhouette overlap {overlap:.2f}, worst neck/hand error {worst:.1f} px")
     assert overlap > 0.8 and worst <= 4, "round trip drifted"
+    rim_selftest()
+
+
+def rim_selftest():
+    """A brown block with a rim light: its top and back (left) edges come out lighter and
+    cooler than its middle, its front and bottom edges do not."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        (tmp / "block").mkdir()
+        src = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+        src.paste(Image.new("RGBA", (128, 192), (110, 70, 45, 255)), (64, 32))
+        src.save(tmp / "block" / "idle.png")
+        old = globals()["SOURCES"]
+        globals()["SOURCES"] = tmp
+        try:
+            cfg = {"dir": "block", "colors": 8, "ramps": ["night"], "height": 24,
+                   "rim": {"color": [176, 204, 232], "mix": 0.4},
+                   "animations": {"idle": {"file": "idle.png", "frame_size": 256, "columns": 1, "count": 1}}}
+            imp = Importer("block", cfg, (32, 32), (16, 30))
+            img = np.asarray(imp.frame(source_frames(cfg["animations"]["idle"], imp.dir)[0], "ground")[0]).astype(int)
+        finally:
+            globals()["SOURCES"] = old
+    ys, xs = np.nonzero((img[..., 3] > 0) & (img[..., :3].sum(-1) > 3 * 40))
+    top, left, right, bottom = ys.min(), xs.min(), xs.max(), ys.max()
+    mid = img[(top + bottom) // 2, (left + right) // 2, :3]
+    lit, front, base = img[top, (left + right) // 2, :3], img[(top + bottom) // 2, right, :3], img[bottom, (left + right) // 2, :3]
+    print(f"selftest: rim {list(lit)} over {list(mid)}")
+    assert lit.sum() > mid.sum() + 60 and lit[2] > mid[2] + 40, "no rim on the top edge"
+    assert img[(top + bottom) // 2, left, :3].sum() > mid.sum() + 60, "no rim on the back edge"
+    assert (front == mid).all() and (base == mid).all(), "rim on the front or bottom edge"
 
 
 def find_loop(path, frame_size=256, min_len=6, max_len=40):

@@ -7,6 +7,7 @@
   "density": 2,
   "reference": "idle",
   "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
   "animations": {
    "idle": {"file": "idle.png", "frame_size": 256, "columns": 10, "count": 97, "pick": [27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67], "fps": 12, "loop": true, "autosprite": "character cmvkgu36o002f1g8yyrxrwqbp (hero v3), pro 4s"},
    "run": {"file": "run.png", "frame_size": 256, "columns": 10, "count": 97, "pick": [47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63], "fps": 24, "loop": true, "autosprite": "character cmvkgu36o002f1g8yyrxrwqbp (hero v3), pro 4s"},

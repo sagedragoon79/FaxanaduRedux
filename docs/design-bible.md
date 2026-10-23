@@ -573,6 +573,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   (`/mnt/project-files/autosprite/sean-halfling-reference.png`): charcoal hood over brown hair, pointed ears, layered
   brown leather armor with brass buckles, a dark green cloak with gold trim that trails and shows movement, leather
   boots. Sean rejected the earlier green tunic and blond hair because it read as Link from Zelda; avoid that combination.
+  The brown leather sits close to the Trunk's brown bark, so the hero gets a thin cool rim light on his top and back
+  edges (manifest `"rim"` in `art/autosprite/manifest.json`, applied at import) to stand off it.
 - **Zone moods:** Eolis warm amber and stone grey; Trunk Hollows brown, amber, fungus cyan; Tower of Trunk iron, rust, lamp orange; Mist grey-green, bone, lantern yellow; Branches leaf green, sky blue, cloud white; Daybreak storm violet, gold; Dartmoor flooded teal, crystal magenta; Zenis black-violet, alien cyan, blood red.
 
 ### 12.3 Rendering rules
