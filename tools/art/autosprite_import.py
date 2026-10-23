@@ -41,6 +41,9 @@ animations of which sheet they replace:
                "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
                                          the game draws itself
                "erase_white": true,      also cut out the glow's near-white core
+               "spill": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
+                                         stray red liquid is painted over from its row neighbours
+                                         (the drink clip spills the potion down his chest)
                "height": 38}             this animation's own figure height (world px) and middle,
                                          for a part drawn apart from the reference (boss segments)
     },
@@ -152,6 +155,34 @@ def _erase_hue(src, lo, hi, white=False):
     if white:
         gone |= (sat < 0.15) & (mx > 0.8)
     out[gone] = 0
+    return out
+
+
+def _paint_spill(src, box):
+    """Paints over saturated red (hue within 12 degrees of 0) inside `box`: each such pixel
+    takes the mean of the nearest clean opaque pixels left and right on its row, or is cleared
+    where it hangs over the background."""
+    a = src[..., 3]
+    rgb = np.where(a[..., None] > 1e-6, src[..., :3] / np.maximum(a[..., None], 1e-6), 0)
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    sat = (mx - mn) / np.maximum(mx, 1e-6)
+    # Red is the largest channel and green and blue are within a fifth of the chroma: hue 0 +- 12.
+    red = (rgb.argmax(-1) == 0) & (np.abs(rgb[..., 1] - rgb[..., 2]) <= 0.2 * (mx - mn)) & \
+        (sat > 0.5) & (mx > 0.25) & (a > 0.05)
+    x0, y0, x1, y1 = box
+    gone = np.zeros_like(red)
+    gone[y0:y1, x0:x1] = red[y0:y1, x0:x1]
+    out = src.copy()
+    for y, x in zip(*np.nonzero(gone)):
+        picks = []
+        for step in (-1, 1):
+            xx = x + step
+            while 0 <= xx < src.shape[1] and gone[y, xx]:
+                xx += step
+            if 0 <= xx < src.shape[1] and abs(xx - x) <= 6:
+                picks.append(src[y, xx])
+        opaque = [q for q in picks if q[3] > 0.5]
+        out[y, x] = np.mean(opaque, 0) if len(opaque) == len(picks) and opaque else 0
     return out
 
 
@@ -385,6 +416,10 @@ def imported(name, cell, origin, code_meta):
         imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
         if "erase" in spec:
             srcs = [_erase_hue(src, *spec["erase"], white=spec.get("erase_white", False)) for src in srcs]
+        if "spill" in spec:
+            picks = list(spec.get("pick", range(len(srcs))))
+            srcs = [_paint_spill(src, spec["spill"][str(k)]) if str(k) in spec["spill"] else src
+                    for k, src in zip(picks, srcs)]
         if "height" in spec:
             # A part drawn on its own (a boss segment) sets its own scale and middle.
             imp.set_reference(srcs[0], spec["height"])

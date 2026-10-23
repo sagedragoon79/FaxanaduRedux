@@ -74,3 +74,5 @@ date,asset,operation,credits,result,notes
 2026-10-23,Ripasheiku pounce,generate_pose,3,queued (cf_4df692de-0bf0-4f88-a301-103fd946eef3),airborne, legs flung wide; balance 25 after
 2026-10-23,Ripasheiku dropped,generate_pose,3,queued (cf_47c59c69-0652-4e01-9bca-36aae9efc991),on her back, legs curled; balance 22 after
 2026-10-23,Ripasheiku import,import (packed poses rest=1; castgen placeholder rig),0,ok (art/autosprite/ripasheiku),7 animations; other states borrow the nearest; balance 22
+2026-10-23,hero drink fix,re-import (manifest spill: paint over the potion dripping down his chest in frames 40 and 20),0,ok,Sean spotted the spill; balance 22
+2026-10-23,Iron Dwarf walk fix,re-import (walk pick 25..47: the clip's frames 10-22 let go of the hammer),0,ok,Sean spotted the floating hammer; also refreshed Ripasheiku's stale 2-frame walk; balance 22
