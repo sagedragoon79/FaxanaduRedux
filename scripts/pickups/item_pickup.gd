@@ -5,6 +5,7 @@ extends Node2D
 
 const KIND_BY_CHAR := {
 	"G": "glove",
+	"X": "boots",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
@@ -13,6 +14,7 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
+	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
@@ -21,12 +23,16 @@ const INFO := {
 
 var kind := "life_fruit"
 var pickup_id := ""
+## Abilities glow through the Mist's fog (group "light") so they are never missed.
+var light_radius := 44.0
 
 var _t := 0.0
 
 
 func _ready() -> void:
 	z_index = 1
+	if kind == "glove" or kind == "boots":
+		add_to_group("light")
 
 
 func _physics_process(delta: float) -> void:
@@ -41,8 +47,8 @@ func _physics_process(delta: float) -> void:
 func grant(p: Player) -> void:
 	var info: Dictionary = INFO[kind]
 	var subtitle: String = info.text
-	if kind == "glove":
-		p.abilities["glove"] = true
+	if kind == "glove" or kind == "boots":
+		p.abilities[kind] = true
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
 	if pickup_id != "":
@@ -93,6 +99,23 @@ func _draw() -> void:
 			_hp(o, -10, 14, 20, 1, Color("b8860b"))
 			for i in 4:
 				_hp(o, -7 + i * 4, 6, 2, 1, dark)
+		"boots":
+			# A messenger's boot, sky-blue leather with a gold cuff and a white
+			# wing at the heel that flutters.
+			var flap := roundf(sin(_t * 7.0) * 2.0)
+			var wing := [Vector2(-6, -8), Vector2(-16, -14 - flap), Vector2(-20, -8 - flap), Vector2(-16, -4), Vector2(-8, -2)]
+			_poly(o, wing, Color("120f19"), 2.0)
+			_poly(o, wing, Color("e8f0f8"))
+			for i in 3:
+				_hp(o, -17 + i * 3, -9 - flap + i, 2, 1, Color("9fb6cc"))
+			var boot := [Vector2(-7, -14), Vector2(3, -14), Vector2(3, 2), Vector2(13, 6), Vector2(13, 12), Vector2(-7, 12)]
+			_poly(o, boot, Color("120f19"), 2.0)
+			_poly(o, boot, dark)
+			_poly(o + Vector2(-0.5, -0.5), [Vector2(-6, -13), Vector2(2, -13), Vector2(2, 3), Vector2(12, 7), Vector2(12, 9), Vector2(-6, 9)], c)
+			_hp(o, -5, -12, 2, 18, light)
+			_hp(o, -8, -16, 12, 4, Color("120f19"))
+			_hp(o, -7, -15, 10, 2, Color("ffd24a"))
+			_hp(o, -7, 10, 20, 3, Color("3a2a1a"))
 		"life_fruit":
 			# A red fruit of the Tree: shaded crescent, highlight, stem and leaf.
 			var f := o + Vector2(0, 1)

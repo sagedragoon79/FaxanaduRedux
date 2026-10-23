@@ -214,3 +214,28 @@ func test_bound_fog_parts_for_the_lantern_key() -> void:
 	await frames(2)
 	var again := runner.get_tree().get_nodes_in_group("mist_curtain")
 	check(not again.is_empty() and (again[0] as MistCurtain).parted, "back in the room, the fog is still parted")
+
+
+## Bible 4.1 (A3): the Wing Boots lie on a perch in Feather Hollow. Taking them
+## grants the double jump, and the game remembers it.
+func test_wing_boots_grant_the_double_jump() -> void:
+	var w := make_world({}, "mist/feather_hollow")
+	await frames(3)
+	var p := w.player
+	check(not p.abilities.boots, "the run starts without the Wing Boots")
+	var boots: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "boots":
+			boots = c
+	check(boots != null, "the boots lie on the perch")
+	if boots == null:
+		return
+	p.teleport(boots.global_position + Vector2(0, 12))
+	await frames(3)
+	check(p.abilities.boots and GameState.data.abilities.boots, "taking them grants the double jump and the save remembers it")
+	w._enter("mist/feather_hollow")
+	await frames(2)
+	var again := false
+	for c in w.room.get_children():
+		again = again or (c is ItemPickup and (c as ItemPickup).kind == "boots")
+	check(not again, "they don't come back")
