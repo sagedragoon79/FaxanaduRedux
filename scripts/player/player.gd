@@ -20,6 +20,8 @@ const LAYER_ENEMY := 8
 ## Sap pools (Trunk Hollows) halve run speed and weaken jumps.
 const SAP_SPEED := 0.5
 const SAP_JUMP := 0.72
+## How long an Ointment protects you (design bible 10.2).
+const OINTMENT_TIME := 10.0
 
 const SLASH_SIZE := Vector2(36, 26)
 const UP_SLASH_SIZE := Vector2(34, 36)
@@ -52,6 +54,8 @@ var has_shield := true
 var guard_reduction := 0.5
 ## Elixirs carried: dying with one revives you where you fell.
 var elixirs := 0
+## Ointments carried: each makes you immune to harm for OINTMENT_TIME.
+var ointments := 0
 var melee_mult := 1.0
 var mp_hit_mult := 1.0
 var gold_mult := 1.0
@@ -78,7 +82,10 @@ var is_drinking: bool:
 var has_double_jump := true
 var air_dash_charges := 1
 var invulnerable: bool:
-	get: return _invuln_timer > 0.0
+	get: return _invuln_timer > 0.0 or _ointment_timer > 0.0
+## Seconds of Ointment left (0 when none is on).
+var ointment_left: float:
+	get: return maxf(_ointment_timer, 0.0)
 ## Counts swings, so the visual can restart an attack animation on each press.
 var swing_count := 0
 var is_casting: bool:
@@ -110,6 +117,7 @@ var _dash_cooldown := 0.0
 var _dash_dir := 1
 var _afterimage_timer := 0.0
 var _invuln_timer := 0.0
+var _ointment_timer := 0.0
 var _attack_timer := 0.0
 var _attack_cooldown := 0.0
 var _attack_hits := {}
@@ -233,6 +241,10 @@ func _tick_timers(delta: float) -> void:
 	_control_blend_timer -= delta
 	_dash_cooldown -= delta
 	_invuln_timer -= delta
+	if _ointment_timer > 0.0:
+		_ointment_timer -= delta
+		if _ointment_timer <= 0.0:
+			GameState.toast.emit("The Ointment wears off.")
 	_attack_cooldown -= delta
 	_dust_timer -= delta
 	_step_timer -= delta
@@ -760,6 +772,18 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		_control_lock_timer = combat.hurt_control_lock
 		_control_blend_timer = 0.0
 	health_changed.emit(hp, max_hp)
+
+
+## Rubs on an Ointment (from the pause menu): nothing can hurt you for
+## OINTMENT_TIME seconds. False if you have none or one is already on.
+func use_ointment() -> bool:
+	if ointments <= 0 or _ointment_timer > 0.0 or dead:
+		return false
+	ointments -= 1
+	_ointment_timer = OINTMENT_TIME
+	Sfx.play("heal", 0.0)
+	GameState.toast.emit("The Ointment shimmers on your skin.")
+	return true
 
 
 ## Dying with an Elixir: it is used up and you rise where you fell, fully healed.

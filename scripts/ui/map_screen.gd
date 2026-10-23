@@ -17,6 +17,8 @@ const DIM := Color("8d84a3")
 
 var world: World
 var is_open := false
+## The frame the map last closed on (a Pause press that closes it must not also pause).
+var closed_frame := -1
 
 var _font: Font
 var _t := 0.0
@@ -42,8 +44,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func toggle() -> void:
 	if world == null or world.player == null or world.busy:
 		return
-	if not is_open and (world.player.dead or world.player.frozen):
+	if not is_open and (world.player.dead or world.player.frozen or get_tree().paused):
 		return
+	if is_open:
+		closed_frame = Engine.get_process_frames()
 	is_open = not is_open
 	visible = is_open
 	get_tree().paused = is_open

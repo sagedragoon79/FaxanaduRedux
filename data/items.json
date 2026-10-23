@@ -8,5 +8,6 @@
 	"jack_key": {"name": "Jack Key", "kind": "key", "desc": "Opens one Jack door. Jack doors guard treasure."},
 	"life_fruit": {"name": "Life Fruit", "kind": "stat", "desc": "Two fruits grow a new mask of health."},
 	"mana_dew": {"name": "Mana Dew", "kind": "stat", "desc": "Your magic grows by 10."},
+	"ointment": {"name": "Ointment", "kind": "ointment", "desc": "Rub it on from the pause menu: nothing can hurt you for 10 seconds. You can carry three."},
 	"elixir": {"name": "Elixir", "kind": "elixir", "desc": "If you fall, it revives you where you stand. You can carry one."}
 }

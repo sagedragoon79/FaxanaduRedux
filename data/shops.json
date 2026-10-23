@@ -14,7 +14,8 @@
 		"stock": [
 			{"item": "jack_key", "price": 150},
 			{"item": "mana_dew", "price": 500, "once": true},
-			{"item": "life_fruit", "price": 800, "once": true}
+			{"item": "life_fruit", "price": 800, "once": true},
+			{"item": "ointment", "price": 300}
 		]
 	},
 	"apolune_armor": {
@@ -30,6 +31,7 @@
 		"greeting": "The sap's gone hard and so have my prices. Mostly.",
 		"stock": [
 			{"item": "elixir", "price": 1500},
+			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150},
 			{"item": "mana_dew", "price": 800, "once": true},
 			{"item": "life_fruit", "price": 1200, "once": true}

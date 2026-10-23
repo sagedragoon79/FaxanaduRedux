@@ -6,10 +6,14 @@ const MAX_SHAKE_OFFSET := Vector2(10.0, 7.0)
 const MAX_SHAKE_ROLL := 0.0
 const TRAUMA_DECAY := 1.5
 
-## Settings (exposed later in the options menu).
+## Settings (the options menu sets these through Settings).
 var hitstop_enabled := true
 var shake_scale := 1.0
 var rumble_enabled := true
+## Scales full-screen flashes (boss kills, the Elixir): 1 full, 0 off.
+var flash_scale := 1.0
+## Game speed (accessibility, 70% to 100%): the time scale the game runs at.
+var game_speed := 1.0
 
 var trauma := 0.0
 var shake_offset := Vector2.ZERO
@@ -41,6 +45,7 @@ func hitstop(seconds: float) -> void:
 
 ## Slows the game to `scale` for `seconds` of real time (cinematic kills).
 func slowmo(scale: float, seconds: float) -> void:
+	scale *= game_speed
 	_base_scale = scale
 	_slowmo_until_usec = Time.get_ticks_usec() + int(seconds * 1_000_000.0)
 	if Engine.time_scale > 0.0:
@@ -51,8 +56,16 @@ func slowmo(scale: float, seconds: float) -> void:
 func reset() -> void:
 	_hitstop_until_usec = 0
 	_slowmo_until_usec = 0
-	_base_scale = 1.0
-	Engine.time_scale = 1.0
+	_base_scale = game_speed
+	Engine.time_scale = game_speed
+
+
+func set_game_speed(speed: float) -> void:
+	game_speed = speed
+	if _slowmo_until_usec == 0:
+		_base_scale = speed
+		if Engine.time_scale > 0.0:
+			Engine.time_scale = speed
 
 
 func is_frozen() -> bool:
@@ -80,9 +93,9 @@ func _process(_delta: float) -> void:
 
 	if _slowmo_until_usec > 0 and now >= _slowmo_until_usec:
 		_slowmo_until_usec = 0
-		_base_scale = 1.0
+		_base_scale = game_speed
 		if Engine.time_scale > 0.0:
-			Engine.time_scale = 1.0
+			Engine.time_scale = game_speed
 	if _hitstop_until_usec > 0 and now >= _hitstop_until_usec:
 		_hitstop_until_usec = 0
 		Engine.time_scale = _base_scale

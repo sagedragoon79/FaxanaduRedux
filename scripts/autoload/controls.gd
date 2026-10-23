@@ -1,6 +1,6 @@
 extends Node
-## Registers the input map in code so bindings live in one readable place and
-## can be remapped at runtime later. Keyboard and gamepad are both bound.
+## Registers the input map in code so bindings live in one readable place.
+## Keyboard and gamepad are both bound; Settings can rebind an action's first key.
 
 const DEADZONE := 0.35
 
@@ -28,6 +28,11 @@ const BINDINGS := {
 
 
 func _ready() -> void:
+	restore_defaults()
+
+
+## Rebuilds every action from BINDINGS.
+func restore_defaults() -> void:
 	for action: String in BINDINGS:
 		var spec: Dictionary = BINDINGS[action]
 		if InputMap.has_action(action):
@@ -51,3 +56,45 @@ func _ready() -> void:
 			jt.axis = spec["trigger"]
 			jt.axis_value = 1.0
 			InputMap.action_add_event(action, jt)
+
+
+## The physical keycode of an action's first key (0 if it has none).
+func primary_key(action: String) -> int:
+	for ev in InputMap.action_get_events(action):
+		if ev is InputEventKey:
+			return int((ev as InputEventKey).physical_keycode)
+	return 0
+
+
+## Makes `keycode` the action's first key, replacing the default first key.
+## Any other action that also had that key loses it.
+func rebind(action: String, keycode: int) -> void:
+	for other: String in BINDINGS:
+		if other == action:
+			continue
+		for ev in InputMap.action_get_events(other):
+			if ev is InputEventKey and int((ev as InputEventKey).physical_keycode) == keycode:
+				InputMap.action_erase_event(other, ev)
+	var first: InputEvent = null
+	for ev in InputMap.action_get_events(action):
+		if ev is InputEventKey:
+			first = ev
+			break
+	if first != null:
+		InputMap.action_erase_event(action, first)
+	var key := InputEventKey.new()
+	key.physical_keycode = keycode as Key
+	InputMap.action_add_event(action, key)
+	# Put it back first: the menus show and swap the first key.
+	var events := InputMap.action_get_events(action)
+	InputMap.action_erase_events(action)
+	InputMap.action_add_event(action, key)
+	for ev in events:
+		if ev != key:
+			InputMap.action_add_event(action, ev)
+
+
+## A short name for the key an action uses ("Space", "X").
+func key_name(action: String) -> String:
+	var code := primary_key(action)
+	return OS.get_keycode_string(code as Key) if code != 0 else "-"
