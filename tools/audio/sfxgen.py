@@ -203,6 +203,22 @@ def main():
 
     save("rank", lowpass(arpeggio([392, 523, 659, 784, 1047, 784, 1047], 0.08, "square", 0.5, 0.6), 4500), 0.5)
 
+    # --- Bosses (M3) ---
+    d = 1.3
+    growl = osc(slide(95, 48, d, 0.8) + 9 * np.sin(2 * np.pi * 31 * t_axis(d)), "saw")
+    rasp = lowpass(noise(d), 900 + 500 * np.sin(2 * np.pi * 4 * t_axis(d)) ** 2)
+    save("roar", mix(lowpass(growl, 1100), rasp * 0.7) * env(int(RATE * d), 0.08, 0.7), 0.8)
+
+    d = 0.9
+    save("rumble", lowpass(noise(d), 180) * env(int(RATE * d), 0.15, 0.6) * 3.0, 0.7)
+
+    d = 0.22
+    save("splat", lowpass(noise(d), slide(2400, 300, d)) * env(int(RATE * d), 0.002, 1.8), 0.6)
+
+    d = 0.5
+    grains = noise(d) * (np.random.default_rng(7).random(int(RATE * d)) > 0.9)
+    save("crumble", mix(lowpass(grains, 2500), lowpass(noise(d), 300) * 0.8) * env(int(RATE * d), 0.003, 1.2), 0.7)
+
     d = 0.03
     save("blip", lowpass(osc(np.full(int(RATE * d), 880.0), "square", 0.5), 3000) * env(int(RATE * d), 0.001, 1.0), 0.3)
 

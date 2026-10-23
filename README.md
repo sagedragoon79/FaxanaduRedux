@@ -8,8 +8,10 @@ The full design lives in [docs/design-bible.md](docs/design-bible.md).
 **M3: vertical slice, in progress.** A title menu starts a new game at the West Gate of
 Eolis. Six Eolis rooms (King, Guru, shops, townsfolk) and nine Trunk Hollows rooms (sap
 pools, Monodrons, Hornets, Rot Dwarves, the Climbing Glove, secrets, save shrines) are
-connected by doors, with a map, saving, ranks, a skill tree, shops and Jack doors. The
-Rokusutahn boss, final art and music come next. The movement and combat gym is still there:
+connected by doors, with a map, saving, ranks, a skill tree, shops and Jack doors. The Root
+Chamber holds Rokusutahn, a three-phase boss; beating it wins the Elf Ring and opens the
+Spring of Trunk, which hardens the sap into amber and starts filling the Eolis fountain.
+Final art and music come next. The movement and combat gym is still there:
 `godot --path . -- --room=gym/gym`.
 
 ## Running

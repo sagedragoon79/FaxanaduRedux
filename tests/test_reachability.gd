@@ -96,6 +96,19 @@ func test_no_soft_locks_with_glove() -> void:
 	check(stuck.is_empty(), "with the glove, every reachable spot can get back to a save: %s" % [stuck.slice(0, 6)])
 
 
+func test_amber_keeps_everything_reachable() -> void:
+	# After the Spring of Trunk, sap is solid amber: nothing may be cut off.
+	var reach := Reach.new(_texts(), {"glove": true, "amber": true}, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var missing: Array = []
+	for p: Array in _pickups(reach):
+		if not reach.touchable(nodes, p[0], p[2], p[3]):
+			missing.append(p)
+	check(missing.is_empty(), "with amber, every pickup is still reachable: missing %s" % [missing])
+	var stuck := reach.stuck(nodes, _save_spots(reach))
+	check(stuck.is_empty(), "with amber, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
 func test_checker_respects_walls() -> void:
 	# A sanity check on a tiny pair of rooms: a 6-tile wall can't be jumped
 	# without the glove, but can be climbed with it.

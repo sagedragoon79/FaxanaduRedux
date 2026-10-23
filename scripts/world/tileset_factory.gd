@@ -3,7 +3,7 @@ extends RefCounted
 ## Builds graybox tilesets entirely in code: pixel textures plus collision.
 ## Final zone tilesets replace the textures; the atlas layout stays the same.
 
-enum Tile { INNER, TOP, ONE_WAY }
+enum Tile { INNER, TOP, ONE_WAY, AMBER }
 
 const TILE := 16
 const SOURCE_ID := 0
@@ -15,6 +15,9 @@ const MOSS := Color("5f8a4a")
 const MOSS_LIGHT := Color("7fae5e")
 const WOOD := Color("8a5a34")
 const WOOD_DARK := Color("5e3b22")
+const AMBER := Color("c97a1e")
+const AMBER_LIGHT := Color("ffc76a")
+const AMBER_DARK := Color("8a4f14")
 
 
 ## Builds the tileset. Without collision it is used for fake walls (secrets).
@@ -33,7 +36,7 @@ static func build(with_collision := true) -> TileSet:
 	var half := TILE * 0.5
 	var full := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)])
 	var strip := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, -half + 4), Vector2(-half, -half + 4)])
-	for tile: int in [Tile.INNER, Tile.TOP, Tile.ONE_WAY]:
+	for tile: int in [Tile.INNER, Tile.TOP, Tile.ONE_WAY, Tile.AMBER]:
 		var coords := Vector2i(tile, 0)
 		src.create_tile(coords)
 		if not with_collision:
@@ -49,7 +52,7 @@ static func build(with_collision := true) -> TileSet:
 
 
 static func _paint_atlas() -> Image:
-	var img := Image.create(TILE * 3, TILE, false, Image.FORMAT_RGBA8)
+	var img := Image.create(TILE * 4, TILE, false, Image.FORMAT_RGBA8)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1987
 	for tile in 2:
@@ -82,4 +85,18 @@ static func _paint_atlas() -> Image:
 		if x % 8 == 0:
 			for y in range(5, 10):
 				img.set_pixel(wx + x, y, WOOD_DARK)
+	# Hardened amber (sap after the Spring of Trunk): glassy, with bubbles.
+	var ax := Tile.AMBER * TILE
+	for y in TILE:
+		for x in TILE:
+			var c := AMBER
+			if y == 0:
+				c = AMBER_LIGHT
+			elif rng.randf() < 0.08:
+				c = AMBER_DARK
+			elif (x + y) % 11 == 0:
+				c = AMBER.lightened(0.15)
+			img.set_pixel(ax + x, y, c)
+	for b: Vector2i in [Vector2i(4, 5), Vector2i(11, 9), Vector2i(7, 12)]:
+		img.set_pixel(ax + b.x, b.y, AMBER_LIGHT)
 	return img

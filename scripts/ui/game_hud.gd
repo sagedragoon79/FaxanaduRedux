@@ -27,6 +27,9 @@ var _banner_sub := ""
 var _banner_t := 0.0
 var _toast := ""
 var _toast_t := 0.0
+var _flash := 0.0
+## The boss bar's shown health trails the real value, like the gold counter.
+var _boss_shown := 1.0
 
 
 func _ready() -> void:
@@ -35,6 +38,7 @@ func _ready() -> void:
 	_font = ThemeDB.fallback_font
 	GameState.banner.connect(show_banner)
 	GameState.toast.connect(show_toast)
+	GameState.flash.connect(func(strength: float) -> void: _flash = maxf(_flash, strength))
 
 
 func show_banner(title: String, subtitle: String) -> void:
@@ -51,6 +55,7 @@ func show_toast(text: String) -> void:
 func _process(delta: float) -> void:
 	_banner_t = maxf(_banner_t - delta, 0.0)
 	_toast_t = maxf(_toast_t - delta, 0.0)
+	_flash = maxf(_flash - delta * 1.6, 0.0)
 	if player:
 		# The counter rolls up toward the real total, like an arcade score.
 		_shown_gold = move_toward(_shown_gold, player.gold, maxf(40.0, absf(player.gold - _shown_gold) * 6.0) * delta)
@@ -93,7 +98,38 @@ func _draw() -> void:
 	draw_rect(Rect2(gp + Vector2(1, 3), Vector2(4, 4)), GOLD)
 	draw_string_outline(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
 	draw_string(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, GOLD)
+	_draw_boss()
 	_draw_messages()
+	if _flash > 0.0:
+		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
+
+
+func _boss() -> Node:
+	var b := get_tree().get_first_node_in_group("boss")
+	return b if b != null and not b.is_queued_for_deletion() and b.state != "dead" else null
+
+
+## Boss health bar along the bottom, with a tick at each phase threshold.
+func _draw_boss() -> void:
+	var b := _boss()
+	if b == null:
+		_boss_shown = 1.0
+		return
+	var frac: float = b.health_fraction()
+	_boss_shown = move_toward(_boss_shown, frac, get_process_delta_time() * 0.5)
+	if _boss_shown < frac:
+		_boss_shown = frac
+	var w := 320.0
+	var bar := Rect2((get_viewport_rect().size.x - w) * 0.5, 340, w, 6)
+	draw_string_outline(_font, bar.position + Vector2(0, -4), b.DISPLAY_NAME, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
+	draw_string(_font, bar.position + Vector2(0, -4), b.DISPLAY_NAME, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, MASK_FULL)
+	draw_rect(bar.grow(1), OUTLINE)
+	draw_rect(bar, Color("3a1a22"))
+	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * _boss_shown), bar.size.y)), Color("f1ead2"))
+	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * frac), bar.size.y)), Color("d8443a"))
+	for mark: float in b.PHASES:
+		var x := bar.position.x + roundf(bar.size.x * mark)
+		draw_rect(Rect2(x, bar.position.y - 2, 1, bar.size.y + 4), GOLD)
 
 
 ## Fades in fast, holds, fades out over the last half second.
@@ -114,7 +150,7 @@ func _draw_messages() -> void:
 			_centered(_banner_sub, 140, 10, Color(Color("c9b98f"), a))
 	if _toast_t > 0.0:
 		var a := _envelope(_toast_t, TOAST_TIME)
-		_centered(_toast, 330, 10, Color(MASK_FULL, a))
+		_centered(_toast, 318 if _boss() != null else 330, 10, Color(MASK_FULL, a))
 
 
 func _centered(text: String, y: float, size: int, color: Color) -> void:

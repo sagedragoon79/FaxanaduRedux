@@ -61,7 +61,7 @@ static func from_text(text: String, room_id := "") -> Room:
 
 
 ## Splits room text into {header: Dictionary, lists: {key: [values]}, grid: Array[String]}.
-## Keys that may repeat (label, door, sign, npc, secret) are collected in `lists`.
+## Keys that may repeat (label, door, sign, npc, secret, prop) are collected in `lists`.
 static func parse(text: String) -> Dictionary:
 	var lines := text.replace("\r", "").split("\n")
 	var header := {}
@@ -77,7 +77,7 @@ static func parse(text: String) -> Dictionary:
 			if colon > 0:
 				var key := line.substr(0, colon).strip_edges()
 				var value := line.substr(colon + 1).strip_edges()
-				if key in ["label", "door", "sign", "npc", "secret"]:
+				if key in ["label", "door", "sign", "npc", "secret", "prop"]:
 					if not lists.has(key):
 						lists[key] = []
 					lists[key].append(value)
@@ -200,7 +200,43 @@ func build(text: String) -> void:
 			npc.npc_id = parts[2].strip_edges()
 			_spawn(npc, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
 
+	for spec: String in lists.get("prop", []):
+		var parts := spec.split(",")
+		if parts.size() == 3:
+			_add_prop(parts[2].strip_edges(), Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
+
+	if header.has("boss"):
+		var arena := BossArena.new()
+		arena.boss_id = header.boss
+		arena.room = self
+		add_child(arena)
+
 	_restore_purse()
+
+
+func _add_prop(kind: String, pos: Vector2) -> void:
+	match kind:
+		"fountain":
+			_spawn(Fountain.new(), pos)
+		"spring_trunk":
+			var spring := Spring.new()
+			spring.spring_id = "trunk"
+			spring.spring_name = "Spring of Trunk"
+			_spawn(spring, pos)
+		_:
+			push_warning("Unknown prop in %s: %s" % [id, kind])
+
+
+## Phase 3 of Rokusutahn: removes floor rows `row_from`..`row_to` between the
+## columns, and lines the new pit's floor with spikes.
+func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
+	for x in range(col_from, col_to + 1):
+		for y in range(row_from, row_to + 1):
+			tiles.erase_cell(Vector2i(x, y))
+		var below := Vector2i(x, row_to + 1)
+		if tiles.get_cell_source_id(below) != -1:
+			tiles.set_cell(below, TilesetFactory.SOURCE_ID, Vector2i(TilesetFactory.Tile.TOP, 0))
+			_spawn(Spikes.new(), Vector2((x + 0.5) * TILE, below.y * TILE))
 
 
 func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
@@ -218,7 +254,11 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"%":
 			_place_secret(cell, grid)
 		"~":
-			_sap_cells[cell] = true
+			if zone == "trunk" and GameState.flag("spring:trunk"):
+				# The restored spring hardens the Trunk's sap into walkable amber.
+				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(TilesetFactory.Tile.AMBER, 0))
+			else:
+				_sap_cells[cell] = true
 		"^":
 			_spawn(Spikes.new(), bottom_center)
 		"o":

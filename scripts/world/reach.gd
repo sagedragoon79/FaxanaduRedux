@@ -70,6 +70,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 		return not keys
 	if c == "C":
 		return not abilities.get("mattock", false)
+	if c == "~":
+		# Sap hardens into solid amber once the Spring of Trunk is restored.
+		return abilities.get("amber", false)
 	return SOLID.contains(c)
 
 
