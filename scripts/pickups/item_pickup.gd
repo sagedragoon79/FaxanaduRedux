@@ -6,6 +6,7 @@ extends Node2D
 const KIND_BY_CHAR := {
 	"G": "glove",
 	"X": "boots",
+	"O": "deluge",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
@@ -14,6 +15,7 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
+	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
 	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
@@ -31,7 +33,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	z_index = 1
-	if kind == "glove" or kind == "boots":
+	if kind == "glove" or kind == "boots" or kind == "deluge":
 		add_to_group("light")
 
 
@@ -47,7 +49,7 @@ func _physics_process(delta: float) -> void:
 func grant(p: Player) -> void:
 	var info: Dictionary = INFO[kind]
 	var subtitle: String = info.text
-	if kind == "glove" or kind == "boots":
+	if kind == "glove" or kind == "boots" or kind == "deluge":
 		p.abilities[kind] = true
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
@@ -99,6 +101,18 @@ func _draw() -> void:
 			_hp(o, -10, 14, 20, 1, Color("b8860b"))
 			for i in 4:
 				_hp(o, -7 + i * 4, 6, 2, 1, dark)
+		"deluge":
+			# A spell scroll bound in blue ribbon, a wave glyph glowing on it.
+			_poly(o, [Vector2(-12, -10), Vector2(12, -10), Vector2(12, 10), Vector2(-12, 10)], Color("120f19"), 2.0)
+			_hp(o, -12, -10, 24, 20, Color("efe4c8"))
+			_hp(o, -12, -10, 24, 2, Color("c9b98e"))
+			_hp(o, -14, -12, 4, 24, Color("c9b98e"))
+			_hp(o, 10, -12, 4, 24, Color("c9b98e"))
+			_hp(o, -1, -10, 3, 20, dark)
+			var k := 0.6 + 0.4 * sin(_t * 4.0)
+			for i in 4:
+				_hp(o, -9 + i * 5, -2 + (2 if i % 2 else 0), 4, 2, Color(c, k))
+				_hp(o, -9 + i * 5, 3 + (2 if i % 2 else 0), 4, 2, Color(light, k))
 		"boots":
 			# A messenger's boot, sky-blue leather with a gold cuff and a white
 			# wing at the heel that flutters.

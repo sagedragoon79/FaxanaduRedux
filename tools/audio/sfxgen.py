@@ -390,5 +390,12 @@ def main():
     hiss = lowpass(highpass(noise(d), 1800), 6000) * env(n, 0.02, 1.6) * 0.5
     save("spore", mix(pop, hiss), 0.55)
 
+    # A fire seal doused by Deluge: a sharp splash and a long hiss of steam.
+    d = 0.9
+    n = int(RATE * d)
+    slap = lowpass(noise(0.05), 2500) * env(int(RATE * 0.05), 0.001, 2.0)
+    steam = highpass(lowpass(noise(d), slide(7000, 2500, d, 0.7)), 1200) * env(n, 0.03, 1.2) * 0.6
+    save("douse", mix(slap, steam), 0.55)
+
 if __name__ == "__main__":
     main()

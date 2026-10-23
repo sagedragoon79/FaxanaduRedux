@@ -47,6 +47,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `A` | Lantern Ghost (drifts through walls; out in the Mist's fog it shows only near light. Eyes flare, then it lunges) |
 | `V` | Bog Myconid (rooted; its gills glow as it swells, then it bursts into a lingering spore cloud. Soft while spent) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
+| `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Deluge bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |
 | `Y` | Bound fog (the Mist): solid until the player brings the Lantern Key near, then every curtain in the room parts for good (a row of three is usual) |
@@ -59,6 +60,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
 | `X` | Wing Boots (ability pickup: double jump; glows in the fog) |
+| `O` | Deluge scroll (spell pickup; glows in the fog) |
 | `L` | Life Fruit (+1 mask) |
 | `W` | Mana Dew (+10 max MP) |
 | `F` | Potion Shard (3 = +1 flask charge) |

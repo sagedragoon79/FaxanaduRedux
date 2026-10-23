@@ -239,3 +239,52 @@ func test_wing_boots_grant_the_double_jump() -> void:
 	for c in w.room.get_children():
 		again = again or (c is ItemPickup and (c as ItemPickup).kind == "boots")
 	check(not again, "they don't come back")
+
+
+## Bible 4.1 (A4) and 4.5: the Deluge scroll grants the spell, the fire seal
+## burns whoever touches it, and one Deluge bolt douses the whole seal for good.
+func test_deluge_douses_the_fire_seal_for_good() -> void:
+	var w := make_world({}, "mist/marsh_road")
+	await frames(3)
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	var seals := runner.get_tree().get_nodes_in_group("fire_seal")
+	check(seals.size() == 3, "three tiles of fire seal the road east (%d)" % seals.size())
+	check(not p.abilities.deluge, "the run starts without Deluge")
+	var scroll: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "deluge":
+			scroll = c
+	check(scroll != null, "the scroll lies on the perch")
+	if scroll == null:
+		return
+	p.teleport(scroll.global_position + Vector2(0, 12))
+	await frames(3)
+	check(p.abilities.deluge and GameState.data.abilities.deluge, "taking it grants Deluge and the save remembers")
+	# Touching the flames burns.
+	var hp := p.hp
+	var seal := seals[1] as FireSeal
+	p.teleport(seal.global_position + Vector2(-9, 24))
+	await frames(4)
+	check(p.hp < hp, "the flames burn on touch")
+	# Back off, face the seal and cast.
+	p.teleport(seal.global_position + Vector2(-80, 24))
+	p.mp = p.max_mp
+	await frames(30)
+	p.facing = 1
+	p.input.spell_pressed = true
+	var out := false
+	for i in 60:
+		await frames(1)
+		if seal.doused:
+			out = true
+			break
+	var all_out := true
+	for s in runner.get_tree().get_nodes_in_group("fire_seal"):
+		all_out = all_out and (s as FireSeal).doused
+	check(out and all_out and GameState.flag("seal:mist/marsh_road"), "one bolt douses every tile and the room remembers")
+	w._enter("mist/marsh_road")
+	await frames(2)
+	var again := runner.get_tree().get_nodes_in_group("fire_seal")
+	check(not again.is_empty() and (again[0] as FireSeal).doused, "back in the room the seal is still out")
