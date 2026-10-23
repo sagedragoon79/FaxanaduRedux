@@ -14,6 +14,7 @@ const SUITES := [
 	preload("res://tests/test_economy.gd"),
 	preload("res://tests/test_reachability.gd"),
 	preload("res://tests/test_boss.gd"),
+	preload("res://tests/test_animation.gd"),
 ]
 
 var _passed := 0
@@ -37,6 +38,7 @@ func _ready() -> void:
 			var name: String = m["name"]
 			if not name.begins_with("test_") or (_filter != "" and not name.contains(_filter)):
 				continue
+			Feel.reset()
 			var arena := Node2D.new()
 			add_child(arena)
 			suite.arena = arena

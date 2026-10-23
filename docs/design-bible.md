@@ -540,7 +540,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 - **Internal resolution:** 640x360. Integer scaling: 3x at 1080p, 4x at 1440p, 6x at 4K. Letterbox otherwise.
 - **Smooth camera with crisp pixels:** render the world into a 642x362 SubViewport (1 px margin), upscale with nearest-neighbor, then offset the upscaled image by the sub-pixel camera remainder. UI renders at native resolution on top, so text can be sharp.
 - **Tile size:** 16x16 px. Large props are free-form.
-- **Character size:** player sprite about 48x56 px on a 64x64 canvas. Standard enemies 32 to 64 px. Bosses 160 to 400 px tall (multi-part, rigged).
+- **Character size:** player sprite about 48x56 px on a 64x64 canvas, counting the blade and scarf (the body itself is
+  about 20x46, matching the 12x40 hitbox). Standard enemies 32 to 64 px. Bosses 160 to 400 px tall (multi-part, rigged).
 
 ### 12.2 Palette
 
@@ -564,6 +565,9 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 - Base rate 12 fps for most animation; key actions (attack, dash) use held frames and smear frames for snap.
 - Every attack has anticipation (1 to 3 frames), action (1 to 2 frames with a smear), and recovery (2 to 4 frames).
+  Exception: the player's own swings skip anticipation and open on the strike frame, because the hitbox is live on
+  the press (section 5) and a wind-up would read as input lag. The recovery frames carry the weight instead. Enemies
+  always telegraph (section 7).
 - The scarf and hair are secondary motion driven by code (verlet chain), not hand-animated, so they react to real movement.
 
 ### 12.5 Parallax

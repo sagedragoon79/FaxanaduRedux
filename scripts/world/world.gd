@@ -45,6 +45,7 @@ var start_room := ""
 var view_size := Vector2(640, 360)
 var busy := false
 var backdrop: Backdrop
+var motes: Motes
 
 var _ignored_door := 0
 
@@ -53,6 +54,8 @@ func _ready() -> void:
 	add_to_group("world")
 	backdrop = Backdrop.new()
 	add_child(backdrop)
+	motes = Motes.new()
+	add_child(motes)
 
 
 # --- Rooms -----------------------------------------------------------------------
@@ -167,6 +170,7 @@ func _enter(room_id: String) -> void:
 	room = next
 	add_child(room)
 	backdrop.set_zone(room.zone)
+	motes.set_zone(room.zone)
 	Music.for_room(room)
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player)

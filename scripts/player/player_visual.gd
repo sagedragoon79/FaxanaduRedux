@@ -1,27 +1,60 @@
 class_name PlayerVisual
 extends Node2D
-## Placeholder elf drawn from pixel rectangles until the Autosprite art lands.
-## Handles squash and stretch, facing and hurt blinking. Origin is at the feet.
+## The elf's sprite: plays the code-generated sheet (tools/art/spritegen.py,
+## assets/sprites/player.*) and draws the held blade, shield and potion from
+## each frame's hand point. Handles squash and stretch, facing and hurt
+## blinking. Origin is at the feet.
 
-const OUTLINE := Color("1d1a2b")
-const TUNIC := Color("3f7d3a")
-const TUNIC_DARK := Color("2b5a2c")
-const LEATHER := Color("6b4a2b")
-const BOOTS := Color("4a3020")
-const SKIN := Color("e8c39e")
-const HAIR := Color("e8d27c")
-const EYE := Color("1d1a2b")
-const SHIELD := Color("8a6a44")
-const SHIELD_BOSS := Color("c9c4d6")
-const POTION := Color("e0404a")
+const SHEET := "res://assets/sprites/player.png"
+const MASK := "res://assets/sprites/player_mask.png"
+const DATA := "res://assets/sprites/player.json"
+
+const OUTLINE := Color("120f19")
+const STEEL := Color("cec5d3")
+const STEEL_EDGE := Color("ece8ed")
+const STEEL_DARK := Color("867ba2")
+const HILT := Color("cb8d16")
+const SHIELD := Color("aa6336")
+const SHIELD_BOSS := Color("cec5d3")
+const POTION := Color("c02a20")
+const GLASS := Color("e68c75")
+## Blade length in pixels before the weapon's reach bonus.
+const BLADE_LENGTH := 11.0
+## Animations that hold on until they finish even when the action behind them
+## ends (the recovery frames of a swing).
+const FINISH := ["slash1", "slash2", "slash3", "slash_up", "cast"]
+## Poses an unfinished swing may play over.
+const OVERRIDABLE := ["idle", "run", "rise", "apex", "fall"]
+
+static var _sheet: Texture2D
+static var _mask: Texture2D
+static var _data: Dictionary
+## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
+static var forced := ""
 
 var player: Player
 var squash_scale := Vector2.ONE
 var pose := "idle"
+## The animation playing, its time and the frame shown.
+var anim := "idle"
+var anim_time := 0.0
+var frame := 0
 
 var _blink_time := 0.0
 var _red_time := 0.0
-var _anim_time := 0.0
+var _swings := 0
+
+
+static func data() -> Dictionary:
+	if _data.is_empty():
+		_sheet = load(SHEET)
+		_mask = load(MASK)
+		_data = (load(DATA) as JSON).data
+	return _data
+
+
+func _ready() -> void:
+	data()
 
 
 func squash(amount: Vector2) -> void:
@@ -40,11 +73,29 @@ func _physics_process(delta: float) -> void:
 	_red_time -= delta
 	visible = not player.dead and not (_blink_time > 0.0 and _red_time <= 0.0 and int(_blink_time * 20.0) % 2 == 0)
 	pose = current_pose(player)
-	_anim_time += delta * (absf(player.velocity.x) / 165.0 * 10.0 if pose == "run" else 3.0)
+	var next := anim_for(player, pose)
+	var restart := player.swing_count != _swings
+	_swings = player.swing_count
+	if anim in FINISH and not finished() and pose in OVERRIDABLE and not restart:
+		next = anim
+	if next != anim or restart:
+		anim = next
+		anim_time = 0.0
+	var rate := 1.0
+	if anim == "run":
+		rate = clampf(absf(player.velocity.x) / player.tuning.run_speed, 0.4, 1.3)
+	anim_time += delta * rate
+	frame = frame_at(anim, anim_time)
+	if forced != "":
+		var parts := forced.split(":")
+		anim = parts[0]
+		frame = int(parts[1]) if parts.size() > 1 else 0
 	queue_redraw()
 
 
 static func current_pose(p: Player) -> String:
+	if p.is_hurt:
+		return "hurt"
 	if p.is_dashing:
 		return "dash"
 	if p.is_wall_sliding:
@@ -55,76 +106,106 @@ static func current_pose(p: Player) -> String:
 		return "drink"
 	if p.is_blocking:
 		return "block"
+	if p.is_casting:
+		return "cast"
 	if not p.is_on_floor():
+		if absf(p.velocity.y) < 60.0:
+			return "apex"
 		return "rise" if p.velocity.y < 0.0 else "fall"
 	if absf(p.velocity.x) > 10.0:
 		return "run"
 	return "idle"
 
 
-func _draw() -> void:
-	var tint := Color(1.0, 0.35, 0.35) if _red_time > 0.0 else Color.WHITE
-	draw_body(self, pose, _anim_time, tint, false)
-	if pose == "block":
-		# Small Shield held in front.
-		draw_rect(Rect2(5, -32, 6, 14), OUTLINE)
-		draw_rect(Rect2(6, -31, 4, 12), SHIELD * tint)
-		draw_rect(Rect2(7, -28, 2, 6), SHIELD_BOSS * tint)
-	elif pose == "drink":
-		draw_rect(Rect2(3, -38, 4, 6), OUTLINE)
-		draw_rect(Rect2(4, -37, 2, 4), POTION)
-
-
-## Draws the figure facing right. `flat` paints everything one tint (afterimages).
-static func draw_body(ci: CanvasItem, body_pose: String, t: float, tint: Color, flat: bool) -> void:
-	var parts: Array = []  # [Rect2, Color]
-	var leg_a := 0
-	var leg_b := 0
-	var lean := 0
-	var arm_up := false
+## The sheet animation for a pose.
+static func anim_for(p: Player, body_pose: String) -> String:
 	match body_pose:
-		"run":
-			leg_a = int(round(sin(t) * 3.0))
-			leg_b = -leg_a
-		"rise":
-			leg_a = -3
-			leg_b = 1
-		"fall":
-			leg_a = 2
-			leg_b = -1
-		"dash":
-			lean = 2
-			leg_a = -3
-			leg_b = 3
-		"wall":
-			leg_a = -2
-			arm_up = true
-		"attack_up", "drink":
-			arm_up = true
-	var bob := 0 if body_pose != "idle" else int(round(sin(t) * 0.6))
-	# Legs and boots.
-	parts.append([Rect2(-5 + leg_a, -16, 4, 10), LEATHER])
-	parts.append([Rect2(1 + leg_b, -16, 4, 10), LEATHER])
-	parts.append([Rect2(-6 + leg_a, -6, 5, 6), BOOTS])
-	parts.append([Rect2(1 + leg_b, -6, 5, 6), BOOTS])
-	# Tunic and belt.
-	parts.append([Rect2(-6 + lean, -31 + bob, 12, 16), TUNIC])
-	parts.append([Rect2(-6 + lean, -18 + bob, 12, 2), LEATHER])
-	# Head, hair and the elf ear.
-	parts.append([Rect2(-4 + lean, -41 + bob, 10, 10), SKIN])
-	parts.append([Rect2(-6 + lean, -43 + bob, 12, 4), HAIR])
-	parts.append([Rect2(-6 + lean, -40 + bob, 3, 8), HAIR])
-	parts.append([Rect2(-8 + lean, -37 + bob, 3, 2), SKIN])
-	parts.append([Rect2(3 + lean, -37 + bob, 2, 2), EYE])
-	# Front arm.
-	if arm_up:
-		parts.append([Rect2(1 + lean, -38 + bob, 3, 9), TUNIC_DARK])
-	else:
-		parts.append([Rect2(0 + lean, -29 + bob, 3, 10), TUNIC_DARK])
+		"attack_side":
+			if p.is_heavy_swing:
+				return "slash3"
+			return "slash2" if p.combo_index == 2 else "slash1"
+		"attack_up":
+			return "slash_up"
+		"attack_down":
+			return "strike_down"
+	return body_pose
 
-	for part: Array in parts:
-		var r: Rect2 = part[0]
-		ci.draw_rect(r.grow(1.0), OUTLINE * tint if not flat else Color(tint, tint.a * 0.6))
-	for part: Array in parts:
-		var c: Color = part[1]
-		ci.draw_rect(part[0], tint if flat else c * tint)
+
+## The frame of `name` shown at time `t`.
+static func frame_at(name: String, t: float) -> int:
+	var a: Dictionary = data().animations[name]
+	var seq: Array = a.seq
+	var i := int(t * float(a.fps))
+	if a.loop:
+		i = i % seq.size()
+	else:
+		i = mini(i, seq.size() - 1)
+	return int(seq[i])
+
+
+func finished() -> bool:
+	var a: Dictionary = data().animations[anim]
+	return not a.loop and anim_time * float(a.fps) >= float(a.seq.size())
+
+
+## The current frame's metadata: hand and neck points (relative to the feet,
+## facing right) and, in a swing, the blade angle.
+func frame_info() -> Dictionary:
+	return data().animations[anim].frames[frame]
+
+
+## The neck in world space, where the scarf hangs from.
+func neck_position() -> Vector2:
+	var n: Array = frame_info().neck
+	return global_position + Vector2(n[0] * player.facing * squash_scale.x, n[1] * squash_scale.y)
+
+
+static func region(name: String, f: int) -> Rect2:
+	var d := data()
+	var cell := float(d.cell)
+	return Rect2(f * cell, float(d.animations[name].row) * cell, cell, cell)
+
+
+## Draws one frame of the sheet (or its flat silhouette, tinted) with the feet at the origin.
+static func draw_frame(ci: CanvasItem, name: String, f: int, tint: Color, flat: bool) -> void:
+	var d := data()
+	var origin := Vector2(d.origin[0], d.origin[1])
+	ci.draw_texture_rect_region(_mask if flat else _sheet, Rect2(-origin, Vector2(d.cell, d.cell)), region(name, f), tint)
+
+
+func _draw() -> void:
+	var tint := Color(1.0, 0.45, 0.45) if _red_time > 0.0 else Color.WHITE
+	draw_frame(self, anim, frame, tint, false)
+	var info := frame_info()
+	var hand := Vector2(info.hand[0], info.hand[1])
+	if info.has("blade"):
+		_draw_blade(hand, deg_to_rad(float(info.blade)), BLADE_LENGTH + player.reach_bonus * 0.75, tint)
+	if anim == "block":
+		_draw_shield(hand + Vector2(2, 0), tint)
+	elif anim == "drink":
+		draw_rect(Rect2(hand + Vector2(-2, -6), Vector2(4, 6)), OUTLINE)
+		draw_rect(Rect2(hand + Vector2(-1, -5), Vector2(2, 4)), POTION * tint)
+		draw_rect(Rect2(hand + Vector2(-1, -5), Vector2(1, 1)), GLASS * tint)
+
+
+func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> void:
+	var dir := Vector2.from_angle(angle)
+	var side := dir.orthogonal()
+	var base := hand + dir * 2.0
+	var tip := base + dir * length
+	# Outline, steel with a bright edge, then the crossguard and pommel.
+	draw_line(base, tip + dir, OUTLINE, 4.0)
+	draw_line(base, tip, STEEL * tint, 2.0)
+	draw_line(base + side * 0.5, tip + side * 0.5, STEEL_EDGE * tint, 1.0)
+	draw_line(base - side * 0.5 + dir * 2.0, tip - side * 0.5 - dir, STEEL_DARK * tint, 1.0)
+	draw_line(base - side * 3.0, base + side * 3.0, OUTLINE, 3.0)
+	draw_line(base - side * 2.0, base + side * 2.0, HILT * tint, 1.0)
+	draw_rect(Rect2((hand - dir * 2.0).round() - Vector2(1, 1), Vector2(2, 2)), HILT * tint)
+
+
+func _draw_shield(at: Vector2, tint: Color) -> void:
+	var r := Rect2(at + Vector2(-2, -7), Vector2(6, 14))
+	draw_rect(r.grow(1.0), OUTLINE)
+	draw_rect(r, SHIELD * tint)
+	draw_rect(Rect2(r.position + Vector2(1, 0), Vector2(1, r.size.y)), Color(SHIELD.lightened(0.25), 1.0) * tint)
+	draw_rect(Rect2(r.position + Vector2(2, 5), Vector2(2, 4)), SHIELD_BOSS * tint)

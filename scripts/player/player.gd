@@ -75,6 +75,12 @@ var has_double_jump := true
 var air_dash_charges := 1
 var invulnerable: bool:
 	get: return _invuln_timer > 0.0
+## Counts swings, so the visual can restart an attack animation on each press.
+var swing_count := 0
+var is_casting: bool:
+	get: return _cast_cooldown > combat.cast_cooldown - 0.2
+var is_hurt: bool:
+	get: return _invuln_timer > tuning.hurt_invuln - 0.25 and not dead
 
 var spawn_point := Vector2.ZERO
 var safe_position := Vector2.ZERO
@@ -483,6 +489,7 @@ func _try_attack(on_floor: bool) -> void:
 		if is_heavy_swing:
 			_swing_damage = roundi(heavy_damage * melee_mult)
 	_attack_hits.clear()
+	swing_count += 1
 	var fx := SlashFx.new()
 	fx.setup(attack_kind, facing, combo_index, is_heavy_swing)
 	add_child(fx)
