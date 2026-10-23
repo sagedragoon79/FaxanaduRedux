@@ -28,6 +28,10 @@ func _ready() -> void:
 	Feel.hitstop_enabled = false
 	Feel.rumble_enabled = false
 	Sfx.volume_db = -80.0
+	# Random bread and mana drops would make kills nondeterministic; tests that
+	# check drops turn them on and back off.
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--filter="):
 			_filter = arg.trim_prefix("--filter=")

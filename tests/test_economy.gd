@@ -180,6 +180,49 @@ func test_gym_kills_give_no_xp() -> void:
 	check(int(GameState.data.xp) == 0, "no XP while the game state is inactive")
 
 
+func test_kills_sometimes_drop_bread_or_mana() -> void:
+	var w := make_world(_town({Vector2i(12, 19): "M", Vector2i(20, 19): "M"}), "test/town")
+	var p := w.player
+	await frames(3)
+	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)
+	Drop.bread_chance = 1.0
+	monos[0].take_hit(999, Vector2.RIGHT)
+	Drop.bread_chance = 0.0
+	var bread: Drop = _find(w.room, Drop)
+	check(bread != null and bread.kind == "bread", "a kill can leave bread")
+	await frames(40)
+	check(bread.is_on_floor(), "it settles on the floor")
+	p.hp = 40
+	p.teleport(bread.global_position)
+	await frames(3)
+	check(p.hp == 40 + Drop.BREAD_HEAL and not is_instance_valid(bread), "walking over it eats it: +%d health (%d)" % [Drop.BREAD_HEAL, p.hp])
+	Drop.mana_chance = 1.0
+	monos[1].take_hit(999, Vector2.RIGHT)
+	Drop.mana_chance = 0.0
+	var orb: Drop = _find(w.room, Drop)
+	check(orb != null and orb.kind == "mana", "or a mana orb")
+	await frames(40)
+	p.mp = 10.0
+	p.teleport(orb.global_position)
+	await frames(3)
+	check(p.mp >= 10.0 + Drop.MANA_GAIN and p.mp < 11.0 + Drop.MANA_GAIN, "which refills magic (%.1f, with a moment of regeneration)" % p.mp)
+	Drop.mana_chance = 1.0
+	Drop.bread_chance = 0.0
+	var spare := Drop.roll(w.room, cell_feet(30, 19))
+	Drop.mana_chance = 0.0
+	await frames(roundi(Drop.LIFETIME * 60.0) + 5)
+	check(not is_instance_valid(spare), "an uneaten drop fades away")
+
+
+func test_the_guru_gives_a_mantra_for_the_journey() -> void:
+	make_world(_town(), "test/town")
+	var m := GameState.mantra()
+	check(m.length() == 19 and m.split(" ").size() == 4, "four groups of four letters (%s)" % m)
+	check(GameState.mantra() == m, "the same journey gives the same mantra")
+	GameState.data.gold = int(GameState.data.gold) + 1
+	check(GameState.mantra() != m, "any change to the journey changes it")
+
+
 # --- NPCs ----------------------------------------------------------------------------
 
 func test_king_gives_gold_once() -> void:

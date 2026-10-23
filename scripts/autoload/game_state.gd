@@ -25,6 +25,9 @@ const RESPEC_BASE := 200
 const RESPEC_MAX := 2000
 
 ## Persistent game data. Keys are documented in `fresh()`.
+## The original's password alphabet, more or less: letters, digits, ? and !.
+const MANTRA_LETTERS := "ABCDEFGHJKLMNPQRSTUVWXYZabdefghkmnpqrtwy23456789?!"
+
 var data := {}
 var slot := 1
 ## False in the gym: kills there give no XP and nothing is recorded.
@@ -111,6 +114,25 @@ func is_visited(room_id: String) -> bool:
 
 func has_skill(id: String) -> bool:
 	return id in data.skills
+
+
+## The Guru's "mantra" for the journey so far: a nod to Faxanadu's password
+## saves (design bible 11, easter eggs). It is never typed back in; saving is
+## automatic. The same progress always gives the same mantra.
+func mantra() -> String:
+	var rooms: Array = data.get("visited", {}).keys()
+	rooms.sort()
+	var taken: Array = data.get("collected", {}).keys()
+	taken.sort()
+	var src := JSON.stringify([data.get("rank", 0), data.get("xp", 0), data.get("gold", 0), data.get("abilities", {}),
+		data.get("equipment", {}), data.get("rings", []), taken, rooms, data.get("flags", {}), data.get("save_room", "")], "", true)
+	var h := src.sha256_buffer()
+	var out := ""
+	for i in 16:
+		if i > 0 and i % 4 == 0:
+			out += " "
+		out += MANTRA_LETTERS[h[i] % MANTRA_LETTERS.length()]
+	return out
 
 
 func rank_name() -> String:
