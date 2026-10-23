@@ -37,3 +37,13 @@ date,asset,operation,credits,result,notes
 2026-10-23,Rokusutahn head/plate/tail,import (spin + state frames by code),0,ok (art/autosprite/rokusutahn),HD boss parts at 2x density; balance 139
 2026-10-23,monodron / hornet / rot_dwarf at 2x,re-import (density 2 + own palette),0,ok,free: same clips at double detail; balance 139
 2026-10-23,hero rim light,re-import (rim on top/back edges),0,ok,free: readability against brown trees; balance 139
+2026-10-23,Iron Dwarf base,create_character pro,3,ok (cmvkkcpj00080ou6emvc2qffu),tower enemy (PR #31 gameplay); balance 136 after
+2026-10-23,Iron Dwarf walk,generate_spritesheet pro 4s,10,queued (video cmvkkd3ni008lou6ezjbyvfd0),hammer on shoulder; balance 126 after
+2026-10-23,Iron Dwarf hammer slam,generate_spritesheet pro 4s custom,10,queued (video cmvkkd3qb008rou6elkpf33kr),windup/slam/stuck/recover from one clip (rejected below); balance 116 after
+2026-10-23,Iron Dwarf stagger,generate_pose,3,queued (cf_039b7ae8-c531-4695-951d-1f0ef338128b),knocked back; balance 113 after
+2026-10-23,Iron Dwarf slam clip review,-,0,rejected,the custom slam clip morphed the hammer into a double-headed maul; replaced by poses
+2026-10-23,Iron Dwarf windup,generate_pose,3,queued (cf_2d9a8ea7-b037-4600-bfcd-451acdd93232),hammer overhead; balance 110 after
+2026-10-23,Iron Dwarf swing down,generate_pose,3,queued (cf_845f0861-1b2d-40fc-ba5d-e5f3341b5a5d),mid-swing; balance 107 after
+2026-10-23,Iron Dwarf impact,generate_pose,3,queued (cf_aff04744-f61e-474f-a341-be0286c33b33),head in the floor; balance 104 after
+2026-10-23,Iron Dwarf wrench,generate_pose,3,queued (cf_6d1b94ab-e919-4f6e-9c26-b01197638b6e),pulling the stuck hammer; balance 101 after
+2026-10-23,Iron Dwarf import,import (walk clip + packed poses),0,ok (art/autosprite/iron_dwarf),gain 1.5 + lamp rim for the dark tower; balance 101

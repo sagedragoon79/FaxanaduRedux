@@ -7,11 +7,19 @@
   64,
   122
  ],
- "columns": 4,
+ "columns": 12,
  "animations": {
   "walk": {
    "row": 0,
    "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
     {},
     {},
     {},
@@ -23,7 +31,7 @@
     2,
     3
    ],
-   "fps": 5,
+   "fps": 15,
    "loop": true
   },
   "windup": {
@@ -88,5 +96,6 @@
    "loop": false
   }
  },
- "density": 2
+ "density": 2,
+ "own_palette": true
 }

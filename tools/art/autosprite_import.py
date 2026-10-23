@@ -33,7 +33,8 @@ animations of which sheet they replace:
                                          "fixed": the reference frame's feet (jumps, deaths);
                                          "center": the reference frame's middle (fliers)
                "feet_x": "self",         "self": find the feet in this sheet's first picked frame
-                                         (attack moves come in 512 px cells, figure bottom-centre)
+                                         (attack moves come in 512 px cells, figure bottom-centre);
+                                         a number: the source column (poses packed on one spot)
                "drop": ["blade"],        code-rig metadata keys to leave out (the clip draws the sword)
                "meta": {"art_prop": true},  keys added to every frame's metadata
                "extra_ramps": ["stone"], more palette ramps for this animation (a steel blade)
@@ -43,6 +44,8 @@ animations of which sheet they replace:
                "height": 38}             this animation's own figure height (world px) and middle,
                                          for a part drawn apart from the reference (boss segments)
     },
+    "gain": 1.3,                      brightens a figure drawn too dark for the game's dark rooms
+                                      (the Iron Dwarf's black iron), before the palette is cut
     "rim": {"color": [r, g, b],       a cool rim light (12.2: readability): the figure's top and
             "mix": 0.5}               back edges (left, the sheets face right) lifted toward this
                                       color, so a brown figure stands off brown trees
@@ -184,6 +187,7 @@ class Importer:
         self.name, self.cfg = name, cfg
         self.cell, self.origin = cell, origin
         self.density = int(cfg.get("density", 1))
+        self.gain = float(cfg.get("gain", 1.0))
         self.dir = SOURCES / cfg["dir"]
         self.own = {}
         ref = cfg["animations"][cfg.get("reference", "idle")]
@@ -237,7 +241,7 @@ class Importer:
         small = np.stack(chans, -1)
         alpha = small[..., 3]
         rgb = np.where(alpha[..., None] > 1e-6, small[..., :3] / np.maximum(alpha[..., None], 1e-6), 0)
-        return rgb, alpha
+        return (rgb * self.gain).clip(0, 1), alpha
 
     def own_palette(self, frames, count):
         """{"own-i": rgb} cut from the frames at game scale (median cut), darkest first."""
@@ -384,7 +388,9 @@ def imported(name, cell, origin, code_meta):
         if "height" in spec:
             # A part drawn on its own (a boss segment) sets its own scale and middle.
             imp.set_reference(srcs[0], spec["height"])
-        ref_x = imp.feet_x(srcs[0]) if spec.get("feet_x") == "self" else None
+        ref_x = spec.get("feet_x")
+        if ref_x == "self":
+            ref_x = imp.feet_x(srcs[0])
         for i, src in enumerate(srcs):
             img, mask, grid = imp.frame(src, spec.get("anchor", "ground"), ref_x)
             meta = base[min(len(base) - 1, i * len(base) // len(srcs))]
