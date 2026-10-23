@@ -1,1 +1,3 @@
 date,asset,operation,credits,result,notes
+2026-10-23,elf_wanderer base (upload of code sprite idle frame x10),upload_character,0,ok,free; character cmvkedf5r001j14mtays3bnw5; balance 490 before
+2026-10-23,elf_wanderer idle,generate_spritesheet turbo 16f@256,5,generated (sheet cmvkee6ep002m14mtsqwiuiof; download blocked by network policy),test call: 5 credits per turbo animation; balance 485 after
