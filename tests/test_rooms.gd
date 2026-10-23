@@ -363,6 +363,22 @@ func test_every_zone_has_a_tileset() -> void:
 	check(missing.is_empty(), "every zone folder has a generated tileset: missing %s" % [missing])
 
 
+func test_tiles_are_drawn_at_double_density() -> void:
+	var size := TilesetFactory.TILE * TilesetFactory.DENSITY
+	var small: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		var tex: Texture2D = load(TilesetFactory.TILES_DIR + zone + ".png")
+		if tex.get_width() != TilesetFactory.COLUMNS * size or tex.get_height() != 7 * size:
+			small.append(zone)
+	check(small.is_empty(), "every atlas holds %d px tiles (wrong: %s)" % [size, small])
+	var room := make_room(["##########", "#........#", "#........#", "#........#", "#........#", "##########", "##########"])
+	check(room.tiles.map_to_local(Vector2i(3, 5)) * room.tiles.scale == Vector2(3 * 16 + 8, 5 * 16 + 8), "yet each tile still covers 16 world pixels")
+	var p := make_player(room, Vector2i(3, 4))
+	await frames(20)
+	check(p.is_on_floor() and absf(p.global_position.y - 5 * 16) < 0.5, "and the player stands on the floor's top edge (y %.2f)" % p.global_position.y)
+	room.queue_free()
+
+
 func test_decor_dresses_open_surfaces_only() -> void:
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")

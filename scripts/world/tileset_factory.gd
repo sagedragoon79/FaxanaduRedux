@@ -10,6 +10,10 @@ extends RefCounted
 ## tiles for wall cells two (MID) or three or more (DEEP) tiles from open air.
 
 const TILE := 16
+## Render density of the atlases (design bible 12.1): each 16 px world tile is
+## drawn from a 32 px atlas tile. Tile layers run at TILE * DENSITY and are
+## scaled by 1 / DENSITY (see `layer()`), so cell coordinates stay the same.
+const DENSITY := 2
 const SOURCE_ID := 0
 const COLUMNS := 8
 const TILES_DIR := "res://assets/tiles/"
@@ -90,19 +94,21 @@ static func build(zone := "", with_collision := true) -> TileSet:
 	if _cache.has(key):
 		return _cache[key]
 	var ts := TileSet.new()
-	ts.tile_size = Vector2i(TILE, TILE)
+	var size := TILE * DENSITY
+	ts.tile_size = Vector2i(size, size)
 	ts.add_physics_layer()
 	ts.set_physics_layer_collision_layer(0, Player.LAYER_WORLD)
 	ts.set_physics_layer_collision_mask(0, 0)
 
 	var src := TileSetAtlasSource.new()
 	src.texture = load(path)
-	src.texture_region_size = Vector2i(TILE, TILE)
+	src.texture_region_size = Vector2i(size, size)
 	ts.add_source(src, SOURCE_ID)
 
-	var half := TILE * 0.5
+	var half := size * 0.5
 	var full := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)])
-	var strip := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, -half + 4), Vector2(-half, -half + 4)])
+	var lip := 4.0 * DENSITY
+	var strip := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, -half + lip), Vector2(-half, -half + lip)])
 	var all: Array[Vector2i] = [ONE_WAY, AMBER]
 	all.append_array(MID)
 	all.append_array(DEEP)
@@ -121,3 +127,11 @@ static func build(zone := "", with_collision := true) -> TileSet:
 			data.set_collision_polygon_points(0, 0, full)
 	_cache[key] = ts
 	return ts
+
+
+## A tile layer for a zone's tileset, scaled so its cells are TILE world pixels.
+static func layer(zone := "", with_collision := true) -> TileMapLayer:
+	var l := TileMapLayer.new()
+	l.tile_set = build(zone, with_collision)
+	l.scale = Vector2.ONE / DENSITY
+	return l

@@ -553,7 +553,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
   UI renders at native resolution on top, so text can be sharp.
-- **Tile size:** 16x16 px. Large props are free-form.
+- **Tile size:** 16x16 world px, drawn from 32x32 atlas tiles at 2x density (`TilesetFactory.DENSITY`; tile layers are scaled by one half, so cell coordinates are unchanged). Large props are free-form.
 - **Character size:** in world pixels, player sprite about 48x56 px on a 64x64 canvas, counting the blade and cloak (the
   body itself is about 20x46, matching the 12x40 hitbox). At 2x density the hero sheet is 128x128 per cell, about 96 px
   tall. Standard enemies 32 to 64 px. Bosses 160 to 400 px tall (multi-part, rigged).
