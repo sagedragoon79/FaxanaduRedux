@@ -41,6 +41,21 @@ animations of which sheet they replace:
                "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
                                          the game draws itself
                "erase_white": true,      also cut out the glow's near-white core
+               "graft": {"above": 152, "from": {"33": 23}},  per source frame, the rows above
+                                         `above` taken from another frame of the clip, moved so
+                                         the heads line up (the Iron Dwarf's walk lets go of his
+                                         hammer for half a stride: that half gets a gripping arm)
+               "face": {"from": 2, "box": [x0, y0, x1, y1], "match": [x0, y0, x1, y1]},
+                                         every frame's `box` (in the donor's place) replaced by
+                                         source frame `from`'s, found where the `match` patch
+                                         (the helmet) lines up best: one still face, for a clip
+                                         whose mouth works as if talking (the Foreman's walk)
+               "clear": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
+                                         pale grey pixels are cleared: background the clip left
+                                         closed in (between the hero's raised arm and his face)
+               "paint": {"20": [x0, y0, x1, y1]},  as "spill", for a pale grey blot (painted
+                                         from row neighbours up to 14 px away: a fleck of white
+                                         on the hero's boot in the wall slide)
                "spill": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
                                          stray red liquid is painted over from its row neighbours
                                          (the drink clip spills the potion down his chest)
@@ -158,10 +173,75 @@ def _erase_hue(src, lo, hi, white=False):
     return out
 
 
-def _paint_spill(src, box):
-    """Paints over saturated red (hue within 12 degrees of 0) inside `box`: each such pixel
-    takes the mean of the nearest clean opaque pixels left and right on its row, or is cleared
-    where it hangs over the background."""
+def _head(src, rows=30):
+    """(x middle, top row) of the figure's top `rows` rows."""
+    ys, xs = np.nonzero(src[..., 3] > 0.5)
+    top = ys.min()
+    band = xs[ys < top + rows]
+    return (band.min() + band.max()) / 2.0, top
+
+
+def _graft(src, donor, above):
+    """`src` with its rows above `above` replaced by `donor`'s, shifted so the heads line up."""
+    (sx, sy), (dx, dy) = _head(src), _head(donor)
+    ox, oy = int(round(sx - dx)), int(round(sy - dy))
+    moved = np.zeros_like(donor)
+    h, w = donor.shape[:2]
+    moved[max(0, oy):min(h, h + oy), max(0, ox):min(w, w + ox)] = \
+        donor[max(0, -oy):min(h, h - oy), max(0, -ox):min(w, w - ox)]
+    out = src.copy()
+    out[:above] = moved[:above]
+    # Bits of the free arm the cut leaves below `above` float loose: keep the figure only.
+    from autosprite_poses import components
+    labels, sizes = components(out[..., 3] > 0.02)
+    if len(sizes) > 1:
+        out[labels != int(np.argmax(sizes[1:])) + 1] = 0
+    return out
+
+
+def _match_offset(src, donor, box, reach=10):
+    """The shift (dx, dy) that best lays `donor`'s `box` onto `src`."""
+    x0, y0, x1, y1 = box
+    patch = donor[y0:y1, x0:x1]
+    best = None
+    for dy in range(-reach, reach + 1):
+        for dx in range(-reach, reach + 1):
+            if y0 + dy < 0 or x0 + dx < 0 or y1 + dy > src.shape[0] or x1 + dx > src.shape[1]:
+                continue
+            d = np.abs(src[y0 + dy:y1 + dy, x0 + dx:x1 + dx] - patch).mean()
+            if best is None or d < best[0]:
+                best = (d, dx, dy)
+    return best[1], best[2]
+
+
+def _face(src, donor, box, match):
+    """`src` with `donor`'s `box` pasted where the `match` patch lines up."""
+    dx, dy = _match_offset(src, donor, match)
+    x0, y0, x1, y1 = box
+    patch = donor[y0:y1, x0:x1]
+    out = src.copy()
+    region = out[y0 + dy:y1 + dy, x0 + dx:x1 + dx]
+    solid = patch[..., 3] > 0.5
+    region[solid] = patch[solid]
+    return out
+
+
+def _clear_grey(src, box):
+    """Clears pale, unsaturated pixels inside `box` (background left behind in a gap)."""
+    a = src[..., 3]
+    rgb = np.where(a[..., None] > 1e-6, src[..., :3] / np.maximum(a[..., None], 1e-6), 0)
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    grey = (a > 0.05) & ((mx - mn) / np.maximum(mx, 1e-6) < 0.15) & (mx > 0.35)
+    x0, y0, x1, y1 = box
+    out = src.copy()
+    out[y0:y1, x0:x1][grey[y0:y1, x0:x1]] = 0
+    return out
+
+
+def _paint_spill(src, box, grey=False, reach=6):
+    """Paints over saturated red (hue within 12 degrees of 0), or with `grey` pale grey, inside
+    `box`: each such pixel takes the mean of the nearest clean opaque pixels left and right on
+    its row (within `reach`), or is cleared where it hangs over the background."""
     a = src[..., 3]
     rgb = np.where(a[..., None] > 1e-6, src[..., :3] / np.maximum(a[..., None], 1e-6), 0)
     mx, mn = rgb.max(-1), rgb.min(-1)
@@ -169,6 +249,8 @@ def _paint_spill(src, box):
     # Red is the largest channel and green and blue are within a fifth of the chroma: hue 0 +- 12.
     red = (rgb.argmax(-1) == 0) & (np.abs(rgb[..., 1] - rgb[..., 2]) <= 0.2 * (mx - mn)) & \
         (sat > 0.5) & (mx > 0.25) & (a > 0.05)
+    if grey:
+        red = (sat < 0.3) & (mx > 0.45) & (a > 0.05)
     x0, y0, x1, y1 = box
     gone = np.zeros_like(red)
     gone[y0:y1, x0:x1] = red[y0:y1, x0:x1]
@@ -179,7 +261,7 @@ def _paint_spill(src, box):
             xx = x + step
             while 0 <= xx < src.shape[1] and gone[y, xx]:
                 xx += step
-            if 0 <= xx < src.shape[1] and abs(xx - x) <= 6:
+            if 0 <= xx < src.shape[1] and abs(xx - x) <= reach:
                 picks.append(src[y, xx])
         opaque = [q for q in picks if q[3] > 0.5]
         out[y, x] = np.mean(opaque, 0) if len(opaque) == len(picks) and opaque else 0
@@ -416,8 +498,24 @@ def imported(name, cell, origin, code_meta):
         imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
         if "erase" in spec:
             srcs = [_erase_hue(src, *spec["erase"], white=spec.get("erase_white", False)) for src in srcs]
+        picks = list(spec.get("pick", range(len(srcs))))
+        if "graft" in spec:
+            g = spec["graft"]
+            donors = dict(zip(*[[int(k) for k in g["from"]], source_frames(
+                {**spec, "pick": [int(v) for v in g["from"].values()]}, imp.dir)]))
+            srcs = [_graft(src, donors[k], g["above"]) if k in donors else src for k, src in zip(picks, srcs)]
+        if "face" in spec:
+            f = spec["face"]
+            donor = source_frames({**spec, "pick": [f["from"]]}, imp.dir)[0]
+            srcs = [src if k == f["from"] else _face(src, donor, f["box"], f["match"])
+                    for k, src in zip(picks, srcs)]
+        if "clear" in spec:
+            srcs = [_clear_grey(src, spec["clear"][str(k)]) if str(k) in spec["clear"] else src
+                    for k, src in zip(picks, srcs)]
+        if "paint" in spec:
+            srcs = [_paint_spill(src, spec["paint"][str(k)], grey=True, reach=14)
+                    if str(k) in spec["paint"] else src for k, src in zip(picks, srcs)]
         if "spill" in spec:
-            picks = list(spec.get("pick", range(len(srcs))))
             srcs = [_paint_spill(src, spec["spill"][str(k)]) if str(k) in spec["spill"] else src
                     for k, src in zip(picks, srcs)]
         if "height" in spec:

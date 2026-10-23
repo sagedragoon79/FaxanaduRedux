@@ -76,3 +76,7 @@ date,asset,operation,credits,result,notes
 2026-10-23,Ripasheiku import,import (packed poses rest=1; castgen placeholder rig),0,ok (art/autosprite/ripasheiku),7 animations; other states borrow the nearest; balance 22
 2026-10-23,hero drink fix,re-import (manifest spill: paint over the potion dripping down his chest in frames 40 and 20),0,ok,Sean spotted the spill; balance 22
 2026-10-23,Iron Dwarf walk fix,re-import (walk pick 25..47: the clip's frames 10-22 let go of the hammer),0,ok,Sean spotted the floating hammer; also refreshed Ripasheiku's stale 2-frame walk; balance 22
+2026-10-23,Iron Dwarf walk grip (2nd fix),re-import (manifest graft: frames 33-45 take the gripping upper body of frames 23-32),0,ok,Sean: hand still left the haft (it lets go for half the stride); balance 22
+2026-10-23,hero drink arm gap,re-import (manifest clear: grey background closed in between arm and face in frames 40 and 20),0,ok,Sean spotted it; balance 22
+2026-10-23,Foreman walk face,re-import (manifest face: frame 2's face pasted on every walk frame, aligned on the helmet),0,ok,Sean: mouth moved as if talking; balance 22
+2026-10-23,hero wall slide fleck,re-import (manifest paint: pale blot on the boot in all six frames),0,ok,Sean spotted it; balance 22
