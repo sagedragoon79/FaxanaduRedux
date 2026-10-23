@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "amb_trunk", "amb_eolis", "amb_tower"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -250,6 +250,18 @@ func test_music_follows_rooms_and_bosses() -> void:
 	w.player.teleport(cell_feet(12, 19))
 	await _until(func() -> bool: return arena.fighting, 20)
 	check(Music.track == "boss", "the fight plays the boss theme")
+
+
+func test_tower_rooms_pick_their_ambience_and_theme() -> void:
+	# Bible 11: each part of the Tower has its own bed; Forepaw has its own theme.
+	var w := make_world({}, "tower/winch_hall")
+	check(Music.track == "tower" and Music.ambience_track == "amb_tower", "the Tower's halls hum with machinery")
+	GameState.set_flag("boss:zoradohna")
+	for stop: Array in [["tower/old_flue", "tower", "amb_heights"], ["tower/rafters", "tower", "amb_heights"],
+			["tower/forepaw", "forepaw", "amb_tower"], ["tower/mine_mouth", "tower", "amb_mine"], ["tower/smelter", "tower", "amb_mine"]]:
+		w._enter(stop[0])
+		await frames(1)
+		check(Music.track == stop[1] and Music.ambience_track == stop[2], "%s plays %s over %s (%s, %s)" % [stop[0], stop[1], stop[2], Music.track, Music.ambience_track])
 
 
 func test_reveal_bursts_out_and_withdraws() -> void:

@@ -498,6 +498,101 @@ def amb_tower():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
 
 
+def amb_heights():
+    """Wind high in the tower: a hollow howl through the flue and the rafters,
+    gusts, a loose shutter rattling and roof beams creaking."""
+    rng = np.random.default_rng(83)
+    dur = 24.0
+    n = int(dur * RATE)
+    t_all = np.arange(n + RATE * 3) / RATE
+    m = len(t_all)
+    out = np.zeros((m, 2))
+    gust = fft_filter(rng.uniform(-1, 1, m), low=0.4)
+    gust = 0.55 + 0.45 * gust / (np.max(np.abs(gust)) + 1e-9)
+    wind = fft_filter(rng.uniform(-1, 1, m), low=900, high=120) * gust
+    out[:, 0] += wind
+    out[:, 1] += np.roll(wind, RATE // 4)
+    # The howl: a breathy tone that bends with the gusts.
+    f = 300 + 70 * np.sin(2 * np.pi * t_all / 7.3) + 35 * np.sin(2 * np.pi * t_all / 2.9) + 60 * (gust - 0.55)
+    breath = 0.55 + 0.45 * fft_filter(rng.uniform(-1, 1, m), low=30) / 0.3
+    howl = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.clip(breath, 0, 1.4) * (gust - 0.2) * 0.22
+    howl2 = np.sin(2 * np.pi * np.cumsum(f * 1.5) / RATE) * (gust - 0.3).clip(0) * 0.06
+    out[:, 0] += howl + howl2 * 0.6
+    out[:, 1] += howl * 0.8 + howl2
+    # A loose shutter knocking in its frame.
+    for _ in range(5):
+        i = rng.integers(0, n)
+        for k in range(rng.integers(3, 7)):
+            j = i + int(k * rng.uniform(0.07, 0.14) * RATE)
+            hit = fft_filter(rng.uniform(-1, 1, int(0.05 * RATE)), low=1800, high=200)
+            hit *= np.exp(-np.arange(len(hit)) / RATE * 70) * rng.uniform(0.25, 0.45)
+            pan = rng.uniform(-0.8, 0.8)
+            out[j:j + len(hit), 0] += hit * (1 - pan) / 2
+            out[j:j + len(hit), 1] += hit * (1 + pan) / 2
+    # Roof beams creaking under the wind.
+    for _ in range(4):
+        i = rng.integers(0, n)
+        mm = int(rng.uniform(0.7, 1.3) * RATE)
+        tt = np.arange(mm) / RATE
+        fc = rng.uniform(60, 95) + 10 * np.sin(2 * np.pi * 19 * tt)
+        creak = fft_filter(wave_of("saw", np.cumsum(fc) / RATE % 1.0), low=650) * np.sin(np.pi * tt / tt[-1]) * 0.22
+        out[i:i + mm, :] += creak[:, None]
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
+
+
+def amb_mine():
+    """The Deep Workings: a stone hush, water dripping into sumps, a cart
+    rumbling past somewhere in the rock, and far-off picks."""
+    rng = np.random.default_rng(89)
+    dur = 26.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    hush = fft_filter(rng.uniform(-1, 1, m), low=160) * 2.5
+    out[:, 0] += hush
+    out[:, 1] += np.roll(hush, RATE // 5)
+    for _ in range(30):
+        i = rng.integers(0, n)
+        mm = int(0.4 * RATE)
+        t = np.arange(mm) / RATE
+        f = rng.uniform(700, 1400) * np.exp(-t * 5)
+        drip = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.exp(-t * 26) * rng.uniform(0.15, 0.4)
+        # A faint echo off the shaft walls.
+        echo = np.zeros(mm)
+        d = int(0.11 * RATE)
+        echo[d:] = drip[:-d] * 0.35
+        pan = rng.uniform(-1, 1)
+        out[i:i + mm, 0] += (drip + echo) * (1 - pan) / 2
+        out[i:i + mm, 1] += (drip + echo * 0.8) * (1 + pan) / 2
+    # Two carts passing deep in the rock: a swelling rumble with wheel clacks.
+    for c in range(2):
+        i = int((0.15 + 0.5 * c) * n + rng.integers(0, RATE * 2))
+        mm = int(5.0 * RATE)
+        t = np.arange(mm) / RATE
+        swell = np.sin(np.pi * t / t[-1]) ** 2
+        rumble = fft_filter(rng.uniform(-1, 1, mm), low=220, high=40) * swell * 2.2
+        clack = np.zeros(mm)
+        for k in np.arange(0.2, 4.8, 0.36):
+            j = int(k * RATE)
+            hit = fft_filter(rng.uniform(-1, 1, int(0.03 * RATE)), low=900)
+            clack[j:j + len(hit)] += hit * np.exp(-np.arange(len(hit)) / RATE * 90)
+        clack *= swell * 0.5
+        pan = np.linspace(-0.7, 0.7, mm) * (1 if c == 0 else -1)
+        out[i:i + mm, 0] += (rumble + clack) * (1 - pan) / 2
+        out[i:i + mm, 1] += (rumble + clack) * (1 + pan) / 2
+    for _ in range(7):
+        i = rng.integers(0, n)
+        hit = fft_filter(anvil(rng, rng.uniform(500, 800), 0.8), low=1200) * rng.uniform(0.08, 0.16)
+        pan = rng.uniform(-1, 1)
+        out[i:i + len(hit), 0] += hit * (1 - pan) / 2
+        out[i:i + len(hit), 1] += hit * (1 + pan) / 2
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -510,6 +605,8 @@ TRACKS = {
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
+    "amb_heights": amb_heights,
+    "amb_mine": amb_mine,
 }
 
 

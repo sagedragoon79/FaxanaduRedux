@@ -1,6 +1,7 @@
 name: Mine Shaft
 zone: tower
 map: 22, -6
+ambience: mine
 chest_gold: 200
 sign: 26, 41, The cage that ran here fell long ago. Climb, and mind the bats.
 door: 1, tower/rail_gallery, 1

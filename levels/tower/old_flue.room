@@ -1,6 +1,7 @@
 name: Old Flue
 zone: tower
 map: 14, -6
+ambience: heights
 chest_gold: 240
 sign: 28, 65, THE OLD FLUE. Before the lift, dwarves climbed it wall to wall.|Smoke-black stone, and no ledges. Don't look down.
 door: 1, tower/rafters, 1

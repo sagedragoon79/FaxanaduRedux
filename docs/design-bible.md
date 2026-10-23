@@ -139,7 +139,7 @@ All story triggers check items, not route order.
 | Trigger | Change |
 |---------|--------|
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
-| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter), the ore road toward the Mist |
+| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter, and two side rooms: the Sorting Floor, a loop from the Mine Mouth up into the Mine Vault, and the Slag Heap under the Smelter), the ore road toward the Mist |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface; fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
@@ -735,7 +735,7 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 #### Audio
 - **Music (SEAN, curated by Claude):** title, Eolis (and festival variant), Guru/shrine, each zone (7 + 2 optional), mini-boss, boss (3 themes: early, mid, late), Evil One (3 phases), ending, credits. About 22 tracks. Each zone track gets a "restored" variant (filter/arrangement change) when its spring returns.
 - **SFX (CODE synth + CC0 packs):** about 180 effects across movement, combat, UI, ambience, bosses.
-- **Ambience:** one bed per zone (wind, drips, creaking wood, storm).
+- **Ambience:** one bed per zone (wind, drips, creaking wood, storm), and a room can name another (`ambience:`). In the Tower, the halls hum with machinery (amb_tower), the Old Flue and the Rafters howl with wind, a rattling shutter and creaking beams (amb_heights), and the Deep Workings drip, with carts rumbling through the rock and far-off picks (amb_mine).
 
 ---
 

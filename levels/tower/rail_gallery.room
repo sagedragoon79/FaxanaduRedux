@@ -1,6 +1,7 @@
 name: Rail Gallery
 zone: tower
 map: 23, -6
+ambience: mine
 sign: 6, 19, ORE ROAD. Carts run east to the Mist cut.|Spikes laid against thieves. Dwarves walk the rails with a mattock in hand.
 sign: 76, 19, SMELTER. Mind the pour.
 door: 1, tower/mine_shaft, 1

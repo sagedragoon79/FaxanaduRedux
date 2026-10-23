@@ -1,6 +1,7 @@
 name: The Rafters
 zone: tower
 map: 15, -6
+ambience: heights
 sign: 4, 19, THE RAFTERS, under the tower's crown.|The dwarves' old road to the Deep Workings, before the lift.
 sign: 110, 9, DEEP WORKINGS. Mind the drop.
 door: 1, tower/old_flue, 1
