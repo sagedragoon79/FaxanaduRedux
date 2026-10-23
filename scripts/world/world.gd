@@ -51,6 +51,7 @@ var view_size := Vector2(640, 360)
 var busy := false
 var backdrop: Backdrop
 var motes: Motes
+var fog: Fog
 
 var _ignored_door := 0
 
@@ -59,6 +60,8 @@ func _ready() -> void:
 	add_to_group("world")
 	backdrop = Backdrop.new()
 	add_child(backdrop)
+	fog = Fog.new()
+	add_child(fog)
 	motes = Motes.new()
 	add_child(motes)
 
@@ -180,6 +183,7 @@ func _enter(room_id: String) -> void:
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player)
 	room.add_child(player)
+	fog.set_room(room)
 	for c in room.get_children():
 		if c is GoldPurse:
 			player.purse = c

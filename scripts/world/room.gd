@@ -388,6 +388,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(GearBat.new(), center)
 		"K":
 			_spawn_enemy(MinecartRider.new(), bottom_center)
+		"A":
+			_spawn_enemy(LanternGhost.new(), center)
 		"R":
 			var gate := RootGate.new()
 			_spawn(gate, center)

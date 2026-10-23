@@ -345,3 +345,42 @@ func test_enemies_respawn_when_configured() -> void:
 	check(m.dead and not m.visible, "defeated")
 	await frames(40)
 	check(not m.dead and m.hp == m.max_hp and m.visible, "respawned at home")
+
+
+func test_lantern_ghost_shows_only_near_light_and_lunges_through_walls() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 6, 19, "P")
+	put_tiles(rows, 14, 4, "#", 1, 16)
+	put_tiles(rows, 16, 16, "A")
+	var w := make_world({"test/a": room_text(["name: Fog", "zone: mist"], rows)}, "test/a")
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	await frames(3)
+	var g: LanternGhost = _find(w.room, LanternGhost)
+	# Out in the murk, away from every light, it is all but invisible.
+	var start := g.global_position
+	var murk := Vector2.INF
+	for y in range(80, 300, 16):
+		for x in range(300, 620, 16):
+			if murk == Vector2.INF and w.fog.clear_at(Vector2(x, y)) == 0.0 and w.fog.clear_at(Vector2(x, y) + Vector2(12, 12)) == 0.0:
+				murk = Vector2(x, y)
+	g.global_position = murk
+	await frames(1)
+	check(murk != Vector2.INF and g.seen < 0.15, "out in the fog the ghost is all but invisible (%.2f at %s)" % [g.seen, murk])
+	g.global_position = start
+	var windup_frames := 0
+	var bright := true
+	var hurt := false
+	for i in 600:
+		await frames(1)
+		if g.state == "windup":
+			windup_frames += 1
+			bright = bright and g.seen >= LanternGhost.WINDUP_ALPHA
+		if p.hp < p.max_hp:
+			hurt = true
+			break
+	check(g.global_position.x < 16 * 14, "it drifted through the wall to the player")
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH and bright, "its eyes flare for at least %.2f s, even in the fog (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(hurt, "and its lunge lands")
+	check(g.seen > 0.8 or g.state == "fade", "near the player it shows (%.2f, %s)" % [g.seen, g.state])

@@ -20,6 +20,7 @@ prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, sprin
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
+fog: 0.5           (optional: the Mist's fog density over this room, 0 for none; the zone's otherwise)
 surface: stone     (optional: the ground's footstep sound if not the zone's: stone, moss, plank, iron, sap)
 ---
 ##########
@@ -43,6 +44,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `I` | Iron Dwarf (armored; slams a hammer that sends a shockwave along the floor; hit him while it is stuck) |
 | `B` | Gear Bat (roosts upside down; place it just under a ceiling. Flings a returning gear; parry it back at the bat) |
 | `K` | Minecart Rider (rolls the floor; revs, then charges to a wall or the floor's end and tips over: hit him then) |
+| `A` | Lantern Ghost (drifts through walls; out in the Mist's fog it shows only near light. Eyes flare, then it lunges) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |

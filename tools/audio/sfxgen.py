@@ -310,5 +310,14 @@ def main():
     n = int(RATE * d)
     save("step_sap", lowpass(noise(d), slide(250, 1400, d, 0.7)) * env(n, 0.02, 1.5), 0.45)
 
+    # A Lantern Ghost's wail before it lunges: a breathy falling moan with a
+    # wavering second voice.
+    d = 0.55
+    n = int(RATE * d)
+    vib = 1 + 0.03 * np.sin(2 * np.pi * 6 * t_axis(d))
+    moan = osc(slide(620, 380, d, 0.8) * vib, "sine") + osc(slide(930, 560, d, 0.8) * vib * 1.01, "tri") * 0.3
+    breath = lowpass(highpass(noise(d), 900), 3000) * 0.35
+    save("wail", mix(moan, breath) * env(n, 0.12, 1.2), 0.45)
+
 if __name__ == "__main__":
     main()
