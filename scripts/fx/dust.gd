@@ -17,6 +17,8 @@ const KINDS := {
 	"heal": {"count": 10, "speed": Vector2(30, 40), "life": 0.6, "color": Color("ff8a8a"), "size": 2, "rise": -60.0},
 	"coin": {"count": 4, "speed": Vector2(40, 40), "life": 0.25, "color": Color("ffe27a"), "size": 1, "rise": 0.0},
 	"debris": {"count": 10, "speed": Vector2(90, 120), "life": 0.6, "color": Color("8a7d6b"), "size": 3, "rise": 300.0},
+	"sap": {"count": 9, "speed": Vector2(80, 70), "life": 0.4, "color": Color("ffb84a"), "size": 2, "rise": 260.0},
+	"bark": {"count": 14, "speed": Vector2(150, 150), "life": 0.8, "color": Color("6e4a2c"), "size": 4, "rise": 320.0},
 }
 
 var _particles: Array = []  # [pos, vel, life, max_life]
@@ -35,7 +37,7 @@ func setup(kind: String, facing := 1) -> void:
 		var dir := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 0.2))
 		if kind == "run":
 			dir.x = -absf(dir.x) * facing
-		if kind in ["debris", "hit", "pogo", "walljump", "splash", "parry", "guard", "coin"]:
+		if kind in ["debris", "hit", "pogo", "walljump", "splash", "parry", "guard", "coin", "sap", "bark"]:
 			dir = Vector2.from_angle(randf() * TAU)
 		var life: float = k["life"] * randf_range(0.7, 1.2)
 		_particles.append([Vector2.ZERO, dir * speed, life, life])

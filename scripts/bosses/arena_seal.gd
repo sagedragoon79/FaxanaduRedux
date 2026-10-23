@@ -1,0 +1,59 @@
+class_name ArenaSeal
+extends StaticBody2D
+## A wall of thick roots that grows across a doorway while a boss is alive and
+## pulls back when it falls. Its origin is the top-left of the blocked area.
+
+const ROOT := Color("5e3b22")
+const ROOT_LIGHT := Color("8a5a34")
+const OUTLINE := Color("1d1a2b")
+const GROW_TIME := 0.35
+
+var size := Vector2(16, 48)
+
+var _grow := 0.0
+var _opening := false
+
+
+func _ready() -> void:
+	collision_layer = Player.LAYER_WORLD
+	collision_mask = 0
+	add_to_group("arena_seal")
+	z_index = 1
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = size
+	shape.shape = rect
+	shape.position = size * 0.5
+	add_child(shape)
+	Sfx.play("crumble", 0.1, -6.0)
+
+
+func open() -> void:
+	_opening = true
+	collision_layer = 0
+	Sfx.play("crumble", 0.1, -4.0)
+
+
+func _process(delta: float) -> void:
+	_grow = move_toward(_grow, 0.0 if _opening else 1.0, delta / GROW_TIME)
+	if _opening and _grow <= 0.0:
+		queue_free()
+	queue_redraw()
+
+
+func _draw() -> void:
+	var h := size.y * _grow
+	# A dark mass of root fills the opening (hiding whatever is beyond it)...
+	draw_rect(Rect2(0, 0, size.x, h), OUTLINE)
+	draw_rect(Rect2(1, 0, size.x - 2, h), Color("2e1d12"))
+	# ...with three twisted strands growing down from the lintel.
+	for i in 3:
+		var x := 2.0 + i * (size.x - 4.0) / 2.0
+		var pts := PackedVector2Array()
+		var steps := 8
+		for k in steps + 1:
+			var y := h * k / steps
+			pts.append(Vector2(x + sin(y * 0.25 + i * 2.0) * 3.0, y))
+		draw_polyline(pts, OUTLINE, 7.0)
+		draw_polyline(pts, ROOT, 5.0)
+		draw_polyline(pts, ROOT_LIGHT, 1.0)

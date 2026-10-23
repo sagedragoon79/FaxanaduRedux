@@ -7,6 +7,8 @@ extends Node
 signal banner(title: String, subtitle: String)
 ## Small line of text near the bottom of the screen ("Progress saved").
 signal toast(text: String)
+## A full-screen white flash (boss kills); strength 0 to 1.
+signal flash(strength: float)
 ## Asks the HUD to show a dialog box; it freezes the player until closed.
 signal dialog_requested(speaker: String, pages: Array)
 
@@ -55,6 +57,7 @@ static func fresh() -> Dictionary:
 		"respecs": 0,
 		"equipment": {"blade": "hand_dagger", "armor": "", "shield": ""},
 		"keys": {},
+		"rings": [],
 		"potion_shards": 0,
 		"mantra_shards": 0,
 		"collected": {},

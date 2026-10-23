@@ -124,7 +124,7 @@ func test_stat_skills() -> void:
 	p.gold = 0
 	for i in 10:
 		p.add_gold(10, true)
-	check(p.gold == 110, "Gold Sense: 10% more found gold (%d)" % p.gold)
+	check(p.gold == 110, "Gold Sense: 10%% more found gold (%d)" % p.gold)
 	p.add_gold(100)
 	check(p.gold == 210, "returned gold gets no bonus")
 

@@ -15,6 +15,9 @@ var trauma := 0.0
 var shake_offset := Vector2.ZERO
 
 var _hitstop_until_usec := 0
+## Slow motion (boss kills): the time scale hit-stop returns to, and until when.
+var _base_scale := 1.0
+var _slowmo_until_usec := 0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
 var _last_usec := 0
@@ -34,6 +37,14 @@ func hitstop(seconds: float) -> void:
 	var until := Time.get_ticks_usec() + int(seconds * 1_000_000.0)
 	_hitstop_until_usec = maxi(_hitstop_until_usec, until)
 	Engine.time_scale = 0.0
+
+
+## Slows the game to `scale` for `seconds` of real time (cinematic kills).
+func slowmo(scale: float, seconds: float) -> void:
+	_base_scale = scale
+	_slowmo_until_usec = Time.get_ticks_usec() + int(seconds * 1_000_000.0)
+	if Engine.time_scale > 0.0:
+		Engine.time_scale = scale
 
 
 func is_frozen() -> bool:
@@ -59,9 +70,14 @@ func _process(_delta: float) -> void:
 	if real_delta <= 0.0 or real_delta > 0.25:
 		real_delta = 1.0 / 60.0
 
+	if _slowmo_until_usec > 0 and now >= _slowmo_until_usec:
+		_slowmo_until_usec = 0
+		_base_scale = 1.0
+		if Engine.time_scale > 0.0:
+			Engine.time_scale = 1.0
 	if _hitstop_until_usec > 0 and now >= _hitstop_until_usec:
 		_hitstop_until_usec = 0
-		Engine.time_scale = 1.0
+		Engine.time_scale = _base_scale
 
 	trauma = maxf(trauma - TRAUMA_DECAY * real_delta, 0.0)
 	_noise_t += real_delta * 60.0

@@ -59,6 +59,21 @@ directly. Gear and skills turn into player numbers in one place: `GameState.refr
 NPCs (`scripts/world/npc.gd`) are placed with `npc:` lines and act by role: talk, king, shop
 or guru.
 
+## Bosses
+
+A room with a `boss:` header gets a `BossArena` (`scripts/bosses/boss_arena.gd`). It seals
+every door but the way in with an `ArenaSeal` (roots on the world layer), seals that one too
+once the player is inside, spawns the boss, and on defeat gives the reward (ring, skill
+point), sets the `boss:<id>` flag and opens the doors. Dying resets the fight because the
+room is rebuilt on respawn.
+
+Bosses are not `Enemy` subclasses: they are made of several `BossSegment` hitboxes
+(`StaticBody2D` on the enemy layer, in the `enemy` and `pogo` groups) that forward hits to
+the boss, which decides the damage. `Rokusutahn` moves its segments along a straight "rail"
+per attack, so the body follows the head in and out of the walls. The HUD draws the health
+bar of whatever is in the `boss` group, with ticks at its `PHASES` thresholds, and
+`GameState.flash` gives the white flash of a boss kill; `Feel.slowmo()` the slow motion.
+
 ## Combat
 
 - Player melee, spells and hazard checks use `Query.rect` (immediate shape queries).

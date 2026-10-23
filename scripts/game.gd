@@ -18,6 +18,8 @@ extends Node2D
 ##   --map                      open the map before the screenshot
 ##   --open=shop:ID|guru|skills open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
+##   --flags=A,B                set world flags first, e.g. spring:trunk
+##   --boss-hp=F                set a boss's health to fraction F when it appears
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 const SAVE_SLOT := 1
@@ -94,6 +96,8 @@ func _ready() -> void:
 			var xy: PackedStringArray = _args["shot-at"].split(",")
 			at = Vector2(int(xy[0]) * Room.TILE + 8, int(xy[1]) * Room.TILE + 16)
 		GameState.new_game()
+		for flag: String in String(_args.get("flags", "")).split(",", false):
+			GameState.set_flag(flag)
 		_start(room_id, at)
 	elif _args.has("continue") and GameState.load_game(SAVE_SLOT):
 		_continue()
@@ -163,6 +167,10 @@ func _process(_delta: float) -> void:
 	_frames += 1
 	if _frames == 2:
 		_debug_open()
+	if _args.has("boss-hp"):
+		var boss := get_tree().get_first_node_in_group("boss") as Rokusutahn
+		if boss != null and boss.state == "intro":
+			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])
