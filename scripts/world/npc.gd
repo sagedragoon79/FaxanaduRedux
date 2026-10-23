@@ -36,6 +36,9 @@ func interact(p: Player) -> void:
 		"shop":
 			Menus.open_shop(get_tree(), info.shop, p)
 		"guru":
+			var world := get_tree().get_first_node_in_group("world") as World
+			if world != null and world.room != null:
+				GameState.meet_guru(world.room.id, global_position)
 			if GameState.unnamed_title() != "":
 				await _name_title()
 			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)

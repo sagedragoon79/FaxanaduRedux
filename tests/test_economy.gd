@@ -433,3 +433,50 @@ func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
 	back.interact(w.player)
 	await frames(3)
 	check(w.room.id == "tower/forepaw", "and back up again")
+
+
+func test_the_mantra_path_joins_the_gurus_after_a_spring() -> void:
+	var w := make_world({}, "tower/forepaw")
+	await frames(2)
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	GameState.meet_guru("trunk/apolune", Vector2(12 * Room.TILE + 8, 20 * Room.TILE))
+	var guru: Npc = null
+	for n in w.room.get_children():
+		if n is Npc and (n as Npc).npc_id == "guru":
+			guru = n
+	guru.interact(w.player)
+	await frames(1)
+	check(GameState.data.gurus.has("tower/forepaw"), "speaking to a Guru marks a stop on the path")
+	check(menu.title == "Guru" and menu.rows[3].label == "Mantra Path", "the Guru offers the Mantra Path")
+	check(not menu.rows[3].enabled, "but it stays dry until a spring flows")
+	menu.close()
+	GameState.set_flag("spring:trunk")
+	guru.interact(w.player)
+	await frames(1)
+	check(menu.rows[3].enabled, "a restored spring opens it")
+	menu.cursor = 3
+	menu.confirm()
+	check(menu.title == "Mantra Path" and menu.rows.size() == 1 and menu.rows[0].label == "Apolune", "it lists the other Gurus met")
+	menu.cursor = 0
+	menu.confirm()
+	await frames(3)
+	check(w.room.id == "trunk/apolune", "and walks you to one")
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
+	check(absf(w.player.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Guru")
+	menu.queue_free()
+
+
+func test_the_forepaw_forge_rings_and_throws_sparks() -> void:
+	var w := make_world({}, "tower/forepaw")
+	await frames(2)
+	var forge: Forge = _find(w.room, Forge)
+	check(forge != null, "Forepaw has a forge beside the smith")
+	var before := forge.strikes
+	await frames(int(Forge.STRIKE_EVERY * 60.0) + 5)
+	check(forge.strikes > before, "the smith's hammer rings on the anvil")
+	forge._next_strike = 10.0
+	forge.strike()
+	check(not forge.sparks.is_empty(), "each strike throws sparks")
+	forge._process(0.6)
+	check(forge.sparks.is_empty(), "and the sparks die away")

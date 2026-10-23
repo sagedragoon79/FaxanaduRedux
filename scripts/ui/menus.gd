@@ -3,6 +3,10 @@ extends RefCounted
 ## Opens the shop, Guru and skill tree menus on the scene's ListMenu. Each
 ## returns false when there is no menu (tests, headless runs).
 
+## How far from the Guru the Mantra Path sets you down, in pixels.
+const MANTRA_STEP := 32.0
+
+
 static func _menu(tree: SceneTree) -> ListMenu:
 	return tree.get_first_node_in_group("list_menu") as ListMenu
 
@@ -63,6 +67,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 			{"label": "Learn skills", "right": "%d pt" % pts, "detail": "Spend skill points. You earn them from ranks, bosses and Mantra Shards."},
 			{"label": "Unlearn skills", "right": "%d g" % Skills.respec_cost(), "detail": "Forget every skill and get the points back, for a price that rises each time.",
 				"enabled": not GameState.data.skills.is_empty() and p.gold >= Skills.respec_cost()},
+			_mantra_row(tree),
 			{"label": "Leave", "detail": "Walk in the light, wanderer."},
 		]
 	var on_select := func(i: int) -> void:
@@ -79,8 +84,50 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 					Sfx.play("heal", 0.0)
 					GameState.toast.emit("Skills forgotten. Points returned.")
 			3:
+				open_mantra_path(tree, p)
+			4:
 				menu.close()
 	menu.open("Guru", greeting, provider, on_select, _gold_footer(p))
+	return true
+
+
+static func _here(tree: SceneTree) -> String:
+	var world := tree.get_first_node_in_group("world") as World
+	return world.room.id if world != null and world.room != null else ""
+
+
+static func _mantra_row(tree: SceneTree) -> Dictionary:
+	var row := {"label": "Mantra Path", "detail": "Walk the mantra to another Guru you have met.",
+		"enabled": GameState.mantra_path_open() and not GameState.mantra_stops(_here(tree)).is_empty()}
+	if not GameState.mantra_path_open():
+		row.detail = "The path between Gurus is dry. Restore a spring to walk it."
+	elif not row.enabled:
+		row.detail = "You have met no other Guru yet."
+	return row
+
+
+## Guru-to-Guru travel (design bible 3.3). You arrive a step from the Guru.
+static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
+	var menu := _menu(tree)
+	var world := tree.get_first_node_in_group("world") as World
+	if menu == null or world == null:
+		return false
+	var stops := GameState.mantra_stops(_here(tree))
+	var provider := func() -> Array:
+		var out := []
+		for id: String in stops:
+			var info: Dictionary = world.catalog.get(id, {})
+			out.append({"label": String(info.get("name", id)), "right": String(info.get("zone", "")).capitalize(),
+				"detail": "Close your eyes and speak the mantra."})
+		return out
+	var on_select := func(i: int) -> void:
+		menu.close()
+		var at: Array = GameState.data.gurus[stops[i]]
+		Sfx.play("save", 0.0)
+		GameState.flash.emit(0.2)
+		world.travel(stops[i], Vector2(float(at[0]) + MANTRA_STEP, float(at[1])))
+		p.velocity = Vector2.ZERO
+	menu.open("Mantra Path", "Every Guru hears every other.", provider, on_select)
 	return true
 
 
