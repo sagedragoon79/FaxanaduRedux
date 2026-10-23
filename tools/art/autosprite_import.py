@@ -41,6 +41,13 @@ animations of which sheet they replace:
                "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
                                          the game draws itself
                "erase_white": true,      also cut out the glow's near-white core
+               "graft": {"above": 152, "from": {"33": 23}},  per source frame, the rows above
+                                         `above` taken from another frame of the clip, moved so
+                                         the heads line up (the Iron Dwarf's walk lets go of his
+                                         hammer for half a stride: that half gets a gripping arm)
+               "clear": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
+                                         pale grey pixels are cleared: background the clip left
+                                         closed in (between the hero's raised arm and his face)
                "spill": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
                                          stray red liquid is painted over from its row neighbours
                                          (the drink clip spills the potion down his chest)
@@ -155,6 +162,44 @@ def _erase_hue(src, lo, hi, white=False):
     if white:
         gone |= (sat < 0.15) & (mx > 0.8)
     out[gone] = 0
+    return out
+
+
+def _head(src, rows=30):
+    """(x middle, top row) of the figure's top `rows` rows."""
+    ys, xs = np.nonzero(src[..., 3] > 0.5)
+    top = ys.min()
+    band = xs[ys < top + rows]
+    return (band.min() + band.max()) / 2.0, top
+
+
+def _graft(src, donor, above):
+    """`src` with its rows above `above` replaced by `donor`'s, shifted so the heads line up."""
+    (sx, sy), (dx, dy) = _head(src), _head(donor)
+    ox, oy = int(round(sx - dx)), int(round(sy - dy))
+    moved = np.zeros_like(donor)
+    h, w = donor.shape[:2]
+    moved[max(0, oy):min(h, h + oy), max(0, ox):min(w, w + ox)] = \
+        donor[max(0, -oy):min(h, h - oy), max(0, -ox):min(w, w - ox)]
+    out = src.copy()
+    out[:above] = moved[:above]
+    # Bits of the free arm the cut leaves below `above` float loose: keep the figure only.
+    from autosprite_poses import components
+    labels, sizes = components(out[..., 3] > 0.02)
+    if len(sizes) > 1:
+        out[labels != int(np.argmax(sizes[1:])) + 1] = 0
+    return out
+
+
+def _clear_grey(src, box):
+    """Clears pale, unsaturated pixels inside `box` (background left behind in a gap)."""
+    a = src[..., 3]
+    rgb = np.where(a[..., None] > 1e-6, src[..., :3] / np.maximum(a[..., None], 1e-6), 0)
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    grey = (a > 0.05) & ((mx - mn) / np.maximum(mx, 1e-6) < 0.15) & (mx > 0.35)
+    x0, y0, x1, y1 = box
+    out = src.copy()
+    out[y0:y1, x0:x1][grey[y0:y1, x0:x1]] = 0
     return out
 
 
@@ -416,8 +461,16 @@ def imported(name, cell, origin, code_meta):
         imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
         if "erase" in spec:
             srcs = [_erase_hue(src, *spec["erase"], white=spec.get("erase_white", False)) for src in srcs]
+        picks = list(spec.get("pick", range(len(srcs))))
+        if "graft" in spec:
+            g = spec["graft"]
+            donors = dict(zip(*[[int(k) for k in g["from"]], source_frames(
+                {**spec, "pick": [int(v) for v in g["from"].values()]}, imp.dir)]))
+            srcs = [_graft(src, donors[k], g["above"]) if k in donors else src for k, src in zip(picks, srcs)]
+        if "clear" in spec:
+            srcs = [_clear_grey(src, spec["clear"][str(k)]) if str(k) in spec["clear"] else src
+                    for k, src in zip(picks, srcs)]
         if "spill" in spec:
-            picks = list(spec.get("pick", range(len(srcs))))
             srcs = [_paint_spill(src, spec["spill"][str(k)]) if str(k) in spec["spill"] else src
                     for k, src in zip(picks, srcs)]
         if "height" in spec:
