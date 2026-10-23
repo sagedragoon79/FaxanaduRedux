@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump; the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -194,6 +194,109 @@ ROT_DWARF = [
     ("recover", [dwarf(lean=1, axe_hand=(5, -8), axe_angle=70)], [0], 1, False),
     ("stagger", [dwarf(lean=-4, feet=((2, 0), (-6, 0)), axe_hand=(-8, -20), axe_angle=-170, shield=False,
                        shield_hand=(6, -24))], [0], 1, False),
+]
+
+
+# --- Iron Dwarf: a Forepaw dwarf in iron plate with a two-handed hammer --------
+# Drawn at the 2x render density (Canvas scale 2): world-pixel geometry, half-pixel detail.
+
+I_PLATE = mat("stone", 5, 3, 2, 0)
+I_PLATE_BACK = mat("stone", 3, 2, 1, 0)
+I_HELM = mat("stone", 6, 5, 3, 1)
+I_GOLD = mat("gold", 6, 5, 3, 1)
+I_BEARD = mat("bark", 4, 3, 2, 0)
+I_SKIN = mat_from("#f0c09a", ["ember", "bark", "gold"])
+I_BOOT = mat("bark", 3, 2, 1, 0)
+I_HAFT = mat("bark", 5, 4, 3, 1)
+I_HEAD = mat("stone", 6, 4, 2, 0)
+ID_SCALE = 2
+
+
+def iron_dwarf(hip=(0, -11), lean=0, feet=((5, 0), (-5, 0)), hands=(6, -20), hammer=-140, bob=0, crouch=0):
+    """hammer: degrees of the haft from the hands toward the head (0 = forward, -90 = up)."""
+    def render(_):
+        cv = Canvas(72, 64, (32, 61), ID_SCALE)
+        hx, hy = hip[0], hip[1] + crouch
+        sx, sy = hx + lean, hy - 13 + bob
+        head = (sx + 1.5, sy - 6)
+
+        def leg(h, foot, m, boot):
+            foot = reach(h, foot, 10.5)
+            knee = ik(h, foot, 5.5, 5.5, 1)
+            cv.part(cv.capsule(h, knee, 3.2) | cv.capsule(knee, foot, 2.8), m)
+            cv.part(cv.capsule((foot[0] - 2, foot[1] - 2), (foot[0] + 3, foot[1] - 1.6), 2.5), boot)
+            cv.part(cv.ellipse((knee[0] + 0.5, knee[1]), 2.2, 2.0), I_GOLD)
+
+        # The hammer, gripped in both hands.
+        a = math.radians(hammer)
+        grip = reach((sx, sy + 2), hands, 12)
+        tip = (grip[0] + math.cos(a) * 17, grip[1] + math.sin(a) * 17)
+        butt = (grip[0] - math.cos(a) * 5, grip[1] - math.sin(a) * 5)
+        perp = (-math.sin(a), math.cos(a))
+        leg((hx - 3, hy), feet[1], I_PLATE_BACK, I_BOOT)
+        # Back arm, then the haft and head over it.
+        elbow_b = ik((sx - 4, sy + 2), grip, 6.5, 6.5, -1)
+        cv.part(cv.capsule((sx - 4, sy + 2), elbow_b, 2.7) | cv.capsule(elbow_b, grip, 2.4), I_PLATE_BACK)
+        cv.part(cv.capsule(butt, tip, 1.2), I_HAFT)
+        hw, hl = 4.2, 6.5  # half width across the haft, half length along it
+        corners = [(tip[0] + perp[0] * s1 * hl + math.cos(a) * s2 * hw, tip[1] + perp[1] * s1 * hl + math.sin(a) * s2 * hw)
+                   for s1, s2 in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        cv.part(cv.polygon(corners), I_HEAD, deep=True)
+        band = [(tip[0] + perp[0] * s1 * (hl - 2.2) + math.cos(a) * s2 * (hw + 0.4),
+                 tip[1] + perp[1] * s1 * (hl - 2.2) + math.sin(a) * s2 * (hw + 0.4)) for s1, s2 in ((-1, -1), (-0.55, -1), (-0.55, 1), (-1, 1))]
+        cv.part(cv.polygon(band), I_GOLD)
+        band2 = [(tip[0] + perp[0] * s1 * (hl - 2.2) + math.cos(a) * s2 * (hw + 0.4),
+                  tip[1] + perp[1] * s1 * (hl - 2.2) + math.sin(a) * s2 * (hw + 0.4)) for s1, s2 in ((0.55, -1), (1, -1), (1, 1), (0.55, 1))]
+        cv.part(cv.polygon(band2), I_GOLD)
+        leg((hx + 3, hy), feet[0], I_PLATE, I_BOOT)
+        # A broad torso in plate, with a gold-trimmed belt.
+        torso = cv.polygon([(sx - 8, sy), (sx + 8, sy), (hx + 8.5, hy + 1), (hx - 8.5, hy + 1)]) | cv.ellipse((sx, sy + 2), 8.5, 4)
+        cv.part(torso, I_PLATE, deep=True)
+        cv.part(cv.capsule((hx - 8, hy - 1.5), (hx + 8, hy - 1.5), 1.4), mat("bark", 4, 3, 2, 0))
+        cv.part(cv.ellipse((hx + 1, hy - 1.5), 2.0, 1.8), I_GOLD)
+        cv.part(cv.ellipse((sx - 5, sy + 1), 4.0, 3.2), I_PLATE)  # pauldron
+        # Front arm, both hands on the haft.
+        elbow_f = ik((sx + 4, sy + 2), grip, 6.5, 6.5, -1)
+        cv.part(cv.capsule((sx + 4, sy + 2), elbow_f, 2.7) | cv.capsule(elbow_f, grip, 2.4), I_PLATE)
+        cv.part(cv.ellipse(grip, 2.3, 2.3), I_SKIN)
+        # Head, over the arms: a face under a full helm with a nose guard and a ridge.
+        cv.part(cv.ellipse(head, 5.2, 4.8), I_SKIN)
+        helm = cv.ellipse((head[0] - 0.3, head[1] - 2.2), 6.3, 4.2) & ~cv.below(head[1] - 0.6)
+        cv.part(helm, I_HELM)
+        cv.part(cv.capsule((head[0] - 6, head[1] - 1.5), (head[0] + 6, head[1] - 1.5), 1.2), I_HELM)
+        cv.part(cv.capsule((head[0] + 3.2, head[1] - 1.5), (head[0] + 3.2, head[1] + 1.5), 0.8), I_HELM)
+        cv.part(cv.capsule((head[0] - 4.5, head[1] - 5.8), (head[0] + 2, head[1] - 6.6), 1.0), I_GOLD)
+        beard = cv.polygon([(head[0] - 1.5, head[1] + 2.2), (head[0] + 5.2, head[1] + 2.2), (head[0] + 4.2, sy + 5.5),
+                            (head[0] + 1.6, sy + 7.5), (head[0] - 0.8, sy + 5)])
+        cv.part(beard, I_BEARD)
+        cv.part(cv.capsule((head[0] + 1.6, sy + 4), (head[0] + 1.8, sy + 8), 0.6), mat("bark", 3, 3, 2, 1))
+        cv.part(cv.ellipse((head[0] + 1.8, sy + 8.4), 0.9, 0.7), I_GOLD)
+        cv.part(cv.ellipse((head[0] + 4.6, head[1] + 0.8), 1.4, 1.2), I_SKIN)  # nose
+        # The eye glints under the brim: something in the iron has hold of him.
+        cv.pixel((head[0] + 2, head[1] - 0.4), PAL["ember-6"])
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def iron_walk(i):
+    t = i / 4 * math.tau
+    fx = 4.5 * math.cos(t)
+    return iron_dwarf(hip=(0, -11 - (1 if i % 2 else 0)),
+                      feet=((fx, -max(0, 2.5 * math.sin(t))), (-fx, -max(0, -2.5 * math.sin(t)))),
+                      hands=(6, -13), hammer=-150 + 5 * math.cos(t))
+
+
+IRON_DWARF = [
+    ("walk", [iron_walk(i) for i in range(4)], [0, 1, 2, 3], 5, True),
+    ("windup", [iron_dwarf(lean=-3, hands=(-1, -33), hammer=-125, feet=((6, 0), (-6, 0))),
+                iron_dwarf(lean=-4, hands=(-2, -34), hammer=-118, feet=((6, 0), (-6, 0)), bob=-1)], [0, 1], 8, True),
+    ("slam", [iron_dwarf(lean=3, hands=(10, -26), hammer=-25, feet=((7, 0), (-6, 0))),
+              iron_dwarf(lean=5, hands=(13, -12), hammer=60, feet=((8, 0), (-6, 0)), crouch=2)], [0, 1], 16, False),
+    ("stuck", [iron_dwarf(lean=6, hands=(13, -10), hammer=72, feet=((8, 0), (-6, 0)), crouch=3),
+               iron_dwarf(lean=5, hands=(13, -11), hammer=70, feet=((8, 0), (-6, 0)), crouch=3, bob=1)], [0, 1], 4, True),
+    ("recover", [iron_dwarf(lean=2, hands=(9, -16), hammer=10)], [0], 1, False),
+    ("stagger", [iron_dwarf(lean=-5, feet=((3, 0), (-7, 0)), hands=(-4, -28), hammer=-170)], [0], 1, False),
 ]
 
 
@@ -433,6 +536,7 @@ def main():
     write_sheet("rokusutahn", (64, 64), (32, 32), ROKUSUTAHN, lambda r: r(None))
     write_sheet("sap_spitter", (32, 32), (16, 30), SAP_SPITTER, lambda r: r(None))
     write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
+    write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

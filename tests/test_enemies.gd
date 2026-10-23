@@ -147,6 +147,61 @@ func test_grub_lump_telegraphs_and_drops_from_the_ceiling() -> void:
 	check(g.state == "crawl", "and crawls on")
 
 
+func test_iron_dwarf_telegraphs_then_slams_a_shockwave() -> void:
+	var room := _room_with({Vector2i(18, 6): "I"})
+	var d: IronDwarf = _find(room, IronDwarf)
+	d.facing = -1
+	var p := make_player(room, Vector2i(12, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var hp := p.hp
+	var windup_frames := 0
+	var wave_seen := false
+	for i in 150:
+		await frames(1)
+		if d.state == "windup":
+			windup_frames += 1
+		for c in room.get_children():
+			if c is Shockwave:
+				wave_seen = true
+		if d.state == "stuck" and p.hp < hp:
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the hammer goes up for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(not d.slam_rect().intersects(p.body_rect()), "the player stood out of the hammer's reach")
+	check(wave_seen and p.hp < hp, "yet the shockwave rolled along the floor and hit (hp %d)" % p.hp)
+	check(d.state == "stuck", "the hammer sticks in the floor")
+
+
+func test_iron_dwarf_plate_turns_blows_until_the_hammer_sticks() -> void:
+	var room := _room_with({Vector2i(12, 6): "I"})
+	var d: IronDwarf = _find(room, IronDwarf)
+	await frames(2)
+	d.set_state("patrol")
+	var hp0 := d.hp
+	d.take_hit(10, Vector2(1, 0))
+	check(d.hp == hp0 - 5, "his plate halves a blow (%d)" % (hp0 - d.hp))
+	d.set_state("stuck")
+	d.take_hit(10, Vector2(-1, 0))
+	check(d.hp == hp0 - 15, "with the hammer stuck, a blow lands in full")
+	d.set_state("patrol")
+	d.take_hit(10, Vector2(0, 1))
+	check(d.hp == hp0 - 25, "a pogo from above lands in full")
+
+
+func test_shockwave_hugs_the_floor_and_breaks_at_a_wall() -> void:
+	var room := _room_with({})
+	var w := Shockwave.new()
+	w.room = room
+	w.direction = 1
+	room.add_child(w)
+	w.global_position = cell_feet(20, 6)
+	var body := Rect2(w.global_position + Vector2(-6, -40), Vector2(12, 40))
+	check(w.hit_rect().intersects(body), "it hits a body standing on the floor")
+	check(not w.hit_rect().intersects(Rect2(body.position - Vector2(0, 14), body.size)), "a small hop clears it")
+	await frames(60)
+	check(not is_instance_valid(w), "it breaks up at the wall")
+
+
 func test_rot_dwarf_shield_blocks_only_the_front() -> void:
 	var room := _room_with({Vector2i(12, 6): "D"})
 	var d: RotDwarf = _find(room, RotDwarf)
