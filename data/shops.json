@@ -36,5 +36,15 @@
 			{"item": "mana_dew", "price": 800, "once": true},
 			{"item": "life_fruit", "price": 1200, "once": true}
 		]
+	},
+	"forepaw_smith": {
+		"name": "Forepaw Forge",
+		"greeting": "Free hands make good steel. Show me that blade of yours, elf.",
+		"stock": [
+			{"item": "temper_1", "price": 700},
+			{"item": "temper_2", "price": 1600},
+			{"item": "ointment", "price": 280},
+			{"item": "jack_key", "price": 150}
+		]
 	}
 }

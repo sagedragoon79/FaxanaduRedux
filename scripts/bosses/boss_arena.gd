@@ -13,7 +13,7 @@ const BOSSES := {
 	"rokusutahn": {"ring": "elf", "ring_name": "Elf Ring", "skill_points": 1},
 	"foreman": {"ability": "mattock", "title": "Mattock",
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
-	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1},
+	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0

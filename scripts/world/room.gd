@@ -268,6 +268,10 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(HouseFront.new(), pos)
 		"taproot":
 			_spawn(Taproot.new(), pos)
+		"lift":
+			var cage := LiftCage.new()
+			cage.room_id = id
+			_spawn(cage, pos)
 		_:
 			push_warning("Unknown prop in %s: %s" % [id, kind])
 

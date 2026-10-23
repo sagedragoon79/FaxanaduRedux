@@ -4,6 +4,7 @@ map: 14, -3
 chest_gold: 160
 sign: 30, 41, The dwarves of Forepaw bolted their tower to the Tree.|Its stairs are long gone. Climb the scaffolds.
 sign: 7, 41, Dwarf-cut stone. A sword only scratches it.
+prop: 24, 41, lift
 door: 1, tower/ore_chute, 1
 door: 2, tower/winch_hall, 1
 door: 3, trunk/spring_of_trunk, 2

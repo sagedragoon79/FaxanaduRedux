@@ -206,7 +206,8 @@ func _think(delta: float) -> void:
 			# Run at the nearer wall, then crawl up it on the drill's grip.
 			velocity.x = 0.0
 			var wall_x := arena.position.x + 30.0 if facing < 0 else arena.end.x - 30.0
-			if absf(global_position.x - wall_x) > 4.0 and is_on_floor():
+			# (A sealed doorway is a wall too: climb wherever the hull meets one.)
+			if absf(global_position.x - wall_x) > 4.0 and is_on_floor() and not (is_on_wall() and state_time > 0.1) and state_time < 2.0:
 				velocity.x = signf(wall_x - global_position.x) * DRILL_SPEED * 0.8
 			else:
 				uses_gravity = false

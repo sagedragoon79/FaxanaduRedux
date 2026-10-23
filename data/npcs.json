@@ -74,5 +74,34 @@
 			"Not every dwarf turned. Those of us who kept away from the meteor's light kept our heads.",
 			"The Tower of Trunk is ours, or was. Zoradohna holds it now. Bring a Mattock if you go: the old walls only crack for one."
 		]
+	},
+	"forepaw_smith": {
+		"name": "Hrothgar the Smith", "role": "shop", "shop": "forepaw_smith",
+		"look": {"robe": "#3a2a1e", "trim": "#e0703a", "skin": "#cd8c51", "hair": "#2a1a14", "hat": "none", "build": "dwarf"}
+	},
+	"forepaw_elder": {
+		"name": "Elder Basalt", "role": "talk",
+		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#e8e2d0", "hat": "helm", "build": "dwarf"},
+		"lines": [
+			"You freed him. Dunmar, our champion. He climbed into that engine to hold the meteor's men back, and the crystal took him instead.",
+			"The meteor fell into the Tree's crown years ago. Our king, Grieve, went up to bargain with what lives inside it.",
+			"He has not come back as himself. Take the Ruby Ring, elf. It was forged in Forepaw, and the gate of Zenis will know it."
+		]
+	},
+	"forepaw_miner": {
+		"name": "Dwarf Tamsin", "role": "talk",
+		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#e8c9a0", "hair": "#aa6336", "hat": "helm", "build": "dwarf"},
+		"lines": [
+			"Three years we hid in the deep galleries while that drill chewed the halls.",
+			"The lift runs again. Ride it down to the Tower Foot and you'll be back in the Trunk in a breath."
+		]
+	},
+	"forepaw_digger": {
+		"name": "Dwarf Okko", "role": "talk",
+		"look": {"robe": "#2a5e3e", "trim": "#cec5d3", "skin": "#cd8c51", "hair": "#48201e", "hat": "none", "build": "dwarf"},
+		"lines": [
+			"Hrothgar's forge is lit! Bring him your blade. He'll fold it twice if your purse is heavy enough.",
+			"Up the trunk the mist begins. Nobody who went into it came back dry."
+		]
 	}
 }

@@ -9,7 +9,8 @@ const ELIXIR_MAX := 1
 const OINTMENT_MAX := 3
 
 
-## Why an entry can't be bought right now: "" (it can), "owned", "full", "sold out" or "gold".
+## Why an entry can't be bought right now: "" (it can), "owned", "full", "sold out",
+## "locked" (a second temper before the first) or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
@@ -26,6 +27,12 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		"ointment":
 			if p.ointments >= OINTMENT_MAX:
 				return "full"
+		"temper":
+			var level := GameState.temper_level(String(GameState.data.equipment.blade))
+			if level >= int(item.level):
+				return "owned"
+			if level < int(item.level) - 1:
+				return "locked"
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
@@ -49,6 +56,11 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 			p.elixirs += 1
 		"ointment":
 			p.ointments += 1
+		"temper":
+			var tempers: Dictionary = GameState.data.get("tempers", {})
+			tempers[String(GameState.data.equipment.blade)] = int(item.level)
+			GameState.data.tempers = tempers
+			GameState.refresh_stats(p)
 	if entry.get("once", false):
 		GameState.collect(_once_id(shop_id, index))
 	GameState.capture(p)

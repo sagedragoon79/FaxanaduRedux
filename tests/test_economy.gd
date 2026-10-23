@@ -393,3 +393,43 @@ func test_apolune_folk_return_with_the_spring() -> void:
 			lit = (c as HouseFront).lit()
 	check(lit, "and the windows light up")
 	GameState.new_game()
+
+
+# --- Forepaw freed ---------------------------------------------------------------
+
+func test_the_forepaw_smith_tempers_a_blade_twice() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.gold = 5000
+	var base := p.slash_damage
+	var heavy := p.heavy_damage
+	check(Shop.status("forepaw_smith", 1, p) == "locked", "the second temper waits for the first")
+	check(Shop.buy("forepaw_smith", 0, p), "bought Temper Blade I")
+	check(p.slash_damage == roundi(base * 1.15) and p.heavy_damage == roundi(heavy * 1.15),
+		"+15%% damage (%d -> %d)" % [base, p.slash_damage])
+	check(Shop.status("forepaw_smith", 0, p) == "owned", "one first temper per blade")
+	check(Shop.buy("forepaw_smith", 1, p), "bought Temper Blade II")
+	check(p.slash_damage == roundi(base * 1.3), "+30%% in all (%d)" % p.slash_damage)
+	check(Shop.status("forepaw_smith", 1, p) == "owned", "and that is the most a blade takes")
+	check(Shop.buy("eolis_arms", 0, p), "a new blade")
+	check(p.slash_damage == 11 and Shop.status("forepaw_smith", 0, p) == "", "starts untempered")
+
+
+func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
+	var w := make_world({}, "tower/forepaw")
+	await frames(2)
+	var cage: LiftCage = _find(w.room, LiftCage)
+	check(cage != null and cage.destination()[0] == "tower/foot", "Forepaw has a lift down to the Tower Foot")
+	cage.interact(w.player)
+	await frames(3)
+	check(w.room.id == "tower/forepaw", "it hangs still while Zoradohna holds the city")
+	GameState.set_flag("boss:zoradohna")
+	cage.interact(w.player)
+	await frames(3)
+	check(w.room.id == "tower/foot", "once freed, it carries you down")
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
+	var back: LiftCage = _find(w.room, LiftCage)
+	check(back != null and absf(back.global_position.x - w.player.global_position.x) < 24.0, "beside the cage at the bottom")
+	back.interact(w.player)
+	await frames(3)
+	check(w.room.id == "tower/forepaw", "and back up again")
