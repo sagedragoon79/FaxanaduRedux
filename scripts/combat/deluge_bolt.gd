@@ -29,11 +29,14 @@ func _physics_process(delta: float) -> void:
 	global_position += velocity * delta
 	var area := Rect2(global_position - SIZE * 0.5, SIZE)
 	var mask := Player.LAYER_WORLD | Player.LAYER_ENEMY
-	for c: Variant in Query.rect(get_world_2d(), area, mask):
+	var hits := Query.rect(get_world_2d(), area, mask)
+	# Water targets first: a basin overlaps its own walls.
+	for c: Variant in hits:
 		if c.is_in_group("water_target") and c.has_method("douse"):
 			c.douse()
 			_splash()
 			return
+	for c: Variant in hits:
 		if c.is_in_group("enemy") and c.has_method("take_hit"):
 			c.take_hit(damage, Vector2(signf(velocity.x), 0))
 			Feel.hitstop(0.04)

@@ -20,7 +20,7 @@ const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
 const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
 const DROP_DRIFT := 4
 const RISE_FROM_FLOOR_DOOR := 4
-const SOLID := "#CJ"
+const SOLID := "#CJu"
 ## Tiles the body can't stand in (hazards).
 const HAZARD := "^o"
 
@@ -104,7 +104,7 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 
 func supported(room_id: String, x: int, y: int) -> bool:
-	return solid(room_id, x, y + 1) or ch(room_id, x, y + 1) == "-"
+	return solid(room_id, x, y + 1) or ch(room_id, x, y + 1) == "-" or (ch(room_id, x, y + 1) == "=" and abilities.get("deluge", false))
 
 
 func standable(room_id: String, x: int, y: int) -> bool:

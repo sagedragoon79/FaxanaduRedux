@@ -17,7 +17,7 @@ const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
-	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall"]
+	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern"]
 
 
 func _texts() -> Dictionary:
@@ -186,7 +186,7 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	check(stuck.is_empty(), "with the Wing Boots, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
-func test_fire_seal_holds_until_deluge() -> void:
+func test_fire_seal_and_dry_basin_hold_until_deluge() -> void:
 	# Bible 4.1 (A4) and 4.5: the Deluge scroll lies on the Marsh Road before
 	# the fire seal, and the seal keeps the Scorched Hall shut until water douses it.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
@@ -197,7 +197,28 @@ func test_fire_seal_holds_until_deluge() -> void:
 	check(not rooms.has("mist/scorched_hall"), "but the fire seal keeps the Scorched Hall shut")
 	set["deluge"] = true
 	var wet := Reach.new(_texts(), set, true)
-	check(_rooms_reached(wet.reachable(wet.spot_of(START_ROOM, "P"))).has("mist/scorched_hall"), "with Deluge the road east opens")
+	var wet_nodes := wet.reachable(wet.spot_of(START_ROOM, "P"))
+	check(_rooms_reached(wet_nodes).has("mist/scorched_hall"), "with Deluge the road east opens")
+	check(wet.touchable(wet_nodes, "mist/dry_cistern", 18, 7), "and the raft floats up to the cistern shelf")
+
+
+func test_checker_floats_the_basin_raft_only_with_deluge() -> void:
+	# A dry tank too wide to jump, a shelf over its middle: only the raft reaches it.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 2, 16, "-", 3, 1)
+	put_tiles(rows, 6, 13, "#", 1, 7)
+	put_tiles(rows, 31, 13, "#", 1, 7)
+	put_tiles(rows, 7, 19, "u", 24, 1)
+	put_tiles(rows, 7, 13, "=", 24, 1)
+	put_tiles(rows, 17, 8, "-", 4, 1)
+	put_tiles(rows, 18, 7, "W")
+	var texts := {"t/tank": room_text(["name: Tank"], rows)}
+	for kit: Dictionary in [{"glove": true}, {"glove": true, "boots": true}]:
+		var dry := Reach.new(texts, kit)
+		check(not dry.touchable(dry.reachable(dry.spot_of("t/tank", "P")), "t/tank", 18, 7), "the shelf is out of reach while the tank is dry (%s)" % [kit.keys()])
+	var wet := Reach.new(texts, {"glove": true, "deluge": true})
+	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Deluge the raft floats up to it")
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
