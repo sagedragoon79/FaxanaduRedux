@@ -170,6 +170,10 @@ func build(text: String) -> void:
 	for cell: Vector2i in covers:
 		if not _secret_cells.has(cell):
 			_place_secret(cell)
+	var decor := Decor.new()
+	decor.name = "Decor"
+	add_child(decor)
+	decor.build(id, zone, grid, covers)
 
 	var found := Room.scan_doors(grid)
 	for spec: String in lists.get("door", []):

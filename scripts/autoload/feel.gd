@@ -47,6 +47,14 @@ func slowmo(scale: float, seconds: float) -> void:
 		Engine.time_scale = scale
 
 
+## Ends any hitstop or slow motion at once (tests, room resets).
+func reset() -> void:
+	_hitstop_until_usec = 0
+	_slowmo_until_usec = 0
+	_base_scale = 1.0
+	Engine.time_scale = 1.0
+
+
 func is_frozen() -> bool:
 	return Engine.time_scale == 0.0
 

@@ -94,6 +94,7 @@ func _ready() -> void:
 	fader.set_anchors_preset(Control.PRESET_FULL_RECT)
 	ui.add_child(fader)
 
+	PlayerVisual.forced = _args.get("shot-pose", "")
 	if _args.has("room"):
 		var room_id: String = _args["room"]
 		if room_id.begins_with("res://"):

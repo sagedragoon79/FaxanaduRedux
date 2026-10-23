@@ -323,3 +323,48 @@ func test_every_zone_has_a_tileset() -> void:
 		if not ResourceLoader.exists(TilesetFactory.TILES_DIR + zone + ".png"):
 			missing.append(zone)
 	check(missing.is_empty(), "every zone folder has a generated tileset: missing %s" % [missing])
+
+
+func test_decor_dresses_open_surfaces_only() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 20, 19, "^")
+	put_tiles(rows, 39, 17, "1", 1, 3)
+	var text := room_text(["name: T", "zone: trunk", "door: 1, t/x, 1"], rows)
+	var room := Room.from_text(text, "t/decor")
+	arena.add_child(room)
+	var decor: Decor = room.get_node("Decor")
+	check(decor.pieces.size() > 10, "a trunk room gets decor (%d pieces)" % decor.pieces.size())
+	var bad: Array = []
+	for piece: Array in decor.pieces:
+		var cell: Vector2i = piece[2]
+		if rows[cell.y][cell.x] != ".":
+			bad.append(cell)
+		elif piece[0] == 0 and (absi(cell.x - 20) <= 1 and cell.y == 19 or cell.x >= 38):
+			bad.append(cell)
+	check(bad.is_empty(), "decor sits in open cells, clear of hazards and doors (bad %s)" % [bad])
+	var again := Room.from_text(text, "t/decor")
+	arena.add_child(again)
+	check(str(again.get_node("Decor").pieces) == str(decor.pieces), "the same room always gets the same decor")
+	var glowing := false
+	for c in decor.get_children():
+		glowing = glowing or c is Node2D
+		check(not c is CollisionObject2D, "decor has no collision")
+	check(glowing == not decor.glows.is_empty(), "light-giving fungus gets a glow layer")
+	var gym := Room.from_text(room_text(["name: G", "zone: gym"], rows), "g/decor")
+	arena.add_child(gym)
+	check((gym.get_node("Decor") as Decor).pieces.is_empty(), "zones without a decor atlas stay bare")
+
+
+func test_motes_wrap_around_the_view() -> void:
+	var motes := Motes.new()
+	arena.add_child(motes)
+	motes.set_zone("trunk")
+	await frames(120)
+	var inside := true
+	for m: Array in motes._motes:
+		var p: Vector2 = m[0]
+		inside = inside and p.x >= 0.0 and p.x < Motes.VIEW.x and p.y >= 0.0 and p.y < Motes.VIEW.y
+	check(motes._motes.size() == Motes.ZONES.trunk[0] and inside, "trunk spores stay within the screen as they drift")
+	motes.set_zone("gym")
+	check(motes._motes.is_empty(), "no motes in the gym")

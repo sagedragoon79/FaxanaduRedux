@@ -23,7 +23,7 @@ func _ready() -> void:
 
 
 func anchor() -> Vector2:
-	return player.global_position + Vector2(-player.facing * 2, -31) * Vector2(1, player.visual.squash_scale.y)
+	return player.visual.neck_position() + Vector2(-player.facing * 2, 1)
 
 
 func snap() -> void:

@@ -1,0 +1,419 @@
+#!/usr/bin/env python3
+"""Generates the player sprite sheet (design bible 12.4 and 13.3).
+
+The elf is posed with a tiny 2D rig: each frame gives the hip, the feet, the
+hands and the head, and two-bone IK places the knees and elbows. Every part is
+rasterized at 1x into its own mask, shaded with a top-left key light (highlight,
+base, shadow from one master-palette ramp), separated from the parts behind it
+by a darker line of its own ramp, and the whole figure gets a full outline.
+No anti-aliasing, no dithering: every pixel is a master-palette color.
+
+The blade, the shield and the potion are drawn in-game from each frame's hand
+position (so the four blades share these animations), and the scarf hangs
+from each frame's neck point.
+
+Writes:
+  assets/sprites/player.png       the sheet: one row per animation, 64x64 cells
+  assets/sprites/player_mask.png  the same frames as a flat white silhouette
+                                  (afterimages and hit flashes)
+  assets/sprites/player.json      animations: row, frame count, playback
+                                  sequence, fps, loop; per-frame hand, blade
+                                  angle and neck point, relative to the feet
+
+Usage: python3 tools/art/spritegen.py
+"""
+import json
+import math
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageDraw
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import palette  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "assets" / "sprites"
+CELL = 64
+# The feet sit on this point of each cell (the node's origin in game).
+ORIGIN = (32, 61)
+
+PAL = {}
+for _name, _hue, _sat in palette.RAMPS:
+    for _i in range(8):
+        PAL[f"{_name}-{_i}"] = palette.shade(_hue, _sat, _i)
+
+
+def mat(ramp, hi, base, shadow, line):
+    return tuple(PAL[f"{ramp}-{i}"] for i in (hi, base, shadow, line))
+
+
+# (highlight, base, shadow, separating line)
+TUNIC = mat("leaf", 3, 2, 1, 0)
+TUNIC_BACK = mat("leaf", 2, 1, 1, 0)
+TROUSERS = mat("bark", 3, 2, 1, 0)
+TROUSERS_BACK = mat("bark", 2, 1, 1, 0)
+BOOTS = mat("bark", 2, 1, 0, 0)
+BOOTS_BACK = mat("bark", 1, 1, 0, 0)
+SKIN = mat("bark", 7, 6, 5, 3)
+SKIN_BACK = mat("bark", 6, 5, 4, 3)
+GLOVE = mat("bark", 4, 3, 2, 1)
+HAIR = mat("gold", 6, 5, 4, 2)
+OUTLINE = PAL["night-0"]
+EYE = PAL["night-1"]
+BELT = PAL["bark-1"]
+BUCKLE = PAL["gold-4"]
+
+THIGH, SHIN = 8.0, 8.5
+UPPER_ARM, FOREARM = 6.0, 6.0
+
+
+# --- Rasterizing -------------------------------------------------------------
+
+def _grid():
+    ys, xs = np.mgrid[0:CELL, 0:CELL]
+    return xs + 0.5, ys + 0.5
+
+
+GX, GY = _grid()
+
+
+def to_cell(p):
+    return (ORIGIN[0] + p[0], ORIGIN[1] + p[1])
+
+
+def capsule(a, b, r):
+    a, b = to_cell(a), to_cell(b)
+    ax, ay = a
+    dx, dy = b[0] - ax, b[1] - ay
+    L2 = dx * dx + dy * dy
+    if L2 == 0:
+        t = np.zeros_like(GX)
+    else:
+        t = np.clip(((GX - ax) * dx + (GY - ay) * dy) / L2, 0.0, 1.0)
+    px, py = ax + t * dx, ay + t * dy
+    return (GX - px) ** 2 + (GY - py) ** 2 <= r * r
+
+
+def ellipse(c, rx, ry):
+    cx, cy = to_cell(c)
+    return ((GX - cx) / rx) ** 2 + ((GY - cy) / ry) ** 2 <= 1.0
+
+
+def polygon(points):
+    img = Image.new("L", (CELL, CELL), 0)
+    ImageDraw.Draw(img).polygon([to_cell(p) for p in points], fill=255)
+    return np.array(img) > 0
+
+
+def shifted(mask, dx, dy):
+    """mask moved by (dx, dy); pixels shifted in from outside are False."""
+    out = np.zeros_like(mask)
+    h, w = mask.shape
+    xs0, xs1 = max(0, dx), min(w, w + dx)
+    ys0, ys1 = max(0, dy), min(h, h + dy)
+    out[ys0:ys1, xs0:xs1] = mask[ys0 - dy:ys1 - dy, xs0 - dx:xs1 - dx]
+    return out
+
+
+def neighbors4(mask):
+    return shifted(mask, 1, 0) | shifted(mask, -1, 0) | shifted(mask, 0, 1) | shifted(mask, 0, -1)
+
+
+class Canvas:
+    def __init__(self):
+        self.rgb = np.zeros((CELL, CELL, 3), np.uint8)
+        self.filled = np.zeros((CELL, CELL), bool)
+
+    def part(self, mask, material, deep=False):
+        """Paints one shaded part over what is already there."""
+        if not mask.any():
+            return
+        hi, base, shadow, line = material
+        # A darker line where this part overlaps parts behind it.
+        edge = neighbors4(mask) & ~mask & self.filled
+        self.rgb[edge] = line
+        self.rgb[mask] = base
+        # Key light from the top left: lit where the pixel above or to the left is open.
+        lit = mask & (~shifted(mask, 0, 1) | ~shifted(mask, 1, 0))
+        dark = mask & (~shifted(mask, 0, -1) | ~shifted(mask, -1, 0))
+        if deep:
+            dark |= mask & ~shifted(mask, -2, 0)
+        self.rgb[dark] = shadow
+        self.rgb[lit & ~dark] = hi
+        self.filled |= mask
+
+    def pixel(self, p, color):
+        x, y = int(math.floor(to_cell(p)[0])), int(math.floor(to_cell(p)[1]))
+        if 0 <= x < CELL and 0 <= y < CELL:
+            self.rgb[y, x] = color
+            self.filled[y, x] = True
+
+    def finish(self):
+        outline = neighbors4(self.filled) & ~self.filled
+        img = np.zeros((CELL, CELL, 4), np.uint8)
+        img[self.filled, :3] = self.rgb[self.filled]
+        img[self.filled, 3] = 255
+        img[outline, :3] = OUTLINE
+        img[outline, 3] = 255
+        mask = np.zeros((CELL, CELL, 4), np.uint8)
+        solid = self.filled | outline
+        mask[solid] = (255, 255, 255, 255)
+        return Image.fromarray(img, "RGBA"), Image.fromarray(mask, "RGBA")
+
+
+# --- The rig ------------------------------------------------------------------
+
+def ik(a, b, l1, l2, bend):
+    """The middle joint of a two-bone limb from a to b. bend +1 puts it forward (+x)."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    d = max(0.001, math.hypot(dx, dy))
+    d_c = min(d, l1 + l2 - 0.01)
+    cos_a = (l1 * l1 + d_c * d_c - l2 * l2) / (2 * l1 * d_c)
+    ang = math.acos(max(-1.0, min(1.0, cos_a)))
+    base = math.atan2(dy, dx)
+    # Pick the side whose joint lies toward `bend` on x.
+    c1 = base + ang
+    c2 = base - ang
+    j1 = (a[0] + math.cos(c1) * l1, a[1] + math.sin(c1) * l1)
+    j2 = (a[0] + math.cos(c2) * l1, a[1] + math.sin(c2) * l1)
+    return j1 if (j1[0] - j2[0]) * bend >= 0 else j2
+
+
+def reach(a, b, length):
+    """b pulled to within `length` of a."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    d = math.hypot(dx, dy)
+    if d <= length:
+        return b
+    return (a[0] + dx / d * length, a[1] + dy / d * length)
+
+
+def pose(hip=(0, -18), lean=0, bob=0, feet=((3, 0), (-3, 0)), knees=(1, 1),
+         hands=((3, -19), (-3, -19)), elbows=(-1, -1), head=(0, 0), blade=None,
+         fist=False):
+    """One frame. Points are relative to the feet, facing right.
+    feet/hands/knees/elbows are (front, back). blade is the angle in degrees of
+    the sword held in the front hand (0 = forward, 90 = down), or None."""
+    return dict(hip=hip, lean=lean, bob=bob, feet=feet, knees=knees, hands=hands,
+                elbows=elbows, head=head, blade=blade, fist=fist)
+
+
+def render(f):
+    cv = Canvas()
+    hx, hy = f["hip"]
+    sx, sy = hx + f["lean"], hy - 12 + f["bob"]          # shoulder line
+    neck = (sx, sy - 1)
+    head = (sx + 1 + f["head"][0], sy - 6 + f["head"][1])
+    shoulder_f = (sx + 1, sy + 2)
+    shoulder_b = (sx - 2, sy + 2)
+    hip_f = (hx + 1.5, hy)
+    hip_b = (hx - 1.5, hy)
+
+    def leg(hip, foot, bend, trousers, boots):
+        foot = reach(hip, foot, THIGH + SHIN - 0.2)
+        knee = ik(hip, foot, THIGH, SHIN, bend)
+        m = capsule(hip, knee, 2.4) | capsule(knee, foot, 2.0)
+        cv.part(m, trousers)
+        boot = capsule((foot[0] - 1, foot[1] - 3), (foot[0] + 2.5, foot[1] - 2), 2.1) | capsule(
+            (foot[0] - 0.5, foot[1] - 5), (foot[0] - 0.5, foot[1] - 2), 2.0)
+        cv.part(boot, boots)
+
+    def arm(shoulder, hand, bend, sleeve, skin, glove=False):
+        hand = reach(shoulder, hand, UPPER_ARM + FOREARM - 0.2)
+        elbow = ik(shoulder, hand, UPPER_ARM, FOREARM, bend)
+        cv.part(capsule(shoulder, elbow, 1.9), sleeve)
+        cv.part(capsule(elbow, hand, 1.5), skin)
+        cv.part(ellipse(hand, 1.9, 1.9), GLOVE if glove else skin)
+        return hand
+
+    # Back limbs first, one shade darker.
+    arm(shoulder_b, f["hands"][1], f["elbows"][1], TUNIC_BACK, SKIN_BACK)
+    leg(hip_b, f["feet"][1], f["knees"][1], TROUSERS_BACK, BOOTS_BACK)
+    # Torso: tunic from shoulders to a hem below the hips, then the belt.
+    torso = polygon([(sx - 4.5, sy), (sx + 4.5, sy), (hx + 5, hy + 1), (hx + 5.5, hy + 4),
+                     (hx - 5.5, hy + 4), (hx - 5, hy + 1)]) | ellipse((sx, sy + 1.5), 5.0, 2.5)
+    leg(hip_f, f["feet"][0], f["knees"][0], TROUSERS, BOOTS)
+    cv.part(torso, TUNIC, deep=True)
+    for x in range(-5, 5):
+        bx = hx + x + 0.5
+        cv.pixel((bx + (hx - hx), hy - 1 + 0.5), BELT)
+    cv.pixel((hx + 2.5, hy - 0.5), BUCKLE)
+    # Head: face, hair over the top and back, the long elf ear, one eye.
+    hcx, hcy = head
+    cv.part(ellipse(head, 4.6, 5.0), SKIN)
+    hair = ellipse((hcx - 1.0, hcy - 2.0), 5.2, 4.0) | capsule((hcx - 3.5, hcy - 2), (hcx - 4.5, hcy + 4.5), 1.8)
+    face = (GX > to_cell(head)[0] - 0.5) & (GY > to_cell(head)[1] - 2.0)
+    cv.part(hair & ~face, HAIR)
+    cv.part(capsule((hcx - 2.0, hcy + 0.5), (hcx - 5.5, hcy - 2.0), 0.9), SKIN)
+    cv.pixel((hcx + 2.0, hcy - 0.5), EYE)
+    cv.pixel((hcx + 2.0, hcy + 0.5), EYE)
+    # Front arm last; a gloved fist when it holds something.
+    hand = arm(shoulder_f, f["hands"][0], f["elbows"][0], TUNIC, SKIN, glove=f["fist"])
+    sheet, mask = cv.finish()
+    meta = {"hand": [round(hand[0], 1), round(hand[1], 1)],
+            "neck": [round(neck[0], 1), round(neck[1], 1)]}
+    if f["blade"] is not None:
+        meta["blade"] = f["blade"]
+    return sheet, mask, meta
+
+
+# --- Animations ---------------------------------------------------------------
+
+def idle():
+    frames = []
+    for bob in (0, 0, 1, 1):
+        frames.append(pose(bob=bob, hands=((3, -19 + bob), (-3, -19 + bob))))
+    return frames
+
+
+def run():
+    frames = []
+    for i in range(8):
+        t = i / 8 * math.tau
+        fx = 6.0 * math.cos(t)
+        lift_f = max(0.0, 4.5 * math.sin(t))
+        lift_b = max(0.0, -4.5 * math.sin(t))
+        hip_y = -18 + (1 if i % 4 == 0 else 0)
+        frames.append(pose(
+            hip=(0, hip_y), lean=2,
+            feet=((fx, -lift_f), (-fx, -lift_b)),
+            hands=((2 - 5.0 * math.cos(t), -20 + abs(math.cos(t))), (-1 + 5.0 * math.cos(t), -20)),
+            elbows=(-1, -1)))
+    return frames
+
+
+def rise():
+    return [pose(hip=(0, -19), lean=1, feet=((3, -6), (-3, -2)), hands=((5, -27), (-5, -24)), elbows=(-1, -1))]
+
+
+def apex():
+    return [pose(hip=(0, -18), lean=0, feet=((3, -4), (-2, -3)), hands=((7, -25), (-6, -25)), elbows=(-1, 1))]
+
+
+def fall():
+    return [pose(hip=(0, -18), lean=-1, feet=((3, 0), (-2, -2)), hands=((6, -31), (-5, -30)), elbows=(-1, 1)),
+            pose(hip=(0, -18), lean=-1, feet=((2, 0), (-3, -1)), hands=((7, -30), (-6, -31)), elbows=(-1, 1))]
+
+
+def dash():
+    return [pose(hip=(-1, -16), lean=5, feet=((6, -2), (-9, -3)), knees=(1, 1), hands=((-4, -21), (-8, -22)),
+                 elbows=(-1, -1), head=(1, 0)),
+            pose(hip=(-1, -16), lean=5, feet=((7, -1), (-10, -4)), knees=(1, 1), hands=((-5, -22), (-9, -23)),
+                 elbows=(-1, -1), head=(1, 0))]
+
+
+def wall():
+    # Facing away from the wall, which is behind (-x).
+    return [pose(hip=(-1, -18), lean=-1, feet=((4, -3), (-5, -4)), knees=(1, 1), hands=((5, -22), (-6, -32)),
+                 elbows=(-1, -1)),
+            pose(hip=(-1, -18), lean=-1, feet=((4, -2), (-5, -5)), knees=(1, 1), hands=((5, -21), (-6, -33)),
+                 elbows=(-1, -1))]
+
+
+def slash1():
+    # An overhand cut: the blade comes over and down in front.
+    lunge = dict(hip=(1, -17), feet=((6, 0), (-5, 0)), knees=(1, 1))
+    return [pose(lean=3, hands=((9, -26), (-5, -21)), blade=-20, fist=True, **lunge),
+            pose(lean=3, hands=((9, -22), (-5, -21)), blade=25, fist=True, **lunge),
+            pose(lean=2, hands=((6, -19), (-4, -20)), blade=65, fist=True, **lunge)]
+
+
+def slash2():
+    # The backhand: low to high.
+    lunge = dict(hip=(1, -17), feet=((5, 0), (-5, 0)), knees=(1, 1))
+    return [pose(lean=2, hands=((9, -21), (-5, -20)), blade=15, fist=True, **lunge),
+            pose(lean=2, hands=((8, -27), (-5, -21)), blade=-35, fist=True, **lunge),
+            pose(lean=1, hands=((5, -30), (-4, -21)), blade=-70, fist=True, elbows=(1, -1), **lunge)]
+
+
+def slash3():
+    # The heavy finisher: a deep lunge and a flat thrust-cut.
+    lunge = dict(hip=(2, -15), feet=((8, 0), (-7, 0)), knees=(1, 1))
+    return [pose(lean=5, hands=((11, -22), (-7, -24)), blade=-5, fist=True, head=(1, 0), **lunge),
+            pose(lean=5, hands=((11, -20), (-7, -24)), blade=20, fist=True, head=(1, 0), **lunge),
+            pose(lean=3, hands=((8, -18), (-6, -22)), blade=55, fist=True, **lunge)]
+
+
+def slash_up():
+    base = dict(hip=(0, -18), feet=((3, 0), (-3, 0)))
+    return [pose(lean=0, hands=((5, -33), (-4, -21)), blade=-55, fist=True, **base),
+            pose(lean=0, hands=((2, -36), (-4, -21)), blade=-95, fist=True, **base),
+            pose(lean=-1, hands=((-1, -34), (-4, -21)), blade=-130, fist=True, elbows=(1, -1), **base)]
+
+
+def strike_down():
+    tuck = dict(hip=(0, -19), feet=((3, -6), (-3, -4)), knees=(1, 1))
+    return [pose(lean=1, hands=((3, -16), (-5, -24)), blade=80, fist=True, **tuck),
+            pose(lean=1, hands=((2, -13), (-5, -25)), blade=90, fist=True, **tuck)]
+
+
+def block():
+    return [pose(hip=(-1, -17), lean=-1, feet=((4, 0), (-5, 0)), hands=((6, -25), (-4, -20)), elbows=(-1, -1),
+                 fist=True)]
+
+
+def drink():
+    return [pose(lean=-1, hands=((4, -33), (-3, -19)), elbows=(1, -1), head=(-1, -1), fist=True),
+            pose(lean=-1, hands=((4, -34), (-3, -19)), elbows=(1, -1), head=(-1, -1), fist=True)]
+
+
+def cast():
+    return [pose(hip=(0, -18), lean=1, feet=((4, 0), (-4, 0)), hands=((8, -27), (-4, -21)), elbows=(-1, -1)),
+            pose(hip=(1, -18), lean=2, feet=((5, 0), (-4, 0)), hands=((11, -26), (-5, -22)), elbows=(-1, -1))]
+
+
+def hurt():
+    return [pose(hip=(-1, -18), lean=-3, feet=((3, -1), (-4, 0)), hands=((5, -31), (-7, -29)), elbows=(1, 1),
+                 head=(-1, 0))]
+
+
+# name: (frames, playback sequence, fps, loop)
+ANIMATIONS = [
+    ("idle", idle, [0, 1, 2, 3], 5, True),
+    ("run", run, list(range(8)), 14, True),
+    ("rise", rise, [0], 1, False),
+    ("apex", apex, [0], 1, False),
+    ("fall", fall, [0, 1], 8, True),
+    ("dash", dash, [0, 1], 16, False),
+    ("wall", wall, [0, 1], 6, True),
+    # Attacks: the strike shows at once (the hitbox is live on the press), the
+    # follow-through, then recovery frames held so the swing reads.
+    ("slash1", slash1, [0, 1, 2, 2], 20, False),
+    ("slash2", slash2, [0, 1, 2, 2], 20, False),
+    ("slash3", slash3, [0, 0, 1, 2, 2, 2], 20, False),
+    ("slash_up", slash_up, [0, 1, 2, 2], 20, False),
+    ("strike_down", strike_down, [0, 1], 14, False),
+    ("block", block, [0], 1, False),
+    ("drink", drink, [0, 1], 4, True),
+    ("cast", cast, [0, 1, 1, 1], 16, False),
+    ("hurt", hurt, [0], 1, False),
+]
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    cols = max(len(fn()) for _, fn, _, _, _ in ANIMATIONS)
+    rows = len(ANIMATIONS)
+    sheet = Image.new("RGBA", (cols * CELL, rows * CELL), (0, 0, 0, 0))
+    masks = Image.new("RGBA", (cols * CELL, rows * CELL), (0, 0, 0, 0))
+    meta = {"cell": CELL, "origin": list(ORIGIN), "columns": cols, "animations": {}}
+    for row, (name, fn, seq, fps, loop) in enumerate(ANIMATIONS):
+        frames = fn()
+        assert max(seq) < len(frames), name
+        info = []
+        for col, f in enumerate(frames):
+            img, mask, fmeta = render(f)
+            sheet.paste(img, (col * CELL, row * CELL))
+            masks.paste(mask, (col * CELL, row * CELL))
+            info.append(fmeta)
+        meta["animations"][name] = {"row": row, "frames": info, "seq": seq, "fps": fps, "loop": loop}
+    sheet.save(OUT / "player.png")
+    masks.save(OUT / "player_mask.png")
+    (OUT / "player.json").write_text(json.dumps(meta, indent=1) + "\n")
+    print(f"player sheet: {rows} animations, {cols} columns")
+
+
+if __name__ == "__main__":
+    main()
