@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf; the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter; the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -333,11 +333,52 @@ def npc(look, bob=0, hand_dy=0.0):
     return render
 
 
+# --- Sap Spitter: a bark-rooted turret with an amber sac -----------------------
+
+SPIT_ROOT = mat("bark", 3, 2, 1, 0)
+SPIT_SAC = mat("gold", 5, 4, 2, 1)
+SPIT_SAC_HOT = mat("gold", 6, 5, 4, 2)
+SPIT_LIP = mat("bark", 5, 4, 2, 0)
+
+
+def sap_spitter(sac, hot=False, spout=1.0, lean=0.0):
+    """sac: the sac's radius; spout: how far the mouth sticks out; lean tips it back."""
+    def render(_):
+        cv = Canvas(32, 32, (16, 30))
+        # Roots gripping the floor.
+        for a, b in (((-9, 0), (-3, -6)), ((9, 0), (3, -6)), ((-5, 0), (-1, -7)), ((5, 0), (1, -7))):
+            cv.part(cv.capsule(a, b, 1.4), SPIT_ROOT)
+        cv.part(cv.ellipse((0, -6), 6.5, 4.5), SPIT_ROOT, deep=True)
+        cy = -8 - sac + lean * 0.3
+        cv.part(cv.ellipse((-lean, cy), sac, sac * 0.92), SPIT_SAC_HOT if hot else SPIT_SAC, deep=True)
+        # Veins over the sac.
+        for vx in (-0.45, 0.2):
+            vein = cv.ellipse((-lean + vx * sac, cy + 2), 0.6, sac * 0.45) & cv.ellipse((-lean, cy), sac - 1.5, sac - 1.5)
+            cv.flat(vein, PAL["gold-2"])
+        # The spout, angled forward and up.
+        base = (-lean + sac * 0.55, cy - sac * 0.55)
+        tip = (base[0] + 3.5 * spout, base[1] - 3.0 * spout)
+        cv.part(cv.capsule(base, tip, 2.2), SPIT_LIP)
+        cv.flat(cv.ellipse(tip, 1.1, 1.1), DARK)
+        cv.pixel((tip[0] + 0.5, tip[1] + 1.6), PAL["gold-6"])
+        img, mask = cv.finish()
+        return img, mask, {"mouth": [round(tip[0], 1), round(tip[1], 1)]}
+    return render
+
+
+SAP_SPITTER = [
+    ("idle", [sap_spitter(6.0), sap_spitter(6.4)], [0, 1], 3, True),
+    ("windup", [sap_spitter(7.4, True, 0.7, 1.0), sap_spitter(8.0, True, 0.6, 1.5)], [0, 1], 8, True),
+    ("spit", [sap_spitter(5.0, False, 1.5, -1.5)], [0], 1, False),
+]
+
+
 def main():
     write_sheet("monodron", (40, 32), (20, 30), MONODRON, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
     write_sheet("rot_dwarf", (48, 48), (24, 45), ROT_DWARF, lambda r: r(None))
     write_sheet("rokusutahn", (64, 64), (32, 32), ROKUSUTAHN, lambda r: r(None))
+    write_sheet("sap_spitter", (32, 32), (16, 30), SAP_SPITTER, lambda r: r(None))
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

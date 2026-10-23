@@ -402,3 +402,16 @@ func test_sap_falls_are_told_from_pools() -> void:
 	check(falls.has(Vector2i(2, 0)) and falls.has(Vector2i(3, 3)), "the stream pours")
 	check(not falls.has(Vector2i(1, 4)) and not falls.has(Vector2i(3, 4)), "the walled pool is still a pool")
 	check(not falls.has(Vector2i(2, 5)), "the pool's bottom row is not a falls")
+
+
+func test_taproot_is_bitten_until_the_spring_returns() -> void:
+	GameState.new_game()
+	var root := Taproot.new()
+	arena.add_child(root)
+	var bite: Array = Taproot.BITES[0]
+	var h: float = bite[0]
+	var bitten := root.edges(h)
+	var whole := root.edges(h + float(bite[2]) + 6.0)
+	check(bitten.y < whole.y - 10.0, "a bite is taken out of the root (%.0f vs %.0f)" % [bitten.y, whole.y])
+	GameState.set_flag("spring:trunk")
+	check(root.edges(h).y > bitten.y + 10.0, "the spring heals the bite")

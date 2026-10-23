@@ -73,7 +73,7 @@ func test_sheets_use_the_master_palette() -> void:
 
 func test_cast_has_sheets() -> void:
 	var want := {"monodron": ["idle", "windup", "hop"], "hornet": ["fly", "windup", "swoop"],
-		"rot_dwarf": ["walk", "windup", "swing", "recover", "stagger"]}
+		"rot_dwarf": ["walk", "windup", "swing", "recover", "stagger"], "sap_spitter": ["idle", "windup", "spit"]}
 	var missing: Array[String] = []
 	for sheet: String in want:
 		for anim: String in want[sheet]:
@@ -84,6 +84,7 @@ func test_cast_has_sheets() -> void:
 			missing.append("npc_" + npc_id)
 	check(missing.is_empty(), "every enemy state and every person has a sheet (missing %s)" % [missing])
 	check(Sheet.info("monodron", "idle", 0).has("eye"), "the Monodron's frames mark its eye for the pupil")
+	check(Sheet.info("sap_spitter", "windup", 1).has("mouth"), "the Sap Spitter's frames mark its mouth for the glob")
 
 
 func test_combo_plays_three_swings() -> void:

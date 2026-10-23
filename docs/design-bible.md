@@ -321,7 +321,7 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 
 | Zone | Enemies |
 |------|---------|
-| Trunk Hollows | Monodron (one-eyed hopper), Hornet (swooper), Rot Dwarf (shield-bearing walker), Grub Lump (crawls on walls and ceilings), Sap Spitter (turret) |
+| Trunk Hollows | Monodron (one-eyed hopper), Hornet (swooper), Rot Dwarf (shield-bearing walker), Grub Lump (crawls on walls and ceilings), Sap Spitter (turret; lobs sap globs that leave a slowing puddle for 4 s) |
 | Tower of Trunk | Iron Dwarf (hammer slam), Minecart Rider, Gear Bat, Rock Golem (mini-boss: the Foreman) |
 | The Mist | Lantern Ghost (only visible near light), Bog Myconid (spore cloud), Marsh Hag, Drowned Dwarf (rises from water), Mist Wisp |
 | Branches (Conflate) | Leaf Mantis, Sky Ray (gliding), Seed Bomber, Bark Knight |

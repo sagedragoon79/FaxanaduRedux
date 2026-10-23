@@ -16,7 +16,7 @@ secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden roo
                         contents can't be seen until the player walks in)
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 chest_gold: 100    (optional: gold in each chest in this room)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, house)
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, house, taproot)
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ---
@@ -36,6 +36,7 @@ music: title       (optional: a track other than the zone's, from assets/music/)
 | `M` | Monodron (hopper) |
 | `H` | Hornet (flier; placed at the tile center) |
 | `D` | Rot Dwarf (shielded walker) |
+| `T` | Sap Spitter (turret; lobs sap that leaves a slowing puddle) |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |

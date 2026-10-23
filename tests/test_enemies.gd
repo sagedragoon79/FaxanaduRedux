@@ -65,6 +65,47 @@ func test_hornet_swoops_at_player() -> void:
 	check(closest < start - 40.0, "swooped at the player (closest %.1f from %.1f)" % [closest, start])
 
 
+func test_sap_spitter_telegraphs_and_lobs_a_glob_that_leaves_sap() -> void:
+	var room := _room_with({Vector2i(20, 6): "T"})
+	var p := make_player(room, Vector2i(9, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var t: SapSpitter = _find(room, SapSpitter)
+	var windup_frames := 0
+	var glob: SapGlob = null
+	for i in 90:
+		await frames(1)
+		if t.state == "windup":
+			windup_frames += 1
+		if glob == null:
+			glob = _find(room, SapGlob)
+		if glob != null:
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the sac swells for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(glob != null and glob.velocity.x < 0.0 and glob.velocity.y < 0.0, "then it lobs a glob up and toward the player")
+	var hp := p.hp
+	for i in 80:
+		await frames(1)
+		if p.hp < hp:
+			break
+	check(p.hp < hp, "the glob lands on the player and hurts")
+	# A miss leaves a puddle that slows.
+	p.teleport(cell_feet(3, 6))
+	await frames(1)
+	var spot := cell_feet(9, 6)
+	var target_x := spot.x
+	var from := t.mouth()
+	var miss := SapGlob.new()
+	miss.velocity = SapGlob.launch(from, Vector2(target_x, spot.y - 2), SapSpitter.FLIGHT)
+	miss.room = room
+	room.add_child(miss)
+	miss.global_position = from
+	await frames(60)
+	check(room.is_sap_at(spot + Vector2(0, -6)), "a glob that hits the floor leaves sap")
+	await frames(roundi(SapGlob.PUDDLE_TIME * 60.0) + 5)
+	check(not room.is_sap_at(spot + Vector2(0, -6)), "and the puddle dries")
+
+
 func test_rot_dwarf_shield_blocks_only_the_front() -> void:
 	var room := _room_with({Vector2i(12, 6): "D"})
 	var d: RotDwarf = _find(room, RotDwarf)
