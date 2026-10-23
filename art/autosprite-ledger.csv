@@ -57,3 +57,11 @@ date,asset,operation,credits,result,notes
 2026-10-23,Foreman throw tell,generate_pose,3,queued (cf_1559b223-03d2-46fe-84bb-04ccd148921a),boulder overhead; balance 70 after
 2026-10-23,Foreman throw,generate_pose,3,queued (cf_76728e7e-510e-41a1-b2d0-b21ba88975e7),follow-through; balance 67 after
 2026-10-23,Foreman import,import (walk clip + packed poses),0,ok (art/autosprite/foreman),idle/recover from the base still; balance 67
+2026-10-23,Zoradohna base,create_character pro,3,ok (cmvkpc31k01ik142gqdu3roft),siege drill boss (PR #39 gameplay); balance 64 after
+2026-10-23,Zoradohna walk A,generate_pose,3,queued (cf_22d9482e-40c1-47a5-902e-a5ced2a3fee8),front leg forward; balance 61 after
+2026-10-23,Zoradohna walk B,generate_pose,3,queued (cf_71ec99b5-5705-438b-b5bf-19f0e8664eed),back leg swinging; balance 58 after
+2026-10-23,Zoradohna stuck,generate_pose,3,queued (cf_fee452bf-bb7c-4f14-9f48-24927b46d059),nose down 25 deg, cold; balance 55 after
+2026-10-23,Zoradohna slam tell,generate_pose,3,queued (cf_bad35bd4-4c5e-40a0-a713-4bde85ef7282),reared up 30 deg; balance 52 after
+2026-10-23,Zoradohna slam,generate_pose,3,queued (cf_c2e5b395-9cbf-4d18-bb99-4d8f97b30736),crouched, nose down 18 deg; balance 49 after
+2026-10-23,Zoradohna open hatch,generate_pose,3,queued (cf_f3d546fe-dca7-4e1a-aa69-44b9ff9db3c8),phase 3 look: hatch open, pink crystal harness; balance 46 after
+2026-10-23,Zoradohna import,import (packed poses + transplanted open hatch + screw-slid drill),0,ok (art/autosprite/zoradohna),15 animations incl. open_ twins and freed; balance 46

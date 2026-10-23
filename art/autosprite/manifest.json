@@ -109,6 +109,31 @@
    "recover": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [0], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"}
   }
  },
+ "zoradohna": {
+  "dir": "zoradohna",
+  "colors": 56,
+  "density": 2,
+  "ramps": ["night", "gold", "stone"],
+  "height": 70,
+  "reference": "idle",
+  "animations": {
+   "idle": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [0, 0], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "walk": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [1, 0, 2, 0], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "drill_tell": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [0, 3, 4], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), drill slid by autosprite_screw.py"},
+   "drill": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [3, 4], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), drill slid by autosprite_screw.py"},
+   "stuck": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [5, 5], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "slam_tell": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [6, 6], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "slam": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [7], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "open_idle": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [8, 8], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_walk": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [9, 8, 10, 8], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_drill_tell": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [8, 11, 12], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_drill": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [11, 12], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_stuck": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [13, 13], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_slam_tell": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [14, 14], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "open_slam": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [15], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"},
+   "freed": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [13], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"}
+  }
+ },
  "rokusutahn": {
   "dir": "rokusutahn",
   "colors": 40,

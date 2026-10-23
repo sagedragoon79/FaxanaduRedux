@@ -549,8 +549,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   world pixel a 48 px hero loses the face and armor detail. Character sheets marked `"density": 2` are drawn at double
   detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
   polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
-  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf, the Foreman
-  and the zone tiles (the small Gear Bat stays code-drawn at 2x).
+  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf, the Foreman,
+  Zoradohna and the zone tiles (the small Gear Bat stays code-drawn at 2x).
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
@@ -653,8 +653,12 @@ hammer head). Short attacks whose game animations are only a few key frames are 
 (3 credits each) instead: `tools/art/autosprite_poses.py` keys out the white ground and any floor patch, keeps the
 figure, and packs the stills on one spot (hips on the cell's middle) into a source sheet. A figure drawn too dark for
 the game's rooms gets a manifest `"gain"` before its palette is cut; the Iron Dwarf also gets a lamp-orange rim.
+A second look that changes one spot (Zoradohna's phase 3: hatch open, crystal harness) is one more pose of the
+standing still, and `tools/art/autosprite_transplant.py` carries that change onto every other pose (turned and moved
+to where the spot sits). A spinning drill is the still with its thread slid along the axis
+(`tools/art/autosprite_screw.py`). Neither costs credits.
 
-Balance after the hooded hero's set, Rokusutahn's parts, the Iron Dwarf and the Foreman: 67 credits, about 6 pro clips. The redesign (concepts, the new base and its
+Balance after the hooded hero's set, Rokusutahn's parts, the Iron Dwarf, the Foreman and Zoradohna: 46 credits, about 15 poses. The redesign (concepts, the new base and its
 leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
@@ -665,7 +669,8 @@ leg fix, a trial clip and the full set) cost 145 and came out of the NPC and res
 | Enemies in the game now (Monodron, Hornet, Rot Dwarf): HD pose + move + attack each | 6 | 69 | 14% |
 | NPCs: only if credits are topped up (they stay code-drawn) | 0 | 0 | 0% |
 | Bosses, Rokusutahn spent: three pro stills (head, plate, tail) | 3 | 9 | 2% |
-| Bosses still to come: stills or key clips for their rigged parts | 3 | 31 | 6% |
+| Zoradohna (boss) spent: base and six poses; open look and drill spin made by code | 0 | 21 | 4% |
+| Bosses still to come: stills or key clips for their rigged parts | 3 | 10 | 2% |
 | Tower enemies, Iron Dwarf spent: base, walk clip, a rejected slam clip, five poses | 2 | 38 | 8% |
 | Foreman (mini-boss) spent: base, walk clip, seven poses | 1 | 34 | 7% |
 | Reserve for later enemies, fixes and regeneration | | 31 | 6% |

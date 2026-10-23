@@ -211,5 +211,6 @@
    "loop": false
   }
  },
- "density": 2
+ "density": 2,
+ "own_palette": true
 }
