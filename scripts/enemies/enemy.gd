@@ -15,6 +15,8 @@ const MIN_TELEGRAPH := 0.35
 @export var contact_damage := 20
 @export var gold_min := 2
 @export var gold_max := 5
+## Experience for the kill (ranks, design bible 9).
+@export var xp := 5
 ## Seconds until the enemy returns at its spawn point; 0 = gone for good.
 @export var respawn_time := 0.0
 
@@ -159,6 +161,7 @@ func die() -> void:
 	get_parent().add_child(d)
 	d.global_position = center()
 	Coin.spray(get_parent(), center(), randi_range(gold_min, gold_max))
+	GameState.add_xp(xp)
 	Feel.hitstop(0.08)
 	Feel.add_trauma(0.25)
 	Sfx.play("enemy_die")

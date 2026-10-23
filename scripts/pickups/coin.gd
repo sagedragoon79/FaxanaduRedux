@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 	if p != null and not p.dead:
 		var target := p.global_position + Vector2(0, -20)
 		var d := target - global_position
-		if _age > MAGNET_DELAY and d.length() < MAGNET_RANGE:
+		if _age > MAGNET_DELAY and d.length() < MAGNET_RANGE * p.magnet_mult:
 			_magnet = true
 		if _magnet:
 			global_position += d.normalized() * minf(MAGNET_SPEED * delta, d.length())
@@ -60,7 +60,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _collect(p: Player) -> void:
-	p.add_gold(value)
+	p.add_gold(value, true)
 	var d := Dust.new()
 	d.setup("coin")
 	get_parent().add_child(d)

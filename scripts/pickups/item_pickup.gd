@@ -13,15 +13,11 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
-	"life_fruit": {"title": "Life Fruit", "text": "Your health grows by one mask.", "color": Color("e0404a")},
-	"mana_dew": {"title": "Mana Dew", "text": "Your magic grows.", "color": Color("4aa3df")},
+	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
+	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
 }
-
-const LIFE_FRUIT_HP := 20
-const MANA_DEW_MP := 10.0
-const SHARDS_PER_REWARD := 3
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -45,33 +41,10 @@ func _physics_process(delta: float) -> void:
 func grant(p: Player) -> void:
 	var info: Dictionary = INFO[kind]
 	var subtitle: String = info.text
-	match kind:
-		"glove":
-			p.abilities["glove"] = true
-		"life_fruit":
-			p.max_hp += LIFE_FRUIT_HP
-			p.hp = p.max_hp
-			p.health_changed.emit(p.hp, p.max_hp)
-		"mana_dew":
-			p.max_mp += MANA_DEW_MP
-			p.mp = p.max_mp
-		"potion_shard":
-			GameState.data.potion_shards = int(GameState.data.potion_shards) + 1
-			var n := int(GameState.data.potion_shards)
-			if n % SHARDS_PER_REWARD == 0:
-				p.flask_max += 1
-				p.flask_charges = p.flask_max
-				subtitle = "Three shards fuse. Your flask holds one more Red Potion."
-			else:
-				subtitle = "%d of %d. Three fuse into a new potion charge." % [n % SHARDS_PER_REWARD, SHARDS_PER_REWARD]
-		"mantra_shard":
-			GameState.data.mantra_shards = int(GameState.data.mantra_shards) + 1
-			var n := int(GameState.data.mantra_shards)
-			if n % SHARDS_PER_REWARD == 0:
-				GameState.data.skill_points = int(GameState.data.skill_points) + 1
-				subtitle = "The mantra is whole. You gain a skill point."
-			else:
-				subtitle = "%d of %d. Three complete a mantra." % [n % SHARDS_PER_REWARD, SHARDS_PER_REWARD]
+	if kind == "glove":
+		p.abilities["glove"] = true
+	else:
+		subtitle = GameState.grant_stat_item(kind, p)
 	if pickup_id != "":
 		GameState.collect(pickup_id)
 	GameState.capture(p)

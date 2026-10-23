@@ -19,6 +19,7 @@ func _init() -> void:
 	max_hp = 24
 	gold_min = 3
 	gold_max = 6
+	xp = 5
 	body_size = Vector2(18, 16)
 
 

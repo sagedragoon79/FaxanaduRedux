@@ -60,7 +60,7 @@ static func from_text(text: String, room_id := "") -> Room:
 
 
 ## Splits room text into {header: Dictionary, lists: {key: [values]}, grid: Array[String]}.
-## Keys that may repeat (label, door, sign) are collected in `lists`.
+## Keys that may repeat (label, door, sign, npc) are collected in `lists`.
 static func parse(text: String) -> Dictionary:
 	var lines := text.replace("\r", "").split("\n")
 	var header := {}
@@ -76,7 +76,7 @@ static func parse(text: String) -> Dictionary:
 			if colon > 0:
 				var key := line.substr(0, colon).strip_edges()
 				var value := line.substr(colon + 1).strip_edges()
-				if key in ["label", "door", "sign"]:
+				if key in ["label", "door", "sign", "npc"]:
 					if not lists.has(key):
 						lists[key] = []
 					lists[key].append(value)
@@ -178,6 +178,13 @@ func build(text: String) -> void:
 			tablet.text = parts[2].strip_edges()
 			_spawn(tablet, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
 
+	for spec: String in lists.get("npc", []):
+		var parts := spec.split(",")
+		if parts.size() == 3:
+			var npc := Npc.new()
+			npc.npc_id = parts[2].strip_edges()
+			_spawn(npc, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
+
 	_restore_purse()
 
 
@@ -219,6 +226,12 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(RotDwarf.new(), bottom_center)
 		"S":
 			_spawn(SaveShrine.new(), bottom_center)
+		"J":
+			var door_id := _pickup_id(cell)
+			if not GameState.is_collected(door_id):
+				var key_door := KeyDoor.new()
+				key_door.persist_id = door_id
+				_spawn(key_door, bottom_center)
 		"$":
 			var chest := Chest.new()
 			chest.pickup_id = _pickup_id(cell)

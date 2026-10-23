@@ -39,3 +39,49 @@ func check(cond: bool, msg: String) -> bool:
 func check_near(actual: float, expected: float, tol: float, msg: String) -> bool:
 	var ok := absf(actual - expected) <= tol
 	return check(ok, "%s: got %.2f, want %.2f +/- %.2f" % [msg, actual, expected, tol])
+
+
+# --- Multi-room helpers (World tests) -------------------------------------------
+
+## A walled box of `w` x `h` tiles with a 3-tile-thick floor.
+func grid_rows(w: int, h: int) -> Array:
+	var rows := []
+	for y in h:
+		var row := []
+		for x in w:
+			row.append("#" if y == 0 or y >= h - 3 or x == 0 or x == w - 1 else ".")
+		rows.append(row)
+	return rows
+
+
+func put_tiles(rows: Array, x: int, y: int, ch: String, w := 1, h := 1) -> void:
+	for yy in range(y, y + h):
+		for xx in range(x, x + w):
+			rows[yy][xx] = ch
+
+
+func room_text(header: Array, rows: Array) -> String:
+	var lines := PackedStringArray(header)
+	lines.append("---")
+	for row: Array in rows:
+		lines.append("".join(PackedStringArray(row)))
+	return "\n".join(lines)
+
+
+## Starts a fresh game in a World built from `rooms` (id -> room text), with no fades
+## and a scripted player.
+func make_world(rooms: Dictionary, start_id := "test/a", at := Vector2.INF) -> World:
+	GameState.new_game()
+	var w := World.new()
+	w.instant = true
+	w.texts = rooms
+	arena.add_child(w)
+	w.build_catalog()
+	w.start(start_id, at)
+	w.player.input.scripted = true
+	return w
+
+
+## Feet position for a player standing in tile (x, y).
+func cell_feet(x: int, y: int) -> Vector2:
+	return Vector2(x * Room.TILE + 8, (y + 1) * Room.TILE)

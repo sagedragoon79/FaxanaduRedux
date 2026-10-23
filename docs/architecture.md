@@ -41,6 +41,15 @@ are deterministic within the frame.
 Visuals are placeholders drawn in code (`player_visual.gd`) plus a verlet-chain scarf
 (`scarf.gd`). They will be swapped for Autosprite animation without touching movement.
 
+## Data, shops and skills
+
+Balance tables are JSON in `data/` (`items`, `shops`, `skills`, `npcs`), read through
+`GameData`. `Shop` and `Skills` (`scripts/data/`) hold the buying and learning rules; the
+menus (`Menus` opening a shared `ListMenu`) only display them, so tests call the rules
+directly. Gear and skills turn into player numbers in one place: `GameState.refresh_stats()`.
+NPCs (`scripts/world/npc.gd`) are placed with `npc:` lines and act by role: talk, king, shop
+or guru.
+
 ## Combat
 
 - Player melee, spells and hazard checks use `Query.rect` (immediate shape queries).

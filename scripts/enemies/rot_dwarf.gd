@@ -30,6 +30,7 @@ func _init() -> void:
 	max_hp = 40
 	gold_min = 5
 	gold_max = 9
+	xp = 12
 	body_size = Vector2(18, 28)
 	knockback = 60.0
 

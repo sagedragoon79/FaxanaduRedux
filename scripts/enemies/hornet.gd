@@ -24,6 +24,7 @@ func _init() -> void:
 	max_hp = 16
 	gold_min = 2
 	gold_max = 4
+	xp = 5
 	body_size = Vector2(16, 12)
 	body_centered = true
 	uses_gravity = false

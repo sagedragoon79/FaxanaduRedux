@@ -1,0 +1,20 @@
+{
+	"eolis_arms": {
+		"name": "Eolis Arms",
+		"greeting": "Steel for the roots, wanderer. Pick what keeps you breathing.",
+		"stock": [
+			{"item": "long_sword", "price": 400},
+			{"item": "leather_armor", "price": 200},
+			{"item": "small_shield", "price": 150}
+		]
+	},
+	"eolis_items": {
+		"name": "Eolis Sundries",
+		"greeting": "Keys, fruit and dew. All honest, mostly.",
+		"stock": [
+			{"item": "jack_key", "price": 150},
+			{"item": "mana_dew", "price": 500, "once": true},
+			{"item": "life_fruit", "price": 800, "once": true}
+		]
+	}
+}

@@ -131,9 +131,11 @@ func start(room_id: String, at := Vector2.INF) -> void:
 		player = Player.new()
 		player.respawn_handler = _on_player_respawn
 		player.died.connect(_on_player_died)
+		_enter(room_id)
 		if use_game_state:
 			GameState.apply(player)
-	_enter(room_id)
+	else:
+		_enter(room_id)
 	var pos := room.spawn_position if at == Vector2.INF else at
 	player.teleport(pos)
 	player.spawn_point = pos

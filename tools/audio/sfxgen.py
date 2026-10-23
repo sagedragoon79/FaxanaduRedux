@@ -201,6 +201,8 @@ def main():
     thunk = lowpass(osc(slide(160, 90, 0.12), "square", 0.4), 1500) * env(int(RATE * 0.12), 0.001, 1.5)
     save("chest", mix(thunk, np.concatenate([np.zeros(int(RATE * 0.1)), arpeggio([784, 1047, 1319], 0.05, "square", 0.5, 0.1) * 0.5])), 0.55)
 
+    save("rank", lowpass(arpeggio([392, 523, 659, 784, 1047, 784, 1047], 0.08, "square", 0.5, 0.6), 4500), 0.5)
+
     d = 0.03
     save("blip", lowpass(osc(np.full(int(RATE * d), 880.0), "square", 0.5), 3000) * env(int(RATE * d), 0.001, 1.0), 0.3)
 

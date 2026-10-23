@@ -110,6 +110,11 @@ func _draw() -> void:
 	_text(Vector2(20, 22), "MAP", 14, TEXT)
 	_text(Vector2(70, 22), zone_name, 10, DIM)
 	_text(Vector2(20, screen.y - 12), world.room.title, 10, TEXT)
+	var status := "%s   XP %d" % [GameState.rank_name(), int(GameState.data.xp)]
+	if GameState.next_rank_xp() > 0:
+		status += " / %d" % GameState.next_rank_xp()
+	status += "   Skill points %d   Jack Keys %d" % [int(GameState.data.skill_points), GameState.key_count("jack")]
+	_text(Vector2(20, 40), status, 9, DIM)
 	draw_rect(Rect2(screen.x - 150, screen.y - 19, 3, 4), SHRINE)
 	_text(Vector2(screen.x - 143, screen.y - 14), "Shrine", 8, DIM)
 	draw_rect(Rect2(screen.x - 100, screen.y - 18, 2, 2), PLAYER)
