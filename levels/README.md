@@ -10,12 +10,13 @@ map: 0, 0          (the room's top-left on the map, in screens)
 door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
-npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19))
+npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19); an optional
+                   fourth field shows them only once a flag is set, or with !flag until then)
 secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden room's
                         contents can't be seen until the player walks in)
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 chest_gold: 100    (optional: gold in each chest in this room)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk)
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, house)
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ---

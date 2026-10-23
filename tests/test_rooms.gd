@@ -368,3 +368,21 @@ func test_motes_wrap_around_the_view() -> void:
 	check(motes._motes.size() == Motes.ZONES.trunk[0] and inside, "trunk spores stay within the screen as they drift")
 	motes.set_zone("gym")
 	check(motes._motes.is_empty(), "no motes in the gym")
+
+
+func test_doors_within_a_zone_scroll_and_others_fade() -> void:
+	var w := make_world(_rooms(), "test/a")
+	var a: Dictionary = w.room.doors
+	var side := {}
+	for n: int in a:
+		if a[n].edge in ["left", "right"]:
+			side = a[n]
+			break
+	check(not side.is_empty() and w.transition_kind(side) == "scroll", "a side door to a room of the same zone scrolls")
+	var inner := side.duplicate()
+	inner.edge = "inner"
+	check(w.transition_kind(inner) == "fade", "an inner doorway fades")
+	var away := side.duplicate()
+	away.target = "elsewhere/room"
+	w.catalog["elsewhere/room"] = {"zone": "elsewhere"}
+	check(w.transition_kind(away) == "fade", "a door into another zone fades")

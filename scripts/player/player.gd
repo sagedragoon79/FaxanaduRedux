@@ -48,6 +48,10 @@ var heavy_damage := 14
 var reach_bonus := 0.0
 var defense := 0.0
 var has_shield := true
+## Share of damage a guard blocks; the shield sets it (data/items.json "guard").
+var guard_reduction := 0.5
+## Elixirs carried: dying with one revives you where you fell.
+var elixirs := 0
 var melee_mult := 1.0
 var mp_hit_mult := 1.0
 var gold_mult := 1.0
@@ -720,7 +724,7 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		mp -= combat.guard_mp_cost
 		_spawn_dust(Vector2(facing * 10, -24), "guard")
 		Sfx.play("guard")
-		take_damage(int(round(damage * (1.0 - combat.guard_reduction))), false, knock)
+		take_damage(int(round(damage * (1.0 - guard_reduction))), false, knock)
 		return "guarded"
 	take_damage(damage, false, knock)
 	return "hit"
@@ -741,6 +745,9 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	Feel.rumble(0.5, 0.6, 0.2)
 	Sfx.play("hurt")
 	visual.flash_hurt()
+	if hp <= 0 and elixirs > 0:
+		_drink_elixir()
+		return
 	if hp <= 0:
 		hp = 0
 		health_changed.emit(hp, max_hp)
@@ -752,6 +759,23 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		velocity = Vector2(knock_dir * combat.hurt_knockback.x, -combat.hurt_knockback.y)
 		_control_lock_timer = combat.hurt_control_lock
 		_control_blend_timer = 0.0
+	health_changed.emit(hp, max_hp)
+
+
+## Dying with an Elixir: it is used up and you rise where you fell, fully healed.
+func _drink_elixir() -> void:
+	elixirs -= 1
+	hp = max_hp
+	_invuln_timer = tuning.hurt_invuln * 2.0
+	velocity = Vector2(0, -180)
+	Feel.slowmo(0.4, 0.6)
+	GameState.flash.emit(0.6)
+	Sfx.play("heal", 0.0)
+	var d := Dust.new()
+	d.setup("heal")
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(0, -20)
+	GameState.toast.emit("The Elixir burns. You rise again.")
 	health_changed.emit(hp, max_hp)
 
 

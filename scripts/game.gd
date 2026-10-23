@@ -164,6 +164,10 @@ func _start(room_id: String, at := Vector2.INF) -> void:
 	world.view_size = Vector2(view.size)
 	world.fader = fader
 	world.start(room_id, at)
+	if _args.has("shot-move"):
+		# Screenshots: hold a direction from the start (e.g. to catch a room transition).
+		world.player.input.scripted = true
+		world.player.input.move_x = int(_args["shot-move"])
 	hud.player = player
 	map_screen.world = world
 	debug_hud = DebugHud.new()

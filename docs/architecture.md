@@ -15,7 +15,8 @@ Autoloads: `Feel` (hit-stop, shake, rumble), `Controls` (input map built in code
 
 `scripts/world/world.gd` owns the current `Room`, the `Player` and the `GameCamera`. It loads
 rooms by id from `levels/<zone>/<room>.room`, moves the player through doors (edge doors on
-touch, inner doors on Up), fades between rooms, saves at shrines, and respawns the player at
+touch, inner doors on Up), scrolls between rooms of one zone (`transition_kind()`: a snapshot
+of the old view slides out as a snapshot of the new one slides in) and fades otherwise, saves at shrines, and respawns the player at
 the last save after death. `build_catalog()` reads every room's header and doors for the map.
 Tests register rooms in `World.texts` instead of writing files, and set `instant` to skip fades.
 

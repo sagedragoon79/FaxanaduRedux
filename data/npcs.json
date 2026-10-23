@@ -41,5 +41,38 @@
 			"East gate leads down into the Trunk Hollows. Monodrons hop about near the entrance. Watch the eye: it flashes before it jumps.",
 			"The rot dwarves carry shields. Get behind them, or wait for the swing and hit back."
 		]
+	},
+	"apolune_armorer": {
+		"name": "Brannoc the Armorer", "role": "shop", "shop": "apolune_armor",
+		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm"}
+	},
+	"apolune_grocer": {
+		"name": "Grocer Tilde", "role": "shop", "shop": "apolune_items",
+		"look": {"robe": "#2b782c", "trim": "#f0dfa8", "skin": "#e3cdb5", "hair": "#aa6336", "hat": "cap"}
+	},
+	"apolune_widow": {
+		"name": "Hesk", "role": "talk",
+		"look": {"robe": "#5d4997", "trim": "#aca1ba", "skin": "#e3cdb5", "hair": "#cec5d3", "hat": "hood"},
+		"lines": [
+			"Apolune, they called it. The town in the hollow. Now it's me and the Guru and the drip of the sap.",
+			"When the spring went quiet the sap started to crawl. It filled the lanes in a night. The others ran for Eolis.",
+			"If you mean to go deeper, the shrine below keeps you safe. Past it, a shaft climbs east to the dwarves' old hall."
+		]
+	},
+	"apolune_widow_glad": {
+		"name": "Hesk", "role": "talk",
+		"look": {"robe": "#5d4997", "trim": "#aca1ba", "skin": "#e3cdb5", "hair": "#cec5d3", "hat": "hood"},
+		"lines": [
+			"The sap went hard as glass in an hour. You did that, didn't you?",
+			"Brannoc and Tilde came back the next morning. Shops open, lamps lit. It almost feels like a town."
+		]
+	},
+	"apolune_miner": {
+		"name": "Dwarf Orrin", "role": "talk",
+		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#cd8c51", "hair": "#48201e", "hat": "helm"},
+		"lines": [
+			"Not every dwarf turned. Those of us who kept away from the meteor's light kept our heads.",
+			"The Tower of Trunk is ours, or was. Zoradohna holds it now. Bring a Mattock if you go: the old walls only crack for one."
+		]
 	}
 }

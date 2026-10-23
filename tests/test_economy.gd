@@ -215,3 +215,67 @@ func test_every_npc_and_shop_entry_is_valid() -> void:
 		if String(node.needs) != "" and GameData.skill(node.needs).is_empty():
 			bad.append("skill %s needs unknown %s" % [node.id, node.needs])
 	check(bad.is_empty(), "data tables are consistent: %s" % ", ".join(bad))
+
+
+# --- Apolune -------------------------------------------------------------------------
+
+func test_large_shield_guards_more() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(p)
+	check_near(p.guard_reduction, 0.5, 0.001, "the Small Shield halves a guarded hit")
+	p.gold = 900
+	check(Shop.buy("apolune_armor", 1, p), "bought the Large Shield")
+	check_near(p.guard_reduction, 0.7, 0.001, "the Large Shield blocks 70%")
+	var dummy := Node2D.new()
+	w.room.add_child(dummy)
+	dummy.global_position = p.global_position + Vector2(p.facing * 30, 0)
+	p.input.block_held = true
+	await frames(3)
+	check(p.receive_attack(20, dummy, false) == "guarded" and p.hp == p.max_hp - 6, "a guarded 20 becomes 6 (hp %d)" % p.hp)
+	check(Shop.status("eolis_arms", 2, p) == "owned", "the Small Shield counts as owned once you have a better one")
+
+
+func test_elixir_revives_once_and_is_limited_to_one() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	p.gold = 4000
+	check(Shop.buy("apolune_items", 0, p) and p.elixirs == 1, "bought an Elixir")
+	check(Shop.status("apolune_items", 0, p) == "owned", "you can carry only one")
+	check(int(GameState.data.elixirs) == 1, "the Elixir is saved")
+	p.take_damage(p.max_hp + 50)
+	check(not p.dead and p.hp == p.max_hp and p.elixirs == 0, "a fatal hit drinks the Elixir and revives you (hp %d)" % p.hp)
+	check(p.invulnerable, "with a moment of safety")
+	Feel.reset()
+	await frames(150)
+	p.take_damage(p.max_hp + 50)
+	check(p.dead, "without an Elixir, a fatal hit kills")
+
+
+func test_apolune_folk_return_with_the_spring() -> void:
+	GameState.new_game()
+	var before := Room.from_file("res://levels/trunk/apolune.room")
+	arena.add_child(before)
+	var ids := func(room: Room) -> Array:
+		var out := []
+		for c in room.get_children():
+			if c is Npc:
+				out.append((c as Npc).npc_id)
+		out.sort()
+		return out
+	var b: Array = ids.call(before)
+	check(b == ["apolune_miner", "apolune_widow", "guru"], "before the spring: the Guru, a dwarf and one townswoman (%s)" % [b])
+	GameState.set_flag("spring:trunk")
+	var after := Room.from_file("res://levels/trunk/apolune.room")
+	arena.add_child(after)
+	var a: Array = ids.call(after)
+	check(a == ["apolune_armorer", "apolune_grocer", "apolune_miner", "apolune_widow_glad", "guru"], "after: the shops reopen (%s)" % [a])
+	var lit := false
+	for c in after.get_children():
+		if c is HouseFront:
+			lit = (c as HouseFront).lit()
+	check(lit, "and the windows light up")
+	GameState.new_game()

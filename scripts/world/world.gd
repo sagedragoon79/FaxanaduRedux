@@ -12,6 +12,9 @@ signal room_changed(room: Room)
 
 const FADE_OUT := 0.12
 const FADE_IN := 0.18
+## Side and shaft doors between rooms of one zone scroll the view instead of
+## fading (design bible 3.3).
+const SCROLL_TIME := 0.34
 ## How far inside the room the player lands when arriving through a side door.
 const ARRIVE_INSET := 14.0
 ## Upward speed when arriving through a floor door from below.
@@ -217,9 +220,15 @@ func use_door(n: int) -> void:
 	busy = true
 	var vel := player.velocity
 	player.frozen = true
+	var scroll := transition_kind(d) == "scroll"
+	var old_view: Texture2D = null
 	if fader != null and not instant:
-		Sfx.play("door", 0.05, -8.0)
-		await _fade(1.0, FADE_OUT)
+		# Right after boot there is no drawn frame to scroll away from yet.
+		if scroll and Engine.get_frames_drawn() > 2:
+			old_view = _snapshot()
+		if old_view == null:
+			Sfx.play("door", 0.05, -8.0)
+			await _fade(1.0, FADE_OUT)
 	if use_game_state:
 		GameState.capture(player)
 	_enter(d.target)
@@ -231,10 +240,59 @@ func use_door(n: int) -> void:
 		_place_at_door(arrive, vel)
 	_ignored_door = d.target_door
 	camera.snap_to_target()
+	if old_view != null:
+		await _scroll(old_view, d.edge)
 	player.frozen = false
-	if fader != null and not instant:
+	if fader != null and not instant and old_view == null:
 		await _fade(0.0, FADE_IN)
 	busy = false
+
+
+## "scroll" for an edge door into a room of the same zone, otherwise "fade".
+func transition_kind(d: Dictionary) -> String:
+	if d.edge == "inner":
+		return "fade"
+	var target_zone: String = catalog.get(d.target, {}).get("zone", "")
+	return "scroll" if target_zone != "" and target_zone == room.zone else "fade"
+
+
+func _snapshot() -> Texture2D:
+	var img := get_viewport().get_texture().get_image()
+	return ImageTexture.create_from_image(img) if img != null else null
+
+
+## Covers the view with the old room's last frame, waits for the new room to
+## draw, then slides the old frame out and the new one in, the way the player
+## walked.
+func _scroll(old_view: Texture2D, edge: String) -> void:
+	var dir := Vector2.ZERO
+	match edge:
+		"right": dir = Vector2.LEFT
+		"left": dir = Vector2.RIGHT
+		"top": dir = Vector2.DOWN
+		"bottom": dir = Vector2.UP
+	var curtain := Node2D.new()
+	fader.get_parent().add_child(curtain)
+	fader.get_parent().move_child(curtain, 0)
+	var size := old_view.get_size()
+	var offset := -(size - fader.size) * 0.5
+	var old_sprite := Sprite2D.new()
+	old_sprite.centered = false
+	old_sprite.texture = old_view
+	old_sprite.position = offset
+	curtain.add_child(old_sprite)
+	await RenderingServer.frame_post_draw
+	await RenderingServer.frame_post_draw
+	var new_sprite := Sprite2D.new()
+	new_sprite.centered = false
+	new_sprite.texture = _snapshot()
+	new_sprite.position = offset - dir * size
+	curtain.add_child(new_sprite)
+	var tw := create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(old_sprite, "position", offset + dir * size, SCROLL_TIME)
+	tw.tween_property(new_sprite, "position", offset, SCROLL_TIME)
+	await tw.finished
+	curtain.queue_free()
 
 
 func _place_at_door(door: Dictionary, vel: Vector2) -> void:

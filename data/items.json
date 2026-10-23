@@ -2,8 +2,11 @@
 	"hand_dagger": {"name": "Hand Dagger", "kind": "blade", "tier": 1, "slash": 8, "heavy": 14, "reach": 0, "desc": "Your starting blade. Quick, but short."},
 	"long_sword": {"name": "Long Sword", "kind": "blade", "tier": 2, "slash": 11, "heavy": 19, "reach": 8, "desc": "Reaches further and hits harder than the dagger."},
 	"leather_armor": {"name": "Leather Armor", "kind": "armor", "tier": 1, "defense": 0.15, "desc": "Take 15% less damage."},
-	"small_shield": {"name": "Small Shield", "kind": "shield", "tier": 1, "desc": "Hold Block to guard. Tap it just before a hit to parry."},
+	"studded_mail": {"name": "Studded Mail", "kind": "armor", "tier": 2, "defense": 0.3, "desc": "Take 30% less damage."},
+	"small_shield": {"name": "Small Shield", "kind": "shield", "tier": 1, "desc": "Hold Block to guard (halves damage). Tap it just before a hit to parry.", "guard": 0.5},
+	"large_shield": {"name": "Large Shield", "kind": "shield", "tier": 2, "guard": 0.7, "desc": "Guarding blocks 70% of a hit. Parries work as before."},
 	"jack_key": {"name": "Jack Key", "kind": "key", "desc": "Opens one Jack door. Jack doors guard treasure."},
 	"life_fruit": {"name": "Life Fruit", "kind": "stat", "desc": "Two fruits grow a new mask of health."},
-	"mana_dew": {"name": "Mana Dew", "kind": "stat", "desc": "Your magic grows by 10."}
+	"mana_dew": {"name": "Mana Dew", "kind": "stat", "desc": "Your magic grows by 10."},
+	"elixir": {"name": "Elixir", "kind": "elixir", "desc": "If you fall, it revives you where you stand. You can carry one."}
 }

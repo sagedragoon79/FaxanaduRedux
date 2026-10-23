@@ -213,6 +213,13 @@ func build(text: String) -> void:
 
 	for spec: String in lists.get("npc", []):
 		var parts := spec.split(",")
+		# An optional fourth field shows the person only once a world flag is set,
+		# or ("!flag") only until it is.
+		if parts.size() == 4:
+			var cond := parts[3].strip_edges()
+			if GameState.flag(cond.trim_prefix("!")) == cond.begins_with("!"):
+				continue
+			parts.resize(3)
 		if parts.size() == 3:
 			var npc := Npc.new()
 			npc.npc_id = parts[2].strip_edges()
@@ -241,6 +248,8 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			spring.spring_id = "trunk"
 			spring.spring_name = "Spring of Trunk"
 			_spawn(spring, pos)
+		"house":
+			_spawn(HouseFront.new(), pos)
 		_:
 			push_warning("Unknown prop in %s: %s" % [id, kind])
 
