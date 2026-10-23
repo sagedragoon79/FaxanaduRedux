@@ -5,6 +5,9 @@ extends TestSuite
 
 const START_ROOM := "eolis/west_gate"
 const PICKUPS := "GLWF*$S"
+## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
+## [room, tile x, tile y].
+const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 
 
 func _texts() -> Dictionary:
@@ -84,9 +87,16 @@ func test_with_glove_everything_is_reachable() -> void:
 	check(missing_rooms.is_empty(), "with the glove and keys every room is reachable: missing %s" % [missing_rooms])
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
+
+
+func test_amber_secrets_need_the_spring() -> void:
+	var reach := Reach.new(_texts(), {"glove": true}, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	for s: Array in AMBER_SECRETS:
+		check(not reach.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach until the sap hardens" % [s])
 
 
 func test_no_soft_locks_with_glove() -> void:

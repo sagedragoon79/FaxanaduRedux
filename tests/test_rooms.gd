@@ -386,3 +386,19 @@ func test_doors_within_a_zone_scroll_and_others_fade() -> void:
 	away.target = "elsewhere/room"
 	w.catalog["elsewhere/room"] = {"zone": "elsewhere"}
 	check(w.transition_kind(away) == "fade", "a door into another zone fades")
+
+
+func test_sap_falls_are_told_from_pools() -> void:
+	# A stream 2 wide pouring from row 0 into a pool walled in at x 0 and x 5.
+	var sap := {}
+	for y in 4:
+		sap[Vector2i(2, y)] = true
+		sap[Vector2i(3, y)] = true
+	for x in range(1, 5):
+		sap[Vector2i(x, 4)] = true
+		sap[Vector2i(x, 5)] = true
+	var walls := {Vector2i(0, 4): true, Vector2i(5, 4): true, Vector2i(0, 5): true, Vector2i(5, 5): true}
+	var falls := SapPool.find_falls(sap, func(c: Vector2i) -> bool: return walls.has(c))
+	check(falls.has(Vector2i(2, 0)) and falls.has(Vector2i(3, 3)), "the stream pours")
+	check(not falls.has(Vector2i(1, 4)) and not falls.has(Vector2i(3, 4)), "the walled pool is still a pool")
+	check(not falls.has(Vector2i(2, 5)), "the pool's bottom row is not a falls")
