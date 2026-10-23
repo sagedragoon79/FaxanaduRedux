@@ -19,7 +19,7 @@ the 2x render density change (PR #20), so the new art is drawn at 2x.
 
 ## Automated verification
 
-390 checks pass. New: a kill can leave bread that settles, heals by `BREAD_HEAL` when walked
+393 checks pass. New: a kill can leave bread that settles, heals by `BREAD_HEAL` when walked
 over and is eaten; a mana orb refills magic; an uneaten drop fades; the mantra has four groups
 of four, is stable for the same journey and changes with progress. Screenshot reviewed: the
 loaf and the orb on the Burrow Drop floor beside the player at 2x.
