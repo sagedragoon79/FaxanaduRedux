@@ -98,6 +98,100 @@ func test_random_input_soak_in_every_eolis_and_trunk_room() -> void:
 	await _soak_zone("trunk", "Trunk")
 
 
+## The Mist under its fog: the same soak, and the fog never runs out of lights.
+func test_random_input_soak_in_every_mist_room() -> void:
+	await _soak_zone("mist", "Mist")
+
+
+## The fog's CPU side in every Mist room: the player walked across the room,
+## the light list rebuilt each frame. It must stay cheap and never hit
+## Fog.MAX_LIGHTS (the shader would drop lanterns).
+func test_fog_stays_cheap_in_every_mist_room() -> void:
+	var dir := DirAccess.open("res://levels/mist")
+	var problems: Array[String] = []
+	var report: Array[String] = []
+	for f in dir.get_files():
+		if not f.ends_with(".room"):
+			continue
+		var id := "mist/" + f.trim_suffix(".room")
+		var w := make_world({}, id)
+		await frames(2)
+		var fog := w.fog
+		var rect := w.room.pixel_rect()
+		var most := 0
+		var total_usec := 0
+		const STEPS := 120
+		for i in STEPS:
+			# Sweep the player (and so the camera) across the room, row by row.
+			var at := Vector2(rect.position.x + rect.size.x * fmod(i * 0.083, 1.0), rect.position.y + rect.size.y * (0.2 + 0.6 * float(i) / STEPS))
+			w.player.global_position = at
+			await frames(1)
+			var t0 := Time.get_ticks_usec()
+			fog._update()
+			total_usec += Time.get_ticks_usec() - t0
+			most = maxi(most, fog.lights.size())
+		var avg_ms := total_usec / 1000.0 / STEPS
+		report.append("%s %.3f ms, %d lights" % [id, avg_ms, most])
+		if most >= Fog.MAX_LIGHTS:
+			problems.append("%s: the fog ran out of lights (%d)" % [id, most])
+		if avg_ms > 0.5:
+			problems.append("%s: the fog update takes %.3f ms" % [id, avg_ms])
+		w.queue_free()
+		await frames(2)
+	print("  Fog: " + ", ".join(report))
+	check(problems.is_empty(), "the fog is cheap and never short of lights: %s" % [problems])
+
+
+## Ripasheiku at full tilt for 30 seconds against a mashing player who can't
+## die: under the fog, with her lanterns as lights. Effects clean up after
+## themselves and a frame stays well inside the 60 fps budget.
+func test_widow_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "mist/sunken_chapel", cell_feet(10, 19))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Ripasheiku
+	check(boss != null, "Ripasheiku wakes")
+	if boss == null:
+		return
+	boss.max_hp = 99999
+	boss.hp = 99999
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 11
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var slowest := 0
+	var states := {}
+	const FIGHT_FRAMES := 1800
+	for f in FIGHT_FRAMES:
+		_mash(w.player, rng, hold)
+		# Force phase 2 halfway through, so the vault, webs and drops are soaked too.
+		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
+			boss.hp = roundi(boss.max_hp * 0.6)
+			boss._check_phase()
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		slowest = maxi(slowest, dt)
+		states[boss.state] = true
+		peak = maxi(peak, _count_nodes(w))
+		if not boss.arena.grow(32.0).has_point(boss.global_position):
+			check(false, "she left the chapel at %s (%s)" % [boss.global_position, boss.state])
+			break
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  Widow soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
+	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(states.has("hang") or states.has("climb"), "the soak reached her vault phase")
+	check(is_instance_valid(boss) and boss.state != "dead", "the fight ran its course")
+	w.player.pull = Vector2.ZERO
+	w.queue_free()
+	await frames(2)
+
+
 func _soak_zone(zone: String, label: String) -> void:
 	var problems: Array[String] = []
 	var dir := DirAccess.open("res://levels/" + zone)
