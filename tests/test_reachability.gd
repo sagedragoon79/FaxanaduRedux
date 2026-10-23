@@ -9,10 +9,11 @@ const PICKUPS := "GLWF*$SN"
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
-## or above the flue damper, open once Zoradohna falls (the "winch" ability).
+## or above the flue damper, open once Zoradohna falls (the "winch" ability),
+## and the Mist, reached by the ore road east of the Deep Workings.
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
-	"tower/crown_lookout", "tower/bell_loft"]
+	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing"]
 
 
 func _texts() -> Dictionary:

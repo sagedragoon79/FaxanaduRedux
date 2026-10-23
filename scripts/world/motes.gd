@@ -11,6 +11,7 @@ const ZONES := {
 	"trunk": [46, Color("84cbd6"), Vector2(0, -7), 7.0, 0.25],
 	"eolis": [28, Color("f0dfa8"), Vector2(3, 4), 4.0, 0.1],
 	"tower": [34, Color("f0a050"), Vector2(-2, -12), 3.0, 0.15],
+	"mist": [40, Color("b8c8b0"), Vector2(6, 1), 9.0, 0.12],
 }
 
 var zone := ""

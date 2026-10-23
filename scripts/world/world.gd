@@ -26,6 +26,7 @@ const ZONES := {
 	"eolis": {"name": "Eolis", "color": Color("c9a25a")},
 	"trunk": {"name": "Trunk Hollows", "color": Color("6fb0a0")},
 	"tower": {"name": "Tower of Trunk", "color": Color("c8784a")},
+	"mist": {"name": "The Mist", "color": Color("8fa596")},
 	"gym": {"name": "Movement Gym", "color": Color("8d84a3")},
 	"test": {"name": "Test Rooms", "color": Color("8d84a3")},
 }

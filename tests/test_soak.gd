@@ -88,12 +88,23 @@ const TOWER_FRAMES := 420
 ## Every Tower room, live (enemies, doors, gates), with every ability and a
 ## mashing player: no escapes, no embedding, and the room's node count settles.
 func test_random_input_soak_in_every_tower_room() -> void:
+	await _soak_zone("tower", "Tower")
+
+
+## The same soak over every Eolis and Trunk room, so the first two zones keep up
+## with changes made for later ones.
+func test_random_input_soak_in_every_eolis_and_trunk_room() -> void:
+	await _soak_zone("eolis", "Eolis")
+	await _soak_zone("trunk", "Trunk")
+
+
+func _soak_zone(zone: String, label: String) -> void:
 	var problems: Array[String] = []
-	var dir := DirAccess.open("res://levels/tower")
+	var dir := DirAccess.open("res://levels/" + zone)
 	var ids: Array[String] = []
 	for f in dir.get_files():
 		if f.ends_with(".room"):
-			ids.append("tower/" + f.trim_suffix(".room"))
+			ids.append(zone + "/" + f.trim_suffix(".room"))
 	ids.sort()
 	if OS.get_environment("SOAK_ONLY") != "":
 		ids = ids.filter(func(i: String) -> bool: return i in OS.get_environment("SOAK_ONLY").split(","))
@@ -135,7 +146,7 @@ func test_random_input_soak_in_every_tower_room() -> void:
 			problems.append("%s: nodes grew from %d to %d" % [id, start_nodes, peak])
 		w.queue_free()
 		await frames(2)
-	check(problems.is_empty(), "%d Tower rooms soaked with no problems: %s" % [ids.size(), problems])
+	check(problems.is_empty(), "%d %s rooms soaked with no problems: %s" % [ids.size(), label, problems])
 
 
 ## The Foreman fight at full tilt: a mashing player who can't die, 30 seconds.
