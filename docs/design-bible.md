@@ -130,7 +130,7 @@ Supporting spells (optional, combat-focused, found or bought): **Fire** (arcing 
 
 Expert players can skip ahead, and the game must never soft-lock if they do:
 - Pogo chains in the Mist let skilled players reach Conflate before Wing Boots.
-- A wall-jump route skips most of the Tower of Trunk after Zoradohna is beaten.
+- A wall-jump route skips most of the Tower of Trunk after Zoradohna is beaten: the Old Flue, a three-screen chimney with no ledges above the Tower Foot, then the Rafters under the tower's crown, straight to the top of the Mine Shaft. It skips the lift, Forepaw, the Mine Mouth and the shaft climb. An iron damper (legend `Q`) seals the flue until the winch turns.
 - Hour Glass can be reached before Black Onyx with precise dashes.
 All story triggers check items, not route order.
 
@@ -139,7 +139,7 @@ All story triggers check items, not route order.
 | Trigger | Change |
 |---------|--------|
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
-| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again; the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter), the ore road toward the Mist |
+| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter), the ore road toward the Mist |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface; fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |

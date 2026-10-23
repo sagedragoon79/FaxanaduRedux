@@ -75,6 +75,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	if c == "R":
 		# A root-gate opens once the room's Root Heart can be struck.
 		return not _roots_open.has(room_id)
+	if c == "Q":
+		# The flue damper stands open once Zoradohna falls and the winch turns.
+		return not abilities.get("winch", false)
 	if c == "~":
 		# Sap hardens into solid amber once the Spring of Trunk is restored.
 		return abilities.get("amber", false)

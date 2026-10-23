@@ -11,6 +11,7 @@ const LIFETIME := 12.0
 const GOLD := Color("ffd24a")
 const GOLD_DARK := Color("c08a1e")
 const SHINE := Color("fff6c4")
+const OUTLINE := Color("120f19")
 
 var value := 1
 
@@ -69,15 +70,22 @@ func _collect(p: Player) -> void:
 	queue_free()
 
 
+## Drawn at 2x render density: a spinning coin seen edge-on to face-on.
 func _draw() -> void:
 	if _age > LIFETIME - 2.0 and int(_age * 10.0) % 2 == 0:
 		return
 	var spin := absf(sin(_age * 8.0))
-	var w := maxf(1.0, round(4.0 * spin))
-	draw_rect(Rect2(-w * 0.5 - 0.5, -5, w + 1, 5), GOLD_DARK)
-	draw_rect(Rect2(-w * 0.5, -5, w, 4), GOLD)
-	if w > 2:
-		draw_rect(Rect2(-w * 0.5, -5, 1, 1), SHINE)
+	var big := value >= 5
+	var r := 3.0 if big else 2.5
+	var w := maxf(0.5, roundf(r * 2.0 * spin * 2.0) * 0.5)
+	var c := Vector2(0, -r - 0.5)
+	draw_rect(Rect2(c.x - w * 0.5 - 0.5, c.y - r - 0.5, w + 1.0, r * 2.0 + 1.0), OUTLINE)
+	draw_rect(Rect2(c.x - w * 0.5, c.y - r, w, r * 2.0), GOLD_DARK)
+	if w > 1.5:
+		draw_rect(Rect2(c.x - w * 0.5 + 0.5, c.y - r + 0.5, w - 1.0, r * 2.0 - 1.0), GOLD)
+		draw_rect(Rect2(c.x - w * 0.5 + 0.5, c.y - r + 0.5, 0.5, r), SHINE)
+		if w > 3.0:
+			draw_rect(Rect2(c.x - 0.5, c.y - r * 0.5, 1.0, r), GOLD_DARK)
 
 
 ## Spawns `total` gold as a spray of coins (5-gold coins first, then singles).

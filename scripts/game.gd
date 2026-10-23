@@ -22,6 +22,7 @@ extends Node2D
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
+##   --hp=N                     start with N health (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --drops                    drop a loaf of bread, a mana orb and a poison flask ahead of the player
 ##   --poisoned                 start poisoned
@@ -238,6 +239,8 @@ func _debug_open() -> void:
 		return
 	if _args.has("gold"):
 		player.gold = int(_args["gold"])
+	if _args.has("hp"):
+		player.hp = int(_args["hp"])
 	if _args.has("ointments"):
 		player.ointments = int(_args["ointments"])
 	if _args.has("use-ointment"):

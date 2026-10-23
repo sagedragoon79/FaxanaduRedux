@@ -8,8 +8,9 @@ const PICKUPS := "GLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
-## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock.
-const MATTOCK_ROOMS := ["tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
+## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
+## or above the flue damper, open once Zoradohna falls (the "winch" ability).
+const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter"]
 
 
@@ -125,8 +126,9 @@ func test_amber_keeps_everything_reachable() -> void:
 
 
 func test_with_the_mattock_everything_is_reachable() -> void:
-	# The Act I set: glove, Mattock (from the Foreman), keys, and the Spring restored.
-	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true}, true)
+	# The Act I set: glove, Mattock (from the Foreman), keys, the Spring restored,
+	# and Zoradohna beaten (the winch opens the flue damper).
+	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
@@ -154,6 +156,28 @@ func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
 	check(not bare.touchable(bare.reachable(bare.spot_of("t/pit", "P")), "t/pit", 34, 19), "the spike floor can't be crossed without the Mattock")
 	var pogo := Reach.new(texts, {"glove": true, "mattock": true})
 	check(pogo.touchable(pogo.reachable(pogo.spot_of("t/pit", "P")), "t/pit", 34, 19), "with it, the player pogoes across")
+
+
+func test_the_old_flue_skips_the_tower_once_the_winch_turns() -> void:
+	# Bible 4.3: after Zoradohna, a wall-jump climb from the Tower Foot over the
+	# Rafters reaches the Deep Workings without the lift or Forepaw.
+	var texts := _texts()
+	var skip := {}
+	for id: String in texts:
+		if id.begins_with("tower/") and id not in ["tower/forepaw", "tower/forepaw_lift", "tower/mine_mouth", "tower/winch_hall"]:
+			skip[id] = texts[id]
+	var shut := Reach.new(skip, {"glove": true, "mattock": true})
+	check(not _rooms_reached(shut.reachable(_foot_spot(shut))).has("tower/rafters"), "the damper keeps the flue shut before Zoradohna falls")
+	var open := Reach.new(skip, {"glove": true, "mattock": true, "winch": true})
+	var reached := _rooms_reached(open.reachable(_foot_spot(open)))
+	check(reached.has("tower/rafters") and reached.has("tower/rail_gallery"), "with the winch turning, the flue climbs to the Deep Workings: %s" % [reached.keys()])
+
+
+func _foot_spot(reach: Reach) -> String:
+	for x in range(1, 39):
+		if reach.standable("tower/foot", x, 41):
+			return Reach.key("tower/foot", x, 41)
+	return ""
 
 
 func test_checker_respects_walls() -> void:
