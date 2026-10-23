@@ -8,6 +8,8 @@ const STONE_DARK := Color("4a4458")
 const STONE_LIGHT := Color("8d84a3")
 const RUNE := Color("7ee0d6")
 
+## How far its glow clears the Mist's fog.
+var light_radius := 80.0
 var _glow := 0.0
 
 
@@ -15,6 +17,8 @@ func _ready() -> void:
 	super()
 	prompt_height = 34.0
 	z_index = -1
+	# Its rune burns through the Mist's fog (see Fog).
+	add_to_group("light")
 
 
 func _process(delta: float) -> void:
