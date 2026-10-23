@@ -1,7 +1,8 @@
 class_name PlayerVisual
 extends Node2D
-## The elf's sprite: plays the code-generated sheet (tools/art/spritegen.py,
-## assets/sprites/player.*) and draws the held blade, shield and potion from
+## The elf's sprite: plays the sheet (tools/art/spritegen.py with the Autosprite
+## clips from art/autosprite/, assets/sprites/player.*) and draws the shield,
+## and the blade and potion where the frame does not already show them, from
 ## each frame's hand point. Handles squash and stretch, facing and hurt
 ## blinking. Origin is at the feet.
 
@@ -61,7 +62,7 @@ func _physics_process(delta: float) -> void:
 	scale = Vector2(player.facing * squash_scale.x, squash_scale.y)
 	_blink_time -= delta
 	_red_time -= delta
-	visible = not player.dead and not (_blink_time > 0.0 and _red_time <= 0.0 and int(_blink_time * 20.0) % 2 == 0)
+	visible = player.dead or not (_blink_time > 0.0 and _red_time <= 0.0 and int(_blink_time * 20.0) % 2 == 0)
 	pose = current_pose(player)
 	var next := anim_for(player, pose)
 	var restart := player.swing_count != _swings
@@ -84,6 +85,8 @@ func _physics_process(delta: float) -> void:
 
 
 static func current_pose(p: Player) -> String:
+	if p.dead:
+		return "death"
 	if p.is_hurt:
 		return "hurt"
 	if p.is_dashing:
@@ -163,7 +166,7 @@ func _draw() -> void:
 		_draw_blade(hand, deg_to_rad(float(info.blade)), BLADE_LENGTH + player.reach_bonus * 0.75, tint)
 	if anim == "block":
 		_draw_shield(hand + Vector2(2, 0), tint)
-	elif anim == "drink":
+	elif anim == "drink" and not info.get("art_prop", false):
 		draw_rect(Rect2(hand + Vector2(-2, -6), Vector2(4, 6)), OUTLINE)
 		draw_rect(Rect2(hand + Vector2(-1, -5), Vector2(2, 4)), POTION * tint)
 		draw_rect(Rect2(hand + Vector2(-1, -5), Vector2(1, 1)), GLASS * tint)

@@ -597,41 +597,59 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 ### 13.2 Autosprite credit budget
 
-**Real costs** (test call on 2026-10-23, one turbo idle for the elf): a side-view animation is **5 credits** on the
-turbo tier (a 2 s clip, cut into up to 64 frames at any size; turbo is also the most consistent tier), a weapon attack
-move is 5, a pose 3, a portrait 1, a new character 1 (turbo) or 3 (pro or pixel art), and **uploading our own image as a
-character is free**. That is about 60% more per animation than the plan assumed, so the budget below is redone.
+**Real costs** (2026-10-23): a side-view animation is **5 credits** on the turbo tier (a 2 s clip) or **10 credits**
+on the pro tier (a 4 s clip); a weapon attack move is 5 (one engine only), a pose 3, a portrait 1, a new character 1
+(turbo) or 3 (pro or pixel art), and **uploading our own image as a character is free**. Re-cutting a finished clip at
+another size or frame count (`regenerate_single_spritesheet`) is **free**, so every clip is re-cut at its full rate
+(about 24 frames per second, 256 px) and the import picks the frames.
 
-**Style lock for free:** each character's base is the code-drawn sprite (tools/art/spritegen.py, castgen.py) blown up
-10x and uploaded, so Autosprite animates our design, palette and proportions instead of inventing new ones, and
-`tools/art/autosprite_import.py` brings every clip back to the palette, scale and outline of 12.3. One clip can feed
-several game animations (a jump clip gives rise, apex, fall and land frames).
+**Tier: pro.** Sean asked for HD quality over the cheapest option (2026-10-23). The same run clip on both tiers: pro
+stayed in clean side profile with more readable limbs, turbo drifted to a three-quarter view on several frames. Every
+character clip is pro unless it is only a reference test.
 
-Balance after the test: 485 credits, about 97 animations.
+**Style lock:** each character starts from its code-drawn sprite (tools/art/spritegen.py, castgen.py) blown up 10x and
+uploaded free. That soft blow-up animated poorly (the test idle turned three-quarter and barely moved), so the base is
+first redrawn once as an **HD side-view pose** (`generate_pose`, 3 credits, prompt names the outfit and "strict side
+profile facing right"), and that pose is uploaded free as the character the clips are made from. The player's base
+is Autosprite character `cmvkexbot00w0vd98tdlkmcx5`. `tools/art/autosprite_import.py` brings every clip back to the
+palette, scale and outline of 12.3 (`--loop` finds a clean cycle in a full-rate sheet); `tools/art/autosprite_fetch.py`
+stores the source sheets compactly in `art/autosprite/`. One clip feeds several game animations (the jump clip gives
+rise, apex and fall; the sword combo gives slash 2, slash 3 and the down strike).
 
-| Use | Animations | Credits | Share |
-|-----|------------|---------|-------|
-| Test call (elf idle, spent) | 1 | 5 | 1% |
-| Player: idle, run, jump, dash, wall slide, sword moves (quick strike, triple combo), up-slash, down-strike, block, cast, drink, hurt, death, meditate, item-get, door enter | 18 | 90 | 18% |
-| Bosses (9, two key clips each; the rest rigged from parts) | 18 | 90 | 18% |
-| Enemies (17 families, move + attack; telegraph, hurt and death made by code from those frames; variants recolored) | 34 | 170 | 35% |
-| NPCs (12, one talk clip each; idle stays code-drawn) | 12 | 60 | 12% |
-| Reserve for regeneration and fixes | 15 | 75 | 15% |
-| **Total** | **98** | **490** | |
+**Swords:** attack-move clips draw the sword. Where the blade is visible in a frame it is kept (on the stone and sky
+ramps) and the frame is marked `art_blade`, so the game does not draw a second one; where the clip blurs it out
+(the fast lunges of slash 1 and 2) the game draws its own blade from the code rig's angle, which also shows the
+equipped weapon. Recoloring the drawn blade per weapon is a later job.
 
-If credits run short, cut enemies first (more recolors, more code-drawn frames), never the player. Every clip is
-judged against the code-drawn sheet it would replace; the better one ships (the manifest in `art/autosprite/` says
-which animations are imported).
+Balance after the player set: 357 credits, about 35 pro clips.
 
-**Credit rules:** never regenerate a whole set to fix one frame (fix by hand or by code); always request at the canonical size so no upscaling is needed; batch similar requests; log every call in `art/autosprite-ledger.csv` with date, asset, cost and result.
+| Use | Clips | Credits | Share |
+|-----|-------|---------|-------|
+| Tests (turbo idle, turbo vs pro run), spent | 3 | 20 | 4% |
+| Player, spent: HD pose, idle, run, jump, dash, wall slide, hurt, death, cast, block, drink (pro); quick strike and triple combo (moves) | 13 | 113 | 23% |
+| Enemies in the game now (Monodron, Hornet, Rot Dwarf): HD pose + move + attack each | 6 | 69 | 14% |
+| NPCs (11): HD pose + one talk/idle clip each | 11 | 143 | 29% |
+| Bosses: key clips for the rigged parts (Rokusutahn's head first) | 4 | 40 | 8% |
+| Reserve for later enemies, fixes and regeneration | | 105 | 22% |
+| **Total** | | **490** | |
+
+If credits run short, cut NPC clips first (they can stay code-drawn), then enemies (more recolors, more code frames),
+never the player. Every clip is judged against the code-drawn sheet it would replace; the better one ships (the
+manifest in `art/autosprite/` says which animations are imported). Sean can buy more credits; the budget above is
+what the first 500 cover.
+
+**Credit rules:** never regenerate a whole set to fix one frame (fix by hand or by code, or re-cut free); request at
+the canonical size so no upscaling is needed; batch similar requests; log every call in `art/autosprite-ledger.csv`
+with date, asset, cost and result.
 
 ### 13.3 Full asset list
 
 **Legend:** AS = Autosprite, CODE = code-generated, BL = Blender then quantize, APP = art-app cleanup, SH = shader/particles, SEAN = Sean's library.
 
-**Interim (until the Autosprite connector is available):** the player, enemies and NPCs are generated by code on a
-small 2D rig (`tools/art/spritegen.py`, `castgen.py`), shaded and outlined to the rules in 12.3, using the same sheet
-format (PNG plus JSON with per-frame points) that Autosprite output will be packed into. No credits are spent on them.
+**Code rig and Autosprite:** every character also has a code-drawn version on a small 2D rig (`tools/art/spritegen.py`,
+`castgen.py`), shaded and outlined to the rules in 12.3, in the same sheet format (PNG plus JSON with per-frame points).
+Autosprite clips replace it animation by animation through `art/autosprite/manifest.json`. Since 2026-10-23 all 17 of
+the player's animations are Autosprite (pro tier), including a new death collapse; enemies and NPCs are still code-drawn.
 
 #### Player (AS, cleanup APP; scarf CODE)
 idle (8 frames), run (10), run-start (3), turn (3), jump-rise (3), jump-apex (2), fall (3), land (3), double jump (5), wall slide (4), wall jump (4), dash (4 + afterimages SH), slash 1/2/3 (5 each), air slash (5), up-slash (5), down-strike/pogo (4), charged thrust (6), parry (4), cast spell (6), drink potion (8), hurt (3), death (10), meditate/save (6), item-get pose (4), door enter (4). Weapon swaps: blade drawn as a separate layer (CODE) so the 4 blades share animations.

@@ -253,6 +253,8 @@ ANIMATIONS = [
     ("drink", drink, [0, 1], 4, True),
     ("cast", cast, [0, 1, 1, 1], 16, False),
     ("hurt", hurt, [0], 1, False),
+    # Code fallback only: the Autosprite clip (art/autosprite/manifest.json) is the real one.
+    ("death", hurt, [0], 1, False),
 ]
 
 

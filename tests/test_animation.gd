@@ -13,7 +13,7 @@ const ARENA := [
 	"####################",
 ]
 const POSES := ["idle", "run", "rise", "apex", "fall", "dash", "wall", "attack_side", "attack_up",
-	"attack_down", "drink", "block", "cast", "hurt"]
+	"attack_down", "drink", "block", "cast", "hurt", "death"]
 
 
 func test_sheet_covers_every_pose() -> void:
@@ -34,7 +34,8 @@ func test_sheet_covers_every_pose() -> void:
 				bad.append(n)
 		var swing: bool = n.begins_with("slash") or n == "strike_down"
 		for f: Dictionary in a.frames:
-			if swing != f.has("blade"):
+			# A swing shows its blade: drawn from the frame's angle, or in the art (Autosprite).
+			if swing != (f.has("blade") or f.has("art_blade")):
 				bad.append(n)
 		for i: Variant in a.seq:
 			if int(i) >= a.frames.size():
@@ -134,6 +135,16 @@ func test_actions_pick_their_animations() -> void:
 	check(p.visual.anim == "hurt", "hurt (%s)" % p.visual.anim)
 	await frames(30)
 	check(p.visual.anim != "hurt", "the hurt pose is brief (%s)" % p.visual.anim)
+
+
+func test_death_plays_the_collapse() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.take_damage(p.hp, false, -1)
+	await frames(30)
+	check(p.dead and p.visual.anim == "death" and p.visual.visible, "the elf collapses where they fell (%s)" % p.visual.anim)
+	check(p.visual.frame > 0, "the collapse plays through (frame %d)" % p.visual.frame)
 
 
 func test_scarf_hangs_from_the_neck() -> void:

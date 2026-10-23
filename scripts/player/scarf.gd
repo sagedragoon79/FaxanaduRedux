@@ -53,6 +53,8 @@ func _physics_process(delta: float) -> void:
 			var len := d.length()
 			if len > SEGMENT_LENGTH:
 				_points[i] = _points[i - 1] + d / len * SEGMENT_LENGTH
+			# It rests on the ground the feet stand on (the elf lying down after a death).
+			_points[i].y = minf(_points[i].y, player.global_position.y - 2.0)
 	queue_redraw()
 
 
