@@ -11,12 +11,16 @@ const BOOTS := Color("4a3020")
 const SKIN := Color("e8c39e")
 const HAIR := Color("e8d27c")
 const EYE := Color("1d1a2b")
+const SHIELD := Color("8a6a44")
+const SHIELD_BOSS := Color("c9c4d6")
+const POTION := Color("e0404a")
 
 var player: Player
 var squash_scale := Vector2.ONE
 var pose := "idle"
 
 var _blink_time := 0.0
+var _red_time := 0.0
 var _anim_time := 0.0
 
 
@@ -26,13 +30,15 @@ func squash(amount: Vector2) -> void:
 
 func flash_hurt() -> void:
 	_blink_time = player.tuning.hurt_invuln
+	_red_time = 0.12
 
 
 func _physics_process(delta: float) -> void:
 	squash_scale = squash_scale.lerp(Vector2.ONE, 1.0 - exp(-delta * 16.0))
 	scale = Vector2(player.facing * squash_scale.x, squash_scale.y)
 	_blink_time -= delta
-	visible = not (_blink_time > 0.0 and int(_blink_time * 20.0) % 2 == 0)
+	_red_time -= delta
+	visible = not player.dead and not (_blink_time > 0.0 and _red_time <= 0.0 and int(_blink_time * 20.0) % 2 == 0)
 	pose = current_pose(player)
 	_anim_time += delta * (absf(player.velocity.x) / 165.0 * 10.0 if pose == "run" else 3.0)
 	queue_redraw()
@@ -45,6 +51,10 @@ static func current_pose(p: Player) -> String:
 		return "wall"
 	if p.is_attacking:
 		return "attack_" + p.attack_kind
+	if p.is_drinking:
+		return "drink"
+	if p.is_blocking:
+		return "block"
 	if not p.is_on_floor():
 		return "rise" if p.velocity.y < 0.0 else "fall"
 	if absf(p.velocity.x) > 10.0:
@@ -53,7 +63,16 @@ static func current_pose(p: Player) -> String:
 
 
 func _draw() -> void:
-	draw_body(self, pose, _anim_time, Color.WHITE, false)
+	var tint := Color(1.0, 0.35, 0.35) if _red_time > 0.0 else Color.WHITE
+	draw_body(self, pose, _anim_time, tint, false)
+	if pose == "block":
+		# Small Shield held in front.
+		draw_rect(Rect2(5, -32, 6, 14), OUTLINE)
+		draw_rect(Rect2(6, -31, 4, 12), SHIELD * tint)
+		draw_rect(Rect2(7, -28, 2, 6), SHIELD_BOSS * tint)
+	elif pose == "drink":
+		draw_rect(Rect2(3, -38, 4, 6), OUTLINE)
+		draw_rect(Rect2(4, -37, 2, 4), POTION)
 
 
 ## Draws the figure facing right. `flat` paints everything one tint (afterimages).
@@ -80,7 +99,7 @@ static func draw_body(ci: CanvasItem, body_pose: String, t: float, tint: Color, 
 		"wall":
 			leg_a = -2
 			arm_up = true
-		"attack_up":
+		"attack_up", "drink":
 			arm_up = true
 	var bob := 0 if body_pose != "idle" else int(round(sin(t) * 0.6))
 	# Legs and boots.

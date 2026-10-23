@@ -1,5 +1,11 @@
 extends Node2D
-## Prototype entry point: loads the movement gym, spawns the player and camera.
+## Prototype entry point: loads a room, spawns the player, camera and HUD.
+##
+## The world renders into a SubViewport at 642x362 (one spare pixel per side),
+## shown upscaled with nearest filtering and shifted by the camera's sub-pixel
+## remainder, so scrolling is smooth while pixels stay crisp. The HUD draws in
+## the main viewport at native resolution.
+##
 ## Command-line options after `--`:
 ##   --room=res://levels/...    room file to load
 ##   --shot=PATH                save a screenshot and quit
@@ -7,11 +13,16 @@ extends Node2D
 ##   --shot-at=X,Y              place the player at tile X,Y first
 
 const DEFAULT_ROOM := "res://levels/gym/gym.room"
+const BASE_SIZE := Vector2i(640, 360)
+const MARGIN := 1
 
+var view: SubViewport
+var display: Sprite2D
 var room: Room
 var player: Player
 var camera: GameCamera
-var hud: DebugHud
+var hud: GameHud
+var debug_hud: DebugHud
 
 var _args := {}
 var _frames := 0
@@ -22,8 +33,23 @@ func _ready() -> void:
 		var kv := arg.trim_prefix("--").split("=", true, 1)
 		_args[kv[0]] = kv[1] if kv.size() > 1 else ""
 
+	view = SubViewport.new()
+	view.size = BASE_SIZE + Vector2i(MARGIN, MARGIN) * 2
+	view.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+	view.snap_2d_transforms_to_pixel = true
+	view.snap_2d_vertices_to_pixel = true
+	view.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	add_child(view)
+
+	display = Sprite2D.new()
+	display.texture = view.get_texture()
+	display.centered = false
+	display.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	display.position = -Vector2(MARGIN, MARGIN)
+	add_child(display)
+
 	room = Room.from_file(_args.get("room", DEFAULT_ROOM))
-	add_child(room)
+	view.add_child(room)
 
 	player = Player.new()
 	player.position = room.spawn_position
@@ -35,16 +61,26 @@ func _ready() -> void:
 
 	camera = GameCamera.new()
 	camera.target = player
+	camera.view_size = Vector2(view.size)
 	camera.set_room_limits(room.pixel_rect())
-	add_child(camera)
+	view.add_child(camera)
 	camera.make_current()
 
-	hud = DebugHud.new()
+	var ui := CanvasLayer.new()
+	ui.layer = 5
+	add_child(ui)
+	hud = GameHud.new()
 	hud.player = player
-	add_child(hud)
+	ui.add_child(hud)
+
+	debug_hud = DebugHud.new()
+	debug_hud.player = player
+	add_child(debug_hud)
 
 
 func _process(_delta: float) -> void:
+	# Shift the upscaled world by the camera's fractional position.
+	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
 	_frames += 1
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
@@ -61,12 +97,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle("boots")
 	elif event.is_action_pressed("debug_stride"):
 		_toggle("stride")
+	elif event.is_action_pressed("debug_deluge"):
+		_toggle("deluge")
 	elif event.is_action_pressed("debug_reset"):
 		player.hp = player.max_hp
+		player.mp = player.combat.max_mp
+		player.flask_charges = player.combat.flask_charges
 		player.teleport(room.spawn_position)
 		camera.snap_to_target()
 	elif event.is_action_pressed("debug_hud"):
-		hud.visible = not hud.visible
+		debug_hud.visible = not debug_hud.visible
 
 
 func _toggle(ability: String) -> void:

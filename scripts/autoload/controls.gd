@@ -12,12 +12,16 @@ const BINDINGS := {
 	"jump": {"keys": [KEY_SPACE, KEY_Z, KEY_K], "buttons": [JOY_BUTTON_A]},
 	"attack": {"keys": [KEY_X, KEY_J], "buttons": [JOY_BUTTON_X]},
 	"dash": {"keys": [KEY_C, KEY_L, KEY_SHIFT], "buttons": [JOY_BUTTON_B, JOY_BUTTON_RIGHT_SHOULDER], "trigger": JOY_AXIS_TRIGGER_RIGHT},
+	"block": {"keys": [KEY_V, KEY_I], "buttons": [JOY_BUTTON_LEFT_SHOULDER]},
+	"spell": {"keys": [KEY_F, KEY_U], "buttons": [JOY_BUTTON_Y]},
+	"heal": {"keys": [KEY_Q, KEY_H], "trigger": JOY_AXIS_TRIGGER_LEFT},
 	"debug_glove": {"keys": [KEY_F1]},
 	"debug_mattock": {"keys": [KEY_F2]},
 	"debug_boots": {"keys": [KEY_F3]},
 	"debug_stride": {"keys": [KEY_F4]},
 	"debug_reset": {"keys": [KEY_F5, KEY_R], "buttons": [JOY_BUTTON_BACK]},
 	"debug_hud": {"keys": [KEY_F6]},
+	"debug_deluge": {"keys": [KEY_F7]},
 }
 
 

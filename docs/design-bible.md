@@ -193,6 +193,21 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - **Spells:** one equipped spell on the Spell button, cycle with shoulder buttons. MP regenerates slowly and on melee hits.
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash.
 
+**Starting combat values** (in `scripts/player/combat_tuning.gd`, asserted by tests):
+
+| Value | Setting |
+|-------|---------|
+| Light hit / heavy third hit | 8 / 14 damage (Hand Dagger) |
+| Combo window, cooldowns | 0.40 s to chain; 0.20 s, 0.20 s, 0.38 s after hits 1 to 3 |
+| Attack buffer | 0.15 s |
+| Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
+| Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed |
+| Knockback when hit | 160 px/s back, 220 px/s up, 0.18 s control lock |
+| MP | 60 max, +2/s, +4 per melee hit on an enemy |
+| Red Potion | 2 charges, +40 HP, 0.7 s to drink, cancelled (charge kept) if hit |
+| Deluge | 15 MP, 12 damage, 300 px/s |
+| Gold coins | Magnet after 0.4 s within 100 px |
+
 ### 5.4 Death and recovery
 
 On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses.

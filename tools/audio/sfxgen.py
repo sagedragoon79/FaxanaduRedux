@@ -125,6 +125,55 @@ def main():
     rumble = lowpass(noise(d), slide(1500, 150, d)) * env(int(RATE * d), 0.002, 1.3)
     save("break", mix(rumble, lowpass(osc(slide(120, 50, d), "square"), 800) * env(int(RATE * d)) * 0.5), 0.85)
 
+    d = 0.14
+    body = lowpass(osc(slide(140, 55, d), "square", 0.45), 2000) * env(int(RATE * d), 0.001, 1.0)
+    swish = highpass(lowpass(noise(d), slide(6000, 900, d)), 500) * env(int(RATE * d), 0.004, 1.2)
+    save("heavy", mix(swish, body * 0.7), 0.75)
+
+    d = 0.3
+    ring = mix(osc(slide(1320, 1250, d), "sine") * env(int(RATE * d), 0.001, 2.2),
+               osc(slide(1980, 1900, d), "sine") * env(int(RATE * d), 0.001, 3.0) * 0.5)
+    save("parry", mix(ring, highpass(noise(0.04), 3000) * env(int(RATE * 0.04)) * 0.8), 0.7)
+
+    d = 0.12
+    save("guard", mix(lowpass(osc(slide(420, 380, d), "square", 0.3), 2500) * env(int(RATE * d), 0.001, 2.0),
+                      lowpass(noise(d), 2500) * env(int(RATE * d), 0.001, 3.0) * 0.6), 0.6)
+
+    d = 0.12
+    save("coin", mix(osc(np.where(t_axis(d) < 0.04, 1320.0, 1760.0), "square", 0.5) * env(int(RATE * d), 0.001, 1.5)), 0.4)
+
+    d = 0.25
+    bubble = osc(slide(300, 900, d, 0.4) + 80 * np.sin(2 * np.pi * 30 * t_axis(d)), "sine") * env(int(RATE * d), 0.01, 1.2)
+    save("cast", mix(bubble, lowpass(noise(d), 1800) * env(int(RATE * d), 0.02, 1.0) * 0.4), 0.6)
+
+    d = 0.2
+    save("splash", lowpass(highpass(noise(d), 600), slide(5000, 1200, d)) * env(int(RATE * d), 0.002, 1.6), 0.6)
+
+    d = 0.3
+    pop = lowpass(osc(slide(240, 60, d, 0.5), "square", 0.5), 1800) * env(int(RATE * d), 0.001, 1.3)
+    save("enemy_die", mix(pop, lowpass(noise(d), slide(3000, 300, d)) * env(int(RATE * d), 0.001, 1.6)), 0.75)
+
+    d = 0.4
+    buzz = osc(np.full(int(RATE * d), 170.0) + 12 * np.sin(2 * np.pi * 9 * t_axis(d)), "saw")
+    save("buzz", lowpass(buzz, 1400) * env(int(RATE * d), 0.05, 0.6), 0.45)
+
+    d = 0.5
+    sparkle = sum(osc(np.full(int(RATE * d), f), "sine") * env(int(RATE * d), 0.002 + i * 0.05, 2.0)
+                  for i, f in enumerate([880, 1108, 1318, 1760]))
+    save("heal", sparkle, 0.5)
+
+    d = 0.3
+    save("drink", lowpass(noise(d), 700 + 400 * np.sin(2 * np.pi * 8 * t_axis(d)) ** 2) * env(int(RATE * d), 0.02, 0.8), 0.45)
+
+    d = 0.9
+    save("death", lowpass(osc(slide(330, 55, d, 0.6), "square", 0.5), slide(3000, 400, d)) * env(int(RATE * d), 0.005, 0.9), 0.7)
+
+    d = 0.12
+    save("fizzle", highpass(lowpass(noise(d), 2500), 800) * env(int(RATE * d), 0.002, 2.0), 0.35)
+
+    d = 0.1
+    save("hop", lowpass(osc(slide(180, 320, d), "square", 0.4), 2000) * env(int(RATE * d)), 0.45)
+
     d = 0.25
     save("hurt", lowpass(osc(slide(420, 140, d, 0.7), "square", 0.5), 3000) * env(int(RATE * d), 0.002, 1.0), 0.6)
 

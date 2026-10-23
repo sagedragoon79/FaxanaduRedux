@@ -17,6 +17,9 @@ bible changes substantially (link in the project memory).
 
 - Most nodes are built in code (`class_name` scripts), not hand-edited `.tscn` files.
 - Rooms are text files in `levels/` loaded by `scripts/world/room.gd`. Legend in `levels/README.md`.
+  The gym is generated: edit `tools/levels/gen_gym.py`, then run it.
+- Enemies extend `Enemy` and must telegraph attacks for at least `Enemy.MIN_TELEGRAPH`.
+- Combat numbers live in `scripts/player/combat_tuning.gd` (design bible 5.3).
 - Movement numbers live in `scripts/player/movement_tuning.gd` and must match design bible
   section 6. Change both together and keep `tests/` asserting them.
 - The player reads intent from `PlayerInput`, never from `Input` directly, so tests can script it.
