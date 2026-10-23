@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, foreman and zoradohna (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -506,6 +506,141 @@ FOREMAN = [
 ]
 
 
+# --- Zoradohna: the Hammer of Forepaw (design bible 8.2) ------------------------
+# A dwarf champion fused with a walking siege drill: an iron hull on two piston
+# legs, a bronze drill out front, two exhaust stacks behind (the pogo vents) and
+# a glass cockpit with the dwarf inside. "open_" frames show the hatch thrown
+# back and the meteor-crystal harness that binds him. 2x render density.
+
+ZD_HULL = mat("ember", 4, 3, 2, 0)
+ZD_HULL_BACK = mat("ember", 2, 1, 1, 0)
+ZD_LEG = mat("night", 4, 3, 2, 0)
+ZD_FOOT = mat("bark", 3, 2, 1, 0)
+ZD_BRASS = mat("gold", 6, 5, 3, 1)
+ZD_DRILL = mat("gold", 5, 4, 3, 1)
+ZD_GROOVE = PAL["gold-2"]
+ZD_STACK = mat("night", 4, 3, 2, 0)
+ZD_GLASS = mat("sky", 6, 5, 3, 1)
+ZD_SKIN = mat_from("#f0c09a", ["ember", "bark", "gold"])
+ZD_BEARD = mat("stone", 7, 6, 5, 3)
+ZD_HELM = mat("gold", 5, 4, 3, 1)
+ZD_CRYSTAL = mat("crystal", 7, 6, 4, 2)
+ZD_FURNACE = mat("gold", 7, 6, 5, 3)
+ZD_FURNACE_COLD = mat("night", 3, 2, 1, 0)
+ZD_SCALE = 2
+
+
+def _rot(p, c, deg):
+    a = math.radians(deg)
+    x, y = p[0] - c[0], p[1] - c[1]
+    return (c[0] + x * math.cos(a) - y * math.sin(a), c[1] + x * math.sin(a) + y * math.cos(a))
+
+
+def zoradohna(crouch=0.0, lean=0.0, spin=0.0, drill_angle=0.0, extend=0.0, feet=((10, 0), (-16, 0)),
+              hot=True, open_=False, slump=False):
+    """Points are relative to the feet. drill_angle: degrees, + points the drill down."""
+    def render(_):
+        cv = Canvas(128, 88, (60, 84), ZD_SCALE)
+        cx, top = lean, -50 + crouch
+        bot = -20 + crouch * 0.8
+        # Back leg, back exhaust stack.
+        bh = (cx - 14, bot)
+        bf = reach(bh, feet[1], 22)
+        cv.part(cv.capsule(bh, ((bh[0] + bf[0]) / 2 - 3, (bh[1] + bf[1]) / 2), 4.2) |
+                cv.capsule(((bh[0] + bf[0]) / 2 - 3, (bh[1] + bf[1]) / 2), bf, 3.6), ZD_HULL_BACK)
+        cv.part(cv.ellipse((bf[0], bf[1] - 2), 7, 3.2), ZD_FOOT)
+        for sx, h in ((cx - 22, 15), (cx - 13, 11)):
+            cv.part(cv.capsule((sx, top + 2), (sx - 2, top - h), 3.2), ZD_STACK, deep=True)
+            cv.part(cv.ellipse((sx - 2, top - h), 4.2, 2.0), ZD_BRASS)
+            cv.flat(cv.ellipse((sx - 2, top - h), 2.6, 0.9), PAL["night-0"])
+        # The hull: a riveted iron boiler with chamfered corners.
+        hull = cv.polygon([(cx - 27, top + 6), (cx - 20, top), (cx + 14, top), (cx + 21, top + 7),
+                           (cx + 21, bot - 2), (cx + 16, bot + 3), (cx - 22, bot + 3), (cx - 27, bot - 3)])
+        cv.part(hull, ZD_HULL, deep=True)
+        cv.part(cv.capsule((cx - 26, top + 12), (cx + 20, top + 12), 1.0), ZD_BRASS)
+        for rx in range(-22, 20, 6):
+            cv.pixel((cx + rx, top + 4), PAL["gold-5"])
+            cv.pixel((cx + rx, bot), PAL["gold-4"])
+        # The furnace grate: it glows while the engine runs.
+        fur = cv.ellipse((cx - 8, top + 21), 6.5, 4.5)
+        cv.part(fur, ZD_FURNACE if hot else ZD_FURNACE_COLD)
+        for gx in (-11, -8, -5):
+            cv.flat(cv.capsule((cx + gx, top + 18), (cx + gx, top + 24), 0.45), PAL["night-1"])
+        # Front leg.
+        fh = (cx + 8, bot)
+        ff = reach(fh, feet[0], 22)
+        mid = ((fh[0] + ff[0]) / 2 + 3, (fh[1] + ff[1]) / 2)
+        cv.part(cv.capsule(fh, mid, 4.6) | cv.capsule(mid, ff, 3.9), ZD_LEG)
+        cv.part(cv.ellipse(mid, 3.2, 3.2), ZD_BRASS)
+        cv.part(cv.ellipse((ff[0] + 1, ff[1] - 2), 7.5, 3.4), ZD_FOOT)
+        # The drill: a bronze cone with spiral grooves that crawl as it spins.
+        mount = (cx + 22, top + 17)
+        length = 30 + extend
+        cone = [(mount[0] + 1, mount[1] - 10), (mount[0] + length, mount[1]), (mount[0] + 1, mount[1] + 10)]
+        cone = [_rot(p, mount, drill_angle) for p in cone]
+        cmask = cv.polygon(cone)
+        cv.part(cmask, ZD_DRILL, deep=True)
+        for k in range(5):
+            u = (k + spin) / 5.0
+            a = (mount[0] + 2 + u * (length - 4), mount[1] - 10 * (1 - u) - 1)
+            b = (mount[0] + 2 + u * (length - 4) + 6, mount[1] + 10 * (1 - u) + 1)
+            cv.flat(cv.capsule(_rot(a, mount, drill_angle), _rot(b, mount, drill_angle), 0.55) & cmask, ZD_GROOVE)
+        cv.part(cv.ellipse(mount, 5, 11), ZD_BRASS, deep=True)
+        cv.part(cv.ellipse(mount, 2.2, 2.2), ZD_HULL)
+        # The cockpit and the dwarf inside it.
+        head = (cx + 1 + (2 if slump else 0), top - 6 + (3 if slump else 0))
+        if not open_:
+            cv.part(cv.ellipse((cx + 1, top - 3), 12, 9) & ~cv.below(top + 1), ZD_GLASS)
+        cv.part(cv.ellipse(head, 4.4, 4.2), ZD_SKIN)
+        cv.part(cv.ellipse((head[0], head[1] - 2.6), 4.8, 3.0) & ~cv.below(head[1] - 1.5), ZD_HELM)
+        cv.part(cv.polygon([(head[0] - 1, head[1] + 1.5), (head[0] + 4.5, head[1] + 1.5), (head[0] + 1.5, head[1] + 7)]), ZD_BEARD)
+        cv.flat(cv.ellipse((head[0] + 2.2, head[1] - 0.2), 0.8, 0.8 if not slump else 0.35), PAL["night-0"])
+        if open_:
+            # The hatch thrown back, and the crystal harness clamped over his chest.
+            cv.part(cv.ellipse((cx - 13, top - 6), 5, 9) & ~cv.right_of(cx - 12), ZD_GLASS)
+            cv.part(cv.capsule((head[0] - 4, head[1] + 4), (head[0] + 5, head[1] + 9), 1.0), ZD_BRASS)
+            hc = (head[0] - 2, head[1] + 9)
+            cv.part(cv.polygon([(hc[0], hc[1] - 6), (hc[0] + 5.5, hc[1]), (hc[0], hc[1] + 6), (hc[0] - 5.5, hc[1])]), ZD_CRYSTAL, deep=True)
+            cv.pixel((hc[0] - 1, hc[1] - 2), PAL["crystal-7"])
+            cv.pixel((hc[0], hc[1] - 3), PAL["crystal-7"])
+        else:
+            cv.flat(cv.capsule((cx - 6, top - 9), (cx - 2, top - 11), 0.5), PAL["sky-7"])
+        cv.part(cv.capsule((cx - 12, top + 1), (cx + 13, top + 1), 1.2), ZD_BRASS)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def zoradohna_walk(i, **kw):
+    t = i / 4 * math.tau
+    fx = 6 * math.cos(t)
+    return zoradohna(crouch=1 if i % 2 else 0, spin=i * 0.25,
+                     feet=((fx + 10, -max(0, 3 * math.sin(t))), (-fx - 16, -max(0, -3 * math.sin(t)))), **kw)
+
+
+def zoradohna_anims(open_):
+    o = {"open_": open_}
+    p = "open_" if open_ else ""
+    return [
+        (p + "idle", [zoradohna(**o), zoradohna(crouch=1, spin=0.5, **o)], [0, 1], 3, True),
+        (p + "walk", [zoradohna_walk(i, **o) for i in range(4)], [0, 1, 2, 3], 7, True),
+        (p + "drill_tell", [zoradohna(crouch=3, lean=-4, spin=s, feet=((12, 0), (-19, 0)), **o) for s in (0.0, 0.33, 0.66)],
+         [0, 1, 2], 18, True),
+        (p + "drill", [zoradohna(crouch=2, lean=4, spin=s, extend=4, feet=((14, -2), (-12, 0)), **o) for s in (0.0, 0.5)],
+         [0, 1], 16, True),
+        (p + "stuck", [zoradohna(crouch=6, lean=6, drill_angle=24, extend=2, hot=False, slump=True, **o),
+                       zoradohna(crouch=7, lean=6, drill_angle=26, extend=2, hot=False, slump=True, **o)], [0, 1], 2, True),
+        (p + "slam_tell", [zoradohna(crouch=-7, lean=-3, drill_angle=-30, feet=((9, -3), (-15, 0)), **o),
+                           zoradohna(crouch=-8, lean=-4, drill_angle=-32, feet=((9, -4), (-15, 0)), **o)], [0, 1], 10, True),
+        (p + "slam", [zoradohna(crouch=8, lean=4, drill_angle=18, feet=((13, 0), (-17, 0)), **o)], [0], 1, False),
+    ]
+
+
+ZORADOHNA = zoradohna_anims(False) + zoradohna_anims(True) + [
+    ("freed", [zoradohna(crouch=9, drill_angle=30, hot=False, open_=True, slump=True)], [0], 1, False),
+]
+
+
 # --- Rokusutahn: the body parts the boss script chains together ----------------
 
 R_BARK = mat("bark", 3, 2, 1, 0)
@@ -745,6 +880,7 @@ def main():
     write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
     write_sheet("gear_bat", (56, 40), (28, 20), GEAR_BAT, lambda r: r(None), density=GB_SCALE)
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
+    write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

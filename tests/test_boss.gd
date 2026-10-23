@@ -433,3 +433,177 @@ func test_foreman_defeat_gives_the_mattock() -> void:
 	w._enter(FOREMAN_ROOM)
 	await frames(5)
 	check(get_tree_boss() == null, "he never comes back")
+
+
+# --- Zoradohna (Tower of Trunk boss) ---------------------------------------------------
+
+const LIFT_ROOM := "tower/forepaw_lift"
+
+
+## Zoradohna dropped onto the lift without the arena, awake.
+func _zora_world(cell := Vector2i(30, 19)) -> Array:
+	var w := make_world({}, LIFT_ROOM, cell_feet(4, 19))
+	GameState.set_flag("boss:zoradohna")  # keep the arena from starting its own fight
+	var z := Zoradohna.new()
+	z.arena = Rect2(16, 64, 608, 256)
+	z.position = cell_feet(cell.x, cell.y)
+	w.room.add_child(z)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(2)
+	z.set_state("walk")
+	return [w, z]
+
+
+func test_forepaw_lift_wakes_zoradohna() -> void:
+	var w := make_world({}, LIFT_ROOM)
+	await frames(3)
+	var arena := _arena(w)
+	check(arena != null and arena.boss_id == "zoradohna", "the Forepaw Lift is a boss arena")
+	w.player.teleport(cell_feet(10, 19))
+	var woke := await _until(func() -> bool: return arena.fighting, 20)
+	var z := get_tree_boss() as Zoradohna
+	check(woke and z != null, "walking in wakes Zoradohna")
+	check(z != null and z.global_position.x > w.player.global_position.x + 200.0, "the drill waits across the lift")
+	check(_count(w, LiftShaft) == 1, "the shaft is drawn behind the fight")
+	check(arena.seals.has(1), "the way in seals behind the player")
+
+
+func test_zoradohna_telegraphs_are_fair() -> void:
+	var z := Zoradohna.new()
+	for ph in [1, 2, 3]:
+		z.phase = ph
+		for t: float in [Zoradohna.DRILL_TELL, Zoradohna.SLAM_TELL, Zoradohna.DIVE_TELL]:
+			check(z.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, z.tell(t), Enemy.MIN_TELEGRAPH])
+	z.free()
+
+
+func test_zoradohna_hull_shrugs_off_side_blows_but_not_the_vents() -> void:
+	var r := await _zora_world()
+	var z: Zoradohna = r[1]
+	var hp0 := z.hp
+	z.take_hit(8, Vector2.RIGHT)
+	check(z.hp == hp0 - 2, "the hull lets a quarter through (%d)" % (hp0 - z.hp))
+	z.take_hit(8, Vector2(0, 1))
+	check(z.hp == hp0 - 10, "a down-strike on the vents lands in full")
+	check(z.is_in_group("pogo"), "and the player bounces off it")
+
+
+func test_zoradohna_drills_into_the_wall_and_sticks() -> void:
+	var r := await _zora_world(Vector2i(20, 19))
+	var w: World = r[0]
+	var z: Zoradohna = r[1]
+	w.player.teleport(cell_feet(4, 14))
+	await frames(1)
+	z.facing = 1
+	z.set_state("drill_tell")
+	var tell_frames := [0]
+	var stuck := await _until(func() -> bool:
+		if z.state == "drill_tell":
+			tell_frames[0] += 1
+		return z.stuck(), 240)
+	check(tell_frames[0] / 60.0 >= Enemy.MIN_TELEGRAPH, "the drill spins up for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames[0]])
+	check(stuck and z.global_position.x > 32 * Room.TILE, "rammed the far wall and stuck fast (x %.0f)" % z.global_position.x)
+	var hp0 := z.hp
+	z.take_hit(8, Vector2.LEFT)
+	check(z.hp == hp0 - 8, "stuck, it takes a side blow in full")
+
+
+func test_zoradohna_drill_hurts_the_player_in_its_path() -> void:
+	var r := await _zora_world(Vector2i(24, 19))
+	var w: World = r[0]
+	var z: Zoradohna = r[1]
+	w.player.teleport(cell_feet(14, 19))
+	await frames(1)
+	z.facing = -1
+	z.set_state("drill_tell")
+	var hp := w.player.hp
+	var hit := await _until(func() -> bool: return w.player.hp < hp, 120)
+	check(hit, "the charge runs the player down")
+
+
+func test_zoradohna_slam_sends_shockwaves() -> void:
+	var r := await _zora_world()
+	var w: World = r[0]
+	var z: Zoradohna = r[1]
+	w.player.teleport(cell_feet(24, 19))
+	z.facing = -1
+	z.set_state("slam_tell")
+	var dirs := {}
+	await _until(func() -> bool:
+		for c in w.room.get_children():
+			if c is Shockwave:
+				dirs[c.direction] = true
+		return dirs.size() == 2, 120)
+	check(dirs.has(-1) and dirs.has(1), "a shockwave rolls each way (%s)" % [dirs.keys()])
+
+
+func test_zoradohna_phase_two_raises_the_lift_and_climbs() -> void:
+	var r := await _zora_world()
+	var w: World = r[0]
+	var z: Zoradohna = r[1]
+	var shaft := LiftShaft.new()
+	shaft.area = z.arena
+	shaft.boss = z
+	w.room.add_child(shaft)
+	z.set_state("stuck")
+	z.hp = int(Zoradohna.MAX_HP * Zoradohna.PHASES[0]) + 4
+	z.take_hit(8, Vector2(0, 1))
+	check(z.phase == 2 and z.rising, "below %d%% the lift starts to rise" % int(Zoradohna.PHASES[0] * 100))
+	var rocks := await _until(func() -> bool: return _count_rubble(w, "fall") > 0, 120)
+	check(rocks, "debris falls from the shaft")
+	await frames(30)
+	check(shaft.is_rising(), "the girders stream past")
+	w.player.teleport(cell_feet(20, 19))
+	z.global_position = cell_feet(22, 19)
+	z._since_climb = 2
+	z.set_state("walk")
+	var dove := await _until(func() -> bool: return z.state == "dive_tell", 300)
+	check(dove and z.global_position.y < 12 * Room.TILE, "it climbs the wall (y %.0f)" % z.global_position.y)
+	check(absf(z.dive_target.x - w.player.global_position.x) < 48.0, "and marks the player's spot")
+	var landed := await _until(func() -> bool: return z.stuck(), 180)
+	check(landed and z.is_on_floor(), "then dives and buries the drill in the floor")
+
+
+func test_zoradohna_phase_three_opens_the_cockpit() -> void:
+	var r := await _zora_world()
+	var z: Zoradohna = r[1]
+	z.phase = 2
+	z.rising = true
+	z.set_state("stuck")
+	z.hp = int(Zoradohna.MAX_HP * Zoradohna.PHASES[1]) + 4
+	z.take_hit(8, Vector2(0, 1))
+	check(z.phase == 3 and z.state == "opening", "below %d%% the cockpit bursts open" % int(Zoradohna.PHASES[1] * 100))
+	await frames(roundi(Zoradohna.OPEN_TIME * 60.0) + 5)
+	var hp0 := z.hp
+	z.take_hit(8, Vector2.RIGHT)
+	check(z.hp == hp0, "now side blows glance off")
+	z.take_hit(8, Vector2(0, 1))
+	check(z.hp == hp0 - 12, "but a strike on the harness from above lands hard (%d)" % (hp0 - z.hp))
+
+
+func test_zoradohna_defeat_gives_the_ruby_ring() -> void:
+	var w := make_world({}, LIFT_ROOM)
+	var p := w.player
+	await frames(3)
+	var arena := _arena(w)
+	p.teleport(cell_feet(10, 19))
+	await _until(func() -> bool: return arena.fighting, 20)
+	var z := get_tree_boss() as Zoradohna
+	await frames(2)
+	z.set_state("stuck")
+	z.hp = 1
+	var points := int(GameState.data.skill_points)
+	var rank := int(GameState.data.rank)
+	z.take_hit(8, Vector2(0, 1))
+	check(z.state == "dying", "the last blow shatters the harness")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:zoradohna"), 600)
+	check(gone, "Zoradohna is marked beaten")
+	check((GameState.data.rings as Array).has("ruby"), "the Ruby Ring is the player's")
+	var ranks := int(GameState.data.rank) - rank
+	check(int(GameState.data.skill_points) == points + 1 + ranks, "with a skill point (plus %d from rank-ups)" % ranks)
+	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
+	check(opened, "the way out opens")
+	w._enter(LIFT_ROOM)
+	await frames(5)
+	check(get_tree_boss() == null, "it never comes back")
