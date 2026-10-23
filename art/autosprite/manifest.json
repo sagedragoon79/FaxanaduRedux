@@ -80,7 +80,7 @@
   "rim": {"color": [255, 178, 96], "mix": 0.35},
   "reference": "walk",
   "animations": {
-   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31], "fps": 15, "loop": true, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), pro 4s walk, video cmvkkd3ni008lou6ezjbyvfd0"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47], "fps": 15, "loop": true, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), pro 4s walk, video cmvkkd3ni008lou6ezjbyvfd0"},
    "windup": {"file": "poses.png", "frame_size": 256, "columns": 5, "count": 5, "pick": [0, 0], "feet_x": 128, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
    "slam": {"file": "poses.png", "frame_size": 256, "columns": 5, "count": 5, "pick": [1, 2], "feet_x": 128, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
    "stuck": {"file": "poses.png", "frame_size": 256, "columns": 5, "count": 5, "pick": [2, 3], "feet_x": 128, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
