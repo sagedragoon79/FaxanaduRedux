@@ -571,7 +571,11 @@ func _draw() -> void:
 		if s.is_head:
 			anim = "head"
 			var spin := _t * (14.0 if state in ["stuck", "lunge", "plunge", "intro"] else 3.0)
-			frame = int(fposmod(spin, TAU / 6.0) / (TAU / 6.0) * 6.0) % 6
+			# The head frames cover one turn of the mandible wheel: 60 degrees for the
+			# code-drawn wheel (six-fold), a full turn for the Autosprite one.
+			var turn := deg_to_rad(float(Sheet.flag(SHEET, "head_turn", 60.0)))
+			var n: int = Sheet.get_sheet(SHEET).animations.head.frames.size()
+			frame = int(fposmod(spin, turn) / turn * n) % n
 		elif s.is_tail:
 			anim = "tail"
 			frame = 1 if hot else 0

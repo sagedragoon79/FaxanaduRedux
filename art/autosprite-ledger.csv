@@ -31,3 +31,7 @@ date,asset,operation,credits,result,notes
 2026-10-23,elf hero v3 full set (idle/run/jump/dash/hurt/death/cast/block/wall slide/drink),generate_spritesheet pro 4s 64f@256 ultra bg x10,100,queued (videos cmvkhakk6 cmvkhakhf cmvkhakfq cmvkhakqz cmvkhakzj cmvkhaksk cmvkhakuq cmvkhakx4 cmvkhaklx cmvkhakl2),Sean OK'd the shorter-legged base; balance 158 after
 2026-10-23,elf hero v3 sword quick_strike + triple_combo,generate_attack_moves 48f@256 ultra bg,10,queued (videos cmvkhaqmo cmvkhaqii),slash sources; balance 148 after
 2026-10-23,elf hero v3 clips (all 12),regenerate_single_spritesheet full rate@256 (moves 1024 then halved to 512) ultra bg,0,ok (art/autosprite/ranger/*.png),free re-cuts; all 17 player animations imported at 2x density with own 56-color palette; old elf sources removed; balance 148
+2026-10-23,Rokusutahn head base,create_character pro,3,ok (cmvki2qv700ikcjben0qxn2ke),boss key part: face-on spiky maw; balance 145 after
+2026-10-23,Rokusutahn plate base,create_character pro,3,ok (cmvki8kzw00xy8p8adn82rk5v),bark plate segment to match the HD head; balance 142 after
+2026-10-23,Rokusutahn tail base,create_character pro,3,ok (cmvki8x2y00941g8yjbshrtxp),glowing weak-point tail; balance 139 after
+2026-10-23,Rokusutahn head/plate/tail,import (spin + state frames by code),0,ok (art/autosprite/rokusutahn),HD boss parts at 2x density; balance 139

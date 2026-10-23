@@ -1,17 +1,35 @@
 {
  "cell": [
+  128,
+  128
+ ],
+ "origin": [
   64,
   64
  ],
- "origin": [
-  32,
-  32
- ],
- "columns": 6,
+ "columns": 24,
  "animations": {
   "head": {
    "row": 0,
    "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
     {},
     {},
     {},
@@ -54,5 +72,10 @@
    "fps": 1,
    "loop": false
   }
+ },
+ "density": 2,
+ "own_palette": true,
+ "flags": {
+  "head_turn": 360
  }
 }
