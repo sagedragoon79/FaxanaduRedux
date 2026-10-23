@@ -549,8 +549,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   world pixel a 48 px hero loses the face and armor detail. Character sheets marked `"density": 2` are drawn at double
   detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
   polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
-  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf and the
-  zone tiles.
+  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf, the Foreman
+  and the zone tiles (the small Gear Bat stays code-drawn at 2x).
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
@@ -654,7 +654,7 @@ hammer head). Short attacks whose game animations are only a few key frames are 
 figure, and packs the stills on one spot (hips on the cell's middle) into a source sheet. A figure drawn too dark for
 the game's rooms gets a manifest `"gain"` before its palette is cut; the Iron Dwarf also gets a lamp-orange rim.
 
-Balance after the hooded hero's set, Rokusutahn's parts and the Iron Dwarf: 101 credits, about 10 pro clips. The redesign (concepts, the new base and its
+Balance after the hooded hero's set, Rokusutahn's parts, the Iron Dwarf and the Foreman: 67 credits, about 6 pro clips. The redesign (concepts, the new base and its
 leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
@@ -667,7 +667,8 @@ leg fix, a trial clip and the full set) cost 145 and came out of the NPC and res
 | Bosses, Rokusutahn spent: three pro stills (head, plate, tail) | 3 | 9 | 2% |
 | Bosses still to come: stills or key clips for their rigged parts | 3 | 31 | 6% |
 | Tower enemies, Iron Dwarf spent: base, walk clip, a rejected slam clip, five poses | 2 | 38 | 8% |
-| Reserve for later enemies, fixes and regeneration | | 65 | 13% |
+| Foreman (mini-boss) spent: base, walk clip, seven poses | 1 | 34 | 7% |
+| Reserve for later enemies, fixes and regeneration | | 31 | 6% |
 | **Total** | | **490** | |
 
 If credits run short, cut NPC clips first (they can stay code-drawn), then enemies (more recolors, more code frames),

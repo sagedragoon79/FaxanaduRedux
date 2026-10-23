@@ -7,7 +7,7 @@
   96,
   152
  ],
- "columns": 4,
+ "columns": 8,
  "animations": {
   "idle": {
    "row": 0,
@@ -28,6 +28,10 @@
     {},
     {},
     {},
+    {},
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
@@ -36,7 +40,7 @@
     2,
     3
    ],
-   "fps": 6,
+   "fps": 12,
    "loop": true
   },
   "pound_tell": {
@@ -136,5 +140,6 @@
    "loop": false
   }
  },
- "density": 2
+ "density": 2,
+ "own_palette": true
 }
