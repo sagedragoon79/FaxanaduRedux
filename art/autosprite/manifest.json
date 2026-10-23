@@ -147,5 +147,22 @@
    "plate": {"file": "plate.png", "frame_size": 512, "columns": 2, "count": 2, "anchor": "center", "height": 38, "autosprite": "character cmvki8kzw00xy8p8adn82rk5v (pro still), states by tools/art/autosprite_parts.py --box 70,50,970,950 --states plain,crack"},
    "tail": {"file": "tail.png", "frame_size": 512, "columns": 2, "count": 2, "anchor": "center", "height": 30, "autosprite": "character cmvki8x2y00941g8yjbshrtxp (pro still), states by tools/art/autosprite_parts.py --box 130,0,910,780 --cut 615 --states plain,glow"}
   }
+ },
+ "ripasheiku": {
+  "dir": "ripasheiku",
+  "colors": 48,
+  "density": 2,
+  "ramps": ["night", "stone", "crystal", "gold"],
+  "height": 58,
+  "reference": "idle",
+  "animations": {
+   "idle": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [0, 0], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "walk": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [1, 2], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "sweep_tell": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [3, 3], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "sweep": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [4], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "pounce_tell": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [5, 5], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "pounce": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [6], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"},
+   "dropped": {"file": "poses.png", "frame_size": 320, "columns": 8, "count": 8, "pick": [7, 7], "feet_x": 160, "autosprite": "character cmvl0t02101zkmg612urh0dfl (pro prompt base), generate_pose stills packed by autosprite_poses.py (rest=1)"}
+  }
  }
 }
