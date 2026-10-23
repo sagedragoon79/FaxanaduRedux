@@ -1,0 +1,140 @@
+{
+ "cell": [
+  192,
+  160
+ ],
+ "origin": [
+  96,
+  152
+ ],
+ "columns": 4,
+ "animations": {
+  "idle": {
+   "row": 0,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 3,
+   "loop": true
+  },
+  "walk": {
+   "row": 1,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 6,
+   "loop": true
+  },
+  "pound_tell": {
+   "row": 2,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "pound": {
+   "row": 3,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "charge_tell": {
+   "row": 4,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 12,
+   "loop": true
+  },
+  "charge": {
+   "row": 5,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "stunned": {
+   "row": 6,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 2,
+   "loop": true
+  },
+  "throw_tell": {
+   "row": 7,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "throw": {
+   "row": 8,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "recover": {
+   "row": 9,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ },
+ "density": 2
+}

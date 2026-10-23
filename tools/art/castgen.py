@@ -400,6 +400,112 @@ GEAR_BAT = [
 ]
 
 
+# --- The Foreman: a rock golem the dwarves set to work the tower -------------------
+# A boulder body with ore veins, a dwarf foreman's brass lamp-helm jammed on its head
+# and the Mattock wedged in its back (the reward). 2x render density.
+
+FM_ROCK = mat("bark", 4, 3, 2, 0)
+FM_ROCK_BACK = mat("bark", 3, 2, 1, 0)
+FM_ROCK_DARK = mat("bark", 3, 2, 1, 0)
+FM_CRACK = PAL["bark-1"]
+FM_VEIN = mat("gold", 6, 4, 3, 1)
+FM_VEIN_DIM = mat("gold", 3, 2, 2, 1)
+FM_HELM = mat("stone", 6, 5, 3, 1)
+FM_LAMP = mat("gold", 7, 6, 4, 2)
+FM_HAFT = mat("bark", 5, 4, 3, 1)
+FM_PICK = mat("stone", 7, 6, 4, 2)
+FM_SCALE = 2
+
+
+def foreman(lean=0.0, crouch=0.0, fist_f=(22, -22), fist_b=(-20, -24), feet=((9, 0), (-9, 0)),
+            head_dy=0.0, glow=True, boulder=None, slump=False):
+    """Points are relative to the feet. fist_f/fist_b: front and back fist centres."""
+    def render(_):
+        cv = Canvas(96, 80, (48, 76), FM_SCALE)
+        hip_y = -16 + crouch * 0.6
+        cx, cy = lean, -34 + crouch
+        sh_f, sh_b = (cx + 13, cy - 8), (cx - 13, cy - 10)
+        head = (cx + 9 + (3 if slump else 0), cy - 17 + head_dy + (5 if slump else 0))
+        vein = FM_VEIN if glow else FM_VEIN_DIM
+
+        def arm(sh, fist, m, r):
+            fist = reach(sh, fist, 26)
+            elbow = ik(sh, fist, 13, 13, -1 if fist[0] > sh[0] else 1)
+            cv.part(cv.capsule(sh, elbow, r) | cv.capsule(elbow, fist, r - 0.5), m)
+            cv.part(cv.ellipse(elbow, r * 0.8, r * 0.8), m)
+            cv.part(cv.ellipse(fist, 7.5, 6.8), m, deep=True)
+            cv.part(cv.capsule((fist[0] - 3, fist[1] - 1), (fist[0] + 3, fist[1] - 1), 0.6), vein)
+
+        # Back arm and leg, then the Mattock wedged in the back.
+        arm(sh_b, fist_b, FM_ROCK_BACK, 5.5)
+        bf = reach((cx - 7, hip_y), feet[1], 17)
+        cv.part(cv.capsule((cx - 7, hip_y), bf, 6.5), FM_ROCK_BACK)
+        cv.part(cv.ellipse((bf[0] + 1, bf[1] - 2.5), 8, 4), FM_ROCK_BACK)
+        tip = (cx - 22, cy - 34)
+        cv.part(cv.capsule((cx - 8, cy - 4), tip, 1.4), FM_HAFT)
+        cv.part(cv.polygon([(tip[0] - 9, tip[1] + 4), (tip[0] - 1, tip[1] - 2.5), (tip[0] + 8, tip[1] - 3),
+                            (tip[0] + 1, tip[1] + 1.5)]), FM_PICK, deep=True)
+        cv.part(cv.ellipse(tip, 1.8, 1.8), FM_HELM)
+        # Front leg.
+        ff = reach((cx + 7, hip_y), feet[0], 17)
+        cv.part(cv.capsule((cx + 7, hip_y), ff, 7), FM_ROCK)
+        cv.part(cv.ellipse((ff[0] + 2, ff[1] - 2.5), 8.5, 4), FM_ROCK_DARK)
+        # The boulder body: a big rounded mass with a few slabs and glowing ore veins.
+        body = cv.ellipse((cx, cy), 20, 17) | cv.polygon([(cx - 16, cy + 4), (cx + 17, cy + 2), (cx + 11, cy + 17), (cx - 12, cy + 17)])
+        cv.part(body, FM_ROCK, deep=True)
+        cv.part(cv.ellipse((cx - 9, cy - 9), 9, 7), FM_ROCK)
+        cv.part(cv.ellipse((cx + 8, cy + 6), 8, 6), FM_ROCK_DARK)
+        # Facet cracks between the slabs.
+        for a, b in (((cx - 18, cy - 2), (cx - 10, cy + 1)), ((cx + 1, cy - 15), (cx - 2, cy - 8)), ((cx + 15, cy + 10), (cx + 9, cy + 14)),
+                     ((cx - 4, cy + 10), (cx - 9, cy + 16))):
+            cv.flat(cv.capsule(a, b, 0.45), FM_CRACK)
+        for a, b in (((cx - 6, cy - 2), (cx + 4, cy + 3)), ((cx + 4, cy + 3), (cx + 2, cy + 11)), ((cx - 12, cy + 4), (cx - 6, cy - 2)),
+                     ((cx + 9, cy - 9), (cx + 14, cy - 3))):
+            cv.part(cv.capsule(a, b, 0.9), vein)
+        # Head, sunk between the shoulders, under a dented brass lamp-helm.
+        cv.part(cv.ellipse(head, 9, 8), FM_ROCK)
+        helm = cv.ellipse((head[0] - 0.5, head[1] - 5), 9.5, 6.5) & ~cv.below(head[1] - 4.2)
+        cv.part(helm, FM_HELM)
+        cv.part(cv.capsule((head[0] - 10, head[1] - 4.2), (head[0] + 10.5, head[1] - 4.2), 1.1), FM_HELM)
+        cv.part(cv.ellipse((head[0] + 3.5, head[1] - 8.5), 2.4, 2.2), FM_LAMP if glow else FM_HELM)
+        # Two ore-lit eyes under the brim, and a slab of a jaw.
+        for ex in (head[0] + 3.5, head[0] + 7.0):
+            cv.flat(cv.ellipse((ex, head[1] - 0.8), 1.4, 1.0), PAL["gold-6"] if glow else PAL["bark-1"])
+        cv.flat(cv.capsule((head[0] + 1, head[1] + 4.2), (head[0] + 8, head[1] + 3.6), 0.5), FM_CRACK)
+        if boulder is not None:
+            cv.part(cv.ellipse(boulder, 9, 8), FM_ROCK_DARK, deep=True)
+            cv.part(cv.capsule((boulder[0] - 4, boulder[1] - 2), (boulder[0] + 3, boulder[1] + 2), 0.7), FM_VEIN_DIM)
+        arm(sh_f, fist_f, FM_ROCK, 6)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def foreman_walk(i):
+    t = i / 4 * math.tau
+    fx = 7 * math.cos(t)
+    return foreman(crouch=1 if i % 2 else 0, feet=((fx + 2, -max(0, 3 * math.sin(t))), (-fx - 2, -max(0, -3 * math.sin(t)))),
+                   fist_f=(20 - fx * 0.6, -18), fist_b=(-18 + fx * 0.6, -20))
+
+
+FOREMAN = [
+    ("idle", [foreman(), foreman(crouch=1, head_dy=0.5)], [0, 1], 3, True),
+    ("walk", [foreman_walk(i) for i in range(4)], [0, 1, 2, 3], 6, True),
+    ("pound_tell", [foreman(lean=-3, crouch=-2, fist_f=(6, -66), fist_b=(-6, -68), head_dy=-1),
+                    foreman(lean=-4, crouch=-3, fist_f=(5, -68), fist_b=(-7, -70), head_dy=-1)], [0, 1], 10, True),
+    ("pound", [foreman(lean=6, crouch=8, fist_f=(30, -6), fist_b=(22, -6), feet=((11, 0), (-10, 0)))], [0], 1, False),
+    ("charge_tell", [foreman(lean=-6, crouch=7, fist_f=(4, -12), fist_b=(-24, -14), feet=((12, 0), (-13, 0))),
+                     foreman(lean=-7, crouch=8, fist_f=(3, -11), fist_b=(-25, -13), feet=((12, 0), (-14, 0)))], [0, 1], 12, True),
+    ("charge", [foreman(lean=8, crouch=6, fist_f=(28, -30), fist_b=(4, -26), feet=((14, -2), (-10, 0))),
+                foreman(lean=8, crouch=6, fist_f=(28, -30), fist_b=(4, -26), feet=((6, 0), (-14, -2)))], [0, 1], 10, True),
+    ("stunned", [foreman(lean=-4, crouch=10, fist_f=(14, -3), fist_b=(-18, -3), glow=False, slump=True),
+                 foreman(lean=-3, crouch=10, fist_f=(14, -3), fist_b=(-18, -3), glow=False, slump=True, head_dy=1)], [0, 1], 2, True),
+    ("throw_tell", [foreman(lean=-4, crouch=-1, fist_f=(2, -64), fist_b=(-8, -64), boulder=(-2, -74))], [0], 1, False),
+    ("throw", [foreman(lean=6, crouch=3, fist_f=(30, -40), fist_b=(18, -36))], [0], 1, False),
+    ("recover", [foreman(crouch=3, fist_f=(18, -12), fist_b=(-18, -14))], [0], 1, False),
+]
+
+
 # --- Rokusutahn: the body parts the boss script chains together ----------------
 
 R_BARK = mat("bark", 3, 2, 1, 0)
@@ -638,6 +744,7 @@ def main():
     write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
     write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
     write_sheet("gear_bat", (56, 40), (28, 20), GEAR_BAT, lambda r: r(None), density=GB_SCALE)
+    write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

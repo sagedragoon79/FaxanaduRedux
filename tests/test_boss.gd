@@ -296,3 +296,140 @@ func test_tail_damage_staggers_him() -> void:
 	var hp1 := boss.hp
 	boss.hit_segment(boss.segments[8], 20, Vector2.RIGHT)
 	check(still and boss.hp == hp1 - 5, "and back to a quarter when it passes (hp %d)" % boss.hp)
+
+
+# --- The Foreman (Tower of Trunk mini-boss) ------------------------------------------
+
+const FOREMAN_ROOM := "tower/foreman_hall"
+
+
+## The Foreman dropped into his hall without the arena, awake.
+func _foreman_world(cell := Vector2i(30, 19)) -> Array:
+	var w := make_world({}, FOREMAN_ROOM, cell_feet(4, 19))
+	GameState.set_flag("boss:foreman")  # keep the arena from starting its own fight
+	var f := Foreman.new()
+	f.arena = Rect2(16, 64, 608, 256)
+	f.position = cell_feet(cell.x, cell.y)
+	w.room.add_child(f)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(2)
+	f.set_state("walk")
+	return [w, f]
+
+
+func _count_rubble(w: World, mode: String) -> int:
+	var n := 0
+	for c in w.room.get_children():
+		if c is Rubble and c.mode == mode and not c.is_queued_for_deletion():
+			n += 1
+	return n
+
+
+func test_foreman_hall_wakes_the_golem() -> void:
+	var w := make_world({}, FOREMAN_ROOM)
+	await frames(3)
+	var arena := _arena(w)
+	check(arena != null and arena.boss_id == "foreman", "the Foreman's Hall is a boss arena")
+	w.player.teleport(cell_feet(10, 19))
+	var woke := await _until(func() -> bool: return arena.fighting, 20)
+	var f := get_tree_boss() as Foreman
+	check(woke and f != null, "walking in wakes the Foreman")
+	check(f != null and f.global_position.x > w.player.global_position.x + 200.0, "he stands at the far end of the hall")
+	check(arena.seals.has(1), "the way in seals behind the player")
+
+
+func test_foreman_telegraphs_are_fair() -> void:
+	var f := Foreman.new()
+	for ph in [1, 2]:
+		f.phase = ph
+		for t: float in [Foreman.POUND_TELL, Foreman.THROW_TELL, Foreman.CHARGE_TELL]:
+			check(f.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, f.tell(t), Enemy.MIN_TELEGRAPH])
+	check(Rubble.TELL >= Enemy.MIN_TELEGRAPH, "a falling rock marks its spot for at least %.2f s" % Enemy.MIN_TELEGRAPH)
+	f.free()
+
+
+func test_foreman_charges_into_the_wall_and_is_stunned() -> void:
+	var r := await _foreman_world(Vector2i(20, 19))
+	var w: World = r[0]
+	var f: Foreman = r[1]
+	w.player.teleport(cell_feet(6, 19))
+	await frames(1)
+	f.facing = 1
+	f.set_state("charge_tell")
+	var tell_frames := [0]  # lambdas capture locals by value, so count in an array
+	var stunned := await _until(func() -> bool:
+		if f.state == "charge_tell":
+			tell_frames[0] += 1
+		return f.stunned(), 240)
+	check(tell_frames[0] / 60.0 >= Enemy.MIN_TELEGRAPH, "he scrapes the floor for at least %.2f s first (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames[0]])
+	check(stunned and f.global_position.x > 34 * Room.TILE, "charged into the far wall and is stunned (x %.0f)" % f.global_position.x)
+	check(_count_rubble(w, "fall") >= 3, "the impact shakes rocks loose from the ceiling (%d)" % _count_rubble(w, "fall"))
+	var hp0 := f.hp
+	f.take_hit(8, Vector2.LEFT)
+	check(f.hp == hp0 - 8, "stunned, he takes a blow in full")
+
+
+func test_foreman_rock_halves_blows_unless_from_above() -> void:
+	var r := await _foreman_world()
+	var f: Foreman = r[1]
+	var hp0 := f.hp
+	f.take_hit(8, Vector2.RIGHT)
+	check(f.hp == hp0 - 4, "his rock halves a blow (%d)" % (hp0 - f.hp))
+	f.take_hit(8, Vector2(0, 1))
+	check(f.hp == hp0 - 12, "a blow from above lands in full")
+	check(f.state == "walk", "blows don't interrupt him")
+
+
+func test_foreman_pound_sends_a_shockwave_each_way() -> void:
+	var r := await _foreman_world()
+	var w: World = r[0]
+	var f: Foreman = r[1]
+	w.player.teleport(cell_feet(26, 19))
+	f.facing = -1
+	f.set_state("pound_tell")
+	var dirs := {}
+	await _until(func() -> bool:
+		for c in w.room.get_children():
+			if c is Shockwave:
+				dirs[c.direction] = true
+		return dirs.size() == 2, 120)
+	check(dirs.has(-1) and dirs.has(1), "two shockwaves roll out, one each way (%s)" % [dirs.keys()])
+
+
+func test_foreman_throws_a_boulder_at_the_player() -> void:
+	var r := await _foreman_world()
+	var w: World = r[0]
+	var f: Foreman = r[1]
+	w.player.teleport(cell_feet(22, 19))
+	f.facing = -1
+	f.set_state("throw_tell")
+	var hp := w.player.hp
+	var thrown := await _until(func() -> bool: return _count_rubble(w, "thrown") > 0, 90)
+	check(thrown, "he lobs a boulder")
+	var hit := await _until(func() -> bool: return w.player.hp < hp, 90)
+	check(hit, "it lands on the player standing still")
+
+
+func test_foreman_defeat_gives_the_mattock() -> void:
+	var w := make_world({}, FOREMAN_ROOM)
+	var p := w.player
+	await frames(3)
+	check(not p.abilities.mattock, "no Mattock before the fight")
+	var arena := _arena(w)
+	p.teleport(cell_feet(10, 19))
+	await _until(func() -> bool: return arena.fighting, 20)
+	var f := get_tree_boss() as Foreman
+	await frames(2)
+	f.set_state("stunned")
+	f.hp = 1
+	f.take_hit(8, Vector2.RIGHT)
+	check(f.state == "dying", "the last blow topples him")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:foreman"), 600)
+	check(gone, "the Foreman is marked beaten")
+	check(p.abilities.mattock and bool(GameState.data.abilities.mattock), "the Mattock is the player's")
+	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
+	check(opened, "the way out opens")
+	w._enter(FOREMAN_ROOM)
+	await frames(5)
+	check(get_tree_boss() == null, "he never comes back")
