@@ -137,6 +137,11 @@ func start(room_id: String, at := Vector2.INF) -> void:
 	else:
 		_enter(room_id)
 	var pos := room.spawn_position if at == Vector2.INF else at
+	if at == Vector2.INF and room.spawn_position == Vector2.ZERO and not room.doors.is_empty():
+		# No spawn marker: arrive as if through the room's first door.
+		var first: int = room.doors.keys().min()
+		_place_at_door(room.doors[first], Vector2.ZERO)
+		pos = player.global_position
 	player.teleport(pos)
 	player.spawn_point = pos
 	player.safe_position = pos
@@ -174,6 +179,7 @@ func _enter(room_id: String) -> void:
 func _physics_process(_delta: float) -> void:
 	if busy or player == null or room == null or player.dead or player.frozen:
 		return
+	player.in_sap = room.is_sap_at(player.global_position + Vector2(0, -6))
 	if player.global_position.y > room.pixel_rect().end.y + FALL_RESCUE:
 		player.teleport(player.safe_position)
 		camera.snap_to_target()

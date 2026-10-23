@@ -5,12 +5,12 @@ The full design lives in [docs/design-bible.md](docs/design-bible.md).
 
 ## Status
 
-**M2: combat core.** A graybox gym with the full movement kit (run, variable jump, coyote
-time, jump buffering, wall slide and wall jump, double jump, air dash, the Mattock pogo) and
-combat: a three-hit combo, parry and guard with the shield, the Deluge spell, the Red Potion,
-three enemies (Monodron, Hornet, Rot Dwarf), gold drops and a death and recovery loop.
-Game feel: squash and stretch, dust, hit-stop, screen shake, sub-pixel smooth camera and
-synthesized sound effects.
+**M3: vertical slice, in progress.** A title menu starts a new game at the West Gate of
+Eolis. Six Eolis rooms (King, Guru, shops, townsfolk) and nine Trunk Hollows rooms (sap
+pools, Monodrons, Hornets, Rot Dwarves, the Climbing Glove, secrets, save shrines) are
+connected by doors, with a map, saving, ranks, a skill tree, shops and Jack doors. The
+Rokusutahn boss, final art and music come next. The movement and combat gym is still there:
+`godot --path . -- --room=gym/gym`.
 
 ## Running
 
@@ -27,7 +27,9 @@ synthesized sound effects.
 | Cast spell (Deluge) | F / U | Y |
 | Drink Red Potion | Q / H | LT |
 | Drop through a platform | Down + Jump | Down + A |
-| Toggle Glove, Mattock, Wing Boots, Elven Stride, Deluge | F1 to F4, F7 | |
+| Talk, read, use doors, rest at shrines | Up | Up |
+| Map | Tab / M | Back |
+| Toggle Glove, Mattock, Wing Boots, Elven Stride, Deluge (debug builds) | F1 to F4, F7 | |
 | Reset to spawn | R / F5 | Back |
 | Toggle debug HUD | F6 | |
 

@@ -11,6 +11,8 @@ door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
 npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19))
+secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden room's
+                        contents can't be seen until the player walks in)
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 chest_gold: 100    (optional: gold in each chest in this room)
 ---
@@ -33,6 +35,7 @@ chest_gold: 100    (optional: gold in each chest in this room)
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |
+| `~` | Sap pool: halves run speed and weakens jumps (Trunk Hollows) |
 | `S` | Meditation Shrine (save, refill, respawn point) |
 | `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
 | `$` | Treasure chest (gold, opens once) |
@@ -61,3 +64,15 @@ Mark a door with a digit, repeated over every cell of the opening, and add a `do
 Every door must lead to a door that leads back (`tests/test_rooms.gd` checks this).
 Pickups, chests and cracked walls remember being taken or broken (by room id and tile), so
 moving one in a room file makes it collectable again.
+
+## Design rules the tests enforce
+
+`tests/test_reachability.gd` runs the reachability checker (`scripts/world/reach.gd`) on
+every room: from the new game spawn, with no abilities, the Climbing Glove must be reachable
+and the boss must not be; with the glove (and keys) every room, pickup, chest and shrine must
+be reachable; and no reachable spot may be a soft-lock (unable to get back to a save, or on
+to the glove). It also boots every room and checks the player lands safely.
+
+Safe numbers for layouts (a little under the real movement): a standing jump clears 4 tiles
+up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles of headroom
+for the body. Platforms that should be reachable from the floor go 4 rows above it.

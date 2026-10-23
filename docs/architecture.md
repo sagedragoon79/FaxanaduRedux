@@ -41,6 +41,15 @@ are deterministic within the frame.
 Visuals are placeholders drawn in code (`player_visual.gd`) plus a verlet-chain scarf
 (`scarf.gd`). They will be swapped for Autosprite animation without touching movement.
 
+## Reachability checker
+
+`scripts/world/reach.gd` models where the player can stand in every room (tile columns with
+three clear tiles and support below) and the moves between those spots: walking, falling with
+drift, jumps inside a safe envelope, dropping through one-way platforms, doors, and climbing
+wall faces with the glove. `tests/test_reachability.gd` uses it to prove the critical path
+order, that every pickup is reachable, and that no spot is a soft-lock. Extend it with each
+new movement ability (double jump, air dash, pogo) when that ability's zone is built.
+
 ## Data, shops and skills
 
 Balance tables are JSON in `data/` (`items`, `shops`, `skills`, `npcs`), read through

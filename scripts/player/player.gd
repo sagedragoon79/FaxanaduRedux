@@ -17,6 +17,10 @@ const LAYER_PLAYER := 2
 const LAYER_HAZARD := 4
 const LAYER_ENEMY := 8
 
+## Sap pools (Trunk Hollows) halve run speed and weaken jumps.
+const SAP_SPEED := 0.5
+const SAP_JUMP := 0.72
+
 const SLASH_SIZE := Vector2(36, 26)
 const UP_SLASH_SIZE := Vector2(34, 36)
 const DOWN_STRIKE_SIZE := Vector2(28, 24)
@@ -49,6 +53,8 @@ var mp_hit_mult := 1.0
 var gold_mult := 1.0
 var magnet_mult := 1.0
 var ground_combo_length := 3
+## Set each frame by the World when the feet are in a sap pool.
+var in_sap := false
 var dead := false
 var purse: GoldPurse
 
@@ -279,6 +285,8 @@ func _horizontal_step(delta: float, on_floor: bool) -> void:
 		target = 0.0
 	elif is_blocking:
 		target *= combat.guard_move_multiplier
+	if in_sap:
+		target *= SAP_SPEED
 	var accel: float
 	if on_floor:
 		if input.move_x != 0:
@@ -315,7 +323,7 @@ func _try_jump() -> void:
 
 
 func _do_jump() -> void:
-	velocity.y = -tuning.jump_velocity
+	velocity.y = -tuning.jump_velocity * (SAP_JUMP if in_sap else 1.0)
 	_end_dash_into_jump()
 	_consume_jump()
 	_jump_cut_available = true
