@@ -549,7 +549,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   world pixel a 48 px hero loses the face and armor detail. Character sheets marked `"density": 2` are drawn at double
   detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
   polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
-  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn and the zone tiles.
+  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf and the
+  zone tiles.
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
@@ -647,7 +648,13 @@ the game draws its own blade from the code rig's angle. The hooded hero's clips 
 frame, so all five swings use the art blade; at 2x density a code-drawn blade would also look coarse beside the art.
 Showing the equipped weapon (longer blades, recolors) is a later job.
 
-Balance after the hooded hero's set and Rokusutahn's parts: 139 credits, about 13 pro clips. The redesign (concepts, the new base and its
+**Heavy attacks from poses:** a custom clip of a big weapon can drift (the Iron Dwarf's slam clip grew a second
+hammer head). Short attacks whose game animations are only a few key frames are made from `generate_pose` stills
+(3 credits each) instead: `tools/art/autosprite_poses.py` keys out the white ground and any floor patch, keeps the
+figure, and packs the stills on one spot (hips on the cell's middle) into a source sheet. A figure drawn too dark for
+the game's rooms gets a manifest `"gain"` before its palette is cut; the Iron Dwarf also gets a lamp-orange rim.
+
+Balance after the hooded hero's set, Rokusutahn's parts and the Iron Dwarf: 101 credits, about 10 pro clips. The redesign (concepts, the new base and its
 leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
@@ -659,7 +666,8 @@ leg fix, a trial clip and the full set) cost 145 and came out of the NPC and res
 | NPCs: only if credits are topped up (they stay code-drawn) | 0 | 0 | 0% |
 | Bosses, Rokusutahn spent: three pro stills (head, plate, tail) | 3 | 9 | 2% |
 | Bosses still to come: stills or key clips for their rigged parts | 3 | 31 | 6% |
-| Reserve for later enemies, fixes and regeneration | | 103 | 21% |
+| Tower enemies, Iron Dwarf spent: base, walk clip, a rejected slam clip, five poses | 2 | 38 | 8% |
+| Reserve for later enemies, fixes and regeneration | | 65 | 13% |
 | **Total** | | **490** | |
 
 If credits run short, cut NPC clips first (they can stay code-drawn), then enemies (more recolors, more code frames),
