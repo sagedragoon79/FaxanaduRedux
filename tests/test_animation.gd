@@ -61,6 +61,17 @@ func test_sheets_use_the_master_palette() -> void:
 		count += 1
 		var img := (load(Sheet.DIR + file.trim_suffix(".json") + ".png") as Texture2D).get_image()
 		img.decompress()
+		if Sheet.get_sheet(file.trim_suffix(".json")).get("own_palette", false):
+			# HD characters keep their own small palette (12.2); still a limited, pixel-art one.
+			var seen := {}
+			for y in img.get_height():
+				for x in img.get_width():
+					var c := img.get_pixel(x, y)
+					if c.a > 0.0:
+						seen[Color(c.r, c.g, c.b, 1.0).to_rgba32()] = true
+			if seen.size() > 96:
+				bad.append("%s (%d colors)" % [file, seen.size()])
+			continue
 		var off := 0
 		for y in img.get_height():
 			for x in img.get_width():
@@ -156,12 +167,14 @@ func test_scarf_hangs_from_the_neck() -> void:
 	await frames(3)
 	var neck := p.visual.neck_position()
 	check(p.scarf.anchor().distance_to(neck) < 4.0, "the scarf follows the frame's neck (%s vs %s)" % [p.scarf.anchor(), neck])
+	check(p.scarf.visible == Sheet.flag("player", "scarf", true), "the scarf shows only when the sheet asks for it")
 
 
-func test_double_density_sheets_keep_world_size() -> void:
+func test_dense_sheets_keep_world_size() -> void:
 	var one := Sheet.dest_rect("player")
 	Sheet._cache["test_dense"] = {"cell": Vector2(128, 128), "origin": Vector2(64, 122), "density": 2.0}
 	var two := Sheet.dest_rect("test_dense")
 	Sheet._cache.erase("test_dense")
 	check(two == Rect2(-32, -61, 64, 64), "a density-2 cell covers half its pixels in the world (%s)" % two)
-	check(one.size == PlayerVisual.data().cell, "a plain sheet draws 1:1 (%s)" % one)
+	var d := PlayerVisual.data()
+	check(one.size == (d.cell as Vector2) / float(d.density), "the player sheet keeps its world size at its density (%s)" % one)

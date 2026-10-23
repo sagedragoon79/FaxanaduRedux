@@ -560,7 +560,11 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 ### 12.2 Palette
 
-- One **master palette of 64 colors** (stored in `art/palette/master.gpl` and as a Godot resource). Every asset is quantized to it.
+- One **master palette of 64 colors** (stored in `art/palette/master.gpl` and as a Godot resource). Every asset is quantized to it,
+  except the HD (2x density) characters made in Autosprite: each of those sheets keeps its **own palette of 56
+  colors** cut from its reference clip (plus the master outline and the neutral stone ramp). Quantizing them to the
+  master ramps turned the hooded hero's leather red and flattened his armor detail, which is what Sean asked for
+  (2026-10-23). They stay limited-palette pixel art (a test caps each sheet at 96 colors).
 - Each zone uses a **sub-palette of 24 to 32** of those colors, plus 4 accent colors.
 - No pure black (#000) or pure white (#fff). Darkest is a deep blue-violet; lightest is a warm cream.
 - **Hero look (changed 2026-10-23):** a tall, slender hooded elf ranger after Sean's own reference
@@ -626,7 +630,8 @@ frame (it is also the mode Autosprite calls the most consistent).
 uploaded free. That soft blow-up animated poorly (the test idle turned three-quarter and barely moved), so the base is
 first redrawn once as an **HD side-view pose** (`generate_pose`, 3 credits, prompt names the outfit and "strict side
 profile facing right"), and that pose is uploaded free as the character the clips are made from. The player's base
-is Autosprite character `cmvkexbot00w0vd98tdlkmcx5`. When `generate_pose` fails on a base (it failed, refunded, twice
+is Autosprite character `cmvkgu36o002f1g8yyrxrwqbp`, the hooded ranger (12.2); the first player set, on the
+Link-like design Sean rejected, is retired. When `generate_pose` fails on a base (it failed, refunded, twice
 each for the Hornet and the Rot Dwarf), a pro `create_character` from a written description (3 credits) is the fallback. `tools/art/autosprite_import.py` brings every clip back to the
 palette, scale and outline of 12.3 (`--loop` finds a clean cycle in a full-rate sheet); `tools/art/autosprite_fetch.py`
 stores the source sheets compactly in `art/autosprite/`. One clip feeds several game animations (the jump clip gives
@@ -634,19 +639,22 @@ rise, apex and fall; the sword combo gives slash 2, slash 3 and the down strike)
 
 **Swords:** attack-move clips draw the sword. Where the blade is visible in a frame it is kept (on the stone and sky
 ramps) and the frame is marked `art_blade`, so the game does not draw a second one; where the clip blurs it out
-(the fast lunges of slash 1 and 2) the game draws its own blade from the code rig's angle, which also shows the
-equipped weapon. Recoloring the drawn blade per weapon is a later job.
+the game draws its own blade from the code rig's angle. The hooded hero's clips show the sword in every picked swing
+frame, so all five swings use the art blade; at 2x density a code-drawn blade would also look coarse beside the art.
+Showing the equipped weapon (longer blades, recolors) is a later job.
 
-Balance after the player set: 357 credits, about 35 pro clips.
+Balance after the hooded hero's set: 148 credits, about 14 pro clips. The redesign (concepts, the new base and its
+leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
 |-----|-------|---------|-------|
 | Tests (turbo idle, turbo vs pro run), spent | 3 | 20 | 4% |
-| Player, spent: HD pose, idle, run, jump, dash, wall slide, hurt, death, cast, block, drink (pro); quick strike and triple combo (moves) | 13 | 113 | 23% |
+| Player, first design (retired), spent | 13 | 113 | 23% |
+| Player redesign, spent: concepts, base and leg fix, trial idle + run, full set of 10 pro clips and 2 sword moves | 14 | 145 | 30% |
 | Enemies in the game now (Monodron, Hornet, Rot Dwarf): HD pose + move + attack each | 6 | 69 | 14% |
-| NPCs (11): HD pose + one talk/idle clip each | 11 | 143 | 29% |
+| NPCs: only if credits are topped up (they stay code-drawn) | 0 | 0 | 0% |
 | Bosses: key clips for the rigged parts (Rokusutahn's head first) | 4 | 40 | 8% |
-| Reserve for later enemies, fixes and regeneration | | 105 | 22% |
+| Reserve for later enemies, fixes and regeneration | | 103 | 21% |
 | **Total** | | **490** | |
 
 If credits run short, cut NPC clips first (they can stay code-drawn), then enemies (more recolors, more code frames),

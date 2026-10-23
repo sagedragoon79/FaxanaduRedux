@@ -25,3 +25,9 @@ date,asset,operation,credits,result,notes
 2026-10-23,monodron / hornet / rot_dwarf clips,regenerate none; download + import,0,ok (art/autosprite/{monodron,hornet,rot_dwarf}),all three enemies imported; balance 284
 2026-10-23,hero base from Sean reference (hooded ranger),upload_character free + generate_pose,3,queued (ref cmvkgcyl7006two89klukb557),Sean sent a halfling reference; asking for a taller slender elf; balance 281 after
 2026-10-23,elf hero v2 base,upload_character (pose image),0,ok (cmvkgfgy8007pwo89gj71xqcp),tall slender hooded ranger from Sean reference; balance 281
+2026-10-23,elf hero v2 idle + run,generate_spritesheet pro 4s 64f@256 ultra bg x2,20,queued (videos cmvkgpcd5009eko85q90bh5p6 cmvkgpcec009gko85h0qsxawh),Sean chose 2x detail; balance 261 after
+2026-10-23,elf hero v2 shorter legs,generate_pose,3,queued (cf_09cde545),Sean: legs a tad too long; balance 258 after
+2026-10-23,elf hero v3 base,upload_character (shorter-legs pose),0,ok (cmvkgu36o002f1g8yyrxrwqbp),v2 idle+run (20) superseded by the leg fix; kept for pipeline tests; balance 258
+2026-10-23,elf hero v3 full set (idle/run/jump/dash/hurt/death/cast/block/wall slide/drink),generate_spritesheet pro 4s 64f@256 ultra bg x10,100,queued (videos cmvkhakk6 cmvkhakhf cmvkhakfq cmvkhakqz cmvkhakzj cmvkhaksk cmvkhakuq cmvkhakx4 cmvkhaklx cmvkhakl2),Sean OK'd the shorter-legged base; balance 158 after
+2026-10-23,elf hero v3 sword quick_strike + triple_combo,generate_attack_moves 48f@256 ultra bg,10,queued (videos cmvkhaqmo cmvkhaqii),slash sources; balance 148 after
+2026-10-23,elf hero v3 clips (all 12),regenerate_single_spritesheet full rate@256 (moves 1024 then halved to 512) ultra bg,0,ok (art/autosprite/ranger/*.png),free re-cuts; all 17 player animations imported at 2x density with own 56-color palette; old elf sources removed; balance 148

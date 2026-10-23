@@ -183,11 +183,22 @@ def write_sheet(name, cell, origin, animations, render):
     """animations: [(anim name, [frame specs], playback sequence, fps, loop)].
     render(spec) -> (sheet image, mask image, per-frame metadata dict)."""
     SPRITES.mkdir(parents=True, exist_ok=True)
-    cw, ch = cell
     # Render the code-drawn frames, then swap in any Autosprite imports (autosprite_import.py).
+    # A sheet with imports at density 2 is written at double size; its code-drawn frames
+    # are blown up to match and the metadata stays in world pixels.
+    d = autosprite_import.density(name)
+    cell, origin = (cell[0] * d, cell[1] * d), (origin[0] * d, origin[1] * d)
+    cw, ch = cell
     rendered = []
     for anim, frames, seq, fps, loop in animations:
-        rendered.append([anim, [render(spec) for spec in frames], seq, fps, loop])
+        out = []
+        for spec in frames:
+            img, mask, fmeta = render(spec)
+            if d > 1:
+                img = img.resize((cw, ch), Image.NEAREST)
+                mask = mask.resize((cw, ch), Image.NEAREST)
+            out.append((img, mask, fmeta))
+        rendered.append([anim, out, seq, fps, loop])
     imports = autosprite_import.imported(name, cell, origin, {r[0]: [f[2] for f in r[1]] for r in rendered})
     for r in rendered:
         if r[0] in imports:
@@ -201,6 +212,15 @@ def write_sheet(name, cell, origin, animations, render):
     sheet = Image.new("RGBA", (cols * cw, rows * ch), (0, 0, 0, 0))
     masks = Image.new("RGBA", (cols * cw, rows * ch), (0, 0, 0, 0))
     meta = {"cell": [cw, ch], "origin": list(origin), "columns": cols, "animations": {}}
+    if d > 1:
+        meta["density"] = d
+    if autosprite_import.own_colors(name):
+        # The imported frames use the sheet's own palette (design bible 12.2), plus the
+        # master outline and any master ramps the code-drawn frames use.
+        meta["own_palette"] = True
+    flags = autosprite_import.flags(name)
+    if flags:
+        meta["flags"] = flags
     for row, (anim, frames, seq, fps, loop) in enumerate(rendered):
         assert max(seq) < len(frames), (name, anim)
         info = []

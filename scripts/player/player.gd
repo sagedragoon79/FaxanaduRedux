@@ -154,9 +154,11 @@ func _ready() -> void:
 	visual = PlayerVisual.new()
 	visual.player = self
 
-	# The scarf is added first so it draws behind the body.
+	# The scarf is added first so it draws behind the body. A sheet whose art
+	# carries its own cloak turns it off (flags "scarf": false).
 	scarf = Scarf.new()
 	scarf.player = self
+	scarf.visible = Sheet.flag(PlayerVisual.SHEET_NAME, "scarf", true)
 	add_child(scarf)
 	add_child(visual)
 
