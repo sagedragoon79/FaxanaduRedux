@@ -167,6 +167,7 @@ func _enter(room_id: String) -> void:
 	room = next
 	add_child(room)
 	backdrop.set_zone(room.zone)
+	Music.for_room(room)
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player)
 	room.add_child(player)

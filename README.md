@@ -5,7 +5,7 @@ The full design lives in [docs/design-bible.md](docs/design-bible.md).
 
 ## Status
 
-**M3: vertical slice, in progress.** A title menu starts a new game at the West Gate of
+**M3: vertical slice, done (pass 03 in docs/loop).** A title menu starts a new game at the West Gate of
 Eolis. Six Eolis rooms (King, Guru, shops, townsfolk) and nine Trunk Hollows rooms (sap
 pools, Monodrons, Hornets, Rot Dwarves, the Climbing Glove, secrets, save shrines) are
 connected by doors, with a map, saving, ranks, a skill tree, shops and Jack doors. The Root

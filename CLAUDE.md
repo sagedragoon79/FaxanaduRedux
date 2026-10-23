@@ -11,7 +11,9 @@ bible changes substantially (link in the project memory).
 - Run tests: `GODOT=<godot binary> tools/run_tests.sh` (must pass before merging).
 - Screenshot a room: `GODOT=<godot binary> tools/screenshot.sh out.png [tileX,tileY] [room]`.
   Look at screenshots of anything visual you change.
-- Regenerate sound effects: `python3 tools/audio/sfxgen.py`. Palette: `python3 tools/art/palette.py`.
+- Regenerate sound effects: `python3 tools/audio/sfxgen.py`. Placeholder music and ambience:
+  `python3 tools/audio/musicgen.py` (needs ffmpeg). A file Sean supplies with the same name in
+  `assets/music/` (.ogg, .mp3 or .wav) replaces a placeholder. Palette: `python3 tools/art/palette.py`.
 - Regenerate zone tilesets and parallax backgrounds: `python3 tools/art/tilegen.py` (every new
   zone folder in `levels/` needs a material spec there; a test checks it).
 
