@@ -15,7 +15,7 @@ const BOSSES := {
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
 	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
 	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
-		"text": "Its light opens the way to the Spring of Mist. Your magic grows."},
+		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0

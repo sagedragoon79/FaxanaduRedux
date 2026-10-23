@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -657,6 +657,7 @@ func test_sunken_chapel_wakes_the_lantern_widow() -> void:
 		if l.is_in_group("light"):
 			lit += 1
 	check(lit == Ripasheiku.LANTERNS, "each lantern is a light in the fog")
+	check(Music.track == "ripasheiku", "the fight plays her own theme (%s)" % Music.track)
 	await _until(func() -> bool: return r.state == "stalk", 120)
 	w.player.teleport(r.global_position + Vector2(-120, 18))
 	await frames(3)

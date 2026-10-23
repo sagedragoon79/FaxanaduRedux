@@ -176,7 +176,7 @@ func hit_segment(seg: BossSegment, _damage: int, _dir: Vector2) -> void:
 	if l == null or l.dead or state in ["dormant", "intro", "dying"]:
 		return
 	l.shatter()
-	Sfx.play("break", 0.05, 0.0)
+	Sfx.play("lantern_break", 0.05, 0.0)
 	Sfx.play("wail", 0.1, -6.0)
 	Feel.hitstop(0.06)
 	var d := Dust.new()
@@ -282,18 +282,20 @@ func _think(delta: float) -> void:
 				else:
 					_next_hang = "web"
 					set_state("drop_tell")
+					Sfx.play("skitter", 0.1, 0.0)
 		"web_tell":
 			if state_time >= tell(WEB_TELL):
 				web_tip = center()
 				set_state("web")
-				Sfx.play("whir", 0.1, -4.0)
+				Sfx.play("web_shoot", 0.1, 0.0)
 		"web":
 			var to := web_target - center()
 			web_tip = web_tip.move_toward(center() + to.normalized() * WEB_RANGE, WEB_SPEED * delta)
 			var p := player()
 			if p != null and not p.dead and p.body_rect().grow(4.0).has_point(web_tip):
 				set_state("reel")
-				Sfx.play("hit", 0.1, -4.0)
+				Sfx.play("web_catch", 0.05, 0.0)
+				Sfx.play("reel", 0.05, -2.0)
 			elif web_tip.distance_to(center()) >= WEB_RANGE - 1.0 or not arena.grow(8.0).has_point(web_tip):
 				set_state("hang")
 		"reel":
@@ -341,6 +343,7 @@ func _choose_floor(dist: float) -> void:
 func _start_climb() -> void:
 	_from = global_position
 	set_state("climb")
+	Sfx.play("skitter", 0.1, -2.0)
 
 
 func _start_drop() -> void:
