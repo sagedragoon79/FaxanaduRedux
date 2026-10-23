@@ -47,3 +47,13 @@ date,asset,operation,credits,result,notes
 2026-10-23,Iron Dwarf impact,generate_pose,3,queued (cf_aff04744-f61e-474f-a341-be0286c33b33),head in the floor; balance 104 after
 2026-10-23,Iron Dwarf wrench,generate_pose,3,queued (cf_6d1b94ab-e919-4f6e-9c26-b01197638b6e),pulling the stuck hammer; balance 101 after
 2026-10-23,Iron Dwarf import,import (walk clip + packed poses),0,ok (art/autosprite/iron_dwarf),gain 1.5 + lamp rim for the dark tower; balance 101
+2026-10-23,Foreman base,create_character pro,3,ok (cmvklxzbu002ulij0ilwj38wd),Rock Golem mini-boss (PR #34 gameplay); balance 98 after
+2026-10-23,Foreman walk,generate_spritesheet pro 4s,10,queued (video cmvklybcc000gh91en1kdty6n),heavy plod; balance 88 after
+2026-10-23,Foreman pound tell,generate_pose,3,queued (cf_746cb383-679f-40cc-9128-a457844e8966),fists overhead; balance 85 after
+2026-10-23,Foreman pound,generate_pose,3,queued (cf_fb697b06-d9e5-4c45-b004-3f25d916ca9e),two-fist slam; balance 82 after
+2026-10-23,Foreman charge tell,generate_pose,3,queued (cf_63e71a51-d976-4ed9-8b8b-a2e76c81e572),low crouch; balance 79 after
+2026-10-23,Foreman charge,generate_pose,3,queued (cf_b9612d5b-ad26-4552-85a5-09dc704d86c8),shoulder run; balance 76 after
+2026-10-23,Foreman stunned,generate_pose,3,queued (cf_63d8f7d5-4401-4b07-9f0a-02ce6904ed71),slumped, glow dimmed; balance 73 after
+2026-10-23,Foreman throw tell,generate_pose,3,queued (cf_1559b223-03d2-46fe-84bb-04ccd148921a),boulder overhead; balance 70 after
+2026-10-23,Foreman throw,generate_pose,3,queued (cf_76728e7e-510e-41a1-b2d0-b21ba88975e7),follow-through; balance 67 after
+2026-10-23,Foreman import,import (walk clip + packed poses),0,ok (art/autosprite/foreman),idle/recover from the base still; balance 67
