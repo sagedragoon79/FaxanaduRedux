@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, foreman and zoradohna (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -14,6 +14,8 @@ import json
 import math
 import sys
 from pathlib import Path
+
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pixelrig import PAL, ROOT, Canvas, ik, mat, mat_from, reach, write_sheet  # noqa: E402
@@ -971,6 +973,24 @@ GRUB_LUMP = [
 ]
 
 
+def autosprite_only(_):
+    """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
+    animation it names is swapped for the imported frames."""
+    blank = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
+    return blank, blank.copy(), {}
+
+
+RIPASHEIKU = [
+    ("idle", [None, None], [0, 1], 2, True),
+    ("walk", [None, None], [0, 1], 5, True),
+    ("sweep_tell", [None, None], [0, 1], 6, True),
+    ("sweep", [None], [0], 1, False),
+    ("pounce_tell", [None, None], [0, 1], 6, True),
+    ("pounce", [None], [0], 1, False),
+    ("dropped", [None, None], [0, 1], 2, True),
+]
+
+
 def main():
     write_sheet("monodron", (40, 32), (20, 30), MONODRON, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
@@ -983,6 +1003,7 @@ def main():
     write_sheet("minecart_rider", (72, 56), (36, 53), MINECART_RIDER, lambda r: r(None), density=MC_SCALE)
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
     write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
+    write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})
