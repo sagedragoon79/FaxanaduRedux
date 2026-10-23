@@ -21,8 +21,17 @@ animations of which sheet they replace:
       "idle": {"file": "idle.png", "frame_size": 256, "columns": 4, "count": 16,
                "pick": [0, 4, 8, 12],    source frames to keep (default: all)
                "seq": [...], "fps": 8, "loop": true,   playback (default: the code rig's)
-               "anchor": "ground"}       "ground": each frame's lowest pixel on the origin;
-    }                                    "fixed": the reference frame's feet (jumps, deaths)
+               "anchor": "ground",       "ground": each frame's lowest pixel on the origin;
+                                         "fixed": the reference frame's feet (jumps, deaths)
+               "feet_x": "self",         "self": find the feet in this sheet's first picked frame
+                                         (attack moves come in 512 px cells, figure bottom-centre)
+               "drop": ["blade"],        code-rig metadata keys to leave out (the clip draws the sword)
+               "meta": {"art_prop": true},  keys added to every frame's metadata
+               "extra_ramps": ["stone"], more palette ramps for this animation (a steel blade)
+               "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
+                                         the game draws itself
+               "erase_white": true}      also cut out the glow's near-white core
+    }
   }
 
 pixelrig.write_sheet() calls imported() for every sheet it writes, so spritegen.py and
@@ -31,6 +40,9 @@ Per-frame metadata (hand, neck, blade, eye...) comes from the code rig's frame a
 point of the animation; for the player, the neck and front hand are found in the pixels.
 
 Usage: python3 tools/art/autosprite_import.py             reruns spritegen.py and castgen.py
+       python3 tools/art/autosprite_import.py --loop elf/run.png [min max]
+                                                          finds the cleanest loop (start, length) in a
+                                                          full-rate sheet, for the manifest's "pick"
        python3 tools/art/autosprite_import.py --selftest  round trip: blows the code-drawn run up to a
                                                           fake 256 px sheet, imports it, checks the result
 """
@@ -106,30 +118,57 @@ def _n4(mask):
     return _shifted(mask, 1, 0) | _shifted(mask, -1, 0) | _shifted(mask, 0, 1) | _shifted(mask, 0, -1)
 
 
+def _erase_hue(src, lo, hi, white=False):
+    """Clears saturated pixels whose hue lies in [lo, hi] degrees (premultiplied RGBA), and
+    with `white` the near-white core of a glow too."""
+    a = src[..., 3:4]
+    rgb = np.where(a > 1e-6, src[..., :3] / np.maximum(a, 1e-6), 0)
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    c = mx - mn
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    safe = np.maximum(c, 1e-6)
+    h = np.where(mx == r, ((g - b) / safe) % 6, np.where(mx == g, (b - r) / safe + 2, (r - g) / safe + 4)) * 60
+    sat = c / np.maximum(mx, 1e-6)
+    out = src.copy()
+    gone = (h >= lo) & (h <= hi) & (sat > 0.25) & (c > 0.12)
+    if white:
+        gone |= (sat < 0.15) & (mx > 0.8)
+    out[gone] = 0
+    return out
+
+
 class Importer:
     def __init__(self, name, cfg, cell, origin):
         self.name, self.cfg = name, cfg
         self.cell, self.origin = cell, origin
         self.dir = SOURCES / cfg["dir"]
-        keys = [k for k in PAL if k.split("-")[0] in cfg["ramps"]]
-        self.keys = keys
-        self.colors = np.array([PAL[k] for k in keys], np.uint8)
-        self.lab = _lab(self.colors)
+        self.use_ramps(cfg["ramps"])
         ref = cfg["animations"][cfg.get("reference", "idle")]
         frame = source_frames(ref, self.dir)[0]
         x0, y0, x1, y1 = _bbox(frame[..., 3])
         self.scale = cfg["height"] / float(y1 - y0 + 1)
         # The reference feet: bottom of the figure, centered on its lowest rows.
-        bottom = frame[..., 3][max(y0, y1 - 6):y1 + 1] >= 0.5
-        xs = np.nonzero(bottom.any(0))[0]
-        self.ref_x = (xs.min() + xs.max() + 1) / 2.0
+        self.ref_x = self.feet_x(frame)
         self.ref_y = y1 + 1.0
+
+    def use_ramps(self, ramps):
+        self.keys = [k for k in PAL if k.split("-")[0] in ramps]
+        self.colors = np.array([PAL[k] for k in self.keys], np.uint8)
+        self.lab = _lab(self.colors)
 
     def quantize(self, rgb):
         d = ((_lab(rgb)[:, None, :] - self.lab[None, :, :]) ** 2).sum(-1)
         return d.argmin(1)
 
-    def frame(self, src, anchor):
+    @staticmethod
+    def feet_x(frame):
+        """The middle of the figure's lowest rows, in source pixels."""
+        x0, y0, x1, y1 = _bbox(frame[..., 3])
+        bottom = frame[..., 3][max(y0, y1 - 6):y1 + 1] >= 0.5
+        xs = np.nonzero(bottom.any(0))[0]
+        return (xs.min() + xs.max() + 1) / 2.0
+
+    def frame(self, src, anchor, ref_x=None):
         """One source frame -> (RGBA image, white mask image, palette key grid)."""
         n = src.shape[0]
         s = self.scale
@@ -145,7 +184,7 @@ class Importer:
         if anchor == "ground":
             box = _bbox(src[..., 3])
             fy = box[3] + 1.0 if box else fy
-        ox = int(round(self.origin[0] - self.ref_x * s))
+        ox = int(round(self.origin[0] - (self.ref_x if ref_x is None else ref_x) * s))
         oy = int(round(self.origin[1] - fy * s))
         cw, ch = self.cell
         solid = np.zeros((ch, cw), bool)
@@ -219,9 +258,15 @@ def imported(name, cell, origin, code_meta):
         frames = []
         srcs = source_frames(spec, imp.dir)
         base = code_meta.get(anim) or [{}]
+        imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
+        if "erase" in spec:
+            srcs = [_erase_hue(src, *spec["erase"], white=spec.get("erase_white", False)) for src in srcs]
+        ref_x = imp.feet_x(srcs[0]) if spec.get("feet_x") == "self" else None
         for i, src in enumerate(srcs):
-            img, mask, grid = imp.frame(src, spec.get("anchor", "ground"))
+            img, mask, grid = imp.frame(src, spec.get("anchor", "ground"), ref_x)
             meta = base[min(len(base) - 1, i * len(base) // len(srcs))]
+            meta = {k: v for k, v in meta.items() if k not in spec.get("drop", [])}
+            meta.update(spec.get("meta", {}))
             if cfg.get("detect") == "elf":
                 meta = imp.detect(grid, meta)
             frames.append((img, mask, meta))
@@ -237,18 +282,23 @@ def selftest():
     import pixelrig
     import spritegen
     mod = pixelrig.autosprite_import  # this file as pixelrig sees it (not __main__)
-    real = json.loads((pixelrig.SPRITES / "player.json").read_text())["animations"]["run"]
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         (tmp / "elf").mkdir()
-        src = Image.open(pixelrig.SPRITES / "player.png")
+        # The code-drawn sheet, with no imports (the real one may hold Autosprite frames).
+        mod.SOURCES, mod.MANIFEST = tmp, tmp / "manifest.json"
+        sprites = pixelrig.SPRITES
+        pixelrig.SPRITES = tmp / "code"
+        spritegen.main()
+        pixelrig.SPRITES = sprites
+        real = json.loads((tmp / "code" / "player.json").read_text())["animations"]["run"]
+        src = Image.open(tmp / "code" / "player.png")
         row = real["row"] * 64
         sheet = Image.new("RGBA", (4 * 256, 2 * 256))
         for i in range(8):
             cell = src.crop((i * 64, row, i * 64 + 64, row + 64)).resize((256, 256), Image.BICUBIC)
             sheet.paste(cell, ((i % 4) * 256, (i // 4) * 256))
         sheet.save(tmp / "elf" / "run.png")
-        mod.SOURCES, mod.MANIFEST = tmp, tmp / "manifest.json"
         mod.MANIFEST.write_text(json.dumps({"player": {
             "dir": "elf", "ramps": ["night", "bark", "leaf", "gold"], "height": 42, "reference": "run",
             "detect": "elf", "animations": {"run": {"file": "run.png", "frame_size": 256, "columns": 4}}}}))
@@ -266,7 +316,41 @@ def selftest():
     assert overlap > 0.8 and worst <= 4, "round trip drifted"
 
 
+def find_loop(path, frame_size=256, min_len=6, max_len=40):
+    """(start, length, score) of the cut whose last frame flows best into its first: the
+    silhouette of frame start+length matches frame start. Autosprite clips hold several
+    cycles, so the shortest strong match is one cycle."""
+    sheet = np.asarray(Image.open(path).convert("RGBA"))[..., 3] >= 128
+    cols = sheet.shape[1] // frame_size
+    frames = []
+    for i in range(cols * (sheet.shape[0] // frame_size)):
+        x, y = (i % cols) * frame_size, (i // cols) * frame_size
+        f = sheet[y:y + frame_size, x:x + frame_size]
+        if not f.any():
+            break
+        frames.append(f)
+
+    def iou(a, b):
+        return (a & b).sum() / float(max(1, (a | b).sum()))
+
+    best = None
+    for start in range(len(frames)):
+        for length in range(min_len, min(max_len, len(frames) - start - 1) + 1):
+            score = iou(frames[start], frames[start + length])
+            # Prefer short loops: a two-cycle loop matches as well as a one-cycle loop.
+            if best is None or score > best[2] + 0.02 or (score >= best[2] - 0.005 and length < best[1]):
+                best = (start, length, score)
+    return best, len(frames)
+
+
 def main():
+    if "--loop" in sys.argv:
+        args = sys.argv[sys.argv.index("--loop") + 1:]
+        lo, hi = (int(args[1]), int(args[2])) if len(args) >= 3 else (6, 40)
+        (start, length, score), total = find_loop(SOURCES / args[0], min_len=lo, max_len=hi)
+        print(f"{args[0]}: {total} frames; loop start {start}, length {length} (match {score:.2f})")
+        print(f'  "pick": {list(range(start, start + length))}')
+        return
     if "--selftest" in sys.argv:
         selftest()
         return

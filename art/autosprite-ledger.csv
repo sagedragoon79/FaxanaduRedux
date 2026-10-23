@@ -1,3 +1,13 @@
 date,asset,operation,credits,result,notes
 2026-10-23,elf_wanderer base (upload of code sprite idle frame x10),upload_character,0,ok,free; character cmvkedf5r001j14mtays3bnw5; balance 490 before
 2026-10-23,elf_wanderer idle,generate_spritesheet turbo 16f@256,5,generated (sheet cmvkee6ep002m14mtsqwiuiof; download blocked by network policy),test call: 5 credits per turbo animation; balance 485 after
+2026-10-23,elf_wanderer idle,get_spritesheet + download,0,ok (art/autosprite/elf/idle.png),download now allowed; sheet imported for comparison
+2026-10-23,elf_wanderer run,generate_spritesheet turbo 24f@256,5,queued (job wf_31e01456),tier test: turbo vs pro on the same clip; balance 480 after
+2026-10-23,elf_wanderer run,generate_spritesheet pro 4s 32f@256,10,queued (job wf_6c1f57b2),tier test: pro 4s; balance 470 after
+2026-10-23,elf_wanderer run (turbo + pro),regenerate_single_spritesheet all frames@256 ultra bg x2,0,queued,free re-cut of the two test videos at full frame rate
+2026-10-23,elf_wanderer HD side idle,generate_pose,3,queued (job cf_a0aa6023),sharper HD base image so pro clips drift less; balance 467 after
+2026-10-23,elf_wanderer HD base,upload_character (HD side idle pose),0,ok,free; character cmvkexbot00w0vd98tdlkmcx5 is the new player base
+2026-10-23,elf HD idle + run,generate_spritesheet pro 4s 64f@256 ultra bg x2,20,queued (jobs wf_94f9aa20 wf_64308e13),Sean asked for HD quality over the cheapest tier; balance 447 after
+2026-10-23,elf HD jump/dash/hurt/death/cast/block/wall slide/drink,generate_spritesheet pro 4s 64f@256 ultra bg x8,80,queued (videos cmvkf1inp cmvkf1iyy cmvkf1j16 cmvkf1ixy cmvkf1ivz cmvkf1iuk cmvkf1iot cmvkf1itg),rest of the player set; balance 367 after
+2026-10-23,elf HD sword quick_strike + triple_combo,generate_attack_moves 48f@256 ultra bg,10,queued (videos cmvkf1le0 cmvkf1lf7),slash1-3 source; balance 357 after
+2026-10-23,elf HD clips (all 12),regenerate_single_spritesheet full rate@256 (512 for moves) ultra bg,0,ok (art/autosprite/elf/*.png),free re-cuts; all 17 player animations imported; balance 357
