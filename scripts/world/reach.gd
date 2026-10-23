@@ -7,8 +7,9 @@ extends RefCounted
 ## It is a conservative approximation of the real controller. A node is a
 ## standing spot: room, tile column x and the tile row y holding the feet, with
 ## three clear tiles for the body and support below. Moves are walking, walking
-## off ledges (with some drift), jumps within the safe envelope, doors, and,
-## with the Climbing Glove, climbing any wall face. Numbers are a little under
+## off ledges (with some drift), jumps within the safe envelope, doors, with
+## the Climbing Glove climbing any wall face, and with the Mattock pogo bounces
+## off spikes and thorn bulbs (see drop()). Numbers are a little under
 ## the movement spec so a route that passes here is comfortable in play.
 
 ## Safe jump envelope in tiles: rise -> max horizontal distance.
@@ -101,7 +102,9 @@ func standable(room_id: String, x: int, y: int) -> bool:
 
 
 ## Where something falling down column x from row y lands, or -1 if it leaves
-## the room (through a floor door) or never lands.
+## the room (through a floor door) or never lands. With the Mattock, a fall onto
+## spikes or a thorn bulb is a pogo: it "lands" just above the hazard, and the
+## bounce works like a jump from there.
 func drop(room_id: String, x: int, y: int) -> int:
 	var h: int = rooms[room_id].size.y
 	var yy := y
@@ -109,6 +112,8 @@ func drop(room_id: String, x: int, y: int) -> int:
 		if not clear(room_id, x, yy):
 			return -1
 		if HAZARD.contains(ch(room_id, x, yy)):
+			if abilities.get("mattock", false) and yy > y:
+				return yy - 1
 			return -1
 		if supported(room_id, x, yy):
 			return yy
@@ -173,7 +178,7 @@ func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
 				out.append(key(r, cx, top))
 			else:
 				var land := drop(r, cx, top)
-				if land >= 0 and land != y:
+				if land >= 0:
 					out.append(key(r, cx, land))
 
 

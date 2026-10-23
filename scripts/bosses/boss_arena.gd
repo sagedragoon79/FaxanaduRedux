@@ -12,7 +12,7 @@ signal won
 const BOSSES := {
 	"rokusutahn": {"ring": "elf", "ring_name": "Elf Ring", "skill_points": 1},
 	"foreman": {"ability": "mattock", "title": "Mattock",
-		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone."},
+		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -80,7 +80,7 @@ func _start() -> void:
 			return
 	room.add_child(boss)
 	boss.begin()
-	Music.play("boss", 0.5)
+	Music.play(BOSSES.get(boss_id, {}).get("music", "boss"), 0.5)
 	started.emit()
 
 
@@ -132,6 +132,7 @@ func _seal(n: int) -> void:
 		_:
 			return
 	var seal := ArenaSeal.new()
+	seal.style = "iron" if room.zone == "tower" else "roots"
 	seal.size = area.size
 	seal.position = area.position
 	room.add_child(seal)

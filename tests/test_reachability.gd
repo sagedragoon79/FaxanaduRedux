@@ -8,6 +8,8 @@ const PICKUPS := "GLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
+## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock.
+const MATTOCK_ROOMS := ["tower/forepaw_stair", "tower/forepaw_gate", "tower/ore_vault"]
 
 
 func _texts() -> Dictionary:
@@ -82,14 +84,16 @@ func test_with_glove_everything_is_reachable() -> void:
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
 	for id: String in reach.rooms:
-		if not rooms.has(id):
+		if not rooms.has(id) and not MATTOCK_ROOMS.has(id):
 			missing_rooms.append(id)
 	check(missing_rooms.is_empty(), "with the glove and keys every room is reachable: missing %s" % [missing_rooms])
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]) and not MATTOCK_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
+	var opened := MATTOCK_ROOMS.filter(func(id: String) -> bool: return rooms.has(id))
+	check(opened.is_empty(), "the cracked stone keeps the Mattock rooms shut: %s" % [opened])
 
 
 func test_amber_secrets_need_the_spring() -> void:
@@ -112,11 +116,43 @@ func test_amber_keeps_everything_reachable() -> void:
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not MATTOCK_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with amber, every pickup is still reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
 	check(stuck.is_empty(), "with amber, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+func test_with_the_mattock_everything_is_reachable() -> void:
+	# The Act I set: glove, Mattock (from the Foreman), keys, and the Spring restored.
+	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true}, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var rooms := _rooms_reached(nodes)
+	var missing_rooms: Array[String] = []
+	for id: String in reach.rooms:
+		if not rooms.has(id):
+			missing_rooms.append(id)
+	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
+	var missing: Array = []
+	for p: Array in _pickups(reach):
+		if not reach.touchable(nodes, p[0], p[2], p[3]):
+			missing.append(p)
+	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
+	var stuck := reach.stuck(nodes, _save_spots(reach))
+	check(stuck.is_empty(), "with the Mattock, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
+	# A floor of spikes too wide to jump: only pogo bounces cross it.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 6, 19, "^", 26, 1)
+	put_tiles(rows, 34, 19, "L")
+	var texts := {"t/pit": room_text(["name: Pit"], rows)}
+	var bare := Reach.new(texts, {"glove": true})
+	check(not bare.touchable(bare.reachable(bare.spot_of("t/pit", "P")), "t/pit", 34, 19), "the spike floor can't be crossed without the Mattock")
+	var pogo := Reach.new(texts, {"glove": true, "mattock": true})
+	check(pogo.touchable(pogo.reachable(pogo.spot_of("t/pit", "P")), "t/pit", 34, 19), "with it, the player pogoes across")
 
 
 func test_checker_respects_walls() -> void:
