@@ -58,6 +58,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
+| `X` | Wing Boots (ability pickup: double jump; glows in the fog) |
 | `L` | Life Fruit (+1 mask) |
 | `W` | Mana Dew (+10 max MP) |
 | `F` | Potion Shard (3 = +1 flask charge) |

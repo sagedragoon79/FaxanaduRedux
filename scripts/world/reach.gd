@@ -9,11 +9,15 @@ extends RefCounted
 ## three clear tiles for the body and support below. Moves are walking, walking
 ## off ledges (with some drift), jumps within the safe envelope, doors, with
 ## the Climbing Glove climbing any wall face, and with the Mattock pogo bounces
-## off spikes and thorn bulbs (see drop()). Numbers are a little under
+## off spikes and thorn bulbs (see drop()), and with the Wing Boots a higher,
+## longer jump (BOOT_JUMP). Numbers are a little under
 ## the movement spec so a route that passes here is comfortable in play.
 
 ## Safe jump envelope in tiles: rise -> max horizontal distance.
 const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
+## With the Wing Boots: a second jump at the top adds three tiles of rise
+## (double_jump_height 48) and keeps the player in the air longer.
+const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
 const DROP_DRIFT := 4
 const RISE_FROM_FLOOR_DOOR := 4
 const SOLID := "#CJ"
@@ -167,7 +171,8 @@ func neighbors(k: String) -> Array:
 ## A jump from (x, y): rise straight up to the target's height (head room in
 ## column x), then travel across with the body clear, then land.
 func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
-	for rise: int in JUMP:
+	var envelope: Dictionary = BOOT_JUMP if abilities.get("boots", false) else JUMP
+	for rise: int in envelope:
 		var top := y - rise
 		var ok := true
 		for yy in range(top - 2, y - 2):
@@ -176,7 +181,7 @@ func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
 				break
 		if not ok:
 			break
-		for dx in range(1, int(JUMP[rise]) + 1):
+		for dx in range(1, int(envelope[rise]) + 1):
 			var cx := x + s * dx
 			if not body_clear(r, cx, top):
 				break

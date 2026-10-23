@@ -4,10 +4,12 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GLWF*$SN"
+const PICKUPS := "GXLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
+## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
+const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
 ## or above the flue damper, open once Zoradohna falls (the "winch" ability),
 ## and the Mist, reached by the ore road east of the Deep Workings (its rooms
@@ -15,7 +17,7 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
-	"mist/veiled_rise", "mist/victim_causeway"]
+	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow"]
 
 
 func _texts() -> Dictionary:
@@ -142,7 +144,7 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -161,6 +163,27 @@ func test_bound_fog_holds_until_the_lantern_key() -> void:
 	var open := Reach.new(_texts(), set, true)
 	var opened := _rooms_reached(open.reachable(open.spot_of(START_ROOM, "P")))
 	check(opened.has("mist/veiled_rise") and opened.has("mist/victim_causeway"), "with the Lantern Key the shaft climbs to the causeway")
+
+
+func test_wing_boots_reach_the_high_perch() -> void:
+	# Bible 4.1 (A3): the Wing Boots wait in Feather Hollow, reachable without
+	# them; the Life Fruit on the perch above is six rows up, past any single jump.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
+	var bare := Reach.new(_texts(), set, true)
+	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
+	check(bare.touchable(nodes, "mist/feather_hollow", 30, 15), "the Wing Boots can be reached without them")
+	for s: Array in BOOT_SECRETS:
+		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Wing Boots" % [s])
+	set["boots"] = true
+	var reach := Reach.new(_texts(), set, true)
+	var with_boots := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var missing: Array = []
+	for p: Array in _pickups(reach):
+		if not reach.touchable(with_boots, p[0], p[2], p[3]):
+			missing.append(p)
+	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
+	var stuck := reach.stuck(with_boots, _save_spots(reach))
+	check(stuck.is_empty(), "with the Wing Boots, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
