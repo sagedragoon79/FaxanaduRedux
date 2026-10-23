@@ -385,6 +385,40 @@ func test_autotiles_match_their_neighbours() -> void:
 	room.queue_free()
 
 
+func test_footsteps_follow_the_surface_underfoot() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 20, 15, "-", 5)
+	put_tiles(rows, 30, 19, "~", 4)
+	put_tiles(rows, 3, 19, "P")
+	var room := Room.from_text(room_text(["name: T", "zone: tower"], rows), "t/steps")
+	arena.add_child(room)
+	var below := func(x: int, y: int) -> Vector2: return cell_feet(x, y) + Vector2(0, 2)
+	check(room.surface_at(below.call(5, 19)) == "iron", "Tower floors ring as iron (%s)" % room.surface_at(below.call(5, 19)))
+	check(room.surface_at(below.call(22, 14)) == "plank", "platforms are planks")
+	check(room.surface_at(below.call(31, 19)) == "sap", "a sap pool squelches")
+	check(room.surface_at(below.call(10, 10)) == "", "nothing underfoot in mid-air")
+	for s: String in ["stone", "moss", "plank", "iron", "sap"]:
+		check(ResourceLoader.exists("res://assets/sfx/step_%s.wav" % s), "a step sound for %s" % s)
+	var heard: Array[String] = []
+	var p := make_player(room, Vector2i(3, 19))
+	p.footstep.connect(func(surface: String) -> void: heard.append(surface))
+	await frames(5)
+	p.input.move_x = 1
+	await frames(60)
+	p.input.move_x = 0
+	check(heard.size() >= 2 and heard.has("iron"), "running plays iron footsteps (%s)" % [heard])
+	room.queue_free()
+	await frames(1)
+	var trunk := Room.from_text(room_text(["name: T", "zone: trunk"], grid_rows(10, 23)), "t/moss")
+	var paved := Room.from_text(room_text(["name: T", "zone: trunk", "surface: stone"], grid_rows(10, 23)), "t/paved")
+	arena.add_child(trunk)
+	arena.add_child(paved)
+	check(trunk.surface_at(below.call(5, 19)) == "moss", "the Trunk is soft moss")
+	check(paved.surface_at(below.call(5, 19)) == "stone", "a room's surface header overrides its zone")
+	trunk.queue_free()
+	paved.queue_free()
+
+
 func test_every_zone_has_a_tileset() -> void:
 	var missing: Array[String] = []
 	for zone: String in DirAccess.get_directories_at("res://levels"):

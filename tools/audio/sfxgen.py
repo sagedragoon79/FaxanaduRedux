@@ -281,5 +281,34 @@ def main():
     rumble = lowpass(osc(np.full(n, 70.0), "square", 0.5), 400) * env(n, 0.005, 1.0) * 0.5
     save("cart", mix(clack, rumble), 0.6)
 
+    # Footsteps per surface (design bible 11): the player plays step_<surface> for
+    # the ground underfoot. Each is short, quiet and differs in body and grain.
+    d = 0.07
+    n = int(RATE * d)
+    grit = highpass(noise(d), 2500) * env(n, 0.0005, 4.0) * 0.6
+    thump = lowpass(noise(d), 700) * env(n, 0.001, 2.5)
+    save("step_stone", mix(thump, grit), 0.5)
+
+    d = 0.09
+    n = int(RATE * d)
+    save("step_moss", lowpass(noise(d), slide(700, 250, d)) * env(n, 0.012, 2.0), 0.45)
+
+    d = 0.09
+    n = int(RATE * d)
+    knock = osc(slide(210, 150, d), "tri") * env(n, 0.001, 3.0)
+    scuff = lowpass(noise(d), 1600) * env(n, 0.001, 4.0) * 0.5
+    save("step_plank", mix(knock, scuff), 0.5)
+
+    d = 0.12
+    n = int(RATE * d)
+    ring = mix(osc(np.full(n, 1180.0), "sine"), osc(np.full(n, 1730.0), "sine") * 0.6,
+               osc(np.full(n, 2610.0), "sine") * 0.3) * env(n, 0.0005, 3.5) * 0.35
+    clank = lowpass(noise(0.03), 2200) * env(int(RATE * 0.03), 0.0005, 2.5)
+    save("step_iron", mix(clank, ring), 0.45)
+
+    d = 0.12
+    n = int(RATE * d)
+    save("step_sap", lowpass(noise(d), slide(250, 1400, d, 0.7)) * env(n, 0.02, 1.5), 0.45)
+
 if __name__ == "__main__":
     main()

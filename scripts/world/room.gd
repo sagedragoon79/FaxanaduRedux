@@ -7,6 +7,9 @@ const TILE := TilesetFactory.TILE
 ## One screen in tiles (640x360 px). Map cells and room sizes count in screens.
 const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
+## What each zone's ground is made of, for footsteps (design bible 11). A room's
+## `surface:` header overrides it; platforms are planks and sap pools are sap.
+const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron"}
 
 ## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
 var id := ""
@@ -494,6 +497,19 @@ func is_solid_at(world_pos: Vector2) -> bool:
 
 func is_one_way_at(world_pos: Vector2) -> bool:
 	return _one_way.has(cell_at(world_pos))
+
+
+## The ground under `world_pos` (a point just below the feet) for footsteps:
+## "stone", "moss", "plank", "iron" or "sap", or "" in mid-air.
+func surface_at(world_pos: Vector2) -> String:
+	if is_sap_at(world_pos + Vector2(0, -TILE * 0.5)):
+		return "sap"
+	if is_one_way_at(world_pos):
+		return "plank"
+	var cell := cell_at(world_pos)
+	if tiles.get_cell_source_id(cell) == -1:
+		return ""
+	return str(header.get("surface", ZONE_SURFACES.get(zone, "stone")))
 
 
 ## True if `world_pos` is inside a fake wall (a secret passage).
