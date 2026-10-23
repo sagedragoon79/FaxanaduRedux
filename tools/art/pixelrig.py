@@ -214,8 +214,11 @@ def write_sheet(name, cell, origin, animations, render, density=1):
     for r in rendered:
         if r[0] in imports:
             frames, seq, fps, loop = imports[r[0]]
+            rig_frames = len(r[1])
             r[1] = frames
-            r[2] = seq or (r[2] if max(r[2]) < len(frames) else list(range(len(frames))))
+            # The code rig's playback order only fits a clip with as many frames as the rig;
+            # a longer clip (a 12-frame walk for a 4-frame rig) plays every frame.
+            r[2] = seq or (r[2] if len(frames) == rig_frames else list(range(len(frames))))
             r[3] = fps or r[3]
             r[4] = r[4] if loop is None else loop
     cols = max(len(frames) for _, frames, _, _, _ in rendered)
