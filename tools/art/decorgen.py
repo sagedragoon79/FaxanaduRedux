@@ -374,6 +374,116 @@ def eolis_sconce(rng):
     return c
 
 
+# --- Tower of Trunk ------------------------------------------------------------
+
+def tower_rubble(rng):
+    c = Cell()
+    for _ in range(rng.randint(3, 5)):
+        x = rng.randint(3, 24)
+        w = rng.randint(5, 9)
+        h = rng.randint(4, 7)
+        col = rng.choice(("stone-3", "stone-2", "stone-4"))
+        c.disc(x + w / 2, H - h / 2, w / 2, h / 2 + 0.5, col)
+        c.rect(x + 1, H - h, w - 3, 1, "stone-5")
+        c.px(x + 1, H - h + 1, "stone-6")
+    # A bent rivet or two among the stones.
+    c.px(rng.randint(5, 25), H - 1, "bark-3")
+    c.outline("night-0")
+    return c
+
+
+def tower_lantern(rng):
+    """A dwarf's oil lantern left on the floor: the zone's warm light."""
+    c = Cell()
+    x = rng.randint(10, 18)
+    c.rect(x, H - 2, 8, 2, "stone-2")
+    c.rect(x + 1, H - 12, 6, 10, "stone-2")
+    c.rect(x + 2, H - 11, 4, 8, "ember-4")
+    c.rect(x + 3, H - 10, 2, 5, "gold-6")
+    c.px(x + 3, H - 9, "gold-7")
+    c.rect(x, H - 14, 8, 2, "stone-3")
+    c.line([(x + 2, H - 14), (x + 4, H - 18), (x + 6, H - 14)], "stone-3")
+    c.add_glow(x + 4, H - 8)
+    c.outline("night-0")
+    return c
+
+
+def tower_pick(rng):
+    """A worn mattock leaning on a crate of ore."""
+    c = Cell()
+    c.rect(14, H - 9, 12, 9, "bark-3")
+    c.rect(14, H - 9, 12, 1, "bark-4")
+    c.rect(14, H - 5, 12, 1, "bark-2")
+    for k in range(4):
+        c.px(16 + k * 3, H - 10, rng.choice(("crystal-4", "gold-4", "stone-4")))
+    c.line([(6, H - 1), (14, H - 22)], "bark-4")
+    c.line([(7, H - 1), (15, H - 22)], "bark-2")
+    c.line([(9, H - 24), (14, H - 22), (19, H - 19)], "stone-4")
+    c.line([(10, H - 25), (15, H - 23), (20, H - 20)], "stone-5")
+    c.outline("night-0")
+    return c
+
+
+def tower_hanging_lamp(rng):
+    c = Cell()
+    x = rng.randint(13, 18)
+    length = rng.randint(8, 20)
+    c.line([(x, 0), (x, length)], "stone-3")
+    c.rect(x - 4, length, 9, 2, "stone-3")
+    c.rect(x - 3, length + 2, 7, 6, "stone-2")
+    c.rect(x - 2, length + 3, 5, 4, "ember-4")
+    c.rect(x - 1, length + 3, 3, 3, "gold-6")
+    c.rect(x - 2, length + 8, 5, 1, "stone-3")
+    c.add_glow(x + 0.5, length + 5)
+    c.outline("night-0")
+    return c
+
+
+def tower_pipe(rng):
+    """A pipe out of the ceiling with a rusted joint and a slow drip."""
+    c = Cell()
+    x = rng.randint(8, 18)
+    n = rng.randint(10, 18)
+    c.rect(x, 0, 5, n, "stone-3")
+    c.rect(x, 0, 1, n, "stone-5")
+    c.rect(x + 4, 0, 1, n, "stone-2")
+    c.rect(x - 1, n - 4, 7, 3, "stone-4")
+    c.rect(x - 1, n - 2, 7, 1, "bark-2")
+    c.px(x + 2, n, "stone-2")
+    c.px(x + 2, n + 4, "sky-4")
+    c.outline("night-0")
+    return c
+
+
+def tower_wall_lamp(rng):
+    c = Cell()
+    y = 28
+    c.rect(0, y, 8, 2, "stone-3")
+    c.rect(0, y, 7, 1, "stone-5")
+    c.rect(6, y - 7, 5, 7, "stone-2")
+    c.rect(7, y - 6, 3, 5, "ember-4")
+    c.rect(8, y - 5, 1, 3, "gold-7")
+    c.rect(5, y - 8, 7, 1, "stone-3")
+    c.add_glow(8.5, y - 4)
+    c.outline("night-0")
+    return c
+
+
+def tower_gear_plate(rng):
+    """A small cog bolted to the wall, left from some long-stopped machine."""
+    c = Cell()
+    cx, cy = 3, rng.randint(22, 40)
+    c.disc(cx, cy, 8, 8, "stone-3")
+    for k in range(10):
+        ang = k / 10 * math.tau
+        c.rect(cx + math.cos(ang) * 9 - 1, cy + math.sin(ang) * 9 - 1, 3, 3, "stone-3")
+    c.disc(cx, cy, 5, 5, "stone-2")
+    c.disc(cx, cy, 2, 2, "stone-5")
+    c.px(cx - 4, cy - 5, "stone-5")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -386,6 +496,11 @@ ZONES = {
         "floor": [eolis_weeds, eolis_weeds, eolis_stones, eolis_weeds, eolis_stones, eolis_crate],
         "ceiling": [eolis_ivy, eolis_chain, eolis_banner],
         "wall": [eolis_sconce],
+    },
+    "tower": {
+        "floor": [tower_rubble, tower_rubble, tower_lantern, tower_pick, tower_rubble, eolis_crate],
+        "ceiling": [eolis_chain, tower_hanging_lamp, tower_pipe, eolis_chain],
+        "wall": [tower_wall_lamp, tower_gear_plate],
     },
 }
 

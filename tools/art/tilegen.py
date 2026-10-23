@@ -167,6 +167,55 @@ def cap_stone(img, ox, oy, seed, x0, x1, ramp="stone"):
             img.putpixel((ox + x, oy + 2), c("leaf-3"))
 
 
+def paint_plates(img, ox, oy, seed, ramp):
+    """Dwarven iron: square plates of 8x8 world pixels, bevelled and lit from the
+    top left, a rivet at each corner, and rust bleeding down from the odd rivet."""
+    pw = 8 * D
+    for y in range(T):
+        for x in range(T):
+            px, py = x // pw, y // pw
+            lx, ly = x % pw, y % pw
+            shade = 3 if hash2(px + ox // T * 2, py + oy // T * 2, seed) > 0.5 else 2
+            if lx == 0 or ly == 0:
+                col = f"{ramp}-1"
+            elif lx == 1 or ly == 1:
+                col = f"{ramp}-{shade + 2}"
+            elif lx == pw - 1 or ly == pw - 1:
+                col = f"{ramp}-{shade - 1}"
+            else:
+                col = f"{ramp}-{shade}"
+                # Brushed grain across the plate.
+                if (y * 7 + x // 5) % 13 == 0:
+                    col = f"{ramp}-{shade + 1}"
+                elif hash2(x, y, seed + 2) > 0.96:
+                    col = f"{ramp}-{shade - 1}"
+            img.putpixel((ox + x, oy + y), c(col))
+    for py in range(T // pw):
+        for px in range(T // pw):
+            for rx, ry in [(3, 3), (pw - 4, 3), (3, pw - 4), (pw - 4, pw - 4)]:
+                x, y = px * pw + rx, py * pw + ry
+                img.putpixel((ox + x, oy + y), c(f"{ramp}-6"))
+                img.putpixel((ox + x + 1, oy + y + 1), c(f"{ramp}-1"))
+                if hash2(x, y, seed + 5) > 0.82:
+                    # A rust streak running down from the rivet.
+                    for k in range(2, 2 + int(hash2(x, y, seed + 6) * 9)):
+                        if y + k < T and (x, y + k) != (x, py * pw + pw - 1):
+                            img.putpixel((ox + x, oy + y + k), c("bark-2" if k % 3 else "bark-3"))
+
+
+def cap_girder(img, ox, oy, seed, x0, x1, ramp="stone"):
+    """An iron girder along the top: a lit rim, a riveted web, a shadow, and rust."""
+    rows = [f"{ramp}-6", f"{ramp}-5", f"{ramp}-4", f"{ramp}-3", f"{ramp}-3", f"{ramp}-2", "night-0", f"{ramp}-1"]
+    for x in range(x0, x1):
+        for y, col in enumerate(rows):
+            if 2 <= y <= 4 and hash2(x, y, seed + 8) > 0.9:
+                col = "bark-3"
+            img.putpixel((ox + x, oy + y), c(col))
+        if x % 8 == 4:
+            img.putpixel((ox + x, oy + 3), c(f"{ramp}-7"))
+            img.putpixel((ox + x + 1 if x + 1 < x1 else ox + x, oy + 4), c(f"{ramp}-1"))
+
+
 ZONES = {
     "gym": {"painter": paint_bricks, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": None,
             "under": "stone-1", "outline": "night-0"},
@@ -174,6 +223,8 @@ ZONES = {
               "under": "stone-1", "outline": "night-0"},
     "trunk": {"painter": paint_wood, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": "sky-6", "cap_top": 4,
               "under": "bark-1", "outline": "night-0"},
+    "tower": {"painter": paint_plates, "ramp": "stone", "cap": "girder", "light": "leaf", "glow": None,
+              "under": "night-1", "outline": "night-0"},
 }
 
 
@@ -213,6 +264,8 @@ def paint_tile(img, ox, oy, mask, zone, seed):
         x1 = T if mask & E else T - D
         if z["cap"] == "moss":
             cap_moss(img, ox, oy, seed, x0, x1, z["light"], z["glow"], z.get("cap_top", 5))
+        elif z["cap"] == "girder":
+            cap_girder(img, ox, oy, seed, x0, x1, ramp)
         else:
             cap_stone(img, ox, oy, seed, x0, x1, ramp)
     # Inner corners: a dark notch where two solid sides meet an open diagonal.
@@ -525,6 +578,104 @@ def eolis_mid():
     return img
 
 
+def gear(img, cx, cy, r, teeth, col, hub_col, alpha=255):
+    """A gear silhouette: a toothed rim, spokes and a hub (atlas pixels)."""
+    for y in range(int(cy - r - 6), int(cy + r + 7)):
+        for x in range(int(cx - r - 6), int(cx + r + 7)):
+            dx, dy = x - cx, y - cy
+            d = math.hypot(dx, dy)
+            ang = math.atan2(dy, dx)
+            tooth = r + (5 if math.cos(ang * teeth) > 0.3 else 0)
+            if d > tooth:
+                continue
+            inner = r * 0.72
+            if d > inner or d < r * 0.22:
+                put(img, x, y, c(col, alpha))
+            elif min(abs(math.sin(ang * 3)), 1.0) * d < 4:
+                put(img, x, y, c(col, alpha))  # spokes
+            if d < r * 0.12:
+                put(img, x, y, c(hub_col, alpha))
+
+
+def tower_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
+    gradient(img, "night-0", "ember-0")
+    rng = random.Random(21)
+    # The tower's far shafts: tall stone columns with lit slit windows.
+    for i in range(6):
+        x0 = rng.randrange(BG_W)
+        w = rng.randrange(30, 60) * D
+        for y in range(BG_H):
+            for dx in range(w):
+                col = "night-1"
+                if (y // (12 * D)) % 2 == 0 and dx % (16 * D) == 0:
+                    col = "night-0"
+                if y % (12 * D) == 0:
+                    col = "night-0"
+                put(img, x0 + dx, y, c(col))
+        for wy in range(rng.randrange(20, 60) * D, BG_H, rng.randrange(60, 110) * D):
+            wx = x0 + w // 2 - 2 * D
+            for yy in range(wy, wy + 8 * D):
+                for xx in range(wx, wx + 3 * D):
+                    put(img, xx, yy, c("gold-3" if yy > wy + 2 else "gold-4"))
+    # Great gears turning in the dark.
+    for i in range(4):
+        gear(img, rng.randrange(BG_W), rng.randrange(80, BG_H - 80), rng.randrange(50, 110), rng.choice([10, 12, 14]),
+             "night-1", "ember-1")
+    # Sparks and lamp glints.
+    for _ in range(140):
+        put(img, rng.randrange(BG_W), rng.randrange(BG_H), c(rng.choice(["ember-3", "gold-3", "ember-2"])))
+    return img
+
+
+def tower_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(22)
+    # Cross-braced girders bolted between the walls.
+    for i in range(5):
+        x0 = i * BG_W // 5 + rng.randrange(-40, 40)
+        w = 10 * D
+        for y in range(BG_H):
+            for dx in range(w):
+                edge = dx in (0, w - 1)
+                col = "night-0" if edge else ("stone-1" if dx < 3 else "night-1")
+                if y % (24 * D) in (0, 1) and not edge:
+                    col = "stone-2"
+                put(img, x0 + dx, y, c(col))
+        # A diagonal brace to the next girder.
+        x1 = x0 + BG_W // 5
+        for k in range(0, BG_H, 160 * D):
+            y0 = k + rng.randrange(0, 40) * D
+            for t in range(x1 - x0):
+                yy = y0 + t * 60 * D // max(1, (x1 - x0))
+                for th in range(4 * D):
+                    put(img, x0 + t, yy + th, c("night-1" if 0 < th < 4 * D - 1 else "night-0"))
+    # Chains and hanging lamps.
+    for i in range(7):
+        x = rng.randrange(BG_W)
+        length = rng.randrange(60, 220) * D
+        for y in range(0, length):
+            if (y // 4) % 2 == 0:
+                put(img, x, y, c("stone-2"))
+                put(img, x + 1, y, c("stone-1"))
+            else:
+                put(img, x - 1, y, c("stone-2"))
+                put(img, x + 2, y, c("stone-1"))
+        for dy in range(12):
+            half = 3 + dy // 3 if dy < 9 else 6
+            for dx in range(-half, half + 1):
+                col = "stone-2" if dy < 3 or abs(dx) == half or dy > 9 else ("gold-6" if abs(dx) < 2 else "ember-4")
+                put(img, x + dx, length + dy, c(col))
+        for r, alpha in ((20, 110), (28, 60)):
+            for k in range(96):
+                ang = k / 96 * math.tau
+                px = x + int(math.cos(ang) * r)
+                py = length + 8 + int(math.sin(ang) * r)
+                if k % 2 == 0 and 0 <= py < BG_H and img.getpixel((px % BG_W, py))[3] == 0:
+                    put(img, px, py, c("ember-3", alpha))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -534,6 +685,7 @@ def gym_far():
 BACKGROUNDS = {
     "trunk": (trunk_far, trunk_mid),
     "eolis": (eolis_far, eolis_mid),
+    "tower": (tower_far, tower_mid),
     "gym": (gym_far, None),
 }
 

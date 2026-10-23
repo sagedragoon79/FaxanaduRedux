@@ -298,6 +298,41 @@ def track_trunk():
     return s.render(reverb=0.45)
 
 
+def anvil(rng, freq=1200.0, dur=0.6):
+    """A struck anvil: inharmonic partials that ring and die away."""
+    n = int(dur * RATE)
+    t = np.arange(n) / RATE
+    out = np.zeros(n)
+    for ratio, g in [(1.0, 1.0), (2.76, 0.5), (5.4, 0.25), (8.93, 0.12)]:
+        out += np.sin(2 * np.pi * freq * ratio * t) * g * np.exp(-t * (6 + ratio * 2))
+    out += fft_filter(rng.uniform(-1, 1, n), high=3000) * np.exp(-t * 60) * 0.4
+    return out * 0.3
+
+
+def track_tower():
+    rng = np.random.default_rng(41)
+    s = Song(bpm=92, bars=16)
+    root, scale = 43, SCALES["phrygian"]  # G phrygian: dark, metal, dwarven
+    prog = [0, 0, 1, 0, 0, 6, 1, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones[:2]:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, rng.uniform(-0.4, 0.4), 0.35)
+        # A plodding bass in fifths, like a hauling chant.
+        for k in range(4):
+            off = 0 if k % 2 == 0 else 4
+            s.add(bass(midi_hz(scale_note(root - 12, scale, deg + off)), s.beat * 0.85), b * 4 + k, 0, 0.8)
+        # Hammer on the one and three, an anvil ring on the four.
+        s.add(kick(0.3) * 0.7, b * 4, 0, 1.0)
+        s.add(kick(0.3) * 0.5, b * 4 + 2, 0, 0.8)
+        s.add(anvil(rng, rng.choice([1180.0, 1240.0])), b * 4 + 3, rng.uniform(-0.6, 0.6), 0.5)
+        for k in range(8):
+            s.add(hat(rng) * 0.5, b * 4 + k * 0.5, 0.3, 0.3 if k % 2 else 0.5)
+    melody(s, rng, root, scale, prog, lead, start_bar=4, octave=12, pan=-0.15, gain=0.55, density=0.5)
+    melody(s, rng, root, scale, prog, bell, start_bar=8, octave=24, pan=0.3, gain=0.35, density=0.3)
+    return s.render(reverb=0.5)
+
+
 def track_boss():
     rng = np.random.default_rng(51)
     s = Song(bpm=148, bars=16)
@@ -363,13 +398,45 @@ def amb_eolis():
     return out / (np.max(np.abs(out)) + 1e-9) * 0.5
 
 
+def amb_tower():
+    """Machinery deep in the walls: a low hum, distant hammer strikes, chain rattles."""
+    rng = np.random.default_rng(79)
+    dur = 22.0
+    n = int(dur * RATE)
+    t_all = np.arange(n + RATE * 3) / RATE
+    out = np.zeros((n + RATE * 3, 2))
+    hum = np.sin(2 * np.pi * 55 * t_all) * 0.15 + fft_filter(rng.uniform(-1, 1, len(out)), low=200) * 1.5
+    hum *= 0.8 + 0.2 * np.sin(2 * np.pi * t_all / 5.5)
+    out[:, 0] += hum
+    out[:, 1] += hum
+    for _ in range(9):
+        i = rng.integers(0, n)
+        hit = anvil(rng, rng.uniform(700, 1300), 1.2) * rng.uniform(0.15, 0.35)
+        hit = fft_filter(hit, low=2000)
+        pan = rng.uniform(-1, 1)
+        out[i:i + len(hit), 0] += hit * (1 - pan) / 2
+        out[i:i + len(hit), 1] += hit * (1 + pan) / 2
+    for _ in range(4):
+        i = rng.integers(0, n)
+        m = int(0.7 * RATE)
+        tt = np.arange(m) / RATE
+        rattle = fft_filter(rng.uniform(-1, 1, m), high=2500, low=7000) * (np.sin(2 * np.pi * 18 * tt) > 0.3)
+        rattle = rattle * np.sin(np.pi * tt / tt[-1]) * 0.15
+        out[i:i + m, :] += rattle[:, None]
+    loop = out[:n].copy()
+    loop[: len(out) - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
     "trunk": track_trunk,
+    "tower": track_tower,
     "boss": track_boss,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
+    "amb_tower": amb_tower,
 }
 
 
