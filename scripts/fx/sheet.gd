@@ -29,9 +29,16 @@ static func get_sheet(name: String) -> Dictionary:
 			"origin": Vector2(d.origin[0], d.origin[1]),
 			"columns": int(d.columns),
 			"density": float(d.get("density", 1)),
+			"own_palette": bool(d.get("own_palette", false)),
+			"flags": d.get("flags", {}),
 			"animations": d.animations,
 		}
 	return _cache[name]
+
+
+## A sheet-wide switch from the manifest's "flags" (e.g. "scarf": false).
+static func flag(name: String, key: String, default: Variant) -> Variant:
+	return get_sheet(name).flags.get(key, default)
 
 
 static func has_anim(name: String, anim: String) -> bool:

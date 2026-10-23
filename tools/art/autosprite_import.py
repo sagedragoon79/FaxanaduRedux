@@ -15,7 +15,15 @@ animations of which sheet they replace:
   "player": {                         sheet name in assets/sprites/
     "dir": "elf",
     "ramps": ["night", "bark", ...],  palette ramps the figure may use
-    "height": 42,                     reference figure height in px, before the outline
+    "height": 42,                     reference figure height in world px, before the outline
+    "colors": 40,                     instead of the master ramps, the sheet's own palette of this
+                                      many colors, cut from the reference animation (12.2: HD
+                                      characters); "ramps" and "extra_ramps" then only add colors
+    "flags": {"scarf": false},        sheet-wide switches written for the game (the hooded hero's
+                                      cloak is in the art, so the code scarf is off)
+    "density": 2,                     sheet pixels per world pixel (design bible 12.1, default 1):
+                                      the sheet is written at double size and drawn at half, so
+                                      the figure keeps its world size with twice the detail
     "reference": "idle",              animation whose first picked frame sets the scale
     "animations": {
       "idle": {"file": "idle.png", "frame_size": 256, "columns": 4, "count": 16,
@@ -39,6 +47,7 @@ pixelrig.write_sheet() calls imported() for every sheet it writes, so spritegen.
 castgen.py pick up the imported animations and keep the code-drawn ones for the rest.
 Per-frame metadata (hand, neck, blade, eye...) comes from the code rig's frame at the same
 point of the animation; for the player, the neck and front hand are found in the pixels.
+Metadata is always in world pixels, whatever the density.
 
 Usage: python3 tools/art/autosprite_import.py             reruns spritegen.py and castgen.py
        python3 tools/art/autosprite_import.py --loop elf/run.png [min max]
@@ -138,16 +147,48 @@ def _erase_hue(src, lo, hi, white=False):
     return out
 
 
+def density(name):
+    """Sheet pixels per world pixel for sheet `name` (1 unless the manifest says otherwise
+    and its reference source is downloaded)."""
+    cfg = load_manifest().get(name)
+    if not cfg or not (SOURCES / cfg["dir"] / cfg["animations"][cfg.get("reference", "idle")]["file"]).exists():
+        return 1
+    return int(cfg.get("density", 1))
+
+
+def flags(name):
+    """Sheet-wide switches for the game (manifest "flags", e.g. {"scarf": false}), once the
+    reference source is downloaded."""
+    cfg = load_manifest().get(name)
+    if not cfg or not (SOURCES / cfg["dir"] / cfg["animations"][cfg.get("reference", "idle")]["file"]).exists():
+        return {}
+    return cfg.get("flags", {})
+
+
+def own_colors(name):
+    """The size of sheet `name`'s own palette, or 0 if it uses the master ramps."""
+    cfg = load_manifest().get(name)
+    if not cfg or not (SOURCES / cfg["dir"] / cfg["animations"][cfg.get("reference", "idle")]["file"]).exists():
+        return 0
+    return int(cfg.get("colors", 0))
+
+
 class Importer:
     def __init__(self, name, cfg, cell, origin):
+        """`cell` and `origin` are in sheet pixels (world pixels times the density)."""
         self.name, self.cfg = name, cfg
         self.cell, self.origin = cell, origin
+        self.density = int(cfg.get("density", 1))
         self.dir = SOURCES / cfg["dir"]
-        self.use_ramps(cfg["ramps"])
+        self.own = {}
         ref = cfg["animations"][cfg.get("reference", "idle")]
-        frame = source_frames(ref, self.dir)[0]
+        frames = source_frames(ref, self.dir)
+        frame = frames[0]
         x0, y0, x1, y1 = _bbox(frame[..., 3])
-        self.scale = cfg["height"] / float(y1 - y0 + 1)
+        self.scale = cfg["height"] * self.density / float(y1 - y0 + 1)
+        if cfg.get("colors"):
+            self.own = self.own_palette(frames, int(cfg["colors"]))
+        self.use_ramps(cfg["ramps"])
         # The reference feet: bottom of the figure, centered on its lowest rows.
         self.ref_x = self.feet_x(frame)
         # The reference middle, for fliers whose origin is their center.
@@ -155,9 +196,34 @@ class Importer:
         self.ref_y = y1 + 1.0
 
     def use_ramps(self, ramps):
-        self.keys = [k for k in PAL if k.split("-")[0] in ramps]
-        self.colors = np.array([PAL[k] for k in self.keys], np.uint8)
+        self.keys = list(self.own) + [k for k in PAL if k.split("-")[0] in ramps]
+        self.colors = np.array([self.own.get(k) or PAL[k] for k in self.keys], np.uint8)
         self.lab = _lab(self.colors)
+        # Shades as dark as the outline's neighbor: the anti-aliased rim the outline replaces.
+        self.dark = [i for i, k in enumerate(self.keys) if k in ("night-0", "night-1")
+                     or (k in self.own and self.lab[i][0] <= _lab(np.array([PAL["night-1"]], np.uint8))[0][0])]
+
+    def small(self, src):
+        """A source frame area-averaged down to game scale: (rgb 0..1, alpha)."""
+        size = max(1, int(round(src.shape[0] * self.scale)))
+        chans = [np.asarray(Image.fromarray(src[..., c].astype(np.float32), "F")
+                            .resize((size, size), Image.BOX)) for c in range(4)]
+        small = np.stack(chans, -1)
+        alpha = small[..., 3]
+        rgb = np.where(alpha[..., None] > 1e-6, small[..., :3] / np.maximum(alpha[..., None], 1e-6), 0)
+        return rgb, alpha
+
+    def own_palette(self, frames, count):
+        """{"own-i": rgb} cut from the frames at game scale (median cut), darkest first."""
+        px = []
+        for src in frames:
+            rgb, alpha = self.small(src)
+            px.append((rgb[alpha >= 0.5] * 255).clip(0, 255).astype(np.uint8))
+        px = np.concatenate(px)
+        img = Image.fromarray(px.reshape(1, -1, 3), "RGB").quantize(count, Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+        pal = np.array(img.getpalette()[:count * 3], np.uint8).reshape(-1, 3)
+        pal = pal[np.argsort(_lab(pal)[:, 0])]
+        return {f"own-{i}": tuple(int(v) for v in c) for i, c in enumerate(pal)}
 
     def quantize(self, rgb):
         d = ((_lab(rgb)[:, None, :] - self.lab[None, :, :]) ** 2).sum(-1)
@@ -173,15 +239,8 @@ class Importer:
 
     def frame(self, src, anchor, ref_x=None):
         """One source frame -> (RGBA image, white mask image, palette key grid)."""
-        n = src.shape[0]
         s = self.scale
-        size = max(1, int(round(n * s)))
-        # Area-average the premultiplied frame down to game scale.
-        chans = [np.asarray(Image.fromarray(src[..., c].astype(np.float32), "F")
-                            .resize((size, size), Image.BOX)) for c in range(4)]
-        small = np.stack(chans, -1)
-        alpha = small[..., 3]
-        rgb = np.where(alpha[..., None] > 1e-6, small[..., :3] / np.maximum(alpha[..., None], 1e-6), 0)
+        rgb, alpha = self.small(src)
         # Where the frame lands in the cell: the reference feet (scaled) on the origin.
         fy = self.ref_y
         if anchor == "center":
@@ -204,7 +263,7 @@ class Importer:
         # Drop lone pixels, then the dark anti-aliased rim the outline replaces.
         lone = solid & ~(_shifted(solid, 1, 0) | _shifted(solid, -1, 0) | _shifted(solid, 0, 1) | _shifted(solid, 0, -1))
         solid &= ~lone
-        dark = np.isin(keys, [i for i, k in enumerate(self.keys) if k in ("night-0", "night-1")])
+        dark = np.isin(keys, self.dark)
         rim = solid & _n4(~solid) & dark
         solid &= ~rim
         outline = _n4(solid) & ~solid
@@ -224,11 +283,14 @@ class Importer:
         meta = dict(meta)
         c = _eye_center(grid)
         if c:
-            meta["eye"] = [round(c[0] - self.origin[0], 1), round(c[1] - self.origin[1], 1)]
+            d = self.density
+            meta["eye"] = [round((c[0] - self.origin[0]) / d, 1), round((c[1] - self.origin[1]) / d, 1)]
         return meta
 
     def to_point(self, x, y):
-        return [int(x - self.origin[0]), int(y - self.origin[1])]
+        """A sheet pixel as a point in world pixels from the origin."""
+        d = self.density
+        return [int(round((x - self.origin[0]) / d)), int(round((y - self.origin[1]) / d))]
 
     def detect(self, grid, meta):
         """The player's neck (top of the tunic) and front hand (forward-most skin away from the face)."""
@@ -263,8 +325,9 @@ def _eye_center(grid):
 
 def imported(name, cell, origin, code_meta):
     """{anim: (frames [(img, mask, meta)], seq or None, fps or None, loop or None)} for the
-    animations of sheet `name` that have Autosprite sources. `code_meta` is the code rig's
-    {anim: [per-frame metadata]} to carry over."""
+    animations of sheet `name` that have Autosprite sources. `cell` and `origin` are in sheet
+    pixels (see density()). `code_meta` is the code rig's {anim: [per-frame metadata]} to
+    carry over."""
     cfg = load_manifest().get(name)
     if not cfg:
         return {}
