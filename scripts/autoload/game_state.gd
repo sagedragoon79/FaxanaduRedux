@@ -75,6 +75,8 @@ static func fresh() -> Dictionary:
 		"ointments": 0,
 		"collected": {},
 		"visited": {},
+		## Room id -> [x, y] of each Guru you have spoken to: the Mantra Path's stops.
+		"gurus": {},
 		"flags": {},
 		"purse": {},
 		"save_room": "",
@@ -108,6 +110,29 @@ func flag(id: String) -> bool:
 
 func set_flag(id: String, value := true) -> void:
 	data.flags[id] = value
+
+
+## The Mantra Path (design bible 3.3): Guru-to-Guru travel, open once any
+## spring flows again.
+func mantra_path_open() -> bool:
+	for k: String in data.flags:
+		if k.begins_with("spring:") and bool(data.flags[k]):
+			return true
+	return false
+
+
+func meet_guru(room_id: String, pos: Vector2) -> void:
+	data.gurus[room_id] = [pos.x, pos.y]
+
+
+## The Gurus you could walk the Mantra Path to from `here` (room ids, sorted).
+func mantra_stops(here: String) -> Array:
+	var out := []
+	for k: String in data.gurus:
+		if k != here:
+			out.append(k)
+	out.sort()
+	return out
 
 
 func visit(room_id: String) -> void:

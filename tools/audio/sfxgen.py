@@ -256,5 +256,12 @@ def main():
         chord[chord_start:] += osc(np.full(seg, float(f)), "square", 0.5) * env(seg, 0.01, 1.2) * 0.3
     save("title", lowpass(mix(a, b * 0.8, chord), 5000), 0.55)
 
+    # The Forepaw smith's hammer on the anvil: a bright, inharmonic ring.
+    d = 0.5
+    partials = [(880, 1.0, 2.0), (2380, 0.5, 3.0), (3960, 0.3, 4.0), (5470, 0.15, 5.0)]
+    ring = mix(*[osc(np.full(int(RATE * d), float(f)), "sine") * env(int(RATE * d), 0.001, k) * g for f, g, k in partials])
+    tick = highpass(noise(0.02), 2500) * env(int(RATE * 0.02), 0.0005) * 0.9
+    save("anvil", mix(ring, tick), 0.5)
+
 if __name__ == "__main__":
     main()
