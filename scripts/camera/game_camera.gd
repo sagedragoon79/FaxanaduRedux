@@ -8,6 +8,10 @@ extends Camera2D
 ## image by it. The camera runs every rendered frame, interpolating the target
 ## between physics ticks, so motion stays smooth on high refresh rate displays.
 
+## Render pixels per world pixel (design bible 12.1). The world keeps its
+## 640x360 units; at 2 the camera zooms in on a 1280x720 render, so sprites
+## drawn at double density (Sheet "density") show their full detail.
+const DETAIL := 2
 const DEADZONE := Vector2(16, 24)
 const LOOK_AHEAD := 48.0
 const LOOK_AHEAD_EASE := 0.4
@@ -20,7 +24,8 @@ var target: Player
 ## Size of the visible area in world pixels (the base resolution).
 var view_size := Vector2(640, 360)
 var bounds := Rect2()
-## Fractional part of the camera position, in world pixels, in [0, 1).
+## Fractional part of the camera position below one render pixel, in world
+## pixels, in [0, 1 / DETAIL).
 var subpixel := Vector2.ZERO
 ## The unrounded camera center.
 var exact_position := Vector2.ZERO
@@ -40,6 +45,7 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	zoom = Vector2(DETAIL, DETAIL)
 	position_smoothing_enabled = false
 	if target:
 		snap_to_target()
@@ -90,7 +96,7 @@ func _process(delta: float) -> void:
 
 
 func _apply(exact: Vector2) -> void:
-	var whole := exact.floor()
+	var whole := (exact * DETAIL).floor() / DETAIL
 	subpixel = exact - whole
 	global_position = whole
 

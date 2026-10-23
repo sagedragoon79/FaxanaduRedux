@@ -23,3 +23,5 @@ date,asset,operation,credits,result,notes
 2026-10-23,rot_dwarf walk + axe chop + hurt,generate_spritesheet pro 4s 64f@256 ultra bg x3,30,queued (videos cmvkg06w8000eq907m4cxr9do cmvkg06yt000mq9078irtffp9 cmvkg073h000rq907xus4qvgj),pro for humanoids (as the elf); balance 293 after
 2026-10-23,hero redesign concepts A/B/C,create_character pro x3,9,ok (cmvkg2sdk0031ko85cfj6bjtl cmvkg34i40047ko85w6he6m30 cmvkg3gqf004pko85m5hq2xbv),Sean: the elf looks too much like Link; balance 284 after
 2026-10-23,monodron / hornet / rot_dwarf clips,regenerate none; download + import,0,ok (art/autosprite/{monodron,hornet,rot_dwarf}),all three enemies imported; balance 284
+2026-10-23,hero base from Sean reference (hooded ranger),upload_character free + generate_pose,3,queued (ref cmvkgcyl7006two89klukb557),Sean sent a halfling reference; asking for a taller slender elf; balance 281 after
+2026-10-23,elf hero v2 base,upload_character (pose image),0,ok (cmvkgfgy8007pwo89gj71xqcp),tall slender hooded ranger from Sean reference; balance 281
