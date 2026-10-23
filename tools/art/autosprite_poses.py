@@ -8,12 +8,14 @@ patch of cracked floor under an impact; this keys the white out (also where it i
 between the legs), clears the floor, keeps the figure (the largest connected part, so flying
 chips go too) and scales each still into one square cell.
 
-Usage: python3 tools/art/autosprite_poses.py DEST SRC[:cut=Y][:ground=Y][:x=X][:holes=Y] ... [--scale 0.25] [--size 256]
+Usage: python3 tools/art/autosprite_poses.py DEST SRC[:cut=Y][:ground=Y][:x=X][:holes=Y][:rest=1] ... [--scale 0.25] [--size 256]
        DEST and SRC are under art/autosprite/. cut=Y clears every row from source row Y down
        (the floor a hammer head sinks into); ground=Y clears pale, grey floor pixels from row Y
        down. x=X is the source column under the hips: it lands on the cell's middle, so the
        poses stand on one spot (the manifest then gives the cell's middle as "feet_x").
        holes=Y: only white closed in below row Y is keyed out (a glass dome above keeps it).
+       rest=1: the pose's lowest pixel rests on the cell's bottom (stills that each drew the
+       floor at a different height: a spider that crouches, rears or lies on her back).
        --scale is the pose's scale against the animation clips (a 1024 px pose of a figure
        drawn on a 256 px clip cell: 0.25).
 """
@@ -88,7 +90,11 @@ def main():
         # The hips (x=, default the still's middle) on the cell's middle, the feet where the pose had them.
         hip = opt.get("x", still.width // 2) * a.scale
         cell = Image.new("RGBA", (a.size, a.size), (0, 0, 0, 0))
-        cell.paste(small, (int(round(a.size / 2 - hip)), a.size - side))
+        top = a.size - side
+        if opt.get("rest"):
+            rows = np.nonzero(np.asarray(small)[..., 3].any(1))[0]
+            top = a.size - 1 - int(rows[-1])
+        cell.paste(small, (int(round(a.size / 2 - hip)), top), small)
         sheet.paste(cell, (k * a.size, 0))
     dest = SOURCES / a.dest
     dest.parent.mkdir(parents=True, exist_ok=True)

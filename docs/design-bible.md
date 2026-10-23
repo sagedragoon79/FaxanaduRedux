@@ -553,7 +553,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
   polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
   hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn, the Iron Dwarf, the Foreman,
-  Zoradohna and the zone tiles (the small Gear Bat stays code-drawn at 2x).
+  Zoradohna, Ripasheiku and the zone tiles (the small Gear Bat stays code-drawn at 2x).
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
@@ -659,9 +659,12 @@ the game's rooms gets a manifest `"gain"` before its palette is cut; the Iron Dw
 A second look that changes one spot (Zoradohna's phase 3: hatch open, crystal harness) is one more pose of the
 standing still, and `tools/art/autosprite_transplant.py` carries that change onto every other pose (turned and moved
 to where the spot sits). A spinning drill is the still with its thread slid along the axis
-(`tools/art/autosprite_screw.py`). Neither costs credits.
+(`tools/art/autosprite_screw.py`). Neither costs credits. Stills that each drew the floor at a different height (a
+spider that crouches, rears or lies on her back) are packed with `rest=1`, so the lowest pixel of each rests on the
+floor. Ripasheiku's sheet is made of poses alone (castgen writes empty placeholder frames for it); states without
+their own still borrow the nearest one, and her lanterns, souls and web stay code-drawn on top.
 
-Balance after the hooded hero's set, Rokusutahn's parts, the Iron Dwarf, the Foreman and Zoradohna: 46 credits, about 15 poses. The redesign (concepts, the new base and its
+Balance after the hooded hero's set, Rokusutahn's parts, the Iron Dwarf, the Foreman, Zoradohna and Ripasheiku: 22 credits, about 7 poses. The redesign (concepts, the new base and its
 leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
@@ -673,10 +676,11 @@ leg fix, a trial clip and the full set) cost 145 and came out of the NPC and res
 | NPCs: only if credits are topped up (they stay code-drawn) | 0 | 0 | 0% |
 | Bosses, Rokusutahn spent: three pro stills (head, plate, tail) | 3 | 9 | 2% |
 | Zoradohna (boss) spent: base and six poses; open look and drill spin made by code | 0 | 21 | 4% |
+| Ripasheiku (boss) spent: base and seven poses | 0 | 24 | 5% |
 | Bosses still to come: stills or key clips for their rigged parts | 3 | 10 | 2% |
 | Tower enemies, Iron Dwarf spent: base, walk clip, a rejected slam clip, five poses | 2 | 38 | 8% |
 | Foreman (mini-boss) spent: base, walk clip, seven poses | 1 | 34 | 7% |
-| Reserve for later enemies, fixes and regeneration | | 31 | 6% |
+| Reserve for later enemies, fixes and regeneration | | 7 | 1% |
 | **Total** | | **490** | |
 
 If credits run short, cut NPC clips first (they can stay code-drawn), then enemies (more recolors, more code frames),

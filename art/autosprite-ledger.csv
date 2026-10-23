@@ -65,3 +65,12 @@ date,asset,operation,credits,result,notes
 2026-10-23,Zoradohna slam,generate_pose,3,queued (cf_c2e5b395-9cbf-4d18-bb99-4d8f97b30736),crouched, nose down 18 deg; balance 49 after
 2026-10-23,Zoradohna open hatch,generate_pose,3,queued (cf_f3d546fe-dca7-4e1a-aa69-44b9ff9db3c8),phase 3 look: hatch open, pink crystal harness; balance 46 after
 2026-10-23,Zoradohna import,import (packed poses + transplanted open hatch + screw-slid drill),0,ok (art/autosprite/zoradohna),15 animations incl. open_ twins and freed; balance 46
+2026-10-23,Ripasheiku base,create_character pro,3,ok (cmvl0t02101zkmg612urh0dfl),Lantern Widow boss (PR #53 gameplay); balance 43 after
+2026-10-23,Ripasheiku walk A,generate_pose,3,queued (cf_bec155a5-783f-43ae-87bc-c4606a3ed408),legs 1+3 forward; balance 40 after
+2026-10-23,Ripasheiku walk B,generate_pose,3,queued (cf_905f0723-3841-41ac-91f3-1803de13b89f),legs 2+4 forward; balance 37 after
+2026-10-23,Ripasheiku sweep tell,generate_pose,3,queued (cf_3ceec6a9-729b-4629-a935-af1ba88810e2),front legs raised like scythes; balance 34 after
+2026-10-23,Ripasheiku sweep,generate_pose,3,queued (cf_d4c76307-933b-4965-802a-21db3f3fe197),raking low slash; balance 31 after
+2026-10-23,Ripasheiku pounce tell,generate_pose,3,queued (cf_3030626b-2778-4a64-943d-5ff112b71dd6),low crouch; balance 28 after
+2026-10-23,Ripasheiku pounce,generate_pose,3,queued (cf_4df692de-0bf0-4f88-a301-103fd946eef3),airborne, legs flung wide; balance 25 after
+2026-10-23,Ripasheiku dropped,generate_pose,3,queued (cf_47c59c69-0652-4e01-9bca-36aae9efc991),on her back, legs curled; balance 22 after
+2026-10-23,Ripasheiku import,import (packed poses rest=1; castgen placeholder rig),0,ok (art/autosprite/ripasheiku),7 animations; other states borrow the nearest; balance 22

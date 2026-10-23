@@ -15,11 +15,14 @@ extends Enemy
 ## Phase 3 (below 30%, or every lantern broken): she comes down for good, fully
 ## visible, fast and desperate: tells are a quarter shorter, never under
 ## Enemy.MIN_TELEGRAPH.
-## Code-drawn at 2x render density (`_px` and `_seg` take half-pixels).
+## Drawn from her Autosprite sheet at 2x (`ripasheiku`, design bible 13.2); the
+## lanterns, souls and web stay code-drawn (`_px` and `_seg` take half-pixels).
+## Without the sheet she falls back to a code-drawn body.
 
 signal defeated
 
 const DISPLAY_NAME := "Ripasheiku"
+const SHEET := "ripasheiku"
 const EPITHET := "The Lantern Widow"
 const MAX_HP := 260
 const PHASES := [0.66, 0.3]
@@ -416,6 +419,22 @@ func _draw() -> void:
 		white = int(state_time * 12.0) % 2 == 0
 	var jitter := Vector2(randf_range(-1, 1), 0).round() if state in ["drop_tell", "dying"] else Vector2.ZERO
 	draw_set_transform(jitter, 0.0, Vector2(facing, flip))
+	if Sheet.exists(SHEET):
+		if on_ceiling or state == "climb":
+			_seg(Vector2(0, -BODY_H * 2), Vector2(0, -BODY_H * 2 - 400), WEB, a * 0.5, 1.0)
+		# The sheet's origin is at her feet, BODY_H below her middle (above it, hanging).
+		draw_set_transform(jitter + Vector2(0, BODY_H * flip), 0.0, Vector2(facing, flip))
+		var anim := sheet_anim()
+		var f := Sheet.frame_at(SHEET, anim, state_time)
+		Sheet.draw(self, SHEET, anim, f, Color(1, 1, 1, a))
+		if white:
+			Sheet.draw(self, SHEET, anim, f, Color(1, 1, 1, 0.6 * maxf(a, 0.5)), true)
+		draw_set_transform(jitter, 0.0, Vector2(facing, flip))
+		_draw_souls(Vector2(-20, -10), t, a)
+		draw_set_transform(Vector2.ZERO)
+		_draw_lanterns(t)
+		_draw_web()
+		return
 	var rear := state == "pounce_tell" or state == "sweep_tell"
 	var walk := t * (9.0 if absf(_player_dx()) > 20.0 and state in ["stalk", "hang"] else 2.0)
 	# Web lines while she hangs: up to the vault.
@@ -447,11 +466,7 @@ func _draw() -> void:
 	draw_circle(ab + Vector2(-2, -3), 8.0, Color(BODY_LIGHT, a))
 	for r in [9.0, 5.0]:
 		draw_arc(ab, r, PI * 1.1, PI * 1.9, 10, Color(BONE, a * 0.8), 1.0)
-	# Freed souls cling to her as pale fire, one for each lantern broken.
-	for i in broken():
-		var sp := ab + Vector2(-6 + i * 5, -12 + sin(t * 5.0 + i) * 1.5)
-		draw_circle(sp, 2.5, Color(SOUL, a * 0.8))
-		draw_circle(sp + Vector2(0, -2), 1.2, Color(1, 1, 1, a))
+	_draw_souls(ab, t, a)
 	# The head: a veiled widow's face, bone-pale, lantern eyes.
 	var hd := Vector2(8, -6)
 	draw_circle(hd, 9.0, Color(OUTLINE, a))
@@ -471,6 +486,37 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO)
 	_draw_lanterns(t)
 	_draw_web()
+
+
+## The sheet animation for her state. The stills cover her key poses; the rest
+## borrow the nearest one (rearing for the web, the leap for the drop).
+func sheet_anim() -> String:
+	match state:
+		"stalk", "hang":
+			return "walk" if absf(velocity.x) > 1.0 else "idle"
+		"climb":
+			return "walk"
+		"intro", "web_tell", "reel":
+			return "sweep_tell"
+		"web":
+			return "sweep"
+		"drop":
+			return "pounce"
+		"flinch":
+			return "pounce_tell"
+		"dying":
+			return "dropped"
+		"sweep_tell", "sweep", "pounce_tell", "pounce", "dropped":
+			return state
+	return "idle"
+
+
+## Freed souls cling to her abdomen as pale fire, one for each lantern broken.
+func _draw_souls(ab: Vector2, t: float, a: float) -> void:
+	for i in broken():
+		var sp := ab + Vector2(-6 + i * 5, -12 + sin(t * 5.0 + i) * 1.5)
+		draw_circle(sp, 2.5, Color(SOUL, a * 0.8))
+		draw_circle(sp + Vector2(0, -2), 1.2, Color(1, 1, 1, a))
 
 
 func _draw_lanterns(t: float) -> void:
