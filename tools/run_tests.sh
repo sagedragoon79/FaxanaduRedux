@@ -5,4 +5,5 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 GODOT="${GODOT:-godot}"
 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
-"$GODOT" --headless --path . --fixed-fps 60 res://tests/test_runner.tscn -- "$@"
+# A script that fails to parse leaves Godot running with nothing to do, so cap the run.
+timeout "${TEST_TIMEOUT:-1500}" "$GODOT" --headless --path . --fixed-fps 60 res://tests/test_runner.tscn -- "$@"

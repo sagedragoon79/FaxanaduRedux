@@ -24,6 +24,7 @@ var doors := {}
 var _one_way := {}
 var _secret_cells := {}
 var _sap_cells := {}
+var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
 var _solid_look := {}
 var _secret_revealed := false
@@ -207,10 +208,8 @@ func build(text: String) -> void:
 			_spawn(tablet, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
 
 	if not _sap_cells.is_empty():
-		var sap := SapPool.new()
-		sap.cells = _sap_cells
-		sap.falls = SapPool.find_falls(_sap_cells, func(c: Vector2i) -> bool: return _solid_look.has(c))
-		add_child(sap)
+		_sap_pool()
+		_sap_node.falls = SapPool.find_falls(_sap_cells, func(c: Vector2i) -> bool: return _solid_look.has(c))
 
 	for spec: String in lists.get("npc", []):
 		var parts := spec.split(",")
@@ -251,6 +250,8 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(spring, pos)
 		"house":
 			_spawn(HouseFront.new(), pos)
+		"taproot":
+			_spawn(Taproot.new(), pos)
 		_:
 			push_warning("Unknown prop in %s: %s" % [id, kind])
 
@@ -348,6 +349,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(Hornet.new(), center)
 		"D":
 			_spawn_enemy(RotDwarf.new(), bottom_center)
+		"T":
+			_spawn_enemy(SapSpitter.new(), bottom_center)
 		"S":
 			_spawn(SaveShrine.new(), bottom_center)
 		"J":
@@ -456,3 +459,32 @@ func is_secret_at(world_pos: Vector2) -> bool:
 ## True if `world_pos` is inside a sap pool (slows the player).
 func is_sap_at(world_pos: Vector2) -> bool:
 	return _sap_cells.has(cell_at(world_pos))
+
+
+## A Sap Spitter's glob lands: a puddle of sap, up to three tiles wide, on the
+## floor around `world_pos`, that slows like a pool and dries after `seconds`.
+## Returns the cells it covered (none in mid-air or where sap already is).
+func splash_sap(world_pos: Vector2, seconds: float) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var at := cell_at(world_pos)
+	for dx in [0, -1, 1]:
+		var c: Vector2i = at + Vector2i(dx, 0)
+		if _sap_cells.has(c) or tiles.get_cell_source_id(c) != -1 or not is_solid_at(Vector2(c + Vector2i.DOWN) * TILE + Vector2(8, 8)):
+			continue
+		_sap_cells[c] = true
+		out.append(c)
+	if out.is_empty():
+		return out
+	_sap_pool()
+	get_tree().create_timer(seconds, false).timeout.connect(func() -> void:
+		for c in out:
+			_sap_cells.erase(c))
+	return out
+
+
+func _sap_pool() -> SapPool:
+	if _sap_node == null:
+		_sap_node = SapPool.new()
+		_sap_node.cells = _sap_cells
+		add_child(_sap_node)
+	return _sap_node
