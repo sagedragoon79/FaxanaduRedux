@@ -14,7 +14,6 @@ const SPORES := 40
 
 var _far: Texture2D
 var _mid: Texture2D
-var _font: Font
 var _t := 0.0
 var _spores: Array = []
 var _rng := RandomNumberGenerator.new()
@@ -24,7 +23,6 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_font = ThemeDB.fallback_font
 	_far = load(FAR) if ResourceLoader.exists(FAR) else null
 	_mid = load(MID) if ResourceLoader.exists(MID) else null
 	_rng.seed = 7
@@ -71,14 +69,13 @@ func _layer(tex: Texture2D, speed: float, y: float) -> void:
 func _logo(center: Vector2) -> void:
 	var title := "FAXANADU"
 	var size := 44
-	var w := _font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var w := PixelFont.width(title, size)
 	var pos := Vector2(roundf(center.x - w * 0.5), center.y)
 	# A drop shadow, then the letters; they brighten and dim slowly.
-	draw_string(_font, pos + Vector2(0, 3), title, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color("542512"))
-	draw_string(_font, pos, title, HORIZONTAL_ALIGNMENT_LEFT, -1, size, GOLD.lerp(GOLD_LIGHT, 0.12 + 0.12 * sin(_t * 1.3)))
+	PixelFont.draw(self, pos + Vector2(0, PixelFont.scale_for(size)), title, size, Color("542512"))
+	PixelFont.draw(self, pos, title, size, GOLD.lerp(GOLD_LIGHT, 0.12 + 0.12 * sin(_t * 1.3)))
 	var sub := "R  E  D  U  X"
-	var sw := _font.get_string_size(sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x
+	var sw := PixelFont.width(sub, 12)
 	var sp := Vector2(roundf(center.x - sw * 0.5), center.y + 24)
-	draw_string_outline(_font, sp, sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, 4, OUTLINE)
-	draw_string(_font, sp, sub, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, SUB)
+	PixelFont.draw(self, sp, sub, 12, SUB, OUTLINE)
 	draw_rect(Rect2(center.x - 90, center.y + 32, 180, 1), Color(GOLD, 0.6))

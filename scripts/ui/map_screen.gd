@@ -23,7 +23,6 @@ var is_open := false
 ## The frame the map last closed on (a Pause press that closes it must not also pause).
 var closed_frame := -1
 
-var _font: Font
 var _t := 0.0
 
 
@@ -31,7 +30,6 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	_font = ThemeDB.fallback_font
 	visible = false
 
 
@@ -160,13 +158,19 @@ func _draw() -> void:
 		status += " / %d" % GameState.next_rank_xp()
 	status += "   Skill points %d   Jack Keys %d" % [int(GameState.data.skill_points), GameState.key_count("jack")]
 	_text(Vector2(20, 40), status, 9, DIM)
-	draw_rect(Rect2(screen.x - 230, screen.y - 18, 3, 3), PIN)
-	_text(Vector2(screen.x - 223, screen.y - 14), "Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], 8, DIM)
-	draw_rect(Rect2(screen.x - 150, screen.y - 19, 3, 4), SHRINE)
-	_text(Vector2(screen.x - 143, screen.y - 14), "Shrine", 8, DIM)
-	draw_rect(Rect2(screen.x - 100, screen.y - 18, 2, 2), PLAYER)
-	_text(Vector2(screen.x - 94, screen.y - 14), "You", 8, DIM)
-	_text(Vector2(screen.x - 64, screen.y - 14), "Map: Tab", 8, DIM)
+	# The legend, laid out right to left from measured widths: swatch, label, gap.
+	var legend := [["Map: Tab", Color.TRANSPARENT, Vector2.ZERO], ["You", PLAYER, Vector2(2, 2)],
+		["Shrine", SHRINE, Vector2(3, 4)], ["Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], PIN, Vector2(3, 3)]]
+	var lx := screen.x - 16
+	for item: Array in legend:
+		var label: String = item[0]
+		lx -= PixelFont.width(label, 8)
+		_text(Vector2(lx, screen.y - 14), label, 8, DIM)
+		var swatch: Vector2 = item[2]
+		if swatch != Vector2.ZERO:
+			lx -= swatch.x + 4
+			draw_rect(Rect2(Vector2(lx, screen.y - 15 - swatch.y), swatch), item[1])
+		lx -= 14
 
 
 func _draw_doors(info: Dictionary, r: Rect2, fill: Color) -> void:
@@ -189,5 +193,4 @@ func _draw_doors(info: Dictionary, r: Rect2, fill: Color) -> void:
 
 
 func _text(pos: Vector2, s: String, size: int, color: Color) -> void:
-	draw_string_outline(_font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, OUTLINE)
-	draw_string(_font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+	PixelFont.draw(self, pos, s, size, color, OUTLINE)
