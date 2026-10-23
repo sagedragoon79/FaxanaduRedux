@@ -19,12 +19,15 @@ extends Node2D
 ##   --open=shop:ID|guru|skills open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
+##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 const SAVE_SLOT := 1
 const BASE_SIZE := Vector2i(640, 360)
 const MARGIN := 1
+## The title menu sits under the logo.
+const TITLE_PANEL := Rect2(190, 156, 260, 178)
 
 var view: SubViewport
 var display: Sprite2D
@@ -33,6 +36,7 @@ var hud: GameHud
 var dialog: DialogBox
 var map_screen: MapScreen
 var menu: ListMenu
+var title_screen: TitleScreen
 var fader: ColorRect
 var debug_hud: DebugHud
 
@@ -77,6 +81,9 @@ func _ready() -> void:
 	ui.add_child(hud)
 	dialog = DialogBox.new()
 	ui.add_child(dialog)
+	title_screen = TitleScreen.new()
+	title_screen.visible = false
+	ui.add_child(title_screen)
 	menu = ListMenu.new()
 	ui.add_child(menu)
 	map_screen = MapScreen.new()
@@ -101,7 +108,7 @@ func _ready() -> void:
 		_start(room_id, at)
 	elif _args.has("continue") and GameState.load_game(SAVE_SLOT):
 		_continue()
-	elif _args.has("shot"):
+	elif _args.has("shot") and not _args.has("title"):
 		GameState.new_game()
 		_start(NEW_GAME_ROOM)
 	else:
@@ -111,6 +118,9 @@ func _ready() -> void:
 ## Title menu: continue the save in slot 1, or start over.
 func _title() -> void:
 	var has_save := GameState.has_save(SAVE_SLOT)
+	title_screen.visible = true
+	menu.panel = TITLE_PANEL
+	Music.play("title")
 	var rows := func() -> Array:
 		return [
 			{"label": "Continue", "enabled": has_save, "detail": "Return to your last rest." if has_save else "No journey saved yet."},
@@ -119,6 +129,8 @@ func _title() -> void:
 		]
 	var pick := func(i: int) -> void:
 		menu.close()
+		title_screen.visible = false
+		menu.panel = ListMenu.PANEL
 		match i:
 			0:
 				GameState.load_game(SAVE_SLOT)
@@ -130,7 +142,7 @@ func _title() -> void:
 				GameState.banner.emit("Eolis", "The root town")
 			2:
 				get_tree().quit()
-	menu.open("Faxanadu Redux", "A wanderer returns to the World Tree to find its springs run dry.", rows, pick)
+	menu.open("A wanderer returns", "The World Tree's springs have run dry.", rows, pick)
 	menu.cursor = 0 if has_save else 1
 
 
@@ -160,17 +172,22 @@ func _start(room_id: String, at := Vector2.INF) -> void:
 
 
 func _process(_delta: float) -> void:
+	_frames += 1
 	if camera == null:
+		_take_shot()
 		return
 	# Shift the upscaled world by the camera's fractional position.
 	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
-	_frames += 1
 	if _frames == 2:
 		_debug_open()
 	if _args.has("boss-hp"):
 		var boss := get_tree().get_first_node_in_group("boss") as Rokusutahn
 		if boss != null and boss.state == "intro":
 			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
+	_take_shot()
+
+
+func _take_shot() -> void:
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])

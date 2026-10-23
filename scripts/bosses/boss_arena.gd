@@ -69,6 +69,7 @@ func _start() -> void:
 			return
 	room.add_child(boss)
 	boss.begin()
+	Music.play("boss", 0.5)
 	GameState.banner.emit(Rokusutahn.DISPLAY_NAME, Rokusutahn.EPITHET)
 	started.emit()
 
@@ -84,6 +85,7 @@ func _on_defeated() -> void:
 	Sfx.play("item", 0.0)
 	GameState.banner.emit(reward.get("ring_name", "Victory"), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
 	_open_timer = OPEN_DELAY
+	Music.play("", 2.5)
 	won.emit()
 
 
@@ -93,6 +95,7 @@ func _open_doors() -> void:
 		if is_instance_valid(seals[n]):
 			seals[n].open()
 	seals.clear()
+	Music.for_room(room)
 
 
 func _seal(n: int) -> void:

@@ -235,3 +235,18 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 	check(Fountain.level() == 1, "the fountain is a third full")
 	w._enter("test/spring")
 	check(w.room.is_solid_at(sap_at) and not w.room.is_sap_at(sap_at), "the sap is solid amber now")
+
+
+func test_music_follows_rooms_and_bosses() -> void:
+	for name: String in ["title", "eolis", "trunk", "boss", "amb_trunk", "amb_eolis"]:
+		var stream := Music.stream_for(name)
+		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
+	var w := make_world({}, "trunk/boss_gate")
+	check(Music.track == "trunk" and Music.ambience_track == "amb_trunk", "the Trunk plays its theme and ambience (%s)" % Music.track)
+	w.use_door(2)
+	await frames(3)
+	check(Music.track == "trunk", "the arena keeps the zone theme until the fight")
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(12, 19))
+	await _until(func() -> bool: return arena.fighting, 20)
+	check(Music.track == "boss", "the fight plays the boss theme")

@@ -25,6 +25,8 @@ var subtitle := ""
 var rows: Array = []
 var cursor := 0
 var is_open := false
+## Where the panel sits; menus may move it (the title menu sits under the logo).
+var panel := PANEL
 
 var _provider: Callable
 var _on_select: Callable
@@ -123,15 +125,15 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if not is_open:
 		return
-	draw_rect(PANEL.grow(2), BORDER)
-	draw_rect(PANEL, BG)
-	var x := PANEL.position.x + 14
-	var y := PANEL.position.y + 22
+	draw_rect(panel.grow(2), BORDER)
+	draw_rect(panel, BG)
+	var x := panel.position.x + 14
+	var y := panel.position.y + 22
 	_text(Vector2(x, y), title, 14, ACCENT)
 	y += 14
 	if subtitle != "":
-		draw_multiline_string(_font, Vector2(x, y), subtitle, HORIZONTAL_ALIGNMENT_LEFT, PANEL.size.x - 28, 9, 4, Color("c9b98f"))
-		y += 12 * ceilf(_font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / (PANEL.size.x - 28)) + 4
+		draw_multiline_string(_font, Vector2(x, y), subtitle, HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 28, 9, 4, Color("c9b98f"))
+		y += 12 * ceilf(_font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / (panel.size.x - 28)) + 4
 	y += 4
 	for i in rows.size():
 		var row: Dictionary = rows[i]
@@ -142,22 +144,22 @@ func _draw() -> void:
 		var enabled: bool = row.get("enabled", true)
 		if i == cursor:
 			var c := CURSOR if _flash <= 0.0 else Color(0.9, 0.25, 0.3, 0.3)
-			draw_rect(Rect2(PANEL.position.x + 6, top, PANEL.size.x - 12, ROW_H - 1), c)
+			draw_rect(Rect2(panel.position.x + 6, top, panel.size.x - 12, ROW_H - 1), c)
 			draw_colored_polygon(PackedVector2Array([Vector2(x - 6, top + 4), Vector2(x - 2, top + 7.5), Vector2(x - 6, top + 11)]), ACCENT)
 		_text(Vector2(x + 2, top + 12), row.label, 10, TEXT if enabled else DIM)
 		var right: String = row.get("right", "")
 		if right != "":
 			var w := _font.get_string_size(right, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
-			_text(Vector2(PANEL.end.x - 14 - w, top + 12), right, 10, ACCENT if enabled else DIM)
+			_text(Vector2(panel.end.x - 14 - w, top + 12), right, 10, ACCENT if enabled else DIM)
 	# Description of the selected row.
 	var detail: String = rows[cursor].get("detail", "") if not rows.is_empty() else ""
-	var box := Rect2(PANEL.position.x + 8, PANEL.end.y - 62, PANEL.size.x - 16, 38)
+	var box := Rect2(panel.position.x + 8, panel.end.y - 62, panel.size.x - 16, 38)
 	draw_rect(box, Color(1, 1, 1, 0.04))
 	draw_multiline_string(_font, box.position + Vector2(6, 13), detail, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 12, 9, 3, Color("c9b98f"))
 	var foot: String = _footer.call() if _footer.is_valid() else ""
-	_text(Vector2(x, PANEL.end.y - 9), foot, 9, ACCENT)
+	_text(Vector2(x, panel.end.y - 9), foot, 9, ACCENT)
 	var hint := "Jump: choose   Dash: leave"
-	_text(Vector2(PANEL.end.x - 14 - _font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, PANEL.end.y - 9), hint, 8, DIM.lightened(0.2))
+	_text(Vector2(panel.end.x - 14 - _font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, panel.end.y - 9), hint, 8, DIM.lightened(0.2))
 
 
 func _text(pos: Vector2, s: String, size: int, color: Color) -> void:

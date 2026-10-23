@@ -8,7 +8,8 @@ world and puts a `World` in it. The UI layer (main viewport, native resolution) 
 fade rectangle. The game node runs while paused; the viewport with the world does not.
 
 Autoloads: `Feel` (hit-stop, shake, rumble), `Controls` (input map built in code), `Sfx`
-(pooled sound player), `GameState` (everything persistent, plus JSON saves).
+(pooled sound player), `GameState` (everything persistent, plus JSON saves), `Music`
+(crossfading music by zone or room `music:` header, boss themes, ambience beds).
 
 ## World and rooms
 
