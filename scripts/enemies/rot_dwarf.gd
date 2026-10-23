@@ -13,14 +13,6 @@ const SWING_DAMAGE := 20
 const SWING_SIZE := Vector2(36, 30)
 const TURN_DELAY := 0.6
 
-const SKIN := Color("8fa06a")
-const SKIN_DARK := Color("63724a")
-const BEARD := Color("b9b4c4")
-const ARMOR := Color("5d5670")
-const SHIELD := Color("6b4a2b")
-const SHIELD_RIM := Color("c9c4d6")
-const AXE := Color("d6d2e0")
-const OUTLINE := Color("1d1a2b")
 
 var _swung := false
 var _behind_time := 0.0
@@ -99,33 +91,12 @@ func _floor_ahead() -> bool:
 
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
-	var c := func(col: Color) -> Color: return Color.WHITE if white else col
-	# Body and head.
-	draw_rect(Rect2(-8, -22, 16, 20), OUTLINE)
-	draw_rect(Rect2(-7, -21, 14, 18), c.call(ARMOR))
-	draw_rect(Rect2(-6, -29, 12, 9), OUTLINE)
-	draw_rect(Rect2(-5, -28, 10, 7), c.call(SKIN))
-	draw_rect(Rect2(-5, -22, 10, 6), c.call(BEARD))
-	draw_rect(Rect2(1, -26, 2, 2), Color("ffd24a"))
-	# Legs.
-	var step := int(state_time * 8.0) % 2 if state == "patrol" else 0
-	draw_rect(Rect2(-6, -3, 5, 3), c.call(SKIN_DARK))
-	draw_rect(Rect2(1 + step, -3, 5, 3), c.call(SKIN_DARK))
-	# Axe: raised in windup, swung down in swing.
-	match state:
-		"windup":
-			draw_rect(Rect2(-4, -44, 3, 18), c.call(SHIELD))
-			draw_rect(Rect2(-8, -46, 9, 7), c.call(AXE))
-		"swing", "recover":
-			draw_rect(Rect2(6, -16, 18, 3), c.call(SHIELD))
-			draw_rect(Rect2(20, -22, 7, 12), c.call(AXE))
-		_:
-			draw_rect(Rect2(-9, -24, 3, 16), c.call(SHIELD))
-			draw_rect(Rect2(-12, -26, 7, 6), c.call(AXE))
-	# Shield in front while it's up.
-	if shield_up():
-		draw_rect(Rect2(7, -24, 6, 18), OUTLINE)
-		draw_rect(Rect2(8, -23, 4, 16), c.call(SHIELD))
-		draw_rect(Rect2(8, -23, 4, 2), c.call(SHIELD_RIM))
-		draw_rect(Rect2(9, -17, 2, 4), c.call(SHIELD_RIM))
+	var anim := "walk"
+	var t := state_time
+	if is_staggered():
+		anim = "stagger"
+	elif state in ["windup", "swing", "recover"]:
+		anim = state
+	elif absf(velocity.x) < 1.0:
+		t = 0.0
+	draw_sheet("rot_dwarf", anim, t, white)

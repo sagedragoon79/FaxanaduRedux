@@ -22,32 +22,16 @@ Writes:
 
 Usage: python3 tools/art/spritegen.py
 """
-import json
 import math
 import sys
 from pathlib import Path
 
-import numpy as np
-from PIL import Image, ImageDraw
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import palette  # noqa: E402
+from pixelrig import PAL, Canvas, ik, mat, reach, write_sheet  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "assets" / "sprites"
 CELL = 64
 # The feet sit on this point of each cell (the node's origin in game).
 ORIGIN = (32, 61)
-
-PAL = {}
-for _name, _hue, _sat in palette.RAMPS:
-    for _i in range(8):
-        PAL[f"{_name}-{_i}"] = palette.shade(_hue, _sat, _i)
-
-
-def mat(ramp, hi, base, shadow, line):
-    return tuple(PAL[f"{ramp}-{i}"] for i in (hi, base, shadow, line))
-
 
 # (highlight, base, shadow, separating line)
 TUNIC = mat("leaf", 3, 2, 1, 0)
@@ -60,7 +44,6 @@ SKIN = mat("bark", 7, 6, 5, 3)
 SKIN_BACK = mat("bark", 6, 5, 4, 3)
 GLOVE = mat("bark", 4, 3, 2, 1)
 HAIR = mat("gold", 6, 5, 4, 2)
-OUTLINE = PAL["night-0"]
 EYE = PAL["night-1"]
 BELT = PAL["bark-1"]
 BUCKLE = PAL["gold-4"]
@@ -69,126 +52,7 @@ THIGH, SHIN = 8.0, 8.5
 UPPER_ARM, FOREARM = 6.0, 6.0
 
 
-# --- Rasterizing -------------------------------------------------------------
-
-def _grid():
-    ys, xs = np.mgrid[0:CELL, 0:CELL]
-    return xs + 0.5, ys + 0.5
-
-
-GX, GY = _grid()
-
-
-def to_cell(p):
-    return (ORIGIN[0] + p[0], ORIGIN[1] + p[1])
-
-
-def capsule(a, b, r):
-    a, b = to_cell(a), to_cell(b)
-    ax, ay = a
-    dx, dy = b[0] - ax, b[1] - ay
-    L2 = dx * dx + dy * dy
-    if L2 == 0:
-        t = np.zeros_like(GX)
-    else:
-        t = np.clip(((GX - ax) * dx + (GY - ay) * dy) / L2, 0.0, 1.0)
-    px, py = ax + t * dx, ay + t * dy
-    return (GX - px) ** 2 + (GY - py) ** 2 <= r * r
-
-
-def ellipse(c, rx, ry):
-    cx, cy = to_cell(c)
-    return ((GX - cx) / rx) ** 2 + ((GY - cy) / ry) ** 2 <= 1.0
-
-
-def polygon(points):
-    img = Image.new("L", (CELL, CELL), 0)
-    ImageDraw.Draw(img).polygon([to_cell(p) for p in points], fill=255)
-    return np.array(img) > 0
-
-
-def shifted(mask, dx, dy):
-    """mask moved by (dx, dy); pixels shifted in from outside are False."""
-    out = np.zeros_like(mask)
-    h, w = mask.shape
-    xs0, xs1 = max(0, dx), min(w, w + dx)
-    ys0, ys1 = max(0, dy), min(h, h + dy)
-    out[ys0:ys1, xs0:xs1] = mask[ys0 - dy:ys1 - dy, xs0 - dx:xs1 - dx]
-    return out
-
-
-def neighbors4(mask):
-    return shifted(mask, 1, 0) | shifted(mask, -1, 0) | shifted(mask, 0, 1) | shifted(mask, 0, -1)
-
-
-class Canvas:
-    def __init__(self):
-        self.rgb = np.zeros((CELL, CELL, 3), np.uint8)
-        self.filled = np.zeros((CELL, CELL), bool)
-
-    def part(self, mask, material, deep=False):
-        """Paints one shaded part over what is already there."""
-        if not mask.any():
-            return
-        hi, base, shadow, line = material
-        # A darker line where this part overlaps parts behind it.
-        edge = neighbors4(mask) & ~mask & self.filled
-        self.rgb[edge] = line
-        self.rgb[mask] = base
-        # Key light from the top left: lit where the pixel above or to the left is open.
-        lit = mask & (~shifted(mask, 0, 1) | ~shifted(mask, 1, 0))
-        dark = mask & (~shifted(mask, 0, -1) | ~shifted(mask, -1, 0))
-        if deep:
-            dark |= mask & ~shifted(mask, -2, 0)
-        self.rgb[dark] = shadow
-        self.rgb[lit & ~dark] = hi
-        self.filled |= mask
-
-    def pixel(self, p, color):
-        x, y = int(math.floor(to_cell(p)[0])), int(math.floor(to_cell(p)[1]))
-        if 0 <= x < CELL and 0 <= y < CELL:
-            self.rgb[y, x] = color
-            self.filled[y, x] = True
-
-    def finish(self):
-        outline = neighbors4(self.filled) & ~self.filled
-        img = np.zeros((CELL, CELL, 4), np.uint8)
-        img[self.filled, :3] = self.rgb[self.filled]
-        img[self.filled, 3] = 255
-        img[outline, :3] = OUTLINE
-        img[outline, 3] = 255
-        mask = np.zeros((CELL, CELL, 4), np.uint8)
-        solid = self.filled | outline
-        mask[solid] = (255, 255, 255, 255)
-        return Image.fromarray(img, "RGBA"), Image.fromarray(mask, "RGBA")
-
-
 # --- The rig ------------------------------------------------------------------
-
-def ik(a, b, l1, l2, bend):
-    """The middle joint of a two-bone limb from a to b. bend +1 puts it forward (+x)."""
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    d = max(0.001, math.hypot(dx, dy))
-    d_c = min(d, l1 + l2 - 0.01)
-    cos_a = (l1 * l1 + d_c * d_c - l2 * l2) / (2 * l1 * d_c)
-    ang = math.acos(max(-1.0, min(1.0, cos_a)))
-    base = math.atan2(dy, dx)
-    # Pick the side whose joint lies toward `bend` on x.
-    c1 = base + ang
-    c2 = base - ang
-    j1 = (a[0] + math.cos(c1) * l1, a[1] + math.sin(c1) * l1)
-    j2 = (a[0] + math.cos(c2) * l1, a[1] + math.sin(c2) * l1)
-    return j1 if (j1[0] - j2[0]) * bend >= 0 else j2
-
-
-def reach(a, b, length):
-    """b pulled to within `length` of a."""
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    d = math.hypot(dx, dy)
-    if d <= length:
-        return b
-    return (a[0] + dx / d * length, a[1] + dy / d * length)
-
 
 def pose(hip=(0, -18), lean=0, bob=0, feet=((3, 0), (-3, 0)), knees=(1, 1),
          hands=((3, -19), (-3, -19)), elbows=(-1, -1), head=(0, 0), blade=None,
@@ -201,7 +65,7 @@ def pose(hip=(0, -18), lean=0, bob=0, feet=((3, 0), (-3, 0)), knees=(1, 1),
 
 
 def render(f):
-    cv = Canvas()
+    cv = Canvas(CELL, CELL, ORIGIN)
     hx, hy = f["hip"]
     sx, sy = hx + f["lean"], hy - 12 + f["bob"]          # shoulder line
     neck = (sx, sy - 1)
@@ -214,26 +78,26 @@ def render(f):
     def leg(hip, foot, bend, trousers, boots):
         foot = reach(hip, foot, THIGH + SHIN - 0.2)
         knee = ik(hip, foot, THIGH, SHIN, bend)
-        m = capsule(hip, knee, 2.4) | capsule(knee, foot, 2.0)
+        m = cv.capsule(hip, knee, 2.4) | cv.capsule(knee, foot, 2.0)
         cv.part(m, trousers)
-        boot = capsule((foot[0] - 1, foot[1] - 3), (foot[0] + 2.5, foot[1] - 2), 2.1) | capsule(
+        boot = cv.capsule((foot[0] - 1, foot[1] - 3), (foot[0] + 2.5, foot[1] - 2), 2.1) | cv.capsule(
             (foot[0] - 0.5, foot[1] - 5), (foot[0] - 0.5, foot[1] - 2), 2.0)
         cv.part(boot, boots)
 
     def arm(shoulder, hand, bend, sleeve, skin, glove=False):
         hand = reach(shoulder, hand, UPPER_ARM + FOREARM - 0.2)
         elbow = ik(shoulder, hand, UPPER_ARM, FOREARM, bend)
-        cv.part(capsule(shoulder, elbow, 1.9), sleeve)
-        cv.part(capsule(elbow, hand, 1.5), skin)
-        cv.part(ellipse(hand, 1.9, 1.9), GLOVE if glove else skin)
+        cv.part(cv.capsule(shoulder, elbow, 1.9), sleeve)
+        cv.part(cv.capsule(elbow, hand, 1.5), skin)
+        cv.part(cv.ellipse(hand, 1.9, 1.9), GLOVE if glove else skin)
         return hand
 
     # Back limbs first, one shade darker.
     arm(shoulder_b, f["hands"][1], f["elbows"][1], TUNIC_BACK, SKIN_BACK)
     leg(hip_b, f["feet"][1], f["knees"][1], TROUSERS_BACK, BOOTS_BACK)
     # Torso: tunic from shoulders to a hem below the hips, then the belt.
-    torso = polygon([(sx - 4.5, sy), (sx + 4.5, sy), (hx + 5, hy + 1), (hx + 5.5, hy + 4),
-                     (hx - 5.5, hy + 4), (hx - 5, hy + 1)]) | ellipse((sx, sy + 1.5), 5.0, 2.5)
+    torso = cv.polygon([(sx - 4.5, sy), (sx + 4.5, sy), (hx + 5, hy + 1), (hx + 5.5, hy + 4),
+                        (hx - 5.5, hy + 4), (hx - 5, hy + 1)]) | cv.ellipse((sx, sy + 1.5), 5.0, 2.5)
     leg(hip_f, f["feet"][0], f["knees"][0], TROUSERS, BOOTS)
     cv.part(torso, TUNIC, deep=True)
     for x in range(-5, 5):
@@ -242,11 +106,11 @@ def render(f):
     cv.pixel((hx + 2.5, hy - 0.5), BUCKLE)
     # Head: face, hair over the top and back, the long elf ear, one eye.
     hcx, hcy = head
-    cv.part(ellipse(head, 4.6, 5.0), SKIN)
-    hair = ellipse((hcx - 1.0, hcy - 2.0), 5.2, 4.0) | capsule((hcx - 3.5, hcy - 2), (hcx - 4.5, hcy + 4.5), 1.8)
-    face = (GX > to_cell(head)[0] - 0.5) & (GY > to_cell(head)[1] - 2.0)
+    cv.part(cv.ellipse(head, 4.6, 5.0), SKIN)
+    hair = cv.ellipse((hcx - 1.0, hcy - 2.0), 5.2, 4.0) | cv.capsule((hcx - 3.5, hcy - 2), (hcx - 4.5, hcy + 4.5), 1.8)
+    face = cv.right_of(hcx - 0.5) & cv.below(hcy - 2.0)
     cv.part(hair & ~face, HAIR)
-    cv.part(capsule((hcx - 2.0, hcy + 0.5), (hcx - 5.5, hcy - 2.0), 0.9), SKIN)
+    cv.part(cv.capsule((hcx - 2.0, hcy + 0.5), (hcx - 5.5, hcy - 2.0), 0.9), SKIN)
     cv.pixel((hcx + 2.0, hcy - 0.5), EYE)
     cv.pixel((hcx + 2.0, hcy + 0.5), EYE)
     # Front arm last; a gloved fist when it holds something.
@@ -393,26 +257,8 @@ ANIMATIONS = [
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
-    cols = max(len(fn()) for _, fn, _, _, _ in ANIMATIONS)
-    rows = len(ANIMATIONS)
-    sheet = Image.new("RGBA", (cols * CELL, rows * CELL), (0, 0, 0, 0))
-    masks = Image.new("RGBA", (cols * CELL, rows * CELL), (0, 0, 0, 0))
-    meta = {"cell": CELL, "origin": list(ORIGIN), "columns": cols, "animations": {}}
-    for row, (name, fn, seq, fps, loop) in enumerate(ANIMATIONS):
-        frames = fn()
-        assert max(seq) < len(frames), name
-        info = []
-        for col, f in enumerate(frames):
-            img, mask, fmeta = render(f)
-            sheet.paste(img, (col * CELL, row * CELL))
-            masks.paste(mask, (col * CELL, row * CELL))
-            info.append(fmeta)
-        meta["animations"][name] = {"row": row, "frames": info, "seq": seq, "fps": fps, "loop": loop}
-    sheet.save(OUT / "player.png")
-    masks.save(OUT / "player_mask.png")
-    (OUT / "player.json").write_text(json.dumps(meta, indent=1) + "\n")
-    print(f"player sheet: {rows} animations, {cols} columns")
+    anims = [(name, fn(), seq, fps, loop) for name, fn, seq, fps, loop in ANIMATIONS]
+    write_sheet("player", (CELL, CELL), ORIGIN, anims, render)
 
 
 if __name__ == "__main__":

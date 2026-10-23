@@ -16,7 +16,8 @@ bible changes substantially (link in the project memory).
   `assets/music/` (.ogg, .mp3 or .wav) replaces a placeholder. Palette: `python3 tools/art/palette.py`.
 - Regenerate zone tilesets and parallax backgrounds: `python3 tools/art/tilegen.py` (every new
   zone folder in `levels/` needs a material spec there; a test checks it).
-- Player sprite sheet: `python3 tools/art/spritegen.py`. Room decor atlases:
+- Player sprite sheet: `python3 tools/art/spritegen.py`. Enemy and NPC sheets (NPCs from their
+  `look` in `data/npcs.json`; rerun after adding a person): `python3 tools/art/castgen.py`. Room decor atlases:
   `python3 tools/art/decorgen.py`. Screenshot one player frame with `--shot-pose=slash1:1`.
 
 ## Conventions

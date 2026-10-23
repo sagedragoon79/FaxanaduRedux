@@ -64,6 +64,12 @@ frames finish over idle, run or air poses. The blade, shield and potion are draw
 hand point, so every blade shares the animations; the verlet-chain scarf (`scarf.gd`) hangs
 from the frame's neck. An Autosprite sheet can replace the PNG later if it keeps the JSON.
 
+Enemies and NPCs use the same pipeline: `tools/art/castgen.py` (on the shared
+`tools/art/pixelrig.py`) writes a sheet per enemy and one per person in `data/npcs.json`,
+and `Sheet` (`scripts/fx/sheet.gd`) loads and draws any of them. `Enemy.draw_sheet()` picks
+a frame by state and time and washes it white (the silhouette sheet) while flashing or
+telegraphing; the Monodron draws its pupil on the eye point its frames carry.
+
 ## Reachability checker
 
 `scripts/world/reach.gd` models where the player can stand in every room (tile columns with

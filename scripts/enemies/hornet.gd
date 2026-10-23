@@ -10,11 +10,6 @@ const SWOOP_TIME := 0.55
 const RETURN_SPEED := 110.0
 const COOLDOWN := 0.8
 
-const BODY := Color("e0b03a")
-const STRIPE := Color("2a2230")
-const WING := Color("d8f0ff")
-const STING := Color("f1ead2")
-const OUTLINE := Color("1d1a2b")
 
 var _dir := Vector2.ZERO
 var _cooldown := 0.0
@@ -67,16 +62,9 @@ func _think(delta: float) -> void:
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
 	var jitter := Vector2(randf_range(-1, 1), 0).round() if state == "windup" else Vector2.ZERO
-	draw_set_transform(jitter, 0.0, Vector2(facing, 1))
-	var wing_up := int(Time.get_ticks_msec() / 40) % 2 == 0
-	var wy := -10.0 if wing_up else -8.0
-	draw_rect(Rect2(-5, wy, 6, 4), Color(WING, 0.8))
-	draw_rect(Rect2(-1, wy + 1, 5, 3), Color(WING, 0.6))
-	draw_rect(Rect2(-9, -5, 16, 10), OUTLINE)
-	draw_rect(Rect2(-8, -4, 14, 8), Color.WHITE if white else BODY)
-	if not white:
-		draw_rect(Rect2(-5, -4, 2, 8), STRIPE)
-		draw_rect(Rect2(-1, -4, 2, 8), STRIPE)
-	draw_rect(Rect2(6, -2, 4, 4), OUTLINE)
-	draw_rect(Rect2(7, -1, 2, 2), Color("c3343f"))
-	draw_rect(Rect2(-12, 0, 4, 2), STING)
+	var anim := "fly"
+	if state == "windup":
+		anim = "windup"
+	elif state == "swoop":
+		anim = "swoop"
+	draw_sheet("hornet", anim, Time.get_ticks_msec() * 0.001, white, jitter)
