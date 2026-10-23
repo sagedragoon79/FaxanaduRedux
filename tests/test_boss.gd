@@ -623,3 +623,139 @@ func test_zoradohna_defeat_gives_the_ruby_ring() -> void:
 	w._enter(LIFT_ROOM)
 	await frames(5)
 	check(get_tree_boss() == null, "it never comes back")
+
+
+# --- Ripasheiku (the Mist's first boss) ------------------------------------------------
+
+const CHAPEL_ROOM := "mist/sunken_chapel"
+
+
+## The chapel with the arena awake: [world, arena, widow].
+func _widow_world() -> Array:
+	var w := make_world({}, CHAPEL_ROOM)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(10, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var r := get_tree_boss() as Ripasheiku
+	await frames(3)
+	return [w, arena, r]
+
+
+func test_sunken_chapel_wakes_the_lantern_widow() -> void:
+	var setup := await _widow_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var r: Ripasheiku = setup[2]
+	check(arena.boss_id == "ripasheiku" and r != null, "walking into the chapel wakes Ripasheiku")
+	check(r.global_position.x > w.player.global_position.x + 200.0, "she waits across the chapel")
+	check(r.lanterns.size() == Ripasheiku.LANTERNS, "she carries %d lanterns" % Ripasheiku.LANTERNS)
+	var lit := 0
+	for l in r.lanterns:
+		if l.is_in_group("light"):
+			lit += 1
+	check(lit == Ripasheiku.LANTERNS, "each lantern is a light in the fog")
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	w.player.teleport(r.global_position + Vector2(-120, 18))
+	await frames(3)
+	check(w.fog.clear_at(r.lanterns[0].global_position) == 1.0, "her lanterns clear the fog around them")
+
+
+func test_ripasheiku_telegraphs_are_fair() -> void:
+	var r := Ripasheiku.new()
+	for ph in [1, 2, 3]:
+		r.phase = ph
+		for t: float in [Ripasheiku.SWEEP_TELL, Ripasheiku.POUNCE_TELL, Ripasheiku.WEB_TELL, Ripasheiku.DROP_TELL]:
+			check(r.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, r.tell(t), Enemy.MIN_TELEGRAPH])
+	r.free()
+
+
+func test_breaking_her_lanterns_shows_more_of_her() -> void:
+	var setup := await _widow_world()
+	var r: Ripasheiku = setup[2]
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	var hp0 := r.hp
+	var floor0 := Ripasheiku.MIN_SEEN
+	r.lanterns[0].take_hit(10, Vector2.RIGHT)
+	await frames(1)
+	check(r.lanterns[0].dead and not r.lanterns[0].is_in_group("light"), "a blow shatters a lantern and its light goes out")
+	check(r.hp == hp0 - Ripasheiku.LANTERN_DAMAGE, "breaking it hurts her (%d)" % (hp0 - r.hp))
+	check(r.seen >= floor0 + Ripasheiku.SEEN_PER_LANTERN - 0.001, "the freed soul makes her show more (%.2f)" % r.seen)
+	for l in r.lanterns:
+		l.take_hit(10, Vector2.RIGHT)
+	await frames(1)
+	check(r.phase == 3 and r.seen == 1.0, "with every lantern broken she is in plain sight, and desperate")
+
+
+func test_ripasheiku_climbs_and_reels_you_in_on_a_web() -> void:
+	var setup := await _widow_world()
+	var w: World = setup[0]
+	var r: Ripasheiku = setup[2]
+	var p := w.player
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	r.hp = roundi(r.max_hp * 0.6)
+	r.take_hit(1, Vector2.RIGHT)
+	check(r.phase == 2, "below two thirds she enters phase 2")
+	var up := await _until(func() -> bool: return r.on_ceiling and r.state == "hang", 180)
+	check(up and absf(r.global_position.y - r.ceiling_y()) < 1.0, "she climbs to the vault")
+	r._next_hang = "web"
+	# Stand within web range, off to one side of her.
+	p.teleport(Vector2(r.global_position.x - 120.0, p.global_position.y))
+	await frames(2)
+	var x0 := p.global_position.x
+	var reeled := await _until(func() -> bool: return r.state == "reel", 240)
+	check(reeled, "a web line catches the player")
+	var pulled := await _until(func() -> bool: return absf(p.global_position.x - x0) > 10.0, 50)
+	check(pulled and signf(p.global_position.x - x0) == signf(r.global_position.x - x0), "and reels them toward her")
+
+
+func test_ripasheiku_drops_and_lies_open() -> void:
+	var setup := await _widow_world()
+	var r: Ripasheiku = setup[2]
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	r.hp = roundi(r.max_hp * 0.6)
+	r.take_hit(1, Vector2.RIGHT)
+	await _until(func() -> bool: return r.state == "hang", 180)
+	r._next_hang = "drop"
+	r.set_state("hang")
+	r.state_time = Ripasheiku.HANG_TIME
+	var tell_frames := 0
+	var landed := false
+	for i in 240:
+		await frames(1)
+		if r.state == "drop_tell":
+			tell_frames += 1
+		if r.state == "dropped":
+			landed = true
+			break
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "her shadow marks the drop for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	check(landed and absf(r.global_position.y - r.floor_y()) < 1.0, "she drops to the floor")
+	var hp0 := r.hp
+	r.take_hit(10, Vector2.RIGHT)
+	check(hp0 - r.hp == roundi(10 * Ripasheiku.DROPPED_BONUS), "stunned where she lands she takes extra damage (%d)" % (hp0 - r.hp))
+
+
+func test_ripasheiku_defeat_gives_the_lantern_key() -> void:
+	var setup := await _widow_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var r: Ripasheiku = setup[2]
+	var mp0 := float(GameState.data.max_mp)
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	r.hp = 1
+	r.take_hit(5, Vector2.RIGHT)
+	check(r.state == "dying", "the last blow ends her")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:ripasheiku"), 600)
+	check(gone, "Ripasheiku is marked beaten")
+	check(GameState.key_count("lantern") == 1, "the Lantern Key is the player's")
+	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "and the Mana Dew she guarded")
+	var lamps := 0
+	await frames(2)
+	for c in w.room.get_children():
+		if c is BossLantern and not c.is_queued_for_deletion():
+			lamps += 1
+	check(lamps == 0, "her lanterns go with her")
+	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
+	check(opened, "the way out opens")

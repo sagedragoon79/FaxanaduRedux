@@ -139,7 +139,8 @@ All story triggers check items, not route order.
 | Trigger | Change |
 |---------|--------|
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
-| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs again, stopping at the town, the Tower Foot and a cage at the East Gate of Eolis down the outside of the trunk (the elevator shortcut home; press Up in a cage to pick a stop); dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter, and two side rooms: the Sorting Floor, a loop from the Mine Mouth up into the Mine Vault, and the Slag Heap under the Smelter), the ore road toward the Mist, which leaves the Smelter's east end for the Fog Cut, the Drowned Stair and Lantern Landing, a shrine where the boardwalk to Victim is out |
+| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs again, stopping at the town, the Tower Foot and a cage at the East Gate of Eolis down the outside of the trunk (the elevator shortcut home; press Up in a cage to pick a stop); dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter, and two side rooms: the Sorting Floor, a loop from the Mine Mouth up into the Mine Vault, and the Slag Heap under the Smelter), the ore road toward the Mist, which leaves the Smelter's east end for the Fog Cut, the Drowned Stair and Lantern Landing, a shrine where the boardwalk to Victim is out, with the Sunken Chapel, Ripasheiku's lair, past its east door |
+| Ripasheiku defeated | Her lanterns go dark and she gives up the Lantern Key, which opens the way to the Spring of Mist and Zorugeriru |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface; fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
@@ -361,12 +362,13 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 
 ### 8.3 Ripasheiku, the Lantern Widow (The Mist)
 - **Concept:** A spider-wraith that carries the souls of the drowned as lanterns on her legs. She is invisible except where her lanterns glow.
-- **Arena:** a sunken chapel in heavy fog.
+- **Arena:** the Sunken Chapel (mist 30,-7, 60x23), east of Lantern Landing: a drowned nave under fog of 0.92, with two side ledges and a high central ledge.
 - **Tests:** reading by light; double jump.
-- **Phase 1:** she stalks in the dark; each lantern you break makes more of her visible.
-- **Phase 2:** she hangs from the ceiling and drops web lines that pull you toward her.
-- **Phase 3:** all lanterns broken; she is fully visible, fast, and desperate.
-- **Reward:** Lantern Key (opens the path to Zorugeriru), Mana Dew.
+- **Body:** 260 HP. Her four lanterns are separate targets on her legs, and each is a light in the fog (70 px). A lantern breaks in one blow and costs her 18 HP. Each broken lantern frees a soul that clings to her as pale fire, so she shows a little more (8% plus 16% a lantern). Her tells always show at least 80%, so they stay readable in the murk.
+- **Phase 1:** she stalks in the dark. Close up she sweeps her front legs (0.55 s tell); farther off she rears and pounces at where you stand (0.65 s tell).
+- **Phase 2 (below 66%):** she climbs to the vault and hangs there. Web: a thread flickers toward you (0.6 s), then a strand shoots along it (360 px). If it catches you it reels you toward her for 0.9 s; a dash breaks free. Drop: she shivers (0.6 s), marking a shadow below, then falls on you and lies stunned for 1.3 s, taking 1.5x damage.
+- **Phase 3 (below 30%, or all lanterns broken):** she comes down for good. She is fully visible, fast, and desperate, with tells a quarter shorter (never under the minimum).
+- **Reward:** Lantern Key (opens the path to Zorugeriru), Mana Dew, a skill point.
 
 ### 8.4 Zorugeriru, the Mist Hydra (The Mist)
 - **Concept:** A three-headed serpent made of fog and bone, coiled around the Spring of Mist. Only the head that is solid at the moment can be hurt.

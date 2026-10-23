@@ -14,6 +14,8 @@ const BOSSES := {
 	"foreman": {"ability": "mattock", "title": "Mattock",
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
 	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
+	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
+		"text": "Its light opens the way to the Spring of Mist. Your magic grows."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -89,6 +91,15 @@ func _start() -> void:
 			room.add_child(shaft)
 			boss = z
 			z.defeated.connect(_on_defeated)
+		"ripasheiku":
+			# The widow waits in the dark across the chapel from the way in.
+			var r := Ripasheiku.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			r.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			var px := p_x()
+			r.position = Vector2(w - 8 * Room.TILE if px < w * 0.5 else 8 * Room.TILE, r.floor_y())
+			boss = r
+			r.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
@@ -107,7 +118,14 @@ func _on_defeated() -> void:
 	var points := int(reward.get("skill_points", 0))
 	GameState.data.skill_points = int(GameState.data.skill_points) + points
 	Sfx.play("item", 0.0)
-	if reward.has("ability"):
+	if reward.has("key"):
+		# A key and, for the Lantern Widow, the Mana Dew she guarded.
+		var p := get_tree().get_first_node_in_group("player") as Player
+		GameState.add_key(reward.key)
+		if reward.get("mana_dew", false) and p != null:
+			GameState.grant_stat_item("mana_dew", p)
+		GameState.banner.emit(reward.title, reward.text)
+	elif reward.has("ability"):
 		# The ability the boss guarded (the Foreman drops the Mattock from its back).
 		var p := get_tree().get_first_node_in_group("player") as Player
 		GameState.data.abilities[reward.ability] = true

@@ -110,6 +110,10 @@ var safe_position := Vector2.ZERO
 var respawn_handler: Callable
 ## While frozen (room transitions, dialog, menus) the controller does nothing.
 var frozen := false
+## A drag in px/s that something outside the player applies this frame (a
+## boss's web line reeling you in). Moves the body directly, so it works
+## against any input; a dash breaks it. Cleared every frame.
+var pull := Vector2.ZERO
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -240,6 +244,9 @@ func _physics_process(delta: float) -> void:
 	_apply_ledge_correction(delta, on_floor)
 	var pre_velocity := velocity
 	move_and_slide()
+	if pull != Vector2.ZERO and not is_dashing:
+		move_and_collide(pull * delta)
+	pull = Vector2.ZERO
 	_after_move(pre_velocity, delta)
 	_check_hazards()
 	input.end_frame()
