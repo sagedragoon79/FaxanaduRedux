@@ -10,10 +10,12 @@ const PICKUPS := "GLWF*$SN"
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
 ## or above the flue damper, open once Zoradohna falls (the "winch" ability),
-## and the Mist, reached by the ore road east of the Deep Workings.
+## and the Mist, reached by the ore road east of the Deep Workings (its rooms
+## past the bound fog also need the Lantern Key: the "lantern" ability).
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
-	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel"]
+	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
+	"mist/veiled_rise", "mist/victim_causeway"]
 
 
 func _texts() -> Dictionary:
@@ -129,8 +131,8 @@ func test_amber_keeps_everything_reachable() -> void:
 
 func test_with_the_mattock_everything_is_reachable() -> void:
 	# The Act I set: glove, Mattock (from the Foreman), keys, the Spring restored,
-	# and Zoradohna beaten (the winch opens the flue damper).
-	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true}, true)
+	# Zoradohna beaten (the winch opens the flue damper) and Ripasheiku's Lantern Key.
+	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
@@ -145,6 +147,20 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
 	check(stuck.is_empty(), "with the Mattock, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+func test_bound_fog_holds_until_the_lantern_key() -> void:
+	# Bible 4.4: the Lantern Key opens the way past Lantern Landing. Without it
+	# the bound fog seals the shaft, and the rooms above stay out of reach.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true}
+	var shut := Reach.new(_texts(), set, true)
+	var rooms := _rooms_reached(shut.reachable(shut.spot_of(START_ROOM, "P")))
+	check(rooms.has("mist/lantern_landing") and rooms.has("mist/sunken_chapel"), "the landing and the chapel are open without the key")
+	check(not rooms.has("mist/veiled_rise") and not rooms.has("mist/victim_causeway"), "but the bound fog keeps the Veiled Rise shut")
+	set["lantern"] = true
+	var open := Reach.new(_texts(), set, true)
+	var opened := _rooms_reached(open.reachable(open.spot_of(START_ROOM, "P")))
+	check(opened.has("mist/veiled_rise") and opened.has("mist/victim_causeway"), "with the Lantern Key the shaft climbs to the causeway")
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:

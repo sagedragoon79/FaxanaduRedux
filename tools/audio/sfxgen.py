@@ -367,5 +367,13 @@ def main():
                  osc(np.full(n, 4410.0), "sine") * 0.4) * env(n, 0.001, 2.5) * 0.35
     save("lantern_break", mix(crack, tinkle), 0.5)
 
+    # Bound fog parting before the Lantern Key: a breathy rising shimmer, like
+    # a held breath let go, with a soft bell at its crest.
+    d = 0.9
+    n = int(RATE * d)
+    breath = lowpass(highpass(noise(d), 500), slide(900, 4200, d, 0.6)) * 0.6
+    shimmer = mix(osc(slide(660, 990, d, 0.5), "sine"), osc(slide(990, 1485, d, 0.5), "sine") * 0.5) * 0.25
+    save("curtain", mix(breath, shimmer) * env(n, 0.25, 1.4), 0.5)
+
 if __name__ == "__main__":
     main()
