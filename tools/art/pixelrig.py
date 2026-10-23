@@ -97,15 +97,19 @@ def reach(a, b, length):
 
 
 class Canvas:
-    """One frame. Points are relative to `origin` (the node's origin in game)."""
+    """One frame. Points are relative to `origin` (the node's origin in game).
+    Sizes, points and radii are in world pixels; `scale` rasterizes them at that
+    many pixels per world pixel (2 for the 2x render density, design bible 12.1),
+    so lines, outlines and shading come out finer at the same world size."""
 
-    def __init__(self, w, h, origin):
-        self.w, self.h = w, h
+    def __init__(self, w, h, origin, scale=1):
+        self.scale = scale
+        self.w, self.h = w * scale, h * scale
         self.origin = origin
-        ys, xs = np.mgrid[0:h, 0:w]
-        self.gx, self.gy = xs + 0.5, ys + 0.5
-        self.rgb = np.zeros((h, w, 3), np.uint8)
-        self.filled = np.zeros((h, w), bool)
+        ys, xs = np.mgrid[0:self.h, 0:self.w]
+        self.gx, self.gy = (xs + 0.5) / scale, (ys + 0.5) / scale
+        self.rgb = np.zeros((self.h, self.w, 3), np.uint8)
+        self.filled = np.zeros((self.h, self.w), bool)
 
     def to_cell(self, p):
         return (self.origin[0] + p[0], self.origin[1] + p[1])
@@ -128,7 +132,8 @@ class Canvas:
 
     def polygon(self, points):
         img = Image.new("L", (self.w, self.h), 0)
-        ImageDraw.Draw(img).polygon([self.to_cell(p) for p in points], fill=255)
+        k = self.scale
+        ImageDraw.Draw(img).polygon([(x * k, y * k) for x, y in (self.to_cell(p) for p in points)], fill=255)
         return np.array(img) > 0
 
     def right_of(self, x):
@@ -161,11 +166,15 @@ class Canvas:
         self.filled |= mask
 
     def pixel(self, p, color):
+        """One world pixel (scale x scale image pixels)."""
         c = self.to_cell(p)
-        x, y = int(math.floor(c[0])), int(math.floor(c[1]))
-        if 0 <= x < self.w and 0 <= y < self.h:
-            self.rgb[y, x] = color
-            self.filled[y, x] = True
+        k = self.scale
+        x0, y0 = int(math.floor(c[0])) * k, int(math.floor(c[1])) * k
+        for y in range(y0, y0 + k):
+            for x in range(x0, x0 + k):
+                if 0 <= x < self.w and 0 <= y < self.h:
+                    self.rgb[y, x] = color
+                    self.filled[y, x] = True
 
     def finish(self):
         outline = neighbors4(self.filled) & ~self.filled
@@ -179,14 +188,16 @@ class Canvas:
         return Image.fromarray(img, "RGBA"), Image.fromarray(mask, "RGBA")
 
 
-def write_sheet(name, cell, origin, animations, render):
+def write_sheet(name, cell, origin, animations, render, density=1):
     """animations: [(anim name, [frame specs], playback sequence, fps, loop)].
-    render(spec) -> (sheet image, mask image, per-frame metadata dict)."""
+    render(spec) -> (sheet image, mask image, per-frame metadata dict).
+    `cell` and `origin` are in world pixels; `density` is how many pixels per
+    world pixel the code-drawn frames were rasterized at (Canvas scale)."""
     SPRITES.mkdir(parents=True, exist_ok=True)
     # Render the code-drawn frames, then swap in any Autosprite imports (autosprite_import.py).
-    # A sheet with imports at density 2 is written at double size; its code-drawn frames
+    # A sheet with imports at density 2 is written at double size; 1x code-drawn frames
     # are blown up to match and the metadata stays in world pixels.
-    d = autosprite_import.density(name)
+    d = max(density, autosprite_import.density(name))
     cell, origin = (cell[0] * d, cell[1] * d), (origin[0] * d, origin[1] * d)
     cw, ch = cell
     rendered = []
@@ -194,7 +205,7 @@ def write_sheet(name, cell, origin, animations, render):
         out = []
         for spec in frames:
             img, mask, fmeta = render(spec)
-            if d > 1:
+            if img.size != (cw, ch):
                 img = img.resize((cw, ch), Image.NEAREST)
                 mask = mask.resize((cw, ch), Image.NEAREST)
             out.append((img, mask, fmeta))
