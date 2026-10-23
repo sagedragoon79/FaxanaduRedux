@@ -397,6 +397,22 @@ func test_decor_and_backgrounds_are_drawn_at_double_density() -> void:
 	backdrop.queue_free()
 
 
+func test_every_zone_is_dressed() -> void:
+	# A zone with rooms gets its name on the map, a decor atlas, parallax layers and motes.
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if zone == "gym":
+			continue
+		check(World.ZONES.has(zone), "%s has a map name and color" % zone)
+		check(ResourceLoader.exists(Decor.DIR + zone + ".png"), "%s has a decor atlas" % zone)
+		check(Decor.GLOW_COLORS.has(zone), "%s has a glow color for its lights" % zone)
+		check(Motes.ZONES.has(zone), "%s has motes in the air" % zone)
+		var backdrop := Backdrop.new()
+		arena.add_child(backdrop)
+		backdrop.set_zone(zone)
+		check(backdrop.get_child_count() == 2, "%s has two parallax layers" % zone)
+		backdrop.queue_free()
+
+
 func test_decor_dresses_open_surfaces_only() -> void:
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
