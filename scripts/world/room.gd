@@ -93,6 +93,12 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn(CrackedBlock.new(), cell_origin + Vector2(TILE, TILE) * 0.5)
 		"E":
 			_spawn(TrainingDummy.new(), bottom_center)
+		"M":
+			_spawn_enemy(Monodron.new(), bottom_center)
+		"H":
+			_spawn_enemy(Hornet.new(), cell_origin + Vector2(TILE, TILE) * 0.5)
+		"D":
+			_spawn_enemy(RotDwarf.new(), bottom_center)
 		"P":
 			spawn_position = bottom_center
 
@@ -100,6 +106,11 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 func _spawn(node: Node2D, pos: Vector2) -> void:
 	node.position = pos
 	add_child(node)
+
+
+func _spawn_enemy(enemy: Enemy, pos: Vector2) -> void:
+	enemy.respawn_time = float(header.get("enemy_respawn", "0"))
+	_spawn(enemy, pos)
 
 
 func _char_at(grid: Array[String], cell: Vector2i) -> String:
@@ -125,6 +136,14 @@ func _add_label(spec: String) -> void:
 
 func pixel_rect() -> Rect2:
 	return Rect2(Vector2.ZERO, Vector2(size_tiles * TILE))
+
+
+## True if the tile under `world_pos` is solid ground (not a one-way platform).
+func is_solid_at(world_pos: Vector2) -> bool:
+	var cell := Vector2i(floori(world_pos.x / TILE), floori(world_pos.y / TILE))
+	if tiles.get_cell_source_id(cell) == -1:
+		return false
+	return tiles.get_cell_atlas_coords(cell).x != TilesetFactory.Tile.ONE_WAY
 
 
 func is_one_way_at(world_pos: Vector2) -> bool:

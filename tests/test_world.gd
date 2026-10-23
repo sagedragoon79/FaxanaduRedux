@@ -106,3 +106,18 @@ func test_cracked_wall_needs_mattock() -> void:
 		if c is CrackedBlock and c.visible:
 			intact += 1
 	check(intact < 3, "slash with the Mattock breaks cracked stone")
+
+
+func test_gym_enemies_stay_put() -> void:
+	var room := Room.from_file("res://levels/gym/gym.room")
+	arena.add_child(room)
+	var enemies: Array[Enemy] = []
+	for c in room.get_children():
+		if c is Enemy:
+			enemies.append(c)
+	check(enemies.size() == 3, "gym has 3 enemies (got %d)" % enemies.size())
+	await frames(120)
+	for e in enemies:
+		var inside := room.pixel_rect().has_point(e.global_position)
+		check(inside and not e.dead and e.global_position.distance_to(e.home) < 120.0,
+			"%s stays near its post (home %s, now %s)" % [e.get_script().get_global_name(), e.home, e.global_position])

@@ -5,15 +5,20 @@ extends Node2D
 const LIFE := 0.12
 const COLOR := Color("f6eed2")
 const EDGE := Color("ffffff")
+const HEAVY := Color("ffe9a8")
 
 var _kind := "side"
 var _facing := 1
+var _combo := 1
+var _heavy := false
 var _life := LIFE
 
 
-func setup(kind: String, facing: int) -> void:
+func setup(kind: String, facing: int, combo := 1, heavy := false) -> void:
 	_kind = kind
 	_facing = facing
+	_combo = combo
+	_heavy = heavy
 	z_index = 3
 
 
@@ -42,7 +47,14 @@ func _draw() -> void:
 			center = Vector2(_facing * 6, -22)
 			from = deg_to_rad(-70) if _facing > 0 else deg_to_rad(250)
 			to = deg_to_rad(70) if _facing > 0 else deg_to_rad(110)
+	# The second combo hit sweeps the other way, so a chain reads as back-and-forth cuts.
+	if _combo == 2:
+		var t := from
+		from = to
+		to = t
+	var radius := 26.0 if _heavy else 20.0
+	var width := 9.0 if _heavy else 6.0
 	var sweep := lerpf(0.35, 1.0, 1.0 - k)
 	var end := lerpf(from, to, sweep)
-	draw_arc(center, 20.0, from, end, 10, Color(COLOR, k), 6.0)
-	draw_arc(center, 23.0, from, end, 10, Color(EDGE, k), 2.0)
+	draw_arc(center, radius, from, end, 12, Color(HEAVY if _heavy else COLOR, k), width)
+	draw_arc(center, radius + 3.0, from, end, 12, Color(EDGE, k), 2.0)

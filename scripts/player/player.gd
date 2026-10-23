@@ -6,6 +6,8 @@ extends CharacterBody2D
 signal health_changed(hp: int, max_hp: int)
 signal jumped(kind: String)
 signal landed(fall_speed: float)
+signal died
+signal respawned
 
 const BODY_SIZE := Vector2(12, 40)
 
@@ -21,13 +23,19 @@ const DOWN_STRIKE_SIZE := Vector2(28, 24)
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
+@export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true}
+var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true}
 
 var max_hp := 100
 var hp := 100
-var attack_damage := 1
+var mp := 60.0
+var gold := 0
+var flask_charges := 2
+var equipped_spell := "deluge"
+var dead := false
+var purse: GoldPurse
 
 var facing := 1
 var wall_dir := 0
@@ -37,6 +45,11 @@ var is_dashing: bool:
 var is_attacking: bool:
 	get: return _attack_timer > 0.0
 var attack_kind := ""
+var combo_index := 0
+var is_heavy_swing := false
+var is_blocking := false
+var is_drinking: bool:
+	get: return _drink_timer > 0.0
 var has_double_jump := true
 var air_dash_charges := 1
 var invulnerable: bool:
@@ -68,6 +81,13 @@ var _was_on_floor := false
 var _peak_fall_speed := 0.0
 var _dust_timer := 0.0
 var _step_timer := 0.0
+var _combo_timer := 0.0
+var _attack_buffer_timer := 0.0
+var _swing_damage := 0
+var _parry_timer := 0.0
+var _drink_timer := 0.0
+var _cast_cooldown := 0.0
+var _dead_timer := 0.0
 
 
 func _ready() -> void:
@@ -96,13 +116,22 @@ func _ready() -> void:
 	add_child(visual)
 
 	air_dash_charges = tuning.air_dash_charges
+	mp = combat.max_mp
+	flask_charges = combat.flask_charges
 	spawn_point = global_position
 	safe_position = global_position
 
 
 func _physics_process(delta: float) -> void:
+	if dead:
+		_dead_timer -= delta
+		input.clear()
+		if _dead_timer <= 0.0:
+			_respawn()
+		return
 	input.poll()
 	_tick_timers(delta)
+	mp = minf(mp + combat.mp_regen_per_second * delta, combat.max_mp)
 
 	var on_floor := is_on_floor()
 	if on_floor:
@@ -111,9 +140,15 @@ func _physics_process(delta: float) -> void:
 	if input.jump_pressed:
 		_jump_buffer_timer = tuning.jump_buffer_time
 
+	if input.attack_pressed:
+		_attack_buffer_timer = combat.attack_buffer
+
 	_update_wall_contact(on_floor)
+	_update_block()
+	_update_drink(delta, on_floor)
 	_try_drop_through(on_floor)
 	_try_dash(on_floor)
+	_try_cast()
 	_try_attack(on_floor)
 
 	if is_dashing:
@@ -131,7 +166,7 @@ func _physics_process(delta: float) -> void:
 	if is_attacking:
 		_process_attack_hits()
 
-	if velocity.x != 0.0 and not is_attacking and not is_dashing and not is_wall_sliding and input.move_x != 0:
+	if velocity.x != 0.0 and not is_attacking and not is_dashing and not is_wall_sliding and not is_blocking and input.move_x != 0:
 		facing = input.move_x
 
 	_apply_corner_correction(delta)
@@ -156,6 +191,10 @@ func _tick_timers(delta: float) -> void:
 	_attack_cooldown -= delta
 	_dust_timer -= delta
 	_step_timer -= delta
+	_combo_timer -= delta
+	_attack_buffer_timer -= delta
+	_parry_timer -= delta
+	_cast_cooldown -= delta
 
 
 func _refresh_air_moves() -> void:
@@ -207,6 +246,10 @@ func _apply_wall_slide() -> void:
 
 func _horizontal_step(delta: float, on_floor: bool) -> void:
 	var target := input.move_x * tuning.run_speed
+	if is_drinking:
+		target = 0.0
+	elif is_blocking:
+		target *= combat.guard_move_multiplier
 	var accel: float
 	if on_floor:
 		if input.move_x != 0:
@@ -375,23 +418,39 @@ func _end_dash_into_jump() -> void:
 # --- Attacks and pogo -----------------------------------------------------------
 
 func _try_attack(on_floor: bool) -> void:
-	if not input.attack_pressed or _attack_cooldown > 0.0 or is_dashing:
+	if _attack_buffer_timer <= 0.0 or _attack_cooldown > 0.0 or is_dashing or is_blocking or is_drinking:
 		return
+	_attack_buffer_timer = 0.0
+	is_heavy_swing = false
+	_swing_damage = combat.slash_damage
 	if not on_floor and input.down and abilities.mattock:
 		attack_kind = "down"
+		combo_index = 0
 		_attack_timer = tuning.down_strike_active
+		_attack_cooldown = tuning.attack_cooldown
 	elif input.up:
 		attack_kind = "up"
+		combo_index = 0
 		_attack_timer = tuning.slash_active
+		_attack_cooldown = tuning.attack_cooldown
 	else:
 		attack_kind = "side"
+		var max_combo := combat.ground_combo_length if on_floor else combat.air_combo_length
+		combo_index = combo_index + 1 if _combo_timer > 0.0 and combo_index < max_combo else 1
+		_combo_timer = combat.combo_window
 		_attack_timer = tuning.slash_active
-	_attack_cooldown = tuning.attack_cooldown
+		_attack_cooldown = combat.combo_cooldowns[combo_index - 1]
+		if combo_index == 3:
+			is_heavy_swing = true
+			_swing_damage = combat.heavy_damage
 	_attack_hits.clear()
 	var fx := SlashFx.new()
-	fx.setup(attack_kind, facing)
+	fx.setup(attack_kind, facing, combo_index, is_heavy_swing)
 	add_child(fx)
-	Sfx.play("slash", 0.1)
+	if is_heavy_swing:
+		visual.squash(Vector2(1.2, 0.9))
+		velocity.x += facing * 60.0
+	Sfx.play("heavy" if is_heavy_swing else "slash", 0.1)
 
 
 func _attack_rect() -> Rect2:
@@ -425,16 +484,19 @@ func _process_attack_hits() -> void:
 			hit_something = true
 			continue
 		if collider.has_method("take_hit"):
-			collider.take_hit(attack_damage, Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1))
+			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
+			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_something = true
+			if collider.is_in_group("enemy"):
+				mp = minf(mp + combat.mp_per_melee_hit, combat.max_mp)
 		if attack_kind == "down" and collider.is_in_group("pogo") and not bounced:
 			bounced = true
 			_pogo_bounce()
 	if hit_something and not bounced:
-		Feel.hitstop(0.05)
-		Feel.add_trauma(0.15)
-		Feel.rumble(0.3, 0.0, 0.08)
-		Sfx.play("hit")
+		Feel.hitstop(combat.heavy_hitstop if is_heavy_swing else combat.hit_hitstop)
+		Feel.add_trauma(0.3 if is_heavy_swing else 0.15)
+		Feel.rumble(0.3, 0.2 if is_heavy_swing else 0.0, 0.08)
+		Sfx.play("hit", 0.08, 2.0 if is_heavy_swing else 0.0)
 		if attack_kind == "side":
 			velocity.x = -facing * tuning.slash_recoil
 	if attack_kind == "down" and bounced:
@@ -456,21 +518,11 @@ func _pogo_bounce() -> void:
 
 
 func _query_rect(rect: Rect2, mask: int) -> Array:
-	var shape := RectangleShape2D.new()
-	shape.size = rect.size
-	var params := PhysicsShapeQueryParameters2D.new()
-	params.shape = shape
-	params.transform = Transform2D(0.0, rect.get_center())
-	params.collision_mask = mask
-	params.collide_with_areas = true
-	params.collide_with_bodies = true
-	params.exclude = [get_rid()]
-	var out: Array = []
-	for r in get_world_2d().direct_space_state.intersect_shape(params, 32):
-		var c: Object = r.get("collider")
-		if c != null and not out.has(c):
-			out.append(c)
-	return out
+	return Query.rect(get_world_2d(), rect, mask, [get_rid()])
+
+
+func body_rect() -> Rect2:
+	return Rect2(global_position + Vector2(-BODY_SIZE.x * 0.5, -BODY_SIZE.y), BODY_SIZE)
 
 
 # --- Collision helpers ----------------------------------------------------------
@@ -525,15 +577,62 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 	_was_on_floor = on_floor
 
 
+# --- Shield, potion and spells -------------------------------------------------
+
+func _update_block() -> void:
+	if input.block_pressed:
+		_parry_timer = combat.parry_window
+	is_blocking = input.block_held and not is_dashing and not is_attacking and not is_drinking
+
+
+func _update_drink(delta: float, on_floor: bool) -> void:
+	if is_drinking:
+		if not on_floor or is_dashing:
+			_drink_timer = 0.0
+			return
+		_drink_timer -= delta
+		if _drink_timer <= 0.0:
+			hp = mini(hp + combat.flask_heal, max_hp)
+			flask_charges -= 1
+			_spawn_dust(Vector2(0, -20), "heal")
+			Sfx.play("heal")
+			health_changed.emit(hp, max_hp)
+		return
+	if input.heal_pressed and flask_charges > 0 and on_floor and hp < max_hp and not is_attacking and not is_dashing:
+		_drink_timer = combat.drink_time
+		Sfx.play("drink")
+
+
+func _try_cast() -> void:
+	if not input.spell_pressed or _cast_cooldown > 0.0 or is_dashing or is_drinking or is_blocking:
+		return
+	if not abilities.get(equipped_spell, false):
+		return
+	var cost := Spells.cost(equipped_spell)
+	if mp < cost:
+		Sfx.play("fizzle")
+		return
+	mp -= cost
+	_cast_cooldown = combat.cast_cooldown
+	var bolt := Spells.cast(equipped_spell, self)
+	get_parent().add_child(bolt)
+	bolt.global_position = global_position + Vector2(facing * 12, -24)
+	visual.squash(Vector2(1.1, 0.95))
+	Sfx.play("cast")
+
+
 # --- Damage ---------------------------------------------------------------------
 
 func _check_hazards() -> void:
-	if invulnerable:
+	if invulnerable or dead:
 		return
 	var body := Rect2(global_position + Vector2(-BODY_SIZE.x * 0.5 + 1, -BODY_SIZE.y + 2), BODY_SIZE - Vector2(2, 3))
-	for c: Variant in _query_rect(body, LAYER_HAZARD):
+	for c: Variant in _query_rect(body, LAYER_HAZARD | LAYER_ENEMY):
 		if c.is_in_group("hazard"):
-			take_damage(20, true)
+			take_damage(combat.hazard_damage, true)
+			return
+		if c.is_in_group("enemy") and "contact_damage" in c and c.contact_damage > 0 and not c.dead:
+			receive_attack(c.contact_damage, c, false)
 			return
 
 
@@ -545,22 +644,103 @@ func _hazard_near() -> bool:
 	return false
 
 
-func take_damage(amount: int, from_hazard := false) -> void:
+## Entry point for every enemy attack. Resolves parry, guard or a clean hit.
+## Returns "parried", "guarded", "hit" or "ignored".
+func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
+	if dead:
+		return "ignored"
+	var src_dir := int(signf(source.global_position.x - global_position.x))
+	var from_front := src_dir == 0 or src_dir == facing
+	if parryable and _parry_timer > 0.0 and from_front:
+		_parry_timer = 0.0
+		_invuln_timer = maxf(_invuln_timer, 0.25)
+		mp = minf(mp + combat.parry_mp_gain, combat.max_mp)
+		Feel.hitstop(combat.parry_hitstop)
+		Feel.add_trauma(0.2)
+		Feel.rumble(0.6, 0.2, 0.1)
+		Sfx.play("parry")
+		_spawn_dust(Vector2(facing * 12, -24), "parry")
+		visual.squash(Vector2(1.15, 0.9))
+		if source.has_method("stagger"):
+			source.stagger()
+		return "parried"
 	if invulnerable:
+		return "ignored"
+	var knock := -src_dir if src_dir != 0 else -facing
+	if is_blocking and from_front and mp >= combat.guard_mp_cost:
+		mp -= combat.guard_mp_cost
+		_spawn_dust(Vector2(facing * 10, -24), "guard")
+		Sfx.play("guard")
+		take_damage(int(round(damage * (1.0 - combat.guard_reduction))), false, knock)
+		return "guarded"
+	take_damage(damage, false, knock)
+	return "hit"
+
+
+func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
+	if invulnerable or dead:
 		return
 	hp -= amount
 	_invuln_timer = tuning.hurt_invuln
+	_drink_timer = 0.0
+	_attack_timer = 0.0
+	_dash_timer = 0.0
 	Feel.hitstop(0.15)
 	Feel.add_trauma(0.35)
 	Feel.rumble(0.5, 0.6, 0.2)
 	Sfx.play("hurt")
 	visual.flash_hurt()
 	if hp <= 0:
-		hp = max_hp
-		teleport(spawn_point)
-	elif from_hazard:
+		hp = 0
+		health_changed.emit(hp, max_hp)
+		_die(safe_position if from_hazard else global_position)
+		return
+	if from_hazard:
 		teleport(safe_position)
+	elif knock_dir != 0:
+		velocity = Vector2(knock_dir * combat.hurt_knockback.x, -combat.hurt_knockback.y)
+		_control_lock_timer = combat.hurt_control_lock
+		_control_blend_timer = 0.0
 	health_changed.emit(hp, max_hp)
+
+
+func _die(where: Vector2) -> void:
+	dead = true
+	_dead_timer = combat.respawn_delay
+	velocity = Vector2.ZERO
+	var drop := int(floor(gold * combat.death_gold_fraction))
+	if is_instance_valid(purse):
+		purse.queue_free()
+	purse = null
+	if drop > 0:
+		gold -= drop
+		purse = GoldPurse.new()
+		purse.value = drop
+		get_parent().add_child(purse)
+		purse.global_position = where
+	var d := Dust.new()
+	d.setup("debris")
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(0, -20)
+	Feel.hitstop(0.35)
+	Feel.add_trauma(0.5)
+	Sfx.play("death")
+	died.emit()
+
+
+func _respawn() -> void:
+	dead = false
+	hp = max_hp
+	mp = combat.max_mp
+	flask_charges = combat.flask_charges
+	teleport(spawn_point)
+	_invuln_timer = 1.0
+	health_changed.emit(hp, max_hp)
+	respawned.emit()
+
+
+func add_gold(amount: int) -> void:
+	gold += amount
 
 
 func teleport(pos: Vector2) -> void:
@@ -568,6 +748,7 @@ func teleport(pos: Vector2) -> void:
 	velocity = Vector2.ZERO
 	_dash_timer = 0.0
 	_attack_timer = 0.0
+	_drink_timer = 0.0
 	reset_physics_interpolation()
 	if scarf:
 		scarf.snap()

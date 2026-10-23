@@ -2,7 +2,7 @@ class_name TrainingDummy
 extends Area2D
 ## A straw dummy for testing hits and pogo. Flashes, wobbles, breaks and returns.
 
-const HP := 5
+const HP := 40
 const RESPAWN_TIME := 1.5
 const STRAW := Color("d9b45a")
 const STRAW_DARK := Color("a8843a")

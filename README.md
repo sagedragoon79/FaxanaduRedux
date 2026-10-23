@@ -5,10 +5,12 @@ The full design lives in [docs/design-bible.md](docs/design-bible.md).
 
 ## Status
 
-**M1: movement prototype.** A graybox gym with the full movement kit: run, variable jump,
-coyote time, jump buffering, wall slide and wall jump, double jump, air dash, sword slashes
-and the Mattock pogo, with game-feel effects (squash and stretch, dust, hit-stop, screen
-shake, camera look-ahead and synthesized sound effects).
+**M2: combat core.** A graybox gym with the full movement kit (run, variable jump, coyote
+time, jump buffering, wall slide and wall jump, double jump, air dash, the Mattock pogo) and
+combat: a three-hit combo, parry and guard with the shield, the Deluge spell, the Red Potion,
+three enemies (Monodron, Hornet, Rot Dwarf), gold drops and a death and recovery loop.
+Game feel: squash and stretch, dust, hit-stop, screen shake, sub-pixel smooth camera and
+synthesized sound effects.
 
 ## Running
 
@@ -21,8 +23,11 @@ shake, camera look-ahead and synthesized sound effects).
 | Jump | Space / Z / K | A |
 | Attack (hold down in the air to pogo) | X / J | X |
 | Dash | C / L / Shift | B / RB / RT |
+| Block (tap to parry) | V / I | LB |
+| Cast spell (Deluge) | F / U | Y |
+| Drink Red Potion | Q / H | LT |
 | Drop through a platform | Down + Jump | Down + A |
-| Toggle Glove, Mattock, Wing Boots, Elven Stride | F1 to F4 | |
+| Toggle Glove, Mattock, Wing Boots, Elven Stride, Deluge | F1 to F4, F7 | |
 | Reset to spawn | R / F5 | Back |
 | Toggle debug HUD | F6 | |
 
@@ -33,8 +38,9 @@ GODOT=/path/to/godot tools/run_tests.sh            # all tests
 GODOT=/path/to/godot tools/run_tests.sh --filter=jump
 ```
 
-The tests drive a scripted player and assert the movement numbers from the design bible
-(jump height, apex time, coyote time, dash distance, wall-slide speed, pogo and more).
+The tests drive a scripted player and assert the numbers from the design bible (jump
+height, coyote time, dash distance, combo damage, parry, guard, potion, spells, enemy
+telegraphs and more), plus a random-input soak run through the gym.
 CI runs them on every push and pull request and uploads gym screenshots.
 
 ## Layout
