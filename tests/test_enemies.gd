@@ -188,6 +188,44 @@ func test_iron_dwarf_plate_turns_blows_until_the_hammer_sticks() -> void:
 	check(d.hp == hp0 - 25, "a pogo from above lands in full")
 
 
+func test_minecart_rider_revs_charges_and_crashes_into_the_wall() -> void:
+	var room := _room_with({Vector2i(22, 6): "K"})
+	var m: MinecartRider = _find(room, MinecartRider)
+	var p := make_player(room, Vector2i(13, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var hp := p.hp
+	var rev_frames := 0
+	var top_speed := 0.0
+	for i in 240:
+		await frames(1)
+		if m.state == "rev":
+			rev_frames += 1
+		top_speed = maxf(top_speed, absf(m.velocity.x))
+		if m.state == "crash":
+			break
+	check(rev_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the brakes shriek for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, rev_frames])
+	check(top_speed > 150.0, "then the cart charges (%.0f px/s)" % top_speed)
+	check(p.hp < hp, "and runs down a player who stays on the floor")
+	check(m.state == "crash" and m.global_position.x < 4 * Room.TILE, "it stops dead at the far wall and tips over")
+	m.queue_free()
+
+
+func test_minecart_tub_turns_blows_until_it_crashes() -> void:
+	var room := _room_with({Vector2i(12, 6): "K"})
+	var m: MinecartRider = _find(room, MinecartRider)
+	await frames(2)
+	m.set_state("roll")
+	var hp0 := m.hp
+	m.take_hit(10, Vector2(1, 0))
+	check(m.hp == hp0 - 4, "the iron tub turns most of a blow (%d)" % (hp0 - m.hp))
+	m.take_hit(10, Vector2(0, 1))
+	check(m.hp == hp0 - 14, "a pogo on the rider lands in full")
+	m.set_state("crash")
+	m.take_hit(10, Vector2(-1, 0))
+	check(m.hp == hp0 - 24, "tipped over, he takes every blow")
+
+
 func test_shockwave_hugs_the_floor_and_breaks_at_a_wall() -> void:
 	var room := _room_with({})
 	var w := Shockwave.new()
