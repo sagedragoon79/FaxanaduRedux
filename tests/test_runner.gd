@@ -15,6 +15,7 @@ const SUITES := [
 	preload("res://tests/test_reachability.gd"),
 	preload("res://tests/test_boss.gd"),
 	preload("res://tests/test_animation.gd"),
+	preload("res://tests/test_systems.gd"),
 ]
 
 var _passed := 0

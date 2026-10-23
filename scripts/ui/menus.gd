@@ -25,11 +25,15 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 			var right := "%d g" % int(entry.price)
 			if st == "owned":
 				right = "Owned"
+			elif st == "full":
+				right = "Full"
 			elif st == "sold out":
 				right = "Sold out"
 			var detail: String = item.desc
 			if item.kind == "key":
 				detail += "  You have %d." % GameState.key_count(String(entry.item).trim_suffix("_key"))
+			elif item.kind == "ointment":
+				detail += "  You have %d." % p.ointments
 			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
 		return out
 	var on_select := func(i: int) -> void:
@@ -105,4 +109,121 @@ static func open_skills(tree: SceneTree, p: Player) -> bool:
 			GameState.toast.emit("Learned: " + String(GameData.skill(ids[i]).name))
 	var footer := func() -> String: return "Skill points %d" % int(GameState.data.skill_points)
 	menu.open("Skills", "Each branch deepens in order. Choose well: points are scarce.", provider, on_select, footer)
+	return true
+
+
+## The pause menu. `p` may be null (no game running). `on_quit` runs on Quit.
+static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	var provider := func() -> Array:
+		var oint := {"label": "Use Ointment", "right": "x%d" % p.ointments,
+			"detail": "Nothing can hurt you for %d seconds." % int(Player.OINTMENT_TIME),
+			"enabled": p.ointments > 0 and p.ointment_left <= 0.0}
+		if p.ointment_left > 0.0:
+			oint.detail = "One is already on: %d seconds left." % ceili(p.ointment_left)
+		elif p.ointments <= 0:
+			oint.detail = "You carry none. The item shops in Eolis and Apolune sell them."
+		return [
+			{"label": "Resume", "detail": "Back to the Tree."},
+			oint,
+			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
+			{"label": "Controls", "detail": "Rebind the keyboard."},
+			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
+		]
+	var reopen := func() -> void: open_pause(tree, p, on_quit)
+	var on_select := func(i: int) -> void:
+		match i:
+			0:
+				menu.close()
+			1:
+				if p.use_ointment():
+					menu.close()
+			2:
+				open_options(tree, reopen)
+			3:
+				open_controls(tree, reopen)
+			4:
+				menu.close()
+				on_quit.call()
+	menu.open("Paused", "%s. Rank %s." % [_room_title(tree), GameState.rank_name()], provider, on_select, _gold_footer(p))
+	return true
+
+
+static func _room_title(tree: SceneTree) -> String:
+	var w := tree.get_first_node_in_group("world")
+	return String(w.get("room").title) if w != null and w.get("room") != null else "The World Tree"
+
+
+const OPTIONS := [
+	["shake", "Screen shake", "How hard the screen shakes on hits and slams."],
+	["flashes", "Screen flashes", "The white flash on boss kills and the Elixir."],
+	["rumble", "Rumble", "Controller vibration."],
+	["music", "Music volume", ""],
+	["sound", "Sound volume", ""],
+	["speed", "Game speed", "Slow the whole game down if the action is too fast. Everything slows evenly."],
+]
+
+
+## Options. `back` reopens the menu this came from.
+static func open_options(tree: SceneTree, back: Callable) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	var provider := func() -> Array:
+		var out := []
+		for o: Array in OPTIONS:
+			out.append({"label": o[1], "right": Settings.value_text(o[0]), "detail": o[2] + ("  " if o[2] != "" else "") + "Left and Right change it."})
+		out.append({"label": "Back", "detail": ""})
+		return out
+	var on_select := func(i: int) -> void:
+		if i < OPTIONS.size():
+			Settings.adjust(OPTIONS[i][0], 1)
+		else:
+			back.call()
+	menu.open("Options", "Saved as you change them.", provider, on_select)
+	menu.on_adjust = func(i: int, step: int) -> void:
+		if i < OPTIONS.size():
+			Settings.adjust(OPTIONS[i][0], step)
+	menu.on_back = back
+	return true
+
+
+const ACTION_NAMES := {
+	"move_left": "Move left", "move_right": "Move right", "move_up": "Look up / enter", "move_down": "Crouch / drop",
+	"jump": "Jump", "attack": "Attack", "dash": "Dash", "block": "Block / parry", "spell": "Cast spell",
+	"heal": "Drink potion", "map": "Map",
+}
+
+
+## Keyboard rebinding: choose an action, then press its new key.
+static func open_controls(tree: SceneTree, back: Callable) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	var provider := func() -> Array:
+		var out := []
+		for action: String in Settings.REBINDABLE:
+			var listening := menu.capture.is_valid() and menu.rows.size() > out.size() and menu.cursor == out.size()
+			out.append({"label": ACTION_NAMES[action], "right": "..." if listening else Controls.key_name(action),
+				"detail": "Jump to rebind, then press the new key. A key taken from another action swaps with it."})
+		out.append({"label": "Reset to defaults", "detail": "Put every key back the way it was."})
+		out.append({"label": "Back", "detail": "The gamepad layout stays as it is."})
+		return out
+	var on_select := func(i: int) -> void:
+		var n := Settings.REBINDABLE.size()
+		if i < n:
+			menu.capture = func(event: InputEventKey) -> void:
+				if event.physical_keycode == KEY_ESCAPE:
+					return
+				Settings.bind_key(Settings.REBINDABLE[i], int(event.physical_keycode))
+				Sfx.play("blip", 0.0, -4.0)
+		elif i == n:
+			Settings.reset_keys()
+			GameState.toast.emit("Keys reset.")
+		else:
+			back.call()
+	menu.open("Controls", "Keyboard keys. Esc always pauses.", provider, on_select)
+	menu.on_back = back
 	return true

@@ -17,6 +17,7 @@ const SHIELD := Color("aa6336")
 const SHIELD_BOSS := Color("cec5d3")
 const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
+const OINTMENT := Color("f0c02e")
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
@@ -149,6 +150,13 @@ static func draw_frame(ci: CanvasItem, name: String, f: int, tint: Color, flat: 
 func _draw() -> void:
 	var tint := Color(1.0, 0.45, 0.45) if _red_time > 0.0 else Color.WHITE
 	draw_frame(self, anim, frame, tint, false)
+	var oint := player.ointment_left
+	if oint > 0.0:
+		# The Ointment: a gold sheen that pulses, and flickers as it runs out.
+		var a := 0.38 + 0.14 * sin(Time.get_ticks_msec() * 0.008)
+		if oint < 2.0 and int(oint * 8.0) % 2 == 0:
+			a *= 0.3
+		draw_frame(self, anim, frame, Color(OINTMENT, a), true)
 	var info := frame_info()
 	var hand := Vector2(info.hand[0], info.hand[1])
 	if info.has("blade"):

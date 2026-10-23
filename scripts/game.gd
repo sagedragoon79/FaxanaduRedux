@@ -16,8 +16,10 @@ extends Node2D
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --map                      open the map before the screenshot
-##   --open=shop:ID|guru|skills open a menu before the screenshot
+##   --open=shop:ID|guru|skills|pause|options|controls
+##                              open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
+##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
@@ -27,7 +29,7 @@ const SAVE_SLOT := 1
 const BASE_SIZE := Vector2i(640, 360)
 const MARGIN := 1
 ## The title menu sits under the logo.
-const TITLE_PANEL := Rect2(190, 156, 260, 178)
+const TITLE_PANEL := Rect2(190, 140, 260, 212)
 
 var view: SubViewport
 var display: Sprite2D
@@ -54,6 +56,8 @@ var _frames := 0
 func _ready() -> void:
 	# The game node keeps running while paused (map, menus); the world does not.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	Settings.load_settings()
+	Settings.apply()
 	for arg in OS.get_cmdline_user_args():
 		var kv := arg.trim_prefix("--").split("=", true, 1)
 		_args[kv[0]] = kv[1] if kv.size() > 1 else ""
@@ -126,9 +130,17 @@ func _title() -> void:
 		return [
 			{"label": "Continue", "enabled": has_save, "detail": "Return to your last rest." if has_save else "No journey saved yet."},
 			{"label": "New game", "detail": "Begin at the West Gate of Eolis." + ("  Your old save is replaced when you next rest." if has_save else "")},
+			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
+			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Quit", "detail": ""},
 		]
 	var pick := func(i: int) -> void:
+		if i == 2:
+			Menus.open_options(get_tree(), _title)
+			return
+		if i == 3:
+			Menus.open_controls(get_tree(), _title)
+			return
 		menu.close()
 		title_screen.visible = false
 		menu.panel = ListMenu.PANEL
@@ -141,7 +153,7 @@ func _title() -> void:
 				GameState.slot = SAVE_SLOT
 				_start(NEW_GAME_ROOM)
 				GameState.banner.emit("Eolis", "The root town")
-			2:
+			4:
 				get_tree().quit()
 	menu.open("A wanderer returns", "The World Tree's springs have run dry.", rows, pick)
 	menu.cursor = 0 if has_save else 1
@@ -189,7 +201,18 @@ func _process(_delta: float) -> void:
 		var boss := get_tree().get_first_node_in_group("boss") as Rokusutahn
 		if boss != null and boss.state == "intro":
 			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
+	_check_pause()
 	_take_shot()
+
+
+## Pause opens the pause menu during play, unless another screen is up or the
+## press just closed one.
+func _check_pause() -> void:
+	if not Input.is_action_just_pressed("pause") or player == null or player.dead:
+		return
+	if menu.is_open or menu.closed_frame == Engine.get_process_frames() or map_screen.is_open or map_screen.closed_frame == Engine.get_process_frames() or dialog.is_open:
+		return
+	Menus.open_pause(get_tree(), player, func() -> void: get_tree().quit())
 
 
 func _take_shot() -> void:
@@ -204,6 +227,10 @@ func _debug_open() -> void:
 		return
 	if _args.has("gold"):
 		player.gold = int(_args["gold"])
+	if _args.has("ointments"):
+		player.ointments = int(_args["ointments"])
+	if _args.has("use-ointment"):
+		player.use_ointment()
 	if _args.has("map"):
 		map_screen.toggle()
 	var what: String = _args.get("open", "")
@@ -213,6 +240,12 @@ func _debug_open() -> void:
 		Menus.open_guru(get_tree(), GameData.npc("guru").greeting, player, null)
 	elif what == "skills":
 		Menus.open_skills(get_tree(), player)
+	elif what == "pause":
+		Menus.open_pause(get_tree(), player, func() -> void: pass)
+	elif what == "options":
+		Menus.open_options(get_tree(), func() -> void: pass)
+	elif what == "controls":
+		Menus.open_controls(get_tree(), func() -> void: pass)
 
 
 func _unhandled_input(event: InputEvent) -> void:

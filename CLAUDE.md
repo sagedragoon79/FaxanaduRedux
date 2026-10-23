@@ -34,6 +34,8 @@ bible changes substantially (link in the project memory).
 - Movement numbers live in `scripts/player/movement_tuning.gd` and must match design bible
   section 6. Change both together and keep `tests/` asserting them.
 - The player reads intent from `PlayerInput`, never from `Input` directly, so tests can script it.
+- Player options live in `Settings` (`scripts/data/settings.gd`, saved to user://settings.cfg). The game
+  loads them at start; tests never do, and tests that change them must point `Settings.path` elsewhere.
 - Collision layers: see `docs/architecture.md`.
 - Every new mechanic gets a test in `tests/`.
 - Autosprite credits are limited: log every call in `art/autosprite-ledger.csv` and spend them

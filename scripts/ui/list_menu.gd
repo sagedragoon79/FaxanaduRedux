@@ -7,6 +7,10 @@ extends Control
 ## Rows come from a provider callable (so they refresh after each choice):
 ## each row is {label, right (text on the right), detail, enabled, header}.
 ## Header rows are section titles and can't be selected.
+##
+## Optional hooks, cleared on each open(): `on_adjust(index, step)` runs on
+## Left/Right (option values), `on_back` runs instead of closing on Dash (sub
+## menus), and `capture(event)` takes the next key press (rebinding).
 
 signal closed
 
@@ -28,10 +32,17 @@ var is_open := false
 ## Where the panel sits; menus may move it (the title menu sits under the logo).
 var panel := PANEL
 
+var on_adjust := Callable()
+var on_back := Callable()
+var capture := Callable()
+## The frame the menu last closed on, so the key that closed it can't reopen it.
+var closed_frame := -1
+
 var _provider: Callable
 var _on_select: Callable
 var _footer: Callable
 var _grace := 0.0
+var _scroll := 0
 var _flash := 0.0
 var _font: Font
 
@@ -53,7 +64,11 @@ func open(menu_title: String, menu_subtitle: String, provider: Callable, on_sele
 	_provider = provider
 	_on_select = on_select
 	_footer = footer
+	on_adjust = Callable()
+	on_back = Callable()
+	capture = Callable()
 	cursor = 0
+	_scroll = 0
 	refresh()
 	_skip_headers(1)
 	is_open = true
@@ -72,6 +87,8 @@ func close() -> void:
 		return
 	is_open = false
 	visible = false
+	capture = Callable()
+	closed_frame = Engine.get_process_frames()
 	get_tree().paused = false
 	closed.emit()
 
@@ -105,20 +122,55 @@ func _skip_headers(step: int) -> void:
 		cursor = wrapi(cursor + step, 0, rows.size())
 
 
+## Left/Right on the selected row, for menus with values.
+func adjust(step: int) -> void:
+	if rows.is_empty() or not on_adjust.is_valid() or not rows[cursor].get("enabled", true):
+		return
+	on_adjust.call(cursor, step)
+	Sfx.play("blip", 0.0, -6.0)
+	if is_open:
+		refresh()
+
+
+## Dash, Block or Pause: back out of a sub menu, or close.
+func back() -> void:
+	if on_back.is_valid():
+		on_back.call()
+	else:
+		close()
+
+
+func _input(event: InputEvent) -> void:
+	if not is_open or not capture.is_valid():
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		get_viewport().set_input_as_handled()
+		var take := capture
+		capture = Callable()
+		_grace = INPUT_GRACE
+		take.call(event)
+		if is_open:
+			refresh()
+
+
 func _process(delta: float) -> void:
 	if not is_open:
 		return
 	_grace -= delta
 	_flash = maxf(_flash - delta, 0.0)
-	if _grace <= 0.0:
+	if _grace <= 0.0 and not capture.is_valid():
 		if Input.is_action_just_pressed("move_down"):
 			move(1)
 		elif Input.is_action_just_pressed("move_up"):
 			move(-1)
+		elif Input.is_action_just_pressed("move_left"):
+			adjust(-1)
+		elif Input.is_action_just_pressed("move_right"):
+			adjust(1)
 		elif Input.is_action_just_pressed("jump") or Input.is_action_just_pressed("attack"):
 			confirm()
 		elif Input.is_action_just_pressed("dash") or Input.is_action_just_pressed("block") or Input.is_action_just_pressed("pause"):
-			close()
+			back()
 	queue_redraw()
 
 
@@ -135,9 +187,20 @@ func _draw() -> void:
 		draw_multiline_string(_font, Vector2(x, y), subtitle, HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 28, 9, 4, Color("c9b98f"))
 		y += 12 * ceilf(_font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / (panel.size.x - 28)) + 4
 	y += 4
-	for i in rows.size():
+	# Long lists scroll to keep the cursor in view.
+	var fit := maxi(1, int((panel.end.y - 66 - y) / ROW_H))
+	if cursor < _scroll:
+		_scroll = cursor
+	elif cursor >= _scroll + fit:
+		_scroll = cursor - fit + 1
+	_scroll = clampi(_scroll, 0, maxi(rows.size() - fit, 0))
+	if _scroll > 0:
+		_text(Vector2(panel.end.x - 18, y - 2), "^", 9, DIM.lightened(0.3))
+	if _scroll + fit < rows.size():
+		_text(Vector2(panel.end.x - 18, y + fit * ROW_H + 4), "v", 9, DIM.lightened(0.3))
+	for i in range(_scroll, mini(rows.size(), _scroll + fit)):
 		var row: Dictionary = rows[i]
-		var top := y + i * ROW_H
+		var top := y + (i - _scroll) * ROW_H
 		if row.get("header", false):
 			_text(Vector2(x, top + 11), String(row.label).to_upper(), 8, DIM.lightened(0.3))
 			continue
@@ -158,7 +221,7 @@ func _draw() -> void:
 	draw_multiline_string(_font, box.position + Vector2(6, 13), detail, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 12, 9, 3, Color("c9b98f"))
 	var foot: String = _footer.call() if _footer.is_valid() else ""
 	_text(Vector2(x, panel.end.y - 9), foot, 9, ACCENT)
-	var hint := "Jump: choose   Dash: leave"
+	var hint := "Press a key   Esc: cancel" if capture.is_valid() else ("Left/Right: change   Dash: back" if on_adjust.is_valid() else "Jump: choose   Dash: leave")
 	_text(Vector2(panel.end.x - 14 - _font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, panel.end.y - 9), hint, 8, DIM.lightened(0.2))
 
 

@@ -14,6 +14,7 @@ const MP_DARK := Color("23385e")
 const POTION := Color("e0404a")
 const POTION_EMPTY := Color("4a2a34")
 const GOLD := Color("ffd24a")
+const OINTMENT := Color("f0c02e")
 
 var player: Player
 
@@ -38,7 +39,7 @@ func _ready() -> void:
 	_font = ThemeDB.fallback_font
 	GameState.banner.connect(show_banner)
 	GameState.toast.connect(show_toast)
-	GameState.flash.connect(func(strength: float) -> void: _flash = maxf(_flash, strength))
+	GameState.flash.connect(func(strength: float) -> void: _flash = maxf(_flash, strength * Feel.flash_scale))
 
 
 func show_banner(title: String, subtitle: String) -> void:
@@ -98,10 +99,29 @@ func _draw() -> void:
 	draw_rect(Rect2(gp + Vector2(1, 3), Vector2(4, 4)), GOLD)
 	draw_string_outline(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
 	draw_string(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, GOLD)
+	_draw_ointment(origin + Vector2(0, 42))
 	_draw_boss()
 	_draw_messages()
 	if _flash > 0.0:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
+
+
+## Ointments carried (a small jar and a count), and the time left on one in use.
+func _draw_ointment(at: Vector2) -> void:
+	var left := player.ointment_left
+	if player.ointments <= 0 and left <= 0.0:
+		return
+	draw_rect(Rect2(at + Vector2(1, 0), Vector2(5, 2)), Color("8d4e16"))
+	draw_rect(Rect2(at + Vector2(0, 2), Vector2(7, 7)), OUTLINE)
+	draw_rect(Rect2(at + Vector2(1, 3), Vector2(5, 5)), OINTMENT)
+	draw_rect(Rect2(at + Vector2(2, 3), Vector2(1, 2)), Color("f7f1de"))
+	var label := "x%d" % player.ointments
+	draw_string_outline(_font, at + Vector2(10, 9), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
+	draw_string(_font, at + Vector2(10, 9), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, OINTMENT)
+	if left > 0.0:
+		var bar := Rect2(at + Vector2(0, 11), Vector2(30, 2))
+		draw_rect(bar.grow(1), OUTLINE)
+		draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * left / Player.OINTMENT_TIME), bar.size.y)), OINTMENT)
 
 
 func _boss() -> Node:

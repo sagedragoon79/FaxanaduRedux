@@ -13,8 +13,10 @@ var _next := 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	Settings.ensure_buses()
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
+		p.bus = "Sfx"
 		add_child(p)
 		_players.append(p)
 

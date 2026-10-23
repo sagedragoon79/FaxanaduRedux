@@ -505,7 +505,7 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 |------|----------|-------|
 | Weapon smith | Eolis, later Forepaw dwarf smith | Blades, smith upgrades |
 | Armorer | Eolis, Apolune, Daybreak | Armor, shields |
-| Item shop | every town | Ointment (10 s invulnerability, 300 g), Elixir (auto-revive, max 1, 1,500 g), Poison cure (80 g), Mana Dew (one per shop, 500 to 1,200 g), Life Fruit (one per shop, 800 to 2,000 g) |
+| Item shop | every town | Ointment (10 s invulnerability, 300 g; carry up to 3, rubbed on from the pause menu), Elixir (auto-revive, max 1, 1,500 g), Poison cure (80 g), Mana Dew (one per shop, 500 to 1,200 g), Life Fruit (one per shop, 800 to 2,000 g) |
 | Key master | Eolis, Victim, Dartmoor | Jack (150 g), Queen (400 g), King (900 g), Ace (1,800 g) keys; the Joker key is found |
 | Cartographer | every town | zone map outlines (200 to 800 g), map pins |
 | Spell scrolls | Mascon, Daybreak | Fire (1,200 g), Tilte (2,500 g) |
@@ -671,7 +671,7 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 - **Reachability checker:** a tool that simulates the player's movement envelope (jump heights, dash distance) per ability set and proves every required item is reachable in order and that no soft-lock exists. It runs in CI.
 - **Testing:** GUT unit tests for systems; scripted input replays for the movement controller with asserted metrics (jump height, dash distance, coyote window); headless boot of every room; screenshot capture per room under a virtual display (Xvfb) for visual review.
 - **Performance budget:** 60 fps locked on a mid-2018 laptop GPU; under 1.5 GB RAM; rooms load in under 100 ms (preload neighbors).
-- **Accessibility:** full remapping, screen-shake and flash toggles, game speed slider (70 to 100%), assist options (extra invulnerability, infinite double jump in Guru Trials only off by default), colorblind-safe gate icons, subtitles for all voiced grunts.
+- **Accessibility:** full remapping, screen-shake and flash toggles, game speed slider (70 to 100%; steps of 10), assist options (extra invulnerability, infinite double jump in Guru Trials only off by default), colorblind-safe gate icons, subtitles for all voiced grunts. *Interim (pass 09):* the options menu has shake (full, half, off), flashes (full, reduced, off), rumble, music and sound volume and game speed, and the keyboard can be rebound; gamepad remapping comes with controller glyphs.
 
 ---
 

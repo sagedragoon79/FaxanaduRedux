@@ -62,6 +62,8 @@ static func fresh() -> Dictionary:
 		"mantra_shards": 0,
 		## Elixirs carried (at most Shop.ELIXIR_MAX): one revives the player in place on death.
 		"elixirs": 0,
+		## Ointments carried (at most Shop.OINTMENT_MAX).
+		"ointments": 0,
 		"collected": {},
 		"visited": {},
 		"flags": {},
@@ -153,6 +155,7 @@ func apply(p: Player) -> void:
 		p.abilities[k] = bool(data.abilities[k])
 	p.gold = int(data.gold)
 	p.elixirs = int(data.elixirs)
+	p.ointments = int(data.ointments)
 	refresh_stats(p)
 	p.restore()
 
@@ -191,6 +194,7 @@ func capture(p: Player) -> void:
 		data.abilities[k] = bool(p.abilities[k])
 	data.gold = p.gold
 	data.elixirs = p.elixirs
+	data.ointments = p.ointments
 
 
 ## Applies a permanent stat item (Life Fruit, Mana Dew, Potion Shard) and

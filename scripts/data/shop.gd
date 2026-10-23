@@ -5,9 +5,11 @@ extends RefCounted
 
 ## Elixirs you can carry at once (design bible 10.2).
 const ELIXIR_MAX := 1
+## Ointments you can carry at once.
+const OINTMENT_MAX := 3
 
 
-## Why an entry can't be bought right now: "" (it can), "owned", "sold out" or "gold".
+## Why an entry can't be bought right now: "" (it can), "owned", "full", "sold out" or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
@@ -21,6 +23,9 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		"elixir":
 			if p.elixirs >= ELIXIR_MAX:
 				return "owned"
+		"ointment":
+			if p.ointments >= OINTMENT_MAX:
+				return "full"
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
@@ -42,6 +47,8 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 			GameState.grant_stat_item(entry.item, p)
 		"elixir":
 			p.elixirs += 1
+		"ointment":
+			p.ointments += 1
 	if entry.get("once", false):
 		GameState.collect(_once_id(shop_id, index))
 	GameState.capture(p)
