@@ -88,6 +88,27 @@
    "stagger": {"file": "poses.png", "frame_size": 256, "columns": 5, "count": 5, "pick": [4], "feet_x": 128, "autosprite": "character cmvkkcpj00080ou6emvc2qffu (pro prompt base), generate_pose stills packed by autosprite_poses.py"}
   }
  },
+ "foreman": {
+  "dir": "foreman",
+  "colors": 48,
+  "density": 2,
+  "ramps": ["night", "bark", "gold", "stone"],
+  "height": 70,
+  "gain": 1.1,
+  "reference": "walk",
+  "animations": {
+   "idle": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [0, 0], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [2, 5, 8, 11, 14, 17, 20, 23], "fps": 12, "loop": true, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), pro 4s walk, video cmvklybcc000gh91en1kdty6n"},
+   "pound_tell": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [1, 1], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "pound": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [2], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "charge_tell": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [3, 3], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "charge": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [4, 4], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "stunned": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [5, 5], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "throw_tell": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [6], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "throw": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [7], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
+   "recover": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [0], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"}
+  }
+ },
  "rokusutahn": {
   "dir": "rokusutahn",
   "colors": 40,
