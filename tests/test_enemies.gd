@@ -106,6 +106,47 @@ func test_sap_spitter_telegraphs_and_lobs_a_glob_that_leaves_sap() -> void:
 	check(not room.is_sap_at(spot + Vector2(0, -6)), "and the puddle dries")
 
 
+func test_grub_lump_crawls_up_walls_and_over_the_ceiling() -> void:
+	var room := _room_with({Vector2i(3, 6): "U"})
+	var g: GrubLump = _find(room, GrubLump)
+	check(g.clinging_side() == Vector2i(0, 1), "it starts on the floor")
+	var sides := {}
+	var inside := true
+	var inner := Rect2(Vector2(16, 16), Vector2(28 * 16, 6 * 16))
+	for i in 420:
+		await frames(1)
+		sides[g.clinging_side()] = true
+		inside = inside and inner.has_point(g.global_position)
+	check(sides.has(Vector2i(-1, 0)), "it climbed the left wall")
+	check(sides.has(Vector2i(0, -1)), "and crossed onto the ceiling")
+	check(inside, "without leaving the open space")
+
+
+func test_grub_lump_telegraphs_and_drops_from_the_ceiling() -> void:
+	var room := _room_with({Vector2i(12, 1): "U"})
+	var g: GrubLump = _find(room, GrubLump)
+	check(g.on_ceiling(), "placed under a ceiling, it clings to it")
+	var p := make_player(room, Vector2i(12, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var hp := p.hp
+	var windup_frames := 0
+	var landed := false
+	for i in 120:
+		await frames(1)
+		if g.state == "windup":
+			windup_frames += 1
+		if g.state == "land":
+			landed = true
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "it rears for at least %.2f s before dropping (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(p.hp < hp, "the drop hurts the player below")
+	check(landed and g.clinging_side() == Vector2i(0, 1), "it lands on the floor")
+	p.teleport(cell_feet(24, 6))
+	await frames(roundi(GrubLump.LAND_TIME * 60.0) + 30)
+	check(g.state == "crawl", "and crawls on")
+
+
 func test_rot_dwarf_shield_blocks_only_the_front() -> void:
 	var room := _room_with({Vector2i(12, 6): "D"})
 	var d: RotDwarf = _find(room, RotDwarf)
