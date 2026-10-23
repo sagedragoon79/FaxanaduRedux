@@ -48,6 +48,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |
+| `Y` | Bound fog (the Mist): solid until the player brings the Lantern Key near, then every curtain in the room parts for good (a row of three is usual) |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |

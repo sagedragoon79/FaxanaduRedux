@@ -182,3 +182,35 @@ func test_the_mist_fog_hides_all_but_the_light() -> void:
 	w._enter("tower/foot")
 	await frames(1)
 	check(not w.fog.visible and w.fog.visibility_at(Vector2(100, 100)) == 1.0, "other zones have no fog")
+
+
+## Bible 4.4: bound fog seals the shaft above Lantern Landing. It tells you what
+## it needs, holds without the Lantern Key, and parts for good when the key's
+## light comes near. The key is not used up.
+func test_bound_fog_parts_for_the_lantern_key() -> void:
+	var w := make_world({}, "mist/lantern_landing", cell_feet(30, 19))
+	await frames(3)
+	var curtains := runner.get_tree().get_nodes_in_group("mist_curtain")
+	check(curtains.size() == 3, "three tiles of bound fog seal the shaft (%d)" % curtains.size())
+	var said: Array[String] = []
+	var listen := func(text: String) -> void: said.append(text)
+	GameState.toast.connect(listen)
+	var c := curtains[0] as MistCurtain
+	w.player.teleport(c.global_position + Vector2(0, 30))
+	await frames(3)
+	check(not c.parted and said.size() == 1 and said[0].contains("lantern"), "without the key it holds and says what it needs: %s" % [said])
+	w.player.teleport(cell_feet(37, 9))
+	await frames(2)
+	GameState.add_key("lantern")
+	await frames(3)
+	var all_parted := true
+	for n in runner.get_tree().get_nodes_in_group("mist_curtain"):
+		all_parted = all_parted and (n as MistCurtain).parted
+	check(all_parted and GameState.flag("curtain:mist/lantern_landing"), "the key's light parts every tile and the room remembers")
+	check(GameState.key_count("lantern") == 1, "the Lantern Key is kept")
+	GameState.toast.disconnect(listen)
+	await frames(1)
+	w._enter("mist/lantern_landing")
+	await frames(2)
+	var again := runner.get_tree().get_nodes_in_group("mist_curtain")
+	check(not again.is_empty() and (again[0] as MistCurtain).parted, "back in the room, the fog is still parted")
