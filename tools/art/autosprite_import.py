@@ -53,6 +53,9 @@ animations of which sheet they replace:
                "clear": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
                                          pale grey pixels are cleared: background the clip left
                                          closed in (between the hero's raised arm and his face)
+               "paint": {"20": [x0, y0, x1, y1]},  as "spill", for a pale grey blot (painted
+                                         from row neighbours up to 14 px away: a fleck of white
+                                         on the hero's boot in the wall slide)
                "spill": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
                                          stray red liquid is painted over from its row neighbours
                                          (the drink clip spills the potion down his chest)
@@ -235,10 +238,10 @@ def _clear_grey(src, box):
     return out
 
 
-def _paint_spill(src, box):
-    """Paints over saturated red (hue within 12 degrees of 0) inside `box`: each such pixel
-    takes the mean of the nearest clean opaque pixels left and right on its row, or is cleared
-    where it hangs over the background."""
+def _paint_spill(src, box, grey=False, reach=6):
+    """Paints over saturated red (hue within 12 degrees of 0), or with `grey` pale grey, inside
+    `box`: each such pixel takes the mean of the nearest clean opaque pixels left and right on
+    its row (within `reach`), or is cleared where it hangs over the background."""
     a = src[..., 3]
     rgb = np.where(a[..., None] > 1e-6, src[..., :3] / np.maximum(a[..., None], 1e-6), 0)
     mx, mn = rgb.max(-1), rgb.min(-1)
@@ -246,6 +249,8 @@ def _paint_spill(src, box):
     # Red is the largest channel and green and blue are within a fifth of the chroma: hue 0 +- 12.
     red = (rgb.argmax(-1) == 0) & (np.abs(rgb[..., 1] - rgb[..., 2]) <= 0.2 * (mx - mn)) & \
         (sat > 0.5) & (mx > 0.25) & (a > 0.05)
+    if grey:
+        red = (sat < 0.3) & (mx > 0.45) & (a > 0.05)
     x0, y0, x1, y1 = box
     gone = np.zeros_like(red)
     gone[y0:y1, x0:x1] = red[y0:y1, x0:x1]
@@ -256,7 +261,7 @@ def _paint_spill(src, box):
             xx = x + step
             while 0 <= xx < src.shape[1] and gone[y, xx]:
                 xx += step
-            if 0 <= xx < src.shape[1] and abs(xx - x) <= 6:
+            if 0 <= xx < src.shape[1] and abs(xx - x) <= reach:
                 picks.append(src[y, xx])
         opaque = [q for q in picks if q[3] > 0.5]
         out[y, x] = np.mean(opaque, 0) if len(opaque) == len(picks) and opaque else 0
@@ -507,6 +512,9 @@ def imported(name, cell, origin, code_meta):
         if "clear" in spec:
             srcs = [_clear_grey(src, spec["clear"][str(k)]) if str(k) in spec["clear"] else src
                     for k, src in zip(picks, srcs)]
+        if "paint" in spec:
+            srcs = [_paint_spill(src, spec["paint"][str(k)], grey=True, reach=14)
+                    if str(k) in spec["paint"] else src for k, src in zip(picks, srcs)]
         if "spill" in spec:
             srcs = [_paint_spill(src, spec["spill"][str(k)]) if str(k) in spec["spill"] else src
                     for k, src in zip(picks, srcs)]

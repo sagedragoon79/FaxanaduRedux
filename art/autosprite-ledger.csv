@@ -79,3 +79,4 @@ date,asset,operation,credits,result,notes
 2026-10-23,Iron Dwarf walk grip (2nd fix),re-import (manifest graft: frames 33-45 take the gripping upper body of frames 23-32),0,ok,Sean: hand still left the haft (it lets go for half the stride); balance 22
 2026-10-23,hero drink arm gap,re-import (manifest clear: grey background closed in between arm and face in frames 40 and 20),0,ok,Sean spotted it; balance 22
 2026-10-23,Foreman walk face,re-import (manifest face: frame 2's face pasted on every walk frame, aligned on the helmet),0,ok,Sean: mouth moved as if talking; balance 22
+2026-10-23,hero wall slide fleck,re-import (manifest paint: pale blot on the boot in all six frames),0,ok,Sean spotted it; balance 22
