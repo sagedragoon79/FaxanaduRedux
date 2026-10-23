@@ -8,11 +8,12 @@ patch of cracked floor under an impact; this keys the white out (also where it i
 between the legs), clears the floor, keeps the figure (the largest connected part, so flying
 chips go too) and scales each still into one square cell.
 
-Usage: python3 tools/art/autosprite_poses.py DEST SRC[:cut=Y][:ground=Y][:x=X] ... [--scale 0.25] [--size 256]
+Usage: python3 tools/art/autosprite_poses.py DEST SRC[:cut=Y][:ground=Y][:x=X][:holes=Y] ... [--scale 0.25] [--size 256]
        DEST and SRC are under art/autosprite/. cut=Y clears every row from source row Y down
        (the floor a hammer head sinks into); ground=Y clears pale, grey floor pixels from row Y
        down. x=X is the source column under the hips: it lands on the cell's middle, so the
        poses stand on one spot (the manifest then gives the cell's middle as "feet_x").
+       holes=Y: only white closed in below row Y is keyed out (a glass dome above keeps it).
        --scale is the pose's scale against the animation clips (a 1024 px pose of a figure
        drawn on a 256 px clip cell: 0.25).
 """
@@ -46,11 +47,13 @@ def components(mask):
     return labels, sizes
 
 
-def clean(img, cut=None, ground=None, hole=400):
+def clean(img, cut=None, ground=None, hole=400, hole_top=0):
     a = np.asarray(key_background(img)).copy()
     rgb = a[..., :3].astype(int)
-    # White closed in by the figure: near-white parts bigger than a highlight.
+    # White closed in by the figure: near-white parts bigger than a highlight (from row
+    # hole_top down, so glass higher up keeps its shine).
     white = (rgb >= 237).all(-1) & (a[..., 3] > 0)
+    white[:hole_top] = False
     labels, sizes = components(white)
     big = np.array(sizes) > hole
     big[0] = False
@@ -79,7 +82,7 @@ def main():
     for k, spec in enumerate(a.srcs):
         path, *opts = spec.split(":")
         opt = {o.split("=")[0]: int(o.split("=")[1]) for o in opts}
-        still = clean(Image.open(SOURCES / path), opt.get("cut"), opt.get("ground"))
+        still = clean(Image.open(SOURCES / path), opt.get("cut"), opt.get("ground"), hole_top=opt.get("holes", 0))
         side = int(round(still.width * a.scale))
         small = still.resize((side, side), Image.LANCZOS)
         # The hips (x=, default the still's middle) on the cell's middle, the feet where the pose had them.
