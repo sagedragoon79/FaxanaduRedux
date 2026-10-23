@@ -390,6 +390,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn(gate, center)
 			if root_gates_open():
 				gate.retract(true)
+		"Q":
+			_spawn(FlueDamper.new(), center)
 		"N":
 			var heart := RootHeart.new()
 			heart.room = self

@@ -71,35 +71,27 @@ func _draw() -> void:
 	var origin := Vector2(10, 10)
 	var masks := ceili(float(player.max_hp) / MASK_HP)
 	var mask_x := 0.0
+	var widths: Array[float] = []
+	for i in masks:
+		var cap := clampf(float(player.max_hp - i * MASK_HP) / MASK_HP, 0.0, 1.0)
+		widths.append(12.0 if cap >= 1.0 else 7.0)
+		mask_x += widths[i] + 2.0
+	var bar_w := maxf(mask_x - 2.0, player.max_mp)
+	_draw_plate(Rect2(origin - Vector2(5, 5), Vector2(maxf(bar_w, player.flask_max * 9 + 48) + 10, 43 + (14 if _ointment_shown() else 0))))
+	mask_x = 0.0
 	for i in masks:
 		# The last container is narrower when a Life Fruit has added half a mask.
 		var cap := clampf(float(player.max_hp - i * MASK_HP) / MASK_HP, 0.0, 1.0)
-		var w := 12.0 if cap >= 1.0 else 7.0
-		var p := origin + Vector2(mask_x, 0)
-		mask_x += w + 2.0
 		var fill := clampf(float(player.hp - i * MASK_HP) / (MASK_HP * cap), 0.0, 1.0)
-		draw_rect(Rect2(p, Vector2(w, 14)), OUTLINE)
-		draw_rect(Rect2(p + Vector2(1, 1), Vector2(w - 2, 12)), MASK_EMPTY)
-		if fill > 0.0:
-			var h := roundf(12.0 * fill)
-			var sick := player.poison_left > 0.0
-			draw_rect(Rect2(p + Vector2(1, 13 - h), Vector2(w - 2, h)), POISONED if sick else MASK_FULL)
-			draw_rect(Rect2(p + Vector2(2, 13 - h), Vector2(2, minf(h, 3))), POISONED_SHINE if sick else MASK_SHINE)
-	# Magic bar.
-	var bar := Rect2(origin + Vector2(0, 18), Vector2(maxf(mask_x - 2.0, player.max_mp), 5))
-	draw_rect(bar.grow(1), OUTLINE)
-	draw_rect(bar, MP_DARK)
-	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * player.mp / player.max_mp), bar.size.y)), MP)
+		_draw_mask(origin + Vector2(mask_x, 0), widths[i] < 12.0, fill)
+		mask_x += widths[i] + 2.0
+	_draw_mp(Rect2(origin + Vector2(0, 18), Vector2(bar_w, 5)))
 	# Red Potion charges.
 	for i in player.flask_max:
-		var p := origin + Vector2(i * 9, 28)
-		draw_rect(Rect2(p, Vector2(7, 9)), OUTLINE)
-		draw_rect(Rect2(p + Vector2(1, 3), Vector2(5, 5)), POTION if i < player.flask_charges else POTION_EMPTY)
-		draw_rect(Rect2(p + Vector2(2, 1), Vector2(3, 2)), Color("c9c4d6"))
+		_draw_flask(origin + Vector2(i * 9, 28), i < player.flask_charges)
 	# Gold.
 	var gp := origin + Vector2(player.flask_max * 9 + 6, 28)
-	draw_rect(Rect2(gp + Vector2(0, 2), Vector2(6, 6)), OUTLINE)
-	draw_rect(Rect2(gp + Vector2(1, 3), Vector2(4, 4)), GOLD)
+	_draw_coin(gp + Vector2(3, 5))
 	draw_string_outline(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
 	draw_string(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, GOLD)
 	_draw_ointment(origin + Vector2(0, 42))
@@ -107,6 +99,131 @@ func _draw() -> void:
 	_draw_messages()
 	if _flash > 0.0:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
+
+
+# --- 2x icons --------------------------------------------------------------------
+# The HUD renders at the window's full resolution, so icons are drawn in
+# half-pixels (2x density, like the world art) through _hp() and _hpoly().
+
+const MASK_SHADE := Color("c9b98f")
+const MASK_EYE := Color("8a7a5a")
+const MASK_EMPTY_LIGHT := Color("4e4766")
+const POISONED_DARK := Color("3f7a2a")
+const MP_LIGHT := Color("9fdcff")
+const MP_DEEP := Color("2a6fb0")
+const GLASS := Color("c9c4d6")
+const CORK := Color("8d4e16")
+const POTION_LIGHT := Color("ff9a8a")
+const GOLD_DARK := Color("b8860b")
+const PLATE := Color(0.07, 0.06, 0.11, 0.5)
+const PLATE_EDGE := Color(1.0, 0.82, 0.29, 0.28)
+## A full mask, 24x28 half-pixels: a carved ivory face, brow to chin.
+const MASK_SHAPE := [Vector2(4, 0), Vector2(20, 0), Vector2(24, 4), Vector2(24, 14), Vector2(20, 22), Vector2(12, 28), Vector2(4, 22), Vector2(0, 14), Vector2(0, 4)]
+## Half a mask (a Life Fruit's worth), 14 half-pixels wide.
+const HALF_MASK_SHAPE := [Vector2(4, 0), Vector2(14, 0), Vector2(14, 27), Vector2(12, 28), Vector2(4, 22), Vector2(0, 14), Vector2(0, 4)]
+
+
+func _hp(at: Vector2, x: float, y: float, w: float, h: float, c: Color) -> void:
+	draw_rect(Rect2(at + Vector2(x, y) * 0.5, Vector2(w, h) * 0.5), c)
+
+
+func _hpoly(at: Vector2, pts: Array, grow: float = 0.0) -> PackedVector2Array:
+	var center := Vector2.ZERO
+	for p: Vector2 in pts:
+		center += p
+	center /= pts.size()
+	var out := PackedVector2Array()
+	for p: Vector2 in pts:
+		var q := p
+		if grow != 0.0:
+			q += (p - center).normalized() * grow
+		out.append(at + q * 0.5)
+	return out
+
+
+## A faint backing plate so the HUD reads over bright rooms.
+func _draw_plate(r: Rect2) -> void:
+	draw_rect(r, PLATE)
+	draw_rect(Rect2(r.position, Vector2(r.size.x, 0.5)), PLATE_EDGE)
+	draw_rect(Rect2(r.position + Vector2(0, r.size.y - 0.5), Vector2(r.size.x, 0.5)), Color(PLATE_EDGE, 0.12))
+
+
+## One health mask: ivory fills from the chin up as health returns; green when poisoned.
+func _draw_mask(at: Vector2, half: bool, fill: float) -> void:
+	var shape: Array = HALF_MASK_SHAPE if half else MASK_SHAPE
+	draw_colored_polygon(_hpoly(at, shape, 2.0), OUTLINE)
+	var body := _hpoly(at, shape)
+	draw_colored_polygon(body, MASK_EMPTY)
+	draw_colored_polygon(_hpoly(at + Vector2(0.5, 0.5), shape, -2.0), MASK_EMPTY_LIGHT)
+	draw_colored_polygon(_hpoly(at + Vector2(0.5, 0.5), shape, -3.0), MASK_EMPTY)
+	var sick := player.poison_left > 0.0
+	if fill > 0.0:
+		var line := at.y + 14.0 * (1.0 - fill)
+		var clip := PackedVector2Array([Vector2(at.x - 1, line), Vector2(at.x + 13, line), Vector2(at.x + 13, at.y + 15), Vector2(at.x - 1, at.y + 15)])
+		var main := POISONED if sick else MASK_FULL
+		var shade := POISONED_DARK if sick else MASK_SHADE
+		for part in Geometry2D.intersect_polygons(body, clip):
+			draw_colored_polygon(part, shade)
+		for part in Geometry2D.intersect_polygons(_hpoly(at + Vector2(-0.5, -0.5), shape, -2.0), clip):
+			draw_colored_polygon(part, main)
+		if fill >= 1.0:
+			_hp(at, 4, 2, 3, 2, POISONED_SHINE if sick else MASK_SHINE)
+			_hp(at, 3, 4, 2, 4, POISONED_SHINE if sick else MASK_SHINE)
+	# The eyes and a brow line, carved in.
+	var eye := (POISONED_DARK if sick else MASK_EYE) if fill > 0.45 else OUTLINE
+	_hp(at, 5, 10, 5, 3, eye)
+	if not half:
+		_hp(at, 14, 10, 5, 3, eye)
+	_hp(at, 11, 15, 2, 4, Color(eye, 0.6))
+
+
+## The magic bar: a framed glass tube, ticked every 10 MP, with a gem cap.
+func _draw_mp(bar: Rect2) -> void:
+	draw_rect(bar.grow(1), OUTLINE)
+	draw_rect(bar, MP_DARK)
+	var w := roundf(bar.size.x * player.mp / maxf(1.0, player.max_mp) * 2.0) * 0.5
+	if w > 0.0:
+		draw_rect(Rect2(bar.position, Vector2(w, bar.size.y)), MP)
+		draw_rect(Rect2(bar.position, Vector2(w, 1)), MP_LIGHT)
+		draw_rect(Rect2(bar.position + Vector2(0, bar.size.y - 1), Vector2(w, 1)), MP_DEEP)
+	var tick := bar.size.x * 10.0 / maxf(1.0, player.max_mp)
+	var x := tick
+	while x < bar.size.x - 1.0:
+		draw_rect(Rect2(bar.position + Vector2(roundf(x * 2.0) * 0.5, 1), Vector2(0.5, bar.size.y - 2)), Color(OUTLINE, 0.55))
+		x += tick
+	# The gem cap, overlapping the left end.
+	var g := bar.position + Vector2(-1.5, bar.size.y * 0.5)
+	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -4), g + Vector2(3.5, 0), g + Vector2(0, 4), g + Vector2(-3.5, 0)]), OUTLINE)
+	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(2.5, 0), g + Vector2(0, 3), g + Vector2(-2.5, 0)]), MP)
+	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(0, 0), g + Vector2(-2.5, 0)]), MP_LIGHT)
+
+
+## One Red Potion charge: a round flask with a cork, full or empty glass.
+func _draw_flask(at: Vector2, full: bool) -> void:
+	var c := at + Vector2(3.5, 6)
+	draw_circle(c, 4.0, OUTLINE)
+	_hp(at, 3, 0, 8, 7, OUTLINE)
+	_hp(at, 5, 0, 4, 2, CORK)
+	_hp(at, 5, 2, 4, 4, GLASS)
+	draw_circle(c, 3.0, POTION if full else POTION_EMPTY)
+	if full:
+		draw_rect(Rect2(c + Vector2(-3, -2.5), Vector2(6, 1)), Color(GLASS, 0.5))
+		_hp(c, -4, -2, 2, 3, POTION_LIGHT)
+	else:
+		_hp(c, -4, -3, 2, 2, Color(GLASS, 0.5))
+
+
+## A gold coin with a rim and a struck center.
+func _draw_coin(c: Vector2) -> void:
+	draw_circle(c, 4.0, OUTLINE)
+	draw_circle(c, 3.0, GOLD_DARK)
+	draw_circle(c + Vector2(-0.5, -0.5), 2.5, GOLD)
+	_hp(c, -1, -2, 2, 4, GOLD_DARK)
+	_hp(c, -4, -4, 2, 2, Color("fff4c0"))
+
+
+func _ointment_shown() -> bool:
+	return player.ointments > 0 or player.ointment_left > 0.0
 
 
 ## Ointments carried (a small jar and a count), and the time left on one in use.

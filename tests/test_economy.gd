@@ -494,6 +494,21 @@ func test_the_great_winch_turns_once_forepaw_is_free() -> void:
 	check(winch.angle > 0.0, "and turns once the dwarves are free")
 
 
+func test_the_flue_damper_opens_once_zoradohna_falls() -> void:
+	var w := make_world({}, "tower/foot")
+	await frames(2)
+	var shut := w.room.get_children().filter(func(n: Node) -> bool: return n is FlueDamper)
+	check(shut.size() == 3, "the Tower Foot's ceiling holds a three-tile damper (%d)" % shut.size())
+	check(shut.all(func(d: FlueDamper) -> bool: return not d.open), "it is shut while Zoradohna holds Forepaw")
+	GameState.set_flag("boss:zoradohna")
+	w.travel("tower/winch_hall", cell_feet(5, 19))
+	await frames(4)
+	w.travel("tower/foot", cell_feet(20, 41))
+	await frames(4)
+	var opened := w.room.get_children().filter(func(n: Node) -> bool: return n is FlueDamper and not n.is_queued_for_deletion())
+	check(opened.size() == 3 and opened.all(func(d: FlueDamper) -> bool: return d.open), "and stands open once the winch turns")
+
+
 func test_the_smelter_crucible_pours() -> void:
 	var w := make_world({}, "tower/smelter")
 	await frames(2)
