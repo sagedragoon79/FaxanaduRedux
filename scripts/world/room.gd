@@ -142,9 +142,8 @@ func build(text: String) -> void:
 		width = maxi(width, row.length())
 	size_tiles = Vector2i(width, grid.size())
 
-	tiles = TileMapLayer.new()
+	tiles = TilesetFactory.layer(zone)
 	tiles.name = "Tiles"
-	tiles.tile_set = TilesetFactory.build(zone)
 	add_child(tiles)
 
 	# Which cells look like ground, so each wall tile can match its neighbours.
@@ -406,9 +405,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 
 func _place_secret(cell: Vector2i) -> void:
 	if secrets == null:
-		secrets = TileMapLayer.new()
+		secrets = TilesetFactory.layer(zone, false)
 		secrets.name = "Secrets"
-		secrets.tile_set = TilesetFactory.build(zone, false)
 		secrets.z_index = 3
 		add_child(secrets)
 	secrets.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))

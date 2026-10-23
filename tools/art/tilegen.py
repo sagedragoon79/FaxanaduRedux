@@ -5,7 +5,7 @@ Every color comes from the master palette (tools/art/palette.py). Each zone is a
 material spec: a texture painter for the ground, edge rules for exposed sides
 (a cap on top, a lip underneath, outlines on the sides), and background layers.
 
-Tileset atlas (16 px tiles, 8 columns):
+Tileset atlas (16 world px tiles at 2x render density, so 32 px each; 8 columns):
   rows 0-5: the 47 "blob" autotiles, in the order of blob_masks() below
             (scripts/world/tileset_factory.gd computes the same list)
   row 6:    one-way platform, amber, 2 interior tiles one shade darker (two
@@ -27,7 +27,10 @@ import palette  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 TILES = ROOT / "assets" / "tiles"
 BG = ROOT / "assets" / "bg"
-T = 16
+## Render density (design bible 12.1): tiles are 16 world pixels drawn with
+## two pixels per world pixel, so the atlas holds 32 px tiles.
+D = 2
+T = 16 * D
 COLS = 8
 BG_W, BG_H = 640, 480
 
@@ -72,69 +75,95 @@ def hash2(x, y, seed):
 
 
 def paint_bricks(img, ox, oy, seed, ramp):
-    """Masonry: rows of 8x4 bricks offset per row, lit from the top left."""
+    """Masonry: rows of 8x4 world-pixel bricks offset per row, lit from the top
+    left, with a one-render-pixel mortar line and a grain of tiny pits."""
+    bw, bh = 8 * D, 4 * D
     for y in range(T):
         for x in range(T):
-            row = y // 4
-            bx = (x + (row % 2) * 4) // 8
+            row = y // bh
+            sx = x + (row % 2) * (bw // 2)
+            bx = sx // bw
             by = row
-            mortar = y % 4 == 3 or (x + (row % 2) * 4) % 8 == 0
+            lx, ly = sx % bw, y % bh
             shade = 3 if hash2(bx, by, seed) > 0.45 else 2
             if hash2(bx, by, seed + 9) > 0.92:
                 shade = 4
-            if mortar:
+            if ly == bh - 1 or lx == 0:
                 col = f"{ramp}-1"
-            elif y % 4 == 0 or (x + (row % 2) * 4) % 8 == 1:
+            elif ly == 0 or lx == 1:
                 col = f"{ramp}-{shade + 1}"
+            elif ly == bh - 2 or lx == bw - 1:
+                col = f"{ramp}-{shade - 1}"
             else:
                 col = f"{ramp}-{shade}"
-                if hash2(x, y, seed + 3) > 0.9:
+                if hash2(x, y, seed + 3) > 0.93:
                     col = f"{ramp}-{shade - 1}"
+                elif hash2(x, y, seed + 4) > 0.97:
+                    col = f"{ramp}-{shade + 1}"
             img.putpixel((ox + x, oy + y), c(col))
 
 
 def paint_wood(img, ox, oy, seed, ramp):
-    """Living wood: long vertical grain, low contrast, the odd knot."""
+    """Living wood: long vertical grain in fine strands, low contrast, the odd knot."""
     for x in range(T):
-        base = 1 if hash2(x // 2, 0, seed) > 0.4 else 2
-        phase = hash2(x, 1, seed) * 16
+        base = 1 if hash2(x // 3, 0, seed) > 0.4 else 2
+        phase = hash2(x, 1, seed) * 32
         for y in range(T):
-            n = math.sin((y + phase) * 0.39)
+            n = math.sin((y + phase) * 0.2)
             col = base
-            if n > 0.93 and base == 2 and x % 3 == 1:
+            if n > 0.9 and base == 2 and x % 3 == 1:
                 col = 3
             elif n < -0.85:
                 col = base - 1
-            if x % 6 == 0:
+            if x % 12 == 0:
                 col = min(col, 1)
+            elif x % 12 == 1 and hash2(x, y // 4, seed) > 0.5:
+                col = min(col + 1, 3)
             img.putpixel((ox + x, oy + y), c(f"{ramp}-{max(col, 0)}"))
-    if hash2(seed, 7, 3) > 0.6:
-        kx, ky = 4 + int(hash2(seed, 1, 5) * 8), 4 + int(hash2(seed, 2, 5) * 8)
-        for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1)]:
-            img.putpixel((ox + kx + dx, oy + ky + dy), c(f"{ramp}-0"))
-        img.putpixel((ox + kx - 1, oy + ky), c(f"{ramp}-3"))
+    if hash2(seed, 7, 3) > 0.82:
+        # A knot: a dark eye in a lighter ring of grain.
+        kx, ky = 8 + int(hash2(seed, 1, 5) * 14), 8 + int(hash2(seed, 2, 5) * 14)
+        for dy in range(-3, 4):
+            for dx in range(-2, 3):
+                r = (dx / 2.5) ** 2 + (dy / 3.5) ** 2
+                if r <= 1.0:
+                    col = f"{ramp}-0" if r < 0.35 else (f"{ramp}-3" if dx < 0 or dy < 0 else f"{ramp}-1")
+                    img.putpixel((ox + kx + dx, oy + ky + dy), c(col))
 
 
 def cap_moss(img, ox, oy, seed, x0, x1, light="leaf", glow=None, top=5):
-    """A ragged cap of moss over the top edge, with a lit fringe."""
+    """A ragged cap of moss over the top edge: blades of uneven height, a lit
+    fringe, and a dark under-edge where it meets the ground."""
     for x in range(x0, x1):
-        depth = 3 + (1 if hash2(x, 0, seed) > 0.55 else 0) + (1 if hash2(x, 5, seed) > 0.9 else 0)
+        depth = 6 + (2 if hash2(x // 2, 0, seed) > 0.55 else 0) + (1 if hash2(x, 5, seed) > 0.85 else 0)
+        blade = 1 if hash2(x, 6, seed) > 0.7 else 0
         for y in range(depth):
-            col = f"{light}-{top}" if y == 0 else (f"{light}-{top - 1}" if y < depth - 1 else f"{light}-{top - 3}")
+            if y == 0 and blade == 0 and hash2(x, 7, seed) > 0.6:
+                continue  # a ragged top
+            if y <= 1:
+                col = f"{light}-{top}"
+            elif y < depth - 2:
+                col = f"{light}-{top - 1}" if (x + y) % 5 else f"{light}-{top}"
+            elif y < depth - 1:
+                col = f"{light}-{top - 2}"
+            else:
+                col = f"{light}-{top - 3}"
             img.putpixel((ox + x, oy + y), c(col))
-        if glow and hash2(x, 3, seed) > 0.88:
+        if glow and hash2(x // 2, 3, seed) > 0.88:
             img.putpixel((ox + x, oy + depth), c(glow))
+            if x % 2 == 0:
+                img.putpixel((ox + x, oy + depth + 1), c(glow, 160))
 
 
 def cap_stone(img, ox, oy, seed, x0, x1, ramp="stone"):
-    """A dressed stone lip: bright rim, then a shadow line, a few moss tufts."""
+    """A dressed stone lip: bright rim, a mid band, then a shadow line, a few moss tufts."""
     for x in range(x0, x1):
-        img.putpixel((ox + x, oy), c(f"{ramp}-6"))
-        img.putpixel((ox + x, oy + 1), c(f"{ramp}-5"))
-        img.putpixel((ox + x, oy + 2), c(f"{ramp}-2"))
-        if hash2(x, 9, seed) > 0.8:
-            img.putpixel((ox + x, oy), c("leaf-4"))
-            img.putpixel((ox + x, oy + 1), c("leaf-3"))
+        for y, col in enumerate([f"{ramp}-6", f"{ramp}-6", f"{ramp}-5", f"{ramp}-4", f"{ramp}-2", f"{ramp}-1"]):
+            img.putpixel((ox + x, oy + y), c(col))
+        if hash2(x // 3, 9, seed) > 0.8:
+            img.putpixel((ox + x, oy), c("leaf-5" if x % 2 else "leaf-4"))
+            img.putpixel((ox + x, oy + 1), c("leaf-4"))
+            img.putpixel((ox + x, oy + 2), c("leaf-3"))
 
 
 ZONES = {
@@ -152,40 +181,59 @@ def paint_tile(img, ox, oy, mask, zone, seed):
     z["painter"](img, ox, oy, seed, z["ramp"])
     ramp = z["ramp"]
     out = c(z["outline"])
-    # Sides: a dark outline and a soft shade a pixel in.
+    # Sides: a dark outline one world pixel thick, then a soft shade.
     if not mask & W:
         for y in range(T):
-            img.putpixel((ox, oy + y), out)
-            img.putpixel((ox + 1, oy + y), c(f"{ramp}-1"))
+            for k in range(D):
+                img.putpixel((ox + k, oy + y), out)
+            img.putpixel((ox + D, oy + y), c(f"{ramp}-1"))
+            if hash2(0, y // 3, seed) > 0.5:
+                img.putpixel((ox + D + 1, oy + y), c(f"{ramp}-1"))
     if not mask & E:
         for y in range(T):
-            img.putpixel((ox + T - 1, oy + y), out)
-            img.putpixel((ox + T - 2, oy + y), c(f"{ramp}-1"))
-    # Underside: outline, a dark lip, the odd hanging root or drip.
+            for k in range(D):
+                img.putpixel((ox + T - 1 - k, oy + y), out)
+            img.putpixel((ox + T - 1 - D, oy + y), c(f"{ramp}-1"))
+            if hash2(1, y // 3, seed) > 0.5:
+                img.putpixel((ox + T - 2 - D, oy + y), c(f"{ramp}-1"))
+    # Underside: outline, a dark lip, and the odd hanging root tip.
     if not mask & S:
         for x in range(T):
-            img.putpixel((ox + x, oy + T - 1), out)
-            img.putpixel((ox + x, oy + T - 2), c(z["under"]))
+            for k in range(D):
+                img.putpixel((ox + x, oy + T - 1 - k), out)
+            img.putpixel((ox + x, oy + T - 1 - D), c(z["under"]))
+            img.putpixel((ox + x, oy + T - 2 - D), c(z["under"]))
+        for x in range(2, T - 2):
+            if hash2(x, 11, seed) > 0.93:
+                img.putpixel((ox + x, oy + T - 1), c(z["under"]))
     # Top: the zone's cap.
     if not mask & N:
-        x0 = 0 if mask & W else 1
-        x1 = T if mask & E else T - 1
+        x0 = 0 if mask & W else D
+        x1 = T if mask & E else T - D
         if z["cap"] == "moss":
             cap_moss(img, ox, oy, seed, x0, x1, z["light"], z["glow"], z.get("cap_top", 5))
         else:
             cap_stone(img, ox, oy, seed, x0, x1, ramp)
     # Inner corners: a dark notch where two solid sides meet an open diagonal.
-    for bit, a, b, px, py in [(NE, N, E, T - 1, 0), (SE, S, E, T - 1, T - 1), (SW, S, W, 0, T - 1), (NW, N, W, 0, 0)]:
+    for bit, a, b, px, py in [(NE, N, E, T - D, 0), (SE, S, E, T - D, T - D), (SW, S, W, 0, T - D), (NW, N, W, 0, 0)]:
         if mask & a and mask & b and not mask & bit:
-            img.putpixel((ox + px, oy + py), out)
-            nx = px - 1 if px else px + 1
-            ny = py - 1 if py else py + 1
-            img.putpixel((ox + nx, oy + py), c(f"{ramp}-1"))
-            img.putpixel((ox + px, oy + ny), c(f"{ramp}-1"))
-    # Outer corners: round them off.
-    for a, b, px, py in [(N, W, 0, 0), (N, E, T - 1, 0), (S, W, 0, T - 1), (S, E, T - 1, T - 1)]:
+            for dy in range(D):
+                for dx in range(D):
+                    img.putpixel((ox + px + dx, oy + py + dy), out)
+            nx = px - 1 if px else px + D
+            ny = py - 1 if py else py + D
+            for k in range(D):
+                img.putpixel((ox + nx, oy + py + k), c(f"{ramp}-1"))
+                img.putpixel((ox + px + k, oy + ny), c(f"{ramp}-1"))
+    # Outer corners: round them off (a 2x2 notch and its diagonal neighbours).
+    for a, b, px, py, sx, sy in [(N, W, 0, 0, 1, 1), (N, E, T - 1, 0, -1, 1), (S, W, 0, T - 1, 1, -1), (S, E, T - 1, T - 1, -1, -1)]:
         if not mask & a and not mask & b:
-            img.putpixel((ox + px, oy + py), CLEAR)
+            for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1), (2, 0), (0, 2)]:
+                img.putpixel((ox + px + sx * dx, oy + py + sy * dy), CLEAR)
+            img.putpixel((ox + px + sx * 2, oy + py + sy * 1), out)
+            img.putpixel((ox + px + sx * 1, oy + py + sy * 2), out)
+            img.putpixel((ox + px + sx * 3, oy + py), out)
+            img.putpixel((ox + px, oy + py + sy * 3), out)
 
 
 def darken(img, ox, oy, steps):
@@ -203,38 +251,50 @@ def darken(img, ox, oy, steps):
 
 
 def paint_one_way(img, ox, oy, zone):
+    """A plank on brackets: 6 world pixels thick with grain and nail heads."""
     wood = "bark"
     for x in range(T):
-        for y in range(6):
-            col = f"{wood}-4" if y == 1 else (f"{wood}-5" if y == 0 else f"{wood}-3")
-            if y == 4:
+        for y in range(6 * D):
+            if y < 2:
+                col = f"{wood}-5"
+            elif y < 3:
+                col = f"{wood}-4"
+            elif y < 8:
+                col = f"{wood}-3" if (x + y * 3) % 11 else f"{wood}-2"
+            elif y < 10:
                 col = f"{wood}-2"
-            if y == 5:
+            else:
                 col = "night-0"
-            if x % 8 == 0 and 1 <= y <= 4:
+            if x % (8 * D) == 0 and 2 <= y <= 9:
                 col = f"{wood}-1"
+            if x % (8 * D) in (3, 12) and y == 4:
+                col = "stone-5"
             img.putpixel((ox + x, oy + y), c(col))
         # Brackets under the plank.
-        if x % 8 in (3, 4):
-            for y in range(6, 10):
-                img.putpixel((ox + x, oy + y), c(f"{wood}-2" if y < 9 else "night-0"))
+        if x % (8 * D) in (6, 7, 8, 9):
+            for y in range(6 * D, 10 * D):
+                edge = x % (8 * D) in (6, 9)
+                img.putpixel((ox + x, oy + y), c("night-0" if y >= 10 * D - 2 or edge else f"{wood}-2"))
 
 
 def paint_amber(img, ox, oy):
     for y in range(T):
         for x in range(T):
             col = "gold-3"
-            if y == 0:
+            if y < 2:
                 col = "gold-5"
-            elif y == 1:
+            elif y < 4:
                 col = "gold-4"
-            elif hash2(x, y, 41) > 0.93:
+            elif hash2(x, y, 41) > 0.95:
                 col = "gold-2"
-            elif (x + y * 2) % 13 == 0:
+            elif (x + y * 2) % 23 == 0:
                 col = "gold-4"
             img.putpixel((ox + x, oy + y), c(col))
-    for bx, by in [(4, 5), (11, 9), (7, 12)]:
-        img.putpixel((ox + bx, oy + by), c("gold-6"))
+    # Bubbles trapped in the amber, each with a highlight.
+    for bx, by in [(8, 10), (22, 18), (14, 25)]:
+        for dx, dy in [(0, 0), (1, 0), (0, 1), (1, 1)]:
+            img.putpixel((ox + bx + dx, oy + by + dy), c("gold-5"))
+        img.putpixel((ox + bx, oy + by), c("gold-7"))
 
 
 def build_tileset(zone):
