@@ -45,6 +45,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `B` | Gear Bat (roosts upside down; place it just under a ceiling. Flings a returning gear; parry it back at the bat) |
 | `K` | Minecart Rider (rolls the floor; revs, then charges to a wall or the floor's end and tips over: hit him then) |
 | `A` | Lantern Ghost (drifts through walls; out in the Mist's fog it shows only near light. Eyes flare, then it lunges) |
+| `V` | Bog Myconid (rooted; its gills glow as it swells, then it bursts into a lingering spore cloud. Soft while spent) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |

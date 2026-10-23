@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -973,6 +973,66 @@ GRUB_LUMP = [
 ]
 
 
+# --- Bog Myconid: a squat marsh mushroom that bursts into a spore cloud ----------
+# Drawn at 2x like the Iron Dwarf. Its gills glow when it swells (the telegraph);
+# spent, the cap sags open and soft.
+
+BM_STALK = mat("stone", 5, 4, 3, 1)
+BM_CAP = mat("leaf", 3, 2, 1, 0)
+BM_CAP_HOT = mat("leaf", 4, 3, 2, 0)
+BM_SPOT = mat("stone", 6, 5, 4, 2)
+BM_SPOT_HOT = mat("gold", 6, 5, 4, 2)
+BM_GILL = mat("night", 3, 2, 1, 0)
+BM_GILL_HOT = mat("gold", 6, 6, 5, 3)
+BM_ROOT = mat("bark", 3, 2, 1, 0)
+BM_SCALE = 2
+
+
+def bog_myconid(swell=0.0, sag=0.0, hot=False, sway=0.0):
+    """swell: 0 resting, 1 about to burst; sag: 0 firm, 1 spent and drooping; sway tilts the cap."""
+    def render(_):
+        cv = Canvas(40, 40, (20, 38), BM_SCALE)
+        # Rootlets in the mud.
+        for a, b in (((-8, 0), (-3, -4)), ((8, 0), (3, -4)), ((-4, 0), (-1, -5)), ((5, 0), (1, -5))):
+            cv.part(cv.capsule(a, b, 1.1), BM_ROOT)
+        top = -17 - swell * 2 + sag * 3
+        stalk = cv.polygon([(-4.5, -1), (4.5, -1), (3.2 + sway * 0.5, top), (-3.2 + sway * 0.5, top)])
+        cv.part(stalk | cv.ellipse((0, -2), 5.5, 2.5), BM_STALK, deep=True)
+        # A face in the stalk: two hollow eyes and a slack mouth.
+        ey = top + 7.5 + sag * 0.5
+        cv.flat(cv.ellipse((-1.7 + sway * 0.3, ey), 0.8, 1.1), DARK)
+        cv.flat(cv.ellipse((1.9 + sway * 0.3, ey), 0.8, 1.1), DARK)
+        if hot:
+            cv.pixel((-1.7 + sway * 0.3, ey), PAL["gold-6"])
+            cv.pixel((1.9 + sway * 0.3, ey), PAL["gold-6"])
+        cv.flat(cv.ellipse((0.2 + sway * 0.3, ey + 3.5 + sag), 1.2, 0.7 + sag * 0.6), DARK)
+        # The cap: a dome that swells before it bursts and flattens when spent.
+        cx, cy = sway, top - 1
+        rx = 11 + swell * 3 - sag * 1.5
+        ry = 7 + swell * 2 - sag * 3
+        dome = cv.ellipse((cx, cy), rx, ry)
+        under = cv.ellipse((cx, cy + ry * 0.55), rx * 0.95, ry * 0.45)
+        cv.part(dome, BM_CAP_HOT if hot else BM_CAP, deep=True)
+        cv.part(under, BM_GILL_HOT if hot else BM_GILL)
+        for i in (-3, -1.6, -0.5, 0.7, 1.8, 3):
+            gx = cx + i * rx * 0.24
+            cv.flat(cv.capsule((gx, cy + ry * 0.4), (gx * 1.05 - cx * 0.05, cy + ry * 0.85), 0.35),
+                    PAL["gold-4"] if hot else PAL["night-0"])
+        for sx, sy, r in ((-0.5, -0.45, 1.8), (0.35, -0.6, 1.4), (0.6, -0.1, 1.1), (-0.25, -0.05, 1.0)):
+            cv.part(cv.ellipse((cx + sx * rx, cy + sy * ry), r * (1 + swell * 0.3), r * (1 + swell * 0.3)), BM_SPOT_HOT if hot else BM_SPOT)
+        img, mask = cv.finish()
+        return img, mask, {"cap": [round(cx, 1), round(cy, 1)]}
+    return render
+
+
+BOG_MYCONID = [
+    ("idle", [bog_myconid(0.0, sway=-0.5), bog_myconid(0.15, sway=0.5)], [0, 1], 2, True),
+    ("windup", [bog_myconid(0.7, hot=True), bog_myconid(1.0, hot=True, sway=0.4)], [0, 1], 10, True),
+    ("burst", [bog_myconid(-0.3, 0.3)], [0], 1, False),
+    ("spent", [bog_myconid(0.0, 1.0, sway=-0.4), bog_myconid(0.0, 0.9, sway=0.4)], [0, 1], 3, True),
+]
+
+
 def autosprite_only(_):
     """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
     animation it names is swapped for the imported frames."""
@@ -1003,6 +1063,7 @@ def main():
     write_sheet("minecart_rider", (72, 56), (36, 53), MINECART_RIDER, lambda r: r(None), density=MC_SCALE)
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
     write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
+    write_sheet("bog_myconid", (40, 40), (20, 38), BOG_MYCONID, lambda r: r(None), density=BM_SCALE)
     write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():

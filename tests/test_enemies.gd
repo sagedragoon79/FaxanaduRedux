@@ -384,3 +384,54 @@ func test_lantern_ghost_shows_only_near_light_and_lunges_through_walls() -> void
 	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH and bright, "its eyes flare for at least %.2f s, even in the fog (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
 	check(hurt, "and its lunge lands")
 	check(g.seen > 0.8 or g.state == "fade", "near the player it shows (%.2f, %s)" % [g.seen, g.state])
+
+
+## Bible 7: the Bog Myconid swells with glowing gills (a telegraph that lights
+## the fog), bursts into a spore cloud that stings and can't be parried, and is soft
+## while spent.
+func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
+	var room := _room_with({Vector2i(20, 6): "V"})
+	var p := make_player(room, Vector2i(18, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var m: BogMyconid = _find(room, BogMyconid)
+	var windup_frames := 0
+	var lit := true
+	var cloud: SporeCloud = null
+	for i in 120:
+		await frames(1)
+		if m.state == "windup":
+			windup_frames += 1
+			lit = lit and m.is_in_group("light") and m.light_radius > 0.0
+		cloud = _find(room, SporeCloud)
+		if cloud != null:
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the cap swells for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(windup_frames > 0 and lit, "its gills glow through the fog while it swells")
+	check(cloud != null and not m.is_in_group("light"), "then it bursts into a spore cloud and the glow goes out")
+	# The cloud reaches the player two tiles away and stings.
+	var hp := p.hp
+	var hurt_frames := 0
+	for i in 60:
+		await frames(1)
+		if p.hp < hp:
+			hurt_frames += 1
+			hp = p.hp
+	check(hurt_frames >= 1 and hurt_frames <= 2, "the spores sting on arrival and on the tick, not every frame (%d)" % hurt_frames)
+	# Spent, it takes half again the damage.
+	check(m.state == "spent" or m.state == "burst", "after the burst its cap sags open (%s)" % m.state)
+	var before := m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(before - m.hp == 15, "spent, a 10 hit deals 15 (%d)" % (before - m.hp))
+	var firm := false
+	for i in 160:
+		await frames(1)
+		firm = firm or m.state == "idle"
+		if not is_instance_valid(cloud):
+			break
+	check(not is_instance_valid(cloud), "the cloud thins away")
+	check(firm, "and the myconid firms up again")
+	m.set_state("idle")
+	before = m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(before - m.hp == 10, "firm, it takes normal damage (%d)" % (before - m.hp))

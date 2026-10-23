@@ -375,5 +375,20 @@ def main():
     shimmer = mix(osc(slide(660, 990, d, 0.5), "sine"), osc(slide(990, 1485, d, 0.5), "sine") * 0.5) * 0.25
     save("curtain", mix(breath, shimmer) * env(n, 0.25, 1.4), 0.5)
 
+
+    # A Bog Myconid swelling: a wet, rising creak, like a bladder filling.
+    d = 0.55
+    n = int(RATE * d)
+    creak = lowpass(osc(slide(90, 210, d, 0.7), "square", 0.3), 900) * 0.5
+    wet = lowpass(noise(d), slide(300, 1400, d, 0.8)) * 0.4
+    save("swell", mix(creak, wet) * env(n, 0.3, 0.6), 0.45)
+
+    # Its burst: a soft, dusty pop and a long hiss of spores settling.
+    d = 0.8
+    n = int(RATE * d)
+    pop = lowpass(noise(0.06), 700) * env(int(RATE * 0.06), 0.001, 2.0)
+    hiss = lowpass(highpass(noise(d), 1800), 6000) * env(n, 0.02, 1.6) * 0.5
+    save("spore", mix(pop, hiss), 0.55)
+
 if __name__ == "__main__":
     main()
