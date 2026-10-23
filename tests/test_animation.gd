@@ -86,7 +86,8 @@ func test_sheets_use_the_master_palette() -> void:
 func test_cast_has_sheets() -> void:
 	var want := {"monodron": ["idle", "windup", "hop"], "hornet": ["fly", "windup", "swoop"],
 		"rot_dwarf": ["walk", "windup", "swing", "recover", "stagger"], "sap_spitter": ["idle", "windup", "spit"], "grub_lump": ["crawl", "windup", "drop"],
-		"iron_dwarf": ["walk", "windup", "slam", "stuck", "recover", "stagger"]}
+		"iron_dwarf": ["walk", "windup", "slam", "stuck", "recover", "stagger"],
+		"gear_bat": ["roost", "fly", "windup", "bare", "stagger"]}
 	var missing: Array[String] = []
 	for sheet: String in want:
 		for anim: String in want[sheet]:

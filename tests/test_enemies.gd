@@ -202,6 +202,72 @@ func test_shockwave_hugs_the_floor_and_breaks_at_a_wall() -> void:
 	check(not is_instance_valid(w), "it breaks up at the wall")
 
 
+func test_gear_bat_roosts_then_flings_a_gear_that_comes_back() -> void:
+	var room := _room_with({Vector2i(16, 1): "B"})
+	var b: GearBat = _find(room, GearBat)
+	var p := make_player(room, Vector2i(26, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	await frames(30)
+	check(b.state == "roost", "it stays on its roost while the player is far off")
+	p.teleport(cell_feet(10, 6))
+	var hp := p.hp
+	var windup_frames := 0
+	var thrown := false
+	var caught := false
+	for i in 360:
+		await frames(1)
+		if b.state == "windup":
+			windup_frames += 1
+		if b.blade != null:
+			thrown = true
+		elif thrown:
+			caught = true
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the gear whirs for at least %.2f s before the throw (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(thrown and p.hp < hp, "the thrown gear cut the player (hp %d)" % p.hp)
+	check(caught and b.has_gear(), "and flew back onto the bat's back")
+
+
+func test_parried_gear_flies_home_and_staggers_its_bat() -> void:
+	var room := _room_with({Vector2i(8, 3): "B"})
+	var b: GearBat = _find(room, GearBat)
+	await frames(2)
+	b.set_state("bare")
+	var g := GearBlade.new()
+	g.owner_bat = b
+	g.room = room
+	g.direction = Vector2.RIGHT
+	b.blade = g
+	room.add_child(g)
+	g.global_position = cell_center(20, 3)
+	var hp0 := b.hp
+	g.stagger()
+	for i in 60:
+		await frames(1)
+		if b.is_staggered():
+			break
+	check(b.hp == hp0 - GearBlade.REFLECT_DAMAGE, "the parried gear hit its bat (%d)" % (hp0 - b.hp))
+	check(b.is_staggered(), "and staggered it")
+	check(b.has_gear(), "and the bat has its gear back")
+
+
+func test_gear_turns_back_at_a_wall() -> void:
+	var room := _room_with({Vector2i(8, 3): "B"})
+	var b: GearBat = _find(room, GearBat)
+	await frames(2)
+	var g := GearBlade.new()
+	g.owner_bat = b
+	g.room = room
+	g.direction = Vector2.RIGHT
+	b.blade = g
+	room.add_child(g)
+	g.global_position = cell_center(27, 3)
+	await frames(10)
+	check(is_instance_valid(g) and g.phase == "back", "it rang off the wall and turned for home")
+	check(g.global_position.x < 29 * Room.TILE, "without passing into the wall")
+
+
 func test_rot_dwarf_shield_blocks_only_the_front() -> void:
 	var room := _room_with({Vector2i(12, 6): "D"})
 	var d: RotDwarf = _find(room, RotDwarf)

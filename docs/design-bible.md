@@ -323,7 +323,7 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 | Zone | Enemies |
 |------|---------|
 | Trunk Hollows | Monodron (one-eyed hopper), Hornet (swooper), Rot Dwarf (shield-bearing walker), Grub Lump (crawls over floors, walls and ceilings; from a ceiling it shivers for 0.45 s, then drops on you), Sap Spitter (turret; lobs sap globs that leave a slowing puddle for 4 s) |
-| Tower of Trunk | Iron Dwarf (plated walker: raises a hammer for 0.65 s, slams, and sends a shockwave along the floor that a hop clears; his plate halves blows except from above or while the hammer is stuck in the floor for about 1 s), Minecart Rider, Gear Bat, Rock Golem (mini-boss: the Foreman) |
+| Tower of Trunk | Iron Dwarf (plated walker: raises a hammer for 0.65 s, slams, and sends a shockwave along the floor that a hop clears; his plate halves blows except from above or while the hammer is stuck in the floor for about 1 s), Minecart Rider, Gear Bat (clockwork flier: roosts under ceilings, wakes when you pass, hangs off to one side of you, whirs the gear on its back for 0.5 s and flings it; the gear flies out, slows and returns to the bat; parry it and it flies home and staggers the bat), Rock Golem (mini-boss: the Foreman) |
 | The Mist | Lantern Ghost (only visible near light), Bog Myconid (spore cloud), Marsh Hag, Drowned Dwarf (rises from water), Mist Wisp |
 | Branches (Conflate) | Leaf Mantis, Sky Ray (gliding), Seed Bomber, Bark Knight |
 | Branches (Daybreak) | Storm Harpy, Thunder Beetle (pogo-able shell), Spire Sentinel, Wind Imp |
