@@ -329,7 +329,7 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 | Dartmoor | Crystal Dwarf (meteor-fused), Shade Knight (parry-heavy), Clockwork Hound, Meteor Slug |
 | Zenis | Remixes of every family, corrupted with meteor crystal |
 
-Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose and a flash), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items).
+Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose and a flash), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s.
 
 ---
 
@@ -532,7 +532,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 | Guru Trials | 6 | Unlock as springs are restored | Cosmetics, a Mantra Shard each |
 | Lore tablets | 12 | Dwarf ruins | Story, map hints |
 
-**Easter eggs:** a hidden room in Eolis rendered in authentic 8-bit NES palette and resolution, with the original's music style; the Guru recites the old password mantra as a joke ("Your mantra is..."). A secret ending if you reach the Evil One with no deaths and the Battle Suit.
+**Easter eggs:** a hidden room in Eolis rendered in authentic 8-bit NES palette and resolution, with the original's music style; the Guru recites the old password mantra as a joke ("Your mantra is..."): resting with him shows a 16-letter mantra made from your progress (`GameState.mantra()`); it is never typed back in. A secret ending if you reach the Evil One with no deaths and the Battle Suit.
 
 **Completion screen:** shows % with category ticks; 100% unlocks a boss rush and a "Lord" title glow on the cloak.
 

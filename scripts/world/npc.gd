@@ -52,7 +52,7 @@ func rest(p: Player) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
 	Sfx.play("save", 0.0)
-	GameState.toast.emit("Rested. Progress saved.")
+	GameState.toast.emit("Rested. Your mantra is: " + GameState.mantra())
 
 
 func _face(p: Player) -> void:

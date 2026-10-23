@@ -161,6 +161,7 @@ func die() -> void:
 	get_parent().add_child(d)
 	d.global_position = center()
 	Coin.spray(get_parent(), center(), randi_range(gold_min, gold_max))
+	Drop.roll(get_parent(), center())
 	GameState.add_xp(xp)
 	Feel.hitstop(0.08)
 	Feel.add_trauma(0.25)

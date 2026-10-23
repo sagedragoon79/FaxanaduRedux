@@ -21,6 +21,7 @@ extends Node2D
 ##                              open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
+##   --drops                    drop a loaf of bread and a mana orb ahead of the player
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
@@ -236,6 +237,13 @@ func _debug_open() -> void:
 		player.ointments = int(_args["ointments"])
 	if _args.has("use-ointment"):
 		player.use_ointment()
+	if _args.has("drops"):
+		for i in 2:
+			var d := Drop.new()
+			d.kind = ["bread", "mana"][i]
+			d.velocity = Vector2(0, 1)
+			world.room.add_child(d)
+			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
 	if _args.has("map"):
 		map_screen.toggle()
 	var what: String = _args.get("open", "")
