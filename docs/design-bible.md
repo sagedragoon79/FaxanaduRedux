@@ -597,17 +597,31 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 ### 13.2 Autosprite credit budget
 
-The exact credit cost of each Autosprite operation is not known yet. **First production task:** make one test call (one player idle animation), record its real cost, and update this table. Until then the plan assumes **1 credit per still or base character** and **about 3 credits per animation**. If costs are higher, cut enemies first (more recolor variants by code), never the player.
+**Real costs** (test call on 2026-10-23, one turbo idle for the elf): a side-view animation is **5 credits** on the
+turbo tier (a 2 s clip, cut into up to 64 frames at any size; turbo is also the most consistent tier), a weapon attack
+move is 5, a pose 3, a portrait 1, a new character 1 (turbo) or 3 (pro or pixel art), and **uploading our own image as a
+character is free**. That is about 60% more per animation than the plan assumed, so the budget below is redone.
 
-| Use | Assets | Planned credits | Share |
-|-----|--------|-----------------|-------|
-| Style test and base character lock | 3 trials | 15 | 3% |
-| Player (base + 22 animations) | see 13.3 | 90 | 18% |
-| Bosses (9 + optional, key animations only; rest is rigged from parts) | 10 bosses x 4 to 6 anims | 150 | 30% |
-| Enemies (about 30 families, 3 to 4 anims each; variants recolored by code) | 30 | 140 | 28% |
-| NPCs (12 characters, idle + talk) | 12 | 35 | 7% |
-| Reserve for regeneration and fixes | | 70 | 14% |
-| **Total** | | **500** | |
+**Style lock for free:** each character's base is the code-drawn sprite (tools/art/spritegen.py, castgen.py) blown up
+10x and uploaded, so Autosprite animates our design, palette and proportions instead of inventing new ones, and
+`tools/art/autosprite_import.py` brings every clip back to the palette, scale and outline of 12.3. One clip can feed
+several game animations (a jump clip gives rise, apex, fall and land frames).
+
+Balance after the test: 485 credits, about 97 animations.
+
+| Use | Animations | Credits | Share |
+|-----|------------|---------|-------|
+| Test call (elf idle, spent) | 1 | 5 | 1% |
+| Player: idle, run, jump, dash, wall slide, sword moves (quick strike, triple combo), up-slash, down-strike, block, cast, drink, hurt, death, meditate, item-get, door enter | 18 | 90 | 18% |
+| Bosses (9, two key clips each; the rest rigged from parts) | 18 | 90 | 18% |
+| Enemies (17 families, move + attack; telegraph, hurt and death made by code from those frames; variants recolored) | 34 | 170 | 35% |
+| NPCs (12, one talk clip each; idle stays code-drawn) | 12 | 60 | 12% |
+| Reserve for regeneration and fixes | 15 | 75 | 15% |
+| **Total** | **98** | **490** | |
+
+If credits run short, cut enemies first (more recolors, more code-drawn frames), never the player. Every clip is
+judged against the code-drawn sheet it would replace; the better one ships (the manifest in `art/autosprite/` says
+which animations are imported).
 
 **Credit rules:** never regenerate a whole set to fix one frame (fix by hand or by code); always request at the canonical size so no upscaling is needed; batch similar requests; log every call in `art/autosprite-ledger.csv` with date, asset, cost and result.
 

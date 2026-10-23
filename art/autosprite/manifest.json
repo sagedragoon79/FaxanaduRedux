@@ -1,0 +1,14 @@
+{
+ "player": {
+  "dir": "elf",
+  "ramps": ["night", "bark", "leaf", "gold"],
+  "height": 42,
+  "reference": "idle",
+  "detect": "elf",
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 4, "count": 16,
+            "pick": [0, 2, 4, 6, 8, 10, 12, 14], "seq": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true,
+            "autosprite": "character cmvkedf5r001j14mtays3bnw5, spritesheet cmvkee6ep002m14mtsqwiuiof"}
+  }
+ }
+}

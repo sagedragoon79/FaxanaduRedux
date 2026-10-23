@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import autosprite_import  # noqa: E402
 import palette  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -183,16 +184,27 @@ def write_sheet(name, cell, origin, animations, render):
     render(spec) -> (sheet image, mask image, per-frame metadata dict)."""
     SPRITES.mkdir(parents=True, exist_ok=True)
     cw, ch = cell
-    cols = max(len(frames) for _, frames, _, _, _ in animations)
-    rows = len(animations)
+    # Render the code-drawn frames, then swap in any Autosprite imports (autosprite_import.py).
+    rendered = []
+    for anim, frames, seq, fps, loop in animations:
+        rendered.append([anim, [render(spec) for spec in frames], seq, fps, loop])
+    imports = autosprite_import.imported(name, cell, origin, {r[0]: [f[2] for f in r[1]] for r in rendered})
+    for r in rendered:
+        if r[0] in imports:
+            frames, seq, fps, loop = imports[r[0]]
+            r[1] = frames
+            r[2] = seq or (r[2] if max(r[2]) < len(frames) else list(range(len(frames))))
+            r[3] = fps or r[3]
+            r[4] = r[4] if loop is None else loop
+    cols = max(len(frames) for _, frames, _, _, _ in rendered)
+    rows = len(rendered)
     sheet = Image.new("RGBA", (cols * cw, rows * ch), (0, 0, 0, 0))
     masks = Image.new("RGBA", (cols * cw, rows * ch), (0, 0, 0, 0))
     meta = {"cell": [cw, ch], "origin": list(origin), "columns": cols, "animations": {}}
-    for row, (anim, frames, seq, fps, loop) in enumerate(animations):
+    for row, (anim, frames, seq, fps, loop) in enumerate(rendered):
         assert max(seq) < len(frames), (name, anim)
         info = []
-        for col, spec in enumerate(frames):
-            img, mask, fmeta = render(spec)
+        for col, (img, mask, fmeta) in enumerate(frames):
             sheet.paste(img, (col * cw, row * ch))
             masks.paste(mask, (col * cw, row * ch))
             info.append(fmeta)
