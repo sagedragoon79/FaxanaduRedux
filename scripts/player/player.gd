@@ -22,6 +22,11 @@ const SAP_SPEED := 0.5
 const SAP_JUMP := 0.72
 ## How long an Ointment protects you (design bible 10.2).
 const OINTMENT_TIME := 10.0
+## Poison (a Faxanadu drop): seconds it lasts, and health lost each POISON_TICK.
+## It never takes your last point of health.
+const POISON_TIME := 8.0
+const POISON_TICK := 1.0
+const POISON_DAMAGE := 2
 
 const SLASH_SIZE := Vector2(36, 26)
 const UP_SLASH_SIZE := Vector2(34, 36)
@@ -86,6 +91,9 @@ var invulnerable: bool:
 ## Seconds of Ointment left (0 when none is on).
 var ointment_left: float:
 	get: return maxf(_ointment_timer, 0.0)
+## Seconds of poison left (0 when you are well).
+var poison_left: float:
+	get: return maxf(_poison_timer, 0.0)
 ## Counts swings, so the visual can restart an attack animation on each press.
 var swing_count := 0
 var is_casting: bool:
@@ -118,6 +126,8 @@ var _dash_dir := 1
 var _afterimage_timer := 0.0
 var _invuln_timer := 0.0
 var _ointment_timer := 0.0
+var _poison_timer := 0.0
+var _poison_tick := 0.0
 var _attack_timer := 0.0
 var _attack_cooldown := 0.0
 var _attack_hits := {}
@@ -247,6 +257,8 @@ func _tick_timers(delta: float) -> void:
 		_ointment_timer -= delta
 		if _ointment_timer <= 0.0:
 			GameState.toast.emit("The Ointment wears off.")
+	if _poison_timer > 0.0:
+		_tick_poison(delta)
 	_attack_cooldown -= delta
 	_dust_timer -= delta
 	_step_timer -= delta
@@ -788,6 +800,33 @@ func use_ointment() -> bool:
 	return true
 
 
+## Drinks in poison: for POISON_TIME seconds you lose POISON_DAMAGE health
+## every POISON_TICK, down to 1. An Ointment keeps it off. False if it didn't take.
+func poison() -> bool:
+	if dead or _ointment_timer > 0.0:
+		return false
+	_poison_timer = POISON_TIME
+	_poison_tick = POISON_TICK
+	return true
+
+
+## Bread, a shrine or the Guru clears poison.
+func cure_poison() -> void:
+	_poison_timer = 0.0
+
+
+func _tick_poison(delta: float) -> void:
+	_poison_timer -= delta
+	_poison_tick -= delta
+	if _poison_tick <= 0.0:
+		_poison_tick += POISON_TICK
+		if not dead and _ointment_timer <= 0.0 and hp > 1:
+			hp = maxi(1, hp - POISON_DAMAGE)
+			health_changed.emit(hp, max_hp)
+	if _poison_timer <= 0.0:
+		GameState.toast.emit("The poison fades.")
+
+
 ## Dying with an Elixir: it is used up and you rise where you fell, fully healed.
 func _drink_elixir() -> void:
 	elixirs -= 1
@@ -831,6 +870,7 @@ func _die(where: Vector2) -> void:
 
 func _respawn() -> void:
 	dead = false
+	_poison_timer = 0.0
 	hp = max_hp
 	mp = max_mp
 	flask_charges = flask_max
@@ -856,6 +896,7 @@ func add_gold(amount: int, found := false) -> void:
 
 ## Refills health, magic and potion charges (save shrines, the Guru).
 func restore() -> void:
+	_poison_timer = 0.0
 	hp = max_hp
 	mp = max_mp
 	flask_charges = flask_max

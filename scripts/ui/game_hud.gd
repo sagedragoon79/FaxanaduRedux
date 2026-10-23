@@ -15,6 +15,8 @@ const POTION := Color("e0404a")
 const POTION_EMPTY := Color("4a2a34")
 const GOLD := Color("ffd24a")
 const OINTMENT := Color("f0c02e")
+const POISONED := Color("6fb83a")
+const POISONED_SHINE := Color("c8f08a")
 
 var player: Player
 
@@ -80,8 +82,9 @@ func _draw() -> void:
 		draw_rect(Rect2(p + Vector2(1, 1), Vector2(w - 2, 12)), MASK_EMPTY)
 		if fill > 0.0:
 			var h := roundf(12.0 * fill)
-			draw_rect(Rect2(p + Vector2(1, 13 - h), Vector2(w - 2, h)), MASK_FULL)
-			draw_rect(Rect2(p + Vector2(2, 13 - h), Vector2(2, minf(h, 3))), MASK_SHINE)
+			var sick := player.poison_left > 0.0
+			draw_rect(Rect2(p + Vector2(1, 13 - h), Vector2(w - 2, h)), POISONED if sick else MASK_FULL)
+			draw_rect(Rect2(p + Vector2(2, 13 - h), Vector2(2, minf(h, 3))), POISONED_SHINE if sick else MASK_SHINE)
 	# Magic bar.
 	var bar := Rect2(origin + Vector2(0, 18), Vector2(maxf(mask_x - 2.0, player.max_mp), 5))
 	draw_rect(bar.grow(1), OUTLINE)

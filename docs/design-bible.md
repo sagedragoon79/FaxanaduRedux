@@ -330,7 +330,7 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 | Dartmoor | Crystal Dwarf (meteor-fused), Shade Knight (parry-heavy), Clockwork Hound, Meteor Slug |
 | Zenis | Remixes of every family, corrupted with meteor crystal |
 
-Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose and a flash), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s.
+Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose and a flash), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s. From the Tower of Trunk on, some enemies (Iron Dwarf, Gear Bat) leave Faxanadu's **Poison** about 1 kill in 14: a violet skull flask that is a hazard to step around while collecting. Walking over it poisons you for 8 s, costing 2 health a second but never the last point; your health masks and sprite turn green. Bread, resting at a shrine or Guru, or dying cures it, and an Ointment keeps it off.
 
 ---
 

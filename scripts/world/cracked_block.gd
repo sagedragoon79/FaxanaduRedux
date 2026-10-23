@@ -28,7 +28,8 @@ func _ready() -> void:
 	add_child(_shape)
 
 
-func break_block() -> void:
+## `quiet` skips the dust, sound and shake (a block cleared out of the way).
+func break_block(quiet := false) -> void:
 	if _broken:
 		return
 	_broken = true
@@ -37,6 +38,8 @@ func break_block() -> void:
 		GameState.collect(persist_id)
 	_shape.set_deferred("disabled", true)
 	visible = false
+	if quiet:
+		return
 	var d := Dust.new()
 	d.setup("debris")
 	get_parent().add_child(d)

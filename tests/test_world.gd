@@ -121,3 +121,27 @@ func test_gym_enemies_stay_put() -> void:
 		var inside := room.pixel_rect().has_point(e.global_position)
 		check(inside and not e.dead and e.global_position.distance_to(e.home) < 120.0,
 			"%s stays near its post (home %s, now %s)" % [e.get_script().get_global_name(), e.home, e.global_position])
+
+
+func test_arriving_through_a_door_clears_cracked_stone_in_the_way() -> void:
+	# The Forepaw Stair can be entered from its far side (a test, a later shortcut);
+	# coming back must not leave the player inside Winch Hall's cracked wall.
+	var w := make_world({}, "tower/forepaw_stair")
+	await frames(2)
+	w.use_door(1)
+	await frames(3)
+	check(w.room.id == "tower/winch_hall", "door 1 leads back to Winch Hall")
+	var body := w.player.body_rect().grow(-1.0)
+	var blocking := 0
+	var cleared := 0
+	for c in w.room.get_children():
+		if c is CrackedBlock:
+			var r := Rect2(c.global_position - Vector2(8, 8), Vector2(16, 16))
+			if c.visible and r.intersects(body):
+				blocking += 1
+			if not c.visible:
+				cleared += 1
+	check(blocking == 0 and cleared > 0, "the stone around the arrival gave way (%d cleared)" % cleared)
+	await frames(20)
+	var feet := w.player.global_position
+	check(w.player.is_on_floor() and not w.room.is_solid_at(feet + Vector2(0, -4)), "and the player stands on the floor, not in it (%s)" % feet)

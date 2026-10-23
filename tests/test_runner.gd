@@ -32,6 +32,7 @@ func _ready() -> void:
 	# check drops turn them on and back off.
 	Drop.bread_chance = 0.0
 	Drop.mana_chance = 0.0
+	Drop.poison_chance = 0.0
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--filter="):
 			_filter = arg.trim_prefix("--filter=")

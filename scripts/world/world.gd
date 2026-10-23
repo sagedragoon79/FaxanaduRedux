@@ -319,6 +319,15 @@ func _place_at_door(door: Dictionary, vel: Vector2) -> void:
 	player.velocity = vel
 	if door.edge in ["left", "right", "inner"]:
 		player.safe_position = pos
+	_clear_arrival(player.body_rect())
+
+
+## Coming through a door means the way is open: cracked stone that would hold
+## the player on arrival (a door reached from its far side first) gives way.
+func _clear_arrival(body: Rect2) -> void:
+	for c in room.get_children():
+		if c is CrackedBlock and Rect2(c.global_position - Vector2(8, 8), Vector2(16, 16)).intersects(body.grow(-1.0)):
+			c.break_block(true)
 
 
 func _fade(to: float, time: float) -> void:

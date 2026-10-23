@@ -28,6 +28,7 @@ func _init() -> void:
 	max_hp = 64
 	gold_min = 7
 	gold_max = 12
+	poison_drops = true
 	xp = 18
 	contact_damage = 12
 	body_size = Vector2(20, 30)
