@@ -1,27 +1,94 @@
 class_name TilesetFactory
 extends RefCounted
-## Builds graybox tilesets entirely in code: pixel textures plus collision.
-## Final zone tilesets replace the textures; the atlas layout stays the same.
-
-enum Tile { INNER, TOP, ONE_WAY, AMBER }
+## Builds a zone's TileSet from its generated atlas (tools/art/tilegen.py,
+## assets/tiles/<zone>.png) and adds collision.
+##
+## Ground uses 47 "blob" autotiles: each solid cell picks the tile for which of
+## its 8 neighbours are solid too (corners count only when both sides next to
+## them are solid). The atlas has them in rows 0-5 in the order of
+## `blob_masks()`; row 6 holds the one-way platform, amber, and darker interior
+## tiles for wall cells two (MID) or three or more (DEEP) tiles from open air.
 
 const TILE := 16
 const SOURCE_ID := 0
+const COLUMNS := 8
+const TILES_DIR := "res://assets/tiles/"
+const FALLBACK_ZONE := "gym"
 
-const STONE := Color("4a4458")
-const STONE_LIGHT := Color("5d5670")
-const STONE_DARK := Color("37324a")
-const MOSS := Color("5f8a4a")
-const MOSS_LIGHT := Color("7fae5e")
-const WOOD := Color("8a5a34")
-const WOOD_DARK := Color("5e3b22")
-const AMBER := Color("c97a1e")
-const AMBER_LIGHT := Color("ffc76a")
-const AMBER_DARK := Color("8a4f14")
+const ONE_WAY := Vector2i(0, 6)
+const AMBER := Vector2i(1, 6)
+const MID: Array[Vector2i] = [Vector2i(2, 6), Vector2i(3, 6)]
+const DEEP: Array[Vector2i] = [Vector2i(4, 6), Vector2i(5, 6)]
+
+## Neighbour bits for blob masks.
+const N := 1
+const NE := 2
+const E := 4
+const SE := 8
+const S := 16
+const SW := 32
+const W := 64
+const NW := 128
+const FULL := 255
+
+static var _masks: Array[int] = []
+static var _index := {}
+static var _cache := {}
 
 
-## Builds the tileset. Without collision it is used for fake walls (secrets).
-static func build(with_collision := true) -> TileSet:
+## The 47 distinct reduced masks, ascending (tilegen.py builds the same list).
+static func blob_masks() -> Array[int]:
+	if _masks.is_empty():
+		var seen := {}
+		for m in 256:
+			seen[reduce_mask(m)] = true
+		for m: int in seen:
+			_masks.append(m)
+		_masks.sort()
+		for i in _masks.size():
+			_index[_masks[i]] = i
+	return _masks
+
+
+## Drops corner bits whose two neighbouring sides are not both solid.
+static func reduce_mask(m: int) -> int:
+	if not (m & N and m & E):
+		m &= ~NE
+	if not (m & S and m & E):
+		m &= ~SE
+	if not (m & S and m & W):
+		m &= ~SW
+	if not (m & N and m & W):
+		m &= ~NW
+	return m
+
+
+## Atlas coordinates of the ground tile for a neighbour mask. `depth` is how
+## many tiles the cell is from open air (1 = touching it); deeper cells darken.
+static func ground(mask: int, cell := Vector2i.ZERO, depth := 1) -> Vector2i:
+	blob_masks()
+	var m := reduce_mask(mask)
+	if m == FULL and depth >= 2:
+		var h := absi((cell.x * 73856093) ^ (cell.y * 19349663)) % 2
+		return DEEP[h] if depth >= 3 else MID[h]
+	var i: int = _index[m]
+	return Vector2i(i % COLUMNS, i / COLUMNS)
+
+
+static func is_ground(coords: Vector2i) -> bool:
+	return coords != ONE_WAY and coords != AMBER
+
+
+## Builds (and caches) the tileset for a zone. Without collision it is used for
+## fake walls (secrets).
+static func build(zone := "", with_collision := true) -> TileSet:
+	var path := TILES_DIR + zone + ".png"
+	if zone == "" or not ResourceLoader.exists(path):
+		zone = FALLBACK_ZONE
+		path = TILES_DIR + zone + ".png"
+	var key := "%s:%s" % [zone, with_collision]
+	if _cache.has(key):
+		return _cache[key]
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(TILE, TILE)
 	ts.add_physics_layer()
@@ -29,74 +96,28 @@ static func build(with_collision := true) -> TileSet:
 	ts.set_physics_layer_collision_mask(0, 0)
 
 	var src := TileSetAtlasSource.new()
-	src.texture = ImageTexture.create_from_image(_paint_atlas())
+	src.texture = load(path)
 	src.texture_region_size = Vector2i(TILE, TILE)
 	ts.add_source(src, SOURCE_ID)
 
 	var half := TILE * 0.5
 	var full := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)])
 	var strip := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, -half + 4), Vector2(-half, -half + 4)])
-	for tile: int in [Tile.INNER, Tile.TOP, Tile.ONE_WAY, Tile.AMBER]:
-		var coords := Vector2i(tile, 0)
+	var all: Array[Vector2i] = [ONE_WAY, AMBER]
+	all.append_array(MID)
+	all.append_array(DEEP)
+	for i in blob_masks().size():
+		all.append(Vector2i(i % COLUMNS, i / COLUMNS))
+	for coords in all:
 		src.create_tile(coords)
 		if not with_collision:
 			continue
 		var data := src.get_tile_data(coords, 0)
 		data.add_collision_polygon(0)
-		if tile == Tile.ONE_WAY:
+		if coords == ONE_WAY:
 			data.set_collision_polygon_points(0, 0, strip)
 			data.set_collision_polygon_one_way(0, 0, true)
 		else:
 			data.set_collision_polygon_points(0, 0, full)
+	_cache[key] = ts
 	return ts
-
-
-static func _paint_atlas() -> Image:
-	var img := Image.create(TILE * 4, TILE, false, Image.FORMAT_RGBA8)
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 1987
-	for tile in 2:
-		var ox := tile * TILE
-		for y in TILE:
-			for x in TILE:
-				var c := STONE
-				var n := rng.randf()
-				if n < 0.12:
-					c = STONE_DARK
-				elif n > 0.9:
-					c = STONE_LIGHT
-				# Brick seams every 8 px, offset per row of bricks.
-				var row := y / 8
-				if y % 8 == 7 or (x + row * 4) % 8 == 0:
-					c = STONE_DARK
-				img.set_pixel(ox + x, y, c)
-		if tile == Tile.TOP:
-			for x in TILE:
-				var depth := 3 + int(rng.randf() < 0.4)
-				for y in depth:
-					img.set_pixel(ox + x, y, MOSS_LIGHT if y == 0 else MOSS)
-	var wx := Tile.ONE_WAY * TILE
-	for x in TILE:
-		for y in 5:
-			var c := WOOD if y < 3 else WOOD_DARK
-			if y == 0:
-				c = WOOD.lightened(0.2)
-			img.set_pixel(wx + x, y, c)
-		if x % 8 == 0:
-			for y in range(5, 10):
-				img.set_pixel(wx + x, y, WOOD_DARK)
-	# Hardened amber (sap after the Spring of Trunk): glassy, with bubbles.
-	var ax := Tile.AMBER * TILE
-	for y in TILE:
-		for x in TILE:
-			var c := AMBER
-			if y == 0:
-				c = AMBER_LIGHT
-			elif rng.randf() < 0.08:
-				c = AMBER_DARK
-			elif (x + y) % 11 == 0:
-				c = AMBER.lightened(0.15)
-			img.set_pixel(ax + x, y, c)
-	for b: Vector2i in [Vector2i(4, 5), Vector2i(11, 9), Vector2i(7, 12)]:
-		img.set_pixel(ax + b.x, b.y, AMBER_LIGHT)
-	return img
