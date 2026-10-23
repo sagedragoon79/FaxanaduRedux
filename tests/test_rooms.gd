@@ -100,6 +100,30 @@ func test_shrine_saves_and_round_trips() -> void:
 	check(not GameState.has_save(SAVE_SLOT), "save deleted")
 
 
+func test_act_one_state_survives_a_save_round_trip() -> void:
+	GameState.slot = SAVE_SLOT
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("boss:zoradohna")
+	GameState.meet_guru("trunk/apolune", Vector2(200, 320))
+	GameState.meet_guru("tower/forepaw", Vector2(168, 320))
+	GameState.data.tempers["hand_dagger"] = 2
+	GameState.data.named_rank = 3
+	GameState.data.mantra_shards = 2
+	GameState.data.abilities["mattock"] = true
+	check(GameState.save_game(), "the save writes")
+	GameState.new_game()
+	check(GameState.mantra_stops("").is_empty() and not GameState.mantra_path_open(), "a new game forgets it all")
+	check(GameState.load_game(SAVE_SLOT), "and the save loads")
+	check(GameState.mantra_path_open() and GameState.flag("boss:zoradohna"), "spring and boss flags survive")
+	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Mantra Path stops survive")
+	var at: Array = GameState.data.gurus["tower/forepaw"]
+	check(is_equal_approx(float(at[0]), 168.0), "with their positions")
+	check(GameState.temper_level("hand_dagger") == 2, "the blade's temper survives")
+	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
+	check(GameState.has_ability("mattock"), "the Mattock survives")
+	GameState.delete_save(SAVE_SLOT)
+
+
 func test_death_respawns_at_last_shrine_and_purse_persists() -> void:
 	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
 	GameState.slot = SAVE_SLOT

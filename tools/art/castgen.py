@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, foreman and zoradohna (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, foreman and zoradohna (drawn at 2x); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -297,6 +297,107 @@ IRON_DWARF = [
                iron_dwarf(lean=5, hands=(13, -11), hammer=70, feet=((8, 0), (-6, 0)), crouch=3, bob=1)], [0, 1], 4, True),
     ("recover", [iron_dwarf(lean=2, hands=(9, -16), hammer=10)], [0], 1, False),
     ("stagger", [iron_dwarf(lean=-5, feet=((3, 0), (-7, 0)), hands=(-4, -28), hammer=-170)], [0], 1, False),
+]
+
+
+# --- Minecart Rider: a Forepaw dwarf hunched in an ore cart, riding the rails --------
+# Drawn at 2x like the Iron Dwarf. The cart tips forward when it crashes into a wall.
+
+MC_TUB = mat("ember", 4, 3, 2, 0)
+MC_TUB_DARK = mat("ember", 2, 1, 1, 0)
+MC_BAND = mat("stone", 6, 5, 3, 1)
+MC_WHEEL = mat("night", 4, 3, 2, 0)
+MC_HUB = mat("gold", 6, 5, 3, 1)
+MC_ORE = mat("crystal", 6, 5, 3, 1)
+MC_SCALE = 2
+
+
+def minecart(wheel=0.0, tilt=0.0, rider=(0, 0), lean=0.0, pick=-70, dazed=False, sparks=False):
+    """wheel: spin in turns. tilt: degrees, + tips the cart forward over its front wheel.
+    rider: offset of the rider's shoulders from their seat. pick: degrees of the pick haft."""
+    def render(_):
+        cv = Canvas(72, 56, (36, 53), MC_SCALE)
+        pivot = (13, 0)
+
+        def R(p):
+            return _rot(p, pivot, tilt)
+
+        def wheel_at(c):
+            c = R(c)
+            cv.part(cv.ellipse(c, 5.2, 5.2), MC_WHEEL, deep=True)
+            for k in range(3):
+                a = (wheel + k / 3) * math.tau
+                d = (math.cos(a) * 3.6, math.sin(a) * 3.6)
+                cv.part(cv.capsule((c[0] - d[0], c[1] - d[1]), (c[0] + d[0], c[1] + d[1]), 0.6), MC_BAND)
+            cv.part(cv.ellipse(c, 1.6, 1.6), MC_HUB)
+
+        # The rider, sitting low in the tub.
+        sx, sy = -2 + rider[0] + lean, -27 + rider[1]
+        seat = R((sx, sy))
+        head = R((sx + 2 + lean * 0.3, sy - 7))
+        if dazed:
+            head = R((sx + 4, sy - 5))
+        # Back arm and the pick, behind the tub's lip.
+        a = math.radians(pick)
+        grip = R((sx + 7 + lean * 0.5, sy + 1))
+        tip = (grip[0] + math.cos(a) * 14, grip[1] + math.sin(a) * 14)
+        butt = (grip[0] - math.cos(a) * 4, grip[1] - math.sin(a) * 4)
+        cv.part(cv.capsule(butt, tip, 1.0), I_HAFT)
+        perp = (-math.sin(a), math.cos(a))
+        cv.part(cv.capsule((tip[0] - perp[0] * 6, tip[1] - perp[1] * 6), (tip[0] + perp[0] * 5, tip[1] + perp[1] * 5), 1.4), I_HEAD, deep=True)
+        cv.part(cv.ellipse(seat, 7.0, 6.0), I_PLATE_BACK, deep=True)
+        cv.part(cv.ellipse((seat[0] - 3, seat[1] - 1), 3.5, 3.0), I_PLATE)
+        cv.part(cv.capsule((seat[0] + 4, seat[1] - 1), grip, 2.3), I_PLATE)
+        cv.part(cv.ellipse(grip, 2.1, 2.1), I_SKIN)
+        # Head: a leather cap with goggles pushed up, a braided beard.
+        cv.part(cv.ellipse(head, 4.8, 4.5), I_SKIN)
+        cap = cv.ellipse((head[0] - 0.4, head[1] - 2.0), 5.6, 3.8) & ~cv.below(head[1] - 0.8)
+        cv.part(cap, mat("bark", 5, 4, 3, 1))
+        cv.part(cv.capsule((head[0] - 4.5, head[1] - 2.2), (head[0] + 4.5, head[1] - 2.2), 1.1), MC_BAND)
+        for gx in (-1.2, 2.6):
+            cv.part(cv.ellipse((head[0] + gx, head[1] - 2.6), 1.5, 1.4), mat("sky", 6, 5, 3, 1))
+        beard = cv.polygon([(head[0] - 1, head[1] + 1.8), (head[0] + 5, head[1] + 1.8), (head[0] + 4, head[1] + 7),
+                            (head[0] + 1.5, head[1] + 8.5), (head[0] - 0.6, head[1] + 6)])
+        cv.part(beard, mat("stone", 7, 6, 5, 3))
+        cv.part(cv.ellipse((head[0] + 4.4, head[1] + 0.6), 1.3, 1.1), I_SKIN)
+        if dazed:
+            for k in range(3):
+                a2 = k / 3 * math.tau + wheel * 2
+                cv.pixel((head[0] + math.cos(a2) * 6, head[1] - 7 + math.sin(a2) * 1.5), PAL["gold-7"])
+        else:
+            cv.pixel((head[0] + 2.5, head[1] - 0.2), PAL["ember-6"])
+        # The tub: a riveted iron box, wider at the lip, ore heaped at the back.
+        cv.part(cv.ellipse(R((-8, -21)), 6, 3), MC_ORE)
+        tub = cv.polygon([R((-17, -21)), R((17, -21)), R((14, -6)), R((-14, -6))])
+        cv.part(tub, MC_TUB, deep=True)
+        cv.part(cv.capsule(R((-17.5, -21)), R((17.5, -21)), 1.3), MC_BAND)
+        cv.part(cv.capsule(R((-15.5, -13)), R((15.5, -13)), 0.8), MC_TUB_DARK)
+        for rx in (-10, 0, 10):
+            cv.pixel(R((rx, -17)), PAL["stone-6"])
+            cv.pixel(R((rx * 0.9, -9)), PAL["stone-6"])
+        cv.part(cv.capsule(R((-12, -5)), R((12, -5)), 1.0), MC_BAND)
+        # Front lamp: lit while it rolls.
+        cv.part(cv.ellipse(R((17, -16)), 1.8, 2.2), MC_HUB if not dazed else MC_BAND)
+        wheel_at((-9, -5))
+        wheel_at((9, -5))
+        if sparks:
+            for k in range(4):
+                cv.pixel(R((-14 - k * 2.5, -1 - (k % 2) * 2)), PAL["gold-7"])
+                cv.pixel(R((14 + k * 0.5, -1 - k)), PAL["ember-6"])
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+MINECART_RIDER = [
+    ("roll", [minecart(wheel=i / 4, rider=(0, i % 2 * 0.5)) for i in range(4)], [0, 1, 2, 3], 8, True),
+    ("rev", [minecart(wheel=0.0, rider=(-2, 0), lean=-2, pick=-110, sparks=True),
+             minecart(wheel=0.1, rider=(-2, -1), lean=-3, pick=-115, tilt=-3, sparks=True)], [0, 1], 10, True),
+    ("charge", [minecart(wheel=i / 4 + 0.12, rider=(2, 2), lean=3, pick=-20, sparks=i % 2 == 0) for i in range(4)],
+     [0, 1, 2, 3], 16, True),
+    ("crash", [minecart(tilt=14, rider=(3, -2), lean=4, pick=30, dazed=True),
+               minecart(tilt=12, rider=(3, -1), lean=4, pick=35, dazed=True, wheel=0.3)], [0, 1], 4, True),
+    ("stagger", [minecart(tilt=-6, rider=(-3, 0), lean=-3, pick=-150)], [0], 1, False),
 ]
 
 
@@ -879,6 +980,7 @@ def main():
     write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
     write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
     write_sheet("gear_bat", (56, 40), (28, 20), GEAR_BAT, lambda r: r(None), density=GB_SCALE)
+    write_sheet("minecart_rider", (72, 56), (36, 53), MINECART_RIDER, lambda r: r(None), density=MC_SCALE)
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
     write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
