@@ -156,3 +156,12 @@ func test_scarf_hangs_from_the_neck() -> void:
 	await frames(3)
 	var neck := p.visual.neck_position()
 	check(p.scarf.anchor().distance_to(neck) < 4.0, "the scarf follows the frame's neck (%s vs %s)" % [p.scarf.anchor(), neck])
+
+
+func test_double_density_sheets_keep_world_size() -> void:
+	var one := Sheet.dest_rect("player")
+	Sheet._cache["test_dense"] = {"cell": Vector2(128, 128), "origin": Vector2(64, 122), "density": 2.0}
+	var two := Sheet.dest_rect("test_dense")
+	Sheet._cache.erase("test_dense")
+	check(two == Rect2(-32, -61, 64, 64), "a density-2 cell covers half its pixels in the world (%s)" % two)
+	check(one.size == PlayerVisual.data().cell, "a plain sheet draws 1:1 (%s)" % one)

@@ -73,4 +73,5 @@ func _draw() -> void:
 
 ## The world position of the screen's top-left corner.
 func _view_origin() -> Vector2:
-	return -get_viewport().get_canvas_transform().origin
+	var t := get_viewport().get_canvas_transform()
+	return -t.origin / t.get_scale()

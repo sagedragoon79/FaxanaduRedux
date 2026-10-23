@@ -273,8 +273,19 @@ func test_camera_subpixel_and_bounds() -> void:
 	for i in 60:
 		p.input.move_x = 1
 		await frames(1)
-		var whole := cam.global_position == cam.global_position.floor()
-		var frac_ok := cam.subpixel.x >= 0.0 and cam.subpixel.x < 1.0 and cam.subpixel.y >= 0.0 and cam.subpixel.y < 1.0
+		# Whole render pixels: GameCamera.DETAIL of them per world pixel.
+		var scaled := cam.global_position * GameCamera.DETAIL
+		var whole := scaled == scaled.floor()
+		var step := 1.0 / GameCamera.DETAIL
+		var frac_ok := cam.subpixel.x >= 0.0 and cam.subpixel.x < step and cam.subpixel.y >= 0.0 and cam.subpixel.y < step
 		var inside := cam.exact_position.x >= 80.0 - 0.01 and cam.exact_position.x <= room.pixel_rect().end.x - 80.0 + 0.01
 		ok = ok and whole and frac_ok and inside
-	check(ok, "camera stays on whole pixels, sub-pixel remainder in [0,1), inside room bounds")
+	check(ok, "camera stays on whole render pixels, sub-pixel remainder under one, inside room bounds")
+
+
+func test_camera_renders_at_detail() -> void:
+	var cam := GameCamera.new()
+	arena.add_child(cam)
+	await frames(1)
+	check(cam.zoom == Vector2(GameCamera.DETAIL, GameCamera.DETAIL), "the camera zooms the world to its render density (%s)" % cam.zoom)
+	cam.queue_free()

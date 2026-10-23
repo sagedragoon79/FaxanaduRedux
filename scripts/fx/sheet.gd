@@ -4,6 +4,10 @@ extends RefCounted
 ## tools/art/pixelrig.py): <name>.png, <name>_mask.png (flat silhouette) and
 ## <name>.json (cell size, origin, and per animation its row, frames with
 ## metadata, playback sequence, fps and loop). Cached per name.
+##
+## A sheet with "density": 2 is drawn at double detail: its cells and origin
+## are in sheet pixels, two per world pixel (GameCamera.DETAIL), while frame
+## metadata (hand, neck, eye) stays in world pixels.
 
 const DIR := "res://assets/sprites/"
 
@@ -14,7 +18,7 @@ static func exists(name: String) -> bool:
 	return ResourceLoader.exists(DIR + name + ".json")
 
 
-## {"tex", "mask", "cell": Vector2, "origin": Vector2, "animations"}.
+## {"tex", "mask", "cell": Vector2, "origin": Vector2, "density": float, "animations"}.
 static func get_sheet(name: String) -> Dictionary:
 	if not _cache.has(name):
 		var d: Dictionary = (load(DIR + name + ".json") as JSON).data
@@ -24,6 +28,7 @@ static func get_sheet(name: String) -> Dictionary:
 			"cell": Vector2(d.cell[0], d.cell[1]),
 			"origin": Vector2(d.origin[0], d.origin[1]),
 			"columns": int(d.columns),
+			"density": float(d.get("density", 1)),
 			"animations": d.animations,
 		}
 	return _cache[name]
@@ -68,4 +73,12 @@ static func region(name: String, anim: String, frame: int) -> Rect2:
 static func draw(ci: CanvasItem, name: String, anim: String, frame: int, tint := Color.WHITE, flat := false) -> void:
 	var s := get_sheet(name)
 	var tex: Texture2D = s.mask if flat else s.tex
-	ci.draw_texture_rect_region(tex, Rect2(-(s.origin as Vector2), s.cell), region(name, anim, frame), tint)
+	ci.draw_texture_rect_region(tex, dest_rect(name), region(name, anim, frame), tint)
+
+
+## Where a frame lands, in world pixels relative to the origin: a density-2
+## cell covers half as many world pixels as it has sheet pixels.
+static func dest_rect(name: String) -> Rect2:
+	var s := get_sheet(name)
+	var k: float = 1.0 / s.density
+	return Rect2(-(s.origin as Vector2) * k, (s.cell as Vector2) * k)

@@ -32,9 +32,19 @@ func set_zone(next: String) -> void:
 		layer.scroll_scale = LAYERS[suffix]
 		layer.repeat_size = Vector2(SIZE.x, 0)
 		layer.repeat_times = 3
+		layer.ignore_camera_scroll = true
 		var sprite := Sprite2D.new()
 		sprite.texture = load(path)
 		sprite.centered = false
 		sprite.position = OFFSET
 		layer.add_child(sprite)
 		add_child(layer)
+
+
+## Parallax2D reads the camera scroll in render pixels, which is GameCamera.DETAIL
+## times too far once the camera zooms, so the layers get it in world pixels.
+func _process(_delta: float) -> void:
+	var t := get_viewport().get_canvas_transform()
+	var offset := -t.origin / t.get_scale()
+	for layer in get_children():
+		(layer as Parallax2D).screen_offset = offset

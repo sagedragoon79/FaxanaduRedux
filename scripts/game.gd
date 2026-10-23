@@ -2,10 +2,11 @@ extends Node2D
 ## Entry point: builds the pixel-art viewport, the World (rooms, player,
 ## camera) and the UI layer (HUD, dialog box, map, fades).
 ##
-## The world renders into a SubViewport at 642x362 (one spare pixel per side),
-## shown upscaled with nearest filtering and shifted by the camera's sub-pixel
-## remainder, so scrolling is smooth while pixels stay crisp. The UI draws in
-## the main viewport at native resolution.
+## The world renders into a SubViewport at 642x362 world pixels (one spare
+## pixel per side) times GameCamera.DETAIL, shown upscaled with sharp
+## bilinear filtering (shaders/sharp_pixels.gdshader) and shifted by the
+## camera's sub-pixel remainder, so scrolling is smooth while pixels stay
+## crisp. The UI draws in the main viewport at native resolution.
 ##
 ## Command-line options after `--`:
 ## With no options it shows the title menu (continue or new game).
@@ -63,7 +64,7 @@ func _ready() -> void:
 		_args[kv[0]] = kv[1] if kv.size() > 1 else ""
 
 	view = SubViewport.new()
-	view.size = BASE_SIZE + Vector2i(MARGIN, MARGIN) * 2
+	view.size = (BASE_SIZE + Vector2i(MARGIN, MARGIN) * 2) * GameCamera.DETAIL
 	view.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	view.snap_2d_transforms_to_pixel = true
 	view.snap_2d_vertices_to_pixel = true
@@ -74,8 +75,12 @@ func _ready() -> void:
 	display = Sprite2D.new()
 	display.texture = view.get_texture()
 	display.centered = false
-	display.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	display.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	var sharp := ShaderMaterial.new()
+	sharp.shader = load("res://shaders/sharp_pixels.gdshader")
+	display.material = sharp
 	display.position = -Vector2(MARGIN, MARGIN)
+	display.scale = Vector2.ONE / GameCamera.DETAIL
 	add_child(display)
 
 	var ui := CanvasLayer.new()
@@ -173,7 +178,7 @@ func _start(room_id: String, at := Vector2.INF) -> void:
 	GameState.active = world.use_game_state
 	view.add_child(world)
 	world.build_catalog()
-	world.view_size = Vector2(view.size)
+	world.view_size = Vector2(view.size) / GameCamera.DETAIL
 	world.fader = fader
 	world.start(room_id, at)
 	if _args.has("shot-move"):

@@ -542,18 +542,30 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 ### 12.1 Resolution and scale
 
-- **Internal resolution:** 640x360. Integer scaling: 3x at 1080p, 4x at 1440p, 6x at 4K. Letterbox otherwise.
-- **Smooth camera with crisp pixels:** render the world into a 642x362 SubViewport (1 px margin), upscale with nearest-neighbor, then offset the upscaled image by the sub-pixel camera remainder. UI renders at native resolution on top, so text can be sharp.
+- **World resolution:** 640x360 world pixels. All gameplay numbers (movement, hitboxes, rooms, tiles) are in world pixels.
+- **Render density 2x (changed 2026-10-23):** the world renders at 1280x720, two render pixels per world pixel
+  (`GameCamera.DETAIL`). Sean's reference for the hero is high-detail pixel art about 200 px tall; at one pixel per
+  world pixel a 48 px hero loses the face and armor detail. Character sheets marked `"density": 2` are drawn at double
+  detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
+  polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor.
+- **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
+  render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
+  a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
+  UI renders at native resolution on top, so text can be sharp.
 - **Tile size:** 16x16 px. Large props are free-form.
-- **Character size:** player sprite about 48x56 px on a 64x64 canvas, counting the blade and scarf (the body itself is
-  about 20x46, matching the 12x40 hitbox). Standard enemies 32 to 64 px. Bosses 160 to 400 px tall (multi-part, rigged).
+- **Character size:** in world pixels, player sprite about 48x56 px on a 64x64 canvas, counting the blade and cloak (the
+  body itself is about 20x46, matching the 12x40 hitbox). At 2x density the hero sheet is 128x128 per cell, about 96 px
+  tall. Standard enemies 32 to 64 px. Bosses 160 to 400 px tall (multi-part, rigged).
 
 ### 12.2 Palette
 
 - One **master palette of 64 colors** (stored in `art/palette/master.gpl` and as a Godot resource). Every asset is quantized to it.
 - Each zone uses a **sub-palette of 24 to 32** of those colors, plus 4 accent colors.
 - No pure black (#000) or pure white (#fff). Darkest is a deep blue-violet; lightest is a warm cream.
-- **Hero colors:** elf-green tunic, warm brown leather, pale skin, a red scarf (readable against every zone; the scarf trails and shows movement).
+- **Hero look (changed 2026-10-23):** a tall, slender hooded elf ranger after Sean's own reference
+  (`/mnt/project-files/autosprite/sean-halfling-reference.png`): charcoal hood over brown hair, pointed ears, layered
+  brown leather armor with brass buckles, a dark green cloak with gold trim that trails and shows movement, leather
+  boots. Sean rejected the earlier green tunic and blond hair because it read as Link from Zelda; avoid that combination.
 - **Zone moods:** Eolis warm amber and stone grey; Trunk Hollows brown, amber, fungus cyan; Tower of Trunk iron, rust, lamp orange; Mist grey-green, bone, lantern yellow; Branches leaf green, sky blue, cloud white; Daybreak storm violet, gold; Dartmoor flooded teal, crystal magenta; Zenis black-violet, alien cyan, blood red.
 
 ### 12.3 Rendering rules
