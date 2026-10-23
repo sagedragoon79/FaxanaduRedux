@@ -17,6 +17,7 @@ static var mana_chance := 0.1
 const CRUST := Color("b0662a")
 const CRUMB := Color("e8b45a")
 const CRUST_DARK := Color("6e3a1a")
+const CRUMB_LIGHT := Color("fff0c2")
 const MANA := Color("5ec8ff")
 const MANA_CORE := Color("e6f8ff")
 const MANA_DARK := Color("2a5e9e")
@@ -93,17 +94,28 @@ func _collect(p: Player) -> void:
 func _draw() -> void:
 	if _age > LIFETIME - 2.5 and int(_age * 10.0) % 2 == 0:
 		return
+	# Drawn at 2x render density (design bible 12.1): `_px` takes half-pixels.
 	if kind == "bread":
-		# A small round loaf with a scored top.
-		draw_rect(Rect2(-4, -5, 8, 5), CRUST_DARK)
-		draw_rect(Rect2(-3, -6, 6, 5), CRUST)
-		draw_rect(Rect2(-2, -6, 1, 1), CRUMB)
-		draw_rect(Rect2(1, -5, 1, 1), CRUMB)
-		draw_rect(Rect2(-4, -1, 8, 1), CRUST_DARK)
+		# A round loaf with two scores across the crust.
+		_px(-7, -9, 14, 9, CRUST_DARK)
+		_px(-8, -7, 16, 6, CRUST_DARK)
+		_px(-6, -10, 12, 9, CRUST)
+		_px(-7, -8, 14, 6, CRUST)
+		_px(-5, -9, 4, 1, CRUMB)
+		_px(-3, -7, 2, 2, CRUMB)
+		_px(1, -8, 2, 2, CRUMB)
+		_px(3, -6, 2, 2, CRUMB)
+		_px(-4, -10, 3, 1, CRUMB_LIGHT)
+		_px(-8, -1, 16, 1, CRUST_DARK)
 	else:
-		var bob := roundf(sin(_age * 5.0))
-		var y := -6.0 + bob
-		draw_rect(Rect2(-3, y - 2, 6, 6), MANA_DARK)
-		draw_rect(Rect2(-2, y - 3, 4, 8), MANA_DARK)
-		draw_rect(Rect2(-2, y - 2, 4, 6), MANA)
-		draw_rect(Rect2(-1, y - 1, 2, 2), MANA_CORE)
+		var y := -13 + roundi(sin(_age * 5.0) * 2.0)
+		_px(-5, y, 10, 12, MANA_DARK)
+		_px(-6, y + 2, 12, 8, MANA_DARK)
+		_px(-4, y + 1, 8, 10, MANA)
+		_px(-5, y + 3, 10, 6, MANA)
+		_px(-2, y + 3, 3, 3, MANA_CORE)
+		_px(-3, y + 2, 2, 1, MANA_CORE)
+
+
+func _px(x: int, y: int, w: int, h: int, color: Color) -> void:
+	draw_rect(Rect2(x * 0.5, y * 0.5, w * 0.5, h * 0.5), color)
