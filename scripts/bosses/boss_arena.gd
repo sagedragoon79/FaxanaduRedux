@@ -13,6 +13,7 @@ const BOSSES := {
 	"rokusutahn": {"ring": "elf", "ring_name": "Elf Ring", "skill_points": 1},
 	"foreman": {"ability": "mattock", "title": "Mattock",
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
+	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -75,6 +76,19 @@ func _start() -> void:
 			f.position = Vector2(w - 6 * Room.TILE if px < w * 0.5 else 6 * Room.TILE, f.arena.end.y)
 			boss = f
 			f.defeated.connect(_on_defeated)
+		"zoradohna":
+			# The drill waits across the lift from the way in, the shaft behind it.
+			var z := Zoradohna.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			z.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			var px := p_x()
+			z.position = Vector2(w - 7 * Room.TILE if px < w * 0.5 else 7 * Room.TILE, z.arena.end.y)
+			var shaft := LiftShaft.new()
+			shaft.area = z.arena
+			shaft.boss = z
+			room.add_child(shaft)
+			boss = z
+			z.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return

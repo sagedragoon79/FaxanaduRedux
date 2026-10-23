@@ -1,8 +1,9 @@
 name: Forepaw Gate
 zone: tower
 map: 18, -4
-sign: 28, 19, FOREPAW. Hammers ring behind the gate, but no one answers it.|Zoradohna holds the city. The gate opens from within.
+sign: 28, 19, FOREPAW LIFT. Something huge is drilling on the platform.|Zoradohna holds the city. Its lift is the only way in.
 door: 1, tower/forepaw_stair, 2
+door: 2, tower/forepaw_lift, 1
 ---
 ########################################
 ########################################
@@ -21,9 +22,9 @@ door: 1, tower/forepaw_stair, 2
 #...............................########
 #...............................########
 #.................-----.........########
-1...............................########
-1...............................########
-1........S................I.....########
+1......................................2
+1......................................2
+1........S................I............2
 ########################################
 ########################################
 ########################################

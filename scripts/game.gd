@@ -207,9 +207,11 @@ func _process(_delta: float) -> void:
 	if _frames == 2:
 		_debug_open()
 	if _args.has("boss-hp"):
-		var boss := get_tree().get_first_node_in_group("boss") as Rokusutahn
-		if boss != null and boss.state == "intro":
+		var boss := get_tree().get_first_node_in_group("boss")
+		if boss is Rokusutahn and boss.state == "intro":
 			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
+		elif boss is Zoradohna and boss.state == "intro":
+			boss.set_health_fraction(float(_args["boss-hp"]))
 	_check_pause()
 	_take_shot()
 

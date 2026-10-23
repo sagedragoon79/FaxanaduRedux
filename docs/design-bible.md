@@ -350,13 +350,13 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Stagger:** while he is stuck in a wall or dangling from the ceiling, tail hits build poise damage. At 48 he staggers for 2 s: plates crack open and every segment takes full damage, not just the tail.
 
 ### 8.2 Zoradohna, the Hammer of Forepaw (Tower of Trunk)
-- **Concept:** A dwarf champion fused with a mining engine, piloting a walking siege drill. The dwarf inside is still conscious and begging to be stopped.
-- **Arena:** a vertical elevator shaft that keeps rising during the fight.
-- **Tests:** pogo (the drill's exhaust vents are pogo-able and the only way to reach the cockpit).
-- **Phase 1:** drill charges and shockwave slams on a single platform.
-- **Phase 2:** the elevator rises; falling debris must be pogoed; the drill climbs the shaft walls.
-- **Phase 3:** cockpit opens; down-strike the dwarf's crystal harness to free him.
-- **Reward:** Ruby Ring, frees Forepaw, unlocks the dwarf smith.
+- **Concept:** A dwarf champion fused with a mining engine, piloting a walking siege drill: a rust-red riveted hull on two piston legs, a bronze drill, two exhaust stacks and a glass cockpit with the dwarf inside. The dwarf inside is still conscious and begging to be stopped.
+- **Arena:** the Forepaw Lift (tower 19,-4), a one-screen lift platform in an elevator shaft, reached from the Forepaw Gate. From phase 2 the lift rises: girders and cable marks stream down the shaft wall behind the fight. (Built as one screen with the rise drawn behind it, rather than a scrolling arena, so the fight stays readable.)
+- **Tests:** pogo. The hull lets only a quarter of a side blow through; down-strikes on the stacks and cockpit land in full and bounce you (Mattock), so the fight is won from above. Ramming a wall or diving into the floor leaves the drill stuck (1.5 s / 1.1 s), open to any blow.
+- **Phase 1:** drill charges (spins up 0.8 s, then rams across the lift; dodge onto the side ledges or jump it) and stomps (rears up 0.7 s, then slams a shockwave out each way).
+- **Phase 2 (below 65%):** the lift rises; debris falls every 2.4 s, one rock over you, each marked 0.7 s before it drops (dodge it). Every third attack the drill runs to a wall, climbs it, marks your spot on the floor (0.7 s) and dives at it. Tells are 20% shorter, never under the minimum.
+- **Phase 3 (below 30%):** the cockpit bursts open on the meteor-crystal harness that binds the dwarf. Side blows glance off completely; strikes from above hit the harness for 1.5x.
+- **Reward:** Ruby Ring and a skill point; frees Forepaw. Later: unlocks the dwarf smith and the elevator to Eolis (section 4.4).
 
 ### 8.3 Ripasheiku, the Lantern Widow (The Mist)
 - **Concept:** A spider-wraith that carries the souls of the drowned as lanterns on her legs. She is invisible except where her lanterns glow.
