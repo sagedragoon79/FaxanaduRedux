@@ -10,7 +10,7 @@ const PICKUPS := "GLWF*$SN"
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock.
 const MATTOCK_ROOMS := ["tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
-	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault"]
+	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter"]
 
 
 func _texts() -> Dictionary:

@@ -21,8 +21,10 @@ const CHARGE_CONTACT := 22
 ## How much of a blow the tub lets through, outside the crash.
 const ARMOR := 0.4
 const SHEET := "minecart_rider"
+## His cart is heard within this distance of the player.
+const HEAR := 300.0
 
-## Counts down to the next brake shriek (rev) or wheel spark (charge).
+## Counts down to the next rail clack (roll), brake shriek (rev) or wheel spark (charge).
 var _rev_sfx := 0.0
 
 
@@ -65,12 +67,16 @@ func _think(delta: float) -> void:
 			if is_on_floor() and (_wall_ahead() or not _floor_ahead()):
 				facing = -facing
 			velocity.x = facing * ROLL_SPEED
+			_rev_sfx -= delta
+			if _rev_sfx <= 0.0:
+				_rev_sfx = 0.5
+				_sound("cart", -12.0)
 		"rev":
 			velocity.x = 0.0
 			_rev_sfx -= delta
 			if _rev_sfx <= 0.0:
 				_rev_sfx = 0.2
-				Sfx.play("guard", 0.15, -10.0)
+				_sound("brake", -6.0)
 			if state_time >= REV:
 				Sfx.play("dash", 0.05, -2.0)
 				_rev_sfx = 0.0
@@ -81,6 +87,7 @@ func _think(delta: float) -> void:
 			if absf(velocity.x) > 60.0 and _rev_sfx <= 0.0:
 				_rev_sfx = 0.12
 				_spark()
+				_sound("cart", -4.0)
 			if is_on_floor() and (_wall_ahead() or not _floor_ahead()):
 				velocity.x = 0.0
 				_crash()
@@ -98,6 +105,16 @@ func _think(delta: float) -> void:
 				set_state("roll")
 		_:
 			set_state("roll")
+
+
+## Plays `sound` if the player is near, quieter with distance.
+func _sound(sound: String, volume_db: float) -> void:
+	var p := player()
+	if p == null:
+		return
+	var d := p.global_position.distance_to(global_position)
+	if d < HEAR:
+		Sfx.play(sound, 0.08, volume_db - 14.0 * d / HEAR)
 
 
 func _crash() -> void:

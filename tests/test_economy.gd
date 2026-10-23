@@ -480,3 +480,25 @@ func test_the_forepaw_forge_rings_and_throws_sparks() -> void:
 	check(not forge.sparks.is_empty(), "each strike throws sparks")
 	forge._process(0.6)
 	check(forge.sparks.is_empty(), "and the sparks die away")
+
+
+func test_the_great_winch_turns_once_forepaw_is_free() -> void:
+	var w := make_world({}, "tower/winch_hall")
+	await frames(2)
+	var winch: Winch = _find(w.room, Winch)
+	check(winch != null, "Winch Hall has its great winch")
+	await frames(30)
+	check(winch.angle == 0.0, "it stands still while Zoradohna holds Forepaw")
+	GameState.set_flag("boss:zoradohna")
+	await frames(30)
+	check(winch.angle > 0.0, "and turns once the dwarves are free")
+
+
+func test_the_smelter_crucible_pours() -> void:
+	var w := make_world({}, "tower/smelter")
+	await frames(2)
+	var c: Crucible = _find(w.room, Crucible)
+	check(c != null, "the Smelter has its crucible")
+	await frames(40)
+	check(not c.sparks.is_empty(), "the pour throws sparks")
+	check(c.lip().y < -100.0, "from a pot hung high above the walkway")

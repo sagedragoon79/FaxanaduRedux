@@ -263,5 +263,23 @@ def main():
     tick = highpass(noise(0.02), 2500) * env(int(RATE * 0.02), 0.0005) * 0.9
     save("anvil", mix(ring, tick), 0.5)
 
+    # The Minecart Rider's brake: iron on iron, a wavering high shriek.
+    d = 0.22
+    n = int(RATE * d)
+    wobble = 1900 + 120 * np.sin(np.linspace(0, 2 * np.pi * 9, n))
+    screech = mix(osc(wobble, "square", 0.2) * 0.5, osc(wobble * 1.51, "sine") * 0.4)
+    grit = highpass(noise(d), 3000) * 0.5
+    save("brake", lowpass(mix(screech, grit), 7000) * env(n, 0.01, 0.8), 0.4)
+
+    # A cart wheel over a rail joint: two quick clacks and a rumble.
+    d = 0.14
+    n = int(RATE * d)
+    clack = np.zeros(n)
+    for start in (0, int(RATE * 0.05)):
+        k = int(RATE * 0.025)
+        clack[start:start + k] += lowpass(noise(0.025), 1800)[:k] * env(k, 0.0005, 2.5)
+    rumble = lowpass(osc(np.full(n, 70.0), "square", 0.5), 400) * env(n, 0.005, 1.0) * 0.5
+    save("cart", mix(clack, rumble), 0.6)
+
 if __name__ == "__main__":
     main()

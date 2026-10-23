@@ -87,7 +87,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 - **Save points:** each town has a Guru (save, respec, rank-up). Plus 2 to 3 **Meditation Shrines** per zone (save only). No room is more than 4 rooms from a save or a shortcut back to one.
 - **Fast travel:** unlocked after the first spring: Guru-to-Guru travel through the "Mantra Path" menu. Speaking to a Guru marks that Guru as a stop; the Guru's menu lists every other stop you have met, and choosing one fades you to a step beside that Guru. Before any spring flows the row is shown but dry, so players learn it exists.
 - **Map:** auto-maps visited rooms. The Cartographer in each town sells the zone outline (empty rooms shown dimmed). Map pins (custom markers) available from the start. Doors, gates and items get icons once seen.
-- **Landmarks:** every zone has at least 3 visually unique landmark rooms (a giant statue, a waterfall, a crashed airship-dwarf barge) so players can navigate by memory.
+- **Landmarks:** every zone has at least 3 visually unique landmark rooms (a giant statue, a waterfall, a crashed airship-dwarf barge) so players can navigate by memory. The Tower's are the great winch in Winch Hall (still until Forepaw is freed, then turning), the Forepaw forge, and the Smelter's hanging crucible pouring molten ore.
 
 ---
 
@@ -139,7 +139,7 @@ All story triggers check items, not route order.
 | Trigger | Change |
 |---------|--------|
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
-| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault), the ore road toward the Mist |
+| Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs between the town and the Tower Foot, the shortcut home; dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again; the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter), the ore road toward the Mist |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface; fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |

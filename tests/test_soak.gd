@@ -183,3 +183,53 @@ func test_foreman_fight_soak_stays_lean() -> void:
 
 func _count_nodes(w: World) -> int:
 	return w.room.get_child_count() if w.room != null else 0
+
+
+## Mantra Path hops and lift rides, back and forth, with mashing in between:
+## every arrival is in the right room, on open floor.
+func test_mantra_path_and_lift_travel_soak() -> void:
+	var w := make_world({}, "tower/forepaw")
+	await frames(2)
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("boss:zoradohna")
+	for stop: Array in [["eolis/guru_temple", 22], ["trunk/apolune", 12], ["tower/forepaw", 10]]:
+		GameState.meet_guru(stop[0], Vector2(int(stop[1]) * Room.TILE + 8, 20 * Room.TILE))
+	var problems: Array[String] = []
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	w.player.input.scripted = true
+	for hop in 9:
+		var stops := GameState.mantra_stops(w.room.id)
+		Menus.open_mantra_path(arena.get_tree(), w.player)
+		menu.cursor = hop % stops.size()
+		var to: String = stops[menu.cursor]
+		menu.confirm()
+		await frames(3)
+		if w.room.id != to:
+			problems.append("hop %d: in %s, not %s" % [hop, w.room.id, to])
+			break
+		if _embedded(w.room, w.player) or not w.room.pixel_rect().has_point(w.player.global_position):
+			problems.append("hop %d: bad arrival in %s at %s" % [hop, to, w.player.global_position])
+		for f in 40:
+			_mash(w.player, rng, hold)
+			await frames(1)
+		w.player.input.move_x = 0
+	# The lift, down and up three times.
+	w.travel("tower/forepaw", Vector2(71 * Room.TILE + 8, 20 * Room.TILE))
+	await frames(3)
+	for ride in 6:
+		var cage: LiftCage = null
+		for c in w.room.get_children():
+			if c is LiftCage:
+				cage = c
+		var to: String = cage.destination()[0]
+		cage.interact(w.player)
+		await frames(3)
+		if w.room.id != to or _embedded(w.room, w.player):
+			problems.append("ride %d: in %s at %s" % [ride, w.room.id, w.player.global_position])
+			break
+	check(problems.is_empty(), "travel soak found no problems: %s" % [problems])
+	menu.queue_free()
