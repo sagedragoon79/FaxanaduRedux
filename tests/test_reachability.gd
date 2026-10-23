@@ -11,7 +11,7 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
 ## or above the flue damper, open once Zoradohna falls (the "winch" ability).
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
-	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter"]
+	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap"]
 
 
 func _texts() -> Dictionary:

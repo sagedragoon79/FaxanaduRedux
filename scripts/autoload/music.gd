@@ -90,7 +90,8 @@ func for_room(room: Room) -> void:
 	if room.zone == "gym" or room.zone == "test" or room.zone == "":
 		zone_track = ""
 	play(zone_track)
-	ambience("amb_" + room.zone)
+	# A room can name its own bed (`ambience: heights` plays amb_heights).
+	ambience("amb_" + room.header.get("ambience", room.zone))
 
 
 ## The loaded, looping stream for a track name, or null if there is no file.

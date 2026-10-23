@@ -19,6 +19,7 @@ chest_gold: 100    (optional: gold in each chest in this room)
 prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, house, taproot, lift, forge, winch, crucible)
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
+ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
 ---
 ##########
 #P.......#
