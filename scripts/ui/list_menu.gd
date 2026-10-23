@@ -44,7 +44,6 @@ var _footer: Callable
 var _grace := 0.0
 var _scroll := 0
 var _flash := 0.0
-var _font: Font
 
 
 func _ready() -> void:
@@ -52,7 +51,6 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_to_group("list_menu")
-	_font = ThemeDB.fallback_font
 	visible = false
 
 
@@ -184,8 +182,8 @@ func _draw() -> void:
 	_text(Vector2(x, y), title, 14, ACCENT)
 	y += 14
 	if subtitle != "":
-		draw_multiline_string(_font, Vector2(x, y), subtitle, HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 28, 9, 4, Color("c9b98f"))
-		y += 12 * ceilf(_font.get_string_size(subtitle, HORIZONTAL_ALIGNMENT_LEFT, -1, 9).x / (panel.size.x - 28)) + 4
+		var lines := PixelFont.draw_wrapped(self, Vector2(x, y), subtitle, panel.size.x - 28, 9, Color("c9b98f"), 1)
+		y += (PixelFont.height() + 1) * lines + 2
 	y += 4
 	# Long lists scroll to keep the cursor in view.
 	var fit := maxi(1, int((panel.end.y - 66 - y) / ROW_H))
@@ -212,18 +210,18 @@ func _draw() -> void:
 		_text(Vector2(x + 2, top + 12), row.label, 10, TEXT if enabled else DIM)
 		var right: String = row.get("right", "")
 		if right != "":
-			var w := _font.get_string_size(right, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x
+			var w := PixelFont.width(right, 10)
 			_text(Vector2(panel.end.x - 14 - w, top + 12), right, 10, ACCENT if enabled else DIM)
 	# Description of the selected row.
 	var detail: String = rows[cursor].get("detail", "") if not rows.is_empty() else ""
 	var box := Rect2(panel.position.x + 8, panel.end.y - 62, panel.size.x - 16, 38)
 	draw_rect(box, Color(1, 1, 1, 0.04))
-	draw_multiline_string(_font, box.position + Vector2(6, 13), detail, HORIZONTAL_ALIGNMENT_LEFT, box.size.x - 12, 9, 3, Color("c9b98f"))
+	PixelFont.draw_wrapped(self, box.position + Vector2(6, 12), detail, box.size.x - 12, 9, Color("c9b98f"), 1)
 	var foot: String = _footer.call() if _footer.is_valid() else ""
 	_text(Vector2(x, panel.end.y - 9), foot, 9, ACCENT)
 	var hint := "Press a key   Esc: cancel" if capture.is_valid() else ("Left/Right: change   Dash: back" if on_adjust.is_valid() else "Jump: choose   Dash: leave")
-	_text(Vector2(panel.end.x - 14 - _font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 8).x, panel.end.y - 9), hint, 8, DIM.lightened(0.2))
+	_text(Vector2(panel.end.x - 14 - PixelFont.width(hint, 8), panel.end.y - 9), hint, 8, DIM.lightened(0.2))
 
 
 func _text(pos: Vector2, s: String, size: int, color: Color) -> void:
-	draw_string(_font, pos, s, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+	PixelFont.draw(self, pos, s, size, color)

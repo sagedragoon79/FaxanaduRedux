@@ -24,7 +24,6 @@ const BANNER_TIME := 3.2
 const TOAST_TIME := 2.2
 
 var _shown_gold := 0.0
-var _font: Font
 var _banner_title := ""
 var _banner_sub := ""
 var _banner_t := 0.0
@@ -41,7 +40,6 @@ var draws := 0
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	_font = ThemeDB.fallback_font
 	GameState.banner.connect(show_banner)
 	GameState.toast.connect(show_toast)
 	GameState.flash.connect(func(strength: float) -> void: _flash = maxf(_flash, strength * Feel.flash_scale))
@@ -96,8 +94,7 @@ func _draw() -> void:
 	# Gold.
 	var gp := origin + Vector2(player.flask_max * 9 + 6, 28)
 	_draw_coin(gp + Vector2(3, 5))
-	draw_string_outline(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
-	draw_string(_font, gp + Vector2(10, 9), str(int(_shown_gold)), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, GOLD)
+	PixelFont.draw(self, gp + Vector2(10, 9), str(int(_shown_gold)), 10, GOLD, OUTLINE)
 	_draw_ointment(origin + Vector2(0, 42))
 	_draw_boss()
 	_draw_messages()
@@ -258,8 +255,7 @@ func _draw_ointment(at: Vector2) -> void:
 	draw_rect(Rect2(at + Vector2(1, 3), Vector2(5, 5)), OINTMENT)
 	draw_rect(Rect2(at + Vector2(2, 3), Vector2(1, 2)), Color("f7f1de"))
 	var label := "x%d" % player.ointments
-	draw_string_outline(_font, at + Vector2(10, 9), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
-	draw_string(_font, at + Vector2(10, 9), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, OINTMENT)
+	PixelFont.draw(self, at + Vector2(10, 9), label, 10, OINTMENT, OUTLINE)
 	if left > 0.0:
 		var bar := Rect2(at + Vector2(0, 11), Vector2(30, 2))
 		draw_rect(bar.grow(1), OUTLINE)
@@ -283,8 +279,7 @@ func _draw_boss() -> void:
 		_boss_shown = frac
 	var w := 320.0
 	var bar := Rect2((get_viewport_rect().size.x - w) * 0.5, 340, w, 6)
-	draw_string_outline(_font, bar.position + Vector2(0, -4), b.DISPLAY_NAME, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, 3, OUTLINE)
-	draw_string(_font, bar.position + Vector2(0, -4), b.DISPLAY_NAME, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, MASK_FULL)
+	PixelFont.draw(self, bar.position + Vector2(0, -4), b.DISPLAY_NAME, 10, MASK_FULL, OUTLINE)
 	draw_rect(bar.grow(1), OUTLINE)
 	draw_rect(bar, Color("3a1a22"))
 	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * _boss_shown), bar.size.y)), Color("f1ead2"))
@@ -317,7 +312,6 @@ func _draw_messages() -> void:
 
 func _centered(text: String, y: float, size: int, color: Color) -> void:
 	var w := get_viewport_rect().size.x
-	var tw := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	var tw := PixelFont.width(text, size)
 	var pos := Vector2(roundf((w - tw) * 0.5), y)
-	draw_string_outline(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 3, Color(OUTLINE, color.a))
-	draw_string(_font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
+	PixelFont.draw(self, pos, text, size, color, Color(OUTLINE, color.a))

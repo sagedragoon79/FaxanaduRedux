@@ -17,6 +17,7 @@ extends Node2D
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --map                      open the map before the screenshot
+##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
 ##   --open=shop:ID|guru|title|skills|pause|options|controls
 ##                              (title: the nearest Guru names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
@@ -262,6 +263,9 @@ func _debug_open() -> void:
 		GameState.toggle_pin(world.room.id, player.global_position)
 	if _args.has("map"):
 		map_screen.toggle()
+	if _args.has("say"):
+		var npc: Dictionary = GameData.npc(_args["say"])
+		GameState.say(npc.get("name", ""), npc.get("lines", [npc.get("greeting", "")]))
 	var what: String = _args.get("open", "")
 	if what.begins_with("shop:"):
 		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)

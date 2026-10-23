@@ -143,3 +143,53 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	menu.confirm()
 	check(quit[0] and not menu.is_open and not arena.get_tree().paused, "Quit closes the menu and quits")
 	_restore()
+
+
+## The pixel font (bible 12): every printable ASCII character has a glyph, and
+## text only ever scales by whole numbers, so it stays on the pixel grid.
+func test_pixel_font_covers_ascii_and_scales_by_whole_numbers() -> void:
+	var f := PixelFont.font()
+	var h := PixelFont.height()
+	check(f != null and f.fixed_size == h, "the font builds at its native height (%d)" % h)
+	var missing := ""
+	for code in range(33, 127):
+		if not f.has_char(code) or f.get_string_size(char(code), HORIZONTAL_ALIGNMENT_LEFT, -1, h).x <= 0.0:
+			missing += char(code)
+	check(missing == "", "every printable character has a glyph (missing: %s)" % missing)
+	var one := f.get_string_size("Lantern Key", HORIZONTAL_ALIGNMENT_LEFT, -1, h)
+	var two := f.get_string_size("Lantern Key", HORIZONTAL_ALIGNMENT_LEFT, -1, h * 2)
+	check(one.x == roundf(one.x) and two.x == one.x * 2.0, "2x text is exactly twice as wide (%s, %s)" % [one.x, two.x])
+	check(f.get_height(h * 3) == h * 3, "and three times as tall at 3x")
+	var scales := [8, 10, 12, 14, 18, 22, 44].map(func(s: int) -> int: return PixelFont.scale_for(s))
+	check(scales == [1, 1, 1, 1, 2, 2, 4], "requested sizes snap to whole scales (%s)" % [scales])
+	var lines := PixelFont.wrap_lines("The Spring of Mist has dried, and the dwarves of Forepaw quake.", 120.0, 10)
+	var widest := 0.0
+	for l in lines:
+		widest = maxf(widest, PixelFont.width(l, 10))
+	check(lines.size() > 1 and widest <= 120.0, "wrapping keeps lines inside the box (%d lines, %.0f px)" % [lines.size(), widest])
+
+
+## With the pixel font, every page anyone says still fits the dialog box.
+func test_every_npc_line_fits_the_dialog_box() -> void:
+	var npcs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/npcs.json"))
+	var width := DialogBox.BOX.size.x - 24
+	var too_long: Array[String] = []
+	var pages := 0
+	for id: String in npcs:
+		var info: Dictionary = npcs[id]
+		var said: Array = []
+		for key: String in info:
+			var v: Variant = info[key]
+			if v is String and key in ["greeting"]:
+				said.append(v)
+			elif v is Array and key.contains("lines"):
+				said.append_array(v)
+		for line: Variant in said:
+			if not line is String:
+				continue
+			pages += 1
+			var n := PixelFont.wrap_lines(line, width, 11).size()
+			if n > DialogBox.MAX_LINES:
+				too_long.append("%s: %d lines: %s" % [id, n, String(line).left(40)])
+	check(pages > 20, "the scan reads the cast's lines (%d pages)" % pages)
+	check(too_long.is_empty(), "every page fits in %d lines: %s" % [DialogBox.MAX_LINES, too_long])

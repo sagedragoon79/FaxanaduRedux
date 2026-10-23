@@ -11,6 +11,9 @@ const BG := Color(0.07, 0.06, 0.11, 0.92)
 const BORDER := Color("c9b98f")
 const TEXT := Color("f1ead2")
 const NAME := Color("ffd24a")
+## Lines of text in the box, and the pixels from one baseline to the next.
+const MAX_LINES := 5
+const LINE_STEP := 13
 
 signal closed
 
@@ -21,14 +24,12 @@ var shown := 0.0
 var is_open := false
 
 var _grace := 0.0
-var _font: Font
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	_font = ThemeDB.fallback_font
 	visible = false
 	GameState.dialog_requested.connect(open)
 
@@ -96,13 +97,20 @@ func _draw() -> void:
 	draw_rect(BOX, BG)
 	var text_pos := BOX.position + Vector2(12, 18)
 	if speaker != "":
-		var tab := Rect2(BOX.position + Vector2(8, -12), Vector2(_font.get_string_size(speaker, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x + 12, 14))
+		var tab := Rect2(BOX.position + Vector2(8, -12), Vector2(PixelFont.width(speaker, 10) + 12, 14))
 		draw_rect(tab.grow(1), BORDER)
 		draw_rect(tab, BG)
-		draw_string(_font, tab.position + Vector2(6, 11), speaker, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, NAME)
+		PixelFont.draw(self, tab.position + Vector2(6, 11), speaker, 10, NAME)
 		text_pos.y += 4
 	var line: String = pages[page]
-	draw_multiline_string(_font, text_pos, line.substr(0, int(shown)), HORIZONTAL_ALIGNMENT_LEFT, BOX.size.x - 24, 11, 5, TEXT)
+	# Wrap the whole line first so words don't jump lines as they type out.
+	var lines := PixelFont.wrap_lines(line, BOX.size.x - 24, 11)
+	var left := int(shown)
+	for i in mini(lines.size(), MAX_LINES):
+		if left <= 0:
+			break
+		PixelFont.draw(self, text_pos + Vector2(0, i * LINE_STEP), lines[i].substr(0, left), 11, TEXT)
+		left -= lines[i].length() + 1
 	if shown >= line.length():
 		var y := BOX.end.y - 10 + roundf(sin(Time.get_ticks_msec() / 150.0))
 		draw_colored_polygon(PackedVector2Array([Vector2(BOX.end.x - 16, y - 3), Vector2(BOX.end.x - 8, y - 3), Vector2(BOX.end.x - 12, y + 1)]), BORDER)

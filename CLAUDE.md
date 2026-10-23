@@ -19,6 +19,8 @@ bible changes substantially (link in the project memory).
 - Player sprite sheet: `python3 tools/art/spritegen.py`. Enemy and NPC sheets (NPCs from their
   `look` in `data/npcs.json`; rerun after adding a person): `python3 tools/art/castgen.py`. Room decor atlases:
   `python3 tools/art/decorgen.py`. Screenshot one player frame with `--shot-pose=slash1:1`.
+- UI pixel font (every glyph is drawn in the script; `PixelFont` loads it): `python3 tools/art/fontgen.py`.
+  Draw UI text with `PixelFont.draw`, never `draw_string` with another font.
 
 ## Conventions
 
