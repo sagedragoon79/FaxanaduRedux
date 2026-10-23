@@ -85,3 +85,8 @@ func make_world(rooms: Dictionary, start_id := "test/a", at := Vector2.INF) -> W
 ## Feet position for a player standing in tile (x, y).
 func cell_feet(x: int, y: int) -> Vector2:
 	return Vector2(x * Room.TILE + 8, (y + 1) * Room.TILE)
+
+
+## Center of tile (x, y).
+func cell_center(x: int, y: int) -> Vector2:
+	return Vector2(x * Room.TILE + 8, y * Room.TILE + 8)

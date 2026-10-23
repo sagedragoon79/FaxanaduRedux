@@ -222,6 +222,13 @@ def main():
     d = 0.03
     save("blip", lowpass(osc(np.full(int(RATE * d), 880.0), "square", 0.5), 3000) * env(int(RATE * d), 0.001, 1.0), 0.3)
 
+    # A gear spinning up: a ratcheting saw that climbs in pitch and clicks faster.
+    d = 0.5
+    t = t_axis(d)
+    ratchet = (np.sin(2 * np.pi * np.cumsum(slide(14, 60, d)) / RATE) > 0.6).astype(float)
+    spin = osc(slide(140, 620, d, 0.7), "saw") * (0.5 + 0.5 * ratchet)
+    save("whir", lowpass(spin, slide(900, 3200, d)) * np.minimum(1.0, t / 0.35), 0.4)
+
 
 if __name__ == "__main__":
     main()

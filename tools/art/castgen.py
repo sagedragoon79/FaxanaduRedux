@@ -300,6 +300,106 @@ IRON_DWARF = [
 ]
 
 
+# --- Gear Bat: a clockwork bat of riveted iron that flings the gear on its back -----
+# Drawn at the 2x render density, like the Iron Dwarf. The thrown gear is drawn in code
+# (scripts/enemies/gear_blade.gd) in the same gold, at the same size.
+
+GB_IRON = mat("stone", 5, 4, 2, 0)
+GB_IRON_BACK = mat("stone", 3, 2, 1, 0)
+GB_WEB = mat("bark", 3, 2, 1, 0)
+GB_WEB_BACK = mat("bark", 2, 1, 0, 0)
+GB_GEAR = mat("gold", 6, 5, 3, 1)
+GB_HUB = mat("bark", 3, 2, 1, 0)
+GB_SCALE = 2
+GEAR_R = 4.5
+
+
+def gear_shape(cv, c, r, angle, teeth=8):
+    """A gear: a disc with square teeth, rotated by `angle` degrees."""
+    m = cv.ellipse(c, r - 1.0, r - 1.0)
+    for i in range(teeth):
+        a = math.radians(angle + i * 360 / teeth)
+        u, v = (math.cos(a), math.sin(a)), (-math.sin(a), math.cos(a))
+        pts = [(c[0] + u[0] * (r - 1.5) + v[0] * s * 1.1, c[1] + u[1] * (r - 1.5) + v[1] * s * 1.1) for s in (-1, 1)]
+        pts += [(c[0] + u[0] * (r + 0.6) + v[0] * s * 0.9, c[1] + u[1] * (r + 0.6) + v[1] * s * 0.9) for s in (1, -1)]
+        m |= cv.polygon(pts)
+    return m
+
+
+def gear_bat(wing=60, gear=True, gear_angle=0, tilt=0.0, glow=False, hang=False):
+    """wing: degrees of the wing's leading strut above straight back (90 = straight up,
+    -40 = swept down). hang folds the wings and turns the bat upside down on its roost."""
+    def render(_):
+        cv = Canvas(56, 40, (28, 20), GB_SCALE)
+        rot = math.radians(180 if hang else tilt)
+
+        def r(p):
+            return (p[0] * math.cos(rot) - p[1] * math.sin(rot), p[0] * math.sin(rot) + p[1] * math.cos(rot))
+
+        def wing_part(shoulder, a, spread, material, strut, size=1.0):
+            a = math.radians(a)
+            elbow = (shoulder[0] - math.cos(a) * 7 * size, shoulder[1] - math.sin(a) * 7 * size)
+            tips = []
+            for da, ln in ((0.35, 7.5), (0.95, 8.5), (1.55, 7.0)):
+                ang = a - da * spread
+                tips.append((elbow[0] - math.cos(ang) * ln * size, elbow[1] - math.sin(ang) * ln * size))
+            rear = (shoulder[0] - 6, shoulder[1] + 3)
+            # Scalloped trailing edge: pull each span between fingers in toward the body.
+            def mid(p, q, k=0.22):
+                m = ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
+                return (m[0] + (elbow[0] - m[0]) * k, m[1] + (elbow[1] - m[1]) * k)
+            pts = [shoulder, elbow, tips[0], mid(tips[0], tips[1]), tips[1], mid(tips[1], tips[2]), tips[2], mid(tips[2], rear, 0.3), rear]
+            cv.part(cv.polygon([r(p) for p in pts]), material)
+            cv.part(cv.capsule(r(shoulder), r(elbow), 1.1), strut)
+            for t in tips:
+                cv.part(cv.capsule(r(elbow), r(t), 0.55), strut)
+            cv.part(cv.ellipse(r(elbow), 1.3, 1.3), GB_GEAR)
+
+        fold = 0.2 if hang else 1.0
+        wa = 95 if hang else wing
+        ws = 0.8 if hang else 1.0
+        wing_part((-1, -1.5), wa - 18, fold, GB_WEB_BACK, GB_IRON_BACK, ws)
+        if not gear:
+            cv.part(cv.capsule(r((-2.5, -4)), r((-2.5, -7)), 0.9), GB_HUB)  # the bare axle
+        # Feet: little iron hooks under the body (over it when hanging).
+        for fx in (-3.0, -0.5):
+            cv.part(cv.capsule(r((fx, 2.5)), r((fx - 0.6, 5.5)), 0.7), GB_IRON_BACK)
+        cv.part(cv.ellipse(r((-1, 0)), 6.5, 4.2), GB_IRON, deep=True)
+        cv.part(cv.capsule(r((-5.5, 0.5)), r((3, 0.5)), 0.5), mat("gold", 5, 4, 3, 1))  # brass seam
+        for rx in (-4, -1, 2):
+            cv.pixel(r((rx, -2.2)), PAL["stone-6"])
+        # Head with tall pointed ears and a snub snout.
+        hd = r((5.5, -1.5))
+        for ex, tip in ((4.0, (3.0, -9.0)), (6.5, (7.0, -9.5))):
+            cv.part(cv.polygon([r((ex - 1.6, -3.5)), r(tip), r((ex + 1.6, -3.5))]), GB_IRON)
+        cv.part(cv.ellipse(hd, 3.6, 3.2), GB_IRON)
+        cv.part(cv.ellipse(r((8.6, -0.6)), 1.6, 1.3), GB_IRON_BACK)
+        eye = r((6.6, -2.3))
+        cv.pixel(eye, PAL["ember-6"] if glow else PAL["ember-5"])
+        cv.pixel(r((7.6, -2.3)), PAL["ember-4"])
+        cv.pixel(r((8.0, 1.2)), PAL["stone-7"])  # a fang
+        if gear:
+            # The gear rides high on the back, between the wings.
+            g = r((-2.5, -7))
+            cv.part(gear_shape(cv, g, GEAR_R, gear_angle), mat("gold", 7, 6, 4, 2) if glow else GB_GEAR)
+            cv.part(cv.ellipse(g, 1.4, 1.4), GB_HUB)
+        wing_part((0.5, -1), wa, fold, GB_WEB, GB_IRON, ws)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+GEAR_BAT = [
+    ("roost", [gear_bat(hang=True, gear_angle=0), gear_bat(hang=True, gear_angle=8)], [0, 1], 2, True),
+    ("fly", [gear_bat(80, gear_angle=0), gear_bat(30, gear_angle=11), gear_bat(-30, gear_angle=22), gear_bat(30, gear_angle=33)],
+     [0, 1, 2, 3], 14, True),
+    ("windup", [gear_bat(-20, tilt=-10, gear_angle=0, glow=True), gear_bat(-30, tilt=-10, gear_angle=22, glow=True)], [0, 1], 24, True),
+    ("bare", [gear_bat(80, gear=False), gear_bat(30, gear=False), gear_bat(-30, gear=False), gear_bat(30, gear=False)],
+     [0, 1, 2, 3], 16, True),
+    ("stagger", [gear_bat(110, gear=False, tilt=25)], [0], 1, False),
+]
+
+
 # --- Rokusutahn: the body parts the boss script chains together ----------------
 
 R_BARK = mat("bark", 3, 2, 1, 0)
@@ -537,6 +637,7 @@ def main():
     write_sheet("sap_spitter", (32, 32), (16, 30), SAP_SPITTER, lambda r: r(None))
     write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
     write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
+    write_sheet("gear_bat", (56, 40), (28, 20), GEAR_BAT, lambda r: r(None), density=GB_SCALE)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})
