@@ -273,3 +273,23 @@ func test_tablet_opens_dialog() -> void:
 	await frames(2)
 	GameState.dialog_requested.disconnect(listener)
 	check(got.size() == 1 and got[0].size() == 2, "reading a tablet opens a two-page dialog")
+
+
+func test_sap_slows_running_and_jumping() -> void:
+	var extra := {}
+	for x in range(10, 30):
+		extra[Vector2i(x, 20)] = "~"
+		extra[Vector2i(x, 21)] = "~"
+	var w := make_world(_rooms(extra), "test/a", cell_feet(14, 21))
+	var p := w.player
+	await frames(5)
+	p.input.move_x = 1
+	await frames(30)
+	check(p.in_sap, "standing in the sap pool")
+	check_near(p.velocity.x, p.tuning.run_speed * Player.SAP_SPEED, 1.0, "run speed halved in sap")
+	p.input.move_x = 0
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	# One frame of gravity has already been applied.
+	check_near(-p.velocity.y, p.tuning.jump_velocity * Player.SAP_JUMP - p.tuning.gravity / 60.0, 2.0, "weaker jump out of sap")

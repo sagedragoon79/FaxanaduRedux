@@ -19,6 +19,8 @@ bible changes substantially (link in the project memory).
 - Rooms are text files in `levels/` loaded by `scripts/world/room.gd`. Legend, doors and map
   placement in `levels/README.md`. `World` moves the player between rooms.
 - Anything that must survive a room change or a save lives in `GameState.data`, not on nodes.
+- New rooms must pass `tests/test_reachability.gd` (critical path, pickups, no soft-locks).
+  Layout rules of thumb are at the end of `levels/README.md`.
   The gym is generated: edit `tools/levels/gen_gym.py`, then run it.
 - Enemies extend `Enemy` and must telegraph attacks for at least `Enemy.MIN_TELEGRAPH`.
 - Combat numbers live in `scripts/player/combat_tuning.gd` (design bible 5.3).

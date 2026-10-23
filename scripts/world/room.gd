@@ -23,6 +23,7 @@ var doors := {}
 
 var _one_way := {}
 var _secret_cells := {}
+var _sap_cells := {}
 var _secret_revealed := false
 
 
@@ -60,7 +61,7 @@ static func from_text(text: String, room_id := "") -> Room:
 
 
 ## Splits room text into {header: Dictionary, lists: {key: [values]}, grid: Array[String]}.
-## Keys that may repeat (label, door, sign, npc) are collected in `lists`.
+## Keys that may repeat (label, door, sign, npc, secret) are collected in `lists`.
 static func parse(text: String) -> Dictionary:
 	var lines := text.replace("\r", "").split("\n")
 	var header := {}
@@ -76,7 +77,7 @@ static func parse(text: String) -> Dictionary:
 			if colon > 0:
 				var key := line.substr(0, colon).strip_edges()
 				var value := line.substr(colon + 1).strip_edges()
-				if key in ["label", "door", "sign", "npc"]:
+				if key in ["label", "door", "sign", "npc", "secret"]:
 					if not lists.has(key):
 						lists[key] = []
 					lists[key].append(value)
@@ -147,6 +148,15 @@ func build(text: String) -> void:
 		for x in row.length():
 			_place(row[x], Vector2i(x, y), grid)
 
+	# Hidden rooms: cover a rectangle with fake wall so its contents can't be seen.
+	for spec: String in lists.get("secret", []):
+		var r := spec.split(",")
+		if r.size() == 4:
+			for y in range(int(r[1]), int(r[3]) + 1):
+				for x in range(int(r[0]), int(r[2]) + 1):
+					if tiles.get_cell_source_id(Vector2i(x, y)) == -1 and not _secret_cells.has(Vector2i(x, y)):
+						_place_secret(Vector2i(x, y), grid)
+
 	var found := Room.scan_doors(grid)
 	for spec: String in lists.get("door", []):
 		var parts := spec.split(",")
@@ -178,6 +188,11 @@ func build(text: String) -> void:
 			tablet.text = parts[2].strip_edges()
 			_spawn(tablet, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
 
+	if not _sap_cells.is_empty():
+		var sap := SapPool.new()
+		sap.cells = _sap_cells
+		add_child(sap)
+
 	for spec: String in lists.get("npc", []):
 		var parts := spec.split(",")
 		if parts.size() == 3:
@@ -202,6 +217,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_one_way[cell] = true
 		"%":
 			_place_secret(cell, grid)
+		"~":
+			_sap_cells[cell] = true
 		"^":
 			_spawn(Spikes.new(), bottom_center)
 		"o":
@@ -255,7 +272,8 @@ func _place_secret(cell: Vector2i, grid: Array[String]) -> void:
 		secrets.tile_set = TilesetFactory.build(false)
 		secrets.z_index = 3
 		add_child(secrets)
-	var above_open := _char_at(grid, cell + Vector2i(0, -1)) not in ["#", "C", "%"]
+	var above := cell + Vector2i(0, -1)
+	var above_open := _char_at(grid, above) not in ["#", "C", "%"] and not _secret_cells.has(above) and tiles.get_cell_source_id(above) == -1
 	var tile := TilesetFactory.Tile.TOP if above_open and cell.y > 0 else TilesetFactory.Tile.INNER
 	secrets.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(tile, 0))
 	_secret_cells[cell] = true
@@ -329,3 +347,8 @@ func is_one_way_at(world_pos: Vector2) -> bool:
 ## True if `world_pos` is inside a fake wall (a secret passage).
 func is_secret_at(world_pos: Vector2) -> bool:
 	return _secret_cells.has(cell_at(world_pos))
+
+
+## True if `world_pos` is inside a sap pool (slows the player).
+func is_sap_at(world_pos: Vector2) -> bool:
+	return _sap_cells.has(cell_at(world_pos))

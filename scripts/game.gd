@@ -8,7 +8,10 @@ extends Node2D
 ## the main viewport at native resolution.
 ##
 ## Command-line options after `--`:
-##   --room=ID|PATH             room to load: an id like "eolis/gate" or a .room path
+## With no options it shows the title menu (continue or new game).
+##   --room=ID|PATH             start a fresh game in a room: an id like "eolis/plaza",
+##                              "gym/gym" for the movement gym, or a .room path
+##   --continue                 load save slot 1 and skip the title
 ##   --shot=PATH                save a screenshot and quit
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
@@ -16,7 +19,8 @@ extends Node2D
 ##   --open=shop:ID|guru|skills open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
 
-const DEFAULT_ROOM := "gym/gym"
+const NEW_GAME_ROOM := "eolis/west_gate"
+const SAVE_SLOT := 1
 const BASE_SIZE := Vector2i(640, 360)
 const MARGIN := 1
 
@@ -31,11 +35,11 @@ var fader: ColorRect
 var debug_hud: DebugHud
 
 var room: Room:
-	get: return world.room
+	get: return world.room if world else null
 var player: Player:
-	get: return world.player
+	get: return world.player if world else null
 var camera: GameCamera:
-	get: return world.camera
+	get: return world.camera if world else null
 
 var _args := {}
 var _frames := 0
@@ -64,45 +68,87 @@ func _ready() -> void:
 	display.position = -Vector2(MARGIN, MARGIN)
 	add_child(display)
 
-	var room_id: String = _args.get("room", DEFAULT_ROOM)
-	if room_id.begins_with("res://"):
-		room_id = room_id.trim_prefix("res://levels/").trim_suffix(".room")
-
-	world = World.new()
-	# The gym gives every ability and keeps no save data.
-	world.use_game_state = not room_id.begins_with("gym/")
-	GameState.active = world.use_game_state
-	view.add_child(world)
-	world.build_catalog()
-	if world.use_game_state:
-		GameState.new_game()
-	var at := Vector2.INF
-	if _args.has("shot-at"):
-		var xy: PackedStringArray = _args["shot-at"].split(",")
-		at = Vector2(int(xy[0]) * Room.TILE + 8, int(xy[1]) * Room.TILE + 16)
-	world.view_size = Vector2(view.size)
-	world.start(room_id, at)
-
 	var ui := CanvasLayer.new()
 	ui.layer = 5
 	add_child(ui)
 	hud = GameHud.new()
-	hud.player = player
 	ui.add_child(hud)
 	dialog = DialogBox.new()
 	ui.add_child(dialog)
 	menu = ListMenu.new()
 	ui.add_child(menu)
 	map_screen = MapScreen.new()
-	map_screen.world = world
 	ui.add_child(map_screen)
 	fader = ColorRect.new()
 	fader.color = Color(0.07, 0.06, 0.11, 0.0)
 	fader.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fader.set_anchors_preset(Control.PRESET_FULL_RECT)
 	ui.add_child(fader)
-	world.fader = fader
 
+	if _args.has("room"):
+		var room_id: String = _args["room"]
+		if room_id.begins_with("res://"):
+			room_id = room_id.trim_prefix("res://levels/").trim_suffix(".room")
+		var at := Vector2.INF
+		if _args.has("shot-at"):
+			var xy: PackedStringArray = _args["shot-at"].split(",")
+			at = Vector2(int(xy[0]) * Room.TILE + 8, int(xy[1]) * Room.TILE + 16)
+		GameState.new_game()
+		_start(room_id, at)
+	elif _args.has("continue") and GameState.load_game(SAVE_SLOT):
+		_continue()
+	elif _args.has("shot"):
+		GameState.new_game()
+		_start(NEW_GAME_ROOM)
+	else:
+		_title()
+
+
+## Title menu: continue the save in slot 1, or start over.
+func _title() -> void:
+	var has_save := GameState.has_save(SAVE_SLOT)
+	var rows := func() -> Array:
+		return [
+			{"label": "Continue", "enabled": has_save, "detail": "Return to your last rest." if has_save else "No journey saved yet."},
+			{"label": "New game", "detail": "Begin at the West Gate of Eolis." + ("  Your old save is replaced when you next rest." if has_save else "")},
+			{"label": "Quit", "detail": ""},
+		]
+	var pick := func(i: int) -> void:
+		menu.close()
+		match i:
+			0:
+				GameState.load_game(SAVE_SLOT)
+				_continue()
+			1:
+				GameState.new_game()
+				GameState.slot = SAVE_SLOT
+				_start(NEW_GAME_ROOM)
+				GameState.banner.emit("Eolis", "The root town")
+			2:
+				get_tree().quit()
+	menu.open("Faxanadu Redux", "A wanderer returns to the World Tree to find its springs run dry.", rows, pick)
+	menu.cursor = 0 if has_save else 1
+
+
+func _continue() -> void:
+	var at := Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1]))
+	_start(String(GameState.data.save_room), at)
+	GameState.toast.emit("Welcome back. %s, rank %s." % [world.room.title, GameState.rank_name()])
+
+
+## Builds the World in the viewport and hooks the UI to its player.
+## Rooms under gym/ give every ability and keep no save data.
+func _start(room_id: String, at := Vector2.INF) -> void:
+	world = World.new()
+	world.use_game_state = not room_id.begins_with("gym/")
+	GameState.active = world.use_game_state
+	view.add_child(world)
+	world.build_catalog()
+	world.view_size = Vector2(view.size)
+	world.fader = fader
+	world.start(room_id, at)
+	hud.player = player
+	map_screen.world = world
 	debug_hud = DebugHud.new()
 	debug_hud.player = player
 	debug_hud.visible = not world.use_game_state
@@ -124,6 +170,8 @@ func _process(_delta: float) -> void:
 
 
 func _debug_open() -> void:
+	if world == null:
+		return
 	if _args.has("gold"):
 		player.gold = int(_args["gold"])
 	if _args.has("map"):
@@ -138,6 +186,8 @@ func _debug_open() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if world == null or not OS.is_debug_build():
+		return
 	if event.is_action_pressed("debug_glove"):
 		_toggle("glove")
 	elif event.is_action_pressed("debug_mattock"):
