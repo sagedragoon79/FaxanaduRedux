@@ -548,7 +548,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
   (`GameCamera.DETAIL`). Sean's reference for the hero is high-detail pixel art about 200 px tall; at one pixel per
   world pixel a 48 px hero loses the face and armor detail. Character sheets marked `"density": 2` are drawn at double
   detail in the same world size. Older 1x art still draws correctly (each pixel becomes 2x2) and moves to 2x over the
-  polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor.
+  polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
+  hero, the Monodron, Hornet and Rot Dwarf (re-imported free from their clips), Rokusutahn and the zone tiles.
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.

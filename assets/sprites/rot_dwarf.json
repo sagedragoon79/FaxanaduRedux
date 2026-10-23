@@ -1,11 +1,11 @@
 {
  "cell": [
-  48,
-  48
+  96,
+  96
  ],
  "origin": [
-  24,
-  45
+  48,
+  90
  ],
  "columns": 10,
  "animations": {
@@ -86,5 +86,7 @@
    "fps": 1,
    "loop": false
   }
- }
+ },
+ "density": 2,
+ "own_palette": true
 }
