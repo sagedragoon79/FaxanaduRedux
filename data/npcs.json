@@ -103,5 +103,13 @@
 			"Hrothgar's forge is lit! Bring him your blade. He'll fold it twice if your purse is heavy enough.",
 			"Up the trunk the mist begins. Nobody who went into it came back dry."
 		]
+	},
+	"eolis_cartographer": {
+		"name": "Cartographer Pell", "role": "shop", "shop": "eolis_charts",
+		"look": {"robe": "#4a6a8a", "trim": "#e8d9a8", "skin": "#e8c9a0", "hair": "#b0a090", "hat": "cap", "beard": true}
+	},
+	"forepaw_cartographer": {
+		"name": "Surveyor Brin", "role": "shop", "shop": "forepaw_charts",
+		"look": {"robe": "#5a4a3a", "trim": "#7ee0d6", "skin": "#d6ae84", "hair": "#e0703a", "hat": "helm", "build": "dwarf"}
 	}
 }

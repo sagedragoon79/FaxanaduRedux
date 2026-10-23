@@ -33,6 +33,9 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 				return "owned"
 			if level < int(item.level) - 1:
 				return "locked"
+		"chart":
+			if GameState.has_chart(String(item.zone)):
+				return "owned"
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
@@ -61,6 +64,8 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 			tempers[String(GameState.data.equipment.blade)] = int(item.level)
 			GameState.data.tempers = tempers
 			GameState.refresh_stats(p)
+		"chart":
+			GameState.data.charts[String(item.zone)] = true
 	if entry.get("once", false):
 		GameState.collect(_once_id(shop_id, index))
 	GameState.capture(p)

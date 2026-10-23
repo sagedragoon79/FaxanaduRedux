@@ -11,6 +11,7 @@ npc: 37, 19, forepaw_elder
 prop: 44, 19, house
 npc: 48, 19, forepaw_miner
 npc: 58, 15, forepaw_digger
+npc: 62, 19, forepaw_cartographer
 sign: 66, 19, FOREPAW LIFT. Down to the Tower Foot.|Mind the chain, it bites.
 prop: 71, 19, lift
 door: 1, tower/forepaw_lift, 2

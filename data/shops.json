@@ -46,5 +46,20 @@
 			{"item": "ointment", "price": 280},
 			{"item": "jack_key", "price": 150}
 		]
+	},
+	"eolis_charts": {
+		"name": "Maps and Charts",
+		"greeting": "Lost already? Every tunnel I have walked is on these, and a few I only heard about.",
+		"stock": [
+			{"item": "chart_eolis", "price": 40},
+			{"item": "chart_trunk", "price": 250}
+		]
+	},
+	"forepaw_charts": {
+		"name": "Forepaw Survey",
+		"greeting": "Dwarves chart what they dig. Three years in hiding, and I drew every gallery from memory.",
+		"stock": [
+			{"item": "chart_tower", "price": 400}
+		]
 	}
 }
