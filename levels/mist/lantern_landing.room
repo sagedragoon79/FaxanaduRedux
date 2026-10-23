@@ -2,8 +2,9 @@ name: Lantern Landing
 zone: mist
 map: 29, -7
 chest_gold: 200
-sign: 34, 19, The boardwalk to Victim is out. Something has been cutting the planks.|Rest by the lanterns. They keep the dark back.
+sign: 34, 19, The boardwalk east runs down into a drowned chapel. Something sings in there.|Rest by the lanterns. They keep the dark back.
 door: 1, mist/drowned_stair, 2
+door: 2, mist/sunken_chapel, 1
 ---
 ########################################
 ########################################
@@ -22,9 +23,9 @@ door: 1, mist/drowned_stair, 2
 #######.....................------.....#
 #######................................#
 #######................................#
-#######.....-----......................#
-#######................................#
-#######.............S..................#
+#######.....-----......................2
+#######................................2
+#######.............S..................2
 ########################################
 ########################################
 ########################################
