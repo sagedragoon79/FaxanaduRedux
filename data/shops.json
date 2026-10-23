@@ -16,5 +16,23 @@
 			{"item": "mana_dew", "price": 500, "once": true},
 			{"item": "life_fruit", "price": 800, "once": true}
 		]
+	},
+	"apolune_armor": {
+		"name": "Apolune Armory",
+		"greeting": "Back from the dark, are we? Then you'll want thicker skin.",
+		"stock": [
+			{"item": "studded_mail", "price": 1100},
+			{"item": "large_shield", "price": 900}
+		]
+	},
+	"apolune_items": {
+		"name": "Apolune Provisions",
+		"greeting": "The sap's gone hard and so have my prices. Mostly.",
+		"stock": [
+			{"item": "elixir", "price": 1500},
+			{"item": "jack_key", "price": 150},
+			{"item": "mana_dew", "price": 800, "once": true},
+			{"item": "life_fruit", "price": 1200, "once": true}
+		]
 	}
 }

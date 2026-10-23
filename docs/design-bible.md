@@ -83,7 +83,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 ### 3.3 Room and map rules
 
 - **Room size:** multiples of one screen (640x360 px internal = 40x22.5 tiles of 16 px). Rooms are 1x1 up to 4x3 screens.
-- **Camera:** room-bounded; camera locks to room edges; transitions are seamless scrolls (no fade) within a zone and a brief fade between zones.
+- **Camera:** room-bounded; camera locks to room edges; transitions are seamless scrolls (no fade) within a zone and a brief fade between zones. The scroll is a screen push: the old view slides out the way the player went while the new room slides in (0.34 s). Inner doorways (Up to enter) fade, since there is no direction to scroll.
 - **Save points:** each town has a Guru (save, respec, rank-up). Plus 2 to 3 **Meditation Shrines** per zone (save only). No room is more than 4 rooms from a save or a shortcut back to one.
 - **Fast travel:** unlocked after the first spring: Guru-to-Guru travel through the "Mantra Path" menu.
 - **Map:** auto-maps visited rooms. The Cartographer in each town sells the zone outline (empty rooms shown dimmed). Map pins (custom markers) available from the start. Doors, gates and items get icons once seen.
@@ -192,6 +192,9 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Long Sword | 11 light / 19 heavy, +8 px reach |
 | Leather Armor | 15% less damage taken (minimum 1) |
 | Small Shield | Guard halves damage (5.3) |
+| Studded Mail | 30% less damage taken |
+| Large Shield | Guard blocks 70% of a hit |
+| Elixir | Carry one; a fatal hit uses it and revives you in place at full health |
 
 ### 5.3 Combat moves
 
