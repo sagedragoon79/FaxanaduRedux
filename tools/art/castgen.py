@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf; the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -197,6 +197,87 @@ ROT_DWARF = [
 ]
 
 
+# --- Rokusutahn: the body parts the boss script chains together ----------------
+
+R_BARK = mat("bark", 3, 2, 1, 0)
+R_CROWN = mat("bark", 5, 4, 3, 1)
+R_HEAD = mat("bark", 2, 1, 1, 0)
+R_MANDIBLE = mat("bark", 6, 5, 4, 2)
+R_TAIL = mat("gold", 5, 4, 3, 1)
+R_TAIL_HOT = mat("gold", 6, 5, 4, 2)
+
+
+def roku_plate(cracked):
+    """A bark-plated body segment, travelling toward +x (radius 17)."""
+    def render(_):
+        cv = Canvas(64, 64, (32, 32))
+        body = cv.ellipse((0, 0), 17.5, 17.5)
+        cv.part(body, R_BARK, deep=True)
+        cv.part(cv.ellipse((0.5, 11.5), 7.0, 3.6) & body, mat("bark", 7, 6, 5, 3))
+        crown = cv.ellipse((-0.5, -4.5), 14.5, 11.0) & body
+        cv.part(crown, R_CROWN)
+        for x in (-6.5, 5.5):
+            cv.flat(cv.capsule((x, -14), (x + 1, 4), 0.6) & crown, PAL["bark-1"])
+        cv.flat(cv.capsule((-12, 2), (12, 2), 0.6) & crown, PAL["bark-2"])
+        if cracked:
+            pts = [(-11, -9), (-6, -4), (-8, 1), (-1, -2), (3, -9), (6, -3), (11, -6)]
+            for a_, b_ in zip(pts, pts[1:]):
+                cv.flat(cv.capsule(a_, b_, 0.9) & crown, PAL["gold-6"])
+            cv.pixel((-1, -3), PAL["gold-7"])
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def roku_tail(hot):
+    def render(_):
+        cv = Canvas(64, 64, (32, 32))
+        body = cv.ellipse((0, 0), 16.5, 16.5)
+        cv.part(body, R_TAIL_HOT if hot else R_TAIL, deep=True)
+        for x in (-8, 0, 8):
+            cv.flat(cv.capsule((x, -15), (x, 15), 0.6) & body & ~cv.ellipse((-4, -5), 6, 5), PAL["gold-3" if not hot else "gold-4"])
+        cv.part(cv.ellipse((-4, -5), 5.5, 4.5), mat("gold", 7, 7 if hot else 6, 5, 4))
+        cv.pixel((-6, -7), PAL["gold-7"])
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def roku_head(step):
+    """The mandible wheel turned by `step` tenths of a sixth of a turn."""
+    def render(_):
+        cv = Canvas(64, 64, (32, 32))
+        r = 22.0
+        rot = math.radians(step * 10.0)
+        mand = None
+        for k in range(6):
+            a = rot + k * math.tau / 6
+            d = (math.cos(a), math.sin(a))
+            side = (-d[1], d[0])
+            base = (d[0] * (r - 6), d[1] * (r - 6))
+            tri = cv.polygon([(base[0] + side[0] * 5, base[1] + side[1] * 5), (d[0] * (r + 7), d[1] * (r + 7)),
+                              (base[0] - side[0] * 5, base[1] - side[1] * 5)])
+            mand = tri if mand is None else mand | tri
+        cv.part(mand, R_MANDIBLE)
+        cv.part(cv.ellipse((0, 0), r, r), R_HEAD, deep=True)
+        cv.flat(cv.ellipse((0, 0), r * 0.62, r * 0.62), PAL["ember-0"])
+        cv.flat(cv.ellipse((0, 0), r * 0.3, r * 0.3), PAL["night-0"])
+        for k in range(3):
+            a = -rot * 0.5 + k * math.tau / 3
+            e = (math.cos(a) * r * 0.45, math.sin(a) * r * 0.45)
+            cv.part(cv.ellipse(e, 2.4, 2.4), mat("ember", 5, 4, 3, 1))
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+ROKUSUTAHN = [
+    ("head", [roku_head(i) for i in range(6)], list(range(6)), 12, True),
+    ("plate", [roku_plate(False), roku_plate(True)], [0], 1, False),
+    ("tail", [roku_tail(False), roku_tail(True)], [0], 1, False),
+]
+
+
 # --- NPCs ---------------------------------------------------------------------
 
 def npc(look, bob=0, hand_dy=0.0):
@@ -256,6 +337,7 @@ def main():
     write_sheet("monodron", (40, 32), (20, 30), MONODRON, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
     write_sheet("rot_dwarf", (48, 48), (24, 45), ROT_DWARF, lambda r: r(None))
+    write_sheet("rokusutahn", (64, 64), (32, 32), ROKUSUTAHN, lambda r: r(None))
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

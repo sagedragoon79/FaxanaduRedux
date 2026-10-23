@@ -1,0 +1,58 @@
+{
+ "cell": [
+  64,
+  64
+ ],
+ "origin": [
+  32,
+  32
+ ],
+ "columns": 6,
+ "animations": {
+  "head": {
+   "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "fps": 12,
+   "loop": true
+  },
+  "plate": {
+   "row": 1,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "tail": {
+   "row": 2,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ }
+}

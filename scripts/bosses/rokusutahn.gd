@@ -15,6 +15,11 @@ extends Node2D
 ## into platforms, dangles its tail, and plunges at the player.
 ## Phase 3 (below 30%): tears the floor away and lunges along the wall ledges.
 ##
+## The fight opens with a reveal: the head bursts out of the far wall, roars
+## under a name card, and withdraws. Stagger: STAGGER_POISE tail damage within
+## one stuck or dangle window cracks his plates, keeps him pinned STAGGER_TIME
+## longer, and lets every segment take full damage until it passes.
+##
 ## The arena is the Root Chamber's layout (levels/trunk/root_chamber.room).
 
 signal defeated
@@ -48,6 +53,13 @@ const STUCK_TIME_P3 := 3.2
 const DANGLE_TIME := 4.0
 const PLUNGE_HOLD := 0.6
 const ROAR_TIME := 1.6
+## The opening reveal: emerge, roar, withdraw (seconds), and how far the head comes out.
+const INTRO_EMERGE := 0.5
+const INTRO_HOLD := 1.3
+const INTRO_WITHDRAW := 0.6
+const INTRO_REACH := 96.0
+const STAGGER_POISE := 48
+const STAGGER_TIME := 2.0
 const REST := 0.6
 const RAIN_CLUMPS := 5
 const RAIN_GAP := 0.45
@@ -65,15 +77,9 @@ const DANGLE_TIP := 160.0
 const TEAR_COLUMNS := Vector2i(7, 32)
 const TEAR_ROWS := Vector2i(20, 21)
 
-const BARK := Color("6e4a2c")
-const BARK_LIGHT := Color("9a6a3e")
-const BARK_DARK := Color("432a19")
-const FLESH := Color("c9a27a")
-const AMBER := Color("ffb84a")
-const AMBER_HOT := Color("ffe9a8")
-const OUTLINE := Color("1d1a2b")
-const MAW := Color("2a1418")
-const EYE := Color("ff5a3a")
+const AMBER := Color("f0c02e")
+## Sprites from tools/art/castgen.py: head (mandible wheel), plate, tail.
+const SHEET := "rokusutahn"
 
 var room: Room
 var hp := MAX_HP
@@ -82,6 +88,10 @@ var state := "idle"
 var state_time := 0.0
 var dead := false
 var segments: Array[BossSegment] = []
+## Seconds of stagger left (plates cracked, every segment takes full damage).
+var stagger_left := 0.0
+
+var _poise := 0
 
 var _rail_from := Vector2.ZERO
 var _rail_dir := Vector2.LEFT
@@ -127,9 +137,13 @@ func _ready() -> void:
 
 ## Starts the fight (called by the arena once the player is inside).
 func begin() -> void:
-	Sfx.play("roar", 0.0)
-	Feel.add_trauma(0.6)
-	Feel.rumble(0.6, 0.8, 1.0)
+	# The reveal: out of the wall across from the player, along the floor.
+	var from_right := _player_x() < ARENA.get_center().x
+	var start_x := ARENA.end.x + 40.0 if from_right else ARENA.position.x - 40.0
+	_set_rail(Vector2(start_x, FLOOR_LANE), Vector2.LEFT if from_right else Vector2.RIGHT, 0.0)
+	Sfx.play("rumble", 0.0)
+	Feel.add_trauma(0.4)
+	GameState.banner.emit(DISPLAY_NAME, EPITHET)
 	_set_state("intro")
 
 
@@ -140,6 +154,8 @@ func health_fraction() -> float:
 func _set_state(s: String) -> void:
 	state = s
 	state_time = 0.0
+	if s in ["stuck", "dangle"]:
+		_poise = 0
 
 
 func _player() -> Player:
@@ -206,9 +222,24 @@ func _all_hidden() -> bool:
 func _physics_process(delta: float) -> void:
 	_t += delta
 	state_time += delta
+	stagger_left = maxf(stagger_left - delta, 0.0)
 	match state:
 		"intro":
-			if state_time >= ROAR_TIME:
+			var hold_end := INTRO_EMERGE + INTRO_HOLD
+			if state_time < INTRO_EMERGE:
+				_head_s = INTRO_REACH * ease(state_time / INTRO_EMERGE, 0.4)
+				if int(state_time * 10.0) != int((state_time - delta) * 10.0):
+					_wall_debris(head_position())
+			elif state_time < hold_end:
+				if state_time - delta < INTRO_EMERGE:
+					Sfx.play("roar", 0.0)
+					Feel.add_trauma(0.6)
+					Feel.rumble(0.6, 0.8, 1.0)
+				_head_s = INTRO_REACH + sin(state_time * 30.0) * 2.0
+			else:
+				_head_s = INTRO_REACH * (1.0 - clampf((state_time - hold_end) / INTRO_WITHDRAW, 0.0, 1.0))
+			if state_time >= hold_end + INTRO_WITHDRAW:
+				_hide_body()
 				_next_move()
 		"rest":
 			if state_time >= (REST * 0.6 if phase == 3 else REST):
@@ -421,7 +452,7 @@ func _tear_floor() -> void:
 func hit_segment(seg: BossSegment, damage: int, _dir: Vector2) -> void:
 	if dead or state == "intro":
 		return
-	var mult := 1.0 if seg.is_tail else BODY_DAMAGE_MULT
+	var mult := 1.0 if seg.is_tail or stagger_left > 0.0 else BODY_DAMAGE_MULT
 	var dealt := maxi(1, roundi(damage * mult))
 	var frame := Engine.get_physics_frames()
 	if frame == _hit_frame:
@@ -442,6 +473,29 @@ func hit_segment(seg: BossSegment, damage: int, _dir: Vector2) -> void:
 	if hp <= 0:
 		hp = 0
 		_die()
+		return
+	if seg.is_tail and stagger_left <= 0.0 and state in ["stuck", "dangle"]:
+		_poise += dealt
+		if _poise >= STAGGER_POISE:
+			_stagger()
+
+
+## Enough tail damage in one window: the plates crack and he stays pinned longer.
+func _stagger() -> void:
+	stagger_left = STAGGER_TIME
+	_poise = 0
+	state_time -= STAGGER_TIME
+	Feel.hitstop(0.08)
+	Feel.add_trauma(0.5)
+	Feel.rumble(0.8, 0.7, 0.3)
+	Sfx.play("roar", 0.0, -8.0)
+	Sfx.play("crumble", 0.05)
+	for s in segments:
+		if s.active and not s.is_tail and s.index % 4 == 0:
+			var d := Dust.new()
+			d.setup("bark")
+			get_parent().add_child(d)
+			d.global_position = s.global_position
 
 
 func _die() -> void:
@@ -499,53 +553,33 @@ func _ceiling_dust(x: float) -> void:
 
 func _draw() -> void:
 	var stuck_glow := state == "stuck" or state == "dangle"
+	var hot := sin(_t * (10.0 if stuck_glow else 4.0)) > (0.0 if stuck_glow else 0.6)
+	# Plates face along the rail: mirrored when it runs left, turned when it runs up or down.
+	var rot := 0.0
+	var flip := 1.0
+	if absf(_rail_dir.x) > 0.5:
+		flip = signf(_rail_dir.x)
+	else:
+		rot = PI * 0.5 * signf(_rail_dir.y)
+	var shudder := Vector2(randf_range(-1.5, 1.5), 0).round() if stagger_left > 0.0 else Vector2.ZERO
 	for i in range(SEGMENTS - 1, -1, -1):
 		var s := segments[i]
 		if s.dead:
 			continue
-		var p := s.position
-		var white := s.flash > 0.0
-		var r := s.radius
-		draw_circle(p, r + 1.5, OUTLINE)
+		var anim := "plate"
+		var frame := 1 if stagger_left > 0.0 else 0
 		if s.is_head:
-			_draw_head(p, white)
-			continue
-		var base := FLESH if s.is_tail else BARK
-		if s.is_tail:
-			var pulse := 0.5 + 0.5 * sin(_t * (10.0 if stuck_glow else 4.0))
-			base = AMBER.lerp(AMBER_HOT, pulse * (0.8 if stuck_glow else 0.3))
-		draw_circle(p, r, Color.WHITE if white else base)
-		if not white:
-			if s.is_tail:
-				draw_circle(p + Vector2(-r * 0.3, -r * 0.35), r * 0.35, Color(AMBER_HOT, 0.8))
-			else:
-				# Bark plate: a lighter crown and dark seams.
-				draw_circle(p + Vector2(0, -r * 0.25), r * 0.7, BARK_LIGHT)
-				draw_circle(p + Vector2(0, -r * 0.1), r * 0.55, BARK)
-				var a := _rail_dir.angle() + PI * 0.5
-				var seam := Vector2.from_angle(a) * r * 0.9
-				draw_line(p - seam, p + seam, BARK_DARK, 2.0)
-				draw_rect(Rect2(p + Vector2(-2, r * 0.45), Vector2(4, 3)), FLESH)
-
-
-func _draw_head(p: Vector2, white: bool) -> void:
-	var r := HEAD_RADIUS
-	draw_circle(p, r, Color.WHITE if white else BARK_DARK)
-	if white:
-		return
-	# A wheel of mandibles around the maw, turning while it chews.
-	var spin := _t * (14.0 if state in ["stuck", "lunge", "plunge"] else 3.0)
-	for k in 6:
-		var a := spin + k * TAU / 6.0
-		var dir := Vector2.from_angle(a)
-		var side := Vector2(-dir.y, dir.x)
-		var tip := p + dir * (r + 7.0)
-		draw_colored_polygon(PackedVector2Array([p + dir * (r - 6.0) + side * 5.0, tip, p + dir * (r - 6.0) - side * 5.0]), BARK_LIGHT)
-	draw_circle(p, r * 0.62, MAW)
-	draw_circle(p, r * 0.3, Color("120a0c"))
-	for k in 3:
-		var a := -spin * 0.5 + k * TAU / 3.0
-		draw_circle(p + Vector2.from_angle(a) * r * 0.45, 2.5, EYE)
+			anim = "head"
+			var spin := _t * (14.0 if state in ["stuck", "lunge", "plunge", "intro"] else 3.0)
+			frame = int(fposmod(spin, TAU / 6.0) / (TAU / 6.0) * 6.0) % 6
+		elif s.is_tail:
+			anim = "tail"
+			frame = 1 if hot else 0
+		draw_set_transform(s.position + shudder, rot, Vector2(flip, 1))
+		Sheet.draw(self, SHEET, anim, frame)
+		if s.flash > 0.0:
+			Sheet.draw(self, SHEET, anim, frame, Color(1, 1, 1, 0.9), true)
+	draw_set_transform(Vector2.ZERO)
 
 
 ## Telegraphs, drawn above the tiles: a glowing crack in the wall it will burst

@@ -70,7 +70,6 @@ func _start() -> void:
 	room.add_child(boss)
 	boss.begin()
 	Music.play("boss", 0.5)
-	GameState.banner.emit(Rokusutahn.DISPLAY_NAME, Rokusutahn.EPITHET)
 	started.emit()
 
 

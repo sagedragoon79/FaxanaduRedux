@@ -345,6 +345,8 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 2:** burrows into the ceiling and rains sap clumps that harden into temporary platforms.
 - **Phase 3 (below 30%):** tears the floor away; the fight continues on the wall ledges only.
 - **Reward:** Elf Ring, 1 skill point, restores the Spring of Trunk.
+- **Reveal:** on entry the walls shake, the banner names him, and he bursts out of the wall across from you, roars with his mandibles spinning, and pulls back in before the first lunge. Nothing he does in the reveal hurts.
+- **Stagger:** while he is stuck in a wall or dangling from the ceiling, tail hits build poise damage. At 48 he staggers for 2 s: plates crack open and every segment takes full damage, not just the tail.
 
 ### 8.2 Zoradohna, the Hammer of Forepaw (Tower of Trunk)
 - **Concept:** A dwarf champion fused with a mining engine, piloting a walking siege drill. The dwarf inside is still conscious and begging to be stopped.

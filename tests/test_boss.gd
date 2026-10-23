@@ -250,3 +250,49 @@ func test_music_follows_rooms_and_bosses() -> void:
 	w.player.teleport(cell_feet(12, 19))
 	await _until(func() -> bool: return arena.fighting, 20)
 	check(Music.track == "boss", "the fight plays the boss theme")
+
+
+func test_reveal_bursts_out_and_withdraws() -> void:
+	var setup := _boss_world()
+	var boss: Rokusutahn = setup[1]
+	var cards: Array = []
+	var on_banner := func(title: String, sub: String) -> void: cards.append(title + " " + sub)
+	GameState.banner.connect(on_banner)
+	await frames(2)
+	boss.begin()
+	GameState.banner.disconnect(on_banner)
+	check(cards.size() == 1 and String(cards[0]).begins_with(Rokusutahn.DISPLAY_NAME), "a name card announces him (%s)" % [cards])
+	await frames(int((Rokusutahn.INTRO_EMERGE + 0.3) * 60.0))
+	var head := boss.head_position()
+	check(Rokusutahn.ARENA.has_point(head) and absf(head.x - 4 * 16) > 300.0, "the head bursts out of the far wall (%s)" % head)
+	var hit_before := boss.hp
+	boss.hit_segment(boss.segments[0], 50, Vector2.RIGHT)
+	check(boss.hp == hit_before, "he can't be hurt during the reveal")
+	var moved := await _until(func() -> bool: return boss.state != "intro", 200)
+	check(moved and boss.state == "lunge_tell", "then the fight begins (%s)" % boss.state)
+
+
+func test_tail_damage_staggers_him() -> void:
+	var setup := _boss_world()
+	var boss: Rokusutahn = setup[1]
+	await frames(2)
+	boss._start_lunge(Rokusutahn.FLOOR_LANE, true)
+	var stuck := await _until(func() -> bool: return boss.state == "stuck", 400)
+	check(stuck, "a stuck lunge")
+	var tail := boss.segments[Rokusutahn.SEGMENTS - 1]
+	for i in 5:
+		boss.hit_segment(tail, 8, Vector2.RIGHT)
+		await frames(1)
+	check(boss.stagger_left == 0.0, "40 tail damage is not enough")
+	boss.hit_segment(tail, 8, Vector2.RIGHT)
+	check(boss.stagger_left > 0.0, "48 tail damage in one window staggers him")
+	check(boss.state_time < 0.0, "and pins him in the wall longer (state time %.2f)" % boss.state_time)
+	await frames(1)
+	var hp0 := boss.hp
+	boss.hit_segment(boss.segments[8], 20, Vector2.RIGHT)
+	check(boss.hp == hp0 - 20, "while staggered the plates take full damage (hp %d)" % boss.hp)
+	var still := await _until(func() -> bool: return boss.stagger_left == 0.0, 200)
+	await frames(1)
+	var hp1 := boss.hp
+	boss.hit_segment(boss.segments[8], 20, Vector2.RIGHT)
+	check(still and boss.hp == hp1 - 5, "and back to a quarter when it passes (hp %d)" % boss.hp)
