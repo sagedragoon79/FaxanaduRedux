@@ -379,6 +379,24 @@ func test_tiles_are_drawn_at_double_density() -> void:
 	room.queue_free()
 
 
+func test_decor_and_backgrounds_are_drawn_at_double_density() -> void:
+	for zone in ["trunk", "eolis"]:
+		var meta: Dictionary = (load(Decor.DIR + zone + ".json") as JSON).data
+		var tex: Texture2D = load(Decor.DIR + zone + ".png")
+		var density := int(meta.get("density", 1))
+		check(density == TilesetFactory.DENSITY, "%s decor is painted at %dx" % [zone, density])
+		check(tex.get_height() == 4 * int(meta.cell[1]) * density, "%s decor atlas holds 4 rows of %dx cells" % [zone, density])
+	var backdrop := Backdrop.new()
+	arena.add_child(backdrop)
+	backdrop.set_zone("trunk")
+	check(backdrop.get_child_count() == 2, "the trunk has two parallax layers")
+	for layer in backdrop.get_children():
+		var sprite := layer.get_child(0) as Sprite2D
+		check(sprite.texture.get_width() == Backdrop.SIZE.x * TilesetFactory.DENSITY, "a background is painted at %dx" % TilesetFactory.DENSITY)
+		check(sprite.texture.get_size() * sprite.scale == Backdrop.SIZE, "yet it still covers %s world pixels" % [Backdrop.SIZE])
+	backdrop.queue_free()
+
+
 func test_decor_dresses_open_surfaces_only() -> void:
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
