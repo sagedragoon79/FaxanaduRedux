@@ -3,6 +3,7 @@ zone: tower
 map: 15, -3
 sign: 8, 19, The great winch lifted ore to Forepaw. It has not turned since the dwarves went quiet.
 sign: 72, 19, Beyond the cut stone, a stair climbs toward Forepaw.
+prop: 50, 15, winch
 door: 1, tower/foot, 2
 door: 2, tower/ore_chute, 2
 door: 3, tower/gear_shaft, 2
