@@ -567,3 +567,38 @@ func test_taproot_is_bitten_until_the_spring_returns() -> void:
 	check(bitten.y < whole.y - 10.0, "a bite is taken out of the root (%.0f vs %.0f)" % [bitten.y, whole.y])
 	GameState.set_flag("spring:trunk")
 	check(root.edges(h).y > bitten.y + 10.0, "the spring heals the bite")
+
+
+## Every sound and track the code asks for by name exists: a typo would play
+## silence, not fail. Scans the scripts for Sfx.play("...") and Music.play("..."),
+## and the boss arenas' music.
+func test_every_sound_the_code_plays_exists() -> void:
+	var sfx := RegEx.create_from_string("Sfx\\.play\\(\"([a-z0-9_]+)\"")
+	var music := RegEx.create_from_string("Music\\.play\\(\"([a-z0-9_]+)\"")
+	var missing: Array[String] = []
+	var found := 0
+	var dirs: Array[String] = ["res://scripts"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		var da := DirAccess.open(d)
+		for sub in da.get_directories():
+			dirs.append(d + "/" + sub)
+		for f in da.get_files():
+			if not f.ends_with(".gd"):
+				continue
+			var text := FileAccess.get_file_as_string(d + "/" + f)
+			for m in sfx.search_all(text):
+				found += 1
+				# A name ending in "_" is a prefix completed at runtime ("step_" + surface).
+				if not m.get_string(1).ends_with("_") and not ResourceLoader.exists("res://assets/sfx/%s.wav" % m.get_string(1)):
+					missing.append("%s: sfx %s" % [f, m.get_string(1)])
+			for m in music.search_all(text):
+				found += 1
+				if Music.stream_for(m.get_string(1)) == null:
+					missing.append("%s: music %s" % [f, m.get_string(1)])
+	for id: String in BossArena.BOSSES:
+		var track: String = BossArena.BOSSES[id].get("music", "boss")
+		if Music.stream_for(track) == null:
+			missing.append("boss %s: music %s" % [id, track])
+	check(found > 50, "the scan finds the game's sounds (%d)" % found)
+	check(missing.is_empty(), "every sound and track exists: %s" % [missing])

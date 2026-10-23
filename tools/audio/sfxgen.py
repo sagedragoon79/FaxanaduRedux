@@ -319,5 +319,53 @@ def main():
     breath = lowpass(highpass(noise(d), 900), 3000) * 0.35
     save("wail", mix(moan, breath) * env(n, 0.12, 1.2), 0.45)
 
+    # Ripasheiku (bible 8.3). A web strand shot from the vault: an elastic zip
+    # that rises and snaps tight.
+    d = 0.28
+    n = int(RATE * d)
+    zip_ = osc(slide(300, 1800, d, 0.4), "tri") * 0.5
+    hiss = highpass(lowpass(noise(d), slide(2000, 7000, d, 0.5)), 1200) * 0.6
+    save("web_shoot", mix(zip_, hiss) * env(n, 0.01, 1.6), 0.5)
+
+    # The strand catching you: a wet, sticky slap with a low twang.
+    d = 0.22
+    n = int(RATE * d)
+    slap = lowpass(noise(d), 1400) * env(n, 0.001, 3.0)
+    twang = osc(slide(190, 150, d) * (1 + 0.04 * np.sin(2 * np.pi * 18 * t_axis(d))), "tri") * env(n, 0.002, 1.5) * 0.7
+    save("web_catch", mix(slap, twang), 0.6)
+
+    # Reeling in: the strand creaks under tension, a ratchet of ticks over a
+    # rising strain.
+    d = 0.9
+    n = int(RATE * d)
+    ticks = np.zeros(n)
+    tick = highpass(noise(0.012), 1800) * env(int(RATE * 0.012), 0.0005, 2.0)
+    for k in range(14):
+        i = int(k / 14 * (n - len(tick)))
+        ticks[i:i + len(tick)] += tick * (0.6 + 0.4 * (k % 2))
+    strain = osc(slide(140, 260, d, 0.7), "saw") * 0.18
+    save("reel", mix(ticks, lowpass(strain, 900)) * env(n, 0.03, 0.6), 0.5)
+
+    # Many legs on stone: a quick patter of dry clicks, for her climb and the
+    # shiver before she drops.
+    d = 0.45
+    n = int(RATE * d)
+    rng = np.random.default_rng(83)
+    pat = np.zeros(n)
+    click = lowpass(highpass(noise(0.008), 1500), 6000) * env(int(RATE * 0.008), 0.0003, 2.0)
+    for k in range(16):
+        i = int((k + rng.uniform(-0.3, 0.3)) / 16 * (n - len(click)))
+        i = max(0, min(n - len(click), i))
+        pat[i:i + len(click)] += click * rng.uniform(0.5, 1.0)
+    save("skitter", pat * env(n, 0.02, 0.8), 0.5)
+
+    # A soul-lantern breaking: thin glass and a bright tinkle that rings away.
+    d = 0.5
+    n = int(RATE * d)
+    crack = highpass(noise(0.04), 3000) * env(int(RATE * 0.04), 0.0005, 2.0)
+    tinkle = mix(osc(np.full(n, 2350.0), "sine"), osc(np.full(n, 3120.0), "sine") * 0.7,
+                 osc(np.full(n, 4410.0), "sine") * 0.4) * env(n, 0.001, 2.5) * 0.35
+    save("lantern_break", mix(crack, tinkle), 0.5)
+
 if __name__ == "__main__":
     main()

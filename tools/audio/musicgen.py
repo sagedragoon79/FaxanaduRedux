@@ -405,6 +405,38 @@ def track_zoradohna():
     return s.render(reverb=0.28)
 
 
+def track_ripasheiku():
+    """Ripasheiku, the Lantern Widow: the Mist's drowned waltz turned hunter. B
+    phrygian in a fast 3/4, a creeping bass that climbs a half step, skittering
+    ticks like many legs on stone, lantern bells tolling the chord, a heartbeat
+    kick on the downbeat, and a bell lead from bar 5."""
+    rng = np.random.default_rng(103)
+    s = Song(bpm=168, bars=24, beats=3)
+    root, scale = 47, SCALES["phrygian"]
+    prog = [0, 0, 1, 0, 5, 5, 1, 0, 0, 0, 1, 0, 3, 4, 1, 1] + [0, 1] * 4
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        base = scale_note(root - 12, scale, deg)
+        # The creep: root, root, a half step up, on every beat.
+        for k, step in enumerate([0, 0, 1]):
+            s.add(bass(midi_hz(base + step), s.beat * 0.8), b * 3 + k, 0, 0.75)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.05), low=1600), b * 3, rng.uniform(-0.6, 0.6), 0.3)
+        # Lantern bells toll the chord on the downbeat, wide in the stereo field.
+        if b % 2 == 0:
+            s.add(bell(midi_hz(tones[0] + 24), s.bar * 1.5), b * 3, rng.uniform(-0.7, 0.7), 0.25)
+        # Heartbeat on one, a softer echo just after.
+        s.add(kick(0.3), b * 3, 0, 0.9)
+        s.add(kick(0.3) * 0.5, b * 3 + 0.35, 0, 0.8)
+        s.add(snare(rng), b * 3 + 2, -0.1, 0.6)
+        # Legs on stone: short ticks on every sixteenth, some skipped, panned about.
+        for k in range(12):
+            if rng.random() < 0.75:
+                s.add(hat(rng, 0.03), b * 3 + k * 0.25, rng.uniform(-0.8, 0.8), 0.22 + 0.1 * (k % 4 == 0))
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=24, pan=0.15, gain=0.6, density=0.6)
+    return s.render(reverb=0.5)
+
+
 def track_forepaw():
     """Forepaw freed: the dwarves' city breathes again. A warm work song in G
     major, anvils ringing in time, a plucked tune over a slow pad."""
@@ -681,6 +713,7 @@ TRACKS = {
     "boss": track_boss,
     "miniboss": track_miniboss,
     "zoradohna": track_zoradohna,
+    "ripasheiku": track_ripasheiku,
     "forepaw": track_forepaw,
     "mist": track_mist,
     "amb_trunk": amb_trunk,
