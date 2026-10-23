@@ -25,6 +25,7 @@ func _init() -> void:
 	contact_damage = 12
 	gold_min = 4
 	gold_max = 7
+	poison_drops = true
 	xp = 9
 	body_size = Vector2(18, 12)
 	body_centered = true

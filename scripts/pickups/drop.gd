@@ -2,8 +2,9 @@ class_name Drop
 extends CharacterBody2D
 ## Food and magic that defeated enemies sometimes leave (design bible 7: drops
 ## are gold, MP orbs and rare items). Bread heals, as it did in Faxanadu; a
-## mana orb refills magic. Both pop out, settle on the floor and wait to be
-## walked over, blinking before they vanish.
+## mana orb refills magic. From the Tower on, some enemies leave Faxanadu's
+## Poison instead: a skull-marked flask that sickens you if you walk over it.
+## All of them pop out, settle on the floor and wait, blinking before they vanish.
 
 const GRAVITY := 700.0
 const COLLECT_RANGE := 14.0
@@ -13,6 +14,8 @@ const MANA_GAIN := 12.0
 ## Chances, per kill, of bread and of a mana orb. Tests set them to 0 or 1.
 static var bread_chance := 0.08
 static var mana_chance := 0.1
+## Chance of poison, per kill, from enemies with `poison_drops`.
+static var poison_chance := 0.07
 
 const CRUST := Color("b0662a")
 const CRUMB := Color("e8b45a")
@@ -21,6 +24,11 @@ const CRUMB_LIGHT := Color("fff0c2")
 const MANA := Color("5ec8ff")
 const MANA_CORE := Color("e6f8ff")
 const MANA_DARK := Color("2a5e9e")
+const VIAL := Color("7a3fa8")
+const VIAL_DARK := Color("3a1a5a")
+const VIAL_LIGHT := Color("b98ae0")
+const BONE := Color("e8e2d0")
+const CORK := Color("8a5a2e")
 
 var kind := "bread"
 
@@ -42,13 +50,15 @@ func _ready() -> void:
 
 
 ## Rolls for an enemy's drop at `at`. Returns the drop made, or null.
-static func roll(parent: Node, at: Vector2) -> Drop:
+static func roll(parent: Node, at: Vector2, can_poison := false) -> Drop:
 	var r := randf()
 	var k := ""
 	if r < bread_chance:
 		k = "bread"
 	elif r < bread_chance + mana_chance:
 		k = "mana"
+	elif can_poison and r < bread_chance + mana_chance + poison_chance:
+		k = "poison"
 	if k == "":
 		return null
 	var d := Drop.new()
@@ -78,10 +88,18 @@ func _collect(p: Player) -> void:
 	var d := Dust.new()
 	if kind == "bread":
 		p.hp = mini(p.max_hp, p.hp + BREAD_HEAL)
+		p.cure_poison()
 		p.health_changed.emit(p.hp, p.max_hp)
 		d.setup("heal")
 		GameState.toast.emit("Bread. +%d health." % BREAD_HEAL)
 		Sfx.play("heal", 0.1, -6.0)
+	elif kind == "poison":
+		d.setup("debris")
+		if p.poison():
+			GameState.toast.emit("Poison! It will pass, or bread will settle it.")
+			Sfx.play("hurt", 0.1, -6.0)
+		else:
+			GameState.toast.emit("The Ointment keeps the poison off.")
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
@@ -107,6 +125,23 @@ func _draw() -> void:
 		_px(3, -6, 2, 2, CRUMB)
 		_px(-4, -10, 3, 1, CRUMB_LIGHT)
 		_px(-8, -1, 16, 1, CRUST_DARK)
+	elif kind == "poison":
+		# A squat violet flask with a cork and a bone-white skull.
+		_px(-6, -12, 12, 12, VIAL_DARK)
+		_px(-7, -10, 14, 8, VIAL_DARK)
+		_px(-3, -16, 6, 5, VIAL_DARK)
+		_px(-2, -15, 4, 3, CORK)
+		_px(-5, -11, 10, 10, VIAL)
+		_px(-6, -9, 12, 6, VIAL)
+		_px(-4, -10, 2, 3, VIAL_LIGHT)
+		_px(-2, -9, 5, 4, BONE)
+		_px(-1, -8, 1, 1, VIAL_DARK)
+		_px(1, -8, 1, 1, VIAL_DARK)
+		_px(-1, -5, 3, 1, BONE)
+		# A bubble rising off the neck.
+		var b := fmod(_age * 1.4, 1.0)
+		if b < 0.7:
+			_px(1, -17 - roundi(b * 8.0), 2, 2, VIAL_LIGHT)
 	else:
 		var y := -13 + roundi(sin(_age * 5.0) * 2.0)
 		_px(-5, y, 10, 12, MANA_DARK)

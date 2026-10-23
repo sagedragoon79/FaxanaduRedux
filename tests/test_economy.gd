@@ -214,6 +214,56 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 	check(not is_instance_valid(spare), "an uneaten drop fades away")
 
 
+
+func test_tower_kills_can_leave_poison() -> void:
+	var w := make_world(_town({Vector2i(12, 19): "M"}), "test/town")
+	var p := w.player
+	await frames(3)
+	Drop.poison_chance = 1.0
+	check(Drop.roll(w.room, cell_feet(30, 19)) == null, "enemies without poison_drops never leave poison")
+	var mono: Monodron = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)[0]
+	mono.poison_drops = true
+	mono.take_hit(999, Vector2.RIGHT)
+	Drop.poison_chance = 0.0
+	var vial: Drop = _find(w.room, Drop)
+	check(vial != null and vial.kind == "poison", "a Tower enemy can leave a poison flask")
+	var dwarf := IronDwarf.new()
+	var bat := GearBat.new()
+	check(dwarf.poison_drops and bat.poison_drops, "Iron Dwarves and Gear Bats leave poison")
+	dwarf.free()
+	bat.free()
+	await frames(40)
+	p.hp = 40
+	p.teleport(vial.global_position)
+	await frames(3)
+	check(not is_instance_valid(vial) and p.poison_left > 0.0, "walking over it poisons you")
+	await frames(roundi(Player.POISON_TICK * 60.0 * 3.0) + 2)
+	check(p.hp == 40 - 3 * Player.POISON_DAMAGE, "poison saps %d health a second (%d)" % [Player.POISON_DAMAGE, p.hp])
+	p.hp = 2
+	await frames(roundi(Player.POISON_TICK * 60.0 * 2.0) + 2)
+	check(p.hp == 1 and not p.dead, "but never takes the last point (%d)" % p.hp)
+	await frames(roundi(Player.POISON_TIME * 60.0))
+	check(p.poison_left == 0.0, "and wears off")
+
+
+func test_bread_shrines_and_ointment_beat_poison() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	check(p.poison() and p.poison_left > 0.0, "poisoned")
+	Drop.bread_chance = 1.0
+	var bread := Drop.roll(w.room, p.global_position)
+	Drop.bread_chance = 0.0
+	await frames(40)
+	check(not is_instance_valid(bread) and p.poison_left == 0.0, "bread settles the stomach")
+	p.poison()
+	p.restore()
+	check(p.poison_left == 0.0, "resting at a shrine or the Guru cures it")
+	p.ointments = 1
+	p.use_ointment()
+	check(not p.poison(), "an Ointment keeps poison off")
+
+
 func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	make_world(_town(), "test/town")
 	var m := GameState.mantra()

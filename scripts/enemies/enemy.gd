@@ -19,6 +19,8 @@ const MIN_TELEGRAPH := 0.35
 @export var xp := 5
 ## Seconds until the enemy returns at its spawn point; 0 = gone for good.
 @export var respawn_time := 0.0
+## May this enemy leave poison (Drop.poison_chance)? The Tower and beyond.
+@export var poison_drops := false
 
 var hp := 0
 var dead := false
@@ -161,7 +163,7 @@ func die() -> void:
 	get_parent().add_child(d)
 	d.global_position = center()
 	Coin.spray(get_parent(), center(), randi_range(gold_min, gold_max))
-	Drop.roll(get_parent(), center())
+	Drop.roll(get_parent(), center(), poison_drops)
 	GameState.add_xp(xp)
 	Feel.hitstop(0.08)
 	Feel.add_trauma(0.25)

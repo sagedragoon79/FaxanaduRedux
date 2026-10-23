@@ -19,6 +19,7 @@ const SHIELD_BOSS := Color("cec5d3")
 const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
 const OINTMENT := Color("f0c02e")
+const POISON := Color("8fd14f")
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
@@ -152,6 +153,10 @@ static func draw_frame(ci: CanvasItem, name: String, f: int, tint: Color, flat: 
 
 func _draw() -> void:
 	var tint := Color(1.0, 0.45, 0.45) if _red_time > 0.0 else Color.WHITE
+	if player.poison_left > 0.0 and _red_time <= 0.0:
+		# Poison: a sickly green cast that throbs with each tick.
+		var t := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
+		tint = Color.WHITE.lerp(POISON, 0.35 + 0.2 * t)
 	draw_frame(self, anim, frame, tint, false)
 	var oint := player.ointment_left
 	if oint > 0.0:
