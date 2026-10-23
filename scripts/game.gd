@@ -13,6 +13,8 @@ extends Node2D
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --map                      open the map before the screenshot
+##   --open=shop:ID|guru|skills open a menu before the screenshot
+##   --gold=N                   start with N gold (for screenshots)
 
 const DEFAULT_ROOM := "gym/gym"
 const BASE_SIZE := Vector2i(640, 360)
@@ -24,6 +26,7 @@ var world: World
 var hud: GameHud
 var dialog: DialogBox
 var map_screen: MapScreen
+var menu: ListMenu
 var fader: ColorRect
 var debug_hud: DebugHud
 
@@ -68,6 +71,7 @@ func _ready() -> void:
 	world = World.new()
 	# The gym gives every ability and keeps no save data.
 	world.use_game_state = not room_id.begins_with("gym/")
+	GameState.active = world.use_game_state
 	view.add_child(world)
 	world.build_catalog()
 	if world.use_game_state:
@@ -87,6 +91,8 @@ func _ready() -> void:
 	ui.add_child(hud)
 	dialog = DialogBox.new()
 	ui.add_child(dialog)
+	menu = ListMenu.new()
+	ui.add_child(menu)
 	map_screen = MapScreen.new()
 	map_screen.world = world
 	ui.add_child(map_screen)
@@ -109,12 +115,26 @@ func _process(_delta: float) -> void:
 	# Shift the upscaled world by the camera's fractional position.
 	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
 	_frames += 1
-	if _args.has("map") and _frames == 2:
-		map_screen.toggle()
+	if _frames == 2:
+		_debug_open()
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])
 		get_tree().quit()
+
+
+func _debug_open() -> void:
+	if _args.has("gold"):
+		player.gold = int(_args["gold"])
+	if _args.has("map"):
+		map_screen.toggle()
+	var what: String = _args.get("open", "")
+	if what.begins_with("shop:"):
+		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)
+	elif what == "guru":
+		Menus.open_guru(get_tree(), GameData.npc("guru").greeting, player, null)
+	elif what == "skills":
+		Menus.open_skills(get_tree(), player)
 
 
 func _unhandled_input(event: InputEvent) -> void:

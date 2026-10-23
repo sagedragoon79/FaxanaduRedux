@@ -1,0 +1,109 @@
+class_name Npc
+extends Interactable
+## A townsperson (data/npcs.json). Press Up to talk. Roles: "talk" (dialog),
+## "king" (dialog, gives the starting gold once), "shop" (opens the shop) and
+## "guru" (rest and save, skills).
+
+const KING_GOLD := 1500
+const OUTLINE := Color("1d1a2b")
+
+var npc_id := ""
+var info := {}
+
+var _look := {}
+
+
+func _ready() -> void:
+	super()
+	info = GameData.npc(npc_id)
+	_look = info.get("look", {})
+	prompt_height = 50.0
+	z_index = -1
+
+
+func interact(p: Player) -> void:
+	_face(p)
+	match String(info.get("role", "talk")):
+		"king":
+			if not GameState.flag("king_gold"):
+				GameState.set_flag("king_gold")
+				p.add_gold(KING_GOLD)
+				GameState.capture(p)
+				Sfx.play("coin", 0.0, 4.0)
+				GameState.say(info.name, info.lines)
+			else:
+				GameState.say(info.name, info.get("lines_after", info.lines))
+		"shop":
+			Menus.open_shop(get_tree(), info.shop, p)
+		"guru":
+			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)
+		_:
+			GameState.say(info.get("name", ""), info.get("lines", []))
+
+
+## The Guru's "Rest and save": same as a shrine.
+func rest(p: Player) -> void:
+	p.restore()
+	var world := get_tree().get_first_node_in_group("world") as World
+	if world != null:
+		world.save_at(global_position)
+	var d := Dust.new()
+	d.setup("heal")
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(0, -20)
+	Sfx.play("save", 0.0)
+	GameState.toast.emit("Rested. Progress saved.")
+
+
+func _face(p: Player) -> void:
+	scale.x = -1.0 if p.global_position.x < global_position.x else 1.0
+
+
+func _c(key: String, fallback: String) -> Color:
+	return Color(_look.get(key, fallback))
+
+
+func _draw() -> void:
+	var robe := _c("robe", "#6b6380")
+	var trim := _c("trim", "#c9b98f")
+	var skin := _c("skin", "#e8c9a0")
+	var hair := _c("hair", "#3a2a1e")
+	var breathe := roundf(sin(t * 2.0) * 0.6)
+	# Robe (wider at the hem), outlined.
+	var body := PackedVector2Array([Vector2(-6, -30 + breathe), Vector2(6, -30 + breathe), Vector2(9, 0), Vector2(-9, 0)])
+	var outline := PackedVector2Array([Vector2(-7, -31 + breathe), Vector2(7, -31 + breathe), Vector2(10, 1), Vector2(-10, 1)])
+	draw_colored_polygon(outline, OUTLINE)
+	draw_colored_polygon(body, robe)
+	draw_rect(Rect2(-9, -3, 18, 3), trim)
+	draw_rect(Rect2(-1, -29 + breathe, 2, 26), trim.darkened(0.2))
+	# Head.
+	var head := Vector2(0, -36 + breathe)
+	draw_rect(Rect2(head + Vector2(-5, -6), Vector2(10, 11)), OUTLINE)
+	draw_rect(Rect2(head + Vector2(-4, -5), Vector2(8, 9)), skin)
+	draw_rect(Rect2(head + Vector2(1, -2), Vector2(2, 2)), OUTLINE)
+	draw_rect(Rect2(head + Vector2(-4, -5), Vector2(8, 3)), hair)
+	draw_rect(Rect2(head + Vector2(-5, -4), Vector2(2, 6)), hair)
+	match String(_look.get("hat", "none")):
+		"crown":
+			draw_rect(Rect2(head + Vector2(-5, -9), Vector2(10, 4)), trim)
+			for i in 3:
+				draw_rect(Rect2(head + Vector2(-5 + i * 4, -11), Vector2(2, 2)), trim)
+		"hood":
+			draw_colored_polygon(PackedVector2Array([head + Vector2(-7, 3), head + Vector2(-6, -7), head + Vector2(0, -10), head + Vector2(6, -7), head + Vector2(7, 3), head + Vector2(5, 3), head + Vector2(4, -5), head + Vector2(-4, -5), head + Vector2(-5, 3)]), robe.lightened(0.1))
+		"cap":
+			draw_rect(Rect2(head + Vector2(-5, -8), Vector2(11, 4)), trim)
+			draw_rect(Rect2(head + Vector2(4, -6), Vector2(3, 2)), trim)
+		"helm":
+			draw_rect(Rect2(head + Vector2(-6, -8), Vector2(12, 5)), Color("8d84a3"))
+			draw_rect(Rect2(head + Vector2(-6, -4), Vector2(2, 5)), Color("8d84a3"))
+	# Hands.
+	draw_rect(Rect2(Vector2(5, -18 + breathe), Vector2(3, 3)), skin)
+	draw_prompt()
+
+
+func draw_prompt() -> void:
+	# The node may be mirrored to face the player; draw the prompt unmirrored.
+	if scale.x < 0.0:
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(-1, 1))
+	super()
+	draw_set_transform(Vector2.ZERO)

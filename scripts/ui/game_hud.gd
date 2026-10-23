@@ -62,17 +62,22 @@ func _draw() -> void:
 		return
 	var origin := Vector2(10, 10)
 	var masks := ceili(float(player.max_hp) / MASK_HP)
+	var mask_x := 0.0
 	for i in masks:
-		var p := origin + Vector2(i * 14, 0)
-		var fill := clampf(float(player.hp - i * MASK_HP) / MASK_HP, 0.0, 1.0)
-		draw_rect(Rect2(p, Vector2(12, 14)), OUTLINE)
-		draw_rect(Rect2(p + Vector2(1, 1), Vector2(10, 12)), MASK_EMPTY)
+		# The last container is narrower when a Life Fruit has added half a mask.
+		var cap := clampf(float(player.max_hp - i * MASK_HP) / MASK_HP, 0.0, 1.0)
+		var w := 12.0 if cap >= 1.0 else 7.0
+		var p := origin + Vector2(mask_x, 0)
+		mask_x += w + 2.0
+		var fill := clampf(float(player.hp - i * MASK_HP) / (MASK_HP * cap), 0.0, 1.0)
+		draw_rect(Rect2(p, Vector2(w, 14)), OUTLINE)
+		draw_rect(Rect2(p + Vector2(1, 1), Vector2(w - 2, 12)), MASK_EMPTY)
 		if fill > 0.0:
 			var h := roundf(12.0 * fill)
-			draw_rect(Rect2(p + Vector2(1, 13 - h), Vector2(10, h)), MASK_FULL)
+			draw_rect(Rect2(p + Vector2(1, 13 - h), Vector2(w - 2, h)), MASK_FULL)
 			draw_rect(Rect2(p + Vector2(2, 13 - h), Vector2(2, minf(h, 3))), MASK_SHINE)
 	# Magic bar.
-	var bar := Rect2(origin + Vector2(0, 18), Vector2(masks * 14 - 2, 5))
+	var bar := Rect2(origin + Vector2(0, 18), Vector2(maxf(mask_x - 2.0, player.max_mp), 5))
 	draw_rect(bar.grow(1), OUTLINE)
 	draw_rect(bar, MP_DARK)
 	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * player.mp / player.max_mp), bar.size.y)), MP)

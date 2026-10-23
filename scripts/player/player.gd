@@ -36,6 +36,19 @@ var gold := 0
 var flask_max := 2
 var flask_charges := 2
 var equipped_spell := "deluge"
+
+# Derived from gear and skills by GameState.refresh_stats. Defaults are the
+# Hand Dagger with a shield and no skills, which is what the gym uses.
+var slash_damage := 8
+var heavy_damage := 14
+var reach_bonus := 0.0
+var defense := 0.0
+var has_shield := true
+var melee_mult := 1.0
+var mp_hit_mult := 1.0
+var gold_mult := 1.0
+var magnet_mult := 1.0
+var ground_combo_length := 3
 var dead := false
 var purse: GoldPurse
 
@@ -95,6 +108,7 @@ var _parry_timer := 0.0
 var _drink_timer := 0.0
 var _cast_cooldown := 0.0
 var _dead_timer := 0.0
+var _gold_frac := 0.0
 
 
 func _ready() -> void:
@@ -437,7 +451,7 @@ func _try_attack(on_floor: bool) -> void:
 		return
 	_attack_buffer_timer = 0.0
 	is_heavy_swing = false
-	_swing_damage = combat.slash_damage
+	_swing_damage = roundi(slash_damage * melee_mult)
 	if not on_floor and input.down and abilities.mattock:
 		attack_kind = "down"
 		combo_index = 0
@@ -450,14 +464,16 @@ func _try_attack(on_floor: bool) -> void:
 		_attack_cooldown = tuning.attack_cooldown
 	else:
 		attack_kind = "side"
-		var max_combo := combat.ground_combo_length if on_floor else combat.air_combo_length
+		var max_combo := ground_combo_length if on_floor else combat.air_combo_length
 		combo_index = combo_index + 1 if _combo_timer > 0.0 and combo_index < max_combo else 1
 		_combo_timer = combat.combo_window
 		_attack_timer = tuning.slash_active
-		_attack_cooldown = combat.combo_cooldowns[combo_index - 1]
-		if combo_index == 3:
-			is_heavy_swing = true
-			_swing_damage = combat.heavy_damage
+		# The last hit of a ground combo is the heavy finisher.
+		is_heavy_swing = on_floor and combo_index == max_combo
+		var cd: Array[float] = combat.combo_cooldowns
+		_attack_cooldown = cd[cd.size() - 1] if is_heavy_swing else cd[mini(combo_index - 1, cd.size() - 2)]
+		if is_heavy_swing:
+			_swing_damage = roundi(heavy_damage * melee_mult)
 	_attack_hits.clear()
 	var fx := SlashFx.new()
 	fx.setup(attack_kind, facing, combo_index, is_heavy_swing)
@@ -479,8 +495,8 @@ func _attack_rect() -> Rect2:
 			size = UP_SLASH_SIZE
 			center = Vector2(0, -BODY_SIZE.y - 14)
 		_:
-			size = SLASH_SIZE
-			center = Vector2(facing * (BODY_SIZE.x * 0.5 + 16), -BODY_SIZE.y * 0.55)
+			size = SLASH_SIZE + Vector2(reach_bonus, 0)
+			center = Vector2(facing * (BODY_SIZE.x * 0.5 + 16 + reach_bonus * 0.5), -BODY_SIZE.y * 0.55)
 	return Rect2(global_position + center - size * 0.5, size)
 
 
@@ -503,7 +519,7 @@ func _process_attack_hits() -> void:
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_something = true
 			if collider.is_in_group("enemy"):
-				mp = minf(mp + combat.mp_per_melee_hit, max_mp)
+				mp = minf(mp + combat.mp_per_melee_hit * mp_hit_mult, max_mp)
 		if attack_kind == "down" and collider.is_in_group("pogo") and not bounced:
 			bounced = true
 			_pogo_bounce()
@@ -595,6 +611,9 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 # --- Shield, potion and spells -------------------------------------------------
 
 func _update_block() -> void:
+	if not has_shield:
+		is_blocking = false
+		return
 	if input.block_pressed:
 		_parry_timer = combat.parry_window
 	is_blocking = input.block_held and not is_dashing and not is_attacking and not is_drinking
@@ -695,6 +714,8 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if invulnerable or dead:
 		return
+	if defense > 0.0:
+		amount = maxi(1, roundi(amount * (1.0 - defense)))
 	hp -= amount
 	_invuln_timer = tuning.hurt_invuln
 	_drink_timer = 0.0
@@ -757,8 +778,15 @@ func _respawn() -> void:
 	respawned.emit()
 
 
-func add_gold(amount: int) -> void:
-	gold += amount
+## Adds gold. Found gold (coins) gets the Gold Sense bonus; returned gold doesn't.
+func add_gold(amount: int, found := false) -> void:
+	if not found:
+		gold += amount
+		return
+	var g := amount * gold_mult + _gold_frac
+	var whole := floori(g)
+	_gold_frac = g - whole
+	gold += whole
 
 
 ## Refills health, magic and potion charges (save shrines, the Guru).

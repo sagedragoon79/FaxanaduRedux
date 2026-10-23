@@ -184,6 +184,15 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards.
 
+You start with no shield: Block and parry come with the Small Shield, the first purchase most players make in Eolis. Gear values live in `data/items.json`:
+
+| Item | Values |
+|------|--------|
+| Hand Dagger | 8 light / 14 heavy |
+| Long Sword | 11 light / 19 heavy, +8 px reach |
+| Leather Armor | 15% less damage taken (minimum 1) |
+| Small Shield | Guard halves damage (5.3) |
+
 ### 5.3 Combat moves
 
 - **Slash:** 3-hit ground combo, 2-hit air combo. Each hit pushes the player back 4 px (knockback against enemy on hit).
@@ -419,7 +428,9 @@ The **Guru** in each town teaches skills. Points come from:
 - **Bosses:** 1 point each from the 9 main bosses (9 total).
 - **Mantra Shards:** hidden secrets; 3 shards = 1 point (15 shards, 5 points).
 
-That is **29 points** available against a tree that costs **54** in total, so players must choose. Respec at any Guru for gold (cost grows with each respec, capped at 2,000 g).
+That is **29 points** available against a tree that costs **54** in total, so players must choose. Respec at any Guru for gold (200 g, then 400 g, 600 g and so on, capped at 2,000 g).
+
+Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900, 1,200, 1,560, 2,000, 2,500, 3,100, 3,800, 4,600, 5,500. Starting enemies give 5 XP (Rot Dwarf 12), so the Trunk Hollows take a careful player to about Fighter. Ranks rise the moment you pass a threshold and give the point right away; the Guru is where you spend it.
 
 Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need the one before.
 

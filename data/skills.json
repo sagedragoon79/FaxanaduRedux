@@ -1,0 +1,11 @@
+{
+	"branches": ["Blade", "Arcana", "Wanderer"],
+	"nodes": [
+		{"id": "keen_edge", "branch": "Blade", "name": "Keen Edge", "cost": 1, "needs": "", "desc": "+10% melee damage."},
+		{"id": "fourth_strike", "branch": "Blade", "name": "Fourth Strike", "cost": 2, "needs": "keen_edge", "desc": "Your ground combo gains a fourth, heavy hit."},
+		{"id": "clear_mind", "branch": "Arcana", "name": "Clear Mind", "cost": 1, "needs": "", "desc": "+20 max MP."},
+		{"id": "siphon", "branch": "Arcana", "name": "Siphon", "cost": 1, "needs": "clear_mind", "desc": "Melee hits restore 50% more MP."},
+		{"id": "deep_pockets", "branch": "Wanderer", "name": "Deep Pockets", "cost": 1, "needs": "", "desc": "+1 Red Potion charge."},
+		{"id": "gold_sense", "branch": "Wanderer", "name": "Gold Sense", "cost": 1, "needs": "deep_pockets", "desc": "Coins fly to you from farther away, and you find 10% more gold."}
+	]
+}

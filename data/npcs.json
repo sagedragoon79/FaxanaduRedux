@@ -1,0 +1,45 @@
+{
+	"king": {
+		"name": "King of Eolis", "role": "king",
+		"look": {"robe": "#7a2e3a", "trim": "#ffd24a", "skin": "#e8c9a0", "hair": "#d8cfb4", "hat": "crown"},
+		"lines": [
+			"Wanderer. You return to a dying town.",
+			"The springs that fed the World Tree have stopped. Our fountain is dust, and the dwarves who share the roots with us have turned savage.",
+			"Something fell from the sky and took root in the Tree. I fear it drinks the springs.",
+			"Take this purse: 1,500 gold. Arm yourself well, then go down into the Trunk Hollows and find out why the Spring of Trunk is silent."
+		],
+		"lines_after": [
+			"The Trunk Hollows lie past the east gate. Rest at the Guru first.",
+			"If the spring flows again, Eolis will know. The fountain will tell us."
+		]
+	},
+	"guru": {
+		"name": "Guru", "role": "guru",
+		"look": {"robe": "#d8cfb4", "trim": "#7ee0d6", "skin": "#c9a27a", "hair": "#f1ead2", "hat": "hood"},
+		"greeting": "Breathe, wanderer. Rest here, or let me teach your body what your mind already knows."
+	},
+	"arms_dealer": {
+		"name": "Arms Dealer", "role": "shop", "shop": "eolis_arms",
+		"look": {"robe": "#5e3b22", "trim": "#c08a1e", "skin": "#e8c9a0", "hair": "#3a2a1e", "hat": "none"}
+	},
+	"merchant": {
+		"name": "Merchant", "role": "shop", "shop": "eolis_items",
+		"look": {"robe": "#3f6b4a", "trim": "#d8cfb4", "skin": "#d9b08c", "hair": "#8a5a34", "hat": "cap"}
+	},
+	"townsfolk_well": {
+		"name": "Old Wena", "role": "talk",
+		"look": {"robe": "#6b6380", "trim": "#c9b98f", "skin": "#e8c9a0", "hair": "#c9c4d6", "hat": "none"},
+		"lines": [
+			"Forty years I drew water from that fountain. Now I draw dust.",
+			"My grandson went into the roots to look for the spring. He said the sap was moving. Sap doesn't move."
+		]
+	},
+	"townsfolk_gate": {
+		"name": "Gate Watch", "role": "talk",
+		"look": {"robe": "#4a4458", "trim": "#8d84a3", "skin": "#d9b08c", "hair": "#2a2538", "hat": "helm"},
+		"lines": [
+			"East gate leads down into the Trunk Hollows. Monodrons hop about near the entrance. Watch the eye: it flashes before it jumps.",
+			"The rot dwarves carry shields. Get behind them, or wait for the swing and hit back."
+		]
+	}
+}

@@ -10,6 +10,7 @@ map: 0, 0          (the room's top-left on the map, in screens)
 door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
+npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19))
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 chest_gold: 100    (optional: gold in each chest in this room)
 ---
@@ -33,6 +34,7 @@ chest_gold: 100    (optional: gold in each chest in this room)
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |
 | `S` | Meditation Shrine (save, refill, respawn point) |
+| `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
 | `L` | Life Fruit (+1 mask) |
