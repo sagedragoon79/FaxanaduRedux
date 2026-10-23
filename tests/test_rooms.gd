@@ -293,3 +293,33 @@ func test_sap_slows_running_and_jumping() -> void:
 	await frames(1)
 	# One frame of gravity has already been applied.
 	check_near(-p.velocity.y, p.tuning.jump_velocity * Player.SAP_JUMP - p.tuning.gravity / 60.0, 2.0, "weaker jump out of sap")
+
+
+# --- Tiles ---------------------------------------------------------------------------
+
+func test_autotiles_match_their_neighbours() -> void:
+	check(TilesetFactory.blob_masks().size() == 47, "47 blob autotiles")
+	var rows := grid_rows(30, 23)
+	put_tiles(rows, 10, 10, "#")
+	put_tiles(rows, 3, 19, "P")
+	var room := Room.from_text(room_text(["name: T", "zone: trunk"], rows), "t/tiles")
+	arena.add_child(room)
+	var lone := room.tiles.get_cell_atlas_coords(Vector2i(10, 10))
+	check(lone == TilesetFactory.ground(0), "a lone block uses the all-edges tile (%s)" % lone)
+	var floor_top := room.tiles.get_cell_atlas_coords(Vector2i(10, 20))
+	var top_mask := TilesetFactory.FULL & ~(TilesetFactory.N | TilesetFactory.NE | TilesetFactory.NW)
+	check(floor_top == TilesetFactory.ground(top_mask), "the floor's top row has a top edge (%s)" % floor_top)
+	var mid := room.tiles.get_cell_atlas_coords(Vector2i(10, 21))
+	check(mid in TilesetFactory.MID, "two tiles into the floor is darker (%s)" % mid)
+	var deep := room.tiles.get_cell_atlas_coords(Vector2i(10, 22))
+	check(deep in TilesetFactory.DEEP, "three tiles in is darker still (%s)" % deep)
+	check(room.is_solid_at(Vector2(10 * 16 + 8, 22 * 16 + 8)), "darker interior tiles are still solid")
+	room.queue_free()
+
+
+func test_every_zone_has_a_tileset() -> void:
+	var missing: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if not ResourceLoader.exists(TilesetFactory.TILES_DIR + zone + ".png"):
+			missing.append(zone)
+	check(missing.is_empty(), "every zone folder has a generated tileset: missing %s" % [missing])

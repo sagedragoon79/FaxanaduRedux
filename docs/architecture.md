@@ -28,6 +28,15 @@ Interactables (`scripts/world/interactable.gd`: shrines, tablets, inner doors, c
 NPCs) are in the `interactable` group. The player uses the nearest one in reach when Up is
 pressed on the ground. Text goes through `GameState.say()`, `banner` and `toast` signals.
 
+## Tiles and backgrounds
+
+`tools/art/tilegen.py` paints each zone's tileset (`assets/tiles/<zone>.png`) and parallax
+layers (`assets/bg/<zone>_far.png`, `_mid.png`) from the master palette. Ground uses 47
+"blob" autotiles picked from each cell's 8 neighbours (`TilesetFactory.ground()`); wall cells
+two or more tiles from open air use darker interior tiles so rooms read as space. Fake walls
+(secrets) use the same tiles without collision. `Backdrop` (owned by the World) swaps the
+`Parallax2D` layers when the zone changes.
+
 ## Player
 
 `scripts/player/player.gd` is a `CharacterBody2D` with hand-written movement at a fixed

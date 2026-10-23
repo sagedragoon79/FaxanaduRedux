@@ -44,12 +44,15 @@ var start_room := ""
 ## Visible area in world pixels, passed to the camera for its bounds clamp.
 var view_size := Vector2(640, 360)
 var busy := false
+var backdrop: Backdrop
 
 var _ignored_door := 0
 
 
 func _ready() -> void:
 	add_to_group("world")
+	backdrop = Backdrop.new()
+	add_child(backdrop)
 
 
 # --- Rooms -----------------------------------------------------------------------
@@ -163,6 +166,7 @@ func _enter(room_id: String) -> void:
 		room.queue_free()
 	room = next
 	add_child(room)
+	backdrop.set_zone(room.zone)
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player)
 	room.add_child(player)

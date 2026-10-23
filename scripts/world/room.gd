@@ -24,6 +24,8 @@ var doors := {}
 var _one_way := {}
 var _secret_cells := {}
 var _sap_cells := {}
+## Cells drawn as ground (real walls and fake ones), for picking autotiles.
+var _solid_look := {}
 var _secret_revealed := false
 
 
@@ -140,22 +142,34 @@ func build(text: String) -> void:
 
 	tiles = TileMapLayer.new()
 	tiles.name = "Tiles"
-	tiles.tile_set = TilesetFactory.build()
+	tiles.tile_set = TilesetFactory.build(zone)
 	add_child(tiles)
 
+	# Which cells look like ground, so each wall tile can match its neighbours.
+	var amber := _amber_on()
 	for y in grid.size():
-		var row := grid[y]
-		for x in row.length():
-			_place(row[x], Vector2i(x, y), grid)
-
-	# Hidden rooms: cover a rectangle with fake wall so its contents can't be seen.
+		for x in grid[y].length():
+			if grid[y][x] in ["#", "%"]:
+				_solid_look[Vector2i(x, y)] = true
+	# Hidden rooms: a rectangle of fake wall hides the contents until the player walks in.
+	var covers := {}
 	for spec: String in lists.get("secret", []):
 		var r := spec.split(",")
 		if r.size() == 4:
 			for y in range(int(r[1]), int(r[3]) + 1):
 				for x in range(int(r[0]), int(r[2]) + 1):
-					if tiles.get_cell_source_id(Vector2i(x, y)) == -1 and not _secret_cells.has(Vector2i(x, y)):
-						_place_secret(Vector2i(x, y), grid)
+					var ch := _char_at(grid, Vector2i(x, y))
+					if ch not in ["#", "-"] and not (ch == "~" and amber):
+						covers[Vector2i(x, y)] = true
+						_solid_look[Vector2i(x, y)] = true
+
+	for y in grid.size():
+		var row := grid[y]
+		for x in row.length():
+			_place(row[x], Vector2i(x, y), grid)
+	for cell: Vector2i in covers:
+		if not _secret_cells.has(cell):
+			_place_secret(cell)
 
 	var found := Room.scan_doors(grid)
 	for spec: String in lists.get("door", []):
@@ -233,10 +247,51 @@ func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
 	for x in range(col_from, col_to + 1):
 		for y in range(row_from, row_to + 1):
 			tiles.erase_cell(Vector2i(x, y))
+			_solid_look.erase(Vector2i(x, y))
 		var below := Vector2i(x, row_to + 1)
 		if tiles.get_cell_source_id(below) != -1:
-			tiles.set_cell(below, TilesetFactory.SOURCE_ID, Vector2i(TilesetFactory.Tile.TOP, 0))
 			_spawn(Spikes.new(), Vector2((x + 0.5) * TILE, below.y * TILE))
+	# The ground around the pit gets new edges.
+	for x in range(col_from - 3, col_to + 4):
+		for y in range(row_from - 3, row_to + 4):
+			var cell := Vector2i(x, y)
+			if _solid_look.has(cell) and tiles.get_cell_source_id(cell) != -1:
+				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))
+
+
+func _amber_on() -> bool:
+	return zone == "trunk" and GameState.flag("spring:trunk")
+
+
+const _NEIGHBOURS := [
+	[Vector2i(0, -1), TilesetFactory.N], [Vector2i(1, -1), TilesetFactory.NE],
+	[Vector2i(1, 0), TilesetFactory.E], [Vector2i(1, 1), TilesetFactory.SE],
+	[Vector2i(0, 1), TilesetFactory.S], [Vector2i(-1, 1), TilesetFactory.SW],
+	[Vector2i(-1, 0), TilesetFactory.W], [Vector2i(-1, -1), TilesetFactory.NW],
+]
+
+
+## How far a ground cell is from open air, in tiles (1 to 3).
+func _depth(cell: Vector2i) -> int:
+	for r in [1, 2]:
+		for dy in range(-r, r + 1):
+			for dx in range(-r, r + 1):
+				var n := cell + Vector2i(dx, dy)
+				var inside := n.x >= 0 and n.y >= 0 and n.x < size_tiles.x and n.y < size_tiles.y
+				if inside and not _solid_look.has(n):
+					return r
+	return 3
+
+
+## Which of a cell's 8 neighbours look like ground. Outside the room counts as ground.
+func _ground_mask(cell: Vector2i) -> int:
+	var m := 0
+	for d: Array in _NEIGHBOURS:
+		var n: Vector2i = cell + d[0]
+		var outside := n.x < 0 or n.y < 0 or n.x >= size_tiles.x or n.y >= size_tiles.y
+		if outside or _solid_look.has(n):
+			m |= int(d[1])
+	return m
 
 
 func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
@@ -245,18 +300,16 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 	var center := cell_origin + Vector2(TILE, TILE) * 0.5
 	match ch:
 		"#":
-			var above_open := cell.y == 0 or _char_at(grid, cell + Vector2i(0, -1)) not in ["#", "C", "%"]
-			var tile := TilesetFactory.Tile.TOP if above_open and cell.y > 0 else TilesetFactory.Tile.INNER
-			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(tile, 0))
+			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))
 		"-":
-			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(TilesetFactory.Tile.ONE_WAY, 0))
+			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
 			_one_way[cell] = true
 		"%":
-			_place_secret(cell, grid)
+			_place_secret(cell)
 		"~":
-			if zone == "trunk" and GameState.flag("spring:trunk"):
+			if _amber_on():
 				# The restored spring hardens the Trunk's sap into walkable amber.
-				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(TilesetFactory.Tile.AMBER, 0))
+				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.AMBER)
 			else:
 				_sap_cells[cell] = true
 		"^":
@@ -305,17 +358,14 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			spawn_position = bottom_center
 
 
-func _place_secret(cell: Vector2i, grid: Array[String]) -> void:
+func _place_secret(cell: Vector2i) -> void:
 	if secrets == null:
 		secrets = TileMapLayer.new()
 		secrets.name = "Secrets"
-		secrets.tile_set = TilesetFactory.build(false)
+		secrets.tile_set = TilesetFactory.build(zone, false)
 		secrets.z_index = 3
 		add_child(secrets)
-	var above := cell + Vector2i(0, -1)
-	var above_open := _char_at(grid, above) not in ["#", "C", "%"] and not _secret_cells.has(above) and tiles.get_cell_source_id(above) == -1
-	var tile := TilesetFactory.Tile.TOP if above_open and cell.y > 0 else TilesetFactory.Tile.INNER
-	secrets.set_cell(cell, TilesetFactory.SOURCE_ID, Vector2i(tile, 0))
+	secrets.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))
 	_secret_cells[cell] = true
 
 
@@ -377,7 +427,7 @@ func is_solid_at(world_pos: Vector2) -> bool:
 	var cell := cell_at(world_pos)
 	if tiles.get_cell_source_id(cell) == -1:
 		return false
-	return tiles.get_cell_atlas_coords(cell).x != TilesetFactory.Tile.ONE_WAY
+	return tiles.get_cell_atlas_coords(cell) != TilesetFactory.ONE_WAY
 
 
 func is_one_way_at(world_pos: Vector2) -> bool:

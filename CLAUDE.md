@@ -12,6 +12,8 @@ bible changes substantially (link in the project memory).
 - Screenshot a room: `GODOT=<godot binary> tools/screenshot.sh out.png [tileX,tileY] [room]`.
   Look at screenshots of anything visual you change.
 - Regenerate sound effects: `python3 tools/audio/sfxgen.py`. Palette: `python3 tools/art/palette.py`.
+- Regenerate zone tilesets and parallax backgrounds: `python3 tools/art/tilegen.py` (every new
+  zone folder in `levels/` needs a material spec there; a test checks it).
 
 ## Conventions
 
