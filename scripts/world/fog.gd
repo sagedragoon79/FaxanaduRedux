@@ -16,23 +16,58 @@ const SPRING_FLAG := "spring:mist"
 const SPRING_VISION := 1.5
 const SPRING_DENSITY := 0.5
 
+## Cells in the drift lattice the shader samples (one texel each).
+const DRIFT_SIZE := 64
+
+static var _drift: ImageTexture
+
 var density := 0.0
 var lights: Array[Vector3] = []
 
 var _room: Room
 var _rect: ColorRect
 var _mat: ShaderMaterial
+## The fog renders here at one texel per world pixel (a quarter of the
+## fragments of drawing it at the game's 2x detail), then _sprite shows it.
+var _view: SubViewport
+var _sprite: Sprite2D
 
 
 func _ready() -> void:
 	z_index = 4
 	_mat = ShaderMaterial.new()
 	_mat.shader = SHADER
+	_mat.set_shader_parameter("drift_tex", drift_texture())
+	_view = SubViewport.new()
+	_view.transparent_bg = true
+	_view.disable_3d = true
+	_view.size = Vector2i(16, 16)
+	_view.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	add_child(_view)
 	_rect = ColorRect.new()
 	_rect.material = _mat
 	_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_rect)
+	_view.add_child(_rect)
+	_sprite = Sprite2D.new()
+	_sprite.centered = false
+	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_sprite.texture = _view.get_texture()
+	add_child(_sprite)
 	visible = false
+
+
+## A tileable lattice of random values, made once: the shader's drifting murk.
+static func drift_texture() -> ImageTexture:
+	if _drift == null:
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 1987
+		var img := Image.create(DRIFT_SIZE, DRIFT_SIZE, false, Image.FORMAT_L8)
+		for y in DRIFT_SIZE:
+			for x in DRIFT_SIZE:
+				var v := rng.randf()
+				img.set_pixel(x, y, Color(v, v, v))
+		_drift = ImageTexture.create_from_image(img)
+	return _drift
 
 
 ## Turns the fog on or off for `room`.
@@ -44,6 +79,7 @@ func set_room(room: Room) -> void:
 		if GameState.flag(SPRING_FLAG):
 			density *= SPRING_DENSITY
 	visible = density > 0.0
+	_view.render_target_update_mode = SubViewport.UPDATE_ALWAYS if visible else SubViewport.UPDATE_DISABLED
 	_mat.set_shader_parameter("density", density)
 	_update()
 
@@ -62,8 +98,14 @@ func _update() -> void:
 	if density <= 0.0 or _room == null or not is_instance_valid(_room):
 		return
 	var view := _view_rect()
-	_rect.position = view.position
-	_rect.size = view.size
+	# Whole world pixels, so the scaled-up texels land on the world's pixel grid.
+	var origin := view.position.floor()
+	var size := Vector2i(ceili(view.end.x - origin.x), ceili(view.end.y - origin.y))
+	if _view.size != size:
+		_view.size = size
+		_rect.size = Vector2(size)
+	_sprite.position = origin
+	_mat.set_shader_parameter("origin", origin)
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null:
 		lights.append(Vector3(p.global_position.x, p.global_position.y - 14.0, vision()))
