@@ -38,6 +38,8 @@ music: title       (optional: a track other than the zone's, from assets/music/)
 | `D` | Rot Dwarf (shielded walker) |
 | `T` | Sap Spitter (turret; lobs sap that leaves a slowing puddle) |
 | `U` | Grub Lump (crawls on floors, walls and ceilings; clings to the floor first, else the ceiling, else a wall) |
+| `R` | Root-gate tile (solid roots; a column of three is usual) |
+| `N` | Root Heart: strike it and every root-gate in the room opens for good |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |

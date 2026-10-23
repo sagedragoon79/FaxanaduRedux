@@ -28,6 +28,7 @@ var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
 var _solid_look := {}
 var _secret_revealed := false
+var _roots_open := false
 
 
 func _ready() -> void:
@@ -239,6 +240,22 @@ func build(text: String) -> void:
 	_restore_purse()
 
 
+## True once this room's Root Heart has been struck (on this visit or an earlier one).
+func root_gates_open() -> bool:
+	return _roots_open or (id != "" and GameState.flag("roots:" + id))
+
+
+## The Root Heart was struck: every root-gate in the room withers open, for good.
+func open_root_gates() -> void:
+	_roots_open = true
+	if id != "":
+		GameState.set_flag("roots:" + id)
+	for c in get_children():
+		if c is RootGate:
+			(c as RootGate).retract()
+	Sfx.play("crumble", 0.0)
+
+
 func _add_prop(kind: String, pos: Vector2) -> void:
 	match kind:
 		"fountain":
@@ -353,6 +370,16 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(SapSpitter.new(), bottom_center)
 		"U":
 			_spawn_enemy(GrubLump.new(), center)
+		"R":
+			var gate := RootGate.new()
+			_spawn(gate, center)
+			if root_gates_open():
+				gate.retract(true)
+		"N":
+			var heart := RootHeart.new()
+			heart.room = self
+			heart.struck = root_gates_open()
+			_spawn(heart, bottom_center)
 		"S":
 			_spawn(SaveShrine.new(), bottom_center)
 		"J":

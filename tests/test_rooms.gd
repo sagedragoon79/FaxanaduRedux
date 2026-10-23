@@ -197,6 +197,44 @@ func test_chest_opens_once() -> void:
 	check(chest.is_open() and not chest.is_in_group("interactable"), "chest stays open after leaving")
 
 
+func test_root_heart_opens_the_root_gate_for_good() -> void:
+	var extra := {Vector2i(8, 19): "N", Vector2i(30, 17): "R", Vector2i(30, 18): "R", Vector2i(30, 19): "R"}
+	var texts := _rooms(extra)
+	var w := make_world(texts, "test/a", cell_feet(27, 19))
+	var p := w.player
+	await frames(2)
+	p.input.move_x = 1
+	await frames(40)
+	p.input.move_x = 0
+	check(p.global_position.x < 30 * Room.TILE, "the roots block the way (x %.0f)" % p.global_position.x)
+	# Walk to the heart and strike it.
+	p.teleport(cell_feet(6, 19))
+	p.facing = 1
+	await frames(2)
+	p.input.attack_pressed = true
+	await frames(12)
+	var heart: RootHeart = null
+	for c in w.room.get_children():
+		if c is RootHeart:
+			heart = c
+	check(heart != null and heart.struck, "the blade strikes the Root Heart")
+	check(GameState.flag("roots:test/a"), "and the room remembers")
+	p.teleport(cell_feet(27, 19))
+	await frames(45)
+	p.input.move_x = 1
+	await frames(40)
+	p.input.move_x = 0
+	check(p.global_position.x > 31 * Room.TILE, "the gate has drawn back (x %.0f)" % p.global_position.x)
+	var again := Room.from_text(texts["test/a"], "test/a")
+	arena.add_child(again)
+	var still_open := true
+	for c in again.get_children():
+		if c is RootGate and not (c as RootGate).open:
+			still_open = false
+	check(still_open, "it stays open on the next visit")
+	again.queue_free()
+
+
 func test_fake_wall_is_passable() -> void:
 	var extra := {}
 	for y in range(1, 20):

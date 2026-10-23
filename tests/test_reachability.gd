@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GLWF*$S"
+const PICKUPS := "GLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
@@ -133,6 +133,21 @@ func test_checker_respects_walls() -> void:
 	var gloved := Reach.new(texts, {"glove": true})
 	var n1 := gloved.reachable(gloved.spot_of("t/wall", "P"))
 	check(gloved.touchable(n1, "t/wall", 22, 19), "the glove climbs it")
+
+
+func test_checker_opens_root_gates_from_their_heart() -> void:
+	var rows := grid_rows(30, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 14, 2, "#", 1, 15)
+	put_tiles(rows, 14, 17, "R", 1, 3)
+	put_tiles(rows, 22, 19, "L")
+	var blocked := {"t/gate": room_text(["name: Gate"], rows)}
+	var r0 := Reach.new(blocked, {"glove": true})
+	check(not r0.touchable(r0.reachable(r0.spot_of("t/gate", "P")), "t/gate", 22, 19), "a root-gate with no heart stays shut")
+	put_tiles(rows, 6, 19, "N")
+	var hearted := {"t/gate": room_text(["name: Gate"], rows)}
+	var r1 := Reach.new(hearted, {})
+	check(r1.touchable(r1.reachable(r1.spot_of("t/gate", "P")), "t/gate", 22, 19), "with its heart in reach, it opens")
 
 
 func test_every_room_boots_and_the_player_lands() -> void:
