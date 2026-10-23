@@ -77,6 +77,11 @@ and the boss must not be; with the glove (and keys) every room, pickup, chest an
 be reachable; and no reachable spot may be a soft-lock (unable to get back to a save, or on
 to the glove). It also boots every room and checks the player lands safely.
 
+A pickup meant to open only after the Spring of Trunk (sap hardens into amber) goes in
+`AMBER_SECRETS` in `tests/test_reachability.gd`; the test then proves it is gated.
+
+Sap with open air beside it and more sap below draws as a pouring falls (Amber Falls).
+
 Safe numbers for layouts (a little under the real movement): a standing jump clears 4 tiles
 up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles of headroom
 for the body. Platforms that should be reachable from the floor go 4 rows above it.

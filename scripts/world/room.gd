@@ -209,6 +209,7 @@ func build(text: String) -> void:
 	if not _sap_cells.is_empty():
 		var sap := SapPool.new()
 		sap.cells = _sap_cells
+		sap.falls = SapPool.find_falls(_sap_cells, func(c: Vector2i) -> bool: return _solid_look.has(c))
 		add_child(sap)
 
 	for spec: String in lists.get("npc", []):
