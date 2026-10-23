@@ -11,6 +11,8 @@ signal won
 ## Boss id -> how to make it and what it gives.
 const BOSSES := {
 	"rokusutahn": {"ring": "elf", "ring_name": "Elf Ring", "skill_points": 1},
+	"foreman": {"ability": "mattock", "title": "Mattock",
+		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -64,6 +66,15 @@ func _start() -> void:
 			r.room = room
 			boss = r
 			r.defeated.connect(_on_defeated)
+		"foreman":
+			# The golem waits at the end of the hall away from the way in.
+			var f := Foreman.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			f.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			var px := p_x()
+			f.position = Vector2(w - 6 * Room.TILE if px < w * 0.5 else 6 * Room.TILE, f.arena.end.y)
+			boss = f
+			f.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
@@ -82,7 +93,16 @@ func _on_defeated() -> void:
 	var points := int(reward.get("skill_points", 0))
 	GameState.data.skill_points = int(GameState.data.skill_points) + points
 	Sfx.play("item", 0.0)
-	GameState.banner.emit(reward.get("ring_name", "Victory"), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
+	if reward.has("ability"):
+		# The ability the boss guarded (the Foreman drops the Mattock from its back).
+		var p := get_tree().get_first_node_in_group("player") as Player
+		GameState.data.abilities[reward.ability] = true
+		if p != null:
+			p.abilities[reward.ability] = true
+			GameState.capture(p)
+		GameState.banner.emit(reward.title, reward.text)
+	else:
+		GameState.banner.emit(reward.get("ring_name", "Victory"), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
 	_open_timer = OPEN_DELAY
 	Music.play("", 2.5)
 	won.emit()
@@ -116,6 +136,11 @@ func _seal(n: int) -> void:
 	seal.position = area.position
 	room.add_child(seal)
 	seals[n] = seal
+
+
+func p_x() -> float:
+	var p := get_tree().get_first_node_in_group("player") as Node2D
+	return p.global_position.x if p != null else 0.0
 
 
 func _nearest_door(pos: Vector2) -> int:
