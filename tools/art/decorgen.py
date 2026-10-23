@@ -484,6 +484,143 @@ def tower_gear_plate(rng):
     return c
 
 
+# --- The Mist ------------------------------------------------------------------
+
+def mist_reeds(rng):
+    """Marsh reeds, grey-green, a few with seed heads like bone beads."""
+    c = Cell()
+    for i in range(rng.randint(7, 11)):
+        x = rng.randint(4, 27)
+        h = rng.randint(8, 22)
+        blade(c, x, h, rng.uniform(-3, 3), "leaf-0", "leaf-1" if i % 3 else "stone-3", "stone-4")
+    for _ in range(rng.randint(1, 3)):
+        x = rng.randint(7, 24)
+        h = rng.randint(18, 26)
+        c.line([(x, H - 1), (x, H - h)], "leaf-1")
+        c.rect(x - 1, H - h - 4, 3, 4, "stone-5")
+        c.px(x, H - h - 4, "stone-6")
+    return c
+
+
+def mist_toadstools(rng):
+    """Pale bone-white toadstools with gold-flecked gills."""
+    c = Cell()
+    for i in range(rng.randint(2, 3)):
+        x = 7 + i * 9 + rng.randint(-2, 2)
+        h = rng.randint(4, 12)
+        c.rect(x, H - h, 2, h, "stone-4")
+        r = rng.randint(3, 5)
+        c.disc(x + 1, H - h - 1, r, 2.2, "stone-5")
+        c.rect(x + 1 - r, H - h - 2, r * 2, 1, "stone-6")
+        c.rect(x + 1 - r + 1, H - h, r * 2 - 2, 1, "gold-2")
+    c.outline("night-0")
+    return c
+
+
+def mist_lantern_post(rng):
+    """A boardwalk post with a soul-lantern hooked to it: the zone's light."""
+    c = Cell()
+    x = rng.randint(10, 14)
+    c.rect(x, H - 34, 4, 34, "bark-2")
+    c.rect(x, H - 34, 1, 34, "bark-3")
+    c.rect(x + 3, H - 34, 1, 34, "bark-1")
+    c.rect(x - 1, H - 36, 6, 2, "bark-1")
+    c.line([(x + 4, H - 30), (x + 9, H - 30), (x + 9, H - 27)], "stone-3")
+    c.rect(x + 6, H - 27, 7, 9, "stone-2")
+    c.rect(x + 7, H - 26, 5, 7, "gold-4")
+    c.rect(x + 8, H - 25, 3, 4, "gold-6")
+    c.px(x + 9, H - 24, "gold-7")
+    c.rect(x + 7, H - 18, 5, 1, "stone-3")
+    c.add_glow(x + 9.5, H - 22)
+    c.outline("night-0")
+    return c
+
+
+def mist_stake(rng):
+    """A rotted boardwalk stake, snapped, with a rag of moss."""
+    c = Cell()
+    x = rng.randint(8, 18)
+    h = rng.randint(10, 20)
+    c.rect(x, H - h, 5, h, "bark-1")
+    c.rect(x + 1, H - h, 2, h, "bark-2")
+    c.line([(x, H - h), (x + 2, H - h - 3), (x + 4, H - h + 1)], "bark-2")
+    c.rect(x - 1, H - h + 3, 7, 2, "leaf-1")
+    c.line([(x + 1, H - h + 5), (x + 1, H - h + 9)], "leaf-1")
+    c.outline("night-0")
+    return c
+
+
+def mist_beard(rng):
+    """A beard of grey moss hanging from a limb."""
+    c = Cell()
+    for _ in range(rng.randint(5, 8)):
+        x = rng.randint(4, 27)
+        n = rng.randint(10, 40)
+        ph = rng.random() * math.tau
+        for y in range(n):
+            col = "leaf-1" if y < n * 0.6 else ("stone-3" if y < n - 2 else "stone-4")
+            c.px(x + math.sin(ph + y * 0.2) * 1.5, y, col)
+    for x in range(4, 28):
+        for y in range(rng.randint(1, 4)):
+            c.px(x, y, "leaf-0")
+    return c
+
+
+def mist_hanging_lantern(rng):
+    """A lantern on a long cord, the light of a drowned soul inside."""
+    c = Cell()
+    x = rng.randint(13, 18)
+    n = rng.randint(14, 30)
+    c.line([(x, 0), (x, n)], "stone-3")
+    c.rect(x - 3, n, 7, 2, "stone-3")
+    c.rect(x - 3, n + 2, 7, 9, "stone-2")
+    c.rect(x - 2, n + 3, 5, 7, "gold-4")
+    c.rect(x - 1, n + 4, 3, 4, "gold-6")
+    c.px(x, n + 5, "gold-7")
+    c.rect(x - 2, n + 11, 5, 1, "stone-3")
+    c.add_glow(x + 0.5, n + 6)
+    c.outline("night-0")
+    return c
+
+
+def mist_drip(rng):
+    """Dead rootlets with a bead of water at the tip."""
+    c = Cell()
+    for s in range(rng.randint(2, 3)):
+        x = 6 + s * 9 + rng.randint(-2, 2)
+        n = rng.randint(10, 30)
+        c.line([(x, 0), (x + rng.randint(-2, 2), n)], "stone-2")
+        c.px(x, n + 3, "sky-4")
+    return c
+
+
+def mist_bracket(rng):
+    """A pale bracket fungus on a wall, ringed like old bone."""
+    c = Cell()
+    y = rng.randint(24, 44)
+    for i, w in enumerate((12, 11, 9, 6)):
+        c.rect(0, y + i * 2, w, 2, "stone-5" if i == 0 else ("stone-4" if i == 1 else "stone-3"))
+    c.rect(0, y - 1, 10, 1, "stone-6")
+    for i in range(4):
+        c.px(11 - i * 2, y + 2 + i, "stone-2")
+    c.outline("night-0")
+    return c
+
+
+def mist_wall_lantern(rng):
+    c = Cell()
+    y = 30
+    c.rect(0, y, 9, 2, "bark-2")
+    c.line([(8, y), (8, y - 3)], "stone-3")
+    c.rect(5, y - 11, 7, 8, "stone-2")
+    c.rect(6, y - 10, 5, 6, "gold-4")
+    c.rect(7, y - 9, 3, 3, "gold-6")
+    c.px(8, y - 8, "gold-7")
+    c.add_glow(8.5, y - 7)
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -501,6 +638,11 @@ ZONES = {
         "floor": [tower_rubble, tower_rubble, tower_lantern, tower_pick, tower_rubble, eolis_crate],
         "ceiling": [eolis_chain, tower_hanging_lamp, tower_pipe, eolis_chain],
         "wall": [tower_wall_lamp, tower_gear_plate],
+    },
+    "mist": {
+        "floor": [mist_reeds, mist_reeds, mist_toadstools, mist_lantern_post, mist_stake, mist_reeds],
+        "ceiling": [mist_beard, mist_beard, mist_hanging_lantern, mist_drip],
+        "wall": [mist_bracket, mist_wall_lantern],
     },
 }
 

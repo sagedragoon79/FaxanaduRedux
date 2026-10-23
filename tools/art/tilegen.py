@@ -132,6 +132,25 @@ def paint_wood(img, ox, oy, seed, ramp):
                     img.putpixel((ox + kx + dx, oy + ky + dy), c(col))
 
 
+def paint_limb(img, ox, oy, seed, ramp):
+    """A drowned limb of the Tree: pale, fog-bleached grain like old bone, wet dark
+    streaks running down it, and patches of grey-green lichen."""
+    paint_wood(img, ox, oy, seed, ramp)
+    for x in range(T):
+        if hash2(x // 2, 9, seed) > 0.95:
+            # A wet streak, darker where the water gathers at its foot.
+            y0 = int(hash2(x, 10, seed) * T * 0.5)
+            for y in range(y0, min(T, y0 + 6 * D + int(hash2(x, 11, seed) * 8 * D))):
+                img.putpixel((ox + x, oy + y), c(f"{ramp}-1"))
+    for k in range(3):
+        if hash2(seed, k, 12) > 0.55:
+            cx, cy = int(hash2(seed, k, 13) * (T - 6)) + 3, int(hash2(seed, k, 14) * (T - 6)) + 3
+            for dy in range(-2, 3):
+                for dx in range(-3, 4):
+                    if abs(dx) + abs(dy) <= 3 and hash2(cx + dx, cy + dy, seed) > 0.25:
+                        img.putpixel((ox + cx + dx, oy + cy + dy), c("leaf-1" if dy > 0 else "leaf-2"))
+
+
 def cap_moss(img, ox, oy, seed, x0, x1, light="leaf", glow=None, top=5):
     """A ragged cap of moss over the top edge: blades of uneven height, a lit
     fringe, and a dark under-edge where it meets the ground."""
@@ -225,6 +244,8 @@ ZONES = {
               "under": "bark-1", "outline": "night-0"},
     "tower": {"painter": paint_plates, "ramp": "stone", "cap": "girder", "light": "leaf", "glow": None,
               "under": "night-1", "outline": "night-0"},
+    "mist": {"painter": paint_limb, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-5", "cap_top": 3,
+             "under": "night-1", "outline": "night-0"},
 }
 
 
@@ -676,6 +697,118 @@ def tower_mid():
     return img
 
 
+def fog_color():
+    """Grey-green fog (bible 12: the Mist is grey-green, bone and lantern yellow)."""
+    return blend(c("stone-4"), c("leaf-4"), 70)
+
+
+def fog_band(img, y0, h, alpha, seed):
+    """A drifting band of fog: soft noise, thinning at its top and bottom, in
+    three dithered steps of density."""
+    col = fog_color()
+    for y in range(max(0, y0), min(BG_H, y0 + h)):
+        k = 1 - abs((y - y0) / h * 2 - 1)
+        for x in range(BG_W):
+            n = wrap_noise(x / (90 * D), y / (20 * D), seed, BG_W // (90 * D)) * (0.4 + 0.6 * k)
+            if n < 0.3:
+                continue
+            step = 1 if n < 0.42 else (2 if n < 0.55 else 3)
+            if step == 1 and (x + y) % 2:
+                continue
+            a = alpha * step // 3
+            under = img.getpixel((x % BG_W, y))
+            put(img, x, y, (col[0], col[1], col[2], a) if under[3] == 0 else blend(under, col, a))
+
+
+def blend(under, over, alpha):
+    k = alpha / 255
+    return tuple(int(under[i] * (1 - k) + over[i] * k) for i in range(3)) + (max(under[3], alpha),)
+
+
+def dead_limb(img, x0, y0, length, w, ang, col, rng, depth=0):
+    """A bare, crooked limb with twigs forking off it."""
+    x, y = float(x0), float(y0)
+    for t in range(length):
+        ang += rng.uniform(-0.04, 0.04)
+        x += math.cos(ang)
+        y += math.sin(ang)
+        ww = max(1, int(w * (1 - t / length)))
+        ww = max(ww, D)
+        for d in range(-ww // 2, ww - ww // 2):
+            put(img, x - math.sin(ang) * d, y + math.cos(ang) * d, c(col))
+        if depth < 2 and t > length // 4 and rng.random() < 0.006:
+            dead_limb(img, x, y, length // 2, max(1, ww - 1), ang + rng.choice([-0.8, 0.7]), col, rng, depth + 1)
+
+
+def mist_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-1"))
+    gradient(img, "night-1", "stone-1")
+    # Steep the whole sky in a green murk.
+    murk = c("leaf-0")
+    for y in range(BG_H):
+        for x in range(BG_W):
+            img.putpixel((x, y), blend(img.getpixel((x, y)), murk, 90 + 50 * y // BG_H))
+    rng = random.Random(31)
+    # Far limbs of the Tree, drowned in fog: the lower, the paler.
+    for i in range(9):
+        x0 = rng.randrange(BG_W)
+        y0 = BG_H - rng.randrange(0, 140) * D
+        dead_limb(img, x0, y0, rng.randrange(200, 380) * D, rng.randrange(10, 22) * D,
+                  -math.pi / 2 + rng.uniform(-0.6, 0.6), "night-0" if i % 3 else "night-1", rng)
+    for k, y in enumerate(range(60 * D, BG_H, 70 * D)):
+        fog_band(img, y, 50 * D, 130, 40 + k)
+    # Will-o'-lanterns, far off in the murk.
+    for _ in range(26):
+        glow_dot(img, rng.randrange(BG_W), rng.randrange(BG_H // 3, BG_H), "gold-5", "gold-2", rng.choice([0, 0, 1]))
+    return img
+
+
+def mist_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(32)
+    # Limbs reaching in from the sides, hung with moss.
+    for i in range(6):
+        left = i % 2 == 0
+        x0 = rng.randrange(BG_W)
+        y0 = rng.randrange(40, 380) * D
+        ang = rng.uniform(-0.35, 0.25) + (0 if left else math.pi)
+        dead_limb(img, x0, y0, rng.randrange(140, 260) * D, rng.randrange(6, 12) * D, ang, "night-0", rng)
+        # Moss beards dripping off the limb.
+        for k in range(rng.randrange(6, 12)):
+            t = rng.randrange(20, 140) * D
+            hx = x0 + math.cos(ang) * t
+            hy = y0 + math.sin(ang) * t + 4 * D
+            length = rng.randrange(14, 50) * D
+            for yy in range(length):
+                sway = int(math.sin(yy * 0.05 + k) * 2 * D)
+                col = "leaf-1" if yy < length * 0.7 else "stone-2"
+                if hash2(k, yy // 3, i) > 0.15:
+                    put(img, hx + sway, hy + yy, c(col))
+                    if yy < length // 2:
+                        put(img, hx + sway + 1, hy + yy, c("night-1"))
+    # Lanterns on cords, each with a soft halo.
+    for i in range(5):
+        x = rng.randrange(BG_W)
+        length = rng.randrange(40, 200) * D
+        for y in range(length):
+            put(img, x, y, c("stone-2" if y % 6 else "stone-3"))
+        for dy in range(14):
+            half = 4 if 2 < dy < 12 else 2
+            for dx in range(-half, half + 1):
+                col = "night-0" if dy in (0, 13) or abs(dx) == half else ("gold-6" if abs(dx) < 2 and 4 < dy < 10 else "gold-4")
+                put(img, x + dx, length + dy, c(col))
+        for r, alpha in ((22, 90), (32, 45)):
+            for k in range(120):
+                ang = k / 120 * math.tau
+                px, py = x + int(math.cos(ang) * r), length + 7 + int(math.sin(ang) * r)
+                if k % 2 == 0 and 0 <= py < BG_H and img.getpixel((px % BG_W, py))[3] == 0:
+                    put(img, px, py, c("gold-3", alpha))
+    # Wisps of near fog.
+    for k, y in enumerate(range(30 * D, BG_H, 110 * D)):
+        fog_band(img, y + rng.randrange(0, 30) * D, 34 * D, 80, 60 + k)
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -686,6 +819,7 @@ BACKGROUNDS = {
     "trunk": (trunk_far, trunk_mid),
     "eolis": (eolis_far, eolis_mid),
     "tower": (tower_far, tower_mid),
+    "mist": (mist_far, mist_mid),
     "gym": (gym_far, None),
 }
 

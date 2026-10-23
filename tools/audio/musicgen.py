@@ -424,6 +424,86 @@ def track_forepaw():
     return s.render(reverb=0.35)
 
 
+def track_mist():
+    """The Mist: slow and drifting, a music box heard through fog, with a lantern-bell
+    melody and no drums, only a heartbeat thump now and then."""
+    rng = np.random.default_rng(97)
+    s = Song(bpm=66, bars=16, beats=3)
+    root, scale = 47, SCALES["minor"]  # B minor in 3/4: a drowned waltz
+    prog = [0, 5, 3, 4, 0, 5, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.1), low=1400), b * 3, rng.uniform(-0.6, 0.6), 0.45)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 2.6), b * 3, 0, 0.55)
+        # The waltz: a soft pluck on two and three, as from a music box under water.
+        for k in (1, 2):
+            m = tones[k] + 12
+            s.add(fft_filter(pluck(midi_hz(m), s.beat * 0.8, bright=1200), low=2200), b * 3 + k, 0.35, 0.35)
+        if b % 4 == 3:
+            s.add(kick(0.4) * 0.35, b * 3, 0, 0.8)
+            s.add(kick(0.4) * 0.25, b * 3 + 0.4, 0, 0.8)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=24, pan=-0.25, gain=0.55, density=0.35)
+    return s.render(reverb=0.65)
+
+
+def amb_mist():
+    """Fog on a drowned marsh: a damp hush, water lapping at the boardwalks, frogs
+    and far-off bird calls, and now and then the creak of a lantern on its cord."""
+    rng = np.random.default_rng(101)
+    dur = 26.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    hush = fft_filter(rng.uniform(-1, 1, m), low=380, high=60) * 1.6
+    out[:, 0] += hush
+    out[:, 1] += np.roll(hush, RATE // 3)
+    # Lapping water: soft filtered splashes in slow pairs.
+    for _ in range(22):
+        i = rng.integers(0, n)
+        mm = int(0.35 * RATE)
+        t = np.arange(mm) / RATE
+        lap = fft_filter(rng.uniform(-1, 1, mm), low=900, high=150) * np.sin(np.pi * t / t[-1]) ** 2 * rng.uniform(0.3, 0.6)
+        pan = rng.uniform(-1, 1)
+        out[i:i + mm, 0] += lap * (1 - pan) / 2
+        out[i:i + mm, 1] += lap * (1 + pan) / 2
+    # Frogs: low croaks in short runs.
+    for _ in range(6):
+        i = rng.integers(0, n)
+        f0 = rng.uniform(110, 170)
+        for k in range(rng.integers(2, 5)):
+            j = i + int(k * 0.28 * RATE)
+            mm = int(0.16 * RATE)
+            t = np.arange(mm) / RATE
+            croak = wave_of("square", np.cumsum(f0 * (1 + 0.3 * np.sin(2 * np.pi * 30 * t))) / RATE % 1.0, 0.3)
+            croak = fft_filter(croak, low=900) * np.sin(np.pi * t / t[-1]) * 0.12
+            pan = rng.uniform(-1, 1)
+            out[j:j + mm, 0] += croak * (1 - pan) / 2
+            out[j:j + mm, 1] += croak * (1 + pan) / 2
+    # A far bird call: two falling whistles.
+    for _ in range(3):
+        i = rng.integers(0, n)
+        for k in range(2):
+            j = i + int(k * 0.5 * RATE)
+            mm = int(0.4 * RATE)
+            t = np.arange(mm) / RATE
+            f = rng.uniform(1500, 1900) * np.exp(-t * 1.2)
+            call = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.sin(np.pi * t / t[-1]) * 0.05
+            out[j:j + mm, 0] += call * 0.4
+            out[j:j + mm, 1] += call
+    # A lantern swinging on its cord.
+    for _ in range(4):
+        i = rng.integers(0, n)
+        mm = int(rng.uniform(0.6, 1.0) * RATE)
+        tt = np.arange(mm) / RATE
+        fc = rng.uniform(150, 220) + 20 * np.sin(2 * np.pi * 13 * tt)
+        creak = fft_filter(wave_of("saw", np.cumsum(fc) / RATE % 1.0), low=900) * np.sin(np.pi * tt / tt[-1]) * 0.08
+        out[i:i + mm, :] += creak[:, None]
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 def amb_trunk():
     rng = np.random.default_rng(71)
     dur = 24.0
@@ -602,11 +682,13 @@ TRACKS = {
     "miniboss": track_miniboss,
     "zoradohna": track_zoradohna,
     "forepaw": track_forepaw,
+    "mist": track_mist,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
     "amb_heights": amb_heights,
     "amb_mine": amb_mine,
+    "amb_mist": amb_mist,
 }
 
 
