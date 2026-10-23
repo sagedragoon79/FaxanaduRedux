@@ -228,10 +228,16 @@ func test_root_heart_opens_the_root_gate_for_good() -> void:
 	var again := Room.from_text(texts["test/a"], "test/a")
 	arena.add_child(again)
 	var still_open := true
+	var passable := true
 	for c in again.get_children():
-		if c is RootGate and not (c as RootGate).open:
-			still_open = false
+		if c is RootGate:
+			if not (c as RootGate).open:
+				still_open = false
+			for s in c.get_children():
+				if s is CollisionShape2D and not (s as CollisionShape2D).disabled:
+					passable = false
 	check(still_open, "it stays open on the next visit")
+	check(passable, "and its roots don't block the way (no solid shape left behind)")
 	again.queue_free()
 
 

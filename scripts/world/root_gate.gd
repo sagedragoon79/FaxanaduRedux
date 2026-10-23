@@ -24,6 +24,8 @@ func _ready() -> void:
 	var rect := RectangleShape2D.new()
 	rect.size = Vector2(16, 16)
 	_shape.shape = rect
+	# A gate opened before it entered the tree (a room rebuilt on a later visit) starts open.
+	_shape.disabled = open
 	add_child(_shape)
 
 
@@ -32,7 +34,8 @@ func retract(instant := false) -> void:
 	if open:
 		return
 	open = true
-	_shape.set_deferred("disabled", true)
+	if _shape != null:
+		_shape.set_deferred("disabled", true)
 	_t = RETRACT_TIME if instant else 0.0
 	queue_redraw()
 

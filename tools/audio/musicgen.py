@@ -354,6 +354,29 @@ def track_boss():
     return s.render(reverb=0.2)
 
 
+def track_miniboss():
+    """The Foreman: a work song turned into a fight. Hammer-and-anvil drums under a
+    driving bass in D phrygian, faster than the tower, slower than a boss."""
+    rng = np.random.default_rng(53)
+    s = Song(bpm=128, bars=16)
+    root, scale = 38, SCALES["phrygian"]
+    prog = [0, 0, 1, 0, 6, 6, 1, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root + 12, scale, deg)
+        for k in range(8):
+            s.add(bass(midi_hz(scale_note(root - 12, scale, deg) + (7 if k % 4 == 2 else 0)), s.beat * 0.45), b * 4 + k * 0.5, 0, 0.85)
+        for m in tones[:2]:
+            s.add(pad(midi_hz(m), s.bar * 1.02), b * 4, rng.uniform(-0.4, 0.4), 0.25)
+        # The hammer falls on every beat; the anvil answers on the off-beats of two and four.
+        for k in range(4):
+            s.add(kick(0.3), b * 4 + k, 0, 0.9)
+        for k in (1.5, 3.5):
+            s.add(anvil(rng, rng.choice([1180.0, 1320.0]), 0.4), b * 4 + k, rng.uniform(-0.5, 0.5), 0.45)
+        s.add(snare(rng), b * 4 + 2, -0.1, 0.8)
+    melody(s, rng, root, scale, prog, lead, start_bar=4, octave=24, pan=0.1, gain=0.75, density=0.65)
+    return s.render(reverb=0.3)
+
+
 def amb_trunk():
     rng = np.random.default_rng(71)
     dur = 24.0
@@ -434,6 +457,7 @@ TRACKS = {
     "trunk": track_trunk,
     "tower": track_tower,
     "boss": track_boss,
+    "miniboss": track_miniboss,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
