@@ -50,7 +50,6 @@ There are 9 new tests in `test_boss.gd`:
 
 `/mnt/project-files/pass-24/`:
 - `lift_phase1.png`: the intro, with the title banner and the boss bar with its two phase marks.
-  - Captured before the hull recolor, so the boss is drawn white here (telegraph flash).
 - `lift_rising.png`: phase 2, with girders on the shaft wall, a rock falling, and the red siege drill against the tower stone.
 - `lift_open.png`: phase 3, with the hatch thrown back and the pink crystal harness on the dwarf's chest.
 
