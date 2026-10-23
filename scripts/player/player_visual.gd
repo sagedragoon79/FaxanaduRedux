@@ -5,9 +5,8 @@ extends Node2D
 ## each frame's hand point. Handles squash and stretch, facing and hurt
 ## blinking. Origin is at the feet.
 
+const SHEET_NAME := "player"
 const SHEET := "res://assets/sprites/player.png"
-const MASK := "res://assets/sprites/player_mask.png"
-const DATA := "res://assets/sprites/player.json"
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -26,9 +25,6 @@ const FINISH := ["slash1", "slash2", "slash3", "slash_up", "cast"]
 ## Poses an unfinished swing may play over.
 const OVERRIDABLE := ["idle", "run", "rise", "apex", "fall"]
 
-static var _sheet: Texture2D
-static var _mask: Texture2D
-static var _data: Dictionary
 ## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
 static var forced := ""
 
@@ -45,16 +41,9 @@ var _red_time := 0.0
 var _swings := 0
 
 
+## The sheet: {"cell", "origin", "columns", "animations", ...} (see Sheet).
 static func data() -> Dictionary:
-	if _data.is_empty():
-		_sheet = load(SHEET)
-		_mask = load(MASK)
-		_data = (load(DATA) as JSON).data
-	return _data
-
-
-func _ready() -> void:
-	data()
+	return Sheet.get_sheet(SHEET_NAME)
 
 
 func squash(amount: Vector2) -> void:
@@ -133,25 +122,17 @@ static func anim_for(p: Player, body_pose: String) -> String:
 
 ## The frame of `name` shown at time `t`.
 static func frame_at(name: String, t: float) -> int:
-	var a: Dictionary = data().animations[name]
-	var seq: Array = a.seq
-	var i := int(t * float(a.fps))
-	if a.loop:
-		i = i % seq.size()
-	else:
-		i = mini(i, seq.size() - 1)
-	return int(seq[i])
+	return Sheet.frame_at(SHEET_NAME, name, t)
 
 
 func finished() -> bool:
-	var a: Dictionary = data().animations[anim]
-	return not a.loop and anim_time * float(a.fps) >= float(a.seq.size())
+	return Sheet.finished(SHEET_NAME, anim, anim_time)
 
 
 ## The current frame's metadata: hand and neck points (relative to the feet,
 ## facing right) and, in a swing, the blade angle.
 func frame_info() -> Dictionary:
-	return data().animations[anim].frames[frame]
+	return Sheet.info(SHEET_NAME, anim, frame)
 
 
 ## The neck in world space, where the scarf hangs from.
@@ -160,17 +141,9 @@ func neck_position() -> Vector2:
 	return global_position + Vector2(n[0] * player.facing * squash_scale.x, n[1] * squash_scale.y)
 
 
-static func region(name: String, f: int) -> Rect2:
-	var d := data()
-	var cell := float(d.cell)
-	return Rect2(f * cell, float(d.animations[name].row) * cell, cell, cell)
-
-
 ## Draws one frame of the sheet (or its flat silhouette, tinted) with the feet at the origin.
 static func draw_frame(ci: CanvasItem, name: String, f: int, tint: Color, flat: bool) -> void:
-	var d := data()
-	var origin := Vector2(d.origin[0], d.origin[1])
-	ci.draw_texture_rect_region(_mask if flat else _sheet, Rect2(-origin, Vector2(d.cell, d.cell)), region(name, f), tint)
+	Sheet.draw(ci, SHEET_NAME, name, f, tint, flat)
 
 
 func _draw() -> void:

@@ -1,7 +1,7 @@
 {
 	"king": {
 		"name": "King of Eolis", "role": "king",
-		"look": {"robe": "#7a2e3a", "trim": "#ffd24a", "skin": "#e8c9a0", "hair": "#d8cfb4", "hat": "crown"},
+		"look": {"robe": "#7a2e3a", "trim": "#ffd24a", "skin": "#e8c9a0", "hair": "#d8cfb4", "hat": "crown", "beard": true},
 		"lines": [
 			"Wanderer. You return to a dying town.",
 			"The springs that fed the World Tree have stopped. Our fountain is dust, and the dwarves who share the roots with us have turned savage.",
@@ -44,7 +44,7 @@
 	},
 	"apolune_armorer": {
 		"name": "Brannoc the Armorer", "role": "shop", "shop": "apolune_armor",
-		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm"}
+		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm", "build": "dwarf"}
 	},
 	"apolune_grocer": {
 		"name": "Grocer Tilde", "role": "shop", "shop": "apolune_items",
@@ -69,7 +69,7 @@
 	},
 	"apolune_miner": {
 		"name": "Dwarf Orrin", "role": "talk",
-		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#cd8c51", "hair": "#48201e", "hat": "helm"},
+		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#cd8c51", "hair": "#48201e", "hat": "helm", "build": "dwarf"},
 		"lines": [
 			"Not every dwarf turned. Those of us who kept away from the meteor's light kept our heads.",
 			"The Tower of Trunk is ours, or was. Zoradohna holds it now. Bring a Mattock if you go: the old walls only crack for one."

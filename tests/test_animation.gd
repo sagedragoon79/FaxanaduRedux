@@ -41,25 +41,49 @@ func test_sheet_covers_every_pose() -> void:
 				bad.append(n)
 	check(bad.is_empty(), "frames carry hand and neck points, and blades only in swings (bad %s)" % [bad])
 	var sheet := (load(PlayerVisual.SHEET) as Texture2D).get_image()
-	check(sheet.get_width() >= int(d.columns) * int(d.cell) and sheet.get_height() >= anims.size() * int(d.cell),
+	var cell: Vector2 = d.cell
+	check(sheet.get_width() >= int(d.columns) * cell.x and sheet.get_height() >= anims.size() * cell.y,
 		"the sheet is big enough for every row")
 
 
-func test_sheet_uses_the_master_palette() -> void:
+func test_sheets_use_the_master_palette() -> void:
 	var allowed := {}
 	for line in FileAccess.get_file_as_string("res://art/palette/master.gpl").split("\n"):
 		var parts := line.replace("\t", " ").strip_edges().split(" ", false)
 		if parts.size() >= 3 and parts[0].is_valid_int():
 			allowed[Color8(int(parts[0]), int(parts[1]), int(parts[2])).to_rgba32()] = true
-	var img := (load(PlayerVisual.SHEET) as Texture2D).get_image()
-	img.decompress()
-	var off := 0
-	for y in img.get_height():
-		for x in img.get_width():
-			var c := img.get_pixel(x, y)
-			if c.a > 0.0 and not allowed.has(Color(c.r, c.g, c.b, 1.0).to_rgba32()):
-				off += 1
-	check(off == 0, "every sprite pixel is a master palette color (%d off)" % off)
+	var bad: Array[String] = []
+	var count := 0
+	for file in DirAccess.get_files_at(Sheet.DIR):
+		if not file.ends_with(".json"):
+			continue
+		count += 1
+		var img := (load(Sheet.DIR + file.trim_suffix(".json") + ".png") as Texture2D).get_image()
+		img.decompress()
+		var off := 0
+		for y in img.get_height():
+			for x in img.get_width():
+				var c := img.get_pixel(x, y)
+				if c.a > 0.0 and not allowed.has(Color(c.r, c.g, c.b, 1.0).to_rgba32()):
+					off += 1
+		if off > 0:
+			bad.append("%s (%d px)" % [file, off])
+	check(count >= 4 and bad.is_empty(), "every character sheet is on the master palette (%d sheets; off: %s)" % [count, bad])
+
+
+func test_cast_has_sheets() -> void:
+	var want := {"monodron": ["idle", "windup", "hop"], "hornet": ["fly", "windup", "swoop"],
+		"rot_dwarf": ["walk", "windup", "swing", "recover", "stagger"]}
+	var missing: Array[String] = []
+	for sheet: String in want:
+		for anim: String in want[sheet]:
+			if not Sheet.exists(sheet) or not Sheet.has_anim(sheet, anim):
+				missing.append(sheet + ":" + anim)
+	for npc_id: String in GameData.table("npcs"):
+		if not Sheet.exists("npc_" + npc_id):
+			missing.append("npc_" + npc_id)
+	check(missing.is_empty(), "every enemy state and every person has a sheet (missing %s)" % [missing])
+	check(Sheet.info("monodron", "idle", 0).has("eye"), "the Monodron's frames mark its eye for the pupil")
 
 
 func test_combo_plays_three_swings() -> void:

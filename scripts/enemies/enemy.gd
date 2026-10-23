@@ -215,3 +215,16 @@ func flashing() -> bool:
 
 func telegraph_pulse() -> bool:
 	return int(state_time * 16.0) % 2 == 0
+
+
+## Draws frame `anim` of `sheet` (assets/sprites, from tools/art/castgen.py) at
+## time `t`, facing this enemy's way, washed white while flashing or telegraphing.
+## Returns the frame drawn.
+func draw_sheet(sheet: String, anim: String, t: float, white := false, offset := Vector2.ZERO) -> int:
+	var f := Sheet.frame_at(sheet, anim, t)
+	draw_set_transform(offset, 0.0, Vector2(facing, 1))
+	Sheet.draw(self, sheet, anim, f)
+	if white:
+		Sheet.draw(self, sheet, anim, f, Color(1, 1, 1, 0.85), true)
+	draw_set_transform(Vector2.ZERO)
+	return f

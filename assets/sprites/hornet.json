@@ -1,0 +1,52 @@
+{
+ "cell": [
+  40,
+  32
+ ],
+ "origin": [
+  20,
+  16
+ ],
+ "columns": 2,
+ "animations": {
+  "fly": {
+   "row": 0,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 24,
+   "loop": true
+  },
+  "windup": {
+   "row": 1,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 30,
+   "loop": true
+  },
+  "swoop": {
+   "row": 2,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 16,
+   "loop": true
+  }
+ }
+}
