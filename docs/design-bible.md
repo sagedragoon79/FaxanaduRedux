@@ -157,6 +157,7 @@ Every gate has a consistent, readable look so players remember it:
 - **Illusory walls:** a 1-pixel seam visible only with Black Onyx.
 - **Time-locked water:** waterfalls with clock-glyph droplets (Hour Glass).
 - **Key doors:** Jack, Queen, King, Ace and Joker doors with a card-suit glyph.
+- **Root-gates (Trunk Hollows):** a woven pillar of living roots beaded with sap. No ability opens it: find and strike the room's Root Heart, a pulsing amber bulb, and every gate in the room draws back into the ceiling for good. A puzzle of finding, not of power, so the zone has gates before the Climbing Glove.
 
 ---
 

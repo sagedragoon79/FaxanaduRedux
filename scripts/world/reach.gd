@@ -24,6 +24,7 @@ var abilities := {}    # ability -> bool
 var keys := false      # may Jack doors be opened?
 
 var _edges := {}       # node key -> Array of node keys
+var _roots_open := {}  # room id -> true once its Root Heart is in reach
 
 
 ## `catalog_texts`: room id -> room text.
@@ -70,6 +71,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 		return not keys
 	if c == "C":
 		return not abilities.get("mattock", false)
+	if c == "R":
+		# A root-gate opens once the room's Root Heart can be struck.
+		return not _roots_open.has(room_id)
 	if c == "~":
 		# Sap hardens into solid amber once the Spring of Trunk is restored.
 		return abilities.get("amber", false)
@@ -264,8 +268,28 @@ func _door_at(out: Array, r: String, x: int, y: int) -> void:
 
 # --- Searches ----------------------------------------------------------------------
 
-## Every node reachable from `start`.
+## Every node reachable from `start`, opening root-gates whose heart comes in
+## reach along the way.
 func reachable(start: String) -> Dictionary:
+	while true:
+		var seen := _flood(start)
+		var opened := false
+		for id: String in rooms:
+			if _roots_open.has(id):
+				continue
+			var g: Array[String] = rooms[id].grid
+			for y in g.size():
+				var x := g[y].find("N")
+				if x >= 0 and touchable(seen, id, x, y):
+					_roots_open[id] = true
+					opened = true
+		if not opened:
+			return seen
+		_edges.clear()
+	return {}
+
+
+func _flood(start: String) -> Dictionary:
 	var seen := {start: true}
 	var queue := [start]
 	while not queue.is_empty():
