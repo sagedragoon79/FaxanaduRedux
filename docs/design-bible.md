@@ -603,15 +603,18 @@ on the pro tier (a 4 s clip); a weapon attack move is 5 (one engine only), a pos
 another size or frame count (`regenerate_single_spritesheet`) is **free**, so every clip is re-cut at its full rate
 (about 24 frames per second, 256 px) and the import picks the frames.
 
-**Tier: pro.** Sean asked for HD quality over the cheapest option (2026-10-23). The same run clip on both tiers: pro
-stayed in clean side profile with more readable limbs, turbo drifted to a three-quarter view on several frames. Every
-character clip is pro unless it is only a reference test.
+**Tier: chosen by result, never by price.** Sean asked for HD quality over the cheapest option (2026-10-23). For
+humanoids, **pro**: on the same run clip pro stayed in clean side profile with more readable limbs, while turbo drifted
+to a three-quarter view. For simple non-humanoid creatures, **turbo in reference mode**: the pro Monodron clip invented a
+second creature and morphed into a legged, front-facing design, while turbo reference kept the exact base on every
+frame (it is also the mode Autosprite calls the most consistent).
 
 **Style lock:** each character starts from its code-drawn sprite (tools/art/spritegen.py, castgen.py) blown up 10x and
 uploaded free. That soft blow-up animated poorly (the test idle turned three-quarter and barely moved), so the base is
 first redrawn once as an **HD side-view pose** (`generate_pose`, 3 credits, prompt names the outfit and "strict side
 profile facing right"), and that pose is uploaded free as the character the clips are made from. The player's base
-is Autosprite character `cmvkexbot00w0vd98tdlkmcx5`. `tools/art/autosprite_import.py` brings every clip back to the
+is Autosprite character `cmvkexbot00w0vd98tdlkmcx5`. When `generate_pose` fails on a base (it failed, refunded, twice
+each for the Hornet and the Rot Dwarf), a pro `create_character` from a written description (3 credits) is the fallback. `tools/art/autosprite_import.py` brings every clip back to the
 palette, scale and outline of 12.3 (`--loop` finds a clean cycle in a full-rate sheet); `tools/art/autosprite_fetch.py`
 stores the source sheets compactly in `art/autosprite/`. One clip feeds several game animations (the jump clip gives
 rise, apex and fall; the sword combo gives slash 2, slash 3 and the down strike).
@@ -649,7 +652,8 @@ with date, asset, cost and result.
 **Code rig and Autosprite:** every character also has a code-drawn version on a small 2D rig (`tools/art/spritegen.py`,
 `castgen.py`), shaded and outlined to the rules in 12.3, in the same sheet format (PNG plus JSON with per-frame points).
 Autosprite clips replace it animation by animation through `art/autosprite/manifest.json`. Since 2026-10-23 all 17 of
-the player's animations are Autosprite (pro tier), including a new death collapse; enemies and NPCs are still code-drawn.
+the player's animations are Autosprite (pro tier), including a new death collapse, and so are the three enemies in the
+game (Monodron, Hornet, Rot Dwarf); the boss and NPCs are still code-drawn.
 
 #### Player (AS, cleanup APP; scarf CODE)
 idle (8 frames), run (10), run-start (3), turn (3), jump-rise (3), jump-apex (2), fall (3), land (3), double jump (5), wall slide (4), wall jump (4), dash (4 + afterimages SH), slash 1/2/3 (5 each), air slash (5), up-slash (5), down-strike/pogo (4), charged thrust (6), parry (4), cast spell (6), drink potion (8), hurt (3), death (10), meditate/save (6), item-get pose (4), door enter (4). Weapon swaps: blade drawn as a separate layer (CODE) so the 4 blades share animations.
