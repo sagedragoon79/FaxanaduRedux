@@ -45,6 +45,11 @@ animations of which sheet they replace:
                                          `above` taken from another frame of the clip, moved so
                                          the heads line up (the Iron Dwarf's walk lets go of his
                                          hammer for half a stride: that half gets a gripping arm)
+               "face": {"from": 2, "box": [x0, y0, x1, y1], "match": [x0, y0, x1, y1]},
+                                         every frame's `box` (in the donor's place) replaced by
+                                         source frame `from`'s, found where the `match` patch
+                                         (the helmet) lines up best: one still face, for a clip
+                                         whose mouth works as if talking (the Foreman's walk)
                "clear": {"20": [x0, y0, x1, y1]},  per source frame, a box (cell pixels) where
                                          pale grey pixels are cleared: background the clip left
                                          closed in (between the hero's raised arm and his face)
@@ -188,6 +193,33 @@ def _graft(src, donor, above):
     labels, sizes = components(out[..., 3] > 0.02)
     if len(sizes) > 1:
         out[labels != int(np.argmax(sizes[1:])) + 1] = 0
+    return out
+
+
+def _match_offset(src, donor, box, reach=10):
+    """The shift (dx, dy) that best lays `donor`'s `box` onto `src`."""
+    x0, y0, x1, y1 = box
+    patch = donor[y0:y1, x0:x1]
+    best = None
+    for dy in range(-reach, reach + 1):
+        for dx in range(-reach, reach + 1):
+            if y0 + dy < 0 or x0 + dx < 0 or y1 + dy > src.shape[0] or x1 + dx > src.shape[1]:
+                continue
+            d = np.abs(src[y0 + dy:y1 + dy, x0 + dx:x1 + dx] - patch).mean()
+            if best is None or d < best[0]:
+                best = (d, dx, dy)
+    return best[1], best[2]
+
+
+def _face(src, donor, box, match):
+    """`src` with `donor`'s `box` pasted where the `match` patch lines up."""
+    dx, dy = _match_offset(src, donor, match)
+    x0, y0, x1, y1 = box
+    patch = donor[y0:y1, x0:x1]
+    out = src.copy()
+    region = out[y0 + dy:y1 + dy, x0 + dx:x1 + dx]
+    solid = patch[..., 3] > 0.5
+    region[solid] = patch[solid]
     return out
 
 
@@ -467,6 +499,11 @@ def imported(name, cell, origin, code_meta):
             donors = dict(zip(*[[int(k) for k in g["from"]], source_frames(
                 {**spec, "pick": [int(v) for v in g["from"].values()]}, imp.dir)]))
             srcs = [_graft(src, donors[k], g["above"]) if k in donors else src for k, src in zip(picks, srcs)]
+        if "face" in spec:
+            f = spec["face"]
+            donor = source_frames({**spec, "pick": [f["from"]]}, imp.dir)[0]
+            srcs = [src if k == f["from"] else _face(src, donor, f["box"], f["match"])
+                    for k, src in zip(picks, srcs)]
         if "clear" in spec:
             srcs = [_clear_grey(src, spec["clear"][str(k)]) if str(k) in spec["clear"] else src
                     for k, src in zip(picks, srcs)]

@@ -98,7 +98,7 @@
   "reference": "walk",
   "animations": {
    "idle": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [0, 0], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
-   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [2, 5, 8, 11, 14, 17, 20, 23], "fps": 12, "loop": true, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), pro 4s walk, video cmvklybcc000gh91en1kdty6n"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [2, 5, 8, 11, 14, 17, 20, 23], "fps": 12, "loop": true, "face": {"from": 2, "box": [150, 58, 192, 84], "match": [140, 34, 200, 58]}, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), pro 4s walk, video cmvklybcc000gh91en1kdty6n"},
    "pound_tell": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [1, 1], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
    "pound": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [2], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
    "charge_tell": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [3, 3], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"},
