@@ -55,6 +55,8 @@ static func fresh() -> Dictionary:
 		"gold": 0,
 		"xp": 0,
 		"rank": 0,
+		## The highest rank a Guru has named you by (Faxanadu's title ceremony).
+		"named_rank": 0,
 		"skill_points": 0,
 		"skills": [],
 		"respecs": 0,
@@ -152,8 +154,19 @@ func add_xp(amount: int) -> void:
 	while int(data.rank) + 1 < RANK_XP.size() and int(data.xp) >= RANK_XP[int(data.rank) + 1]:
 		data.rank = int(data.rank) + 1
 		data.skill_points = int(data.skill_points) + 1
-		banner.emit("Rank up: " + rank_name(), "You gain a skill point. A Guru can teach you new skills.")
+		banner.emit("Rank up: " + rank_name(), "You gain a skill point. Seek a Guru to be named and taught.")
 		Sfx.play("rank", 0.0)
+
+
+## The title you have earned but no Guru has named yet ("" if none).
+func unnamed_title() -> String:
+	return rank_name() if int(data.rank) > int(data.get("named_rank", 0)) else ""
+
+
+## A Guru names you by your current rank. Returns the title.
+func name_title() -> String:
+	data.named_rank = int(data.rank)
+	return rank_name()
 
 
 func key_count(kind: String) -> int:

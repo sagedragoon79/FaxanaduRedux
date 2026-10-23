@@ -17,7 +17,9 @@ extends Node2D
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --map                      open the map before the screenshot
-##   --open=shop:ID|guru|skills|pause|options|controls
+##   --open=shop:ID|guru|title|skills|pause|options|controls
+##                              (title: the nearest Guru names your rank; pair with --xp)
+##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
@@ -245,6 +247,8 @@ func _debug_open() -> void:
 			d.velocity = Vector2(0, 1)
 			world.room.add_child(d)
 			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
+	if _args.has("xp"):
+		GameState.add_xp(int(_args["xp"]))
 	if _args.has("poisoned"):
 		player.poison()
 	if _args.has("map"):
@@ -254,6 +258,11 @@ func _debug_open() -> void:
 		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)
 	elif what == "guru":
 		Menus.open_guru(get_tree(), GameData.npc("guru").greeting, player, null)
+	elif what == "title":
+		for n in get_tree().get_nodes_in_group("interactable"):
+			if n is Npc and n.info.get("role", "") == "guru":
+				n.interact(player)
+				break
 	elif what == "skills":
 		Menus.open_skills(get_tree(), player)
 	elif what == "pause":

@@ -230,5 +230,31 @@ def main():
     save("whir", lowpass(spin, slide(900, 3200, d)) * np.minimum(1.0, t / 0.35), 0.4)
 
 
+    # The Guru names your title: a short heraldic fanfare, square lead over a
+    # triangle bass, ending on a held major chord (Faxanadu's rank-up jingle).
+    beat = 0.11
+    lead = [(523, 1), (523, 1), (523, 1), (659, 3), (587, 1), (659, 1), (784, 6)]
+    bass = [(131, 3), (165, 3), (196, 6)]
+    def line(notes, shape, duty, decay):
+        n = int(RATE * beat * sum(b for _, b in notes)) + int(RATE * 0.5)
+        out = np.zeros(n)
+        pos = 0
+        for f, b in notes:
+            seg = n - pos
+            out[pos:] += osc(np.full(seg, float(f)), shape, duty) * env(seg, 0.004, decay) * (1.0 if b < 6 else 1.3)
+            pos += int(RATE * beat * b)
+        return out
+    a = line(lead, "square", 0.25, 1.6)
+    b = line(bass, "tri", 0.5, 0.9)
+    m = max(len(a), len(b))
+    a = np.pad(a, (0, m - len(a)))
+    b = np.pad(b, (0, m - len(b)))
+    chord_start = int(RATE * beat * 9)
+    chord = np.zeros(m)
+    seg = m - chord_start
+    for f in (392, 523, 659):
+        chord[chord_start:] += osc(np.full(seg, float(f)), "square", 0.5) * env(seg, 0.01, 1.2) * 0.3
+    save("title", lowpass(mix(a, b * 0.8, chord), 5000), 0.55)
+
 if __name__ == "__main__":
     main()

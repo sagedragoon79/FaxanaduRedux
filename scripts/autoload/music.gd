@@ -57,6 +57,17 @@ func play(name: String, fade := FADE) -> void:
 	_fade(next, MUSIC_DB, fade, false)
 
 
+## Dips the music for `time` seconds so a fanfare can be heard, then brings it back.
+func duck(time: float, depth_db := 14.0) -> void:
+	var p := _players[_active]
+	if not p.playing:
+		return
+	var tw := create_tween()
+	tw.tween_property(p, "volume_db", MUSIC_DB - depth_db, 0.15)
+	tw.tween_interval(maxf(time - 0.8, 0.0))
+	tw.tween_property(p, "volume_db", MUSIC_DB, 0.65)
+
+
 func ambience(name: String, fade := FADE) -> void:
 	if name == ambience_track:
 		return

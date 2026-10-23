@@ -264,6 +264,27 @@ func test_bread_shrines_and_ointment_beat_poison() -> void:
 	check(not p.poison(), "an Ointment keeps poison off")
 
 
+
+func test_the_guru_names_your_title_once() -> void:
+	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(9, 19))
+	var p := w.player
+	await frames(2)
+	var guru: Npc = _find(w.room, Npc)
+	var said := []
+	var hear := func(who: String, pages: Array) -> void: said.append([who, pages])
+	GameState.dialog_requested.connect(hear)
+	guru.interact(p)
+	check(said.is_empty(), "a Novice gets no ceremony")
+	GameState.add_xp(100)
+	check(GameState.rank_name() == "Battler" and GameState.unnamed_title() == "Battler", "ranks rise in the field, unnamed (%s)" % GameState.unnamed_title())
+	guru.interact(p)
+	check(said.size() == 1 and String(said[0][1][1]).contains("BATTLER"), "the Guru names you by your title: %s" % [said])
+	check(int(GameState.data.named_rank) == int(GameState.data.rank) and GameState.unnamed_title() == "", "and it is yours from then on")
+	guru.interact(p)
+	check(said.size() == 1, "only once per title")
+	check(Npc.title_lines(14, "Paladin")[0] != Npc.title_lines(1, "Aspirant")[0], "higher ranks hear grander words")
+	GameState.dialog_requested.disconnect(hear)
+
 func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	make_world(_town(), "test/town")
 	var m := GameState.mantra()
