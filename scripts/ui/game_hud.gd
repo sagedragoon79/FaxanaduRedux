@@ -33,6 +33,9 @@ var _toast_t := 0.0
 var _flash := 0.0
 ## The boss bar's shown health trails the real value, like the gold counter.
 var _boss_shown := 1.0
+var _mask_cache := {}
+## Frames drawn (the soak test checks the HUD really draws).
+var draws := 0
 
 
 func _ready() -> void:
@@ -68,6 +71,7 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if player == null:
 		return
+	draws += 1
 	var origin := Vector2(10, 10)
 	var masks := ceili(float(player.max_hp) / MASK_HP)
 	var mask_x := 0.0
@@ -149,26 +153,44 @@ func _draw_plate(r: Rect2) -> void:
 
 
 ## One health mask: ivory fills from the chin up as health returns; green when poisoned.
+## A mask's polygons relative to its corner, built once per shape: outline,
+## body, inner ring, inner fill and the lit face.
+func _mask_polys(half: bool) -> Array:
+	var key := "half" if half else "full"
+	if not _mask_cache.has(key):
+		var shape: Array = HALF_MASK_SHAPE if half else MASK_SHAPE
+		_mask_cache[key] = [_hpoly(Vector2.ZERO, shape, 2.0), _hpoly(Vector2.ZERO, shape),
+			_hpoly(Vector2(0.5, 0.5), shape, -2.0), _hpoly(Vector2(0.5, 0.5), shape, -3.0),
+			_hpoly(Vector2(-0.5, -0.5), shape, -2.0)]
+	return _mask_cache[key]
+
+
+## One health mask: ivory fills from the chin up as health returns; green when poisoned.
 func _draw_mask(at: Vector2, half: bool, fill: float) -> void:
-	var shape: Array = HALF_MASK_SHAPE if half else MASK_SHAPE
-	draw_colored_polygon(_hpoly(at, shape, 2.0), OUTLINE)
-	var body := _hpoly(at, shape)
-	draw_colored_polygon(body, MASK_EMPTY)
-	draw_colored_polygon(_hpoly(at + Vector2(0.5, 0.5), shape, -2.0), MASK_EMPTY_LIGHT)
-	draw_colored_polygon(_hpoly(at + Vector2(0.5, 0.5), shape, -3.0), MASK_EMPTY)
+	var polys := _mask_polys(half)
+	draw_set_transform(at)
+	draw_colored_polygon(polys[0], OUTLINE)
+	draw_colored_polygon(polys[1], MASK_EMPTY)
+	draw_colored_polygon(polys[2], MASK_EMPTY_LIGHT)
+	draw_colored_polygon(polys[3], MASK_EMPTY)
 	var sick := player.poison_left > 0.0
-	if fill > 0.0:
-		var line := at.y + 14.0 * (1.0 - fill)
-		var clip := PackedVector2Array([Vector2(at.x - 1, line), Vector2(at.x + 13, line), Vector2(at.x + 13, at.y + 15), Vector2(at.x - 1, at.y + 15)])
-		var main := POISONED if sick else MASK_FULL
-		var shade := POISONED_DARK if sick else MASK_SHADE
-		for part in Geometry2D.intersect_polygons(body, clip):
+	var main := POISONED if sick else MASK_FULL
+	var shade := POISONED_DARK if sick else MASK_SHADE
+	if fill >= 1.0:
+		draw_colored_polygon(polys[1], shade)
+		draw_colored_polygon(polys[4], main)
+	elif fill > 0.0:
+		# Only a part-filled mask needs clipping at its fill line.
+		var line := 14.0 * (1.0 - fill)
+		var clip := PackedVector2Array([Vector2(-1, line), Vector2(13, line), Vector2(13, 15), Vector2(-1, 15)])
+		for part in Geometry2D.intersect_polygons(polys[1], clip):
 			draw_colored_polygon(part, shade)
-		for part in Geometry2D.intersect_polygons(_hpoly(at + Vector2(-0.5, -0.5), shape, -2.0), clip):
+		for part in Geometry2D.intersect_polygons(polys[4], clip):
 			draw_colored_polygon(part, main)
-		if fill >= 1.0:
-			_hp(at, 4, 2, 3, 2, POISONED_SHINE if sick else MASK_SHINE)
-			_hp(at, 3, 4, 2, 4, POISONED_SHINE if sick else MASK_SHINE)
+	draw_set_transform(Vector2.ZERO)
+	if fill >= 1.0:
+		_hp(at, 4, 2, 3, 2, POISONED_SHINE if sick else MASK_SHINE)
+		_hp(at, 3, 4, 2, 4, POISONED_SHINE if sick else MASK_SHINE)
 	# The eyes and a brow line, carved in.
 	var eye := (POISONED_DARK if sick else MASK_EYE) if fill > 0.45 else OUTLINE
 	_hp(at, 5, 10, 5, 3, eye)
