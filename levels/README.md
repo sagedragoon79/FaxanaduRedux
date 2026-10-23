@@ -37,6 +37,7 @@ music: title       (optional: a track other than the zone's, from assets/music/)
 | `H` | Hornet (flier; placed at the tile center) |
 | `D` | Rot Dwarf (shielded walker) |
 | `T` | Sap Spitter (turret; lobs sap that leaves a slowing puddle) |
+| `U` | Grub Lump (crawls on floors, walls and ceilings; clings to the floor first, else the ceiling, else a wall) |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
 | `%` | Fake wall: looks solid, walk through it (a secret) |

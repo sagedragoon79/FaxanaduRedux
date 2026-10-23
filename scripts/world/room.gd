@@ -351,6 +351,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(RotDwarf.new(), bottom_center)
 		"T":
 			_spawn_enemy(SapSpitter.new(), bottom_center)
+		"U":
+			_spawn_enemy(GrubLump.new(), center)
 		"S":
 			_spawn(SaveShrine.new(), bottom_center)
 		"J":

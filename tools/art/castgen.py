@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter; the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump; the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
@@ -373,12 +373,66 @@ SAP_SPITTER = [
 ]
 
 
+# --- Grub Lump: a bark-plated grub that crawls over every surface -------------
+
+GRUB_FLESH = mat("leaf", 7, 6, 5, 3)
+GRUB_PLATE = mat("bark", 4, 3, 2, 0)
+GRUB_JAW = mat("gold", 5, 4, 3, 1)
+GRUB_LEG = mat("bark", 2, 1, 1, 0)
+
+
+def grub_lump(phase=0.0, rear=0.0, jaw=0.5, curl=0.0):
+    """Drawn crawling along a floor, head toward +x; the game turns it to cling
+    to walls and ceilings. phase: the crawl wave; rear: how far the front half
+    lifts (the drop telegraph); jaw: how wide the mandibles open; curl: 0 lying
+    flat, 1 balled up (falling)."""
+    def render(_):
+        cv = Canvas(32, 24, (16, 21))
+        segs = []
+        for i in range(4):
+            x = -8.5 + i * 4.6
+            lift = max(0.0, math.sin(phase - i * 1.2)) * 1.4 + rear * i * 0.9
+            # Balled up, the segments gather into a ring.
+            a = math.pi * (0.95 - i * 0.42)
+            cx = x * (1 - curl) + math.cos(a) * 5.0 * curl
+            cy = (-4.4 - lift) * (1 - curl) + (-7 - math.sin(a) * 4.5) * curl
+            segs.append((cx, cy, 4.8 - abs(i - 1.5) * 0.4))
+        for cx, cy, r in segs:
+            cv.part(cv.ellipse((cx, cy), r, r * 0.95), GRUB_FLESH, deep=True)
+        for cx, cy, r in segs:
+            plate = cv.ellipse((cx - 0.6, cy - r * 0.55), r * 0.62, r * 0.42) & cv.ellipse((cx, cy), r - 0.5, r * 0.9)
+            cv.part(plate, GRUB_PLATE)
+        hx, hy, _ = segs[-1]
+        head = (hx + 4.4 * (1 - curl) + 1.5 * curl, hy + 0.6 - rear * 1.2)
+        cv.part(cv.ellipse(head, 3.4, 3.0), GRUB_PLATE, deep=True)
+        for side in (-1, 1):
+            tip = (head[0] + 3.2, head[1] + side * (1.0 + jaw * 2.2))
+            cv.part(cv.capsule((head[0] + 1.6, head[1] + side * 0.8), tip, 0.9), GRUB_JAW)
+        cv.pixel((head[0] + 0.8, head[1] - 1.2), DARK)
+        cv.pixel((head[0] + 1.2, head[1] - 1.8), PAL["gold-6"])
+        # Stubby legs under the front segments.
+        if curl < 0.5:
+            for cx, cy, r in segs[1:]:
+                cv.part(cv.capsule((cx, cy + r * 0.6), (cx + 0.6, -0.6), 0.8), GRUB_LEG)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+GRUB_LUMP = [
+    ("crawl", [grub_lump(p) for p in (0.0, 1.6, 3.2, 4.8)], [0, 1, 2, 3], 6, True),
+    ("windup", [grub_lump(0.0, 1.0, 1.0), grub_lump(0.8, 1.3, 1.2)], [0, 1], 10, True),
+    ("drop", [grub_lump(0.0, 0.0, 0.9, 1.0)], [0], 1, False),
+]
+
+
 def main():
     write_sheet("monodron", (40, 32), (20, 30), MONODRON, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
     write_sheet("rot_dwarf", (48, 48), (24, 45), ROT_DWARF, lambda r: r(None))
     write_sheet("rokusutahn", (64, 64), (32, 32), ROKUSUTAHN, lambda r: r(None))
     write_sheet("sap_spitter", (32, 32), (16, 30), SAP_SPITTER, lambda r: r(None))
+    write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

@@ -1,0 +1,54 @@
+{
+ "cell": [
+  32,
+  24
+ ],
+ "origin": [
+  16,
+  21
+ ],
+ "columns": 4,
+ "animations": {
+  "crawl": {
+   "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 6,
+   "loop": true
+  },
+  "windup": {
+   "row": 1,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "drop": {
+   "row": 2,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ }
+}
