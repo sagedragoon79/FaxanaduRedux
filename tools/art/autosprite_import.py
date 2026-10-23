@@ -39,7 +39,9 @@ animations of which sheet they replace:
                "extra_ramps": ["stone"], more palette ramps for this animation (a steel blade)
                "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
                                          the game draws itself
-               "erase_white": true}      also cut out the glow's near-white core
+               "erase_white": true,      also cut out the glow's near-white core
+               "height": 38}             this animation's own figure height (world px) and middle,
+                                         for a part drawn apart from the reference (boss segments)
     }
   }
 
@@ -183,12 +185,20 @@ class Importer:
         self.own = {}
         ref = cfg["animations"][cfg.get("reference", "idle")]
         frames = source_frames(ref, self.dir)
-        frame = frames[0]
-        x0, y0, x1, y1 = _bbox(frame[..., 3])
-        self.scale = cfg["height"] * self.density / float(y1 - y0 + 1)
+        self.set_reference(frames[0], cfg["height"])
         if cfg.get("colors"):
-            self.own = self.own_palette(frames, int(cfg["colors"]))
+            # Cut from the reference clip plus the first frame of every other animation
+            # whose source is here, so a differently colored part keeps its colors.
+            others = [source_frames(dict(spec, pick=spec.get("pick", [0])[:1]), self.dir)[0]
+                      for spec in cfg["animations"].values()
+                      if spec is not ref and (self.dir / spec["file"]).exists()]
+            self.own = self.own_palette(frames + others, int(cfg["colors"]))
         self.use_ramps(cfg["ramps"])
+
+    def set_reference(self, frame, height):
+        """Scales so `frame` is `height` world px tall and measures its feet and middle."""
+        x0, y0, x1, y1 = _bbox(frame[..., 3])
+        self.scale = height * self.density / float(y1 - y0 + 1)
         # The reference feet: bottom of the figure, centered on its lowest rows.
         self.ref_x = self.feet_x(frame)
         # The reference middle, for fliers whose origin is their center.
@@ -347,6 +357,9 @@ def imported(name, cell, origin, code_meta):
         imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
         if "erase" in spec:
             srcs = [_erase_hue(src, *spec["erase"], white=spec.get("erase_white", False)) for src in srcs]
+        if "height" in spec:
+            # A part drawn on its own (a boss segment) sets its own scale and middle.
+            imp.set_reference(srcs[0], spec["height"])
         ref_x = imp.feet_x(srcs[0]) if spec.get("feet_x") == "self" else None
         for i, src in enumerate(srcs):
             img, mask, grid = imp.frame(src, spec.get("anchor", "ground"), ref_x)
@@ -358,6 +371,8 @@ def imported(name, cell, origin, code_meta):
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
             frames.append((img, mask, meta))
+        if "height" in spec:
+            imp.set_reference(source_frames(ref, imp.dir)[0], cfg["height"])
         out[anim] = (frames, spec.get("seq"), spec.get("fps"), spec.get("loop"))
         print(f"  {name}.{anim}: {len(frames)} frames from Autosprite ({spec['file']})")
     return out

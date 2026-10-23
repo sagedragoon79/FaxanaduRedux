@@ -643,7 +643,7 @@ the game draws its own blade from the code rig's angle. The hooded hero's clips 
 frame, so all five swings use the art blade; at 2x density a code-drawn blade would also look coarse beside the art.
 Showing the equipped weapon (longer blades, recolors) is a later job.
 
-Balance after the hooded hero's set: 148 credits, about 14 pro clips. The redesign (concepts, the new base and its
+Balance after the hooded hero's set and Rokusutahn's parts: 139 credits, about 13 pro clips. The redesign (concepts, the new base and its
 leg fix, a trial clip and the full set) cost 145 and came out of the NPC and reserve lines.
 
 | Use | Clips | Credits | Share |
@@ -653,7 +653,8 @@ leg fix, a trial clip and the full set) cost 145 and came out of the NPC and res
 | Player redesign, spent: concepts, base and leg fix, trial idle + run, full set of 10 pro clips and 2 sword moves | 14 | 145 | 30% |
 | Enemies in the game now (Monodron, Hornet, Rot Dwarf): HD pose + move + attack each | 6 | 69 | 14% |
 | NPCs: only if credits are topped up (they stay code-drawn) | 0 | 0 | 0% |
-| Bosses: key clips for the rigged parts (Rokusutahn's head first) | 4 | 40 | 8% |
+| Bosses, Rokusutahn spent: three pro stills (head, plate, tail) | 3 | 9 | 2% |
+| Bosses still to come: stills or key clips for their rigged parts | 3 | 31 | 6% |
 | Reserve for later enemies, fixes and regeneration | | 103 | 21% |
 | **Total** | | **490** | |
 
@@ -661,6 +662,11 @@ If credits run short, cut NPC clips first (they can stay code-drawn), then enemi
 never the player. Every clip is judged against the code-drawn sheet it would replace; the better one ships (the
 manifest in `art/autosprite/` says which animations are imported). Sean can buy more credits; the budget above is
 what the first 500 cover.
+
+**Rigged boss parts:** a part that turns or changes state rather than moving like a body is made from **one pro still**
+(`create_character`, 3 credits) and its frames are built by code: `tools/art/autosprite_spin.py` turns a ring
+around a still hub (Rokusutahn's mandible wheel, 24 frames for a full turn), and `tools/art/autosprite_parts.py`
+draws state frames over a still (cracked plates, the glowing tail). A clip is kept for parts that truly animate.
 
 **Credit rules:** never regenerate a whole set to fix one frame (fix by hand or by code, or re-cut free); request at
 the canonical size so no upscaling is needed; batch similar requests; log every call in `art/autosprite-ledger.csv`
