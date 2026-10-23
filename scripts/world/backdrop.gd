@@ -35,6 +35,8 @@ func set_zone(next: String) -> void:
 		layer.ignore_camera_scroll = true
 		var sprite := Sprite2D.new()
 		sprite.texture = load(path)
+		# Painted at the render density (design bible 12.1): scale back to world pixels.
+		sprite.scale = SIZE / sprite.texture.get_size()
 		sprite.centered = false
 		sprite.position = OFFSET
 		layer.add_child(sprite)

@@ -76,11 +76,11 @@ func _add(row: int, kind: String, variant: int, cell: Vector2i) -> void:
 	for g: Array in variants[v].glow:
 		var gx: float = g[0]
 		if row == 3:
-			gx = 15.0 - gx
-		glows.append(origin + Vector2(gx, g[1]) + Vector2(0.5, 0.5))
+			gx = _meta.cell[0] - gx
+		glows.append(origin + Vector2(gx, g[1]))
 
 
-## Top-left of a piece's 16x32 sprite: floor pieces stand on the cell's bottom,
+## Top-left of a piece's 16x32 (world pixel) sprite: floor pieces stand on the cell's bottom,
 ## ceiling pieces hang from its top, wall pieces span the cell and the one below.
 func _origin(row: int, cell: Vector2i) -> Vector2:
 	var p := Vector2(cell * Room.TILE)
@@ -92,9 +92,12 @@ func _origin(row: int, cell: Vector2i) -> Vector2:
 func _draw() -> void:
 	if _tex == null:
 		return
+	# The atlas is drawn at the render density (design bible 12.1): `density`
+	# atlas pixels per world pixel.
 	var size := Vector2(_meta.cell[0], _meta.cell[1])
+	var src_size := size * float(_meta.get("density", 1))
 	for piece: Array in pieces:
-		var src := Rect2(Vector2(piece[1], piece[0]) * size, size)
+		var src := Rect2(Vector2(piece[1], piece[0]) * src_size, src_size)
 		draw_texture_rect_region(_tex, Rect2(_origin(piece[0], piece[2]), size), src)
 
 

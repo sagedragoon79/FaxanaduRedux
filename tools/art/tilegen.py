@@ -32,7 +32,8 @@ BG = ROOT / "assets" / "bg"
 D = 2
 T = 16 * D
 COLS = 8
-BG_W, BG_H = 640, 480
+## Backgrounds are 640x480 world pixels, painted at the same density.
+BG_W, BG_H = 640 * D, 480 * D
 
 PAL = {}
 for _name, _hue, _sat in palette.RAMPS:
@@ -336,24 +337,49 @@ def gradient(img, top, bottom, dither=True):
             img.putpixel((x, y), c(bottom if k > threshold * 0.6 + 0.2 else top))
 
 
+def put(img, x, y, col):
+    """Sets a pixel, wrapping sideways (the layers repeat) and clipping vertically."""
+    if 0 <= y < BG_H:
+        img.putpixel((int(x) % BG_W, int(y)), col)
+
+
+def glow_dot(img, x, y, core, rim, r=1):
+    """A small light: a bright core with a dimmer rim (atlas pixels)."""
+    for dy in range(-r - 1, r + 2):
+        for dx in range(-r - 1, r + 2):
+            d = abs(dx) + abs(dy)
+            if d <= r:
+                put(img, x + dx, y + dy, c(core))
+            elif d == r + 1:
+                put(img, x + dx, y + dy, c(rim))
+
+
 def trunk_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "bark-0")
     rng = random.Random(5)
-    # Great fibres of the trunk's heartwood, far away.
+    # Great fibres of the trunk's heartwood, far away, with a streaked grain.
     for i in range(14):
         x0 = rng.randrange(BG_W)
-        w = rng.randrange(10, 26)
+        w = rng.randrange(10, 26) * D
         col = "bark-1" if i % 3 else "night-1"
         for y in range(BG_H):
-            sway = int(math.sin(y * 0.02 + i) * 6)
+            sway = int(math.sin(y * 0.01 + i) * 6 * D)
             for dx in range(w):
-                if hash2(dx, y // 6, i) > 0.08:
-                    img.putpixel(((x0 + sway + dx) % BG_W, y), c(col))
-    # Faint glowing spores.
-    for _ in range(90):
+                if hash2(dx // 2, y // 9, i) > 0.08:
+                    put(img, x0 + sway + dx, y, c(col))
+            # Grain lines down the fibre.
+            for g in range(3, w - 2, 7):
+                if hash2(g, y // 40, i + 50) > 0.45:
+                    put(img, x0 + sway + g, y, c("night-0" if col == "bark-1" else "bark-0"))
+    # Faint glowing spores, a few of them larger and haloed.
+    for k in range(240):
         x, y = rng.randrange(BG_W), rng.randrange(BG_H)
-        img.putpixel((x, y), c(rng.choice(["sky-4", "gold-3", "sky-3"])))
+        col = rng.choice(["sky-4", "gold-3", "sky-3"])
+        if k % 12 == 0:
+            glow_dot(img, x, y, col, "sky-1", 0)
+        else:
+            put(img, x, y, c(col))
     return img
 
 
@@ -363,29 +389,47 @@ def trunk_mid():
     # Hanging roots from the top, rooted columns from the bottom.
     for i in range(18):
         x0 = rng.randrange(BG_W)
-        length = rng.randrange(60, 260)
-        w = rng.choice([2, 3, 3, 4])
+        length = rng.randrange(60, 260) * D
+        w = rng.choice([2, 3, 3, 4]) * D
+        tip_x = x0
         for y in range(length):
-            sway = int(math.sin(y * 0.05 + i * 1.7) * 5)
+            sway = int(math.sin(y * 0.025 + i * 1.7) * 5 * D)
             taper = max(1, int(w * (1 - y / length) + 0.5))
             for dx in range(taper):
-                img.putpixel(((x0 + sway + dx) % BG_W, y), c("bark-1" if dx else "bark-2"))
+                col = "bark-2" if dx == 0 else ("night-1" if dx == taper - 1 and taper > 2 else "bark-1")
+                put(img, x0 + sway + dx, y, c(col))
+            tip_x = x0 + sway
+            # Thin rootlets curling off the main root.
+            if y > 20 and hash2(i, y, 7) > 0.985:
+                d = 1 if hash2(i, y, 8) > 0.5 else -1
+                for k in range(rng.randrange(10, 26)):
+                    put(img, x0 + sway + (taper if d > 0 else -1) + d * k, y + k * k // 14, c("bark-1"))
         # A glowing fungus cap at some root tips.
         if i % 3 == 0:
-            tx = (x0 + int(math.sin(length * 0.05 + i * 1.7) * 5)) % BG_W
-            for dx in range(-2, 3):
-                img.putpixel(((tx + dx) % BG_W, length), c("sky-5"))
-            img.putpixel((tx % BG_W, length + 1), c("sky-6"))
+            for dy in range(4):
+                half = 5 - dy
+                for dx in range(-half, half + 1):
+                    put(img, tip_x + dx, length + 3 - dy, c("sky-5" if dy else "sky-4"))
+            put(img, tip_x - 2, length + 1, c("sky-7"))
+            put(img, tip_x - 1, length + 1, c("sky-6"))
+            for dx in range(-5, 6, 2):
+                put(img, tip_x + dx, length + 4, c("sky-2"))
     for i in range(7):
         x0 = rng.randrange(BG_W)
-        w = rng.randrange(18, 40)
-        h = rng.randrange(80, 200)
+        w = rng.randrange(18, 40) * D
+        h = rng.randrange(80, 200) * D
         for y in range(BG_H - h, BG_H):
             k = (y - (BG_H - h)) / h
             ww = int(w * (0.5 + 0.5 * k))
             for dx in range(-ww // 2, ww // 2):
-                col = "bark-1" if abs(dx) < ww // 2 - 2 else "night-1"
-                img.putpixel(((x0 + dx) % BG_W, y), c(col))
+                edge = ww // 2 - abs(dx)
+                col = "night-1" if edge <= 4 else "bark-1"
+                # Bark ridges running up the column.
+                if edge > 4 and (dx + ww) % 9 == 0 and hash2(dx, y // 14, i) > 0.3:
+                    col = "night-1"
+                if edge == 5 and dx < 0:
+                    col = "bark-2"
+                put(img, x0 + dx, y, c(col))
     return img
 
 
@@ -396,26 +440,41 @@ def eolis_far():
     # Distant houses carved into the roots, with lit windows.
     x = 0
     while x < BG_W:
-        w = rng.randrange(40, 80)
-        h = rng.randrange(80, 200)
-        top = BG_H - 120 - h
+        w = rng.randrange(40, 80) * D
+        h = rng.randrange(80, 200) * D
+        top = BG_H - 120 * D - h
         for yy in range(top, BG_H):
             for xx in range(x, min(x + w, BG_W)):
-                img.putpixel((xx, yy), c("night-1" if (xx - x) > 2 else "stone-1"))
-        # Arched roof.
+                col = "stone-1" if (xx - x) < 2 * D else "night-1"
+                # Faint courses of stone.
+                if (yy - top) % 22 == 0 and (xx - x) > 2 * D and hash2(xx // 12, yy, 3) > 0.4:
+                    col = "night-0"
+                img.putpixel((xx, yy), c(col))
+        # Arched roof with a stone rim.
         for xx in range(x, min(x + w, BG_W)):
             k = (xx - x) / max(w - 1, 1)
-            rise = int(math.sin(k * math.pi) * 12)
+            rise = int(math.sin(k * math.pi) * 12 * D)
             for yy in range(top - rise, top):
-                img.putpixel((xx, yy), c("night-1"))
-        for wy in range(top + 14, BG_H - 140, 26):
-            for wx in range(x + 8, x + w - 12, 18):
+                img.putpixel((xx, yy), c("stone-1" if yy - (top - rise) < 2 else "night-1"))
+        for wy in range(top + 14 * D, BG_H - 140 * D, 26 * D):
+            for wx in range(x + 8 * D, x + w - 12 * D, 18 * D):
                 if rng.random() < 0.22:
-                    for yy in range(wy, wy + 9):
-                        for xx in range(wx, wx + 6):
-                            if xx < BG_W:
-                                img.putpixel((xx, yy), c("gold-3" if yy > wy + 1 else "gold-4"))
-        x += w + rng.randrange(6, 24)
+                    ww, wh = 6 * D, 9 * D
+                    for yy in range(wy, wy + wh):
+                        for xx in range(wx, wx + ww):
+                            if xx >= BG_W:
+                                continue
+                            col = "gold-4" if yy < wy + 3 else "gold-3"
+                            # A cross of mullions and a dark sill.
+                            if xx == wx + ww // 2 or yy == wy + wh // 2:
+                                col = "bark-1"
+                            if yy == wy + wh - 1:
+                                col = "stone-1"
+                            img.putpixel((xx, yy), c(col))
+                    # Rounded window top.
+                    for xx in range(wx + 2, wx + ww - 2):
+                        put(img, xx, wy - 1, c("gold-3"))
+        x += w + rng.randrange(6, 24) * D
     return img
 
 
@@ -424,30 +483,45 @@ def eolis_mid():
     rng = random.Random(4)
     # Great roots arching overhead, and hanging lanterns.
     for i in range(4):
-        cx = i * 160 + rng.randrange(-20, 20)
-        for x in range(cx - 120, cx + 120):
-            k = (x - (cx - 120)) / 240
-            y0 = int(30 + math.sin(k * math.pi) * -20 + 40)
+        cx = (i * 160 + rng.randrange(-20, 20)) * D
+        for x in range(cx - 120 * D, cx + 120 * D):
+            k = (x - (cx - 120 * D)) / (240 * D)
+            y0 = int((30 + math.sin(k * math.pi) * -20 + 40) * D)
             for y in range(0, y0):
-                img.putpixel((x % BG_W, y), c("night-1"))
-            for y in range(y0, y0 + 3):
-                img.putpixel((x % BG_W, y), c("bark-1"))
+                col = "night-1"
+                if y > 6 and hash2(x // 3, y // 10, i) > 0.93:
+                    col = "bark-0"
+                put(img, x, y, c(col))
+            for y in range(y0, y0 + 3 * D):
+                put(img, x, y, c("bark-2" if y == y0 else "bark-1"))
+            put(img, x, y0 + 3 * D, c("night-1"))
     for i in range(6):
         x = rng.randrange(BG_W)
-        length = rng.randrange(60, 130)
-        for y in range(40, length):
-            img.putpixel((x, y), c("stone-2"))
-        for dy in range(8):
-            for dx in range(-3, 4):
-                col = "gold-5" if abs(dx) < 2 and 1 < dy < 7 else "stone-2"
-                img.putpixel(((x + dx) % BG_W, length + dy), c(col))
+        length = rng.randrange(60, 130) * D
+        for y in range(40 * D, length):
+            put(img, x, y, c("stone-2"))
+            put(img, x + 1, y, c("stone-1" if (y // 3) % 2 else "stone-2"))
+        # Lantern: a cap, glass panes with a frame, a base.
+        for dx in range(-5, 7):
+            put(img, x + dx, length, c("stone-2"))
+            put(img, x + dx, length + 1, c("stone-3"))
+        for dy in range(2, 14):
+            for dx in range(-6, 8):
+                frame = dx in (-6, 7, 1) or dy in (2, 13)
+                col = "stone-2" if frame else ("gold-6" if abs(dx - 0.5) < 3 and 5 < dy < 11 else "gold-5")
+                put(img, x + dx, length + dy, c(col))
+        for dx in range(-4, 6):
+            put(img, x + dx, length + 14, c("stone-2"))
+        put(img, x, length + 15, c("stone-2"))
+        put(img, x + 1, length + 15, c("stone-2"))
         # A faint ring of lamplight around the lantern.
-        for k in range(48):
-            ang = k / 48 * math.tau
-            px = (x + int(math.cos(ang) * 9)) % BG_W
-            py = length + 4 + int(math.sin(ang) * 9)
-            if k % 2 == 0 and img.getpixel((px, py))[3] == 0:
-                img.putpixel((px, py), c("gold-3", 120))
+        for r, alpha in ((18, 120), (24, 70)):
+            for k in range(96):
+                ang = k / 96 * math.tau
+                px = x + int(math.cos(ang) * r)
+                py = length + 8 + int(math.sin(ang) * r)
+                if k % 2 == 0 and 0 <= py < BG_H and img.getpixel((px % BG_W, py))[3] == 0:
+                    put(img, px, py, c("gold-3", alpha))
     return img
 
 

@@ -60,11 +60,12 @@ func _draw() -> void:
 func _layer(tex: Texture2D, speed: float, y: float) -> void:
 	if tex == null:
 		return
-	var w := tex.get_width()
-	var x := -fmod(_t * speed, w)
+	# Backgrounds are painted at the render density: 640 world pixels wide.
+	var size := tex.get_size() * (640.0 / tex.get_width())
+	var x := -fmod(_t * speed, size.x)
 	while x < 640:
-		draw_texture(tex, Vector2(roundf(x), y))
-		x += w
+		draw_texture_rect(tex, Rect2(Vector2(roundf(x), y), size), false)
+		x += size.x
 
 
 func _logo(center: Vector2) -> void:
