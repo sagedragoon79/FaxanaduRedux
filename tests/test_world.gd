@@ -288,3 +288,54 @@ func test_deluge_douses_the_fire_seal_for_good() -> void:
 	await frames(2)
 	var again := runner.get_tree().get_nodes_in_group("fire_seal")
 	check(not again.is_empty() and (again[0] as FireSeal).doused, "back in the room the seal is still out")
+
+
+## Bible 4.5: a Deluge bolt cast across a dry basin fills it, and a raft floats
+## up to the water-line stain, standing as a one-way platform for good.
+func test_deluge_fills_the_dry_basin_and_floats_a_raft() -> void:
+	var w := make_world({}, "mist/dry_cistern")
+	await frames(3)
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	p.abilities["deluge"] = true
+	var basins := runner.get_tree().get_nodes_in_group("dry_basin")
+	check(basins.size() == 1, "the cistern has one basin (%d)" % basins.size())
+	if basins.is_empty():
+		return
+	var b := basins[0] as DryBasin
+	var raft := Vector2((b.x0 + 8) * Room.TILE + 8, b.water_row * Room.TILE + 4)
+	var surface := b.water_row * Room.TILE
+	check(not w.room.is_one_way_at(raft), "dry, there is nothing to stand on at the stain")
+	# From the west rim, cast across the tank.
+	p.teleport(cell_feet(b.x0 - 1, b.water_row - 1))
+	p.mp = p.max_mp
+	await frames(20)
+	p.facing = 1
+	p.input.spell_pressed = true
+	var full := false
+	for i in 120:
+		await frames(1)
+		if b.filled and b.level >= 1.0:
+			full = true
+			break
+	check(full and GameState.flag(b.flag_id), "the bolt fills the basin and the room remembers")
+	check(w.room.is_one_way_at(raft), "the raft stands at the stain as a one-way platform")
+	var left := 0
+	for e in runner.get_tree().get_nodes_in_group("enemy"):
+		if not (e as Enemy).dead and (e as Enemy).center().y > b.water_row * Room.TILE:
+			left += 1
+	check(left == 0, "the myconids in the tank drown (%d left)" % left)
+	# Walk out onto the raft: it holds.
+	p.teleport(raft + Vector2(0, -6))
+	await frames(30)
+	check(p.is_on_floor() and absf(p.global_position.y - b.water_row * Room.TILE) < 2.0, "the player stands on the raft (%.1f)" % p.global_position.y)
+	w._enter("mist/dry_cistern")
+	await frames(2)
+	check(w.room.is_one_way_at(raft), "back in the room, the basin is still full")
+	await frames(2)
+	var back := 0
+	for e in runner.get_tree().get_nodes_in_group("enemy"):
+		if is_instance_valid(e) and not e.is_queued_for_deletion() and (e as Enemy).center().y > surface:
+			back += 1
+	check(back == 0, "and nothing lives in the water (%d)" % back)

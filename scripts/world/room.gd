@@ -153,7 +153,7 @@ func build(text: String) -> void:
 	var amber := _amber_on()
 	for y in grid.size():
 		for x in grid[y].length():
-			if grid[y][x] in ["#", "%"]:
+			if grid[y][x] in ["#", "%", "u"]:
 				_solid_look[Vector2i(x, y)] = true
 	# Hidden rooms: a rectangle of fake wall hides the contents until the player walks in.
 	var covers := {}
@@ -171,6 +171,7 @@ func build(text: String) -> void:
 		var row := grid[y]
 		for x in row.length():
 			_place(row[x], Vector2i(x, y), grid)
+	_place_basins(grid)
 	for cell: Vector2i in covers:
 		if not _secret_cells.has(cell):
 			_place_secret(cell)
@@ -343,7 +344,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 	var bottom_center := cell_origin + Vector2(TILE * 0.5, TILE)
 	var center := cell_origin + Vector2(TILE, TILE) * 0.5
 	match ch:
-		"#":
+		"#", "u":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))
 		"-":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
@@ -497,6 +498,39 @@ func pixel_rect() -> Rect2:
 
 func cell_at(world_pos: Vector2) -> Vector2i:
 	return Vector2i(floori(world_pos.x / TILE), floori(world_pos.y / TILE))
+
+
+## Each run of `=` tiles is a dry basin's water line; its mud bed (`u`) lies
+## below it. See DryBasin.
+func _place_basins(grid: Array[String]) -> void:
+	for y in grid.size():
+		var x := 0
+		while x < grid[y].length():
+			if grid[y][x] != "=":
+				x += 1
+				continue
+			var start := x
+			while x < grid[y].length() and grid[y][x] == "=":
+				x += 1
+			var bed := y + 1
+			while bed < grid.size() and _char_at(grid, Vector2i(start, bed)) != "u":
+				bed += 1
+			var basin := DryBasin.new()
+			basin.room = self
+			basin.x0 = start
+			basin.x1 = x - 1
+			basin.water_row = y
+			basin.bed_row = bed
+			basin.flag_id = "basin:%s:%d" % [id, start]
+			add_child(basin)
+
+
+## A filled basin's raft: the `=` row from x0 to x1 becomes a one-way platform.
+func float_raft(x0: int, x1: int, row: int) -> void:
+	for x in range(x0, x1 + 1):
+		var cell := Vector2i(x, row)
+		tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
+		_one_way[cell] = true
 
 
 ## True if the tile under `world_pos` is solid ground (not a one-way platform).
