@@ -3,6 +3,8 @@ extends Control
 ## Full-screen map, toggled with the map button. Pauses the game while open.
 ## Draws every visited room from the World's catalog as a block on a grid of
 ## screens, with door openings, save shrines and a blinking player marker.
+## Rooms you have not seen show dimmed once you own the zone's chart (sold by
+## the Cartographers), and Jump drops or lifts a pin where you stand.
 
 const CELL := Vector2(40, 22)
 const BACKDROP := Color(0.05, 0.04, 0.09, 0.96)
@@ -14,6 +16,7 @@ const SHRINE := Color("7ee0d6")
 const PLAYER := Color("e0404a")
 const TEXT := Color("f1ead2")
 const DIM := Color("8d84a3")
+const PIN := Color("f0c02e")
 
 var world: World
 var is_open := false
@@ -39,6 +42,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif is_open and event.is_action_pressed("pause"):
 		toggle()
 		get_viewport().set_input_as_handled()
+	elif is_open and event.is_action_pressed("jump"):
+		pin()
+		get_viewport().set_input_as_handled()
 
 
 func toggle() -> void:
@@ -52,6 +58,26 @@ func toggle() -> void:
 	visible = is_open
 	get_tree().paused = is_open
 	Sfx.play("blip", 0.0, -4.0)
+
+
+## Drops a pin where the player stands, or lifts the one already there.
+func pin() -> String:
+	if world == null or world.room == null or world.player == null:
+		return ""
+	var result := GameState.toggle_pin(world.room.id, world.player.global_position)
+	Sfx.play("fizzle" if result == "full" else "blip", 0.0, -2.0 if result == "placed" else -6.0)
+	return result
+
+
+## How a room shows on the map: "here", "visited", "charted" (dimmed) or "" (hidden).
+static func shown(room_id: String, info: Dictionary, here_id: String) -> String:
+	if room_id == here_id:
+		return "here"
+	if GameState.is_visited(room_id):
+		return "visited"
+	if GameState.has_chart(String(info.get("zone", ""))):
+		return "charted"
+	return ""
 
 
 func _process(delta: float) -> void:
@@ -86,14 +112,20 @@ func _draw() -> void:
 		gy += CELL.y
 
 	for room_id: String in world.catalog:
-		if not GameState.is_visited(room_id) and room_id != world.room.id:
-			continue
 		var info: Dictionary = world.catalog[room_id]
+		var how := MapScreen.shown(room_id, info, world.room.id)
+		if how == "":
+			continue
 		var r := MapScreen.room_rect(info)
 		r.position += origin
 		var zone: Dictionary = World.ZONES.get(info.zone, {"color": DIM})
+		if how == "charted":
+			draw_rect(r.grow(1), OUTLINE)
+			draw_rect(r, zone.color.darkened(0.82))
+			draw_rect(r, zone.color.darkened(0.5), false, 1.0)
+			continue
 		var fill: Color = zone.color.darkened(0.55)
-		if room_id == world.room.id:
+		if how == "here":
 			fill = zone.color.darkened(0.25 - 0.1 * sin(_t * 4.0))
 		draw_rect(r.grow(1), OUTLINE)
 		draw_rect(r, fill)
@@ -102,6 +134,15 @@ func _draw() -> void:
 		for cell: Vector2i in info.shrines:
 			var sp := r.position + Vector2(cell) / Vector2(info.size) * r.size
 			draw_rect(Rect2(sp - Vector2(1.5, 2.5), Vector2(3, 4)), SHRINE)
+
+	for p: Array in GameState.data.pins:
+		var info: Dictionary = world.catalog.get(String(p[0]), {})
+		if info.is_empty():
+			continue
+		var r := MapScreen.room_rect(info)
+		var pp := origin + r.position + Vector2(float(p[1]), float(p[2])) / (Vector2(info.size) * Room.TILE) * r.size
+		draw_colored_polygon(PackedVector2Array([pp + Vector2(0, -5), pp + Vector2(3, -2), pp + Vector2(0, 1), pp + Vector2(-3, -2)]), OUTLINE)
+		draw_colored_polygon(PackedVector2Array([pp + Vector2(0, -4), pp + Vector2(2, -2), pp + Vector2(0, 0), pp + Vector2(-2, -2)]), PIN)
 
 	if not here.is_empty() and fmod(_t, 0.6) < 0.4:
 		var r := MapScreen.room_rect(here)
@@ -119,6 +160,8 @@ func _draw() -> void:
 		status += " / %d" % GameState.next_rank_xp()
 	status += "   Skill points %d   Jack Keys %d" % [int(GameState.data.skill_points), GameState.key_count("jack")]
 	_text(Vector2(20, 40), status, 9, DIM)
+	draw_rect(Rect2(screen.x - 230, screen.y - 18, 3, 3), PIN)
+	_text(Vector2(screen.x - 223, screen.y - 14), "Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], 8, DIM)
 	draw_rect(Rect2(screen.x - 150, screen.y - 19, 3, 4), SHRINE)
 	_text(Vector2(screen.x - 143, screen.y - 14), "Shrine", 8, DIM)
 	draw_rect(Rect2(screen.x - 100, screen.y - 18, 2, 2), PLAYER)

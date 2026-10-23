@@ -253,6 +253,10 @@ func _debug_open() -> void:
 		GameState.add_xp(int(_args["xp"]))
 	if _args.has("poisoned"):
 		player.poison()
+	for zone: String in String(_args.get("charts", "")).split(",", false):
+		GameState.data.charts[zone] = true
+	if _args.has("pin"):
+		GameState.toggle_pin(world.room.id, player.global_position)
 	if _args.has("map"):
 		map_screen.toggle()
 	var what: String = _args.get("open", "")

@@ -77,6 +77,10 @@ static func fresh() -> Dictionary:
 		"visited": {},
 		## Room id -> [x, y] of each Guru you have spoken to: the Mantra Path's stops.
 		"gurus": {},
+		## Zones whose outline the Cartographer sold you (zone -> true): the map shows their unseen rooms dimmed.
+		"charts": {},
+		## Map pins: [room id, x, y] in room pixels (at most MAX_PINS).
+		"pins": [],
 		"flags": {},
 		"purse": {},
 		"save_room": "",
@@ -110,6 +114,30 @@ func flag(id: String) -> bool:
 
 func set_flag(id: String, value := true) -> void:
 	data.flags[id] = value
+
+
+## Map pins you may place at once (design bible 3.3).
+const MAX_PINS := 12
+## A pin this close to where you stand is the one a press removes.
+const PIN_REACH := 48.0
+
+
+func has_chart(zone: String) -> bool:
+	return bool(data.charts.get(zone, false))
+
+
+## Places a pin where you stand, or removes the one within PIN_REACH. Returns
+## "placed", "removed" or "full".
+func toggle_pin(room_id: String, pos: Vector2) -> String:
+	for i in data.pins.size():
+		var pin: Array = data.pins[i]
+		if pin[0] == room_id and Vector2(float(pin[1]), float(pin[2])).distance_to(pos) < PIN_REACH:
+			data.pins.remove_at(i)
+			return "removed"
+	if data.pins.size() >= MAX_PINS:
+		return "full"
+	data.pins.append([room_id, pos.x, pos.y])
+	return "placed"
 
 
 ## The Mantra Path (design bible 3.3): Guru-to-Guru travel, open once any

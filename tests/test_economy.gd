@@ -502,3 +502,36 @@ func test_the_smelter_crucible_pours() -> void:
 	await frames(40)
 	check(not c.sparks.is_empty(), "the pour throws sparks")
 	check(c.lip().y < -100.0, "from a pot hung high above the walkway")
+
+
+func test_a_cartographer_chart_outlines_unseen_rooms() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(2)
+	var p := w.player
+	p.gold = 1000
+	check(MapScreen.shown("trunk/entrance", w.catalog["trunk/entrance"], w.room.id) == "", "unseen rooms are hidden at first")
+	var index := -1
+	var stock: Array = GameData.shop("eolis_charts").stock
+	for i in stock.size():
+		if stock[i].item == "chart_trunk":
+			index = i
+	check(Shop.buy("eolis_charts", index, p), "the Cartographer sells the Trunk chart")
+	check(Shop.status("eolis_charts", index, p) == "owned", "once")
+	check(MapScreen.shown("trunk/entrance", w.catalog["trunk/entrance"], w.room.id) == "charted", "and its rooms show, dimmed")
+	check(MapScreen.shown("tower/foot", w.catalog["tower/foot"], w.room.id) == "", "other zones stay hidden")
+	GameState.visit("trunk/entrance")
+	check(MapScreen.shown("trunk/entrance", w.catalog["trunk/entrance"], w.room.id) == "visited", "a visit shows it in full")
+
+
+func test_map_pins_drop_and_lift_where_you_stand() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(2)
+	var map := MapScreen.new()
+	map.world = w
+	arena.add_child(map)
+	check(map.pin() == "placed" and GameState.data.pins.size() == 1, "Jump on the map drops a pin where you stand")
+	check(map.pin() == "removed" and GameState.data.pins.is_empty(), "and again lifts it")
+	for i in GameState.MAX_PINS:
+		GameState.toggle_pin("eolis/market", Vector2(i * 100, 0))
+	check(GameState.toggle_pin("eolis/market", Vector2(5000, 0)) == "full", "pins are limited to %d" % GameState.MAX_PINS)
+	map.queue_free()

@@ -3,6 +3,7 @@ zone: eolis
 map: 3, 0
 npc: 12, 19, arms_dealer
 npc: 26, 19, merchant
+npc: 33, 19, eolis_cartographer
 door: 1, eolis/plaza, 2
 door: 2, eolis/east_gate, 1
 ---
