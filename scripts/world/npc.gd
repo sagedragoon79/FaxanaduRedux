@@ -36,9 +36,48 @@ func interact(p: Player) -> void:
 		"shop":
 			Menus.open_shop(get_tree(), info.shop, p)
 		"guru":
+			if GameState.unnamed_title() != "":
+				await _name_title()
 			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)
 		_:
 			GameState.say(info.get("name", ""), info.get("lines", []))
+
+
+## Faxanadu's title ceremony: a rank you earned in the field becomes your
+## name when a Guru speaks it, to a fanfare.
+func _name_title() -> void:
+	var title := GameState.name_title()
+	var r := int(GameState.data.rank)
+	Sfx.play("title", 0.0)
+	Music.duck(2.2)
+	GameState.flash.emit(0.25)
+	var d := Dust.new()
+	d.setup("heal")
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(0, -24)
+	GameState.say(info.get("name", "Guru"), title_lines(r, title))
+	var box := _dialog_box()
+	if box != null and box.is_open:
+		await box.closed
+
+
+## What the Guru says when naming you `title` (rank index `r`), in the
+## original's manner.
+static func title_lines(r: int, title: String) -> Array:
+	var first := "You have done well, wanderer. The Tree has felt your blade."
+	if r >= 12:
+		first = "Few who climb the World Tree come back as you have. Even the meteor must fear you now."
+	elif r >= 8:
+		first = "The dwarves' halls echo with your name. You walk like one the Tree has chosen."
+	elif r >= 4:
+		first = "Your steps no longer stumble on the roots. You have grown, wanderer."
+	return [first, "From this day you shall be called %s." % title.to_upper(), "Go now, %s, and may the light of the springs guide you." % title]
+
+
+func _dialog_box() -> DialogBox:
+	for c in get_tree().root.find_children("*", "DialogBox", true, false):
+		return c as DialogBox
+	return null
 
 
 ## The Guru's "Rest and save": same as a shrine.

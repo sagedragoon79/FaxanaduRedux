@@ -436,7 +436,7 @@ The **Guru** in each town teaches skills. Points come from:
 
 That is **29 points** available against a tree that costs **54** in total, so players must choose. Respec at any Guru for gold (200 g, then 400 g, 600 g and so on, capped at 2,000 g).
 
-Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900, 1,200, 1,560, 2,000, 2,500, 3,100, 3,800, 4,600, 5,500. Starting enemies give 5 XP (Rot Dwarf 12), so the Trunk Hollows take a careful player to about Fighter. Ranks rise the moment you pass a threshold and give the point right away; the Guru is where you spend it.
+Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900, 1,200, 1,560, 2,000, 2,500, 3,100, 3,800, 4,600, 5,500. Starting enemies give 5 XP (Rot Dwarf 12), so the Trunk Hollows take a careful player to about Fighter. Ranks rise the moment you pass a threshold and give the point right away; the Guru is where you spend it. As in Faxanadu, the title itself is the Guru's to give: the next time you visit one after ranking up, the Guru names you by your new title ("From this day you shall be called ADEPT") to a short fanfare while the music dips, then opens the usual menu. Higher ranks hear grander words. `GameState.data.named_rank` remembers the last title named.
 
 Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need the one before.
 
