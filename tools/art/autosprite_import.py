@@ -22,7 +22,8 @@ animations of which sheet they replace:
                "pick": [0, 4, 8, 12],    source frames to keep (default: all)
                "seq": [...], "fps": 8, "loop": true,   playback (default: the code rig's)
                "anchor": "ground",       "ground": each frame's lowest pixel on the origin;
-                                         "fixed": the reference frame's feet (jumps, deaths)
+                                         "fixed": the reference frame's feet (jumps, deaths);
+                                         "center": the reference frame's middle (fliers)
                "feet_x": "self",         "self": find the feet in this sheet's first picked frame
                                          (attack moves come in 512 px cells, figure bottom-centre)
                "drop": ["blade"],        code-rig metadata keys to leave out (the clip draws the sword)
@@ -149,6 +150,8 @@ class Importer:
         self.scale = cfg["height"] / float(y1 - y0 + 1)
         # The reference feet: bottom of the figure, centered on its lowest rows.
         self.ref_x = self.feet_x(frame)
+        # The reference middle, for fliers whose origin is their center.
+        self.ref_cx, self.ref_cy = (x0 + x1 + 1) / 2.0, (y0 + y1 + 1) / 2.0
         self.ref_y = y1 + 1.0
 
     def use_ramps(self, ramps):
@@ -181,7 +184,10 @@ class Importer:
         rgb = np.where(alpha[..., None] > 1e-6, small[..., :3] / np.maximum(alpha[..., None], 1e-6), 0)
         # Where the frame lands in the cell: the reference feet (scaled) on the origin.
         fy = self.ref_y
-        if anchor == "ground":
+        if anchor == "center":
+            fy = self.ref_cy
+            ref_x = self.ref_cx if ref_x is None else ref_x
+        elif anchor == "ground":
             box = _bbox(src[..., 3])
             fy = box[3] + 1.0 if box else fy
         ox = int(round(self.origin[0] - (self.ref_x if ref_x is None else ref_x) * s))
@@ -213,6 +219,14 @@ class Importer:
         grid[solid] = np.array(self.keys, object)[keys[solid]]
         return Image.fromarray(img, "RGBA"), Image.fromarray(mask, "RGBA"), grid
 
+    def detect_eye(self, grid, meta):
+        """A one-eyed creature's eye (the white), for the pupil the game draws."""
+        meta = dict(meta)
+        c = _eye_center(grid)
+        if c:
+            meta["eye"] = [round(c[0] - self.origin[0], 1), round(c[1] - self.origin[1], 1)]
+        return meta
+
     def to_point(self, x, y):
         return [int(x - self.origin[0]), int(y - self.origin[1])]
 
@@ -236,6 +250,15 @@ class Importer:
                 pick = sx >= front - 1
                 meta["hand"] = self.to_point(round(sx[pick].mean()), round(sy[pick].mean()))
         return meta
+
+
+def _eye_center(grid):
+    """Center of the largest patch of eye-white (the two lightest stone shades)."""
+    white = np.isin(grid, ["stone-6", "stone-7"])
+    if not white.any():
+        return None
+    ys, xs = np.nonzero(white)
+    return float(xs.mean()), float(ys.mean())
 
 
 def imported(name, cell, origin, code_meta):
@@ -269,6 +292,8 @@ def imported(name, cell, origin, code_meta):
             meta.update(spec.get("meta", {}))
             if cfg.get("detect") == "elf":
                 meta = imp.detect(grid, meta)
+            elif cfg.get("detect") == "eye":
+                meta = imp.detect_eye(grid, meta)
             frames.append((img, mask, meta))
         out[anim] = (frames, spec.get("seq"), spec.get("fps"), spec.get("loop"))
         print(f"  {name}.{anim}: {len(frames)} frames from Autosprite ({spec['file']})")

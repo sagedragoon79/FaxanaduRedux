@@ -24,5 +24,41 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 10, "count": 97, "pick": [30], "autosprite": "character cmvkexbot00w0vd98tdlkmcx5, pro 4s hurt preset (later frames turn to camera), video cmvkf1j16011mvd980z3d9dfn"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 10, "count": 97, "pick": [15, 24, 36, 48, 51, 54, 63, 69, 72, 75], "seq": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "fps": 12, "loop": false, "autosprite": "character cmvkexbot00w0vd98tdlkmcx5, pro 4s death preset, video cmvkf1ixy011evd981h481f8b"}
   }
+ },
+ "monodron": {
+  "dir": "monodron",
+  "ramps": ["night", "crystal", "gold", "stone"],
+  "height": 20,
+  "reference": "idle",
+  "detect": "eye",
+  "animations": {
+   "idle": {"file": "hop.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [0, 44], "autosprite": "character cmvkfqkun004l12am4kegb7n4 (HD pose of the code sprite), turbo reference custom hop, video cmvkfv6ad00ujnplm8c68pp0x"},
+   "windup": {"file": "hop.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [21, 13], "autosprite": "character cmvkfqkun004l12am4kegb7n4 (HD pose of the code sprite), turbo reference custom hop, video cmvkfv6ad00ujnplm8c68pp0x"},
+   "hop": {"file": "hop.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [32], "autosprite": "character cmvkfqkun004l12am4kegb7n4 (HD pose of the code sprite), turbo reference custom hop, video cmvkfv6ad00ujnplm8c68pp0x"}
+  }
+ },
+ "hornet": {
+  "dir": "hornet",
+  "ramps": ["night", "gold", "bark", "sky", "ember", "stone"],
+  "height": 28,
+  "reference": "fly",
+  "animations": {
+   "fly": {"file": "fly.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [16, 17, 18, 19], "anchor": "center", "seq": [0, 1, 2, 3], "fps": 24, "loop": true, "autosprite": "character cmvkfz6gb001yko85s4qp0fqp (pro prompt base), turbo reference fly preset, video cmvkg04lt000p13ab90h0s5p4"},
+   "windup": {"file": "sting.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [22, 23, 24, 25], "anchor": "center", "seq": [0, 1, 2, 3], "fps": 30, "loop": true, "autosprite": "character cmvkfz6gb001yko85s4qp0fqp (pro prompt base), turbo reference custom sting, video cmvkg04fd000i13abxm3o974y"},
+   "swoop": {"file": "sting.png", "frame_size": 256, "columns": 7, "count": 48, "pick": [32, 33, 34, 35], "anchor": "center", "seq": [0, 1, 2, 3], "fps": 16, "loop": true, "autosprite": "character cmvkfz6gb001yko85s4qp0fqp (pro prompt base), turbo reference custom sting"}
+  }
+ },
+ "rot_dwarf": {
+  "dir": "rot_dwarf",
+  "ramps": ["night", "stone", "bark", "leaf"],
+  "height": 36,
+  "reference": "walk",
+  "animations": {
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [17, 19, 21, 23, 25, 27, 29, 31, 33, 35], "seq": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "autosprite": "character cmvkfzkmx002gko85dkbb8fdz (pro prompt base), pro 4s walk, video cmvkg06w8000eq907m4cxr9do"},
+   "windup": {"file": "chop.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [26, 32], "autosprite": "character cmvkfzkmx002gko85dkbb8fdz (pro prompt base), pro 4s custom axe chop, video cmvkg06yt000mq9078irtffp9"},
+   "swing": {"file": "chop.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [48, 50], "autosprite": "character cmvkfzkmx002gko85dkbb8fdz (pro prompt base), pro 4s custom axe chop"},
+   "recover": {"file": "chop.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [54], "autosprite": "character cmvkfzkmx002gko85dkbb8fdz (pro prompt base), pro 4s custom axe chop"},
+   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 8, "count": 64, "pick": [20], "autosprite": "character cmvkfzkmx002gko85dkbb8fdz (pro prompt base), pro 4s hurt preset, video cmvkg073h000rq907xus4qvgj"}
+  }
  }
 }

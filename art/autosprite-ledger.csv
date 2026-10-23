@@ -11,3 +11,15 @@ date,asset,operation,credits,result,notes
 2026-10-23,elf HD jump/dash/hurt/death/cast/block/wall slide/drink,generate_spritesheet pro 4s 64f@256 ultra bg x8,80,queued (videos cmvkf1inp cmvkf1iyy cmvkf1j16 cmvkf1ixy cmvkf1ivz cmvkf1iuk cmvkf1iot cmvkf1itg),rest of the player set; balance 367 after
 2026-10-23,elf HD sword quick_strike + triple_combo,generate_attack_moves 48f@256 ultra bg,10,queued (videos cmvkf1le0 cmvkf1lf7),slash1-3 source; balance 357 after
 2026-10-23,elf HD clips (all 12),regenerate_single_spritesheet full rate@256 (512 for moves) ultra bg,0,ok (art/autosprite/elf/*.png),free re-cuts; all 17 player animations imported; balance 357
+2026-10-23,monodron / hornet / rot_dwarf bases,upload_character x3 (code sprite x10),0,ok,free; characters cmvkflv42004bo6z1qxtzm2oa cmvkfmj6a000dwo890qejq1rh cmvkfnlkq0045w257vo76fzki
+2026-10-23,monodron / hornet / rot_dwarf HD side poses,generate_pose x3,9,queued,HD base recipe (13.2); balance 348 after
+2026-10-23,monodron HD base + breathe/crouch/hop clip,upload_character (free) + generate_spritesheet pro 4s custom,10,queued (character cmvkfqkun004l12am4kegb7n4; video cmvkfqrfh0018wo89kt45j63w),one clip feeds idle windup hop; balance 344 after
+2026-10-23,hornet / rot_dwarf HD side poses,generate_pose x2,0,failed (refunded; balance 344 by get_account),first prompts failed silently
+2026-10-23,hornet / rot_dwarf HD side poses (retry),generate_pose x2 shorter prompts,6,queued,balance 338 after
+2026-10-23,monodron breathe/crouch/hop (pro),result,0,rejected,pro clip invented a second creature and morphed into a front-facing legged design; code sprite stays
+2026-10-23,monodron hop,generate_spritesheet turbo reference 48f@256 ultra bg,5,queued (video cmvkfv6ad00ujnplm8c68pp0x),turbo reference mode is the most consistent for a simple blob; balance 339 reported after (a pose refund)
+2026-10-23,hornet / rot_dwarf HD bases,create_character pro x2,6,ok (characters cmvkfz6gb001yko85s4qp0fqp cmvkfzkmx002gko85dkbb8fdz),generate_pose kept failing on these two (refunded); prompt-made pro bases instead
+2026-10-23,hornet fly + sting attack,generate_spritesheet turbo reference 48f@256 ultra bg x2,10,queued (videos cmvkg04lt000p13ab90h0s5p4 cmvkg04fd000i13abxm3o974y),turbo for non-humanoids: the pro Monodron clip morphed off-model while turbo reference stayed exact
+2026-10-23,rot_dwarf walk + axe chop + hurt,generate_spritesheet pro 4s 64f@256 ultra bg x3,30,queued (videos cmvkg06w8000eq907m4cxr9do cmvkg06yt000mq9078irtffp9 cmvkg073h000rq907xus4qvgj),pro for humanoids (as the elf); balance 293 after
+2026-10-23,hero redesign concepts A/B/C,create_character pro x3,9,ok (cmvkg2sdk0031ko85cfj6bjtl cmvkg34i40047ko85w6he6m30 cmvkg3gqf004pko85m5hq2xbv),Sean: the elf looks too much like Link; balance 284 after
+2026-10-23,monodron / hornet / rot_dwarf clips,regenerate none; download + import,0,ok (art/autosprite/{monodron,hornet,rot_dwarf}),all three enemies imported; balance 284
