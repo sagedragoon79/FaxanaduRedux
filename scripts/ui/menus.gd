@@ -131,6 +131,24 @@ static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
 	return true
 
 
+## The lift's stops: pick one and the cage carries you there.
+static func open_lift(tree: SceneTree, p: Player, cage: LiftCage) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	var stops := cage.other_stops()
+	var provider := func() -> Array:
+		var out := []
+		for stop: Array in stops:
+			out.append({"label": String(stop[1]), "detail": "Haul the lever and ride the chain."})
+		return out
+	var on_select := func(i: int) -> void:
+		menu.close()
+		cage.ride(p, String(stops[i][0]))
+	menu.open("Forepaw Lift", "The dwarves' chain runs the length of the trunk.", provider, on_select)
+	return true
+
+
 static func open_skills(tree: SceneTree, p: Player) -> bool:
 	var menu := _menu(tree)
 	if menu == null:

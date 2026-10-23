@@ -249,7 +249,7 @@ func test_mantra_path_and_lift_travel_soak() -> void:
 			_mash(w.player, rng, hold)
 			await frames(1)
 		w.player.input.move_x = 0
-	# The lift, down and up three times.
+	# The lift, down and up three times, picking the stop from its menu.
 	w.travel("tower/forepaw", Vector2(71 * Room.TILE + 8, 20 * Room.TILE))
 	await frames(3)
 	for ride in 6:
@@ -259,6 +259,10 @@ func test_mantra_path_and_lift_travel_soak() -> void:
 				cage = c
 		var to: String = cage.destination()[0]
 		cage.interact(w.player)
+		await frames(1)
+		# The cage asks for a stop: pick its usual one.
+		menu.cursor = cage.other_stops().map(func(st: Array) -> String: return st[0]).find(to)
+		menu.confirm()
 		await frames(3)
 		if w.room.id != to or _embedded(w.room, w.player):
 			problems.append("ride %d: in %s at %s" % [ride, w.room.id, w.player.global_position])

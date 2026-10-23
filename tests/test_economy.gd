@@ -435,6 +435,38 @@ func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
 	check(w.room.id == "tower/forepaw", "and back up again")
 
 
+func test_the_lift_runs_down_the_trunk_to_eolis() -> void:
+	# Bible 3: the elevator shortcut back to Eolis. The cage offers its other stops.
+	var w := make_world({}, "eolis/east_gate")
+	await frames(2)
+	var gate: LiftCage = _find(w.room, LiftCage)
+	check(gate != null and gate.destination()[0] == "tower/foot", "the East Gate of Eolis has a lift cage up the trunk")
+	gate.interact(w.player)
+	await frames(3)
+	check(w.room.id == "eolis/east_gate", "it hangs still until Forepaw is free")
+	GameState.set_flag("boss:zoradohna")
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	gate.interact(w.player)
+	await frames(1)
+	var labels := menu.rows.map(func(r: Dictionary) -> String: return r.label)
+	check(menu.title == "Forepaw Lift" and labels == ["Forepaw", "Tower Foot"], "it offers the other stops (%s)" % [labels])
+	menu.cursor = 0
+	menu.confirm()
+	await frames(3)
+	check(w.room.id == "tower/forepaw", "and carries you up to Forepaw")
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
+	var top: LiftCage = _find(w.room, LiftCage)
+	top.interact(w.player)
+	await frames(1)
+	menu.cursor = menu.rows.map(func(r: Dictionary) -> String: return r.label).find("Eolis, East Gate")
+	menu.confirm()
+	await frames(3)
+	check(w.room.id == "eolis/east_gate", "and all the way home again")
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "beside the cage in Eolis")
+	menu.queue_free()
+
+
 func test_the_mantra_path_joins_the_gurus_after_a_spring() -> void:
 	var w := make_world({}, "tower/forepaw")
 	await frames(2)
