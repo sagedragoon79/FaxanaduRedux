@@ -79,6 +79,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	var c := ch(room_id, x, y)
 	if c == "J":
 		return not keys
+	if c == "f":
+		# Falling water beats you back down; only the Hour Glass stills it.
+		return not abilities.get("hourglass", false)
 	if c == "g":
 		# Dartmoor's upper gate opens with the Sky Key (Borabohra's reward).
 		return not abilities.get("sky_key", false)
@@ -119,8 +122,19 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 func supported(room_id: String, x: int, y: int) -> bool:
 	var below := ch(room_id, x, y + 1)
-	return solid(room_id, x, y + 1) or below == "-" or below == "i" or (below == "=" and abilities.get("deluge", false)) \
+	return solid(room_id, x, y + 1) or below == "-" or below == "i" or _foothold(room_id, x, y + 1) or (below == "=" and abilities.get("deluge", false)) \
 		or (below == "b" and abilities.get("spring_mist", false))
+
+
+## Time-locked water (`f`): with the Hour Glass it freezes into footholds every
+## Waterfall.STEP rows up from the bottom of its run.
+func _foothold(room_id: String, x: int, y: int) -> bool:
+	if ch(room_id, x, y) != "f" or not abilities.get("hourglass", false):
+		return false
+	var bottom := y
+	while ch(room_id, x, bottom + 1) == "f":
+		bottom += 1
+	return bottom > y and (bottom - y) % Waterfall.STEP == 0
 
 
 func standable(room_id: String, x: int, y: int) -> bool:
@@ -176,7 +190,8 @@ func neighbors(k: String) -> Array:
 		# Jumps up, across and down.
 		_add_jumps(out, r, x, y, s)
 	# Drop through a one-way platform (Down + Jump).
-	if ch(r, x, y + 1) in ["-", "i"]:
+	# (Frozen water's footholds melt away when time runs again: the same way down.)
+	if ch(r, x, y + 1) in ["-", "i"] or _foothold(r, x, y + 1):
 		var below := drop(r, x, y + 1)
 		if below > y:
 			out.append(key(r, x, below))

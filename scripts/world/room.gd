@@ -29,6 +29,8 @@ var doors := {}
 
 var _one_way := {}
 var _secret_cells := {}
+## Time-locked water cells (legend `f`), gathered into Waterfalls after the grid.
+var _falls := {}
 var _sap_cells := {}
 var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
@@ -175,6 +177,7 @@ func build(text: String) -> void:
 		for x in row.length():
 			_place(row[x], Vector2i(x, y), grid)
 	_place_basins(grid)
+	_place_falls()
 	for cell: Vector2i in covers:
 		if not _secret_cells.has(cell):
 			_place_secret(cell)
@@ -382,6 +385,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_place_secret(cell)
 		"i":
 			_place_phantom(cell)
+		"f":
+			_falls[cell] = true
 		"~":
 			if _amber_on():
 				# The restored spring hardens the Trunk's sap into walkable amber.
@@ -489,7 +494,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "d", "h", "n", "L", "W", "F", "*":
+		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
@@ -498,6 +503,27 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				_spawn(item, center)
 		"P":
 			spawn_position = bottom_center
+
+
+## Each connected block of `f` cells becomes one Waterfall over its bounding box.
+func _place_falls() -> void:
+	var seen := {}
+	for start: Vector2i in _falls:
+		if seen.has(start):
+			continue
+		var box := Rect2i(start, Vector2i.ONE)
+		var todo: Array[Vector2i] = [start]
+		seen[start] = true
+		while not todo.is_empty():
+			var c: Vector2i = todo.pop_back()
+			box = box.merge(Rect2i(c, Vector2i.ONE))
+			for d: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+				if _falls.has(c + d) and not seen.has(c + d):
+					seen[c + d] = true
+					todo.append(c + d)
+		var fall := Waterfall.new()
+		fall.cells = box
+		add_child(fall)
 
 
 ## A hidden plank: a one-way platform that is always there but drawn only

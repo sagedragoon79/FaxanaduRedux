@@ -39,7 +39,7 @@ const DOWN_STRIKE_SIZE := Vector2(28, 24)
 @export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "onyx": true}
+var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "onyx": true, "hourglass": true}
 
 var max_hp := 100
 var hp := 100
@@ -120,6 +120,9 @@ var frozen := false
 ## boss's web line reeling you in). Moves the body directly, so it works
 ## against any input; a dash breaks it. Cleared every frame.
 var pull := Vector2.ZERO
+## Falling water bearing down on you this frame (px/s, a floor on velocity.y).
+## Set by a Waterfall while you are in it; cleared every frame.
+var water_push := 0.0
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -165,6 +168,7 @@ func _ready() -> void:
 	floor_constant_speed = true
 	safe_margin = 0.05
 	add_to_group("player")
+	TimeStop.reset()
 
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
@@ -227,6 +231,7 @@ func _physics_process(delta: float) -> void:
 	_try_dash(on_floor)
 	_try_cycle_spell()
 	_try_cast()
+	_try_hourglass()
 	_try_attack(on_floor)
 
 	if is_dashing:
@@ -240,6 +245,10 @@ func _physics_process(delta: float) -> void:
 	if not is_dashing:
 		_apply_gravity(delta, on_floor)
 	_apply_wall_slide()
+	if water_push > 0.0:
+		# A waterfall beats you down: no climbing or jumping up through it.
+		velocity.y = maxf(velocity.y, water_push)
+	water_push = 0.0
 
 	if is_attacking:
 		_process_attack_hits()
@@ -262,6 +271,7 @@ func _physics_process(delta: float) -> void:
 # --- Timers and refresh -------------------------------------------------------
 
 func _tick_timers(delta: float) -> void:
+	TimeStop.tick(delta)
 	_coyote_timer -= delta
 	_jump_buffer_timer -= delta
 	_wall_coyote_timer -= delta
@@ -739,6 +749,18 @@ func _try_cycle_spell() -> void:
 	equipped_spell = next
 	Sfx.play("blip", 0.0, -2.0)
 	GameState.toast.emit("Spell: " + String(Spells.DATA[next].name))
+
+
+## The Hour Glass (design bible A8): stop time for a moment.
+func _try_hourglass() -> void:
+	if not input.hourglass_pressed or not abilities.get("hourglass", false):
+		return
+	if not TimeStop.start():
+		Sfx.play("fizzle")
+		return
+	Sfx.play("hourglass")
+	Feel.add_trauma(0.1)
+	_spawn_dust(Vector2(0, -24), "parry")
 
 
 func _try_cast() -> void:

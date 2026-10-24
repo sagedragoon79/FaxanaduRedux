@@ -68,6 +68,8 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `%` | Fake wall: looks solid, walk through it (a secret). With the Black Onyx a thin violet seam shimmers around it |
 | `i` | Hidden plank: a one-way platform that is always there but unseen; the Black Onyx shows it faintly |
 | `n` | Black Onyx (passive ability pickup) |
+| `f` | Time-locked water: a block of falling water that bears you down; frozen by the Hour Glass, it has a foothold every 3 rows up from its bottom. Fill a shaft wall to wall so nothing climbs past it |
+| `z` | Hour Glass (ability pickup) |
 | `e` | Shade Knight (Dartmoor: tower shield turns frontal blows; parry his thrust or cut) |
 | `~` | Sap pool: halves run speed and weakens jumps (Trunk Hollows) |
 | `S` | Meditation Shrine (save, refill, respawn point) |

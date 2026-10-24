@@ -168,6 +168,7 @@ func start(room_id: String, at := Vector2.INF) -> void:
 		camera.view_size = view_size
 		add_child(camera)
 		camera.make_current()
+		add_child(TimeTint.new())
 	camera.set_room_limits(room.pixel_rect())
 	camera.snap_to_target()
 
