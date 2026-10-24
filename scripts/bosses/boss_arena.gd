@@ -16,6 +16,7 @@ const BOSSES := {
 	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
 	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
 		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
+	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -100,6 +101,14 @@ func _start() -> void:
 			r.position = Vector2(w - 8 * Room.TILE if px < w * 0.5 else 8 * Room.TILE, r.floor_y())
 			boss = r
 			r.defeated.connect(_on_defeated)
+		"zorugeriru":
+			# The hydra lies coiled around the spring on its shelf in the middle.
+			var z := Zorugeriru.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			z.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			z.position = Vector2(w * 0.5, 9 * Room.TILE - 10)
+			boss = z
+			z.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return

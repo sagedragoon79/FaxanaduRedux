@@ -268,6 +268,14 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			spring.spring_id = "trunk"
 			spring.spring_name = "Spring of Trunk"
 			_spawn(spring, pos)
+		"spring_mist":
+			# Zorugeriru lies coiled around it: it can be cleared once he is beaten.
+			var spring := Spring.new()
+			spring.spring_id = "mist"
+			spring.spring_name = "Spring of Mist"
+			spring.text = "The fog thins. Water returns to Eolis."
+			spring.needs_flag = "boss:zorugeriru"
+			_spawn(spring, pos)
 		"house":
 			_spawn(HouseFront.new(), pos)
 		"taproot":
@@ -521,7 +529,12 @@ func _place_basins(grid: Array[String]) -> void:
 			basin.x1 = x - 1
 			basin.water_row = y
 			basin.bed_row = bed
-			basin.flag_id = "basin:%s:%d" % [id, start]
+			if header.has("boss"):
+				# A boss arena's basins are part of the fight: dry again on every
+				# try, and full for good once the boss is beaten.
+				basin.start_full = GameState.flag("boss:" + str(header.boss))
+			else:
+				basin.flag_id = "basin:%s:%d" % [id, start]
 			add_child(basin)
 
 

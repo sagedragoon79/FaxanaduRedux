@@ -19,6 +19,8 @@ const RAFT_DARK := Color("4a3020")
 
 var room: Room
 var flag_id := ""
+## Full from the start (a beaten boss's arena).
+var start_full := false
 ## Tile columns x0..x1, the `=` row and the mud bed row (both in tiles).
 var x0 := 0
 var x1 := 0
@@ -44,7 +46,7 @@ func _ready() -> void:
 	shape.position = rect.size * 0.5 - Vector2(Room.TILE, Room.TILE * 2)
 	add_child(shape)
 	position = Vector2(x0, water_row) * Room.TILE
-	if flag_id != "" and GameState.flag(flag_id):
+	if start_full or flag_id != "" and GameState.flag(flag_id):
 		_fill(true)
 
 
