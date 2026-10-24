@@ -633,3 +633,70 @@ func test_a_parried_harpy_feather_flies_back() -> void:
 		if h.hp < harpy_hp:
 			break
 	check(harpy_hp - h.hp == HarpyFeather.REFLECT_DAMAGE, "and it strikes her for %d (%d)" % [HarpyFeather.REFLECT_DAMAGE, harpy_hp - h.hp])
+
+
+func test_crystal_dwarf_raises_his_fist_then_erupts_spikes() -> void:
+	var room := _room_with({Vector2i(22, 6): "q"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var d: CrystalDwarf = _find(room, CrystalDwarf)
+	var x0 := d.global_position.x
+	await frames(30)
+	check(d.state == "walk" and absf(d.global_position.x - x0) > 4.0, "far off, he trudges along (%s)" % d.state)
+	d.facing = -1
+	p.teleport(Vector2(d.global_position.x - 84.0, 7 * 16))
+	var windup_frames := 0
+	var hp := p.hp
+	var spikes := 0
+	for i in 120:
+		await frames(1)
+		if d.state == "windup":
+			windup_frames += 1
+		spikes = maxi(spikes, room.get_children().filter(func(c: Node) -> bool: return c is CrystalSpike and not c.is_queued_for_deletion()).size())
+		if d.state == "recover":
+			break
+	check(windup_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "he raises the crystal fist for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, windup_frames])
+	check(spikes >= 4, "then a chain of crystal spikes erupts along the floor (%d)" % spikes)
+	check(p.hp < hp, "and catches a player standing in its path")
+
+
+func test_crystal_spikes_hug_the_floor() -> void:
+	var room := _room_with({})
+	var p := make_player(room, Vector2i(10, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var s := CrystalSpike.new()
+	room.add_child(s)
+	s.global_position = Vector2(20 * 16 + 8, 7 * 16)
+	p.teleport(Vector2(s.global_position.x, s.global_position.y - 40.0))
+	p.velocity = Vector2.ZERO
+	var hp := p.hp
+	await frames(int((CrystalSpike.WARN + 0.15) * 60))
+	check(s.rise() > 0.5, "the spike stands up after its warning")
+	var over := Vector2(s.global_position.x, s.global_position.y - CrystalSpike.HEIGHT - 4.0)
+	check(not s.hit_rect().has_point(over), "and a jump over it clears it")
+	p.teleport(s.global_position)
+	await frames(3)
+	check(p.hp < hp, "but it stabs a player standing on it")
+
+
+func test_crystal_dwarf_back_turns_blows_until_his_fist_is_rooted() -> void:
+	var room := _room_with({Vector2i(20, 6): "q"})
+	make_player(room, Vector2i(3, 6))
+	var d: CrystalDwarf = _find(room, CrystalDwarf)
+	await frames(3)
+	d.facing = -1
+	var hp0 := d.hp
+	d.take_hit(10, Vector2(-1, 0))
+	check(d.hp == hp0, "a blow from behind breaks on the crystal on his back")
+	d.take_hit(10, Vector2(1, 0))
+	check(hp0 - d.hp == 10, "a blow to his face lands (%d)" % (hp0 - d.hp))
+	hp0 = d.hp
+	d.take_hit(10, Vector2(0, 1))
+	check(hp0 - d.hp == 10, "so does a pogo from above (%d)" % (hp0 - d.hp))
+	d.set_state("rooted")
+	d._struck = true
+	hp0 = d.hp
+	d.take_hit(10, Vector2(-1, 0))
+	check(hp0 - d.hp == 10, "rooted, even his back gives (%d)" % (hp0 - d.hp))
