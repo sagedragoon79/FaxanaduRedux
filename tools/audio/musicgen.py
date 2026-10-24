@@ -961,6 +961,40 @@ def track_daybreak_town():
     return s.render(reverb=0.5)
 
 
+def track_borabohra():
+    """Borabohra, the Storm Roc: the Daybreak storm theme turned into a fight.
+    E minor at a galloping 150, a pounding eighth-note bass, thunder-roll toms
+    every other bar, bright stabbed fifths like lightning, and the bell lead
+    climbing high over the wind."""
+    rng = np.random.default_rng(1987)
+    s = Song(bpm=150, bars=16)
+    root, scale = 52, SCALES["minor"]
+    prog = [0, 5, 6, 0, 0, 3, 4, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        low = scale_note(root - 24, scale, deg)
+        for k in range(8):
+            s.add(bass(midi_hz(low + (12 if k % 2 == 1 else 0)), s.beat * 0.4), b * 4 + k * 0.5, 0, 0.5)
+        s.add(fft_filter(pad(midi_hz(tones[0]), s.bar * 1.0), low=1800), b * 4, -0.4, 0.22)
+        s.add(fft_filter(pad(midi_hz(tones[0] + 7), s.bar * 1.0), low=1800), b * 4, 0.4, 0.2)
+        # Lightning: stabbed fifths, high and bright, on the offbeats.
+        for k in (1.5, 3.5):
+            for m in (tones[0] + 24, tones[0] + 31):
+                s.add(pluck(midi_hz(m), s.beat * 0.3, bright=4200), b * 4 + k, rng.uniform(-0.6, 0.6), 0.2)
+        s.add(kick(0.25), b * 4, 0, 0.9)
+        s.add(kick(0.25), b * 4 + 1.5, 0, 0.8)
+        s.add(kick(0.25), b * 4 + 2, 0, 0.9)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.6)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.6)
+        if b % 2 == 1:
+            for k in range(6):
+                s.add(kick(0.5) * (0.3 + 0.08 * k), b * 4 + 2.5 + k * 0.25, rng.uniform(-0.3, 0.3), 0.7)
+        for k in range(8):
+            s.add(hat(rng, 0.04), b * 4 + k * 0.5 + 0.25, 0.5, 0.18)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=24, pan=-0.2, gain=0.5, density=0.6)
+    return s.render(reverb=0.4)
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -976,6 +1010,7 @@ TRACKS = {
     "branches": track_branches,
     "conflate": track_conflate,
     "pakukame": track_pakukame,
+    "borabohra": track_borabohra,
     "daybreak": track_daybreak,
     "daybreak_town": track_daybreak_town,
     "amb_trunk": amb_trunk,

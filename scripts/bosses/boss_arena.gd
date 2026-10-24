@@ -18,6 +18,8 @@ const BOSSES := {
 		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
 	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1, "music": "zorugeriru"},
 	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
+	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
+		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -118,6 +120,13 @@ func _start() -> void:
 			k.position = Vector2(w * 0.5, k.arena.end.y)
 			boss = k
 			k.defeated.connect(_on_defeated)
+		"borabohra":
+			# The roc comes down out of the storm over the middle island.
+			var b := Borabohra.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			b.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			boss = b
+			b.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
@@ -182,7 +191,7 @@ func _seal(n: int) -> void:
 		_:
 			return
 	var seal := ArenaSeal.new()
-	seal.style = "iron" if room.zone == "tower" else "roots"
+	seal.style = "iron" if room.zone in ["tower", "daybreak"] else "roots"
 	seal.size = area.size
 	seal.position = area.position
 	room.add_child(seal)
