@@ -18,7 +18,7 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
-	"mist/spring_of_mist"]
+	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing"]
 
 
 func _texts() -> Dictionary:
@@ -235,6 +235,21 @@ func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
 	check(not dry.touchable(dry.reachable(dry.spot_of("t/dip", "P")), "t/dip", 34, 19), "the drowned boardwalk is nothing to stand on")
 	var risen := Reach.new(texts, {"glove": true, "spring_mist": true})
 	check(risen.touchable(risen.reachable(risen.spot_of("t/dip", "P")), "t/dip", 34, 19), "once the spring flows it carries you across")
+
+
+func test_checker_rides_bounce_pods() -> void:
+	# A ledge seven tiles up: out of reach, even with the Wing Boots, but for the pod.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 14, 13, "#", 25, 1)
+	put_tiles(rows, 30, 12, "L")
+	var texts := {"t/ledge": room_text(["name: Ledge"], rows)}
+	var bare := Reach.new(texts, {"boots": true})
+	check(not bare.touchable(bare.reachable(bare.spot_of("t/ledge", "P")), "t/ledge", 30, 12), "the ledge is too high to jump to")
+	put_tiles(rows, 12, 19, "@")
+	texts = {"t/ledge": room_text(["name: Ledge"], rows)}
+	var pod := Reach.new(texts, {})
+	check(pod.touchable(pod.reachable(pod.spot_of("t/ledge", "P")), "t/ledge", 30, 12), "a bounce-pod beside it throws you up there")
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:

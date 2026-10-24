@@ -124,6 +124,50 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	GameState.delete_save(SAVE_SLOT)
 
 
+## Act II (the Mist): every world change made there comes back after a save,
+## and the rooms rebuild in their changed state.
+func test_act_two_state_survives_a_save_round_trip() -> void:
+	var w := make_world({}, "mist/lantern_landing")
+	GameState.slot = SAVE_SLOT
+	for f: String in ["boss:ripasheiku", "boss:zorugeriru", "spring:mist", "curtain:mist/lantern_landing",
+			"seal:mist/marsh_road", "basin:mist/dry_cistern:7"]:
+		GameState.set_flag(f)
+	(GameState.data.rings as Array).append_array(["elf", "ruby", "dworf"])
+	GameState.add_key("lantern")
+	GameState.data.abilities["boots"] = true
+	GameState.data.abilities["deluge"] = true
+	check(GameState.save_game(), "the save writes")
+	GameState.new_game()
+	check(not GameState.flag("spring:mist") and (GameState.data.rings as Array).is_empty(), "a new game forgets it all")
+	check(GameState.load_game(SAVE_SLOT), "and the save loads")
+	check(GameState.flag("boss:zorugeriru") and GameState.flag("spring:mist"), "boss and spring flags survive")
+	check((GameState.data.rings as Array) == ["elf", "ruby", "dworf"], "the three rings survive")
+	check(GameState.key_count("lantern") == 1, "the Lantern Key survives")
+	check(GameState.has_ability("boots") and GameState.has_ability("deluge"), "the Wing Boots and Deluge survive")
+	var found := {}
+	for stop: Array in [["mist/lantern_landing", MistCurtain], ["mist/marsh_road", FireSeal], ["mist/dry_cistern", DryBasin],
+			["mist/spring_of_mist", DryBasin]]:
+		w._enter(stop[0])
+		await frames(2)
+		for c in w.room.get_children():
+			if is_instance_of(c, stop[1]):
+				var open: bool = c.parted if c is MistCurtain else (c.doused if c is FireSeal else c.filled)
+				found[stop[0]] = found.get(stop[0], true) and open
+	check(found.get("mist/lantern_landing", false), "the bound fog stays parted")
+	check(found.get("mist/marsh_road", false), "the fire seal stays out")
+	check(found.get("mist/dry_cistern", false), "the cistern stays full")
+	check(found.get("mist/spring_of_mist", false), "the hydra's tanks stay full")
+	check(_arena_quiet(w), "and Zorugeriru doesn't come back")
+	w._enter("mist/victim_causeway")
+	await frames(2)
+	check(w.room.is_one_way_at(Vector2(17 * Room.TILE + 4, 20 * Room.TILE + 4)), "the drowned boardwalks stay risen")
+	GameState.delete_save(SAVE_SLOT)
+
+
+func _arena_quiet(w: World) -> bool:
+	return runner.get_tree().get_first_node_in_group("boss") == null
+
+
 func test_death_respawns_at_last_shrine_and_purse_persists() -> void:
 	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
 	GameState.slot = SAVE_SLOT

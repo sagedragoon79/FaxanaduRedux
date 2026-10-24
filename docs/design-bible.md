@@ -73,7 +73,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 | 1 | **Trunk Hollows** | Apolune | 28 | Tunnels through living wood, glowing fungus, amber sap | Sap pools slow you; root-gates | Rokusutahn |
 | 2 | **Tower of Trunk** | Forepaw | 26 | Dwarven mining tower bolted into the trunk, gears, minecarts | Vertical climb; cracked stone; elevators | Zoradohna |
 | 3 | **The Mist** | Victim, Mascon | 34 | Fog-drowned limb-marsh, lanterns, rotting boardwalks | Fog limits vision; lanterns; water levels | Ripasheiku, Zorugeriru |
-| 4 | **Branches (Conflate)** | Conflate | 24 | Sunlit canopy, enormous leaves, wind | Wind currents; bounce-pods | Pakukame |
+| 4 | **Branches (Conflate)** | Conflate | 24 | Sunlit canopy, enormous leaves, wind | Wind currents; bounce-pods (legend `@`: land on one and it throws you about nine tiles up, 6.6) | Pakukame |
 | 5 | **Branches (Daybreak) and Canopy Spires** | Daybreak | 26 | Sky islands, storms, ruined elf shrines | Lightning conduits; air dash routes | Borabohra |
 | 6 | **Dartmoor** | Dartmoor | 28 | Flooded dwarf capital, meteor crystals growing through masonry | Time-stop puzzles; illusory walls | King Grieve, Shadow Eura |
 | 7 | **Zenis** | none | 14 | Inside the meteor: organic stone, alien light, gravity wrong | Gauntlet using every ability | The Evil One |
@@ -141,7 +141,7 @@ All story triggers check items, not route order.
 | Spring of Trunk restored | Sap pools in Trunk Hollows harden into walkable amber; new route to a secret; Apolune NPCs return; Eolis fountain 1/3 |
 | Zoradohna defeated | Forepaw dwarves freed (Forepaw town behind the lift: Guru, smith, elder, miners; its own theme); the Forepaw lift runs again, stopping at the town, the Tower Foot and a cage at the East Gate of Eolis down the outside of the trunk (the elevator shortcut home; press Up in a cage to pick a stop); dwarf smith opens (weapon upgrades) and his forge burns again (a hearth, bellows and an anvil that rings and throws sparks); the great winch in Winch Hall turns again and hauls open the Old Flue's damper in the Tower Foot (the wall-jump skip route of 4.3); the Forepaw Deep Workings open east of the town (Mine Mouth, Mine Shaft, Rail Gallery, Mine Vault, Smelter, and two side rooms: the Sorting Floor, a loop from the Mine Mouth up into the Mine Vault, and the Slag Heap under the Smelter), the ore road toward the Mist, which leaves the Smelter's east end for the Fog Cut, the Drowned Stair and Lantern Landing, a shrine where the boardwalk to Victim is out, with the Sunken Chapel, Ripasheiku's lair, past its east door |
 | Ripasheiku defeated | Her lanterns go dark and she gives up the Lantern Key, which opens the way to the Spring of Mist and Zorugeriru. The key's light parts the bound fog (a pale wall of unmoving mist, legend `Y`, that tells you it wants a lantern) sealing the shaft above Lantern Landing; it parts for good and the key is kept. Beyond it the Veiled Rise climbs to the Victim Causeway, a spiked boardwalk dip on the road west to Victim, and past it Feather Hollow, where the Wing Boots wait on a perch below a Life Fruit only a second jump reaches. Her chapel's east door opens on the Marsh Road toward Mascon, where the Deluge scroll lies before a fire seal; the Scorched Hall waits behind it, the Dry Cistern past that, and past the cistern the Spring of Mist, Zorugeriru's lair |
-| Zorugeriru defeated | Dworf Ring; the Spring of Mist's tanks stay full, and the spring on its shelf can be cleared |
+| Zorugeriru defeated | Dworf Ring; the Spring of Mist's tanks stay full, and the spring on its shelf can be cleared; the arena's east door opens on the Windward Climb, where bounce-pods throw you up out of the Mist into the Branches (the Sunlit Bough, then Leaf Landing, a shrine on the elves' leaf road) |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface (legend `b`: one-way planks over the spiked dips of the Fog Cut and the Victim Causeway, nothing before); fountain 2/3 |
 | Spring of Sky restored | Wind currents reverse in Branches (new routes); Eolis festival, fountain full, final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
@@ -303,6 +303,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Refreshes | double jump and dash |
 | Valid targets | enemies, projectiles marked pogo-able, thorn bulbs, spikes, lanterns, cracked-stone tops |
 | Hit-stop on pogo | 45 ms |
+| Bounce-pod (Branches) | landing on a pod from above sets vy = -600 px/s (about 9 tiles of rise in play); release doesn't cut it; refreshes double jump and dash. The pod isn't solid, so walking into it does nothing, and a hop onto it launches |
 
 ### 6.7 Juice checklist (all required before the movement milestone closes)
 

@@ -426,5 +426,13 @@ def main():
     breath = lowpass(highpass(noise(d), 300), 2500) * 0.35
     save("hydra_roar", mix(roar, breath) * env(n, 0.08, 1.0), 0.65)
 
+    # A bounce-pod throwing you up: a rubbery squelch and a rising, wobbling boing.
+    d = 0.45
+    n = int(RATE * d)
+    squelch = lowpass(noise(0.05), 900) * env(int(RATE * 0.05), 0.001, 2.0)
+    t = np.arange(n) / RATE
+    boing = osc(slide(180, 520, d, 0.5) * (1 + 0.06 * np.sin(2 * np.pi * 22 * t)), "sine") * env(n, 0.005, 1.4) * 0.6
+    save("pod", mix(squelch, boing), 0.55)
+
 if __name__ == "__main__":
     main()
