@@ -751,3 +751,36 @@ func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
 	check(GameState.has_chart("mist") and GameState.has_chart("branches"), "and both zones are charted")
 	check(MapScreen.shown("mist/fog_cut", w.catalog["mist/fog_cut"], w.room.id) == "charted", "the Mist shows, dimmed")
 	check(p.gold == 2000 - 500 - 650, "for 1,150 gold (%d left)" % p.gold)
+
+
+func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
+	# Bible 10.2: Daybreak has a Guru, an armorer, the spell-scroll shop (Fire,
+	# 1,200 g), a grocer and a cartographer.
+	var w := make_world({}, "daybreak/daybreak")
+	await frames(2)
+	var ids: Array = []
+	for c in w.room.get_children():
+		if c is Npc:
+			ids.append((c as Npc).npc_id)
+	for id: String in ["guru", "daybreak_armorer", "daybreak_scribe", "daybreak_grocer", "daybreak_cartographer", "daybreak_mayor", "daybreak_bellkeeper"]:
+		check(ids.has(id), "%s lives in Daybreak" % id)
+		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
+	var p := w.player
+	p.gold = 6100
+	check(not p.abilities.get("fire", false), "the run starts without Fire")
+	var scroll: Dictionary = GameData.shop("daybreak_scrolls").stock[0]
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Fire for 1,200 g")
+	check(Shop.buy("daybreak_scrolls", 0, p), "and you can buy it")
+	check(p.abilities.fire and GameState.data.abilities.fire, "the scroll teaches Fire for good")
+	check(p.equipped_spell == "fire", "with no other spell, Fire goes on the Spell button")
+	check(Shop.status("daybreak_scrolls", 0, p) == "owned", "and the scroll shows as owned")
+	check(Shop.buy("daybreak_armor", 0, p), "the armorer sells Full Plate")
+	check(is_equal_approx(p.defense, 0.45), "which takes 45%% off a hit (%.2f)" % p.defense)
+	check(Shop.buy("daybreak_charts", 0, p) and GameState.has_chart("daybreak"), "the bell-ringer sells the Daybreak chart")
+	check(p.gold == 6100 - 1200 - 4200 - 700, "for 6,100 gold in all (%d left)" % p.gold)
+	# The Spell button's choice is saved with the rest.
+	GameState.capture(p)
+	check(GameState.data.spell == "fire", "the save remembers the equipped spell")
+	p.equipped_spell = "deluge"
+	GameState.apply(p)
+	check(p.equipped_spell == "fire", "and puts it back on load")

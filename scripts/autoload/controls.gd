@@ -14,6 +14,7 @@ const BINDINGS := {
 	"dash": {"keys": [KEY_C, KEY_L, KEY_SHIFT], "buttons": [JOY_BUTTON_B, JOY_BUTTON_RIGHT_SHOULDER], "trigger": JOY_AXIS_TRIGGER_RIGHT},
 	"block": {"keys": [KEY_V, KEY_I], "buttons": [JOY_BUTTON_LEFT_SHOULDER]},
 	"spell": {"keys": [KEY_F, KEY_U], "buttons": [JOY_BUTTON_Y]},
+	"spell_next": {"keys": [KEY_G, KEY_O], "buttons": [JOY_BUTTON_RIGHT_STICK]},
 	"heal": {"keys": [KEY_Q, KEY_H], "trigger": JOY_AXIS_TRIGGER_LEFT},
 	"map": {"keys": [KEY_TAB, KEY_M], "buttons": [JOY_BUTTON_BACK]},
 	"pause": {"keys": [KEY_ESCAPE, KEY_P], "buttons": [JOY_BUTTON_START]},

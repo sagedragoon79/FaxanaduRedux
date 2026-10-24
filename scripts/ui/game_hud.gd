@@ -210,11 +210,12 @@ func _draw_mp(bar: Rect2) -> void:
 	while x < bar.size.x - 1.0:
 		draw_rect(Rect2(bar.position + Vector2(roundf(x * 2.0) * 0.5, 1), Vector2(0.5, bar.size.y - 2)), Color(OUTLINE, 0.55))
 		x += tick
-	# The gem cap, overlapping the left end.
+	# The gem cap, overlapping the left end, glows the equipped spell's color.
+	var gem := Spells.color(player.equipped_spell)
 	var g := bar.position + Vector2(-1.5, bar.size.y * 0.5)
 	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -4), g + Vector2(3.5, 0), g + Vector2(0, 4), g + Vector2(-3.5, 0)]), OUTLINE)
-	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(2.5, 0), g + Vector2(0, 3), g + Vector2(-2.5, 0)]), MP)
-	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(0, 0), g + Vector2(-2.5, 0)]), MP_LIGHT)
+	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(2.5, 0), g + Vector2(0, 3), g + Vector2(-2.5, 0)]), gem)
+	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(0, 0), g + Vector2(-2.5, 0)]), gem.lightened(0.45))
 
 
 ## One Red Potion charge: a round flask with a cork, full or empty glass.

@@ -30,6 +30,7 @@ extends Node2D
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
+##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 const SAVE_SLOT := 1
@@ -208,6 +209,13 @@ func _process(_delta: float) -> void:
 	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
 	if _frames == 2:
 		_debug_open()
+	if _args.has("cast") and _frames == 10:
+		var spell := String(_args["cast"])
+		player.abilities[spell] = true
+		player.equipped_spell = spell
+		player.mp = player.max_mp
+		player.input.scripted = true
+		player.input.spell_pressed = true
 	if _args.has("boss-hp"):
 		var boss := get_tree().get_first_node_in_group("boss")
 		if boss is Rokusutahn and boss.state == "intro":

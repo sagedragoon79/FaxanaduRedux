@@ -50,6 +50,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `t` | Thunder Beetle (Daybreak: trundles the floor; its shell turns side blows but not a pogo. Near it, its wing cases crackle, then it discharges a ring of lightning (unparryable, above too); spent, it takes full damage) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Deluge bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |
+| `w` | Bramble wall tile (dry thorn-vine: solid; a Fire spell burns the whole knot to ash for good. Fire is optional, so hide only secrets behind it) |
 | `u` | Dry basin mud bed (solid ground, cracked) |
 | `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Deluge bolt across the tank fills it and the run becomes a one-way raft for good |
 | `b` | Drowned boardwalk (the Mist): nothing until the Spring of Mist flows (`spring:mist`), then a one-way platform. Lay it over a spiked dip |

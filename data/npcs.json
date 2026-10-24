@@ -144,5 +144,38 @@
 	"conflate_cartographer": {
 		"name": "Skywatcher Orin", "role": "shop", "shop": "conflate_charts",
 		"look": {"robe": "#4a6a8a", "trim": "#7ee0d6", "skin": "#efd6b8", "hair": "#f1ead2", "hat": "hood", "ears": true}
+	},
+	"daybreak_armorer": {
+		"name": "Calder the Armorer", "role": "shop", "shop": "daybreak_armor",
+		"look": {"robe": "#4a3a7a", "trim": "#e8c04a", "skin": "#d9b08c", "hair": "#2e2350", "hat": "helm", "ears": true}
+	},
+	"daybreak_scribe": {
+		"name": "Scribe Ysolde", "role": "shop", "shop": "daybreak_scrolls",
+		"look": {"robe": "#6a3a5a", "trim": "#f08a2a", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true}
+	},
+	"daybreak_grocer": {
+		"name": "Grocer Wenna", "role": "shop", "shop": "daybreak_items",
+		"look": {"robe": "#5a6a3a", "trim": "#e8d9a8", "skin": "#e3cdb5", "hair": "#8a5a3a", "hat": "cap", "ears": true}
+	},
+	"daybreak_cartographer": {
+		"name": "Bell-Ringer Tamsin", "role": "shop", "shop": "daybreak_charts",
+		"look": {"robe": "#3a4a7a", "trim": "#b8a8ff", "skin": "#d9b08c", "hair": "#c9a27a", "hat": "cap", "ears": true}
+	},
+	"daybreak_mayor": {
+		"name": "Mayor Halloran", "role": "talk",
+		"look": {"robe": "#2e2350", "trim": "#e8c04a", "skin": "#e3cdb5", "hair": "#e8e2d0", "hat": "crown", "ears": true},
+		"lines": [
+			"You crossed the fallen bridge? Then the Bloom is dead, and the wind brought us a hero. Welcome to Daybreak.",
+			"Our bells and lifts ran on the storm. Lightning came down the rods and the copper sang. Then a great bird came out of the clouds and the conduits went cold.",
+			"Borabohra, we call it. It nests in the Spires above the town. Nothing that flies is safe, and nothing that climbs."
+		]
+	},
+	"daybreak_bellkeeper": {
+		"name": "Old Bellkeeper Rusk", "role": "talk",
+		"look": {"robe": "#4a465d", "trim": "#c9b98f", "skin": "#c9a27a", "hair": "#b0a090", "hat": "none", "beard": true, "ears": true},
+		"lines": [
+			"The old bell cellar? Bramble choked it the year the storm turned. Blades only snag in that stuff.",
+			"Ysolde sells a scroll of Fire. Dry bramble goes up like tinder. I'd do it myself, but I'm too old to aim."
+		]
 	}
 }

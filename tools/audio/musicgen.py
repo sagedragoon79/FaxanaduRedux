@@ -29,6 +29,7 @@ SCALES = {
     "major": [0, 2, 4, 5, 7, 9, 11],
     "lydian": [0, 2, 4, 6, 7, 9, 11],
     "phrygian": [0, 1, 3, 5, 7, 8, 10],
+    "mixolydian": [0, 2, 4, 5, 7, 9, 10],
 }
 
 
@@ -937,6 +938,29 @@ def amb_daybreak():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+def track_daybreak_town():
+    """Daybreak, the bell town: a calm under the storm. G mixolydian at a gentle
+    92, a carillon ringing the chord down from the top on every bar, warm pads,
+    a walking bass and a soft harp lead. Hopeful, but the bells are a little
+    out of time with each other, as if the wind is ringing them."""
+    rng = np.random.default_rng(137)
+    s = Song(bpm=92, bars=16)
+    root, scale = 55, SCALES["mixolydian"]
+    prog = [0, 3, 6, 0, 4, 3, 6, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.1), b * 4, rng.uniform(-0.5, 0.5), 0.24)
+        for k, step in enumerate((0, 2, 4, 2)):
+            s.add(bass(midi_hz(scale_note(root - 12, scale, deg + step)), s.beat * 0.9), b * 4 + k, 0, 0.45)
+        # The carillon: the chord rung down from the top, each bell a touch late.
+        peal = [tones[2] + 12, tones[1] + 12, tones[0] + 12, tones[2]]
+        for k, m in enumerate(peal):
+            s.add(bell(midi_hz(m), s.beat * 1.6), b * 4 + k * 0.5 + rng.uniform(0.0, 0.06), -0.4 + 0.25 * k, 0.22)
+    melody(s, rng, root, scale, prog, pluck, start_bar=2, octave=12, pan=0.25, gain=0.35, density=0.4)
+    return s.render(reverb=0.5)
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -953,6 +977,7 @@ TRACKS = {
     "conflate": track_conflate,
     "pakukame": track_pakukame,
     "daybreak": track_daybreak,
+    "daybreak_town": track_daybreak_town,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
