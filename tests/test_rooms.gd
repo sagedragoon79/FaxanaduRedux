@@ -202,6 +202,58 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 	GameState.delete_save(SAVE_SLOT)
 
 
+## Daybreak: rest at the Broken Shrine with the Life Fruit taken and the Sky
+## Steps chest opened; the save brings it all back, and the rooms rebuild that way.
+func test_daybreak_state_survives_a_save_round_trip() -> void:
+	var w := make_world({}, "daybreak/sky_steps")
+	GameState.slot = SAVE_SLOT
+	w.player.abilities["stride"] = true
+	await frames(2)
+	var chest: Chest = null
+	for c in w.room.get_children():
+		if c is Chest:
+			chest = c
+	check(chest != null, "the Sky Steps chest is there")
+	chest.interact(w.player)
+	w._enter("daybreak/broken_shrine")
+	await frames(2)
+	var fruit: ItemPickup = null
+	var shrine: SaveShrine = null
+	var beetles := 0
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "life_fruit":
+			fruit = c
+		elif c is SaveShrine:
+			shrine = c
+		elif c is ThunderBeetle:
+			beetles += 1
+	check(fruit != null and shrine != null and beetles == 1, "the shrine, its Life Fruit and a beetle are there")
+	var hp0 := int(GameState.data.max_hp)
+	fruit.grant(w.player)
+	w.save_at(shrine.global_position)
+	check(GameState.has_save(SAVE_SLOT), "resting at the shrine writes the save")
+	GameState.new_game()
+	check(int(GameState.data.max_hp) == hp0, "a new game starts without the fruit")
+	check(GameState.load_game(SAVE_SLOT), "and the save loads")
+	check(GameState.data.save_room == "daybreak/broken_shrine", "the save room is the Broken Shrine (%s)" % GameState.data.save_room)
+	check(GameState.has_ability("stride"), "the Stride survives")
+	check(int(GameState.data.max_hp) > hp0, "the Life Fruit's health survives")
+	w._enter("daybreak/broken_shrine")
+	await frames(2)
+	var left := false
+	for c in w.room.get_children():
+		left = left or (c is ItemPickup and (c as ItemPickup).kind == "life_fruit")
+	check(not left, "the fruit doesn't grow back")
+	w._enter("daybreak/sky_steps")
+	await frames(2)
+	var open := false
+	for c in w.room.get_children():
+		if c is Chest:
+			open = not (c as Chest).is_in_group("interactable")
+	check(open, "and the chest stays open")
+	GameState.delete_save(SAVE_SLOT)
+
+
 func _arena_quiet(w: World) -> bool:
 	return runner.get_tree().get_first_node_in_group("boss") == null
 
