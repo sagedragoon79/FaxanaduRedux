@@ -5,7 +5,7 @@ bible 12.3 and 13.3), with tools/art/pixelrig.py.
 Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
-"look" (robe, trim, skin, hair, hat, plus optional beard and build), with every
+"look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
 color snapped to the master palette.
 
 Usage: python3 tools/art/castgen.py
@@ -835,6 +835,7 @@ def npc(look, bob=0, hand_dy=0.0):
     hat = look.get("hat", "none")
     dwarf_build = look.get("build", "") == "dwarf"
     beard = look.get("beard", False) or dwarf_build
+    ears = look.get("ears", False)
 
     def render(_):
         cv = Canvas(32, 48, (16, 46))
@@ -855,6 +856,10 @@ def npc(look, bob=0, hand_dy=0.0):
         if beard:
             cv.part(cv.polygon([(head[0] - 2.5, head[1] + 1.5), (head[0] + 4.5, head[1] + 1.5), (head[0] + 2.5, top + 7),
                                 (head[0] - 0.5, top + 8)]), hair)
+        if ears:
+            # An elf's long ear, swept back and up from the side of the head.
+            ear = cv.polygon([(head[0] - 1.5, head[1] - 0.5), (head[0] - 0.5, head[1] + 1.8), (head[0] - 7.5, head[1] - 4.0)])
+            cv.part(ear, skin)
         cv.pixel((head[0] + 2.0, head[1] - 0.5), DARK)
         cv.pixel((head[0] + 2.0, head[1] + 0.5), DARK)
         if hat == "crown":

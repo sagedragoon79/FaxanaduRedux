@@ -111,5 +111,38 @@
 	"forepaw_cartographer": {
 		"name": "Surveyor Brin", "role": "shop", "shop": "forepaw_charts",
 		"look": {"robe": "#5a4a3a", "trim": "#7ee0d6", "skin": "#d6ae84", "hair": "#e0703a", "hat": "helm", "build": "dwarf"}
+	},
+	"conflate_elder": {
+		"name": "Elder Aelwen", "role": "talk",
+		"look": {"robe": "#2f6b4f", "trim": "#e8d9a8", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true},
+		"lines": [
+			"An elf of Eolis, climbing the Tree from the roots? Then the springs below run again. We felt the sap stir.",
+			"Above us, on the crown-leaf, a flower took root the year the meteor fell. We call it Pakukame, the Devouring Bloom. It eats the light, and those who go to look at it.",
+			"Our wardens crossed the sky-gaps with the Elven Stride. Its shrine is in the Windloft, up the north bough. If you mean to face the Bloom, go there first."
+		]
+	},
+	"conflate_warden": {
+		"name": "Warden Faelan", "role": "talk",
+		"look": {"robe": "#4a5a2a", "trim": "#c9b98f", "skin": "#d9b08c", "hair": "#3a2a1e", "hat": "cap", "ears": true},
+		"lines": [
+			"Hold. You came over the bridge? Past the mantises? Then keep your blade out, elf. You've earned it.",
+			"The north bough climbs to the crown-leaf. Nobody goes up there now. The last warden who tried, the Bloom swallowed whole."
+		]
+	},
+	"conflate_weaver": {
+		"name": "Weaver Imra", "role": "talk",
+		"look": {"robe": "#7a4a6a", "trim": "#f0dfa8", "skin": "#efd6b8", "hair": "#aa6336", "hat": "none", "ears": true},
+		"lines": [
+			"Leaf-silk, spun in the sun. It won't stop a blade, but it keeps the wind off.",
+			"The dwarves used to climb up to trade iron for silk. Then the meteor came, and the dwarves stopped climbing, and some stopped being dwarves."
+		]
+	},
+	"conflate_grocer": {
+		"name": "Grocer Thessaly", "role": "shop", "shop": "conflate_items",
+		"look": {"robe": "#3f6b4a", "trim": "#e8d9a8", "skin": "#e3cdb5", "hair": "#c9a27a", "hat": "cap", "ears": true}
+	},
+	"conflate_cartographer": {
+		"name": "Skywatcher Orin", "role": "shop", "shop": "conflate_charts",
+		"look": {"robe": "#4a6a8a", "trim": "#7ee0d6", "skin": "#efd6b8", "hair": "#f1ead2", "hat": "hood", "ears": true}
 	}
 }

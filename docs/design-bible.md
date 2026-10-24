@@ -86,7 +86,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 - **Camera:** room-bounded; camera locks to room edges; transitions are seamless scrolls (no fade) within a zone and a brief fade between zones. The scroll is a screen push: the old view slides out the way the player went while the new room slides in (0.34 s). Inner doorways (Up to enter) fade, since there is no direction to scroll.
 - **Save points:** each town has a Guru (save, respec, rank-up). Plus 2 to 3 **Meditation Shrines** per zone (save only). No room is more than 4 rooms from a save or a shortcut back to one.
 - **Fast travel:** unlocked after the first spring: Guru-to-Guru travel through the "Mantra Path" menu. Speaking to a Guru marks that Guru as a stop; the Guru's menu lists every other stop you have met, and choosing one fades you to a step beside that Guru. Before any spring flows the row is shown but dry, so players learn it exists.
-- **Map:** auto-maps visited rooms. The Cartographer in each town sells the zone outline (empty rooms shown dimmed). Map pins (custom markers) available from the start: with the map open, Jump drops a pin where you stand or lifts the one there, up to 12. Cartographers so far: Pell in the Eolis market (Eolis 40 g, Trunk Hollows 250 g) and Surveyor Brin in Forepaw (Tower 400 g). Doors, gates and items get icons once seen.
+- **Map:** auto-maps visited rooms. The Cartographer in each town sells the zone outline (empty rooms shown dimmed). Map pins (custom markers) available from the start: with the map open, Jump drops a pin where you stand or lifts the one there, up to 12. Cartographers so far: Pell in the Eolis market (Eolis 40 g, Trunk Hollows 250 g), Surveyor Brin in Forepaw (Tower 400 g), and Skywatcher Orin in Conflate (Mist 500 g, Branches 650 g; the Mist has no town of its own). Doors, gates and items get icons once seen.
 - **Landmarks:** every zone has at least 3 visually unique landmark rooms (a giant statue, a waterfall, a crashed airship-dwarf barge) so players can navigate by memory. The Tower's are the great winch in Winch Hall (still until Forepaw is freed, then turning), the Forepaw forge, and the Smelter's hanging crucible pouring molten ore.
 
 ---
@@ -390,7 +390,7 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 1:** vine whips and seed spit; its mouth opens after each bite (weak point).
 - **Phase 2:** it bites chunks out of the arena; you dash across gaps and bounce on pods.
 - **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence).
-- **Reward:** skill point, large gold drop, the Conflate gate opens.
+- **Reward:** skill point, large gold drop, and the wardens lift the rope on Conflate's north bough: the road on up to Daybreak opens. (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival, and the Bloom's shadow falls on the way onward instead.)
 
 ### 8.6 Borabohra, the Storm Roc (Branches, Daybreak)
 - **Concept:** A titanic thunderbird nesting on the highest spire, its feathers made of rain clouds.
