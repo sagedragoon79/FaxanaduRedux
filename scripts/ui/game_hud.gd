@@ -79,7 +79,8 @@ func _draw() -> void:
 		widths.append(12.0 if cap >= 1.0 else 7.0)
 		mask_x += widths[i] + 2.0
 	var bar_w := maxf(mask_x - 2.0, player.max_mp)
-	_draw_plate(Rect2(origin - Vector2(5, 5), Vector2(maxf(bar_w, player.flask_max * 9 + 48) + 10, 43 + (14 if _ointment_shown() else 0))))
+	var row_w := maxf(bar_w, player.flask_max * 9 + 48 + (14 if _glass_shown() else 0))
+	_draw_plate(Rect2(origin - Vector2(5, 5), Vector2(row_w + 10, 43 + (14 if _ointment_shown() else 0))))
 	mask_x = 0.0
 	for i in masks:
 		# The last container is narrower when a Life Fruit has added half a mask.
@@ -95,6 +96,8 @@ func _draw() -> void:
 	var gp := origin + Vector2(player.flask_max * 9 + 6, 28)
 	_draw_coin(gp + Vector2(3, 5))
 	PixelFont.draw(self, gp + Vector2(10, 9), str(int(_shown_gold)), 10, GOLD, OUTLINE)
+	if _glass_shown():
+		_draw_glass(origin + Vector2(row_w - 8, 27))
 	_draw_ointment(origin + Vector2(0, 42))
 	_draw_boss()
 	_draw_messages()
@@ -116,6 +119,7 @@ const GLASS := Color("c9c4d6")
 const CORK := Color("8d4e16")
 const POTION_LIGHT := Color("ff9a8a")
 const GOLD_DARK := Color("b8860b")
+const GLASS_SAND := Color("e8c870")
 const PLATE := Color(0.07, 0.06, 0.11, 0.5)
 const PLATE_EDGE := Color(1.0, 0.82, 0.29, 0.28)
 ## A full mask, 24x28 half-pixels: a carved ivory face, brow to chin.
@@ -240,6 +244,34 @@ func _draw_coin(c: Vector2) -> void:
 	draw_circle(c + Vector2(-0.5, -0.5), 2.5, GOLD)
 	_hp(c, -1, -2, 2, 4, GOLD_DARK)
 	_hp(c, -4, -4, 2, 2, Color("fff4c0"))
+
+
+func _glass_shown() -> bool:
+	return player.abilities.get("hourglass", false)
+
+
+## The Hour Glass once owned: full and bright when it can be turned, sand
+## pouring while time is stopped, the top bulb refilling as it runs back.
+func _draw_glass(at: Vector2) -> void:
+	var can_turn := TimeStop.ready_to_turn()
+	var top := 1.0 if can_turn else 1.0 - TimeStop.cooldown / TimeStop.COOLDOWN
+	if TimeStop.active():
+		top = TimeStop.left / TimeStop.DURATION
+	var sand := GLASS_SAND if can_turn or TimeStop.active() else GLASS_SAND.darkened(0.45)
+	draw_rect(Rect2(at + Vector2(0, 0), Vector2(8, 12)), OUTLINE)
+	draw_rect(Rect2(at + Vector2(1, 1), Vector2(6, 10)), Color(GLASS, 0.25))
+	draw_rect(Rect2(at + Vector2(0, 0), Vector2(8, 1.5)), GOLD_DARK)
+	draw_rect(Rect2(at + Vector2(0, 10.5), Vector2(8, 1.5)), GOLD_DARK)
+	# The top bulb (4 rows) and the bottom (4 rows), the neck between.
+	var th := roundf(top * 8.0) * 0.5
+	draw_rect(Rect2(at + Vector2(1.5, 5.5 - th), Vector2(5, th)), sand)
+	var bh := roundf((1.0 - top) * 8.0) * 0.5
+	draw_rect(Rect2(at + Vector2(1.5, 10.5 - bh), Vector2(5, bh)), sand)
+	draw_rect(Rect2(at + Vector2(3.5, 5.5), Vector2(1, 1)), Color(GLASS, 0.6))
+	if TimeStop.active():
+		draw_rect(Rect2(at + Vector2(3.75, 5.5), Vector2(0.5, 5)), sand)
+	if can_turn:
+		draw_rect(Rect2(at + Vector2(2, 2), Vector2(1, 2)), Color(1, 1, 1, 0.7))
 
 
 func _ointment_shown() -> bool:

@@ -23,6 +23,10 @@ var _body: StaticBody2D
 var _shapes: Array[CollisionShape2D] = []
 var _frozen := false
 var _t := 0.0
+var _streaks: Array[ImageTexture] = []
+
+## Height (px) of one repeat of the streak pattern.
+const TILE_H := 24
 
 
 func _ready() -> void:
@@ -42,6 +46,25 @@ func _ready() -> void:
 		_body.add_child(s)
 		_shapes.append(s)
 	position = Vector2(cells.position * Room.TILE)
+	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	for k in 2:
+		_streaks.append(_streak_texture(cells.size.x * Room.TILE * 2, k))
+
+
+## A white pattern of falling streaks at 2x density, one repeat tall, for a
+## column `width_2x` half-pixels wide. Layer k differs in where the streaks sit.
+static func _streak_texture(width_2x: int, k: int) -> ImageTexture:
+	var img := Image.create(width_2x, TILE_H * 2, false, Image.FORMAT_RGBA8)
+	img.fill(Color(1, 1, 1, 0))
+	for i in width_2x:
+		if (i + k) % 2 == 1:
+			continue
+		var start := (i * 53 + k * 29) % (TILE_H * 2)
+		var streak := 12 + (i * 11 + k * 5) % 14
+		var a := 0.8 if i % 3 == 0 else 0.55
+		for j in streak:
+			img.set_pixel(i, (start + j) % (TILE_H * 2), Color(1, 1, 1, a))
+	return ImageTexture.create_from_image(img)
 
 
 ## The rows (tiles) whose tops are footholds while frozen.
@@ -82,20 +105,11 @@ func _draw() -> void:
 	var h := cells.size.y * Room.TILE
 	var body := FROZEN if _frozen else WATER
 	draw_rect(Rect2(0, 0, w, h), Color(DEEP, 0.55))
-	# Streaks falling (or frozen where they were), in half-pixel strips.
-	var strips := int(w)
-	for i in strips:
-		var x := i + (0.5 if i % 2 else 0.0)
-		var speed := 120.0 + float((i * 37) % 50)
-		var phase := fmod(_t * speed + float((i * 53) % 97), 24.0)
-		var y := -24.0 + phase
-		while y < h:
-			var streak := 6.0 + float((i * 11) % 7)
-			var top := maxf(y, 0.0)
-			var bot := minf(y + streak, h)
-			if bot > top:
-				draw_rect(Rect2(x, top, 0.5, bot - top), Color(body, 0.55 if i % 3 else 0.8))
-			y += 24.0
+	# Streaks falling (or frozen where they were): two layers of a repeating
+	# streak texture scrolled at different speeds, a few draw calls a frame.
+	for k in 2:
+		var scroll := fmod(_t * (130.0 + 40.0 * k), float(TILE_H))
+		draw_texture_rect_region(_streaks[k], Rect2(0, 0, w, h), Rect2(0, -scroll * 2.0, w * 2.0, h * 2.0), Color(body, 0.7 if k == 0 else 0.5))
 	# Foam where the water lands.
 	for i in int(w / 2.0):
 		var k := 0.6 + 0.4 * sin(_t * 9.0 + i)
