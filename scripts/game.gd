@@ -238,6 +238,10 @@ func _process(_delta: float) -> void:
 			boss._check_phase()
 		elif boss is Borabohra and boss.state == "intro" and boss.hp == Borabohra.MAX_HP:
 			boss.hp = roundi(Borabohra.MAX_HP * float(_args["boss-hp"]))
+		elif boss is KingGrieve and boss.state == "intro" and boss.hp == KingGrieve.MAX_HP:
+			boss.hp = roundi(KingGrieve.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= KingGrieve.PHASES[0]:
+				boss.phase = 2
 			boss._check_phase()
 		elif boss is Pakukame and boss.state == "intro" and boss.hp == Pakukame.MAX_HP:
 			boss.hp = roundi(Pakukame.MAX_HP * float(_args["boss-hp"]))
