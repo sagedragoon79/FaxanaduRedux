@@ -817,3 +817,18 @@ func test_the_waterfall_stair_gallery_opens_on_the_drowned_market() -> void:
 	check(falls.size() == 1, "where one fall pours down into a spiked pit")
 	var slugs := w.room.get_children().filter(func(c: Node) -> bool: return c is MeteorSlug).size()
 	check(slugs == 2, "and Meteor Slugs creep along the market floor (%d)" % slugs)
+
+
+func test_the_kings_stair_runs_down_from_the_market_to_the_kennels() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/drowned_market")
+	await frames(2)
+	check(w.room.doors[2].edge == "inner" and w.room.doors[2].target == "dartmoor/kings_stair", "the market's cracked stair is a doorway down")
+	w._enter("dartmoor/kings_stair")
+	await frames(2)
+	check(w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall).size() == 1, "where the king's fall pours down the stair-well")
+	check(w.room.doors[2].target == "dartmoor/kings_kennels", "and the stair's foot opens on the kennels")
+	w._enter("dartmoor/kings_kennels")
+	await frames(2)
+	var hounds := w.room.get_children().filter(func(c: Node) -> bool: return c is ClockworkHound).size()
+	check(hounds == 3, "where the king's hounds still run (%d)" % hounds)

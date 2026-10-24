@@ -507,5 +507,22 @@ def main():
     out += chime
     save("hourglass", out, 0.5)
 
+    # A Clockwork Hound winding up: a ratchet clicking faster and faster under
+    # a tightening spring whine.
+    d = 0.5
+    n = int(RATE * d)
+    clicks = np.zeros(n)
+    tt = 0.0
+    gap = 0.07
+    while tt < d - 0.01:
+        start = int(RATE * tt)
+        m = int(RATE * 0.008)
+        part = highpass(noise(0.008), 2500) * env(m, 0.0003, 3.0)
+        clicks[start:start + m] += part[: n - start]
+        tt += gap
+        gap = max(0.022, gap * 0.85)
+    whine = lowpass(osc(slide(300, 900, d, 0.6), "saw"), 1800) * env(n, 0.15, 1.0) * 0.18
+    save("ratchet", mix(clicks, whine), 0.5)
+
 if __name__ == "__main__":
     main()
