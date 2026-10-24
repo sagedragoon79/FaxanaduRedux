@@ -842,6 +842,34 @@ def track_conflate():
     return s.render(reverb=0.55)
 
 
+def track_pakukame():
+    """Pakukame, the Devouring Bloom: a hungry, lurching fight in A phrygian at 140.
+    A snapping bass on the offbeats (the jaws), chomp-chomp double kicks, a
+    shaker like rustling leaves, and the Branches' bell lead turned sour, a
+    half step flat of where the canopy theme sang."""
+    rng = np.random.default_rng(131)
+    s = Song(bpm=140, bars=16)
+    root, scale = 45, SCALES["phrygian"]
+    prog = [0, 1, 0, 6, 0, 1, 5, 6] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        base = scale_note(root - 12, scale, deg)
+        for k in (0.5, 1.5, 2.5, 3.5):
+            s.add(bass(midi_hz(base), s.beat * 0.35), b * 4 + k, 0, 0.75)
+        s.add(bass(midi_hz(base - 12), s.beat * 0.9), b * 4, 0, 0.7)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.0), low=1600), b * 4, rng.uniform(-0.5, 0.5), 0.2)
+        # Paku-paku: two quick kicks, twice a bar.
+        for k in (0, 0.25, 2, 2.25):
+            s.add(kick(0.22), b * 4 + k, 0, 0.9)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.6)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.6)
+        for k in range(8):
+            s.add(shaker(rng), b * 4 + k * 0.5 + 0.25, 0.4, 0.25)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=24, pan=-0.2, gain=0.45, density=0.55)
+    return s.render(reverb=0.35)
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -856,6 +884,7 @@ TRACKS = {
     "mist": track_mist,
     "branches": track_branches,
     "conflate": track_conflate,
+    "pakukame": track_pakukame,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,

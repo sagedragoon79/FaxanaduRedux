@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -977,3 +977,170 @@ func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
 		if b.filled:
 			full += 1
 	check(full == 3, "the tanks stay full once he is beaten")
+
+
+# --- Pakukame, the Devouring Bloom (bible 8.5) ---------------------------------
+
+func _bloom_world() -> Array:
+	var w := make_world({}, "branches/crown_leaf")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(8, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var k := get_tree_boss() as Pakukame
+	await _until(func() -> bool: return k != null and k.state == "idle", 200)
+	return [w, arena, k]
+
+
+## Puts the player `dx` px from the root and waits for the move it provokes.
+func _provoke(w: World, k: Pakukame, dx: float, move: String) -> int:
+	w.player.teleport(Vector2(k.global_position.x + dx, k.floor_y()))
+	k.set_state("idle")
+	k._last = ""
+	var tell_frames := 0
+	for i in 240:
+		await frames(1)
+		if k.state == move + "_tell":
+			tell_frames += 1
+		elif tell_frames > 0:
+			break
+	return tell_frames
+
+
+func test_crown_leaf_wakes_pakukame() -> void:
+	var setup := await _bloom_world()
+	var arena: BossArena = setup[1]
+	var k: Pakukame = setup[2]
+	check(arena.boss_id == "pakukame" and k != null, "walking onto the crown-leaf wakes the Bloom")
+	check(Music.track == "pakukame", "the fight plays its own theme (%s)" % Music.track)
+	check(k.head != null and k.head.active, "its head is out and can be struck")
+	check(k.collision_layer == 0, "the stem itself is scenery")
+
+
+func test_pakukame_telegraphs_are_fair() -> void:
+	var k := Pakukame.new()
+	for ph in [1, 2]:
+		k.phase = ph
+		for t: float in [Pakukame.BITE_TELL, Pakukame.WHIP_TELL, Pakukame.SPIT_TELL]:
+			check(k.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, k.tell(t), Enemy.MIN_TELEGRAPH])
+	k.free()
+
+
+func test_pakukame_shell_turns_blows_until_the_jaws_hang_open() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var hp0 := k.hp
+	k.head.take_hit(10, Vector2.RIGHT)
+	check(hp0 - k.hp == 3, "the shut shell turns most of a blow (%d)" % (hp0 - k.hp))
+	var hp := w.player.hp
+	var tell_frames := await _provoke(w, k, 60.0, "bite")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the head rears for at least %.2f s before it bites (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	var gaped := await _until(func() -> bool: return k.state == "gape", 30)
+	check(gaped and w.player.hp < hp, "the bite lands on a player standing still, and the jaws hang open")
+	check(absf(k.head.global_position.y - k.floor_y()) < 30.0, "the head lies low on the leaf")
+	hp0 = k.hp
+	k.head.take_hit(10, Vector2.RIGHT)
+	check(hp0 - k.hp == 10, "open, every blow lands in full (%d)" % (hp0 - k.hp))
+	var back := await _until(func() -> bool: return k.state == "idle", 200)
+	check(back, "then the head draws back")
+
+
+func test_a_parried_bite_holds_the_jaws_open() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var p := w.player
+	p.has_shield = true
+	p.teleport(Vector2(k.global_position.x + 50.0, k.floor_y()))
+	k.set_state("idle")
+	k._last = ""
+	# Raise the guard just before the head comes down.
+	await _until(func() -> bool: return k.state == "bite" and k.state_time >= 2.0 / 60.0, 240)
+	p.facing = -1
+	p.input.block_pressed = true
+	p.input.block_held = true
+	var hp := p.hp
+	await _until(func() -> bool: return k.state == "gape", 30)
+	p.input.block_pressed = false
+	p.input.block_held = false
+	check(p.hp == hp, "a parried bite does no damage")
+	var frames_open := 0
+	while k.state == "gape" and frames_open < 400:
+		await frames(1)
+		frames_open += 1
+	check(frames_open / 60.0 > Pakukame.GAPE_TIME + 0.5, "and the jaws hang open longer (%.2f s)" % (frames_open / 60.0))
+
+
+func test_pakukame_whip_lashes_along_the_leaf() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var hp := w.player.hp
+	var tell_frames := await _provoke(w, k, -150.0, "whip")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the vine coils for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	var r := k.whip_rect()
+	check(r.end.y == k.floor_y() and r.end.x < k.global_position.x, "it lashes low along the leaf on the player's side")
+	await _until(func() -> bool: return k.state == "idle", 60)
+	check(w.player.hp < hp, "and catches a player standing on the leaf")
+
+
+func test_pakukame_spits_seeds_in_arcs() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	k._last = "whip"
+	w.player.teleport(Vector2(k.global_position.x + 180.0, k.floor_y()))
+	k.set_state("idle")
+	await frames(1)
+	k._last = "whip"
+	var seeds := 0
+	for i in 120:
+		await frames(1)
+		seeds = maxi(seeds, _count(w, SeedShot))
+		if seeds > 0:
+			break
+	check(seeds == 3, "it spits three seeds (%d)" % seeds)
+
+
+func test_phase_two_bites_tear_the_leaf() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	k.hp = roundi(k.max_hp * 0.52)
+	k.head.take_hit(30, Vector2.RIGHT)
+	check(k.phase == 2, "below half the Bloom enters phase 2 (%d hp)" % k.hp)
+	k._bites = 1
+	var x := k.global_position.x + 96.0
+	await _provoke(w, k, 96.0, "bite")
+	await _until(func() -> bool: return k.state == "gape", 30)
+	check(k.gaps.size() == 1, "the bite tears a chunk out of the leaf")
+	check(not w.room.is_solid_at(Vector2(x, k.floor_y() + 4)), "where the jaws came down, the leaf is gone")
+	check(w.room.is_solid_at(Vector2(k.global_position.x, k.floor_y() + 4)), "the root's leaf stays whole")
+	var spikes := 0
+	for c in w.room.get_children():
+		if c is Spikes:
+			spikes += 1
+	check(spikes >= Pakukame.TEAR_WIDTH, "thorns line the gap (%d)" % spikes)
+
+
+func test_pakukame_defeat_opens_the_crown_leaf() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var points := int(GameState.data.skill_points)
+	k.phase = 2
+	k.hp = 1
+	k.set_state("gape")
+	k.head.take_hit(5, Vector2.RIGHT)
+	check(k.state == "dying", "the last blow ends it")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:pakukame"), 300)
+	check(gone, "Pakukame is marked beaten")
+	check(int(GameState.data.skill_points) >= points + 1, "and gives a skill point")
+	await frames(90)
+	check(get_tree_boss() == null, "the Bloom is gone")
+	w._enter("branches/crown_leaf")
+	await frames(10)
+	check(get_tree_boss() == null, "and never returns")

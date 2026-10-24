@@ -432,3 +432,46 @@ func test_mantra_path_and_lift_travel_soak() -> void:
 			break
 	check(problems.is_empty(), "travel soak found no problems: %s" % [problems])
 	menu.queue_free()
+
+
+func test_bloom_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "branches/crown_leaf", cell_feet(9, 19))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	w.player.abilities["stride"] = true
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Pakukame
+	check(boss != null, "Pakukame wakes")
+	if boss == null:
+		return
+	boss.max_hp = 99999
+	boss.hp = 99999
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 31
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var slowest := 0
+	var states := {}
+	const FIGHT_FRAMES := 1800
+	for f in FIGHT_FRAMES:
+		_mash(w.player, rng, hold)
+		# Phase 2 halfway through, so the leaf gets torn too.
+		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
+			boss.phase = 2
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		slowest = maxi(slowest, dt)
+		states[boss.state] = true
+		peak = maxi(peak, _count_nodes(w))
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  Bloom soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, gaps %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, boss.gaps.size(), states.keys()])
+	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(states.has("gape") and states.has("whip"), "bites and lashes were soaked")
+	check(boss.gaps.size() <= Pakukame.MAX_GAPS, "the leaf is never torn past %d gaps" % Pakukame.MAX_GAPS)
+	w.queue_free()
+	await frames(2)
