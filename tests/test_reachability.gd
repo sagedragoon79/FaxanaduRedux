@@ -4,12 +4,14 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GXOLWF*$SN"
+const PICKUPS := "GXOdLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
+## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5).
+const STRIDE_SECRETS := [["branches/north_bough", 8, 7]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
 ## or above the flue damper, open once Zoradohna falls (the "winch" ability),
 ## and the Mist, reached by the ore road east of the Deep Workings (its rooms
@@ -18,7 +20,8 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
-	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate"]
+	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
+	"branches/north_bough", "branches/windloft"]
 
 
 func _texts() -> Dictionary:
@@ -145,7 +148,7 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -180,7 +183,7 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	var with_boots := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(with_boots, p[0], p[2], p[3]):
+		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
@@ -335,3 +338,24 @@ func test_every_room_boots_and_the_player_lands() -> void:
 		await frames(1)
 	check(bad.is_empty(), "every room loads and the player lands safely at its entrance: %s" % [bad])
 
+
+
+func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
+	# Bible 4.1 (A5): the Elven Stride waits in the Windloft, reachable without
+	# it; the cache across the north bough's gap needs an air dash.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
+	var bare := Reach.new(_texts(), set, true)
+	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
+	check(bare.touchable(nodes, "branches/windloft", 30, 14), "the Elven Stride can be reached without it")
+	for s: Array in STRIDE_SECRETS:
+		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride" % [s])
+	set["stride"] = true
+	var reach := Reach.new(_texts(), set, true)
+	var strided := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var missing: Array = []
+	for p: Array in _pickups(reach):
+		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]):
+			missing.append(p)
+	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
+	var stuck := reach.stuck(strided, _save_spots(reach))
+	check(stuck.is_empty(), "with the Stride, no soft-locks: %s" % [stuck.slice(0, 6)])

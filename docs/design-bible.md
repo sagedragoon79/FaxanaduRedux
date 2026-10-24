@@ -104,7 +104,7 @@ Abilities are permanent and listed in acquisition order. Each one opens new rout
 | A2 | **Mattock** | Mattock | Down-strike in the air: **pogo** off enemies, spikes and thorn bulbs; breaks cracked stone | Cracked walls and floors, thorn-bulb chains, spike corridors | Tower of Trunk, after a mini-boss |
 | A3 | **Wing Boots** | Wing Boots | **Double jump** (feathers burst), refreshed by pogo and wall touch | Wide gaps, high ledges | The Mist, Victim side: on a perch in Feather Hollow (27,-8), west of the Victim Causeway |
 | A4 | **Deluge** (spell) | Deluge | Water bolt: puts out flame barriers, fills basins (floating platforms rise) | Fire seals, dry basins | The Mist, Mascon side: a drowned scribe's scroll on the Marsh Road (32,-7), east of the Sunken Chapel |
-| A5 | **Elven Stride** | (new, elven) | **Air dash** with brief invulnerability; passes through mist curtains | Mist curtains, long horizontal gaps, wind walls | Branches, Conflate |
+| A5 | **Elven Stride** | (new, elven) | **Air dash** with brief invulnerability; passes through mist curtains | Mist curtains, long horizontal gaps, wind walls | Branches: the Windloft shrine (46,-10), up Conflate's north bough; a warden's cache across the North Bough's gap is the first stride gate |
 | A6 | **Thunder** (spell) | Thunder | Bolt that arcs to conductors; powers elevators and doors | Dead conduits | Branches, Daybreak |
 | A7 | **Black Onyx** | Black Onyx | Passive: illusory walls shimmer; hidden platforms faintly visible | Illusory walls (secrets and one main route in Dartmoor) | Dartmoor, early |
 | A8 | **Hour Glass** | Hour Glass | Stops time for 2.5 s (cooldown 8 s): freezes falling water, crushers, platforms, projectiles | Time puzzles, waterfall stairs | Dartmoor, mid-zone |
