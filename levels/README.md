@@ -47,6 +47,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `A` | Lantern Ghost (drifts through walls; out in the Mist's fog it shows only near light. Eyes flare, then it lunges) |
 | `V` | Bog Myconid (rooted; its gills glow as it swells, then it bursts into a lingering spore cloud. Soft while spent) |
 | `m` | Leaf Mantis (hides folded on a bough; unfolds, lunges with its scythes, stops at ledges. Parryable; soft while overreached) |
+| `t` | Thunder Beetle (Daybreak: trundles the floor; its shell turns side blows but not a pogo. Near it, its wing cases crackle, then it discharges a ring of lightning (unparryable, above too); spent, it takes full damage) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Deluge bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |
 | `u` | Dry basin mud bed (solid ground, cracked) |
