@@ -12,6 +12,9 @@ const SLUDGE := Color("6e4a2c")
 
 var spring_id := "trunk"
 var spring_name := "Spring of Trunk"
+var text := "The sap hardens to amber. Water returns to Eolis."
+## A flag that must be set before the spring can be cleared ("" = none).
+var needs_flag := ""
 
 var _burst := 0.0
 
@@ -31,10 +34,14 @@ func _process(delta: float) -> void:
 	_burst = move_toward(_burst, 0.0, delta * 0.6)
 	if flowing():
 		remove_from_group("interactable")
+	elif needs_flag != "" and not GameState.flag(needs_flag):
+		remove_from_group("interactable")
+	elif not is_in_group("interactable"):
+		add_to_group("interactable")
 
 
 func interact(_p: Player) -> void:
-	if flowing():
+	if flowing() or needs_flag != "" and not GameState.flag(needs_flag):
 		return
 	GameState.set_flag("spring:" + spring_id)
 	_burst = 1.0
@@ -44,7 +51,7 @@ func interact(_p: Player) -> void:
 	d.global_position = global_position + Vector2(0, -20)
 	Sfx.play("secret", 0.0)
 	Feel.add_trauma(0.3)
-	GameState.banner.emit(spring_name + " restored", "The sap hardens to amber. Water returns to Eolis.")
+	GameState.banner.emit(spring_name + " restored", text)
 
 
 func _draw() -> void:

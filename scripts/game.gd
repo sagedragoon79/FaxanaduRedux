@@ -214,6 +214,10 @@ func _process(_delta: float) -> void:
 			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
 		elif boss is Zoradohna and boss.state == "intro":
 			boss.set_health_fraction(float(_args["boss-hp"]))
+		elif boss is Zorugeriru and boss.state == "intro" and boss.hp == Zorugeriru.MAX_HP:
+			boss.hp = roundi(Zorugeriru.MAX_HP * float(_args["boss-hp"]))
+			boss._check_phase()
+			boss._check_phase()
 	_check_pause()
 	_take_shot()
 

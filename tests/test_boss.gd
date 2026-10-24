@@ -760,3 +760,219 @@ func test_ripasheiku_defeat_gives_the_lantern_key() -> void:
 	check(lamps == 0, "her lanterns go with her")
 	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
 	check(opened, "the way out opens")
+
+
+const SPRING_ROOM := "mist/spring_of_mist"
+
+
+## The Spring of Mist with the arena awake: [world, arena, hydra].
+func _hydra_world() -> Array:
+	var w := make_world({}, SPRING_ROOM)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(7, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var z := get_tree_boss() as Zorugeriru
+	await frames(3)
+	return [w, arena, z]
+
+
+func _basins(w: World) -> Array:
+	var out := []
+	for c in w.room.get_children():
+		if c is DryBasin:
+			out.append(c)
+	return out
+
+
+func test_spring_of_mist_wakes_the_hydra() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var z: Zorugeriru = setup[2]
+	check(arena.boss_id == "zorugeriru" and z != null, "walking into the spring wakes Zorugeriru")
+	check(_basins(w).size() == 3, "three dry tanks feed the spring (%d)" % _basins(w).size())
+	for b: DryBasin in _basins(w):
+		check(b.flag_id == "" and not b.filled, "an arena tank starts dry and keeps no flag")
+	check(z.heads.size() == 4 and z.heads[3].coiled, "three heads out, a fourth hidden in the coil")
+	var spring: Spring = null
+	for c in w.room.get_children():
+		if c is Spring:
+			spring = c
+	check(spring != null and spring.spring_id == "mist", "the Spring of Mist lies under the coil")
+	await frames(2)
+	check(not spring.is_in_group("interactable"), "and can't be cleared while he lives")
+
+
+func test_zorugeriru_telegraphs_are_fair() -> void:
+	var z := Zorugeriru.new()
+	for ph in [1, 2, 3]:
+		z.phase = ph
+		for t: float in [Zorugeriru.BITE_TELL, Zorugeriru.BREATH_TELL]:
+			check(z.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, z.tell(t), Enemy.MIN_TELEGRAPH])
+	z.free()
+
+
+func test_only_the_solid_head_takes_damage() -> void:
+	var setup := await _hydra_world()
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	var solid := z.heads[z.solid_index]
+	var mist := z.heads[(z.solid_index + 1) % 3]
+	check(solid.solid and solid.active and solid.collision_layer != 0, "one head is solid and can be struck")
+	check(not mist.solid and mist.collision_layer == 0, "the others are mist the blade passes through")
+	var hp0 := z.hp
+	mist.take_hit(10, Vector2.RIGHT)
+	check(z.hp == hp0, "a blow on a mist head does nothing")
+	solid.take_hit(10, Vector2.RIGHT)
+	check(z.hp == hp0 - 10, "a blow on the solid head hurts him (%d)" % (hp0 - z.hp))
+	z._turn = Zorugeriru.SOLID_TIME
+	solid.set_mode("idle")
+	var i0 := z.solid_index
+	var turned := await _until(func() -> bool: return z.solid_index != i0, 30)
+	check(turned and not solid.solid and z.heads[z.solid_index].solid, "the heads take turns being solid")
+
+
+func test_zorugeriru_bites_then_lies_open() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	var h := z.heads[z.solid_index]
+	z._breath = -100.0
+	w.player.teleport(Vector2(h.global_position.x + 30.0, w.player.global_position.y))
+	var tell_frames := 0
+	var down := false
+	for i in 240:
+		await frames(1)
+		if h.mode == "rear":
+			tell_frames += 1
+		if h.mode == "down":
+			down = true
+			break
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the head rears for at least %.2f s before it bites (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	check(down and h.global_position.y > Zorugeriru.SOLID_Y + 40.0, "it strikes low and lies where it bit (y %.0f)" % h.global_position.y)
+	check(w.player.hp < 9999, "the bite lands on a player standing still")
+
+
+func test_mist_breath_rolls_along_the_floor() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z._breath = Zorugeriru.BREATH_EVERY
+	var breath: MistBreath = null
+	var tell_frames := 0
+	for i in 200:
+		await frames(1)
+		for h in z.heads:
+			if h.mode == "breath_tell":
+				tell_frames += 1
+				break
+		for c in w.room.get_children():
+			if c is MistBreath:
+				breath = c
+		if breath != null:
+			break
+	check(breath != null, "a mist head breathes a bank of fog")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "after a tell of at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	check(absf(breath.ground_y - z.arena.end.y) < 1.0, "it rolls along the floor")
+	var x0 := breath.global_position.x
+	await frames(10)
+	check(absf(breath.global_position.x - x0) > 10.0, "and moves")
+
+
+func test_fourth_head_shows_only_when_the_tanks_are_full() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z.hp = roundi(z.max_hp * 0.61)
+	z.heads[z.solid_index].take_hit(10, Vector2.RIGHT)
+	check(z.phase == 2, "below 60%% he enters phase 2 (%d hp)" % z.hp)
+	for i in 3:
+		check(not z.heads[i].solid, "head %d turns to mist" % i)
+	var h4 := z.heads[3]
+	await frames(30)
+	check(h4.coiled and h4.collision_layer == 0, "the fourth head stays hidden while the tanks are dry")
+	var basins := _basins(w)
+	for i in 2:
+		basins[i].douse()
+	await frames(80)
+	check(h4.coiled, "two full tanks are not enough")
+	basins[2].douse()
+	var out := await _until(func() -> bool: return not h4.coiled and h4.solid, 120)
+	check(out and h4.collision_layer != 0, "with all three full, the fourth head comes out solid")
+	var hp0 := z.hp
+	h4.take_hit(10, Vector2.RIGHT)
+	check(z.hp == hp0 - 10, "and can be struck")
+	for b: DryBasin in basins:
+		check(w.room.is_one_way_at(Vector2(b.x0 * Room.TILE + 4, b.water_row * Room.TILE + 4)), "each tank's raft stands")
+
+
+func test_phase_three_floods_the_floor() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z.phase = 2
+	z.hp = roundi(z.max_hp * 0.31)
+	for b in _basins(w):
+		b.douse()
+	await _until(func() -> bool: return not z.heads[3].coiled, 200)
+	z.heads[3].take_hit(10, Vector2.RIGHT)
+	check(z.phase == 3 and z.flood != null, "below 30%% the spring floods the arena")
+	check(z.heads[3].coiled and z.heads[z.solid_index].solid, "the fourth head sinks and the three take turns again")
+	var full := await _until(func() -> bool: return z.flood.level >= 1.0, 200)
+	check(full and absf(z.ground_y() - (z.arena.end.y - 4 * Room.TILE)) < 1.0, "the water rises to the tanks' rims")
+	z._breath = -100.0
+	z._turn = -100.0
+	w.player.teleport(cell_feet(4, 19))
+	var hp0 := w.player.hp
+	await frames(70)
+	check(w.player.hp < hp0, "standing on the flooded floor hurts")
+	w.player.teleport(cell_feet(30, 15))
+	await frames(70)
+	var hp1 := w.player.hp
+	await frames(70)
+	check(w.player.hp == hp1, "a raft keeps you clear of the water")
+
+
+func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z.phase = 3
+	z.hp = 1
+	z.heads[z.solid_index].take_hit(5, Vector2.RIGHT)
+	check(z.state == "dying", "the last blow ends him")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:zorugeriru"), 600)
+	check(gone, "Zorugeriru is marked beaten")
+	check((GameState.data.rings as Array).has("dworf"), "the Dworf Ring is the player's")
+	await frames(2)
+	var heads := 0
+	for c in w.room.get_children():
+		if c is HydraHead and not c.is_queued_for_deletion():
+			heads += 1
+	check(heads == 0, "his heads go with him")
+	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
+	check(opened, "the way out opens")
+	var spring: Spring = null
+	for c in w.room.get_children():
+		if c is Spring:
+			spring = c
+	await frames(2)
+	check(spring.is_in_group("interactable"), "the spring can be cleared now")
+	spring.interact(w.player)
+	check(GameState.flag("spring:mist"), "clearing it restores the Spring of Mist")
+	w._enter(SPRING_ROOM)
+	await frames(3)
+	var full := 0
+	for b in _basins(w):
+		if b.filled:
+			full += 1
+	check(full == 3, "the tanks stay full once he is beaten")

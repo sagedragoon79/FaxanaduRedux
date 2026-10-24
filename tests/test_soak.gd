@@ -192,6 +192,59 @@ func test_widow_fight_soak_stays_lean() -> void:
 	await frames(2)
 
 
+## Zorugeriru through all three phases, 30 seconds against a mashing player who
+## can't die: breaths, bites, the fourth head and the flood clean up after
+## themselves, and a frame stays well inside the 60 fps budget.
+func test_hydra_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "mist/spring_of_mist", cell_feet(7, 19))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Zorugeriru
+	check(boss != null, "Zorugeriru wakes")
+	if boss == null:
+		return
+	boss.max_hp = 99999
+	boss.hp = 99999
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 23
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var slowest := 0
+	var modes := {}
+	const FIGHT_FRAMES := 1800
+	for f in FIGHT_FRAMES:
+		_mash(w.player, rng, hold)
+		# Phase 2 a third of the way in (the tanks filled), phase 3 at two thirds.
+		if f == FIGHT_FRAMES / 3 and boss.phase == 1:
+			boss.hp = roundi(boss.max_hp * 0.6)
+			boss._check_phase()
+			for c in w.room.get_children():
+				if c is DryBasin:
+					c.douse()
+		if f == FIGHT_FRAMES * 2 / 3 and boss.phase == 2:
+			boss.hp = roundi(boss.max_hp * 0.3)
+			boss._check_phase()
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		slowest = maxi(slowest, dt)
+		for h in boss.heads:
+			modes[h.mode] = true
+		peak = maxi(peak, _count_nodes(w))
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  Hydra soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, modes %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, modes.keys()])
+	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(boss.phase == 3 and is_instance_valid(boss.flood), "the soak reached the flood")
+	check(modes.has("breath") and modes.has("emerge"), "breaths and the fourth head were soaked too")
+	w.queue_free()
+	await frames(2)
+
+
 func _soak_zone(zone: String, label: String) -> void:
 	var problems: Array[String] = []
 	var dir := DirAccess.open("res://levels/" + zone)
