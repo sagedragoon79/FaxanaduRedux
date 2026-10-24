@@ -217,6 +217,10 @@ func _process(_delta: float) -> void:
 		player.mp = player.max_mp
 		player.input.scripted = true
 		player.input.spell_pressed = true
+	if _args.has("give") and _frames == 2:
+		# Screenshots: hand the player abilities (e.g. --give=onyx,glove).
+		for a: String in String(_args["give"]).split(","):
+			player.abilities[a] = true
 	if _args.has("conduits") and _frames == int(_args["conduits"]):
 		for c in get_tree().get_nodes_in_group("conductor"):
 			(c as Conduit).power()

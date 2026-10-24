@@ -119,7 +119,7 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 func supported(room_id: String, x: int, y: int) -> bool:
 	var below := ch(room_id, x, y + 1)
-	return solid(room_id, x, y + 1) or below == "-" or (below == "=" and abilities.get("deluge", false)) \
+	return solid(room_id, x, y + 1) or below == "-" or below == "i" or (below == "=" and abilities.get("deluge", false)) \
 		or (below == "b" and abilities.get("spring_mist", false))
 
 
@@ -176,7 +176,7 @@ func neighbors(k: String) -> Array:
 		# Jumps up, across and down.
 		_add_jumps(out, r, x, y, s)
 	# Drop through a one-way platform (Down + Jump).
-	if ch(r, x, y + 1) == "-":
+	if ch(r, x, y + 1) in ["-", "i"]:
 		var below := drop(r, x, y + 1)
 		if below > y:
 			out.append(key(r, x, below))

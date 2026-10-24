@@ -9,6 +9,7 @@ const KIND_BY_CHAR := {
 	"O": "deluge",
 	"d": "stride",
 	"h": "thunder",
+	"n": "onyx",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
@@ -20,6 +21,7 @@ const INFO := {
 	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
 	"thunder": {"title": "Thunder", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
+	"onyx": {"title": "Black Onyx", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
 	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
@@ -28,7 +30,7 @@ const INFO := {
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder"]
+const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -165,6 +167,18 @@ func _draw() -> void:
 				_hp(o, -10 + i * 3, 10 - i * 4, 2, 2, light)
 			_hp(o, -14, 12, 6, 4, Color("120f19"))
 			_hp(o, -13, 13, 4, 2, Color("ffd24a"))
+		"onyx":
+			# A black stone cut in facets, a violet light sliding over it as it turns.
+			var spin := sin(_t * 2.0)
+			var wx := 9.0 + absf(spin) * 2.0
+			var gem := [Vector2(-wx * 0.6, -12), Vector2(wx * 0.6, -12), Vector2(wx, -4), Vector2(0, 14), Vector2(-wx, -4)]
+			_poly(o, gem, Color("e8dcff") if fmod(_t, 2.4) < 0.08 else Color("120f19"), 2.0)
+			_poly(o, gem, Color("1c1828"))
+			var mid := spin * wx * 0.5
+			_poly(o, [Vector2(-wx * 0.6, -12), Vector2(wx * 0.6, -12), Vector2(wx, -4), Vector2(-wx, -4)], Color("2e2840"))
+			_poly(o, [Vector2(mid - 3, -12), Vector2(mid + 3, -12), Vector2(mid + 4, -4), Vector2(0, 14), Vector2(mid - 4, -4)], Color(c, 0.55))
+			_hp(o, -int(wx * 0.6) + 2, -11, 4, 2, Color("e8dcff"))
+			_hp(o, int(mid) - 1, -3, 2, 6, Color(light, 0.8))
 		"life_fruit":
 			# A red fruit of the Tree: shaded crescent, highlight, stem and leaf.
 			var f := o + Vector2(0, 1)

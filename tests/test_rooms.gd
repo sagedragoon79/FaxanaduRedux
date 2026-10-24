@@ -411,6 +411,56 @@ func test_fake_wall_is_passable() -> void:
 	check(GameState.flag("secret:test/a"), "secret found flag set")
 
 
+## Black Onyx (bible A7): illusory walls shimmer at their seams and hidden
+## planks (legend `i`) show faintly, but only while you carry it.
+func test_black_onyx_shows_seams_and_hidden_planks() -> void:
+	var extra := {}
+	for y in range(14, 20):
+		extra[Vector2i(14, y)] = "%"
+	for x in range(24, 30):
+		extra[Vector2i(x, 15)] = "i"
+	var w := make_world(_rooms(extra), "test/a", cell_feet(12, 19))
+	w.player.abilities["onyx"] = false
+	await frames(30)
+	check(w.room.sheen != null and w.room.phantoms != null, "the room has a sheen and a hidden plank layer")
+	check(w.room.sheen.strength == 0.0 and w.room.phantoms.modulate.a == 0.0, "without the Onyx nothing shows")
+	w.player.abilities["onyx"] = true
+	await frames(40)
+	check(w.room.sheen.strength == 1.0, "with it the seams shimmer (strength %.2f)" % w.room.sheen.strength)
+	check(w.room.phantoms.modulate.a > 0.2 and w.room.phantoms.modulate.a < 0.6, "and the hidden planks show faintly (alpha %.2f)" % w.room.phantoms.modulate.a)
+
+
+func test_hidden_planks_hold_you_up_unseen() -> void:
+	var extra := {}
+	for x in range(8, 14):
+		extra[Vector2i(x, 14)] = "i"
+	var w := make_world(_rooms(extra), "test/a", cell_feet(11, 12))
+	w.player.abilities["onyx"] = false
+	await frames(40)
+	check(w.player.is_on_floor() and absf(w.player.global_position.y - 14 * 16) < 2.0,
+		"stood on an unseen plank (y %.0f)" % w.player.global_position.y)
+	check(w.room.is_one_way_at(Vector2(11 * 16 + 8, 14 * 16 + 4)), "it is a one-way plank")
+
+
+func test_the_onyx_waits_in_the_crypt_below_the_flooded_hall() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/onyx_crypt")
+	w.player.abilities["onyx"] = false
+	await frames(2)
+	var onyx: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "onyx":
+			onyx = c
+	check(onyx != null, "the Black Onyx lies on the crypt's dais")
+	if onyx == null:
+		return
+	onyx.grant(w.player)
+	check(w.player.abilities.get("onyx", false) and GameState.has_ability("onyx"), "taking it gives the Onyx for good")
+	var hall := Room.from_file("res://levels/dartmoor/flooded_hall.room")
+	check(hall.doors[2].target == "dartmoor/sunken_stair", "the flooded hall's west door leads down the stair")
+	hall.free()
+
+
 func test_cracked_wall_stays_broken() -> void:
 	var w := make_world(_rooms({Vector2i(12, 19): "C"}), "test/a", cell_feet(10, 19))
 	w.player.abilities.mattock = true

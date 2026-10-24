@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GXOdhLWF*$SN"
+const PICKUPS := "GXOdhnLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
@@ -24,12 +24,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
 const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
-const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall"]
+const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt"]
 
 
 func _texts() -> Dictionary:
@@ -249,6 +249,19 @@ func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
 	check(not dry.touchable(dry.reachable(dry.spot_of("t/dip", "P")), "t/dip", 34, 19), "the drowned boardwalk is nothing to stand on")
 	var risen := Reach.new(texts, {"glove": true, "spring_mist": true})
 	check(risen.touchable(risen.reachable(risen.spot_of("t/dip", "P")), "t/dip", 34, 19), "once the spring flows it carries you across")
+
+
+func test_checker_stands_on_hidden_planks_without_the_onyx() -> void:
+	# Hidden planks are always there; the Black Onyx only shows them.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 8, 20, ".", 22, 2)
+	put_tiles(rows, 8, 21, "^", 22, 1)
+	put_tiles(rows, 8, 20, "i", 22, 1)
+	put_tiles(rows, 34, 19, "L")
+	var texts := {"t/dip": room_text(["name: Dip"], rows)}
+	var blind := Reach.new(texts, {"glove": true})
+	check(blind.touchable(blind.reachable(blind.spot_of("t/dip", "P")), "t/dip", 34, 19), "the unseen planks carry you across")
 
 
 func test_checker_rides_bounce_pods() -> void:
