@@ -518,3 +518,58 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	check(boss.gaps.size() <= Pakukame.MAX_GAPS, "the leaf is never torn past %d gaps" % Pakukame.MAX_GAPS)
 	w.queue_free()
 	await frames(2)
+
+
+## The Storm Roc fight at full tilt: a mashing player who can't die, 30 seconds,
+## with the conduits woken every ten seconds so it is grounded and rises again.
+func test_roc_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "daybreak/roost", cell_feet(9, 19))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	w.player.abilities["stride"] = true
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Borabohra
+	check(boss != null, "Borabohra wakes")
+	if boss == null:
+		return
+	boss.max_hp = 99999
+	boss.hp = 99999
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 37
+	var bolts := 0
+	var seen := {}
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var slowest := 0
+	var states := {}
+	const FIGHT_FRAMES := 1800
+	for f in FIGHT_FRAMES:
+		_mash(w.player, rng, hold)
+		if f % 600 == 450:
+			for c in runner.get_tree().get_nodes_in_group("conductor"):
+				(c as Conduit).power()
+		# The storm breaks halfway through, so its bolts are soaked too.
+		if f == FIGHT_FRAMES / 2:
+			boss.phase = 2
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		slowest = maxi(slowest, dt)
+		states[boss.state] = true
+		peak = maxi(peak, _count_nodes(w))
+		for c in w.room.get_children():
+			if c is StormStrike and not seen.has(c.get_instance_id()):
+				seen[c.get_instance_id()] = true
+				bolts += 1
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  Roc soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
+	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(states.has("dive") and states.has("volley_tell") and states.has("grounded") and states.has("rise"), "dives, volleys and groundings were soaked")
+	check(bolts > 0, "and storm bolts (%d)" % bolts)
+	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")
+	w.queue_free()
+	await frames(2)

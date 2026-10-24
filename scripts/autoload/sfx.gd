@@ -6,6 +6,11 @@ const SFX_DIR := "res://assets/sfx/"
 
 var volume_db := -6.0
 
+## True with no sound device (the Dummy driver: headless tests and CI). Nothing
+## is started then: the dummy driver never mixes, so the audio server would keep
+## every playback to the end and report them as leaks at exit.
+var silent := false
+
 var _players: Array[AudioStreamPlayer] = []
 var _streams := {}
 var _next := 0
@@ -13,6 +18,7 @@ var _next := 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	silent = AudioServer.get_driver_name() == "Dummy"
 	Settings.ensure_buses()
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
@@ -31,7 +37,8 @@ func play(sound: String, pitch_jitter := 0.06, volume_offset_db := 0.0) -> void:
 	p.stream = stream
 	p.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
 	p.volume_db = volume_db + volume_offset_db
-	p.play()
+	if not silent:
+		p.play()
 
 
 func _get_stream(sound: String) -> AudioStream:

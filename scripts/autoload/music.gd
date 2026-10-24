@@ -18,6 +18,11 @@ const SILENT_DB := -60.0
 var track := ""
 var ambience_track := ""
 
+## True with no sound device (the Dummy driver: headless tests and CI). Nothing
+## is started then: the dummy driver never mixes, so the audio server would keep
+## every playback to the end and report them as leaks at exit.
+var silent := false
+
 var _players: Array[AudioStreamPlayer] = []
 var _active := 0
 var _amb: AudioStreamPlayer
@@ -26,6 +31,7 @@ var _streams := {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	silent = AudioServer.get_driver_name() == "Dummy"
 	Settings.ensure_buses()
 	for i in 2:
 		var p := AudioStreamPlayer.new()
@@ -53,7 +59,8 @@ func play(name: String, fade := FADE) -> void:
 		return
 	next.stream = stream
 	next.volume_db = SILENT_DB
-	next.play()
+	if not silent:
+		next.play()
 	_fade(next, MUSIC_DB, fade, false)
 
 
@@ -78,7 +85,8 @@ func ambience(name: String, fade := FADE) -> void:
 		return
 	_amb.stream = stream
 	_amb.volume_db = SILENT_DB
-	_amb.play()
+	if not silent:
+		_amb.play()
 	_fade(_amb, AMBIENCE_DB, fade, false)
 
 

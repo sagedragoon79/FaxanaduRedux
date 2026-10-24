@@ -1269,3 +1269,70 @@ func test_borabohra_defeat_gives_the_sky_key() -> void:
 	w._enter("daybreak/roost")
 	await frames(10)
 	check(get_tree_boss() == null, "and never returns")
+
+
+func test_borabohra_storm_breaks_below_half() -> void:
+	var setup := await _roc_world()
+	var b: Borabohra = setup[2]
+	check(b.phase == 1, "it starts in phase 1")
+	b.hp = roundi(b.max_hp * Borabohra.PHASE_2) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.phase == 2, "below half the storm breaks (%d hp)" % b.hp)
+	check(StormStrike.TELL >= Enemy.MIN_TELEGRAPH, "a bolt marks its spot for at least %.2f s" % Enemy.MIN_TELEGRAPH)
+	await _roc_provoke(b, "volley")
+	await frames(1)
+	var w: World = setup[0]
+	check(_count(w, HarpyFeather) == Borabohra.VOLLEY_FEATHERS_2, "and the volley throws %d (%d)" % [Borabohra.VOLLEY_FEATHERS_2, _count(w, HarpyFeather)])
+
+
+func _storm_bolt(w: World) -> StormStrike:
+	for c in w.room.get_children():
+		if c is StormStrike and not c.is_queued_for_deletion():
+			return c
+	return null
+
+
+func test_the_storm_strikes_you_when_you_stand_high() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	b.phase = 2
+	b._storm = 999.0
+	w.player.teleport(cell_feet(8, 13))
+	await frames(5)
+	b._call_storm()
+	var bolt := _storm_bolt(w)
+	check(bolt != null and absf(bolt.global_position.x - w.player.global_position.x) < 1.0, "up on an island, you are the tallest point")
+	var hp := w.player.hp
+	await frames(int(StormStrike.TELL * 60) - 6)
+	check(w.player.hp == hp, "nothing lands during the tell")
+	await frames(12)
+	check(hp - w.player.hp >= StormStrike.DAMAGE, "then the bolt strikes you (%d)" % (hp - w.player.hp))
+
+
+func test_the_storm_wakes_a_conduit_when_you_stay_low() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	b.phase = 2
+	b._storm = 999.0
+	b._call_storm()
+	var bolt := _storm_bolt(w)
+	check(bolt != null and bolt.global_position.y < b.floor_y() - Borabohra.ELEVATED, "on the floor, the bolt goes for a conduit up on an island")
+	await frames(int(StormStrike.TELL * 60) + 6)
+	var awake := _conduits(w).filter(func(c: Conduit) -> bool: return c.powered).size()
+	check(awake == 1, "and wakes it (%d awake)" % awake)
+
+
+func test_a_lone_conduit_drains_in_the_storm() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var cs := _conduits(w)
+	cs[0].power()
+	await frames(int(Borabohra.DRAIN_TIME * 60) + 20)
+	check(cs[0].powered, "in phase 1 a woken conduit holds its charge")
+	b.phase = 2
+	b._storm = 999.0
+	await frames(int(Borabohra.DRAIN_TIME * 60) + 20)
+	check(not cs[0].powered, "in the storm it drains unless all three wake together")
