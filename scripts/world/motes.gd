@@ -18,6 +18,10 @@ const ZONES := {
 	"daybreak": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
 }
 
+## Zones whose air settles once their spring runs: spring flag -> share of motes
+## left. The Spring of Sky breaks the storm, so Daybreak's rain thins to a drizzle.
+const SETTLES := {"daybreak": ["spring:sky", 0.3]}
+
 var zone := ""
 var _motes: Array = []  # [screen position, depth 0.5..1.2, phase]
 var _spec: Array = []
@@ -39,8 +43,23 @@ func set_zone(next: String) -> void:
 	if _spec.is_empty():
 		return
 	_rng.seed = zone.hash()
-	for i in int(_spec[0]):
+	for i in count():
 		_motes.append([Vector2(_rng.randf() * VIEW.x, _rng.randf() * VIEW.y), _rng.randf_range(0.5, 1.2), _rng.randf() * TAU])
+
+
+## How many motes the zone has now.
+func count() -> int:
+	var n := int(_spec[0])
+	if SETTLES.has(zone) and GameState.flag(SETTLES[zone][0]):
+		n = roundi(n * float(SETTLES[zone][1]))
+	return n
+
+
+## Rebuilds the motes (after a spring changes the weather).
+func refresh() -> void:
+	var z := zone
+	zone = ""
+	set_zone(z)
 
 
 func _process(delta: float) -> void:

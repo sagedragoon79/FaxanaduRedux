@@ -79,6 +79,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	var c := ch(room_id, x, y)
 	if c == "J":
 		return not keys
+	if c == "g":
+		# Dartmoor's upper gate opens with the Sky Key (Borabohra's reward).
+		return not abilities.get("sky_key", false)
 	if c == "C":
 		return not abilities.get("mattock", false)
 	if c == "R":

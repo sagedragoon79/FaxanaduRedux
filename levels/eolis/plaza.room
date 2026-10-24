@@ -4,7 +4,9 @@ map: 1, 0
 chest_gold: 60
 prop: 40, 19, fountain
 sign: 40, 19, The Fountain of Eolis.|Fed by the three springs of the World Tree. Dry for a season now.
-npc: 50, 19, townsfolk_well
+npc: 50, 19, townsfolk_well, !spring:sky
+npc: 50, 19, townsfolk_well_glad, spring:sky
+npc: 22, 19, festival_piper, spring:sky
 door: 1, eolis/west_gate, 1
 door: 2, eolis/market, 1
 door: 3, eolis/king_hall, 1

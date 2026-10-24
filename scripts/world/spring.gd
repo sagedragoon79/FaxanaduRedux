@@ -45,6 +45,9 @@ func interact(_p: Player) -> void:
 		return
 	GameState.set_flag("spring:" + spring_id)
 	_burst = 1.0
+	var world := get_tree().get_first_node_in_group("world") as World
+	if world != null and world.motes != null:
+		world.motes.refresh()
 	var d := Dust.new()
 	d.setup("splash")
 	get_parent().add_child(d)

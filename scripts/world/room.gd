@@ -276,6 +276,14 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			spring.text = "The fog thins. Water returns to Eolis."
 			spring.needs_flag = "boss:zorugeriru"
 			_spawn(spring, pos)
+		"spring_sky":
+			# The roc nested on it: it can be cleared once Borabohra falls.
+			var spring := Spring.new()
+			spring.spring_id = "sky"
+			spring.spring_name = "Spring of Sky"
+			spring.text = "The storm breaks. Eolis's fountain runs full."
+			spring.needs_flag = "boss:borabohra"
+			_spawn(spring, pos)
 		"house":
 			_spawn(HouseFront.new(), pos)
 		"taproot":
@@ -453,11 +461,14 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn(heart, bottom_center)
 		"S":
 			_spawn(SaveShrine.new(), bottom_center)
-		"J":
+		"J", "g":
 			var door_id := _pickup_id(cell)
 			if not GameState.is_collected(door_id):
 				var key_door := KeyDoor.new()
 				key_door.persist_id = door_id
+				if ch == "g":
+					# Dartmoor's upper gate: Borabohra's Sky Key opens it.
+					key_door.kind = "sky"
 				_spawn(key_door, bottom_center)
 		"$":
 			var chest := Chest.new()
