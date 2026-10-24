@@ -423,6 +423,15 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			var curtain := MistCurtain.new()
 			curtain.flag_id = "curtain:" + id
 			_spawn(curtain, center)
+		"c":
+			var conduit := Conduit.new()
+			conduit.flag_id = "conduit:%s:%d,%d" % [id, cell.x, cell.y]
+			conduit.room_flag = "conduits:" + id
+			_spawn(conduit, bottom_center)
+		"k":
+			var cgate := ConduitGate.new()
+			cgate.flag_id = "conduits:" + id
+			_spawn(cgate, center)
 		"w":
 			var bramble := BrambleWall.new()
 			bramble.persist_id = _pickup_id(cell)
@@ -451,7 +460,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "d", "L", "W", "F", "*":
+		"G", "X", "O", "d", "h", "L", "W", "F", "*":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()

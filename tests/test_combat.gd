@@ -320,6 +320,7 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
 	p.abilities["fire"] = false
+	p.abilities["thunder"] = false
 	p.equipped_spell = "deluge"
 	p.input.spell_next_pressed = true
 	await frames(1)
@@ -335,3 +336,20 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	p.input.spell_next_pressed = true
 	await frames(1)
 	check(p.equipped_spell == "fire", "it skips a spell you don't own")
+
+
+func test_thunder_bolt_strikes_a_foe() -> void:
+	var room := _arena_with("E", Vector2i(12, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.equipped_spell = "thunder"
+	var mp0 := p.mp
+	p.input.spell_pressed = true
+	await frames(1)
+	check(absf(p.mp - (mp0 - Spells.cost("thunder"))) < 0.5, "Thunder costs %.0f MP" % Spells.cost("thunder"))
+	var bolts := runner.get_tree().get_nodes_in_group("projectile")
+	check(bolts.size() == 1 and bolts[0] is ThunderBolt, "a bolt flies")
+	await frames(20)
+	check(dummy.hits_taken == 1, "and strikes the dummy (%d hits)" % dummy.hits_taken)
+

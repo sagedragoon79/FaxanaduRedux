@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GXOdLWF*$SN"
+const PICKUPS := "GXOdhLWF*$SN"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
@@ -24,10 +24,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
-const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak"]
+const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
+## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
+const THUNDER_ROOMS := ["daybreak/spire_stair"]
 
 
 func _texts() -> Dictionary:
@@ -149,14 +151,14 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
 	for id: String in reach.rooms:
-		if not rooms.has(id) and not STRIDE_ROOMS.has(id):
+		if not rooms.has(id) and not STRIDE_ROOMS.has(id) and not THUNDER_ROOMS.has(id):
 			missing_rooms.append(id)
 	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "but not the sky islands past the air-dash gaps")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) \
-				and not STRIDE_ROOMS.has(p[0]):
+				and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -191,7 +193,8 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	var with_boots := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]):
+		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) \
+				and not THUNDER_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
@@ -376,31 +379,33 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	var strided := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not FIRE_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not FIRE_SECRETS.has([p[0], p[2], p[3]]) \
+				and not THUNDER_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
 	var rooms := _rooms_reached(strided)
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return rooms.has(id)), "and the Stride reaches the sky islands")
+	# Daybreak's spell gates (bible 4.5), checked on the same flood to keep the suite quick.
+	check(reach.touchable(strided, "daybreak/daybreak", 66, 13), "the bell-ringer on the gallery can be reached")
+	check(reach.touchable(strided, "daybreak/spire_foot", 16, 19), "the Thunder scroll can be reached without it")
+	for s: Array in FIRE_SECRETS:
+		check(not reach.touchable(strided, s[0], s[1], s[2]), "%s is out of reach behind the bramble" % [s])
+	check(THUNDER_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "the conduit gate keeps the Spire Stair shut")
 	var stuck := reach.stuck(strided, _save_spots(reach))
 	check(stuck.is_empty(), "with the Stride, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
-func test_fire_burns_the_bramble_to_the_bell_cellar() -> void:
-	# Bible 4.5: bramble walls hold until the Fire spell, bought in Daybreak.
-	# The town is reached over the Fallen Bridge without it.
-	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true}
-	var bare := Reach.new(_texts(), set, true)
-	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
-	var rooms := _rooms_reached(nodes)
-	check(rooms.has("daybreak/fallen_bridge") and rooms.has("daybreak/daybreak"), "the Stride crosses the Fallen Bridge to Daybreak")
-	check(bare.touchable(nodes, "daybreak/daybreak", 66, 13), "the bell-ringer on the gallery can be reached")
-	for s: Array in FIRE_SECRETS:
-		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach behind the bramble" % [s])
-	set["fire"] = true
+func test_fire_and_thunder_open_the_daybreak_gates() -> void:
+	# Bible 4.5: bramble holds until Fire, conduit gates until Thunder. The
+	# without-spell side is checked in the Stride test's flood.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
+		"fire": true, "thunder": true}
 	var reach := Reach.new(_texts(), set, true)
 	var lit := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	for s: Array in FIRE_SECRETS:
 		check(reach.touchable(lit, s[0], s[1], s[2]), "%s is reachable once the bramble burns" % [s])
+	var opened := _rooms_reached(lit)
+	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Thunder the Spire Stair opens")
+	check(reach.touchable(lit, "daybreak/spire_stair", 24, 8), "and its top landing's chest can be reached")
 	var stuck := reach.stuck(lit, _save_spots(reach))
-	check(stuck.is_empty(), "with Fire, no soft-locks: %s" % [stuck.slice(0, 6)])
-
+	check(stuck.is_empty(), "with Fire and Thunder, no soft-locks: %s" % [stuck.slice(0, 6)])

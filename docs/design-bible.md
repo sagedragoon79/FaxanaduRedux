@@ -84,6 +84,8 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 
 **Daybreak town (pass 57):** the Broken Shrine's east door opens on the Fallen Bridge (52,-11), the great elf bridge broken into floating spans a stride apart, with hornets in the wind and a beetle on the old footing below (a fall walks you back to the near pier; storm crystals on the far pier stop a climb round). Past it, Daybreak (54,-11), the bell town on the last great island: a Guru, Calder the Armorer (Full Plate), Scribe Ysolde (the Fire scroll), Grocer Wenna, Bell-Ringer Tamsin on the bell loft gallery (the Daybreak chart), the Mayor (who names Borabohra) and the old Bellkeeper (who points at the bramble-choked bell cellar, where a Potion Shard waits for Fire). Music `daybreak_town` (G mixolydian at 92, a carillon over warm pads). The Spires beyond, with Borabohra and the Thunder spell, come next.
 
+**The Spires begin (pass 58):** a passage through the town's bell tower (from the bell-loft gallery) leads to the Spire Foot (56,-11), the old lift-house, where the Thunder scroll lies on the conductor's lectern and one dead conduit stands before a conduit gate. Past it the Spire Stair (57,-12, 40x45) climbs old landings to a silver hatch that opens only when both its conduits wake (one on the floor, one on a landing), and above it to a chest on the top landing below the roost. The roost (Borabohra's arena) and the Storm Harpy come next.
+
 ### 3.3 Room and map rules
 
 - **Room size:** multiples of one screen (640x360 px internal = 40x22.5 tiles of 16 px). Rooms are 1x1 up to 4x3 screens.
@@ -109,7 +111,7 @@ Abilities are permanent and listed in acquisition order. Each one opens new rout
 | A3 | **Wing Boots** | Wing Boots | **Double jump** (feathers burst), refreshed by pogo and wall touch | Wide gaps, high ledges | The Mist, Victim side: on a perch in Feather Hollow (27,-8), west of the Victim Causeway |
 | A4 | **Deluge** (spell) | Deluge | Water bolt: puts out flame barriers, fills basins (floating platforms rise) | Fire seals, dry basins | The Mist, Mascon side: a drowned scribe's scroll on the Marsh Road (32,-7), east of the Sunken Chapel |
 | A5 | **Elven Stride** | (new, elven) | **Air dash** with brief invulnerability; passes through mist curtains | Mist curtains, long horizontal gaps, wind walls | Branches: the Windloft shrine (46,-10), up Conflate's north bough; a warden's cache across the North Bough's gap is the first stride gate |
-| A6 | **Thunder** (spell) | Thunder | Bolt that arcs to conductors; powers elevators and doors | Dead conduits | Branches, Daybreak |
+| A6 | **Thunder** (spell) | Thunder | Bolt that arcs to conductors; powers elevators and doors | Dead conduits | Daybreak: the Spire Foot (56,-11), through the bell tower |
 | A7 | **Black Onyx** | Black Onyx | Passive: illusory walls shimmer; hidden platforms faintly visible | Illusory walls (secrets and one main route in Dartmoor) | Dartmoor, early |
 | A8 | **Hour Glass** | Hour Glass | Stops time for 2.5 s (cooldown 8 s): freezes falling water, crushers, platforms, projectiles | Time puzzles, waterfall stairs | Dartmoor, mid-zone |
 | A9 | **Elf, Ruby, Dworf and Demon Rings** | Rings | Story keys: the four rings open the gate of Zenis | The Zenis gate | Rokusutahn, Zoradohna, Zorugeriru, King Grieve |
@@ -163,7 +165,7 @@ Every gate has a consistent, readable look so players remember it:
 - **Fire seals:** red runic flames (Deluge). They block like a wall, burn for 10 on touch and light the fog around them. One Deluge bolt douses every seal in the room for good, in a hiss of steam (legend `Z`, a column of three under a stone arch).
 - **Dry basins:** cracked mud basins with a water-line stain (Deluge). A Deluge bolt cast across the tank (from its rim is enough) fills it over a second, drowning anything left in it, and a raft floats up to the stain and stays there as a one-way platform for good. The first is the Dry Cistern (mist 34,-7) east of the Scorched Hall, whose shelf over the tank's middle only the raft reaches; Zorugeriru's basins work the same way (legend `u` for the mud bed, a row of `=` for the stain).
 - **Bramble walls:** a knot of dry thorn-vine, crossed vines with pale thorns (Fire, legend `w`). Blades only snag in it. A fireball sets it alight and the flames creep tile to tile through the whole knot, which burns to ash in about a second and stays burnt. Fire is optional, so bramble only ever hides secrets, never the way on.
-- **Dead conduits:** copper coils with a dim blue spark (Thunder).
+- **Dead conduits:** copper coils with a dim blue spark (Thunder). A Thunder bolt that passes within 72 px of one (not behind it) leaps to it in an arc and wakes it for good: the coil glows and lights the fog. When every conduit in a room is awake, the room's conduit gates (elf-silver shutters with a lightning glyph, legend `k`; a conduit is legend `c`) slide up for good (flag `conduits:<room>`). Thunder as built: 18 MP, a fast bolt (380 px/s) that strikes one foe for 16.
 - **Illusory walls:** a 1-pixel seam visible only with Black Onyx.
 - **Time-locked water:** waterfalls with clock-glyph droplets (Hour Glass).
 - **Key doors:** Jack, Queen, King, Ace and Joker doors with a card-suit glyph.

@@ -93,6 +93,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	if c == "Z":
 		# A fire seal goes out for good once a Deluge bolt strikes it.
 		return not abilities.get("deluge", false)
+	if c == "k":
+		# A conduit gate slides open once Thunder powers the room's conduits.
+		return not abilities.get("thunder", false)
 	if c == "w":
 		# A bramble wall burns away for good under a Fire spell.
 		return not abilities.get("fire", false)
