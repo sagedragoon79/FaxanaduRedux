@@ -621,6 +621,96 @@ def mist_wall_lantern(rng):
     return c
 
 
+def branches_litter(rng):
+    """Fallen leaves on the bough, green and gold, one curled up."""
+    c = Cell()
+    for _ in range(rng.randint(3, 5)):
+        x = rng.randint(4, 26)
+        w = rng.randint(4, 7)
+        col = rng.choice(["leaf-3", "leaf-4", "gold-4"])
+        c.disc(x, H - 2, w, 1.6, col)
+        c.line([(x - w + 1, H - 2), (x + w - 1, H - 2)], "leaf-2" if col != "gold-4" else "gold-3")
+    c.outline("night-0")
+    return c
+
+
+def branches_flowers(rng):
+    """Small sky-blue canopy flowers on thin stems among grass."""
+    c = Cell()
+    for i in range(rng.randint(5, 8)):
+        blade(c, rng.randint(3, 28), rng.randint(5, 12), rng.uniform(-2, 2), "leaf-2", "leaf-4", "leaf-5")
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(5, 26)
+        h = rng.randint(8, 16)
+        c.line([(x, H - 1), (x, H - h)], "leaf-3")
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            c.px(x + dx, H - h + dy, "sky-6")
+        c.px(x, H - h, "gold-6")
+    return c
+
+
+def branches_sprout(rng):
+    """A young shoot unfurling from the bark: two broad leaves."""
+    c = Cell()
+    x = rng.randint(12, 18)
+    h = rng.randint(14, 22)
+    c.line([(x, H - 1), (x + 1, H - h)], "leaf-2")
+    c.disc(x - 4, H - h + 2, 5, 2.5, "leaf-4")
+    c.disc(x + 6, H - h + 5, 5, 2.5, "leaf-3")
+    c.line([(x - 8, H - h + 2), (x - 1, H - h + 2)], "leaf-2")
+    c.outline("night-0")
+    return c
+
+
+def branches_hanging_leaves(rng):
+    """A spray of leaves hanging from the bough above."""
+    c = Cell()
+    for _ in range(rng.randint(3, 5)):
+        x = rng.randint(5, 26)
+        n = rng.randint(6, 26)
+        c.line([(x, 0), (x + rng.randint(-2, 2), n)], "leaf-2")
+        c.disc(x, n + 3, 2.5, 4.5, rng.choice(["leaf-3", "leaf-4"]))
+        c.px(x, n + 2, "leaf-5")
+    c.outline("night-0")
+    return c
+
+
+def branches_vine(rng):
+    """A creeper vine trailing down, leaves every few pixels."""
+    c = Cell()
+    x = rng.randint(8, 22)
+    n = rng.randint(30, 60)
+    ph = rng.random() * math.tau
+    for y in range(n):
+        xx = x + math.sin(ph + y * 0.15) * 3
+        c.px(xx, y, "leaf-1")
+        if y % 7 == 3:
+            c.disc(xx + (2 if y % 14 == 3 else -2), y, 2, 1.4, "leaf-3")
+    return c
+
+
+def branches_wall_shelf(rng):
+    """A sun-yellow bracket fungus on a wall of bark."""
+    c = Cell()
+    y = rng.randint(24, 44)
+    for i, w in enumerate((11, 10, 8, 5)):
+        c.rect(0, y + i * 2, w, 2, "gold-5" if i == 0 else ("gold-4" if i == 1 else "bark-4"))
+    c.rect(0, y - 1, 9, 1, "gold-6")
+    c.outline("night-0")
+    return c
+
+
+def branches_wall_sprig(rng):
+    """A sprig of leaves growing out of a crack in the bark."""
+    c = Cell()
+    y = rng.randint(20, 44)
+    c.line([(0, y), (6, y - 3), (10, y - 4)], "leaf-2")
+    c.disc(7, y - 6, 3, 2, "leaf-4")
+    c.disc(11, y - 3, 3, 2, "leaf-3")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -643,6 +733,11 @@ ZONES = {
         "floor": [mist_reeds, mist_reeds, mist_toadstools, mist_lantern_post, mist_stake, mist_reeds],
         "ceiling": [mist_beard, mist_beard, mist_hanging_lantern, mist_drip],
         "wall": [mist_bracket, mist_wall_lantern],
+    },
+    "branches": {
+        "floor": [branches_litter, branches_flowers, branches_sprout, branches_litter, branches_flowers, branches_litter],
+        "ceiling": [branches_hanging_leaves, branches_vine, branches_hanging_leaves, branches_vine],
+        "wall": [branches_wall_shelf, branches_wall_sprig],
     },
 }
 

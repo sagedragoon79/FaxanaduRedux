@@ -103,6 +103,11 @@ func test_random_input_soak_in_every_mist_room() -> void:
 	await _soak_zone("mist", "Mist")
 
 
+## The Branches: the canopy's rooms, bounce-pods and all.
+func test_random_input_soak_in_every_branches_room() -> void:
+	await _soak_zone("branches", "Branches")
+
+
 ## The fog's CPU side in every Mist room: the player walked across the room,
 ## the light list rebuilt each frame. It must stay cheap and never hit
 ## Fog.MAX_LIGHTS (the shader would drop lanterns).

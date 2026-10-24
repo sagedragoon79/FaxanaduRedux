@@ -10,6 +10,7 @@ rendered as seamless loops. Drop a real file with the same name (any of .ogg,
 Needs numpy and ffmpeg (for Ogg Vorbis). Deterministic: same seed, same files.
 Usage: python3 tools/audio/musicgen.py [track ...]
 """
+import math
 import subprocess
 import sys
 import tempfile
@@ -576,6 +577,81 @@ def amb_mist():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+def track_branches():
+    """Branches (Conflate): sunlight high in the canopy. D lydian at a lilting 104,
+    bright plucks rippling like leaves in the wind, a warm pad, a light shaker
+    and kick, and an airy bell lead. The first open sky of the game."""
+    rng = np.random.default_rng(113)
+    s = Song(bpm=104, bars=16)
+    root, scale = 50, SCALES["lydian"]
+    prog = [0, 1, 0, 4, 5, 1, 4, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, rng.uniform(-0.5, 0.5), 0.3)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 1.8), b * 4, 0, 0.55)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg) + 7), s.beat * 0.9), b * 4 + 2.5, 0, 0.45)
+        # Leaves in the wind: a rippling arpeggio up and back down the chord.
+        arp = [tones[0], tones[1], tones[2], tones[0] + 12, tones[2], tones[1]]
+        for k in range(8):
+            m = arp[k % len(arp)] + 12
+            s.add(pluck(midi_hz(m), s.beat * 0.45, bright=2600), b * 4 + k * 0.5, 0.4 * math.sin(k), 0.28)
+        s.add(kick(0.25) * 0.6, b * 4, 0, 0.8)
+        s.add(kick(0.25) * 0.4, b * 4 + 2, 0, 0.8)
+        for k in range(8):
+            s.add(hat(rng, 0.04), b * 4 + k * 0.5 + 0.25, 0.5, 0.18)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=24, pan=-0.2, gain=0.6, density=0.5)
+    return s.render(reverb=0.45)
+
+
+def amb_branches():
+    """Wind through the high canopy: a long airy gust that swells and fades, leaves
+    rustling in bursts, a far bird trill, and a bough creaking under the wind."""
+    rng = np.random.default_rng(117)
+    dur = 26.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    gust = 0.55 + 0.45 * np.sin(2 * np.pi * t / 13.0) * np.sin(2 * np.pi * t / 5.2 + 1.0)
+    wind = fft_filter(rng.uniform(-1, 1, m), low=900, high=180) * 1.4 * gust
+    out[:, 0] += wind
+    out[:, 1] += np.roll(wind, RATE // 4)
+    # Rustling leaves: bright crackles in short bursts.
+    for _ in range(30):
+        i = rng.integers(0, n)
+        mm = int(rng.uniform(0.3, 0.8) * RATE)
+        tt = np.arange(mm) / RATE
+        rustle = fft_filter(rng.uniform(-1, 1, mm) * (rng.random(mm) < 0.3), low=7000, high=2500)
+        rustle *= np.sin(np.pi * tt / tt[-1]) * rng.uniform(0.15, 0.35)
+        pan = rng.uniform(-1, 1)
+        out[i:i + mm, 0] += rustle * (1 - pan) / 2
+        out[i:i + mm, 1] += rustle * (1 + pan) / 2
+    # A bird trill: quick rising chirps.
+    for _ in range(5):
+        i = rng.integers(0, n)
+        for k in range(rng.integers(3, 6)):
+            j = i + int(k * 0.09 * RATE)
+            mm = int(0.07 * RATE)
+            tt = np.arange(mm) / RATE
+            f = rng.uniform(2600, 3200) * (1 + tt * 6)
+            chirp = np.sin(2 * np.pi * np.cumsum(f) / RATE) * np.sin(np.pi * tt / tt[-1]) * 0.05
+            pan = rng.uniform(-0.8, 0.8)
+            out[j:j + mm, 0] += chirp * (1 - pan) / 2
+            out[j:j + mm, 1] += chirp * (1 + pan) / 2
+    # A bough creaking.
+    for _ in range(3):
+        i = rng.integers(0, n)
+        mm = int(rng.uniform(0.8, 1.3) * RATE)
+        tt = np.arange(mm) / RATE
+        fc = rng.uniform(80, 120) + 15 * np.sin(2 * np.pi * 7 * tt)
+        creak = fft_filter(wave_of("saw", np.cumsum(fc) / RATE % 1.0), low=700) * np.sin(np.pi * tt / tt[-1]) * 0.07
+        out[i:i + mm, :] += creak[:, None]
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 def amb_trunk():
     rng = np.random.default_rng(71)
     dur = 24.0
@@ -757,12 +833,14 @@ TRACKS = {
     "zorugeriru": track_zorugeriru,
     "forepaw": track_forepaw,
     "mist": track_mist,
+    "branches": track_branches,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
     "amb_heights": amb_heights,
     "amb_mine": amb_mine,
     "amb_mist": amb_mist,
+    "amb_branches": amb_branches,
 }
 
 

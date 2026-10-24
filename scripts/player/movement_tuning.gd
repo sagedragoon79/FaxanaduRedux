@@ -49,6 +49,8 @@ extends Resource
 @export_group("Pogo and attacks")
 @export var pogo_bounce := 380.0
 @export var pogo_bounce_held := 420.0
+## A bounce-pod's launch (Branches): about 9 tiles of rise.
+@export var pod_bounce := 600.0
 @export var slash_active := 0.10
 @export var down_strike_active := 0.14
 @export var attack_cooldown := 0.28

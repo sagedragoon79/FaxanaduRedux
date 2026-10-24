@@ -151,6 +151,34 @@ def paint_limb(img, ox, oy, seed, ramp):
                         img.putpixel((ox + cx + dx, oy + cy + dy), c("leaf-1" if dy > 0 else "leaf-2"))
 
 
+def paint_bough(img, ox, oy, seed, ramp):
+    """A sunlit bough high in the canopy: the Trunk's grain two shades lighter,
+    warm light streaking down the bark, and the odd sprig of young leaves."""
+    for x in range(T):
+        base = 3 if hash2(x // 3, 0, seed) > 0.4 else 4
+        phase = hash2(x, 1, seed) * 32
+        for y in range(T):
+            n = math.sin((y + phase) * 0.2)
+            col = base
+            if n > 0.9 and base == 4 and x % 3 == 1:
+                col = 5
+            elif n < -0.85:
+                col = base - 1
+            if x % 12 == 0:
+                col = min(col, 3)
+            elif x % 12 == 1 and hash2(x, y // 4, seed) > 0.5:
+                col = min(col + 1, 5)
+            img.putpixel((ox + x, oy + y), c(f"{ramp}-{col}"))
+    for k in range(2):
+        if hash2(seed, k, 21) > 0.6:
+            # A sprig: a short stem and two bright leaves.
+            cx, cy = int(hash2(seed, k, 22) * (T - 8)) + 4, int(hash2(seed, k, 23) * (T - 8)) + 4
+            for dy in range(4):
+                img.putpixel((ox + cx, oy + cy + dy), c("leaf-3"))
+            for dx, dy in [(-1, 0), (-2, 0), (-2, -1), (1, 1), (2, 1), (2, 0)]:
+                img.putpixel((ox + cx + dx, oy + cy + dy), c("leaf-5" if dy < 1 else "leaf-4"))
+
+
 def cap_moss(img, ox, oy, seed, x0, x1, light="leaf", glow=None, top=5):
     """A ragged cap of moss over the top edge: blades of uneven height, a lit
     fringe, and a dark under-edge where it meets the ground."""
@@ -246,6 +274,8 @@ ZONES = {
               "under": "night-1", "outline": "night-0"},
     "mist": {"painter": paint_limb, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-5", "cap_top": 3,
              "under": "night-1", "outline": "night-0"},
+    "branches": {"painter": paint_bough, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": None, "cap_top": 6,
+                 "under": "bark-2", "outline": "night-0"},
 }
 
 
@@ -809,6 +839,71 @@ def mist_mid():
     return img
 
 
+def cloud(img, cx, cy, w, h, rng, top="sky-7", body="sky-6", shade="sky-5"):
+    """A flat-bottomed cumulus: overlapping puffs, lit on top, shaded underneath."""
+    puffs = [(cx + rng.uniform(-0.5, 0.5) * w, cy - rng.uniform(0, 0.6) * h, rng.uniform(0.3, 0.55) * h) for _ in range(9)]
+    for y in range(int(cy - h * 1.3), int(cy + 1)):
+        for x in range(int(cx - w * 0.8), int(cx + w * 0.8)):
+            inside = [p for p in puffs if (x - p[0]) ** 2 + (y - p[1]) ** 2 <= p[2] ** 2]
+            if not inside:
+                continue
+            p = inside[0]
+            dy = (y - p[1]) / p[2]
+            col = top if dy < -0.45 else (shade if y > cy - h * 0.25 else body)
+            if col == body and (x + y) % 2 and dy < -0.3:
+                col = top
+            put(img, x, y, c(col))
+
+
+def leaf_shape(img, cx, cy, length, width, ang, col, vein, rng):
+    """One great leaf of the canopy: a pointed oval with a midrib."""
+    ca, sa = math.cos(ang), math.sin(ang)
+    for t in range(-length // 2, length // 2):
+        k = 1 - (2 * t / length) ** 2
+        half = int(width * 0.5 * math.sqrt(max(0.0, k)))
+        for d in range(-half, half + 1):
+            x = cx + ca * t - sa * d
+            y = cy + sa * t + ca * d
+            put(img, x, y, c(vein if d == 0 or (half and abs(d) == half) else col))
+
+
+def branches_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("sky-6"))
+    gradient(img, "sky-5", "sky-7")
+    rng = random.Random(41)
+    for _ in range(9):
+        cloud(img, rng.randrange(BG_W), rng.randrange(120, 420) * D, rng.randrange(50, 110) * D, rng.randrange(24, 50) * D, rng)
+    # Far boughs of the Tree in the haze, leaves bunched along them.
+    for i in range(6):
+        x0 = rng.randrange(BG_W)
+        y0 = BG_H - rng.randrange(0, 200) * D
+        dead_limb(img, x0, y0, rng.randrange(240, 420) * D, rng.randrange(10, 18) * D,
+                  -math.pi / 2 + rng.uniform(-0.9, 0.9), "sky-4", rng)
+    for _ in range(40):
+        leaf_shape(img, rng.randrange(BG_W), rng.randrange(BG_H // 3, BG_H), rng.randrange(16, 34) * D,
+                   rng.randrange(8, 14) * D, rng.uniform(0, math.pi), "sky-4", "sky-5", rng)
+    return img
+
+
+def branches_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(42)
+    # Boughs crossing in from the sides, hung with enormous leaves.
+    for i in range(5):
+        left = i % 2 == 0
+        x0 = rng.randrange(BG_W)
+        y0 = rng.randrange(60, 420) * D
+        ang = rng.uniform(-0.4, 0.2) + (0 if left else math.pi)
+        dead_limb(img, x0, y0, rng.randrange(180, 300) * D, rng.randrange(8, 14) * D, ang, "bark-2", rng)
+        for k in range(rng.randrange(4, 8)):
+            t = rng.randrange(20, 160) * D
+            hx = x0 + math.cos(ang) * t
+            hy = y0 + math.sin(ang) * t
+            leaf_shape(img, hx, hy + 20 * D, rng.randrange(40, 80) * D, rng.randrange(18, 30) * D,
+                       ang + rng.uniform(0.8, 2.2), rng.choice(["leaf-2", "leaf-3"]), "leaf-1", rng)
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -820,6 +915,7 @@ BACKGROUNDS = {
     "eolis": (eolis_far, eolis_mid),
     "tower": (tower_far, tower_mid),
     "mist": (mist_far, mist_mid),
+    "branches": (branches_far, branches_mid),
     "gym": (gym_far, None),
 }
 

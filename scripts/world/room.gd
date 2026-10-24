@@ -9,7 +9,7 @@ const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
 ## What each zone's ground is made of, for footsteps (design bible 11). A room's
 ## `surface:` header overrides it; platforms are planks and sap pools are sap.
-const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss"}
+const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank"}
 
 ## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
 var id := ""
@@ -372,6 +372,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				_sap_cells[cell] = true
 		"^":
 			_spawn(Spikes.new(), bottom_center)
+		"@":
+			_spawn(BouncePod.new(), bottom_center)
 		"o":
 			_spawn(ThornBulb.new(), center)
 		"C":

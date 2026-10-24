@@ -208,3 +208,76 @@ func test_no_pogo_without_mattock() -> void:
 		if p.hp < p.max_hp:
 			break
 	check(p.hp < p.max_hp, "without the Mattock the down-attack does not pogo")
+
+
+const POD_FLOOR := [
+	"####################",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#........@.........#",
+	"####################",
+]
+
+
+func test_bounce_pod_throws_you_nine_tiles_up() -> void:
+	var room := make_room(POD_FLOOR)
+	var p := make_player(room, Vector2i(9, 10), {"boots": true, "stride": true})
+	p.has_double_jump = false
+	var launched := false
+	var base_y := 0.0
+	for i in 90:
+		await frames(1)
+		if p.velocity.y < -540.0:
+			launched = true
+			base_y = p.global_position.y
+			break
+	check(launched, "falling onto the pod launches the player")
+	check_near(p.velocity.y, -p.tuning.pod_bounce, 30.0, "at the pod's launch speed")
+	check(p.has_double_jump, "and gives the double jump back")
+	p.input.jump_held = false
+	var top := base_y
+	for i in 80:
+		await frames(1)
+		top = minf(top, p.global_position.y)
+		if p.velocity.y > 0.0:
+			break
+	var rise := base_y - top
+	var expected := p.tuning.pod_bounce * p.tuning.pod_bounce / (2.0 * p.tuning.gravity)
+	check(rise >= expected * 0.85 and rise <= expected + 4.0 and rise >= 8.5 * 16, "it rises about nine tiles, released jump or not (%.0f px of %.0f)" % [rise, expected])
+
+
+func test_walking_into_a_bounce_pod_does_nothing_but_a_hop_launches() -> void:
+	var room := make_room(POD_FLOOR)
+	var p := make_player(room, Vector2i(4, 16), {})
+	await frames(5)
+	p.input.move_x = 1
+	var launched := false
+	for i in 40:
+		await frames(1)
+		if p.velocity.y < -450.0:
+			launched = true
+	p.input.move_x = 0
+	check(not launched, "the pod isn't solid and walking through it doesn't launch")
+	p.teleport(Vector2(9 * 16 + 8, 17 * 16))
+	await frames(5)
+	p.input.jump_pressed = true
+	p.input.jump_held = false
+	for i in 60:
+		await frames(1)
+		if p.velocity.y < -540.0:
+			launched = true
+			break
+	check(launched, "a hop on the spot lands on it and launches")

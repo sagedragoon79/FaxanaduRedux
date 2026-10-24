@@ -602,6 +602,20 @@ func _pogo_bounce() -> void:
 	jumped.emit("pogo")
 
 
+## A bounce-pod throws the player up (design bible 6.6): a full-height launch
+## that jump release doesn't cut short, and the air moves come back.
+func pod_launch() -> void:
+	velocity.y = -tuning.pod_bounce
+	_refresh_air_moves()
+	_jump_cut_available = false
+	_coyote_timer = 0.0
+	visual.squash(Vector2(0.75, 1.25))
+	_spawn_dust(Vector2(0, 0), "jump")
+	Feel.add_trauma(0.08)
+	Feel.rumble(0.3, 0.1, 0.08)
+	jumped.emit("pod")
+
+
 func _query_rect(rect: Rect2, mask: int) -> Array:
 	return Query.rect(get_world_2d(), rect, mask, [get_rid()])
 
