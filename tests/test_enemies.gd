@@ -778,3 +778,69 @@ func test_shade_knight_thrusts_then_cuts_and_a_parry_breaks_him() -> void:
 	await frames(10)
 	check(p.hp == hp, "a parried thrust does no damage (%d)" % (hp - p.hp))
 	check(k.is_staggered() and not k.guarding(), "and he reels, shield wide")
+
+
+## Bible 7: the Meteor Slug swells (the tell), then heaves three burning globs.
+func test_meteor_slug_swells_then_heaves_three_globs() -> void:
+	var room := _room_with({Vector2i(20, 6): "s"})
+	var p := make_player(room, Vector2i(10, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var s: MeteorSlug = _find(room, MeteorSlug)
+	var swell := 0
+	var globs := 0
+	for i in 150:
+		await frames(1)
+		if s.state == "swell":
+			swell += 1
+		globs = room.get_children().filter(func(c: Node) -> bool: return c is MeteorGlob).size()
+		if globs > 0:
+			break
+	check(swell / 60.0 >= Enemy.MIN_TELEGRAPH, "the swell is telegraphed (%d frames)" % swell)
+	check(globs == MeteorSlug.GLOBS, "then three globs fly (%d)" % globs)
+	var hp := p.hp
+	var embers := false
+	for i in 90:
+		await frames(1)
+		if room.get_children().any(func(c: Node) -> bool: return c is MeteorEmbers):
+			embers = true
+	check(embers, "and where they land they leave embers")
+	check(p.hp < hp, "and a player standing still is burned (%d)" % (hp - p.hp))
+
+
+func test_meteor_slug_shell_turns_blows_from_above() -> void:
+	var room := _room_with({Vector2i(20, 6): "s"})
+	make_player(room, Vector2i(3, 6))
+	var s: MeteorSlug = _find(room, MeteorSlug)
+	await frames(3)
+	var hp0 := s.hp
+	s.take_hit(10, Vector2(0, 1))
+	check(s.hp == hp0, "a pogo glances off the meteor shell")
+	s.take_hit(10, Vector2(1, 0))
+	check(hp0 - s.hp == 10, "a blow to its soft side lands (%d)" % (hp0 - s.hp))
+	s.set_state("recover")
+	hp0 = s.hp
+	s.take_hit(10, Vector2(0, 1))
+	check(hp0 - s.hp == 10, "spent after a heave, its shell cracks open to a pogo (%d)" % (hp0 - s.hp))
+
+
+func test_meteor_globs_and_embers_hold_still_in_stopped_time() -> void:
+	var room := _room_with({})
+	var p := make_player(room, Vector2i(3, 6))
+	var g := MeteorGlob.new()
+	g.room = room
+	g.velocity = Vector2(100, -100)
+	room.add_child(g)
+	g.position = Vector2(200, 40)
+	var e := MeteorEmbers.new()
+	room.add_child(e)
+	e.position = Vector2(p.global_position.x, 7 * 16)
+	TimeStop.start()
+	var hp := p.hp
+	await frames(20)
+	check(g.position == Vector2(200, 40), "a glob hangs in the air (%s)" % g.position)
+	check(p.hp == hp, "and embers under your feet don't burn while time holds")
+	TimeStop.reset()
+	await frames(5)
+	check(g.position.x > 200.0, "the glob flies on when time runs")
+	check(p.hp < hp, "and the embers burn (%d)" % (hp - p.hp))
