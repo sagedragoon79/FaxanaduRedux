@@ -550,3 +550,86 @@ func test_thunder_beetle_shell_and_the_ring_above_it() -> void:
 	p.global_position = b.center() + Vector2(90, 20)
 	check(not b._player_in_ring(), "but not someone well clear")
 	check(b.is_in_group("pogo"), "the shell is a pogo target")
+
+
+const TALL := [
+	"##############################",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"##############################",
+]
+
+
+## Bible 7: the Storm Harpy hangs above and beside you, rears back with a
+## screech (the tell), flings a fan of three feathers, then sags, winded.
+func test_storm_harpy_rears_then_flings_a_fan() -> void:
+	var rows := TALL.duplicate()
+	rows[4] = "#....................y.......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(8, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: StormHarpy = _find(room, StormHarpy)
+	var windup := 0
+	var feathers := 0
+	for i in 180:
+		await frames(1)
+		if h.state == "windup":
+			windup += 1
+		if h.state == "throw":
+			feathers = runner.get_tree().get_nodes_in_group("enemy_projectile").size()
+			break
+	check(windup / 60.0 >= Enemy.MIN_TELEGRAPH, "she rears for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, windup])
+	check(feathers == 3, "then flings three feathers (%d)" % feathers)
+	check(h.center().y < p.global_position.y - 40.0, "from above you (%.0f vs %.0f)" % [h.center().y, p.global_position.y])
+	var hp := p.hp
+	var y0 := h.center().y
+	for i in 60:
+		await frames(1)
+	check(p.hp < hp, "a feather finds you (%d)" % (hp - p.hp))
+	check(h.state == "recover" or h.center().y > y0 + 10.0, "and she sags, winded (%s, %.0f -> %.0f)" % [h.state, y0, h.center().y])
+
+
+## A parried feather turns and flies back into its harpy.
+func test_a_parried_harpy_feather_flies_back() -> void:
+	var rows := TALL.duplicate()
+	rows[9] = "#....................y.......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(8, 12))
+	p.has_shield = true
+	var h: StormHarpy = _find(room, StormHarpy)
+	await frames(3)
+	h.set_physics_process(false)
+	p.facing = 1
+	var f := HarpyFeather.new()
+	f.thrower = h
+	room.add_child(f)
+	f.global_position = p.global_position + Vector2(40, -20)
+	f.velocity = Vector2(-200, 0)
+	var hp := p.hp
+	var flew_back := false
+	for i in 20:
+		if is_instance_valid(f) and absf(f.global_position.x - p.global_position.x) < 26.0 and not f.reflected:
+			p.input.block_pressed = true
+		await frames(1)
+		if is_instance_valid(f) and f.reflected:
+			flew_back = true
+			break
+	check(flew_back and p.hp == hp, "the parry turns the feather unhurt")
+	h.set_physics_process(true)
+	var harpy_hp := h.hp
+	for i in 60:
+		await frames(1)
+		if h.hp < harpy_hp:
+			break
+	check(harpy_hp - h.hp == HarpyFeather.REFLECT_DAMAGE, "and it strikes her for %d (%d)" % [HarpyFeather.REFLECT_DAMAGE, harpy_hp - h.hp])
