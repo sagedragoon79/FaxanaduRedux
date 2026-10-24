@@ -711,6 +711,119 @@ def branches_wall_sprig(rng):
     return c
 
 
+def daybreak_rubble(rng):
+    """Fallen shrine stone: pale blocks, one with a run of gold inlay."""
+    c = Cell()
+    for _ in range(rng.randint(2, 3)):
+        w, h = rng.randint(5, 9), rng.randint(3, 6)
+        x = rng.randint(2, 30 - w)
+        c.rect(x, H - h, w, h, "stone-4")
+        c.rect(x, H - h, w, 1, "stone-6")
+        c.rect(x + w - 1, H - h + 1, 1, h - 1, "stone-2")
+        if rng.random() > 0.5:
+            c.rect(x + 1, H - h + h // 2, w - 2, 1, "gold-5")
+    c.outline("night-0")
+    return c
+
+
+def daybreak_grass(rng):
+    """Wind-bent sky grass, pale and gold-tipped, all leaning one way."""
+    c = Cell()
+    lean = rng.uniform(3, 6)
+    for _ in range(rng.randint(7, 11)):
+        blade(c, rng.randint(2, 28), rng.randint(6, 14), lean, "leaf-3", "leaf-5", "gold-6")
+    return c
+
+
+def daybreak_pillar(rng):
+    """The broken stump of a shrine pillar, fluted, its top sheared off."""
+    c = Cell()
+    x, h = rng.randint(9, 13), rng.randint(20, 34)
+    c.rect(x - 2, H - 3, 14, 3, "stone-3")
+    for k in range(h):
+        y = H - 3 - k
+        top = h - 1 - (k * 3 // h if x % 2 else 0)
+        c.rect(x, y, 10, 1, "stone-4")
+        c.px(x + 2, y, "stone-2")
+        c.px(x + 5, y, "stone-2")
+        c.px(x, y, "stone-5")
+        c.px(x + 9, y, "stone-2")
+    c.line([(x, H - 3 - h), (x + 4, H - 1 - h), (x + 9, H - 5 - h)], "stone-6")
+    c.rect(x, H - 3 - h * 2 // 3, 10, 1, "gold-5")
+    c.outline("night-0")
+    return c
+
+
+def daybreak_conduit(rng):
+    """A dead lightning conduit: a bronze rod on a stone foot, a dull crystal at its tip."""
+    c = Cell()
+    x = rng.randint(13, 17)
+    h = rng.randint(26, 36)
+    c.rect(x - 4, H - 4, 10, 4, "stone-3")
+    c.rect(x - 4, H - 4, 10, 1, "stone-5")
+    c.rect(x, H - 4 - h, 2, h, "bark-4")
+    c.rect(x, H - 4 - h, 1, h, "gold-4")
+    for k in range(3, h, 7):
+        c.rect(x - 1, H - 4 - k, 4, 1, "gold-3")
+    c.disc(x + 1, H - 7 - h, 2.5, 3.5, "crystal-3")
+    c.px(x, H - 8 - h, "crystal-5")
+    c.outline("night-0")
+    return c
+
+
+def daybreak_roots(rng):
+    """Pale air-roots trailing from an island's underside."""
+    c = Cell()
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(4, 26)
+        n = rng.randint(10, 40)
+        ph = rng.random() * math.tau
+        for y in range(n):
+            c.px(x + math.sin(ph + y * 0.2) * 1.5, y, "stone-5" if y % 5 else "stone-4")
+    return c
+
+
+def daybreak_crystals(rng):
+    """Storm crystals grown down from the stone, faintly lit."""
+    c = Cell()
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(5, 26)
+        n = rng.randint(5, 14)
+        for y in range(n):
+            w = max(1, (n - y) * 3 // n)
+            c.rect(x - w // 2, y, w, 1, "crystal-4" if y < n - 2 else "crystal-6")
+    c.outline("night-0")
+    if rng.random() > 0.5:
+        c.add_glow(16, 8)
+    return c
+
+
+def daybreak_wall_rune(rng):
+    """A gold rune plaque set into the shrine wall, still warm with light."""
+    c = Cell()
+    y = rng.randint(22, 40)
+    c.rect(0, y, 8, 12, "stone-5")
+    c.rect(0, y, 8, 1, "stone-6")
+    c.line([(2, y + 2), (5, y + 5), (2, y + 9)], "gold-6")
+    c.px(5, y + 9, "gold-6")
+    c.add_glow(3, y + 5)
+    c.outline("night-0")
+    return c
+
+
+def daybreak_wall_ledge(rng):
+    """A cracked cornice jutting from the wall, grass along its top."""
+    c = Cell()
+    y = rng.randint(24, 44)
+    c.rect(0, y, 11, 3, "stone-4")
+    c.rect(0, y, 11, 1, "stone-6")
+    c.rect(0, y + 3, 8, 2, "stone-2")
+    for x in range(0, 10, 2):
+        c.px(x, y - 1, "leaf-4")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -738,6 +851,11 @@ ZONES = {
         "floor": [branches_litter, branches_flowers, branches_sprout, branches_litter, branches_flowers, branches_litter],
         "ceiling": [branches_hanging_leaves, branches_vine, branches_hanging_leaves, branches_vine],
         "wall": [branches_wall_shelf, branches_wall_sprig],
+    },
+    "daybreak": {
+        "floor": [daybreak_grass, daybreak_rubble, daybreak_grass, daybreak_pillar, daybreak_conduit, daybreak_grass],
+        "ceiling": [daybreak_roots, daybreak_crystals, daybreak_roots, daybreak_crystals],
+        "wall": [daybreak_wall_rune, daybreak_wall_ledge],
     },
 }
 

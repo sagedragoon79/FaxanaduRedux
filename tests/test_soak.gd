@@ -108,6 +108,11 @@ func test_random_input_soak_in_every_branches_room() -> void:
 	await _soak_zone("branches", "Branches")
 
 
+## Daybreak: storm rain, sky islands and crystal-thorned cliffs.
+func test_random_input_soak_in_every_daybreak_room() -> void:
+	await _soak_zone("daybreak", "Daybreak")
+
+
 ## The fog's CPU side in every Mist room: the player walked across the room,
 ## the light list rebuilt each frame. It must stay cheap and never hit
 ## Fog.MAX_LIGHTS (the shader would drop lanterns).

@@ -6,13 +6,16 @@ extends Node2D
 ## others, so the air has depth without spawning or freeing anything.
 
 const VIEW := Vector2(640, 360)
-## zone: [count, color, drift velocity, sway, size 2 chance]
+## zone: [count, color, drift velocity, sway, size 2 chance, streak length (optional:
+## draws each mote as a short line along its drift, for rain)]
 const ZONES := {
 	"trunk": [46, Color("84cbd6"), Vector2(0, -7), 7.0, 0.25],
 	"eolis": [28, Color("f0dfa8"), Vector2(3, 4), 4.0, 0.1],
 	"tower": [34, Color("f0a050"), Vector2(-2, -12), 3.0, 0.15],
 	"mist": [40, Color("b8c8b0"), Vector2(6, 1), 9.0, 0.12],
 	"branches": [30, Color("d8f0a0"), Vector2(14, 3), 6.0, 0.1],
+	# Daybreak: rain driven hard on the storm wind.
+	"daybreak": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
 }
 
 var zone := ""
@@ -64,6 +67,9 @@ func _draw() -> void:
 	var origin := _view_origin()
 	var color: Color = _spec[1]
 	var sway: float = _spec[3]
+	var streak := Vector2.ZERO
+	if _spec.size() > 5:
+		streak = (_spec[2] as Vector2).normalized() * float(_spec[5])
 	for i in _motes.size():
 		var m: Array = _motes[i]
 		var depth: float = m[1]
@@ -71,7 +77,11 @@ func _draw() -> void:
 		var p: Vector2 = m[0] + Vector2(sin(_t * 0.9 + phase) * sway * depth, 0)
 		var a := (0.25 + 0.35 * depth) * (0.6 + 0.4 * sin(_t * 2.1 + phase * 3.0))
 		var s := 2.0 if float(i) / _motes.size() < float(_spec[4]) else 1.0
-		draw_rect(Rect2((origin + p).floor(), Vector2(s, s)), Color(color, a))
+		if streak != Vector2.ZERO:
+			var at := (origin + p).floor()
+			draw_line(at, at - streak * depth, Color(color, a * 0.8), 1.0)
+		else:
+			draw_rect(Rect2((origin + p).floor(), Vector2(s, s)), Color(color, a))
 
 
 ## The world position of the screen's top-left corner.

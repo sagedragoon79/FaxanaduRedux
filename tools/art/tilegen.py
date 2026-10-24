@@ -104,6 +104,41 @@ def paint_bricks(img, ox, oy, seed, ramp):
             img.putpixel((ox + x, oy + y), c(col))
 
 
+def paint_shrine(img, ox, oy, seed, ramp):
+    """Daybreak's ruined elf shrines: big pale ashlar blocks, weathered and
+    cracked, some still carrying a groove of gold inlay along their face."""
+    bw, bh = 12 * D, 6 * D
+    for y in range(T):
+        row = y // bh
+        for x in range(T):
+            sx = x + (row % 2) * (bw // 2) + int(hash2(row, 0, seed) * 4) * D
+            bx, ly, lx = sx // bw, y % bh, sx % bw
+            shade = 4 if hash2(bx, row, seed) > 0.5 else 3
+            if ly == bh - 1 or lx == 0:
+                col = f"{ramp}-1"
+            elif ly == 0 or lx == 1:
+                col = f"{ramp}-{shade + 1}"
+            elif ly == bh - 2:
+                col = f"{ramp}-{shade - 1}"
+            else:
+                col = f"{ramp}-{shade}"
+                if hash2(x // 2, y // 2, seed + 5) > 0.9:
+                    col = f"{ramp}-{shade - 1}"
+            # Gold inlay: a groove across the middle of some blocks.
+            if ly == bh // 2 and 3 <= lx < bw - 3 and hash2(bx, row, seed + 7) > 0.62:
+                col = "gold-4" if lx % 4 else "gold-5"
+            img.putpixel((ox + x, oy + y), c(col))
+    # A crack or two, running down and sideways.
+    for k in range(2):
+        if hash2(seed, k, 31) > 0.55:
+            x, y = int(hash2(seed, k, 32) * (T - 6)) + 3, int(hash2(seed, k, 33) * (T // 2))
+            for step in range(T // 2):
+                if 0 <= x < T and 0 <= y < T:
+                    img.putpixel((ox + x, oy + y), c(f"{ramp}-1"))
+                y += 1
+                x += 1 if hash2(seed, step, 34 + k) > 0.6 else (-1 if hash2(seed, step, 35 + k) > 0.7 else 0)
+
+
 def paint_wood(img, ox, oy, seed, ramp):
     """Living wood: long vertical grain in fine strands, low contrast, the odd knot."""
     for x in range(T):
@@ -276,6 +311,8 @@ ZONES = {
              "under": "night-1", "outline": "night-0"},
     "branches": {"painter": paint_bough, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": None, "cap_top": 6,
                  "under": "bark-2", "outline": "night-0"},
+    "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
+                 "under": "night-1", "outline": "night-0"},
 }
 
 
@@ -904,6 +941,86 @@ def branches_mid():
     return img
 
 
+def lightning(img, x, y0, y1, rng, col="gold-7", glow="crystal-6"):
+    """A jagged bolt from y0 down to y1, with a faint halo and a fork or two."""
+    pts = [(x, y0)]
+    while pts[-1][1] < y1:
+        px, py = pts[-1]
+        pts.append((px + rng.randrange(-8, 9) * D, py + rng.randrange(6, 16) * D))
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        n = max(abs(bx - ax), abs(by - ay))
+        for t in range(n + 1):
+            xx = ax + (bx - ax) * t / max(n, 1)
+            yy = ay + (by - ay) * t / max(n, 1)
+            for dx in (-D, D):
+                put(img, xx + dx, yy, c(glow, 120))
+            for k in range(D):
+                put(img, xx + k, yy, c(col))
+    if len(pts) > 3:
+        fx, fy = pts[len(pts) // 2]
+        lightning_fork = [(fx, fy)]
+        for _ in range(3):
+            px, py = lightning_fork[-1]
+            lightning_fork.append((px + rng.choice([-1, 1]) * rng.randrange(4, 10) * D, py + rng.randrange(6, 12) * D))
+        for (ax, ay), (bx, by) in zip(lightning_fork, lightning_fork[1:]):
+            n = max(abs(bx - ax), abs(by - ay))
+            for t in range(n + 1):
+                put(img, ax + (bx - ax) * t / max(n, 1), ay + (by - ay) * t / max(n, 1), c(glow))
+
+
+def island(img, cx, cy, w, rng, top="leaf-3", rock="stone-2", dark="stone-1"):
+    """A floating sky island: a grassy lip and a rocky cone hanging beneath."""
+    depth = int(w * rng.uniform(0.6, 0.9))
+    for y in range(int(cy), int(cy + depth)):
+        k = (y - cy) / depth
+        half = w * 0.5 * (1 - k) ** 1.4 * (1 + 0.15 * math.sin(y * 0.3 + cx))
+        for x in range(int(cx - half), int(cx + half)):
+            col = dark if x > cx + half * 0.3 or (x + y) % 7 == 0 else rock
+            put(img, x, y, c(col))
+    for x in range(int(cx - w * 0.5), int(cx + w * 0.5)):
+        for y in range(int(cy - 2 * D), int(cy + D)):
+            put(img, x, y, c(top))
+
+
+def daybreak_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("crystal-1"))
+    gradient(img, "night-1", "crystal-2")
+    rng = random.Random(51)
+    # Storm banks rolling across a violet sky, lit gold along their tops.
+    for _ in range(12):
+        cloud(img, rng.randrange(BG_W), rng.randrange(80, 460) * D, rng.randrange(60, 130) * D, rng.randrange(26, 54) * D, rng,
+              top="crystal-3", body="crystal-2", shade="night-2")
+    for _ in range(3):
+        x = rng.randrange(BG_W)
+        lightning(img, x, rng.randrange(60, 160) * D, rng.randrange(260, 400) * D, rng)
+    # The far spires of the Tree's crown, faint against the storm.
+    for _ in range(5):
+        x0 = rng.randrange(BG_W)
+        dead_limb(img, x0, BG_H, rng.randrange(260, 420) * D, rng.randrange(8, 14) * D,
+                  -math.pi / 2 + rng.uniform(-0.3, 0.3), "night-2", rng)
+    return img
+
+
+def daybreak_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(52)
+    # Sky islands adrift at middle distance, a ruined spire on one or two.
+    for i in range(6):
+        cx = (i + rng.uniform(0.1, 0.9)) * BG_W / 6
+        cy = rng.randrange(140, 400) * D
+        w = rng.randrange(50, 110) * D
+        island(img, cx, cy, w, rng, top="leaf-2", rock="crystal-2", dark="night-1")
+        if rng.random() > 0.5:
+            sx, sh = cx + rng.uniform(-0.2, 0.2) * w, rng.randrange(40, 90) * D
+            for y in range(int(cy - sh), int(cy)):
+                for x in range(int(sx - 5 * D), int(sx + 5 * D)):
+                    if y < cy - sh + 10 * D and (x // (3 * D)) % 2:
+                        continue  # a broken crown of battlements
+                    put(img, x, y, c("night-1" if x > sx + 2 * D else "crystal-2"))
+            put(img, sx, cy - sh * 0.6, c("gold-6"))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -916,6 +1033,7 @@ BACKGROUNDS = {
     "tower": (tower_far, tower_mid),
     "mist": (mist_far, mist_mid),
     "branches": (branches_far, branches_mid),
+    "daybreak": (daybreak_far, daybreak_mid),
     "gym": (gym_far, None),
 }
 

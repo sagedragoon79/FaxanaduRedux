@@ -11,7 +11,7 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5).
-const STRIDE_SECRETS := [["branches/north_bough", 8, 7]]
+const STRIDE_SECRETS := [["branches/north_bough", 8, 7], ["daybreak/sky_steps", 6, 20]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
 ## or above the flue damper, open once Zoradohna falls (the "winch" ability),
 ## and the Mist, reached by the ore road east of the Deep Workings (its rooms
@@ -21,7 +21,11 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
-	"branches/north_bough", "branches/windloft", "branches/crown_leaf"]
+	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
+	"daybreak/broken_shrine"]
+## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
+## Sky Steps, bible 3.2). The Stride test checks them.
+const STRIDE_ROOMS := ["daybreak/broken_shrine"]
 
 
 func _texts() -> Dictionary:
@@ -143,12 +147,14 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	var rooms := _rooms_reached(nodes)
 	var missing_rooms: Array[String] = []
 	for id: String in reach.rooms:
-		if not rooms.has(id):
+		if not rooms.has(id) and not STRIDE_ROOMS.has(id):
 			missing_rooms.append(id)
 	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
+	check(STRIDE_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "but not the sky islands past the air-dash gaps")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) \
+				and not STRIDE_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -183,7 +189,7 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	var with_boots := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
@@ -306,6 +312,20 @@ func test_checker_respects_walls() -> void:
 	check(gloved.touchable(n1, "t/wall", 22, 19), "the glove climbs it")
 
 
+func test_checker_wont_climb_through_thorns() -> void:
+	# The same wall faced with thorn bulbs (Daybreak's crystal-thorned cliffs):
+	# the glove can't cling through them.
+	var rows := grid_rows(30, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 14, 13, "#", 3, 7)
+	put_tiles(rows, 13, 13, "o", 1, 7)
+	put_tiles(rows, 22, 19, "L")
+	var texts := {"t/wall": room_text(["name: Wall"], rows)}
+	var gloved := Reach.new(texts, {"glove": true})
+	var n1 := gloved.reachable(gloved.spot_of("t/wall", "P"))
+	check(not gloved.touchable(n1, "t/wall", 22, 19), "thorns on the wall stop the climb")
+
+
 func test_checker_opens_root_gates_from_their_heart() -> void:
 	var rows := grid_rows(30, 23)
 	put_tiles(rows, 3, 19, "P")
@@ -357,5 +377,10 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
+	var rooms := _rooms_reached(strided)
+	check(STRIDE_ROOMS.all(func(id: String) -> bool: return rooms.has(id)), "and the Stride reaches the sky islands")
 	var stuck := reach.stuck(strided, _save_spots(reach))
 	check(stuck.is_empty(), "with the Stride, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+
