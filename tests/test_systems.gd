@@ -193,3 +193,12 @@ func test_every_npc_line_fits_the_dialog_box() -> void:
 				too_long.append("%s: %d lines: %s" % [id, n, String(line).left(40)])
 	check(pages > 20, "the scan reads the cast's lines (%d pages)" % pages)
 	check(too_long.is_empty(), "every page fits in %d lines: %s" % [DialogBox.MAX_LINES, too_long])
+
+
+func test_no_sound_starts_without_a_sound_device() -> void:
+	# Headless runs use the Dummy driver, which never mixes: a started playback
+	# would sit in the audio server until exit and be reported as a leak.
+	check(Sfx.silent and Music.silent, "the test run has no sound device, and Sfx and Music know it")
+	Sfx.play("blip")
+	var playing := Sfx.get_children().any(func(p: Node) -> bool: return (p as AudioStreamPlayer).playing)
+	check(not playing, "so a sound is never started")

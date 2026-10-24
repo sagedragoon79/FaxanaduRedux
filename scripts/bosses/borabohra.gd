@@ -12,7 +12,12 @@ extends Enemy
 ##   flings a fan of five storm feathers. A parried feather flies back at it.
 ## - Dive bomb: it rises, screaming, and fixes on you (tell), then stoops through
 ##   where you stood and climbs away. Can't be parried; stride through it.
-## Phases 2 and 3 (the lightning storm and the updraft duel) come in a later pass.
+## Phase 2 (below half): the storm breaks. Every few seconds a bolt marks the
+## tallest point and strikes it: you, if you stand up on an island or a landing,
+## or else one of the dead conduits, which wakes it. Stay low and let the storm
+## help, or climb and risk it. But now a woken conduit drains after a few
+## seconds unless all three wake together, and the volley throws seven.
+## Phase 3 (the updraft duel) comes in a later pass.
 
 signal defeated
 
@@ -31,6 +36,15 @@ const FALL_TIME := 0.5
 const GROUND_TIME := 4.5
 const RISE_TIME := 0.9
 const DYING_TIME := 1.6
+## Health fraction where the storm breaks.
+const PHASE_2 := 0.5
+const VOLLEY_FEATHERS_2 := 7
+## Seconds between storm bolts in phase 2 (the first comes sooner).
+const STORM_EVERY := 3.2
+## In phase 2 a woken conduit goes dead again after this long, unless all three are awake.
+const DRAIN_TIME := 6.0
+## Standing this far above the floor makes you the tallest point.
+const ELEVATED := 3.0 * 16.0
 const DIVE_DAMAGE := 22
 const TOUCH_DAMAGE := 14
 ## Share of a blow that gets through its cloud while it flies.
@@ -61,6 +75,9 @@ var _to := Vector2.ZERO
 var _hit_done := false
 var _clock := 0.0
 var _rng := RandomNumberGenerator.new()
+var _storm := 0.0
+## Conduit instance id -> seconds it has been awake (phase 2 drain).
+var _charged := {}
 
 
 func _init() -> void:
@@ -147,6 +164,16 @@ func take_hit(damage: int, dir: Vector2) -> void:
 	super.take_hit(damage, dir)
 	_hitstun = 0.0
 	velocity = Vector2.ZERO
+	_check_phase()
+
+
+func _check_phase() -> void:
+	if phase == 1 and not dead and hp <= roundi(max_hp * PHASE_2):
+		phase = 2
+		_storm = STORM_EVERY * 0.5
+		Sfx.play("roar", 0.05, 1.0)
+		Feel.add_trauma(0.5)
+		GameState.flash.emit(0.4)
 
 
 func _on_blocked(_dir: Vector2) -> void:
@@ -161,6 +188,13 @@ func stagger() -> void:
 func _think(delta: float) -> void:
 	_clock += delta
 	contact_damage = TOUCH_DAMAGE if airborne() else 0
+	if phase >= 2:
+		_drain(delta)
+		if airborne() and state != "intro":
+			_storm -= delta
+			if _storm <= 0.0:
+				_storm = STORM_EVERY
+				_call_storm()
 	match state:
 		"dormant":
 			velocity = Vector2.ZERO
@@ -232,6 +266,7 @@ func _think(delta: float) -> void:
 			if state_time >= GROUND_TIME:
 				for c in conduits():
 					(c as Conduit).reset()
+				_charged.clear()
 				_from = global_position
 				set_state("rise")
 				Sfx.play("hydra_roar", 0.05, 0.0)
@@ -259,6 +294,45 @@ func _check_grounding() -> bool:
 	return true
 
 
+## Where the next bolt falls: the tallest point. That's you when you stand up
+## on the islands; otherwise a dead conduit. INF when there is nothing to strike.
+func strike_target() -> Vector2:
+	var p := player()
+	if p != null and not p.dead and p.global_position.y < floor_y() - ELEVATED:
+		return p.global_position
+	var dead_ones := conduits().filter(func(c: Conduit) -> bool: return not c.powered)
+	if dead_ones.is_empty():
+		return Vector2.INF
+	return (dead_ones[_rng.randi_range(0, dead_ones.size() - 1)] as Conduit).global_position
+
+
+func _call_storm() -> void:
+	var at := strike_target()
+	if at.x == INF:
+		return
+	var s := StormStrike.new()
+	s.boss = self
+	s.top = arena.position.y
+	get_parent().add_child(s)
+	s.global_position = at
+
+
+## Phase 2: a lone woken conduit loses its charge unless all three wake together.
+func _drain(delta: float) -> void:
+	if all_awake():
+		return
+	for c in conduits():
+		var cd := c as Conduit
+		var id := cd.get_instance_id()
+		if not cd.powered:
+			_charged.erase(id)
+			continue
+		_charged[id] = float(_charged.get(id, 0.0)) + delta
+		if _charged[id] >= DRAIN_TIME:
+			cd.reset()
+			_charged.erase(id)
+
+
 func _choose() -> void:
 	var p := player()
 	if p == null:
@@ -278,7 +352,7 @@ func _choose() -> void:
 func _volley() -> void:
 	var off := player_offset()
 	var aim := off.normalized() if off.x != INF else Vector2(facing, 1).normalized()
-	var half := VOLLEY_FEATHERS / 2
+	var half := (VOLLEY_FEATHERS if phase == 1 else VOLLEY_FEATHERS_2) / 2
 	for k in range(-half, half + 1):
 		var f := HarpyFeather.new()
 		f.thrower = self
