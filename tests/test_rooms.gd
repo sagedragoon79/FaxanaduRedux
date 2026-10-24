@@ -804,3 +804,16 @@ func test_the_hour_glass_waits_by_the_stopped_water_clock() -> void:
 	w._enter("dartmoor/waterfall_stair")
 	await frames(2)
 	check(w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall).size() == 2, "where two falls bar the way up")
+
+
+func test_the_waterfall_stair_gallery_opens_on_the_drowned_market() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/waterfall_stair")
+	await frames(2)
+	check(w.room.doors[2].target == "dartmoor/drowned_market", "the stair's top gallery leads on to the Drowned Market")
+	w._enter("dartmoor/drowned_market")
+	await frames(2)
+	var falls: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
+	check(falls.size() == 1, "where one fall pours down into a spiked pit")
+	var slugs := w.room.get_children().filter(func(c: Node) -> bool: return c is MeteorSlug).size()
+	check(slugs == 2, "and Meteor Slugs creep along the market floor (%d)" % slugs)
