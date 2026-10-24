@@ -497,3 +497,56 @@ func test_leaf_mantis_springs_open_when_struck_and_can_be_parried() -> void:
 	await frames(10)
 	check(p.hp == hp, "a parried slash does no damage (%d)" % (hp - p.hp))
 	check(m.is_staggered(), "and staggers the mantis")
+
+
+## Bible 7: the Thunder Beetle walks, crackles when you come near (the
+## telegraph), then discharges a ring of lightning that a guard can't parry.
+## Spent, it takes full damage.
+func test_thunder_beetle_crackles_then_discharges_a_ring() -> void:
+	var room := _room_with({Vector2i(20, 6): "t"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	p.has_shield = true
+	var b: ThunderBeetle = _find(room, ThunderBeetle)
+	var x0 := b.global_position.x
+	await frames(30)
+	check(b.state == "walk" and absf(b.global_position.x - x0) > 4.0, "far off, it trundles along (%s)" % b.state)
+	p.teleport(Vector2(b.global_position.x - 40.0, 7 * 16))
+	p.facing = 1
+	var charge_frames := 0
+	var hp := p.hp
+	for i in 90:
+		p.input.block_held = true
+		await frames(1)
+		if b.state == "charge":
+			charge_frames += 1
+		if b.state == "spent":
+			break
+	check(charge_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "it crackles for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, charge_frames])
+	check(p.hp < hp, "the discharge gets through a raised guard")
+	check(hp - p.hp <= ThunderBeetle.DISCHARGE_DAMAGE, "once per discharge (%d)" % (hp - p.hp))
+	check(b.state == "spent", "and it is left spent (%s)" % b.state)
+	var before := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(before - b.hp == 10, "spent, a side blow lands in full (%d)" % (before - b.hp))
+
+
+## The shell turns blows from the side, but a pogo from above lands in full,
+## and the lightning reaches above the shell as well as beside it.
+func test_thunder_beetle_shell_and_the_ring_above_it() -> void:
+	var room := _room_with({Vector2i(20, 6): "t"})
+	var p := make_player(room, Vector2i(3, 6))
+	var b: ThunderBeetle = _find(room, ThunderBeetle)
+	await frames(5)
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 3, "the shell turns most of a side blow (%d)" % (hp0 - b.hp))
+	hp0 = b.hp
+	b.take_hit(10, Vector2(0, 1))
+	check(hp0 - b.hp == 10, "a pogo from above lands in full (%d)" % (hp0 - b.hp))
+	p.global_position = b.center() + Vector2(0, -24)
+	check(b._player_in_ring(), "the ring reaches someone bouncing on the shell")
+	p.global_position = b.center() + Vector2(90, 20)
+	check(not b._player_in_ring(), "but not someone well clear")
+	check(b.is_in_group("pogo"), "the shell is a pogo target")

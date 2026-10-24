@@ -434,5 +434,21 @@ def main():
     boing = osc(slide(180, 520, d, 0.5) * (1 + 0.06 * np.sin(2 * np.pi * 22 * t)), "sine") * env(n, 0.005, 1.4) * 0.6
     save("pod", mix(squelch, boing), 0.55)
 
+    # A Thunder Beetle charging: static crackling louder and faster over a rising buzz.
+    d = 0.6
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    crackle = highpass(noise(d), 2500) * (np.random.default_rng(55).random(n) < (0.02 + 0.25 * t / d)) * 1.6
+    buzz = lowpass(osc(slide(110, 240, d, 0.8), "saw"), 1800) * 0.25 * (t / d)
+    save("static", mix(crackle, buzz) * env(n, 0.4, 0.4), 0.45)
+
+    # Its discharge: a hard electric snap and a short sizzling tail.
+    d = 0.5
+    n = int(RATE * d)
+    snap = highpass(noise(0.04), 900) * env(int(RATE * 0.04), 0.0005, 2.0) * 1.2
+    sizzle = highpass(lowpass(noise(d), 7000), 1500) * (np.sign(np.sin(2 * np.pi * 60 * np.arange(n) / RATE)) * 0.5 + 0.5)
+    hum = osc(np.full(n, 120.0), "square", 0.5) * 0.25
+    save("zap", mix(snap, sizzle * 0.5 * env(n, 0.005, 1.6), hum * env(n, 0.005, 2.5)), 0.6)
+
 if __name__ == "__main__":
     main()
