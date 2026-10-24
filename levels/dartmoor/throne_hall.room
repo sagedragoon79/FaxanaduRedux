@@ -2,6 +2,7 @@ name: Throne Hall
 zone: dartmoor
 map: 58, -7
 boss: king_grieve
+prop: 12, 19, water_clock
 sign: 3, 19, THE THRONE HALL. The king kept faith with the meteor so his people would live. They did not.
 door: 1, dartmoor/kings_kennels, 2
 ---

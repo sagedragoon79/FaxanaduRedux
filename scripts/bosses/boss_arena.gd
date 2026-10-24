@@ -20,7 +20,7 @@ const BOSSES := {
 	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
 		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
-	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1},
+	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0

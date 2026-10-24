@@ -17,14 +17,21 @@ extends Enemy
 ## the dais first. Each glows before it bursts out and shoots up to the vault.
 ## Hold them in the air with the Hour Glass and they are a stair up to his
 ## crown: strike down on it and he is thrown from the dais, open, to duel again
-## until he climbs back. Phase 3 (the meteor takes him) comes later.
+## until he climbs back.
+##
+## Phase 3 (below a fifth), the meteor takes him: his body cracks open, the
+## crystal blazing through, and he comes down off the throne for good. Frantic
+## now, he walks you down faster, his tells shorter (never under
+## MIN_TELEGRAPH), and every combo ends with the axe driven into the floor and
+## a line of crystal spikes bursting out toward you. Cracked, he no longer turns
+## half a blow, and a parry still throws him reeling.
 
 signal defeated
 
 const DISPLAY_NAME := "King Grieve"
 const EPITHET := "the Drowned Sovereign"
 const MAX_HP := 320
-const PHASES := [0.5]
+const PHASES := [0.5, 0.2]
 const WALK_SPEED := 40.0
 const COMBO_RANGE := 70.0
 const LEAP_RANGE := 150.0
@@ -34,6 +41,15 @@ const LEAP_TELL := 0.6
 const SUMMON_TELL := 0.5
 ## Phase 2 duel tells are this fraction as long (never under MIN_TELEGRAPH).
 const FAST := 0.8
+## Phase 3 tells are this fraction as long, and he walks this much faster.
+const FRANTIC := 0.65
+const FRANTIC_WALK := 1.8
+const BURST_TELL := 0.45
+const SPIKES := 6
+const SPIKE_GAP := 22.0
+const SPIKE_STEP := 0.08
+## The meteor taking him: he roars and cracks, untouchable, this long.
+const POSSESSED := 1.4
 const STRIKE_TIME := 0.16
 const CHOP_DAMAGE := 20
 const SWEEP_DAMAGE := 16
@@ -123,7 +139,18 @@ func floor_y() -> float:
 
 
 func tell(base: float) -> float:
-	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase == 2 else 1.0))
+	var k := 1.0
+	match phase:
+		2:
+			k = FAST
+		3:
+			k = FRANTIC
+	return maxf(Enemy.MIN_TELEGRAPH, base * k)
+
+
+## Cracked open by the meteor: phase 3.
+func cracked() -> bool:
+	return phase == 3
 
 
 ## Warded on his throne: only a blow to the crown gets through.
@@ -137,14 +164,14 @@ func open() -> bool:
 
 
 func _modify_damage(damage: int, dir: Vector2) -> int:
-	if state in ["dormant", "intro", "dying", "to_throne"]:
+	if state in ["dormant", "intro", "dying", "to_throne", "possessed"]:
 		return 0
 	if warded():
 		if dir.y > 0.0:
 			_thrown.call_deferred()
 			return damage
 		return 0
-	if open():
+	if open() or cracked():
 		return damage
 	return maxi(1, roundi(damage * ARMOR))
 
@@ -159,18 +186,20 @@ func take_hit(damage: int, dir: Vector2) -> void:
 		Feel.add_trauma(0.4)
 		if not open():
 			_to_throne()
+	elif not dead and phase == 2 and health_fraction() <= PHASES[1]:
+		_possess()
 
 
 ## A parried chop or sweep leaves him reeling, shield-arm wide.
 func stagger() -> void:
-	if dead or state in ["ward", "summon_tell", "to_throne", "fallen", "dormant", "intro"]:
+	if dead or state in ["ward", "summon_tell", "to_throne", "fallen", "dormant", "intro", "possessed"]:
 		return
 	super.stagger()
 	_stagger = STAGGER
 
 
 func _think(delta: float) -> void:
-	if state not in ["leap", "to_throne", "fallen"]:
+	if state not in ["leap", "to_throne", "fallen", "possessed"]:
 		velocity.x = 0.0
 	if phase == 2 and state not in ["to_throne", "ward", "summon_tell"]:
 		_duel += delta
@@ -194,7 +223,7 @@ func _think(delta: float) -> void:
 				set_state("leap_tell")
 				Sfx.play("swell", 0.1, -4.0)
 			else:
-				velocity.x = signf(dx) * WALK_SPEED
+				velocity.x = signf(dx) * WALK_SPEED * (FRANTIC_WALK if cracked() else 1.0)
 		"chop_tell", "sweep_tell":
 			var base := CHOP_TELL if state == "chop_tell" else SWEEP_TELL
 			if state_time >= tell(base):
@@ -209,7 +238,22 @@ func _think(delta: float) -> void:
 				Feel.add_trauma(0.2)
 				_open("sweep_tell", "sweep")
 			elif state == "sweep" and state_time >= STRIKE_TIME:
+				if cracked():
+					_open("burst_tell", "burst")
+				else:
+					set_state("recover")
+		"burst_tell":
+			if state_time >= tell(BURST_TELL):
+				_burst()
 				set_state("recover")
+		"possessed":
+			if collision_mask == 0 and state_time >= LEAP_AIR:
+				# Down off the throne, onto the hall floor.
+				global_position = Vector2(dais.position.x - 40.0, floor_y())
+				velocity = Vector2.ZERO
+				collision_mask = Player.LAYER_WORLD
+			if state_time >= POSSESSED and collision_mask != 0:
+				set_state("walk")
 		"leap_tell":
 			face_player()
 			if state_time >= tell(LEAP_TELL):
@@ -244,7 +288,9 @@ func _think(delta: float) -> void:
 				_summon()
 				set_state("ward")
 		"fallen":
-			if state_time >= FALLEN:
+			if state_time >= FALLEN and phase == 3:
+				set_state("walk")
+			elif state_time >= FALLEN:
 				_duel = 0.0
 				set_state("walk")
 		_:
@@ -303,6 +349,39 @@ func _to_throne() -> void:
 	_stagger = 0.0
 	collision_mask = 0
 	_leap_to(Vector2(dais.get_center().x, dais.position.y))
+
+
+## The meteor takes him: wherever he is, he roars, cracks open and comes down
+## to the hall floor, never to go back to the throne.
+func _possess() -> void:
+	phase = 3
+	_stagger = 0.0
+	set_state("possessed")
+	Sfx.play("roar", 0.0, 2.0)
+	Feel.add_trauma(0.7)
+	Feel.rumble(1.0, 1.0, 0.4)
+	if global_position.y < floor_y() - 2.0:
+		# Off the throne: a leap down in front of the dais.
+		collision_mask = 0
+		_leap_to(Vector2(dais.position.x - 40.0, floor_y()))
+	else:
+		velocity = Vector2.ZERO
+
+
+## The axe driven into the floor: crystal spikes burst out in a line toward you.
+func _burst() -> void:
+	face_player()
+	Sfx.play("break", 0.05, 3.0)
+	Feel.add_trauma(0.35)
+	var room := get_parent() as Room
+	for i in SPIKES:
+		var at := Vector2(global_position.x + facing * (body_size.x * 0.5 + 12.0 + i * SPIKE_GAP), floor_y())
+		if not arena.has_point(at - Vector2(0, 4)):
+			break
+		var sp := CrystalSpike.new()
+		sp.delay = i * SPIKE_STEP
+		room.add_child(sp)
+		sp.global_position = at
 
 
 ## A blow to his crown throws him down off the dais, open to every blow.
@@ -392,6 +471,8 @@ func _draw() -> void:
 			crouch = 2
 		"dying":
 			crouch = mini(int(state_time * 8.0), 10)
+		"possessed":
+			crouch = 2 + (int(state_time * 20.0) % 2)
 	var bob := roundi(sin(t * 2.0)) if state in ["walk", "ward", "idle"] else 0
 	# The ward: a shell of crystal light around him on the throne.
 	if warded():
@@ -440,11 +521,23 @@ func _draw() -> void:
 	if state == "summon_tell":
 		var k := 0.5 + 0.5 * absf(sin(state_time * 18.0))
 		_px(hx - 6, hy - 16, 26, 12, Color(CRYSTAL, 0.3 * k), 1.0)
+	if cracked():
+		# The meteor through him: cracks of crystal light across robe and face.
+		var k := 0.6 + 0.4 * absf(sin(t * (14.0 if state == "possessed" else 6.0)))
+		for c: Array in [[2, 6, 1, 6], [3, 11, 4, 1], [6, 12, 1, 7], [-4, 16, 6, 1], [-4, 17, 1, 9], [10, 20, 1, 6], [8, 25, 4, 1]]:
+			_px(bx + 8 + c[0], by + c[1], c[2], c[3], Color(CRYSTAL_LIGHT, k), 1.0)
+		_px(hx + 2, hy + 2, 1, 4, Color(CRYSTAL_LIGHT, k), 1.0)
+		_px(hx + 2, hy + 6, 4, 1, Color(CRYSTAL_LIGHT, k), 1.0)
+		_px(hx + 8, hy + 4, 2, 2, CRYSTAL_LIGHT, 1.0)
+		if state == "possessed":
+			_px(-22, -70, 44, 70, Color(CRYSTAL, 0.18 * k), 1.0)
 	# The great-axe, by state.
 	var tip := Vector2i.ZERO
 	match state:
-		"chop_tell":
+		"chop_tell", "burst_tell":
 			tip = _axe(4 + lean, by + 10, -6, -34, telling)
+		"possessed":
+			tip = _axe(10, by + 30, 22, 8, false)
 		"chop":
 			tip = _axe(8 + lean, by + 6, 30, 30, false)
 		"sweep_tell":
