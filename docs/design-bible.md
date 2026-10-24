@@ -84,7 +84,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 
 **Daybreak town (pass 57):** the Broken Shrine's east door opens on the Fallen Bridge (52,-11), the great elf bridge broken into floating spans a stride apart, with hornets in the wind and a beetle on the old footing below (a fall walks you back to the near pier; storm crystals on the far pier stop a climb round). Past it, Daybreak (54,-11), the bell town on the last great island: a Guru, Calder the Armorer (Full Plate), Scribe Ysolde (the Fire scroll), Grocer Wenna, Bell-Ringer Tamsin on the bell loft gallery (the Daybreak chart), the Mayor (who names Borabohra) and the old Bellkeeper (who points at the bramble-choked bell cellar, where a Potion Shard waits for Fire). Music `daybreak_town` (G mixolydian at 92, a carillon over warm pads). The Spires beyond, with Borabohra and the Thunder spell, come next.
 
-**The Spires begin (pass 58):** a passage through the town's bell tower (from the bell-loft gallery) leads to the Spire Foot (56,-11), the old lift-house, where the Thunder scroll lies on the conductor's lectern and one dead conduit stands before a conduit gate. Past it the Spire Stair (57,-12, 40x45) climbs old landings to a silver hatch that opens only when both its conduits wake (one on the floor, one on a landing), and above it to a chest on the top landing below the roost. The roost (Borabohra's arena) and the Storm Harpy come next.
+**The Spires begin (pass 58):** a passage through the town's bell tower (from the bell-loft gallery) leads to the Spire Foot (56,-11), the old lift-house, where the Thunder scroll lies on the conductor's lectern and one dead conduit stands before a conduit gate. Past it the Spire Stair (57,-12, 40x45) climbs old landings to a silver hatch that opens only when both its conduits wake (one on the floor, one on a landing), and above it to a chest on the top landing below the roost. The Storm Harpy came in pass 59. In pass 60 the top landing's east door opens on the Roost (58,-12), Borabohra's arena (8.6).
 
 ### 3.3 Room and map rules
 
@@ -414,6 +414,12 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 2:** a storm; lightning hits the tallest point, so stay low or use it.
 - **Phase 3:** aerial duel: you ride its updraft and pogo its head.
 - **Reward:** Sky Key, restores the Spring of Sky.
+- **As built (pass 60):** the Roost (58,-12, 60x23), east off the top landing of the Spire Stair. Three stone islands float over a cloud-stone floor, each with a dead conduit on top, with wooden landings stepping up to them. 320 HP. In the air it is mostly cloud and blows land at 30%; it touches for 14 as it flies.
+  - Feather volley: it hangs still and throws its wings wide for 0.6 s (screech), then flings a fan of five storm feathers (8 each). A parried feather flies home and hits it for 12. A player perched high on the islands always gets the volley rather than a dive.
+  - Dive bomb: it rises, screaming, and fixes on you for 0.65 s, then stoops through where you stood and on past it for 22, unparryable. Stride through it or get out of the line. It climbs back into the sky after.
+  - Grounding: wake all three conduits with Thunder (the bolt leaps to a dead conduit within 72 px, so cast from the island or from beneath it) and lightning arcs from each to the bird. It falls to the floor and lies stunned for 4.5 s, taking blows in full. Then it shakes the charge off, the conduits go dead and it climbs again, so every grounding means waking all three again. The roost's conduits leave no world flags.
+  - Code-drawn at 2x, drawn half again larger than its body box (a storm-blue body with a pale chest, a gold hooked beak, a crest, and wings of chained cloud billows with flight feathers and rain trailing under them). Its own theme, `borabohra` (E minor at 150). Reward: the Sky Key and a skill point.
+  - Deferred: phases 2 and 3, the wide camera, and the Spring of Sky. They come in a later pass.
 
 ### 8.7 King Grieve, the Drowned Sovereign (Dartmoor)
 - **Concept:** The dwarf king who bargained with the meteor. Tragic, regal, half crystal. He fights with a great-axe and royal guards he summons.

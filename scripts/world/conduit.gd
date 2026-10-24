@@ -58,6 +58,14 @@ func power() -> void:
 		(g as ConduitGate).open(false)
 
 
+## The charge drains away (Borabohra's conduits after it takes off again).
+func reset() -> void:
+	powered = false
+	light_radius = 0.0
+	remove_from_group("light")
+	queue_redraw()
+
+
 func _wake(_instant: bool) -> void:
 	powered = true
 	light_radius = 40.0

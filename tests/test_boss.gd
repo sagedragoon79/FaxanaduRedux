@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -1142,5 +1142,130 @@ func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	await frames(90)
 	check(get_tree_boss() == null, "the Bloom is gone")
 	w._enter("branches/crown_leaf")
+	await frames(10)
+	check(get_tree_boss() == null, "and never returns")
+
+
+# --- Borabohra, the Storm Roc (bible 8.6) --------------------------------------
+
+func _roc_world() -> Array:
+	var w := make_world({}, "daybreak/roost")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(8, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var b := get_tree_boss() as Borabohra
+	await _until(func() -> bool: return b != null and b.state == "circle", 200)
+	return [w, arena, b]
+
+
+func _conduits(w: World) -> Array:
+	var out := []
+	for c in w.room.get_children():
+		if c is Conduit:
+			out.append(c)
+	return out
+
+
+## Makes it pick `move` next and counts the frames of its tell.
+func _roc_provoke(b: Borabohra, move: String) -> int:
+	b._last = "dive" if move == "volley" else "volley"
+	b._choose()
+	var tell_frames := 0
+	for i in 240:
+		if b.state == move + "_tell":
+			tell_frames += 1
+		elif tell_frames > 0:
+			break
+		await frames(1)
+	return tell_frames
+
+
+func test_the_roost_wakes_borabohra() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var b: Borabohra = setup[2]
+	check(arena.boss_id == "borabohra" and b != null and b.state == "circle", "walking into the roost brings the Storm Roc down")
+	check(Music.track == "borabohra", "the fight plays its own theme (%s)" % Music.track)
+	check(b.airborne() and b.global_position.y < b.floor_y() - 4 * Room.TILE, "it circles high over the islands")
+	var cs := _conduits(w)
+	check(cs.size() == 3 and cs.all(func(c: Conduit) -> bool: return c.flag_id == "" and not c.powered),
+		"three dead conduits stand on the islands, part of the fight rather than the world")
+
+
+func test_borabohra_telegraphs_are_fair() -> void:
+	var b := Borabohra.new()
+	for t: float in [Borabohra.VOLLEY_TELL, Borabohra.DIVE_TELL]:
+		check(b.tell(t) >= Enemy.MIN_TELEGRAPH, "tell %.2f s is at least %.2f s" % [b.tell(t), Enemy.MIN_TELEGRAPH])
+	b.free()
+
+
+func test_borabohra_flings_a_fan_of_feathers() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var tell_frames := await _roc_provoke(b, "volley")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "it throws its wings wide for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	await frames(1)
+	var n := _count(w, HarpyFeather)
+	check(n == Borabohra.VOLLEY_FEATHERS, "then flings %d storm feathers (%d)" % [Borabohra.VOLLEY_FEATHERS, n])
+
+
+func test_borabohra_dives_through_where_you_stood() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var hp := w.player.hp
+	var tell_frames := await _roc_provoke(b, "dive")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "it fixes on you for at least %.2f s before it stoops (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	await _until(func() -> bool: return b.state == "climb", 60)
+	check(w.player.hp <= hp - Borabohra.DIVE_DAMAGE / 2, "the dive hits a player standing still (%d)" % (hp - w.player.hp))
+	var back := await _until(func() -> bool: return b.state == "circle", 90)
+	check(back, "then it climbs back into the storm")
+
+
+func test_conduits_ground_borabohra() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 3, "in the air, its cloud turns most of a blow (%d)" % (hp0 - b.hp))
+	var cs := _conduits(w)
+	cs[0].power()
+	cs[1].power()
+	await frames(5)
+	check(b.airborne(), "two conduits are not enough")
+	cs[2].power()
+	var down := await _until(func() -> bool: return b.grounded(), 60)
+	check(down and absf(b.global_position.y + b.body_size.y * 0.5 - b.floor_y()) < 4.0, "the third grounds it on the floor (%s)" % b.state)
+	check(not GameState.flag("conduits:daybreak/roost"), "and leaves no world flag behind")
+	hp0 = b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 10, "grounded, every blow lands in full (%d)" % (hp0 - b.hp))
+	var up := await _until(func() -> bool: return b.state == "rise", int(Borabohra.GROUND_TIME * 60) + 30)
+	check(up and cs.all(func(c: Conduit) -> bool: return not c.powered), "then it shakes the charge off and the conduits go dead")
+	var flying := await _until(func() -> bool: return b.state == "circle", 90)
+	check(flying, "and it climbs back into the sky")
+
+
+func test_borabohra_defeat_gives_the_sky_key() -> void:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var points := int(GameState.data.skill_points)
+	b.hp = 1
+	b.take_hit(5, Vector2.RIGHT)
+	check(b.state == "dying", "the last blow ends it")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:borabohra"), 600)
+	check(gone, "Borabohra is marked beaten")
+	check(GameState.key_count("sky") == 1, "it leaves the Sky Key")
+	check(int(GameState.data.skill_points) >= points + 1, "and a skill point")
+	await frames(90)
+	check(get_tree_boss() == null, "the roc is gone")
+	w._enter("daybreak/roost")
 	await frames(10)
 	check(get_tree_boss() == null, "and never returns")

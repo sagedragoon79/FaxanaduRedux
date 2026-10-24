@@ -427,8 +427,10 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn(curtain, center)
 		"c":
 			var conduit := Conduit.new()
-			conduit.flag_id = "conduit:%s:%d,%d" % [id, cell.x, cell.y]
-			conduit.room_flag = "conduits:" + id
+			if not header.has("boss"):
+				# A boss room's conduits are part of the fight and wake afresh each time.
+				conduit.flag_id = "conduit:%s:%d,%d" % [id, cell.x, cell.y]
+				conduit.room_flag = "conduits:" + id
 			_spawn(conduit, bottom_center)
 		"k":
 			var cgate := ConduitGate.new()

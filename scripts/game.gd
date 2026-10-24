@@ -30,6 +30,7 @@ extends Node2D
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
+##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
@@ -216,6 +217,9 @@ func _process(_delta: float) -> void:
 		player.mp = player.max_mp
 		player.input.scripted = true
 		player.input.spell_pressed = true
+	if _args.has("conduits") and _frames == int(_args["conduits"]):
+		for c in get_tree().get_nodes_in_group("conductor"):
+			(c as Conduit).power()
 	if _args.has("boss-hp"):
 		var boss := get_tree().get_first_node_in_group("boss")
 		if boss is Rokusutahn and boss.state == "intro":
@@ -226,6 +230,8 @@ func _process(_delta: float) -> void:
 			boss.hp = roundi(Zorugeriru.MAX_HP * float(_args["boss-hp"]))
 			boss._check_phase()
 			boss._check_phase()
+		elif boss is Borabohra and boss.state == "intro" and boss.hp == Borabohra.MAX_HP:
+			boss.hp = roundi(Borabohra.MAX_HP * float(_args["boss-hp"]))
 		elif boss is Pakukame and boss.state == "intro" and boss.hp == Pakukame.MAX_HP:
 			boss.hp = roundi(Pakukame.MAX_HP * float(_args["boss-hp"]))
 			if boss.health_fraction() <= Pakukame.PHASES[0]:
