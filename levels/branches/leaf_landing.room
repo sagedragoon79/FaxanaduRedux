@@ -2,8 +2,9 @@ name: Leaf Landing
 zone: branches
 map: 40, -8
 chest_gold: 260
-sign: 24, 19, A shrine on the leaf road, swept clean by the wind.|East, the road is lost in a thicket of leaves taller than houses.
+sign: 24, 19, A shrine on the leaf road, swept clean by the wind.|East, the road runs into a thicket of leaves taller than houses.|Some of the leaves are not leaves.
 door: 1, branches/sunlit_bough, 2
+door: 2, branches/thicket_road, 1
 ---
 ########################################
 ########################################
@@ -22,9 +23,9 @@ door: 1, branches/sunlit_bough, 2
 #.....-----..................@.........#
 #..........................-----.......#
 #......................................#
-1......................................#
-1......................................#
-1...................S............@.....#
+1......................................2
+1......................................2
+1...................S............@.....2
 ########################################
 ########################################
 ########################################

@@ -435,3 +435,65 @@ func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
 	before = m.hp
 	m.take_hit(10, Vector2.RIGHT)
 	check(before - m.hp == 10, "firm, it takes normal damage (%d)" % (before - m.hp))
+
+
+## Bible 7: the Leaf Mantis hides as a leaf cluster (harmless to touch), unfolds
+## for a fair telegraph when you come near, lunges with its scythes, then is left
+## overreached and soft.
+func test_leaf_mantis_hides_unfolds_lunges_and_is_soft_when_overreached() -> void:
+	var room := _room_with({Vector2i(24, 6): "m"})
+	var p := make_player(room, Vector2i(4, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var m: LeafMantis = _find(room, LeafMantis)
+	await frames(30)
+	check(m.state == "hide" and m.contact_damage == 0, "far off, it stays folded and harmless (%s)" % m.state)
+	p.global_position = Vector2(19 * 16 + 8, 7 * 16)
+	p.reset_physics_interpolation()
+	var unfold_frames := 0
+	var hp := p.hp
+	var hurt := false
+	var lunged := false
+	for i in 90:
+		await frames(1)
+		if m.state == "unfold":
+			unfold_frames += 1
+		lunged = lunged or m.state == "lunge"
+		if p.hp < hp:
+			hurt = true
+		if m.state == "recover":
+			break
+	check(unfold_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "it unfolds for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, unfold_frames])
+	check(lunged and hurt, "then lunges and its scythes land")
+	check(hp - p.hp <= LeafMantis.SLASH_DAMAGE + 1, "once per lunge (%d)" % (hp - p.hp))
+	check(m.state == "recover", "and it is left overreached (%s)" % m.state)
+	var before := m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(before - m.hp == 15, "overreached, a 10 hit deals 15 (%d)" % (before - m.hp))
+
+
+## Striking a hidden mantis springs it open; its slash can be parried.
+func test_leaf_mantis_springs_open_when_struck_and_can_be_parried() -> void:
+	var room := _room_with({Vector2i(20, 6): "m"})
+	var p := make_player(room, Vector2i(4, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var m: LeafMantis = _find(room, LeafMantis)
+	await frames(10)
+	m.take_hit(5, Vector2.RIGHT)
+	check(m.state == "unfold", "struck while folded, it springs open (%s)" % m.state)
+	await frames(40)
+	# Now meet its next lunge with a parry.
+	p.global_position = Vector2(m.global_position.x - 40.0, 7 * 16)
+	p.reset_physics_interpolation()
+	p.facing = 1
+	for i in 120:
+		await frames(1)
+		if m.state == "unfold" and m.state_time >= LeafMantis.UNFOLD - 3.0 / 60.0:
+			break
+	var hp := p.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(10)
+	check(p.hp == hp, "a parried slash does no damage (%d)" % (hp - p.hp))
+	check(m.is_staggered(), "and staggers the mantis")
