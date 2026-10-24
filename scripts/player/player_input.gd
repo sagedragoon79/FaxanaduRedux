@@ -16,6 +16,7 @@ var dash_pressed := false
 var block_pressed := false
 var block_held := false
 var spell_pressed := false
+var spell_next_pressed := false
 var heal_pressed := false
 
 
@@ -33,6 +34,7 @@ func poll() -> void:
 	block_pressed = Input.is_action_just_pressed("block")
 	block_held = Input.is_action_pressed("block")
 	spell_pressed = Input.is_action_just_pressed("spell")
+	spell_next_pressed = Input.is_action_just_pressed("spell_next")
 	heal_pressed = Input.is_action_just_pressed("heal")
 
 
@@ -45,6 +47,7 @@ func end_frame() -> void:
 		dash_pressed = false
 		block_pressed = false
 		spell_pressed = false
+		spell_next_pressed = false
 		heal_pressed = false
 
 

@@ -4,6 +4,7 @@
 	"leather_armor": {"name": "Leather Armor", "kind": "armor", "tier": 1, "defense": 0.15, "desc": "Take 15% less damage."},
 	"studded_mail": {"name": "Studded Mail", "kind": "armor", "tier": 2, "defense": 0.3, "desc": "Take 30% less damage."},
 	"small_shield": {"name": "Small Shield", "kind": "shield", "tier": 1, "desc": "Hold Block to guard (halves damage). Tap it just before a hit to parry.", "guard": 0.5},
+	"full_plate": {"name": "Full Plate", "kind": "armor", "tier": 3, "defense": 0.45, "desc": "Elf-forged plate, light as leaf-silk: take 45% less damage."},
 	"large_shield": {"name": "Large Shield", "kind": "shield", "tier": 2, "guard": 0.7, "desc": "Guarding blocks 70% of a hit. Parries work as before."},
 	"jack_key": {"name": "Jack Key", "kind": "key", "desc": "Opens one Jack door. Jack doors guard treasure."},
 	"life_fruit": {"name": "Life Fruit", "kind": "stat", "desc": "Two fruits grow a new mask of health."},
@@ -16,5 +17,7 @@
 	"chart_trunk": {"name": "Chart of the Trunk Hollows", "kind": "chart", "zone": "trunk", "desc": "The tunnels of the Trunk Hollows outlined on your map. Rooms you have not seen show dimmed."},
 	"chart_tower": {"name": "Chart of the Tower", "kind": "chart", "zone": "tower", "desc": "The galleries of the Tower of Trunk outlined on your map. Rooms you have not seen show dimmed."},
 	"chart_mist": {"name": "Chart of the Mist", "kind": "chart", "zone": "mist", "desc": "The drowned marsh of the Mist outlined on your map, as far as the fog let the skywatchers see. Rooms you have not seen show dimmed."},
-	"chart_branches": {"name": "Chart of the Branches", "kind": "chart", "zone": "branches", "desc": "The boughs of the Branches outlined on your map. Rooms you have not seen show dimmed."}
+	"chart_branches": {"name": "Chart of the Branches", "kind": "chart", "zone": "branches", "desc": "The boughs of the Branches outlined on your map. Rooms you have not seen show dimmed."},
+	"chart_daybreak": {"name": "Chart of Daybreak", "kind": "chart", "zone": "daybreak", "desc": "The sky isles of Daybreak outlined on your map, as the bell-ringers see them. Rooms you have not seen show dimmed."},
+	"fire_scroll": {"name": "Fire Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Fire: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."}
 }

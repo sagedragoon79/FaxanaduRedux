@@ -80,5 +80,36 @@
 			{"item": "chart_mist", "price": 500},
 			{"item": "chart_branches", "price": 650}
 		]
+	},
+	"daybreak_armor": {
+		"name": "Stormward Armory",
+		"greeting": "Plate for the sky road. The lightning finds iron, so we forge ours from elf-silver.",
+		"stock": [
+			{"item": "full_plate", "price": 4200}
+		]
+	},
+	"daybreak_scrolls": {
+		"name": "The Bell-Tower Scriptorium",
+		"greeting": "Every scroll here was copied by lamplight while the storm rang the bells.",
+		"stock": [
+			{"item": "fire_scroll", "price": 1200}
+		]
+	},
+	"daybreak_items": {
+		"name": "Daybreak Stores",
+		"greeting": "Dry bread, dry wicks, and ointment for the hail.",
+		"stock": [
+			{"item": "elixir", "price": 1500},
+			{"item": "ointment", "price": 300},
+			{"item": "jack_key", "price": 150},
+			{"item": "mana_dew", "price": 1200, "once": true}
+		]
+	},
+	"daybreak_charts": {
+		"name": "Bell-Ringer's Charts",
+		"greeting": "From the bell loft you can see every isle the wind has not hidden.",
+		"stock": [
+			{"item": "chart_daybreak", "price": 700}
+		]
 	}
 }

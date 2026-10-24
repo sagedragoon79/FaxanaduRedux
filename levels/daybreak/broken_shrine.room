@@ -2,8 +2,9 @@ name: Broken Shrine
 zone: daybreak
 map: 51, -11
 sign: 25, 19, A shrine of the elves, its roof torn away by the wind. The lamps still burn.|The rod on the stair once called the lightning down. It is cold now.
-sign: 36, 12, The bridge to Daybreak lay here. Now there is only sky.|Something circles in the clouds.
+sign: 36, 12, The bridge to Daybreak began here. The storm took its middle.|Something circles in the clouds.
 door: 1, daybreak/sky_steps, 2
+door: 2, daybreak/fallen_bridge, 1
 ---
 ########################################
 ########################################
@@ -15,9 +16,9 @@ door: 1, daybreak/sky_steps, 2
 #......................................#
 #......................................#
 #.......L..............................#
-#.....-----............................#
-#......................................#
-#......................................#
+#.....-----............................2
+#......................................2
+#......................................2
 #.................................######
 #............----.................######
 #.................................######

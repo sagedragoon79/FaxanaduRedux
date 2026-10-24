@@ -50,7 +50,9 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false},
+		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false},
+		## The spell on the Spell button (an id in `Spells.ORDER`).
+		"spell": "deluge",
 		"max_hp": 100,
 		"max_mp": 60.0,
 		"flask_max": 2,
@@ -250,6 +252,7 @@ func say(speaker: String, pages: Array) -> void:
 func apply(p: Player) -> void:
 	for k: String in data.abilities:
 		p.abilities[k] = bool(data.abilities[k])
+	p.equipped_spell = String(data.get("spell", "deluge"))
 	p.gold = int(data.gold)
 	p.elixirs = int(data.elixirs)
 	p.ointments = int(data.ointments)
@@ -295,6 +298,7 @@ func refresh_stats(p: Player) -> void:
 func capture(p: Player) -> void:
 	for k: String in p.abilities:
 		data.abilities[k] = bool(p.abilities[k])
+	data.spell = p.equipped_spell
 	data.gold = p.gold
 	data.elixirs = p.elixirs
 	data.ointments = p.ointments

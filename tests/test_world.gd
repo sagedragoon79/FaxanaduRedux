@@ -388,3 +388,39 @@ func test_deluge_fills_the_dry_basin_and_floats_a_raft() -> void:
 		if is_instance_valid(e) and not e.is_queued_for_deletion() and (e as Enemy).center().y > surface:
 			back += 1
 	check(back == 0, "and nothing lives in the water (%d)" % back)
+
+
+## Bible 4.5: a bramble wall blocks like stone and shrugs off blades, but one
+## fireball sets the whole knot alight; it burns to ash and stays burnt.
+func test_fire_burns_the_bramble_for_good() -> void:
+	var w := make_world({}, "daybreak/daybreak")
+	await frames(3)
+	var p := w.player
+	var brambles := runner.get_tree().get_nodes_in_group("bramble")
+	check(brambles.size() == 4, "four tiles of bramble choke the bell cellar (%d)" % brambles.size())
+	if brambles.is_empty():
+		return
+	var first := brambles[0] as BrambleWall
+	# A blade does nothing to it.
+	p.teleport(first.global_position + Vector2(-20, 8 + 16 * 3))
+	await frames(3)
+	p.facing = 1
+	p.input.attack_pressed = true
+	await frames(12)
+	check(brambles.all(func(b: BrambleWall) -> bool: return not b.burning and not b.burnt), "a blade only snags in it")
+	# A fireball at its foot: the fire creeps through the whole knot.
+	var ball := Fireball.new()
+	w.room.add_child(ball)
+	ball.global_position = (brambles[3] as BrambleWall).global_position + Vector2(-14, 0)
+	ball.velocity = Vector2(200, 0)
+	await frames(3)
+	check((brambles[3] as BrambleWall).burning, "the fireball sets it alight")
+	await frames(90)
+	check(brambles.all(func(b: BrambleWall) -> bool: return b.burnt), "every tile burns to ash")
+	check(GameState.is_collected((brambles[0] as BrambleWall).persist_id), "the save remembers")
+	# Back again: it stays ash, and the cellar is open.
+	w._enter("daybreak/daybreak")
+	await frames(2)
+	var again := runner.get_tree().get_nodes_in_group("bramble")
+	var left := again.filter(func(b: BrambleWall) -> bool: return not b.burnt)
+	check(again.size() == 4 and left.is_empty(), "it doesn't grow back (%d unburnt)" % left.size())

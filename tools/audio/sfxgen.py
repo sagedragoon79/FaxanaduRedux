@@ -450,5 +450,20 @@ def main():
     hum = osc(np.full(n, 120.0), "square", 0.5) * 0.25
     save("zap", mix(snap, sizzle * 0.5 * env(n, 0.005, 1.6), hum * env(n, 0.005, 2.5)), 0.6)
 
+    # A fireball bursting: a soft whump and a spray of crackling embers.
+    d = 0.55
+    n = int(RATE * d)
+    whump = lowpass(noise(d), slide(1800, 200, d, 0.5)) * env(n, 0.003, 1.8) * 1.1
+    pops = highpass(noise(d), 3000) * (np.random.default_rng(57).random(n) < 0.03) * env(n, 0.01, 1.2) * 1.4
+    thud = osc(slide(110, 50, d, 0.7), "sine") * env(n, 0.002, 2.2) * 0.5
+    save("fire_burst", mix(whump, pops, thud), 0.6)
+
+    # Dry bramble catching: a rush of flame and quick snapping twigs.
+    d = 0.7
+    n = int(RATE * d)
+    rush = lowpass(highpass(noise(d), 400), 3000) * env(n, 0.08, 1.2) * 0.7
+    snaps = highpass(noise(d), 2000) * (np.random.default_rng(58).random(n) < 0.05) * 1.5 * env(n, 0.02, 0.8)
+    save("crackle", mix(rush, snaps), 0.5)
+
 if __name__ == "__main__":
     main()

@@ -423,6 +423,12 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			var curtain := MistCurtain.new()
 			curtain.flag_id = "curtain:" + id
 			_spawn(curtain, center)
+		"w":
+			var bramble := BrambleWall.new()
+			bramble.persist_id = _pickup_id(cell)
+			_spawn(bramble, center)
+			if GameState.is_collected(bramble.persist_id):
+				bramble.set_burnt()
 		"Z":
 			var seal := FireSeal.new()
 			seal.flag_id = "seal:" + id

@@ -82,6 +82,8 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 
 **Daybreak as built (pass 54):** `levels/daybreak/`, entered by the Crown-Leaf's east door. Storm Ledge (a fallen causeway span over thorns: pogo it or stride it), Sky Steps (one-way island shelves stacked up a tall room, each gap past any jump, so an air dash at the top of the leap is the way up; storm crystals bristle on the cliffs so nothing can be climbed around them) and the Broken Shrine (a shrine, a Life Fruit, and the fallen bridge to Daybreak town). Look: pale ashlar shrine stone with gold inlay, a violet storm sky with lightning and drifting islands, rain driven on the wind. Music `daybreak` (E dorian at 116, thunder toms) and ambience `amb_daybreak` (gusting wind, rain, rolling thunder).
 
+**Daybreak town (pass 57):** the Broken Shrine's east door opens on the Fallen Bridge (52,-11), the great elf bridge broken into floating spans a stride apart, with hornets in the wind and a beetle on the old footing below (a fall walks you back to the near pier; storm crystals on the far pier stop a climb round). Past it, Daybreak (54,-11), the bell town on the last great island: a Guru, Calder the Armorer (Full Plate), Scribe Ysolde (the Fire scroll), Grocer Wenna, Bell-Ringer Tamsin on the bell loft gallery (the Daybreak chart), the Mayor (who names Borabohra) and the old Bellkeeper (who points at the bramble-choked bell cellar, where a Potion Shard waits for Fire). Music `daybreak_town` (G mixolydian at 92, a carillon over warm pads). The Spires beyond, with Borabohra and the Thunder spell, come next.
+
 ### 3.3 Room and map rules
 
 - **Room size:** multiples of one screen (640x360 px internal = 40x22.5 tiles of 16 px). Rooms are 1x1 up to 4x3 screens.
@@ -114,6 +116,8 @@ Abilities are permanent and listed in acquisition order. Each one opens new rout
 | A10 | **Dragon Slayer** | Dragon Slayer | The only blade that can hurt the Evil One's core | Final boss | Zenis, inside the gate |
 
 Supporting spells (optional, combat-focused, found or bought): **Fire** (arcing fireball, burns bramble walls for secrets), **Tilte** (homing spirit orb), **Death** (screen-wide, very expensive, late secret).
+
+**Fire as built (pass 57):** sold by Daybreak's scribe for 1,200 g (the Mascon shop comes with Mascon). 20 MP; the ball is thrown forward and up (170 px/s across, 150 up, falling at 520 px/s²), so it lands about seven tiles ahead and arcs over a low foe's head at point-blank range. It bursts on a wall, floor or foe, scorching every foe within 20 px for 18 and lighting every bramble in reach. It lights the fog as it flies. The Next Spell button (G or O; right stick click) cycles the spells you own, and the HUD's magic-bar gem shows the equipped spell's color. The save keeps the choice.
 
 ### 4.2 Critical path
 
@@ -158,6 +162,7 @@ Every gate has a consistent, readable look so players remember it:
 - **Mist curtains:** shimmering vertical fog with a faint elven rune (Elven Stride).
 - **Fire seals:** red runic flames (Deluge). They block like a wall, burn for 10 on touch and light the fog around them. One Deluge bolt douses every seal in the room for good, in a hiss of steam (legend `Z`, a column of three under a stone arch).
 - **Dry basins:** cracked mud basins with a water-line stain (Deluge). A Deluge bolt cast across the tank (from its rim is enough) fills it over a second, drowning anything left in it, and a raft floats up to the stain and stays there as a one-way platform for good. The first is the Dry Cistern (mist 34,-7) east of the Scorched Hall, whose shelf over the tank's middle only the raft reaches; Zorugeriru's basins work the same way (legend `u` for the mud bed, a row of `=` for the stain).
+- **Bramble walls:** a knot of dry thorn-vine, crossed vines with pale thorns (Fire, legend `w`). Blades only snag in it. A fireball sets it alight and the flames creep tile to tile through the whole knot, which burns to ash in about a second and stays burnt. Fire is optional, so bramble only ever hides secrets, never the way on.
 - **Dead conduits:** copper coils with a dim blue spark (Thunder).
 - **Illusory walls:** a 1-pixel seam visible only with Black Onyx.
 - **Time-locked water:** waterfalls with clock-glyph droplets (Hour Glass).
@@ -208,7 +213,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Up-slash:** hits above; a hit on a launcher-type enemy pops the player up slightly.
 - **Down-strike (Mattock):** see pogo in 6.6.
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
-- **Spells:** one equipped spell on the Spell button, cycle with shoulder buttons. MP regenerates slowly and on melee hits.
+- **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Dash and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash.
 
 **Starting combat values** (in `scripts/player/combat_tuning.gd`, asserted by tests):
@@ -526,6 +531,8 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 | Key master | Eolis, Victim, Dartmoor | Jack (150 g), Queen (400 g), King (900 g), Ace (1,800 g) keys; the Joker key is found |
 | Cartographer | every town | zone map outlines (200 to 800 g), map pins |
 | Spell scrolls | Mascon, Daybreak | Fire (1,200 g), Tilte (2,500 g) |
+
+Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joins his stock with its reflect mechanic in a later pass. The scribe sells Fire; Tilte waits for its spell. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
 | Guru | every town | save, skill tree, respec, rank-up |
 
 **Gold sinks:** respecs, Ointments and Elixirs, keys for optional doors (each guards a reward), smith upgrades, cosmetics (cloak dyes, 6 total, purely visual).

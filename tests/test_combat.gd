@@ -289,3 +289,49 @@ func test_camera_renders_at_detail() -> void:
 	await frames(1)
 	check(cam.zoom == Vector2(GameCamera.DETAIL, GameCamera.DETAIL), "the camera zooms the world to its render density (%s)" % cam.zoom)
 	cam.queue_free()
+
+
+func test_fire_arcs_bursts_and_scorches_foes_in_reach() -> void:
+	# Bible 4.1: Fire is thrown in an arc and bursts on what it meets.
+	var room := _arena_with("E", Vector2i(10, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.equipped_spell = "fire"
+	var mp0 := p.mp
+	p.input.spell_pressed = true
+	await frames(1)
+	check(absf(p.mp - (mp0 - Spells.cost("fire"))) < 0.5, "Fire costs %.0f MP" % Spells.cost("fire"))
+	var balls := runner.get_tree().get_nodes_in_group("projectile")
+	check(balls.size() == 1 and balls[0] is Fireball, "a fireball is thrown")
+	if balls.is_empty():
+		return
+	var ball := balls[0] as Fireball
+	var y0 := ball.global_position.y
+	await frames(6)
+	check(ball.global_position.y < y0 - 4.0, "it rises first (%.1f -> %.1f)" % [y0, ball.global_position.y])
+	await frames(70)
+	check(dummy.hits_taken == 1, "it bursts on the dummy (%d hits)" % dummy.hits_taken)
+	check(runner.get_tree().get_nodes_in_group("projectile").is_empty(), "and is gone")
+
+
+func test_next_spell_cycles_only_through_spells_you_own() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.abilities["fire"] = false
+	p.equipped_spell = "deluge"
+	p.input.spell_next_pressed = true
+	await frames(1)
+	check(p.equipped_spell == "deluge", "with only Deluge, Next Spell keeps it")
+	p.abilities["fire"] = true
+	p.input.spell_next_pressed = true
+	await frames(1)
+	check(p.equipped_spell == "fire", "with Fire owned it switches to Fire")
+	p.input.spell_next_pressed = true
+	await frames(1)
+	check(p.equipped_spell == "deluge", "and back round to Deluge")
+	p.abilities["deluge"] = false
+	p.input.spell_next_pressed = true
+	await frames(1)
+	check(p.equipped_spell == "fire", "it skips a spell you don't own")

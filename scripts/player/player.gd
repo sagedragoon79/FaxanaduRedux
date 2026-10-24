@@ -39,7 +39,7 @@ const DOWN_STRIKE_SIZE := Vector2(28, 24)
 @export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true}
+var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true}
 
 var max_hp := 100
 var hp := 100
@@ -225,6 +225,7 @@ func _physics_process(delta: float) -> void:
 	_update_drink(delta, on_floor)
 	_try_drop_through(on_floor)
 	_try_dash(on_floor)
+	_try_cycle_spell()
 	_try_cast()
 	_try_attack(on_floor)
 
@@ -724,6 +725,20 @@ func _update_drink(delta: float, on_floor: bool) -> void:
 	if input.heal_pressed and flask_charges > 0 and on_floor and hp < max_hp and not is_attacking and not is_dashing:
 		_drink_timer = combat.drink_time * drink_mult
 		Sfx.play("drink")
+
+
+## Next Spell: equips the next spell you own, in `Spells.ORDER`.
+func _try_cycle_spell() -> void:
+	if not input.spell_next_pressed:
+		return
+	var next := Spells.next_owned(equipped_spell, abilities)
+	if next == equipped_spell:
+		if not abilities.get(next, false):
+			Sfx.play("fizzle")
+		return
+	equipped_spell = next
+	Sfx.play("blip", 0.0, -2.0)
+	GameState.toast.emit("Spell: " + String(Spells.DATA[next].name))
 
 
 func _try_cast() -> void:

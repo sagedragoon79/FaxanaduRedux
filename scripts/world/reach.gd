@@ -93,6 +93,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	if c == "Z":
 		# A fire seal goes out for good once a Deluge bolt strikes it.
 		return not abilities.get("deluge", false)
+	if c == "w":
+		# A bramble wall burns away for good under a Fire spell.
+		return not abilities.get("fire", false)
 	if c == "~":
 		# Sap hardens into solid amber once the Spring of Trunk is restored.
 		return abilities.get("amber", false)

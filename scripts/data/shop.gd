@@ -36,6 +36,9 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		"chart":
 			if GameState.has_chart(String(item.zone)):
 				return "owned"
+		"spell":
+			if p.abilities.get(String(item.spell), false):
+				return "owned"
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
@@ -66,6 +69,11 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 			GameState.refresh_stats(p)
 		"chart":
 			GameState.data.charts[String(item.zone)] = true
+		"spell":
+			# A scroll teaches its spell for good, and is equipped if nothing else is.
+			p.abilities[String(item.spell)] = true
+			if not p.abilities.get(p.equipped_spell, false):
+				p.equipped_spell = String(item.spell)
 	if entry.get("once", false):
 		GameState.collect(_once_id(shop_id, index))
 	GameState.capture(p)
