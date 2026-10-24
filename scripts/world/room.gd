@@ -434,6 +434,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(StormHarpy.new(), center)
 		"q":
 			_spawn_enemy(CrystalDwarf.new(), bottom_center)
+		"e":
+			_spawn_enemy(ShadeKnight.new(), bottom_center)
 		"R":
 			var gate := RootGate.new()
 			_spawn(gate, center)

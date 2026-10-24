@@ -700,3 +700,81 @@ func test_crystal_dwarf_back_turns_blows_until_his_fist_is_rooted() -> void:
 	hp0 = d.hp
 	d.take_hit(10, Vector2(-1, 0))
 	check(hp0 - d.hp == 10, "rooted, even his back gives (%d)" % (hp0 - d.hp))
+
+
+## Bible 7: the Shade Knight's tower shield turns blows from the front; from
+## behind, from above, winded or reeling, they land.
+func test_shade_knight_shield_turns_blows_from_the_front() -> void:
+	var room := _room_with({Vector2i(20, 6): "e"})
+	make_player(room, Vector2i(3, 6))
+	var k: ShadeKnight = _find(room, ShadeKnight)
+	await frames(3)
+	k.facing = -1
+	k.set_state("walk")
+	var hp0 := k.hp
+	k.take_hit(10, Vector2(1, 0))
+	check(k.hp == hp0, "a blow to his shield does nothing")
+	k.take_hit(10, Vector2(-1, 0))
+	check(hp0 - k.hp == 10, "a blow to his back lands (%d)" % (hp0 - k.hp))
+	hp0 = k.hp
+	k.take_hit(10, Vector2(0, 1))
+	check(hp0 - k.hp == 10, "so does a pogo from above (%d)" % (hp0 - k.hp))
+	k.set_state("winded")
+	hp0 = k.hp
+	k.take_hit(10, Vector2(1, 0))
+	check(hp0 - k.hp == 10, "winded, his shield hangs low (%d)" % (hp0 - k.hp))
+	k.stagger()
+	hp0 = k.hp
+	k.take_hit(10, Vector2(1, 0))
+	check(hp0 - k.hp == 10, "reeling from a parry, he is open (%d)" % (hp0 - k.hp))
+
+
+func test_shade_knight_ripostes_when_you_batter_his_shield() -> void:
+	var room := _room_with({Vector2i(20, 6): "e"})
+	make_player(room, Vector2i(3, 6))
+	var k: ShadeKnight = _find(room, ShadeKnight)
+	await frames(3)
+	k.facing = -1
+	k.set_state("walk")
+	k.take_hit(10, Vector2(1, 0))
+	check(k.state == "walk", "one blow on the shield, he holds")
+	k.take_hit(10, Vector2(1, 0))
+	check(k.state == "riposte_tell", "a second and he draws for a riposte (%s)" % k.state)
+	check(ShadeKnight.RIPOSTE_TELL >= Enemy.MIN_TELEGRAPH, "even his riposte is telegraphed")
+
+
+func test_shade_knight_thrusts_then_cuts_and_a_parry_breaks_him() -> void:
+	var room := _room_with({Vector2i(22, 6): "e"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var k: ShadeKnight = _find(room, ShadeKnight)
+	await frames(3)
+	p.teleport(Vector2(k.global_position.x - 40.0, 7 * 16))
+	var tell := 0
+	var cut_tell := 0
+	var hp := p.hp
+	for i in 150:
+		await frames(1)
+		if k.state == "thrust_tell":
+			tell += 1
+		if k.state == "cut_tell":
+			cut_tell += 1
+		if k.state == "winded":
+			break
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH and cut_tell / 60.0 >= Enemy.MIN_TELEGRAPH,
+		"both blows are telegraphed (%d and %d frames)" % [tell, cut_tell])
+	check(p.hp < hp, "and the pair catches a player standing still")
+	# The next time, meet the thrust with a parry.
+	for i in 200:
+		await frames(1)
+		if k.state == "thrust_tell" and k.state_time >= ShadeKnight.THRUST_TELL - 3.0 / 60.0:
+			break
+	p.teleport(Vector2(k.global_position.x - 36.0, 7 * 16))
+	p.facing = 1
+	hp = p.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(10)
+	check(p.hp == hp, "a parried thrust does no damage (%d)" % (hp - p.hp))
+	check(k.is_staggered() and not k.guarding(), "and he reels, shield wide")

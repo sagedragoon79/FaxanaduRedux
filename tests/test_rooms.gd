@@ -456,6 +456,9 @@ func test_the_onyx_waits_in_the_crypt_below_the_flooded_hall() -> void:
 		return
 	onyx.grant(w.player)
 	check(w.player.abilities.get("onyx", false) and GameState.has_ability("onyx"), "taking it gives the Onyx for good")
+	var way_on: Rect2 = w.room.doors[2].rect
+	check(w.room.doors[2].target == "dartmoor/drowned_nave" and w.room.is_secret_at(way_on.get_center()),
+		"the way on to the lower halls is behind an illusory wall")
 	var hall := Room.from_file("res://levels/dartmoor/flooded_hall.room")
 	check(hall.doors[2].target == "dartmoor/sunken_stair", "the flooded hall's west door leads down the stair")
 	hall.free()
