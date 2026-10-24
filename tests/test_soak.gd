@@ -625,3 +625,56 @@ func test_waterfalls_stay_cheap() -> void:
 	TimeStop.reset()
 	w.queue_free()
 	await frames(2)
+
+
+## King Grieve's fight at full tilt: a mashing player who can't die, 30 seconds,
+## the second half on his throne with the Hour Glass turned whenever it is ready.
+func test_king_grieve_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "dartmoor/throne_hall", cell_feet(10, 19))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	w.player.abilities["hourglass"] = true
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as KingGrieve
+	check(boss != null, "King Grieve wakes")
+	if boss == null:
+		return
+	boss.max_hp = 99999
+	boss.hp = 99999
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 71
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var slowest := 0
+	var states := {}
+	var shards := 0
+	var seen := {}
+	const FIGHT_FRAMES := 1800
+	for f in FIGHT_FRAMES:
+		_mash(w.player, rng, hold)
+		if f == FIGHT_FRAMES / 3:
+			boss.phase = 2
+			boss._to_throne()
+		if boss.phase == 2 and TimeStop.ready_to_turn() and f % 120 == 0:
+			TimeStop.start()
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		slowest = maxi(slowest, dt)
+		states[boss.state] = true
+		peak = maxi(peak, _count_nodes(w))
+		for c in w.room.get_children():
+			if c is CrystalShard and not seen.has(c.get_instance_id()):
+				seen[c.get_instance_id()] = true
+				shards += 1
+	TimeStop.reset()
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  King soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
+	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(states.has("chop_tell") and states.has("ward") and states.has("summon_tell"), "duels and the throne were soaked")
+	check(shards > 0, "and shard waves (%d)" % shards)
+	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")

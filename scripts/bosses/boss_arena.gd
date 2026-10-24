@@ -20,6 +20,7 @@ const BOSSES := {
 	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
 		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
+	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -127,6 +128,15 @@ func _start() -> void:
 			b.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = b
 			b.defeated.connect(_on_defeated)
+		"king_grieve":
+			# The king waits before his throne, the dais at the hall's east end.
+			var k := KingGrieve.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			k.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			k.dais = Rect2(46 * Room.TILE, 14 * Room.TILE, w - 47 * Room.TILE, 6 * Room.TILE)
+			k.position = Vector2(40 * Room.TILE, k.arena.end.y)
+			boss = k
+			k.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
