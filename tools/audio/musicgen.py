@@ -437,6 +437,46 @@ def track_ripasheiku():
     return s.render(reverb=0.5)
 
 
+def track_zorugeriru():
+    """Zorugeriru, the Mist Hydra: a heavy surge in C# minor. The bass swells and
+    falls like water in a tank, a war-drum pattern rolls under it, and three
+    voices (the heads) trade one motif left, centre and right, a bar each, while
+    a fourth answers low from bar 9. Slower than the widow, heavier than the
+    generic boss theme."""
+    rng = np.random.default_rng(109)
+    s = Song(bpm=132, bars=16)
+    root, scale = 37, SCALES["minor"]
+    prog = [0, 0, 5, 6, 0, 3, 4, 4] * 2
+    motif = [0, 2, 3, 2, 4, 3]
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root + 12, scale, deg)
+        base = scale_note(root - 12, scale, deg)
+        # The surge: a long bass note swelling into the bar, a push on four.
+        s.add(fft_filter(pad(midi_hz(base), s.bar * 0.9), low=500), b * 4, 0, 0.8)
+        s.add(bass(midi_hz(base), s.beat * 1.4), b * 4, 0, 0.8)
+        s.add(bass(midi_hz(base + 7), s.beat * 0.45), b * 4 + 3, 0, 0.6)
+        s.add(bass(midi_hz(base + 12), s.beat * 0.45), b * 4 + 3.5, 0, 0.6)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.02), low=1400), b * 4, rng.uniform(-0.5, 0.5), 0.22)
+        # War drums: a rolling triplet into the downbeat.
+        s.add(kick(0.35), b * 4, 0, 1.0)
+        s.add(kick(0.3), b * 4 + 2, 0, 0.8)
+        for k in (2.67, 3.0, 3.33):
+            s.add(kick(0.2) * 0.6, b * 4 + k + 0.33, 0, 0.6)
+        s.add(snare(rng), b * 4 + 1, -0.1, 0.7)
+        s.add(snare(rng), b * 4 + 3, -0.1, 0.5)
+        # The heads: each bar one of three voices sings the motif, panned to its lane.
+        head = b % 3
+        pan = [-0.7, 0.0, 0.7][head]
+        for k, step in enumerate(motif):
+            m = scale_note(root + 24, scale, deg + step)
+            s.add(lead(midi_hz(m + [0, 0, -12][head] + 0), s.beat * 0.55), b * 4 + k * 0.5, pan, 0.38)
+        if b >= 8:
+            # The fourth head, low and late.
+            s.add(bell(midi_hz(tones[0]), s.beat * 1.5), b * 4 + 2.5, 0.0, 0.3)
+    return s.render(reverb=0.4)
+
+
 def track_forepaw():
     """Forepaw freed: the dwarves' city breathes again. A warm work song in G
     major, anvils ringing in time, a plucked tune over a slow pad."""
@@ -714,6 +754,7 @@ TRACKS = {
     "miniboss": track_miniboss,
     "zoradohna": track_zoradohna,
     "ripasheiku": track_ripasheiku,
+    "zorugeriru": track_zorugeriru,
     "forepaw": track_forepaw,
     "mist": track_mist,
     "amb_trunk": amb_trunk,

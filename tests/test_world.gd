@@ -292,6 +292,23 @@ func test_deluge_douses_the_fire_seal_for_good() -> void:
 
 ## Bible 4.5: a Deluge bolt cast across a dry basin fills it, and a raft floats
 ## up to the water-line stain, standing as a one-way platform for good.
+func test_drowned_boardwalks_rise_with_the_spring_of_mist() -> void:
+	for id: String in ["mist/victim_causeway", "mist/fog_cut"]:
+		var w := make_world({}, id)
+		await frames(2)
+		var cell := Vector2(17 * Room.TILE + 4, 20 * Room.TILE + 4)
+		check(not w.room.is_one_way_at(cell) and not w.room.is_solid_at(cell), "%s: the boardwalk is under the water while the spring is dry" % id)
+		GameState.set_flag("spring:mist")
+		w._enter(id)
+		await frames(2)
+		check(w.room.is_one_way_at(cell), "%s: with the spring flowing it rises" % id)
+		w.player.teleport(Vector2(cell.x, 20 * Room.TILE))
+		await frames(20)
+		check(w.player.is_on_floor() and absf(w.player.global_position.y - 20 * Room.TILE) < 2.0, "%s: and holds the player over the spikes" % id)
+		w.queue_free()
+		await frames(2)
+
+
 func test_deluge_fills_the_dry_basin_and_floats_a_raft() -> void:
 	var w := make_world({}, "mist/dry_cistern")
 	await frames(3)

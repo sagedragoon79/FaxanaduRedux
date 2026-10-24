@@ -107,7 +107,7 @@ func _ready() -> void:
 ## Starts the fight (called by the arena once the player is inside).
 func begin() -> void:
 	set_state("intro")
-	Sfx.play("swell", 0.0, 2.0)
+	Sfx.play("hydra_roar", 0.0, 2.0)
 	Feel.add_trauma(0.3)
 	GameState.banner.emit(DISPLAY_NAME, EPITHET)
 
@@ -210,7 +210,7 @@ func _enter_phase(n: int) -> void:
 			heads[i].set_solid(false)
 			if heads[i].mode != "idle":
 				heads[i].set_mode("rise")
-		Sfx.play("swell", 0.0, 4.0)
+		Sfx.play("hydra_roar", 0.0, 2.0)
 		GameState.toast.emit("The heads dissolve into the mist. Something stirs in the coil, waiting for water.")
 	else:
 		# The coil bursts and the spring floods the arena.
@@ -227,8 +227,8 @@ func _enter_phase(n: int) -> void:
 		flood.right = arena.end.x
 		flood.target = 1.0
 		get_parent().add_child(flood)
-		Sfx.play("splash", 0.0, 4.0)
-		Sfx.play("heavy", 0.1, 2.0)
+		Sfx.play("flood", 0.0, 2.0)
+		Sfx.play("hydra_roar", 0.1, 0.0)
 		GameState.toast.emit("The coil bursts and the spring floods the basin!")
 
 
@@ -256,7 +256,7 @@ func _fight(delta: float) -> void:
 			h4.coiled = false
 			h4.set_solid(true)
 			h4.set_mode("emerge")
-			Sfx.play("heavy", 0.0, 2.0)
+			Sfx.play("hydra_roar", 0.15, 0.0)
 			Feel.add_trauma(0.4)
 		elif not h4.coiled and h4.mode == "idle" and h4.mode_time >= IDLE_BEFORE_BITE and absf(px - h4.global_position.x) < BITE_RANGE:
 			_rear(h4, FOURTH_REACH_Y)
@@ -317,7 +317,7 @@ func _move_heads(delta: float) -> void:
 				h.global_position = h.from.lerp(h.from + back, clampf(h.mode_time / 0.2, 0.0, 1.0))
 				if h.mode_time >= tell(BITE_TELL):
 					h.set_mode("bite")
-					Sfx.play("dash", 0.05, 0.0)
+					Sfx.play("hydra_bite", 0.08, 0.0)
 			"bite":
 				var b := clampf(h.mode_time / BITE_TIME, 0.0, 1.0)
 				h.global_position = h.from.lerp(h.to, b)
@@ -365,7 +365,7 @@ func _breathe(h: HydraHead) -> void:
 	b.right = arena.end.x
 	b.position = Vector2(h.global_position.x, b.ground_y)
 	get_parent().add_child(b)
-	Sfx.play("spore", 0.05, 2.0)
+	Sfx.play("mist_breath", 0.08, 0.0)
 
 
 func _process(delta: float) -> void:
@@ -395,7 +395,7 @@ func die() -> void:
 	Feel.hitstop(0.12)
 	Feel.slowmo(0.3, 1.0)
 	Feel.add_trauma(0.7)
-	Sfx.play("swell", 0.0, 6.0)
+	Sfx.play("hydra_roar", 0.0, 4.0)
 
 
 # --- Drawing ---------------------------------------------------------------------

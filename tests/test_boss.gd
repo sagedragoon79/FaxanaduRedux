@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -793,6 +793,7 @@ func test_spring_of_mist_wakes_the_hydra() -> void:
 	var arena: BossArena = setup[1]
 	var z: Zorugeriru = setup[2]
 	check(arena.boss_id == "zorugeriru" and z != null, "walking into the spring wakes Zorugeriru")
+	check(Music.track == "zorugeriru", "the fight plays his own theme (%s)" % Music.track)
 	check(_basins(w).size() == 3, "three dry tanks feed the spring (%d)" % _basins(w).size())
 	for b: DryBasin in _basins(w):
 		check(b.flag_id == "" and not b.filled, "an arena tank starts dry and keeps no flag")

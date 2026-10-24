@@ -397,5 +397,34 @@ def main():
     steam = highpass(lowpass(noise(d), slide(7000, 2500, d, 0.7)), 1200) * env(n, 0.03, 1.2) * 0.6
     save("douse", mix(slap, steam), 0.55)
 
+    # Zorugeriru's bite: a deep growl that snaps shut on a hard bone clack.
+    d = 0.45
+    n = int(RATE * d)
+    growl = lowpass(osc(slide(70, 120, d, 0.5), "square", 0.4), 600) * env(n, 0.05, 1.2) * 0.6
+    clack = highpass(noise(0.03), 1500) * env(int(RATE * 0.03), 0.0005, 2.5)
+    save("hydra_bite", mix(growl, clack), 0.6)
+
+    # A head breathing mist: a long throaty exhale, darker than the spores.
+    d = 1.0
+    n = int(RATE * d)
+    exhale = lowpass(highpass(noise(d), 200), slide(2400, 700, d, 0.6)) * 0.7
+    throat = lowpass(osc(np.full(n, 55.0), "square", 0.5), 300) * 0.25
+    save("mist_breath", mix(exhale, throat) * env(n, 0.15, 1.1), 0.5)
+
+    # The coil bursting and the arena flooding: a rushing roar of water.
+    d = 1.6
+    n = int(RATE * d)
+    rush = lowpass(noise(d), slide(500, 2600, d, 0.4)) * 0.8
+    rumble = lowpass(noise(d), 160) * 0.8
+    save("flood", mix(rush, rumble) * env(n, 0.2, 1.3), 0.6)
+
+    # The hydra's roar (a phase change): three throats, a fifth apart, falling.
+    d = 1.1
+    n = int(RATE * d)
+    roar = mix(*[lowpass(osc(slide(f, f * 0.7, d, 0.6), "saw" if i else "square", 0.3), 1400) * 0.4
+                 for i, f in enumerate([98.0, 147.0, 196.0])])
+    breath = lowpass(highpass(noise(d), 300), 2500) * 0.35
+    save("hydra_roar", mix(roar, breath) * env(n, 0.08, 1.0), 0.65)
+
 if __name__ == "__main__":
     main()
