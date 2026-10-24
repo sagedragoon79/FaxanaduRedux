@@ -276,6 +276,11 @@ func refresh_stats(p: Player) -> void:
 	p.mp_hit_mult = 1.5 if has_skill("siphon") else 1.0
 	p.gold_mult = 1.1 if has_skill("gold_sense") else 1.0
 	p.magnet_mult = 1.6 if has_skill("gold_sense") else 1.0
+	p.rising_cut = has_skill("rising_cut")
+	p.down_strike_mult = 1.5 if has_skill("mattock_mastery") else 1.0
+	p.spell_pierce = has_skill("deluge_pierce")
+	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
+	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
 	p.max_hp = int(data.max_hp)
 	p.max_mp = float(data.max_mp) + (20.0 if has_skill("clear_mind") else 0.0)
 	p.flask_max = int(data.flask_max) + (1 if has_skill("deep_pockets") else 0)

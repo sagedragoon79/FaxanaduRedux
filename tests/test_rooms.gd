@@ -164,6 +164,44 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 	GameState.delete_save(SAVE_SLOT)
 
 
+## Act II (the Branches): the Elven Stride, Conflate's charts, Pakukame's fall
+## and the skills bought with its point all come back after a save.
+func test_branches_state_survives_a_save_round_trip() -> void:
+	var w := make_world({}, "branches/windloft")
+	GameState.slot = SAVE_SLOT
+	await frames(2)
+	var stride_id := ""
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "stride":
+			stride_id = (c as ItemPickup).pickup_id
+	check(stride_id != "", "the Elven Stride waits in the Windloft")
+	GameState.collect(stride_id)
+	GameState.data.abilities["stride"] = true
+	GameState.set_flag("boss:pakukame")
+	GameState.data.charts["branches"] = true
+	GameState.meet_guru("branches/conflate", Vector2(400, 320))
+	GameState.data.skills = ["deep_pockets", "gold_sense", "quick_draught", "second_stride"]
+	check(GameState.save_game(), "the save writes")
+	GameState.new_game()
+	check(not GameState.has_ability("stride") and GameState.data.skills.is_empty(), "a new game forgets it all")
+	check(GameState.load_game(SAVE_SLOT), "and the save loads")
+	check(GameState.has_ability("stride") and GameState.flag("boss:pakukame"), "the Stride and Pakukame's fall survive")
+	check(GameState.has_chart("branches"), "the Branches chart survives")
+	check(GameState.data.gurus.has("branches/conflate"), "Conflate's guru is still met")
+	GameState.apply(w.player)
+	check(w.player.bonus_air_dashes == 1 and w.player.abilities.get("stride", false), "Second Stride is back on the player")
+	w._enter("branches/windloft")
+	await frames(2)
+	var left := false
+	for c in w.room.get_children():
+		left = left or (c is ItemPickup and (c as ItemPickup).kind == "stride")
+	check(not left, "the Stride doesn't come back to its plinth")
+	w._enter("branches/crown_leaf")
+	await frames(2)
+	check(_arena_quiet(w), "and Pakukame doesn't come back")
+	GameState.delete_save(SAVE_SLOT)
+
+
 func _arena_quiet(w: World) -> bool:
 	return runner.get_tree().get_first_node_in_group("boss") == null
 

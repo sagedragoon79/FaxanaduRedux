@@ -18,5 +18,6 @@ static func cast(id: String, caster: Player) -> Node2D:
 			var bolt := DelugeBolt.new()
 			bolt.damage = DATA[id]["damage"]
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
+			bolt.pierce = caster.spell_pierce
 			return bolt
 	return null
