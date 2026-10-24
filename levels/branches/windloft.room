@@ -1,8 +1,9 @@
 name: Windloft
 zone: branches
 map: 46, -10
-sign: 22, 19, THE WINDLOFT. Here the wardens learned to stride the gaps between the boughs.|Take it, elf of Eolis. The Bloom is waiting.
+sign: 22, 19, THE WINDLOFT. Here the wardens learned to stride the gaps between the boughs.|Take it, elf of Eolis. East, on the crown-leaf, the Bloom is waiting.
 door: 1, branches/north_bough, 1
+door: 2, branches/crown_leaf, 1
 ---
 ########################################
 ########################################
@@ -21,9 +22,9 @@ door: 1, branches/north_bough, 1
 #########.....................d........#
 #########..............................#
 #########...................#####......#
-#########...................#####......#
-#########...................#####......#
-#########.......S...........#####......#
+#########...................#####......2
+#########...................#####......2
+#########.......S...........#####......2
 ########################################
 ########################################
 ########################################

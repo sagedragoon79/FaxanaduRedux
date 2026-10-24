@@ -17,6 +17,7 @@ const BOSSES := {
 	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
 		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
 	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1, "music": "zorugeriru"},
+	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -109,6 +110,14 @@ func _start() -> void:
 			z.position = Vector2(w * 0.5, 9 * Room.TILE - 10)
 			boss = z
 			z.defeated.connect(_on_defeated)
+		"pakukame":
+			# The bloom is rooted in the middle of the crown-leaf.
+			var k := Pakukame.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			k.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			k.position = Vector2(w * 0.5, k.arena.end.y)
+			boss = k
+			k.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
@@ -143,7 +152,7 @@ func _on_defeated() -> void:
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	else:
-		GameState.banner.emit(reward.get("ring_name", "Victory"), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
+		GameState.banner.emit(reward.get("ring_name", reward.get("title", "Victory")), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
 	_open_timer = OPEN_DELAY
 	Music.play("", 2.5)
 	won.emit()

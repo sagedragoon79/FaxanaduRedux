@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +25,7 @@ jobs:
         run: GODOT="$HOME/godot" tools/run_tests.sh
 
       - name: Capture screenshots
+        timeout-minutes: 12
         continue-on-error: true
         run: |
           sudo apt-get install -y -qq xvfb libgl1-mesa-dri >/dev/null

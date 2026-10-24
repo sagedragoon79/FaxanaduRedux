@@ -218,6 +218,10 @@ func _process(_delta: float) -> void:
 			boss.hp = roundi(Zorugeriru.MAX_HP * float(_args["boss-hp"]))
 			boss._check_phase()
 			boss._check_phase()
+		elif boss is Pakukame and boss.state == "intro" and boss.hp == Pakukame.MAX_HP:
+			boss.hp = roundi(Pakukame.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= Pakukame.PHASES[0]:
+				boss.phase = 2
 	_check_pause()
 	_take_shot()
 

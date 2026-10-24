@@ -385,12 +385,17 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 
 ### 8.5 Pakukame, the Devouring Bloom (Branches, Conflate)
 - **Concept:** A carnivorous flower the size of a house, rooted in a leaf, with a turtle-shell bulb that snaps shut. Pakukame "chomps" (paku-paku).
-- **Arena:** a giant curved leaf over open sky, edged with bounce-pods.
+- **Arena:** the Crown-Leaf (47,-10), east of the Windloft: a giant leaf over open sky, the Bloom rooted in its middle, bounce-pods at both ends and high perches above them.
 - **Tests:** air dash through its vine lashes and over the gaps it bites in the leaf.
-- **Phase 1:** vine whips and seed spit; its mouth opens after each bite (weak point).
-- **Phase 2:** it bites chunks out of the arena; you dash across gaps and bounce on pods.
-- **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence).
-- **Reward:** skill point, large gold drop, and the wardens lift the rope on Conflate's north bough: the road on up to Daybreak opens. (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival, and the Bloom's shadow falls on the way onward instead.)
+- **Body:** only the head can be struck. The shell turns 70% of a blow; after a bite the jaws hang open on the leaf for 1.3 s (the weak point) and every blow lands in full. 260 HP.
+- **Phase 1:**
+  - Bite (within about seven tiles): the head rears back, jaws parting, for 0.55 s, then lunges down where you stand for 24. Parried, the jaws hang open 0.9 s longer.
+  - Vine whip (farther off): a vine coils at the root for 0.6 s, then lashes 170 px along the leaf on your side for 16, too long to parry. Jump it, or stride through it on the dash's invulnerability.
+  - Seed spit (alternating with the whip): the bulb swells for 0.5 s and spits three seeds in arcs, 12 each, parryable.
+- **Phase 2 (below half):** tells a fifth shorter (never under 0.35 s). Every other bite tears a four-tile chunk out of the leaf where it lands, up to three gaps with thorns below, never next to the root or the walls. You stride or bounce across, and strike the open jaws from the gap's edge.
+- **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence). Not built yet; a later pass adds it.
+- **Look:** code-drawn at 2x (a green stem, two great leaves at the root, a shelled bulb with gold-rimmed jaws, white teeth and a red maw, and a ring of pink petals). Its own theme, `pakukame`.
+- **Reward:** skill point, large gold drop, and the way east from the crown-leaf toward Daybreak (a later pass). (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival. Pass 52 put the arena past the Windloft, so the Bloom guards the way onward instead.)
 
 ### 8.6 Borabohra, the Storm Roc (Branches, Daybreak)
 - **Concept:** A titanic thunderbird nesting on the highest spire, its feathers made of rain clouds.
