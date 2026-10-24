@@ -152,6 +152,150 @@ func test_fourth_strike_combo_ends_heavy() -> void:
 	check(dummy.hp == TrainingDummy.HP - light * 3 - big, "Keen Edge damage on every hit (dummy hp %d)" % dummy.hp)
 
 
+## The Act II tier of each branch (design bible 9): each needs the node before it.
+func test_act_two_skills_chain_and_apply() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	GameState.data.skill_points = 20
+	check(Skills.status("rising_cut") == "locked" and Skills.status("deluge_pierce") == "locked"
+		and Skills.status("quick_draught") == "locked", "the new nodes wait on the old ones")
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "clear_mind", "siphon",
+			"deluge_pierce", "deep_pockets", "gold_sense", "quick_draught", "second_stride"]:
+		check(Skills.learn(id, p), "learned " + id)
+	check(p.rising_cut and p.spell_pierce, "Rising Cut and Deluge Pierce switch on")
+	check(is_equal_approx(p.down_strike_mult, 1.5), "Mattock Mastery: the down strike hits 50% harder")
+	check(is_equal_approx(p.drink_mult, 0.6), "Quick Draught: drinking takes 60% as long")
+	check(p.bonus_air_dashes == 1, "Second Stride: one more air dash")
+	check(int(GameState.data.skill_points) == 20 - 13, "the eleven nodes cost 13 points")
+	p.gold = 1000
+	check(Skills.respec(p) and not p.rising_cut and p.bonus_air_dashes == 0, "a respec takes them all back")
+
+
+func test_quick_draught_drinks_faster() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	GameState.data.skill_points = 3
+	for id: String in ["deep_pockets", "gold_sense", "quick_draught"]:
+		Skills.learn(id, p)
+	await frames(6)
+	p.hp = 1
+	p.input.heal_pressed = true
+	await frames(1)
+	var n := 0
+	while p.is_drinking and n < 120:
+		await frames(1)
+		n += 1
+	var expected := p.combat.drink_time * 0.6 * 60.0
+	check(p.hp > 1 and absf(n - expected) <= 2.0, "healed after %d frames (want about %d)" % [n, roundi(expected)])
+
+
+func test_second_stride_gives_two_air_dashes() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.abilities["stride"] = true
+	GameState.data.skill_points = 5
+	for id: String in ["deep_pockets", "gold_sense", "quick_draught", "second_stride"]:
+		Skills.learn(id, p)
+	p.teleport(cell_feet(12, 6))
+	await frames(2)
+	var dashes := 0
+	for i in 3:
+		p.input.dash_pressed = true
+		await frames(1)
+		if p.is_dashing:
+			dashes += 1
+		await frames(int(p.tuning.dash_time * 60.0) + 12)
+	check(dashes == 2, "two air dashes, then no more (%d)" % dashes)
+	# Landing refills both.
+	var n := 0
+	while not p.is_on_floor() and n < 240:
+		await frames(1)
+		n += 1
+	await frames(1)
+	check(p.air_dash_charges == 2, "landing refills both charges (%d)" % p.air_dash_charges)
+
+
+func test_rising_cut_launches_small_foes_only() -> void:
+	var w := make_world(_town({Vector2i(20, 19): "M", Vector2i(30, 19): "I"}), "test/town", cell_feet(8, 19))
+	var p := w.player
+	await frames(6)
+	var m: Monodron = _find(w.room, Monodron)
+	var dwarf: IronDwarf = _find(w.room, IronDwarf)
+	m.hp = 999
+	var nudge := await _rise_after_up_slash(p, m)
+	check(nudge < 30.0, "without Rising Cut an up-slash only nudges it (%.0f px)" % nudge)
+	await frames(40)
+	GameState.data.skill_points = 4
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut"]:
+		Skills.learn(id, p)
+	var rise := await _rise_after_up_slash(p, m)
+	check(rise > 30.0, "Rising Cut throws a Monodron up (%.0f px)" % rise)
+	check(not dwarf.launch(), "an Iron Dwarf is too heavy to lift")
+	var spitter := SapSpitter.new()
+	check(not spitter.launch(), "a rooted Sap Spitter stays put")
+	spitter.free()
+
+
+## Holds the foe just over the player's head, up-slashes, and returns how far
+## above that spot it flew.
+func _rise_after_up_slash(p: Player, foe: Enemy) -> float:
+	foe.global_position = p.global_position + Vector2(0, -Player.BODY_SIZE.y - 6)
+	foe.velocity = Vector2.ZERO
+	var y0 := foe.global_position.y
+	p.input.up = true
+	p.input.attack_pressed = true
+	var top := y0
+	for i in 30:
+		await frames(1)
+		top = minf(top, foe.global_position.y)
+	p.input.up = false
+	return y0 - top
+
+
+func test_mattock_mastery_hits_harder_downward() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.abilities["mattock"] = true
+	GameState.data.skill_points = 5
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery"]:
+		Skills.learn(id, p)
+	p.teleport(cell_feet(12, 10))
+	await frames(2)
+	p.input.down = true
+	p.input.attack_pressed = true
+	await frames(1)
+	p.input.down = false
+	check(p.attack_kind == "down", "a downward strike in the air")
+	check(p._swing_damage == roundi(p.slash_damage * 1.1 * 1.5), "Keen Edge and Mattock Mastery stack (%d)" % p._swing_damage)
+
+
+func test_deluge_pierce_strikes_every_foe_in_line() -> void:
+	var w := make_world(_town({Vector2i(14, 19): "E", Vector2i(18, 19): "E"}), "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.abilities["deluge"] = true
+	await frames(6)
+	var dummies: Array[TrainingDummy] = []
+	for c in w.room.get_children():
+		if c is TrainingDummy:
+			dummies.append(c)
+	var cast := func() -> void:
+		for d in dummies:
+			d.hp = TrainingDummy.HP
+		p.mp = p.max_mp
+		p.facing = 1
+		p.input.spell_pressed = true
+		await frames(40)
+	await cast.call()
+	var hurt := dummies.filter(func(d: TrainingDummy) -> bool: return d.hp < TrainingDummy.HP).size()
+	check(hurt == 1, "a plain bolt stops at the first dummy (%d hit)" % hurt)
+	GameState.data.skill_points = 3
+	for id: String in ["clear_mind", "siphon", "deluge_pierce"]:
+		Skills.learn(id, p)
+	await cast.call()
+	hurt = dummies.filter(func(d: TrainingDummy) -> bool: return d.hp < TrainingDummy.HP).size()
+	check(hurt == 2, "a piercing bolt strikes both (%d hit)" % hurt)
+
+
 func test_xp_raises_rank_and_gives_points() -> void:
 	make_world(_town(), "test/town")
 	GameState.add_xp(39)

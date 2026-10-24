@@ -11,6 +11,10 @@ const DARK := Color("2a5d9c")
 
 var damage := 12
 var velocity := Vector2.ZERO
+## Deluge Pierce (skill tree): pass through foes, striking each one once.
+var pierce := false
+
+var _struck := {}
 
 var _life := LIFE
 var _trail: Array[Vector2] = []
@@ -38,8 +42,14 @@ func _physics_process(delta: float) -> void:
 			return
 	for c: Variant in hits:
 		if c.is_in_group("enemy") and c.has_method("take_hit"):
+			if _struck.has(c.get_instance_id()):
+				continue
+			_struck[c.get_instance_id()] = true
 			c.take_hit(damage, Vector2(signf(velocity.x), 0))
 			Feel.hitstop(0.04)
+			if pierce:
+				Sfx.play("splash", 0.1, -6.0)
+				continue
 			_splash()
 			return
 		if c is TileMapLayer or c is StaticBody2D:

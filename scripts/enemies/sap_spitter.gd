@@ -18,6 +18,7 @@ var _cooldown := 0.6
 
 func _init() -> void:
 	max_hp = 20
+	launchable = false
 	gold_min = 2
 	gold_max = 5
 	xp = 6

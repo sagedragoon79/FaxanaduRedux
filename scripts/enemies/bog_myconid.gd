@@ -26,6 +26,7 @@ var light_radius := 0.0
 
 func _init() -> void:
 	max_hp = 26
+	launchable = false
 	gold_min = 3
 	gold_max = 7
 	xp = 8

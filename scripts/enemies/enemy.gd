@@ -31,6 +31,12 @@ var home := Vector2.ZERO
 var body_size := Vector2(18, 18)
 var body_centered := false
 var uses_gravity := true
+## Rising Cut launches: how hard, how long it hangs helpless, how big a foe it lifts.
+const LAUNCH_SPEED := 330.0
+const LAUNCH_STUN := 0.5
+const LAUNCH_MAX_HP := 40
+## False for foes rooted in place (Sap Spitter): Rising Cut can't lift them.
+var launchable := true
 var knockback := 140.0
 var hits_taken := 0
 
@@ -137,6 +143,17 @@ func _on_blocked(dir: Vector2) -> void:
 	var p := player()
 	if p:
 		p.velocity.x = -signf(dir.x) * 200.0
+
+
+## Rising Cut (skill tree): an up-slash throws a small foe into the air, helpless
+## until it lands. Bosses, fliers and anything heavier than LAUNCH_MAX_HP stay put.
+## Returns whether it went up.
+func launch() -> bool:
+	if dead or not launchable or not uses_gravity or max_hp > LAUNCH_MAX_HP or is_in_group("boss"):
+		return false
+	velocity = Vector2(0, -LAUNCH_SPEED)
+	_hitstun = LAUNCH_STUN
+	return true
 
 
 ## Called by the player on a successful parry.

@@ -452,6 +452,8 @@ Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900
 
 Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need the one before.
 
+Nodes are built tier by tier as the acts that need them arrive. In the game now: Blade 1-4, Arcana 1-3 and Wanderer 1-4 (`data/skills.json`). Rising Cut lifts any walking foe of 40 HP or less (`Enemy.LAUNCH_MAX_HP`) and leaves it helpless for 0.5 s; rooted foes (Sap Spitter, Bog Myconid), fliers and bosses stay put. Deluge Pierce strikes each foe in the bolt's path once. Second Stride does nothing until you own the Elven Stride.
+
 **Blade (melee)**
 1. Keen Edge: +10% melee damage [1]
 2. Fourth Strike: ground combo gains a 4th heavy hit [2]

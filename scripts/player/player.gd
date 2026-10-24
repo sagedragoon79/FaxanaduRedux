@@ -68,6 +68,12 @@ var mp_hit_mult := 1.0
 var gold_mult := 1.0
 var magnet_mult := 1.0
 var ground_combo_length := 3
+## Skill tree effects (design bible 9), set by GameState.refresh_stats.
+var rising_cut := false
+var down_strike_mult := 1.0
+var spell_pierce := false
+var drink_mult := 1.0
+var bonus_air_dashes := 0
 ## Set each frame by the World when the feet are in a sap pool.
 var in_sap := false
 var dead := false
@@ -178,7 +184,7 @@ func _ready() -> void:
 	add_child(scarf)
 	add_child(visual)
 
-	air_dash_charges = tuning.air_dash_charges
+	air_dash_charges = tuning.air_dash_charges + bonus_air_dashes
 	max_mp = max_mp
 	mp = max_mp
 	flask_max = combat.flask_charges
@@ -279,7 +285,7 @@ func _tick_timers(delta: float) -> void:
 
 func _refresh_air_moves() -> void:
 	has_double_jump = true
-	air_dash_charges = tuning.air_dash_charges
+	air_dash_charges = tuning.air_dash_charges + bonus_air_dashes
 
 
 # --- Walls ----------------------------------------------------------------------
@@ -508,6 +514,7 @@ func _try_attack(on_floor: bool) -> void:
 	if not on_floor and input.down and abilities.mattock:
 		attack_kind = "down"
 		combo_index = 0
+		_swing_damage = roundi(slash_damage * melee_mult * down_strike_mult)
 		_attack_timer = tuning.down_strike_active
 		_attack_cooldown = tuning.attack_cooldown
 	elif input.up:
@@ -572,6 +579,8 @@ func _process_attack_hits() -> void:
 			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_something = true
+			if attack_kind == "up" and rising_cut and collider.has_method("launch"):
+				collider.launch()
 			if collider.is_in_group("enemy"):
 				mp = minf(mp + combat.mp_per_melee_hit * mp_hit_mult, max_mp)
 		if attack_kind == "down" and collider.is_in_group("pogo") and not bounced:
@@ -713,7 +722,7 @@ func _update_drink(delta: float, on_floor: bool) -> void:
 			health_changed.emit(hp, max_hp)
 		return
 	if input.heal_pressed and flask_charges > 0 and on_floor and hp < max_hp and not is_attacking and not is_dashing:
-		_drink_timer = combat.drink_time
+		_drink_timer = combat.drink_time * drink_mult
 		Sfx.play("drink")
 
 
