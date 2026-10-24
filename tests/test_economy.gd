@@ -582,3 +582,28 @@ func test_map_pins_drop_and_lift_where_you_stand() -> void:
 		GameState.toggle_pin("eolis/market", Vector2(i * 100, 0))
 	check(GameState.toggle_pin("eolis/market", Vector2(5000, 0)) == "full", "pins are limited to %d" % GameState.MAX_PINS)
 	map.queue_free()
+
+
+## Conflate (pass 50): the elves' town on the leaf road has a Guru, a grocer
+## and a skywatcher who charts the Mist and the Branches.
+func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
+	var w := make_world({}, "branches/conflate")
+	await frames(2)
+	var ids: Array = []
+	for c in w.room.get_children():
+		if c is Npc:
+			ids.append((c as Npc).npc_id)
+	for id: String in ["guru", "conflate_grocer", "conflate_cartographer", "conflate_elder", "conflate_warden", "conflate_weaver"]:
+		check(ids.has(id), "%s lives in Conflate" % id)
+		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
+	for i in GameData.shop("conflate_items").stock.size():
+		var entry: Dictionary = GameData.shop("conflate_items").stock[i]
+		check(GameData.item(entry.item).has("name"), "the grocer's %s is a real item" % entry.item)
+	var p := w.player
+	p.gold = 2000
+	var stock: Array = GameData.shop("conflate_charts").stock
+	for i in stock.size():
+		check(Shop.buy("conflate_charts", i, p), "the skywatcher sells %s" % stock[i].item)
+	check(GameState.has_chart("mist") and GameState.has_chart("branches"), "and both zones are charted")
+	check(MapScreen.shown("mist/fog_cut", w.catalog["mist/fog_cut"], w.room.id) == "charted", "the Mist shows, dimmed")
+	check(p.gold == 2000 - 500 - 650, "for 1,150 gold (%d left)" % p.gold)

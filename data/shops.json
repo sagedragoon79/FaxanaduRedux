@@ -61,5 +61,24 @@
 		"stock": [
 			{"item": "chart_tower", "price": 400}
 		]
+	},
+	"conflate_items": {
+		"name": "Conflate Provisions",
+		"greeting": "Dew and fruit from the high boughs, and ointment the wardens swear by.",
+		"stock": [
+			{"item": "elixir", "price": 1500},
+			{"item": "ointment", "price": 300},
+			{"item": "jack_key", "price": 150},
+			{"item": "mana_dew", "price": 1000, "once": true},
+			{"item": "life_fruit", "price": 1600, "once": true}
+		]
+	},
+	"conflate_charts": {
+		"name": "Skywatch Charts",
+		"greeting": "From the boughs you can see half the Tree. I drew what I saw, and a bit of what the fog let me.",
+		"stock": [
+			{"item": "chart_mist", "price": 500},
+			{"item": "chart_branches", "price": 650}
+		]
 	}
 }

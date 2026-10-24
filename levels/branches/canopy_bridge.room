@@ -2,8 +2,9 @@ name: Canopy Bridge
 zone: branches
 map: 43, -8
 chest_gold: 380
-sign: 35, 19, CONFLATE. The town gate is barred from inside.|The elves have not opened it since the Bloom took root above.
+sign: 35, 19, CONFLATE. Knock, and say who you are.|The elves have kept this gate shut since the Bloom took root above.
 door: 1, branches/thicket_road, 2
+door: 2, branches/conflate, 1
 ---
 ########################################
 ########################################
@@ -22,9 +23,9 @@ door: 1, branches/thicket_road, 2
 #......................................#
 #......................................#
 #.............m.......@................#
-1........----------------------........#
-1......................................#
-1......................................#
+1........----------------------........2
+1......................................2
+1......................................2
 #########......................#########
 #########oooooooooooooooooooooo#########
 ########################################

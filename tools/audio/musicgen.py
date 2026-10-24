@@ -821,6 +821,27 @@ def amb_mine():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
 
 
+def track_conflate():
+    """Conflate, the elves' town in the boughs: a wistful harp waltz in E dorian,
+    rippling arpeggios over a soft pad, a breathy lead, no drums. Warm, but the
+    town is afraid of the Bloom above, so it leans minor."""
+    rng = np.random.default_rng(127)
+    s = Song(bpm=84, bars=16, beats=3)
+    root, scale = 52, SCALES["dorian"]
+    prog = [0, 3, 6, 0, 0, 3, 4, 6] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.1), b * 3, rng.uniform(-0.5, 0.5), 0.28)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 2.4), b * 3, 0, 0.5)
+        # The harp: up the chord and back, a note every half beat.
+        arp = [tones[0], tones[1], tones[2], tones[0] + 12, tones[2], tones[1]]
+        for k in range(6):
+            s.add(pluck(midi_hz(arp[k] + 12), s.beat * 0.9, bright=2200), b * 3 + k * 0.5, -0.3 + 0.12 * k, 0.3)
+    melody(s, rng, root, scale, prog, lead, start_bar=2, octave=24, pan=0.2, gain=0.4, density=0.45)
+    return s.render(reverb=0.55)
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -834,6 +855,7 @@ TRACKS = {
     "forepaw": track_forepaw,
     "mist": track_mist,
     "branches": track_branches,
+    "conflate": track_conflate,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
