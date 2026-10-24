@@ -473,5 +473,24 @@ def main():
     crack = highpass(noise(0.05), 1500) * env(int(RATE * 0.05), 0.0005, 2.0)
     save("spark_up", mix(crack, whine, hum), 0.55)
 
+    # A Storm Harpy rearing back: a raw, rising screech with a raspy edge.
+    d = 0.5
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    cry = osc(slide(900, 1700, d, 0.6) * (1 + 0.03 * np.sin(2 * np.pi * 31 * t)), "saw") * 0.35
+    rasp = highpass(lowpass(noise(d), 5000), 1800) * 0.4
+    save("screech", lowpass(mix(cry, rasp), 4200) * env(n, 0.06, 1.2), 0.45)
+
+    # Her feathers flung: three quick whips of air.
+    d = 0.35
+    n = int(RATE * d)
+    whip = np.zeros(n)
+    for k in range(3):
+        m = int(RATE * 0.09)
+        start = int(RATE * 0.06 * k)
+        part = highpass(lowpass(noise(0.09), slide(5000, 1500, 0.09, 0.5)), 900) * env(m, 0.002, 2.0)
+        whip[start:start + m] += part[: n - start]
+    save("feather", whip, 0.5)
+
 if __name__ == "__main__":
     main()
