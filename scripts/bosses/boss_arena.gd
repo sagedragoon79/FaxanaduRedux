@@ -16,7 +16,7 @@ const BOSSES := {
 	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
 	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
 		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
-	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1},
+	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1, "music": "zorugeriru"},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0

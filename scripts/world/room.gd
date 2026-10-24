@@ -357,6 +357,11 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"-":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
 			_one_way[cell] = true
+		"b":
+			# A drowned boardwalk: it rises once the Spring of Mist flows.
+			if GameState.flag(Fog.SPRING_FLAG):
+				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
+				_one_way[cell] = true
 		"%":
 			_place_secret(cell)
 		"~":

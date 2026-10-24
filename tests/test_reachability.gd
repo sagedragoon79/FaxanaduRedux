@@ -222,6 +222,21 @@ func test_checker_floats_the_basin_raft_only_with_deluge() -> void:
 	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Deluge the raft floats up to it")
 
 
+func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
+	# A spiked dip too wide to jump, a drowned boardwalk over it, a fruit past it.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 8, 20, ".", 22, 2)
+	put_tiles(rows, 8, 21, "^", 22, 1)
+	put_tiles(rows, 8, 20, "b", 22, 1)
+	put_tiles(rows, 34, 19, "L")
+	var texts := {"t/dip": room_text(["name: Dip"], rows)}
+	var dry := Reach.new(texts, {"glove": true})
+	check(not dry.touchable(dry.reachable(dry.spot_of("t/dip", "P")), "t/dip", 34, 19), "the drowned boardwalk is nothing to stand on")
+	var risen := Reach.new(texts, {"glove": true, "spring_mist": true})
+	check(risen.touchable(risen.reachable(risen.spot_of("t/dip", "P")), "t/dip", 34, 19), "once the spring flows it carries you across")
+
+
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
 	# A floor of spikes too wide to jump: only pogo bounces cross it.
 	var rows := grid_rows(40, 23)

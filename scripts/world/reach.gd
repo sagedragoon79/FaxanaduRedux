@@ -104,7 +104,9 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 
 func supported(room_id: String, x: int, y: int) -> bool:
-	return solid(room_id, x, y + 1) or ch(room_id, x, y + 1) == "-" or (ch(room_id, x, y + 1) == "=" and abilities.get("deluge", false))
+	var below := ch(room_id, x, y + 1)
+	return solid(room_id, x, y + 1) or below == "-" or (below == "=" and abilities.get("deluge", false)) \
+		or (below == "b" and abilities.get("spring_mist", false))
 
 
 func standable(room_id: String, x: int, y: int) -> bool:
