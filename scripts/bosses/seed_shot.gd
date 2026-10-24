@@ -13,6 +13,8 @@ var _t := 0.0
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	velocity.y += GRAVITY * delta
 	global_position += velocity * delta

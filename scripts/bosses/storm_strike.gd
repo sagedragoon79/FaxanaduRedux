@@ -30,6 +30,8 @@ func strike_rect() -> Rect2:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	if not _struck and _t >= TELL:
 		_strike()

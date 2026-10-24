@@ -263,7 +263,7 @@ static func open_options(tree: SceneTree, back: Callable) -> bool:
 const ACTION_NAMES := {
 	"move_left": "Move left", "move_right": "Move right", "move_up": "Look up / enter", "move_down": "Crouch / drop",
 	"jump": "Jump", "attack": "Attack", "dash": "Dash", "block": "Block / parry", "spell": "Cast spell", "spell_next": "Next spell",
-	"heal": "Drink potion", "map": "Map",
+	"heal": "Drink potion", "hourglass": "Hour Glass", "map": "Map",
 }
 
 

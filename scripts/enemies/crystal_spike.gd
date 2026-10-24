@@ -42,6 +42,8 @@ func hit_rect() -> Rect2:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	if _t >= delay + WARN + UP:
 		queue_free()

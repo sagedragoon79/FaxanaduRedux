@@ -281,3 +281,75 @@ func test_walking_into_a_bounce_pod_does_nothing_but_a_hop_launches() -> void:
 			launched = true
 			break
 	check(launched, "a hop on the spot lands on it and launches")
+
+
+## Bible A8: the Hour Glass stops time for 2.5 s and runs back for 8 s.
+func test_hour_glass_stops_time_then_runs_back() -> void:
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18), {"hourglass": true})
+	await frames(5)
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(TimeStop.active(), "turning the glass stops time")
+	await frames(int(TimeStop.DURATION * 60) + 4)
+	check(not TimeStop.active(), "for %.1f s" % TimeStop.DURATION)
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(not TimeStop.active(), "it can't be turned again while it runs back")
+	await frames(int((TimeStop.COOLDOWN - TimeStop.DURATION) * 60) + 4)
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(TimeStop.active(), "after %.0f s it can" % TimeStop.COOLDOWN)
+	p.abilities["hourglass"] = false
+	TimeStop.reset()
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(not TimeStop.active(), "without the glass nothing happens")
+
+
+func test_stopped_time_holds_projectiles_in_the_air() -> void:
+	var room := make_room(SHAFT)
+	make_player(room, Vector2i(2, 18), {"hourglass": true})
+	var f := HarpyFeather.new()
+	f.velocity = Vector2(200, 0)
+	room.add_child(f)
+	f.position = Vector2(120, 100)
+	TimeStop.start()
+	await frames(20)
+	check(f.position == Vector2(120, 100), "a feather hangs where it was (%s)" % f.position)
+	TimeStop.reset()
+	await frames(5)
+	check(f.position.x > 120.0, "and flies on when time runs again")
+
+
+## Bible 4.5: falling water beats you back down; frozen, it is a stair of footholds.
+func test_falling_water_beats_you_down_until_time_stops() -> void:
+	var rows := SHAFT.duplicate()
+	for y in range(4, 19):
+		var row: String = rows[y]
+		rows[y] = row.substr(0, 6) + "fff" + row.substr(9)
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(7, 18), {"hourglass": true, "boots": false, "glove": false})
+	await frames(5)
+	var falls: Array = room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
+	check(falls.size() == 1 and (falls[0] as Waterfall).cells == Rect2i(6, 4, 3, 15), "one waterfall over the column")
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var top := p.global_position.y
+	for i in 30:
+		await frames(1)
+		top = minf(top, p.global_position.y)
+	check(p.global_position.y - top < 12.0, "a jump in the falling water barely leaves the floor (rose %.0f)" % (p.global_position.y - top))
+	p.input.jump_held = false
+	await frames(10)
+	TimeStop.start()
+	await frames(2)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(40)
+	p.input.jump_held = false
+	await frames(10)
+	check(p.is_on_floor() and p.global_position.y < 19 * 16 - 8.0, "frozen, a foothold holds you up (y %.0f)" % p.global_position.y)
+	TimeStop.reset()
+	await frames(40)
+	check(absf(p.global_position.y - 19 * 16) < 2.0, "and when time runs again the water carries you down (y %.0f)" % p.global_position.y)

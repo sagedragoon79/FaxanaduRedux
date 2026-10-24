@@ -789,3 +789,18 @@ func test_every_sound_the_code_plays_exists() -> void:
 			missing.append("boss %s: music %s" % [id, track])
 	check(found > 50, "the scan finds the game's sounds (%d)" % found)
 	check(missing.is_empty(), "every sound and track exists: %s" % [missing])
+
+
+func test_the_hour_glass_waits_by_the_stopped_water_clock() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/drowned_nave")
+	await frames(2)
+	var glass: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "hourglass":
+			glass = c
+	check(glass != null, "the Hour Glass stands by the water-clock in the Drowned Nave")
+	check(w.room.doors[2].target == "dartmoor/waterfall_stair", "and the nave's west door leads to the Waterfall Stair")
+	w._enter("dartmoor/waterfall_stair")
+	await frames(2)
+	check(w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall).size() == 2, "where two falls bar the way up")

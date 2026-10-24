@@ -492,5 +492,20 @@ def main():
         whip[start:start + m] += part[: n - start]
     save("feather", whip, 0.5)
 
+    # The Hour Glass turned: a deep clock tick, a reversed shimmer drawn in, and
+    # a glassy chime that hangs while time holds.
+    d = 1.1
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    tick = highpass(noise(0.03), 1800) * env(int(RATE * 0.03), 0.0005, 2.5) * 1.2
+    swell = highpass(noise(0.45), 3000) * np.linspace(0, 1, int(RATE * 0.45)) ** 2 * 0.4
+    chime = (osc(np.full(n, 1318.5), "sine") + 0.5 * osc(np.full(n, 1975.5), "sine") + 0.3 * osc(np.full(n, 659.25), "sine")) * 0.3
+    chime = chime * np.clip((t - 0.42) * 30, 0, 1) * np.exp(-np.maximum(t - 0.42, 0) * 3.0)
+    out = np.zeros(n)
+    out[: len(tick)] += tick
+    out[: len(swell)] += swell
+    out += chime
+    save("hourglass", out, 0.5)
+
 if __name__ == "__main__":
     main()

@@ -28,6 +28,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	velocity.y += GRAVITY * delta
 	var next := global_position + velocity * delta

@@ -26,6 +26,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	if reflected and thrower != null and is_instance_valid(thrower) and not thrower.dead:
 		# It homes on the harpy that threw it.

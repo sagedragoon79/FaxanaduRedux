@@ -10,6 +10,7 @@ const KIND_BY_CHAR := {
 	"d": "stride",
 	"h": "thunder",
 	"n": "onyx",
+	"z": "hourglass",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
@@ -21,6 +22,7 @@ const INFO := {
 	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
 	"thunder": {"title": "Thunder", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
+	"hourglass": {"title": "Hour Glass", "text": "Press Hour Glass (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
 	"onyx": {"title": "Black Onyx", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
 	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
@@ -30,7 +32,7 @@ const INFO := {
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx"]
+const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -167,6 +169,24 @@ func _draw() -> void:
 				_hp(o, -10 + i * 3, 10 - i * 4, 2, 2, light)
 			_hp(o, -14, 12, 6, 4, Color("120f19"))
 			_hp(o, -13, 13, 4, 2, Color("ffd24a"))
+		"hourglass":
+			# A dwarf-made hour glass in a brass frame, the sand caught mid-fall.
+			var sand := fmod(_t * 0.4, 1.0)
+			_poly(o, [Vector2(-10, -16), Vector2(10, -16), Vector2(10, 16), Vector2(-10, 16)], Color("120f19"), 2.0)
+			_hp(o, -11, -17, 22, 4, Color("b8860b"))
+			_hp(o, -11, 13, 22, 4, Color("b8860b"))
+			_hp(o, -11, -17, 22, 1, Color("ffd24a"))
+			_hp(o, -10, -13, 2, 26, Color("8a6a20"))
+			_hp(o, 8, -13, 2, 26, Color("8a6a20"))
+			var glass := Color("d8ecf0")
+			_poly(o, [Vector2(-7, -13), Vector2(7, -13), Vector2(1, 0), Vector2(-1, 0)], Color(glass, 0.5))
+			_poly(o, [Vector2(-1, 0), Vector2(1, 0), Vector2(7, 13), Vector2(-7, 13)], Color(glass, 0.5))
+			var top_h := roundi(8.0 * (1.0 - sand))
+			_hp(o, -4 + (8 - top_h) / 2, -12 + (8 - top_h), top_h, top_h, c)
+			_hp(o, -1, -1, 2, 10, Color(c, 0.8))
+			var bot_h := roundi(8.0 * sand)
+			_hp(o, -5, 12 - bot_h, 10, bot_h, c)
+			_hp(o, -5, -11, 2, 4, Color("ffffff"))
 		"onyx":
 			# A black stone cut in facets, a violet light sliding over it as it turns.
 			var spin := sin(_t * 2.0)

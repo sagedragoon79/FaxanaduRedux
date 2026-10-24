@@ -24,6 +24,8 @@ func hit_rect() -> Rect2:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	var next := global_position + Vector2(direction * SPEED * delta, 0)
 	var ahead := next + Vector2(direction * SIZE.x * 0.5, -4)
