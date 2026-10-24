@@ -876,3 +876,5 @@ func test_the_gate_of_zenis_waits_for_four_rings() -> void:
 	check(gate.message().contains("2 of them"), "and it says how many")
 	GameState.data.rings = ["elf", "ruby", "dworf", "demon"]
 	check(gate.lit().size() == 4 and gate.message().contains("does not open"), "with all four it still waits on the shadow before it")
+	GameState.set_flag("boss:shadow_eura")
+	check(gate.message().contains("nothing watches"), "and once the shadow is broken it says so")
