@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false},
+		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false},
 		## The spell on the Spell button (an id in `Spells.ORDER`).
 		"spell": "deluge",
 		"max_hp": 100,

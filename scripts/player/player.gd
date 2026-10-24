@@ -39,7 +39,7 @@ const DOWN_STRIKE_SIZE := Vector2(28, 24)
 @export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true}
+var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true}
 
 var max_hp := 100
 var hp := 100

@@ -465,5 +465,13 @@ def main():
     snaps = highpass(noise(d), 2000) * (np.random.default_rng(58).random(n) < 0.05) * 1.5 * env(n, 0.02, 0.8)
     save("crackle", mix(rush, snaps), 0.5)
 
+    # A conduit waking: a rising electric whine that settles into a steady hum.
+    d = 0.8
+    n = int(RATE * d)
+    whine = lowpass(osc(slide(180, 720, d, 0.35), "saw"), 2400) * env(n, 0.01, 1.4) * 0.5
+    hum = osc(np.full(n, 120.0), "square", 0.3) * 0.2 * (1 - env(n, 0.3, 1.0))
+    crack = highpass(noise(0.05), 1500) * env(int(RATE * 0.05), 0.0005, 2.0)
+    save("spark_up", mix(crack, whine, hum), 0.55)
+
 if __name__ == "__main__":
     main()

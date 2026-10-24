@@ -424,3 +424,68 @@ func test_fire_burns_the_bramble_for_good() -> void:
 	var again := runner.get_tree().get_nodes_in_group("bramble")
 	var left := again.filter(func(b: BrambleWall) -> bool: return not b.burnt)
 	check(again.size() == 4 and left.is_empty(), "it doesn't grow back (%d unburnt)" % left.size())
+
+
+## Bible 4.1 (A6) and 4.5: the Thunder scroll grants the spell; a bolt cast near
+## a dead conduit leaps to it and wakes it, and when the room's last conduit
+## wakes its gate slides open for good.
+func test_thunder_wakes_the_conduit_and_opens_the_gate() -> void:
+	var w := make_world({}, "daybreak/spire_foot")
+	await frames(3)
+	var p := w.player
+	check(not p.abilities.thunder, "the run starts without Thunder")
+	var scroll: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "thunder":
+			scroll = c
+	check(scroll != null, "the scroll lies on the lectern")
+	if scroll == null:
+		return
+	p.teleport(scroll.global_position + Vector2(0, 12))
+	await frames(3)
+	check(p.abilities.thunder and GameState.data.abilities.thunder, "taking it grants Thunder")
+	check(p.equipped_spell == "thunder", "and, with no other spell, puts it on the Spell button")
+	var conduits := runner.get_tree().get_nodes_in_group("conductor")
+	var gates := runner.get_tree().get_nodes_in_group("conduit_gate")
+	check(conduits.size() == 1 and gates.size() == 3, "one conduit and a gate three tiles tall (%d, %d)" % [conduits.size(), gates.size()])
+	if conduits.is_empty() or gates.is_empty():
+		return
+	var conduit := conduits[0] as Conduit
+	# Cast from four tiles short of it: the bolt leaps the rest.
+	p.teleport(conduit.global_position + Vector2(-64, 0))
+	p.mp = p.max_mp
+	await frames(20)
+	p.facing = 1
+	p.input.spell_pressed = true
+	for i in 30:
+		await frames(1)
+		if conduit.powered:
+			break
+	check(conduit.powered, "the bolt leaps to the conduit and wakes it")
+	check(GameState.flag("conduits:daybreak/spire_foot"), "the room remembers")
+	await frames(60)
+	check(gates.all(func(g: ConduitGate) -> bool: return g.opened), "and the gate slides open")
+	w._enter("daybreak/spire_foot")
+	await frames(2)
+	var again := runner.get_tree().get_nodes_in_group("conduit_gate")
+	check(not again.is_empty() and again.all(func(g: ConduitGate) -> bool: return g.opened), "back in the room the gate stays open")
+	check((runner.get_tree().get_nodes_in_group("conductor")[0] as Conduit).powered, "and the conduit stays awake")
+
+
+## The Spire Stair's hatch needs both its conduits awake, not just one.
+func test_the_spire_hatch_needs_every_conduit() -> void:
+	var w := make_world({}, "daybreak/spire_stair")
+	await frames(3)
+	var conduits := runner.get_tree().get_nodes_in_group("conductor")
+	var gates := runner.get_tree().get_nodes_in_group("conduit_gate")
+	check(conduits.size() == 2 and gates.size() == 3, "two conduits and a hatch three tiles wide (%d, %d)" % [conduits.size(), gates.size()])
+	if conduits.size() < 2:
+		return
+	(conduits[0] as Conduit).power()
+	await frames(2)
+	check(gates.all(func(g: ConduitGate) -> bool: return not g.opened), "one conduit is not enough")
+	(conduits[1] as Conduit).power()
+	await frames(2)
+	check(gates.all(func(g: ConduitGate) -> bool: return g.opened), "the second opens the hatch")
+	check(GameState.flag("conduits:daybreak/spire_stair"), "for good")
+
