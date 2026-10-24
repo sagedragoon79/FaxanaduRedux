@@ -1024,6 +1024,39 @@ def track_dartmoor():
     return s.render(reverb=0.75)
 
 
+def track_grieve():
+    """King Grieve, the Drowned Sovereign: the Dartmoor dirge risen into a duel.
+    D phrygian at 112, a heavy march: a dwarf-choir pad and octave bass on every
+    beat, war drums and a tolling bell on the downbeat, crystal stabs on the
+    offbeats like shards bursting, and the bell lead carrying a grave, regal line."""
+    rng = np.random.default_rng(1871)
+    s = Song(bpm=112, bars=16)
+    root, scale = 50, SCALES["phrygian"]
+    prog = [0, 1, 0, 6, 5, 1, 6, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m - 12), s.bar * 1.05), low=1100), b * 4, rng.uniform(-0.5, 0.5), 0.3)
+        low = scale_note(root - 24, scale, deg)
+        for k in range(4):
+            s.add(bass(midi_hz(low + (12 if k == 2 else 0)), s.beat * 0.8), b * 4 + k, 0, 0.55)
+        s.add(fft_filter(bell(midi_hz(root - 12), s.beat * 2.5), low=1800), b * 4, -0.15, 0.32)
+        # War drums: a march, with a roll into every fourth bar.
+        s.add(kick(0.4), b * 4, 0, 1.0)
+        s.add(kick(0.3), b * 4 + 2, 0, 0.8)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.5)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.5)
+        if b % 4 == 3:
+            for k in range(8):
+                s.add(snare(rng) * (0.3 + 0.07 * k), b * 4 + 2 + k * 0.25, rng.uniform(-0.3, 0.3), 0.5)
+        # Shards: high crystal stabs on the offbeats.
+        for k in (0.5, 2.5):
+            m = tones[rng.integers(0, 3)] + 24
+            s.add(pluck(midi_hz(m), s.beat * 0.4, bright=5200), b * 4 + k, rng.uniform(-0.7, 0.7), 0.16)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=12, pan=0.2, gain=0.5, density=0.5)
+    return s.render(reverb=0.6)
+
+
 def amb_dartmoor():
     """A drowned hall: a deep, still drone of water in stone, drops falling into
     pools at uneven intervals, a slow trickle somewhere, and the faint glassy hum
@@ -1079,6 +1112,7 @@ TRACKS = {
     "conflate": track_conflate,
     "pakukame": track_pakukame,
     "borabohra": track_borabohra,
+    "grieve": track_grieve,
     "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,
     "daybreak_town": track_daybreak_town,

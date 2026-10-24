@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -1361,6 +1361,7 @@ func test_the_throne_hall_wakes_king_grieve() -> void:
 	var b: KingGrieve = setup[2]
 	check(arena.boss_id == "king_grieve" and b != null and b.state == "walk", "walking into the throne hall wakes the king")
 	check(b.phase == 1 and absf(b.global_position.y - b.floor_y()) < 2.0, "he comes down off his throne to duel on the floor")
+	check(Music.track == "grieve", "the fight plays his own theme (%s)" % Music.track)
 
 
 func test_king_grieve_telegraphs_are_fair() -> void:
@@ -1468,3 +1469,47 @@ func test_king_grieve_defeat_gives_the_demon_ring() -> void:
 	w._enter("dartmoor/throne_hall")
 	await frames(10)
 	check(get_tree_boss() == null, "and he never returns")
+
+
+func test_the_meteor_takes_king_grieve_below_a_fifth() -> void:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: KingGrieve = setup[2]
+	for t: float in [KingGrieve.CHOP_TELL, KingGrieve.SWEEP_TELL, KingGrieve.LEAP_TELL, KingGrieve.BURST_TELL]:
+		b.phase = 3
+		check(b.tell(t) >= Enemy.MIN_TELEGRAPH, "frantic, tell %.2f s is still at least %.2f s" % [b.tell(t), Enemy.MIN_TELEGRAPH])
+	b.phase = 1
+	w.player.teleport(cell_feet(8, 19))
+	b.hp = roundi(b.max_hp * 0.5) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	await _until(func() -> bool: return b.state == "ward", 90)
+	b.hp = roundi(b.max_hp * KingGrieve.PHASES[1]) + 2
+	b.take_hit(10, Vector2(0, 1))
+	check(b.phase == 3 and b.state == "possessed", "below a fifth the meteor takes him (%d, %s)" % [b.phase, b.state])
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.hp == hp0, "untouchable while it does")
+	var down := await _until(func() -> bool: return b.state == "walk", 150)
+	check(down and absf(b.global_position.y - b.floor_y()) < 2.0 and b.global_position.x < b.dais.position.x, "then he comes down off the throne for good")
+	hp0 = b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 10, "cracked open, he turns no blow (%d)" % (hp0 - b.hp))
+	# His combos now end with the axe driven into the floor and a line of spikes.
+	w.player.teleport(Vector2(b.global_position.x - 50.0, b.floor_y()))
+	var spikes := await _until(func() -> bool: return _count(w, CrystalSpike) > 0, 240)
+	check(spikes, "his combo ends in a burst of crystal spikes toward you (%d)" % _count(w, CrystalSpike))
+
+
+func test_the_water_clock_drains_with_the_king() -> void:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: KingGrieve = setup[2]
+	var clocks: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is WaterClock)
+	check(clocks.size() == 1, "the throne hall has its water-clock")
+	var clock: WaterClock = clocks[0]
+	check(clock.level > 0.99, "full at the start of the fight")
+	b.hp = roundi(b.max_hp * 0.6)
+	await frames(120)
+	check(clock.level < 0.95 and clock.level >= 0.6 - 0.01, "it drains as he weakens (%.2f)" % clock.level)
+	GameState.set_flag("boss:king_grieve")
+	check(is_equal_approx(clock.target_level(), 0.0), "and stands empty once he is beaten")
