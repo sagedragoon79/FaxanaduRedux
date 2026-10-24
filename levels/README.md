@@ -66,6 +66,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `G` | Climbing Glove (ability pickup) |
 | `X` | Wing Boots (ability pickup: double jump; glows in the fog) |
 | `O` | Deluge scroll (spell pickup; glows in the fog) |
+| `d` | Elven Stride (a warden's feather; grants the dash) |
 | `L` | Life Fruit (+1 mask) |
 | `W` | Mana Dew (+10 max MP) |
 | `F` | Potion Shard (3 = +1 flask charge) |

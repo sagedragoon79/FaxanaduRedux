@@ -10,7 +10,8 @@ extends RefCounted
 ## off ledges (with some drift), jumps within the safe envelope, doors, with
 ## the Climbing Glove climbing any wall face, and with the Mattock pogo bounces
 ## off spikes and thorn bulbs (see drop()), and with the Wing Boots a higher,
-## longer jump (BOOT_JUMP), and from a bounce-pod a much higher one (POD_JUMP). Numbers are a little under
+## longer jump (BOOT_JUMP), and from a bounce-pod a much higher one (POD_JUMP), and with the Elven
+## Stride an air dash at the top of each (STRIDE_REACH). Numbers are a little under
 ## the movement spec so a route that passes here is comfortable in play.
 
 ## Safe jump envelope in tiles: rise -> max horizontal distance.
@@ -20,6 +21,8 @@ const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
 const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
 ## Off a bounce-pod (legend `@`): pod_bounce 600 rises about nine tiles in play.
 const POD_JUMP := {0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 4, 7: 3}
+## With the Elven Stride: dash_speed 380 for 0.15 s is about 3.5 tiles, held level.
+const STRIDE_REACH := 3
 const DROP_DRIFT := 4
 const RISE_FROM_FLOOR_DOOR := 4
 const SOLID := "#CJu"
@@ -175,12 +178,23 @@ func neighbors(k: String) -> Array:
 	return out
 
 
+## With the Elven Stride, an air dash at the top of any jump carries the body
+## STRIDE_REACH tiles further across.
+static func _strided(envelope: Dictionary) -> Dictionary:
+	var out := {}
+	for rise: int in envelope:
+		out[rise] = int(envelope[rise]) + STRIDE_REACH
+	return out
+
+
 ## A jump from (x, y): rise straight up to the target's height (head room in
 ## column x), then travel across with the body clear, then land.
 func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
 	var envelope: Dictionary = BOOT_JUMP if abilities.get("boots", false) else JUMP
 	if ch(r, x, y) == "@":
 		envelope = POD_JUMP
+	if abilities.get("stride", false):
+		envelope = _strided(envelope)
 	for rise: int in envelope:
 		var top := y - rise
 		var ok := true

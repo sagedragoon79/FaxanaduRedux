@@ -7,6 +7,7 @@ const KIND_BY_CHAR := {
 	"G": "glove",
 	"X": "boots",
 	"O": "deluge",
+	"d": "stride",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
@@ -16,12 +17,16 @@ const KIND_BY_CHAR := {
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
 	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
 	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
 }
+
+## Kinds that grant an ability rather than a stat.
+const ABILITIES := ["glove", "boots", "deluge", "stride"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -33,7 +38,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	z_index = 1
-	if kind == "glove" or kind == "boots" or kind == "deluge":
+	if kind in ABILITIES:
 		add_to_group("light")
 
 
@@ -49,7 +54,7 @@ func _physics_process(delta: float) -> void:
 func grant(p: Player) -> void:
 	var info: Dictionary = INFO[kind]
 	var subtitle: String = info.text
-	if kind == "glove" or kind == "boots" or kind == "deluge":
+	if kind in ABILITIES:
 		p.abilities[kind] = true
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
@@ -130,6 +135,22 @@ func _draw() -> void:
 			_hp(o, -8, -16, 12, 4, Color("120f19"))
 			_hp(o, -7, -15, 10, 2, Color("ffd24a"))
 			_hp(o, -7, 10, 20, 3, Color("3a2a1a"))
+		"stride":
+			# An elven warden's feather, leaf-green, streaming wind lines behind it
+			# as if it were already moving.
+			var drift := roundf(sin(_t * 5.0) * 2.0)
+			for i in 3:
+				var k := 0.4 + 0.3 * sin(_t * 6.0 + i)
+				_hp(o, -20 - i * 2 + drift, -6 + i * 6, 8 + i * 2, 2, Color(light, k))
+			var vane := [Vector2(-10, 10), Vector2(-6, -2), Vector2(2, -12), Vector2(12, -16), Vector2(8, -6), Vector2(0, 4), Vector2(-8, 12)]
+			_poly(o, vane, Color("120f19"), 2.0)
+			_poly(o, vane, dark)
+			_poly(o + Vector2(-0.5, -0.5), [Vector2(-8, 8), Vector2(-5, -2), Vector2(2, -11), Vector2(10, -15), Vector2(6, -6), Vector2(-1, 3)], c)
+			# The quill down the middle, and a gold band at its root.
+			for i in 7:
+				_hp(o, -10 + i * 3, 10 - i * 4, 2, 2, light)
+			_hp(o, -14, 12, 6, 4, Color("120f19"))
+			_hp(o, -13, 13, 4, 2, Color("ffd24a"))
 		"life_fruit":
 			# A red fruit of the Tree: shaded crescent, highlight, stem and leaf.
 			var f := o + Vector2(0, 1)

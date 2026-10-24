@@ -241,6 +241,38 @@ func test_wing_boots_grant_the_double_jump() -> void:
 	check(not again, "they don't come back")
 
 
+## Bible 4.1 (A5): the Elven Stride in the Windloft grants the dash, which
+## does nothing before it, and the game remembers it.
+func test_elven_stride_grants_the_dash() -> void:
+	var w := make_world({}, "branches/windloft")
+	await frames(3)
+	var p := w.player
+	check(not p.abilities.stride, "the run starts without the Elven Stride")
+	p.input.dash_pressed = true
+	await frames(1)
+	check(not p.is_dashing, "Dash does nothing without it")
+	var feather: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "stride":
+			feather = c
+	check(feather != null, "the Stride rests on the plinth")
+	if feather == null:
+		return
+	p.teleport(feather.global_position + Vector2(0, 12))
+	await frames(3)
+	check(p.abilities.stride and GameState.data.abilities.stride, "taking it grants the dash and the save remembers it")
+	await frames(10)
+	p.input.dash_pressed = true
+	await frames(1)
+	check(p.is_dashing, "and now Dash strides")
+	w._enter("branches/windloft")
+	await frames(2)
+	var again := false
+	for c in w.room.get_children():
+		again = again or (c is ItemPickup and (c as ItemPickup).kind == "stride")
+	check(not again, "it doesn't come back")
+
+
 ## Bible 4.1 (A4) and 4.5: the Deluge scroll grants the spell, the fire seal
 ## burns whoever touches it, and one Deluge bolt douses the whole seal for good.
 func test_deluge_douses_the_fire_seal_for_good() -> void:

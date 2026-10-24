@@ -443,7 +443,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "L", "W", "F", "*":
+		"G", "X", "O", "d", "L", "W", "F", "*":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
