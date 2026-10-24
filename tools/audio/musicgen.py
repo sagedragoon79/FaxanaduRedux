@@ -995,6 +995,74 @@ def track_borabohra():
     return s.render(reverb=0.4)
 
 
+def track_dartmoor():
+    """Dartmoor: the drowned dwarf capital. A slow dirge in D phrygian at 70, deep
+    hall pads and an octave bass like a dwarf choir under water, a low bell tolling
+    each bar, and crystal chimes ringing high and far apart, as if the meteor's
+    shards were humming in the dark."""
+    rng = np.random.default_rng(163)
+    s = Song(bpm=70, bars=16)
+    root, scale = 50, SCALES["phrygian"]
+    prog = [0, 1, 0, 6, 5, 1, 0, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m - 12), s.bar * 1.1), low=900), b * 4, rng.uniform(-0.5, 0.5), 0.42)
+        low = scale_note(root - 24, scale, deg)
+        s.add(bass(midi_hz(low), s.beat * 3.6), b * 4, 0, 0.6)
+        s.add(bass(midi_hz(low + 12), s.beat * 1.6), b * 4 + 2, 0, 0.3)
+        # The toll: a low bell on the downbeat.
+        s.add(fft_filter(bell(midi_hz(root - 12), s.beat * 3.0), low=1800), b * 4, -0.15, 0.3)
+        # Crystal chimes, high and sparse.
+        for k in range(rng.integers(0, 3)):
+            m = tones[rng.integers(0, 3)] + 24
+            s.add(pluck(midi_hz(m), s.beat * 1.2, bright=5200), b * 4 + rng.integers(0, 8) * 0.5 + 0.25,
+                  rng.uniform(-0.8, 0.8), 0.12)
+        if b % 2 == 1:
+            s.add(kick(0.5) * 0.4, b * 4 + 3, 0, 0.8)
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=12, pan=0.2, gain=0.42, density=0.3)
+    return s.render(reverb=0.75)
+
+
+def amb_dartmoor():
+    """A drowned hall: a deep, still drone of water in stone, drops falling into
+    pools at uneven intervals, a slow trickle somewhere, and the faint glassy hum
+    of meteor crystal rising and falling."""
+    rng = np.random.default_rng(167)
+    dur = 26.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    drone = fft_filter(rng.uniform(-1, 1, m), low=220, high=40) * 1.8
+    out[:, 0] += drone
+    out[:, 1] += np.roll(drone, RATE // 3)
+    trickle = fft_filter(rng.uniform(-1, 1, m), low=5000, high=1500) * 0.12 * (0.6 + 0.4 * np.sin(2 * np.pi * t / 5.3))
+    out[:, 0] += trickle * 0.4
+    out[:, 1] += trickle
+    hum = (np.sin(2 * np.pi * 880 * t) + 0.5 * np.sin(2 * np.pi * 1318.5 * t)) * 0.025 * (0.5 + 0.5 * np.sin(2 * np.pi * t / 11.0))
+    out[:, 0] += hum
+    out[:, 1] += hum
+    # Drops: a short pitched plink and its echo.
+    pos = 0.6
+    while pos < dur:
+        i = int(pos * RATE)
+        mm = int(0.5 * RATE)
+        tt = np.arange(mm) / RATE
+        f = rng.uniform(900, 1700)
+        drop = np.sin(2 * np.pi * f * tt * (1 + tt * 2.5)) * np.exp(-tt * 22) * rng.uniform(0.25, 0.5)
+        pan = rng.uniform(-0.8, 0.8)
+        for d, g in ((0, 1.0), (int(0.23 * RATE), 0.3)):
+            j = i + d
+            if j + mm < m:
+                out[j:j + mm, 0] += drop * g * (1 - pan) / 2
+                out[j:j + mm, 1] += drop * g * (1 + pan) / 2
+        pos += rng.uniform(0.7, 2.6)
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -1011,6 +1079,7 @@ TRACKS = {
     "conflate": track_conflate,
     "pakukame": track_pakukame,
     "borabohra": track_borabohra,
+    "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,
     "daybreak_town": track_daybreak_town,
     "amb_trunk": amb_trunk,
@@ -1021,6 +1090,7 @@ TRACKS = {
     "amb_mist": amb_mist,
     "amb_branches": amb_branches,
     "amb_daybreak": amb_daybreak,
+    "amb_dartmoor": amb_dartmoor,
 }
 
 

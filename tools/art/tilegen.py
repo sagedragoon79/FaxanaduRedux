@@ -139,6 +139,50 @@ def paint_shrine(img, ox, oy, seed, ramp):
                 x += 1 if hash2(seed, step, 34 + k) > 0.6 else (-1 if hash2(seed, step, 35 + k) > 0.7 else 0)
 
 
+def paint_drowned(img, ox, oy, seed, ramp):
+    """Dartmoor's drowned masonry: squat dwarven blocks, dark and water-worn,
+    a teal tide line where the flood stood, and veins of magenta meteor crystal
+    forcing their way through the joints of some blocks."""
+    bw, bh = 16 * D, 8 * D
+    for y in range(T):
+        row = y // bh
+        for x in range(T):
+            sx = x + (row % 2) * (bw // 2)
+            bx, ly, lx = sx // bw, y % bh, sx % bw
+            shade = 3 if hash2(bx, row, seed) > 0.45 else 2
+            if ly == bh - 1 or lx == 0:
+                col = "night-1"
+            elif ly == 0 or lx == 1:
+                col = f"{ramp}-{shade + 1}"
+            elif ly >= bh - 2:
+                col = f"{ramp}-{shade - 1}"
+            else:
+                col = f"{ramp}-{shade}"
+                if hash2(x // 2, y // 2, seed + 5) > 0.88:
+                    col = f"{ramp}-{shade - 1}"
+            # The tide line: a band of teal stain across the tile.
+            if 11 * D <= y < 12 * D and hash2(x // 3, 0, seed + 9) > 0.2:
+                col = "sky-2"
+            elif 12 * D <= y < 13 * D and hash2(x // 2, 1, seed + 9) > 0.6:
+                col = "sky-1"
+            img.putpixel((ox + x, oy + y), c(col))
+
+
+def crystal_vein(img, ox, oy, seed):
+    """Dartmoor: a vein of meteor crystal, a jagged run of shards up through the
+    joints. Only on tiles with an open face, so the solid fill doesn't repeat it."""
+    if hash2(seed, 3, 41) <= 0.6:
+        return
+    x, y = int(hash2(seed, 1, 42) * (T - 10)) + 5, T - 2
+    for step in range(int(T * 0.6)):
+        for k in range(-1, 2):
+            if 0 <= x + k < T and 0 <= y < T:
+                img.putpixel((ox + x + k, oy + y), c("crystal-4" if k else "crystal-6"))
+        y -= 1
+        x += 1 if hash2(seed, step, 43) > 0.65 else (-1 if hash2(seed, step, 44) > 0.65 else 0)
+        x = max(1, min(T - 2, x))
+
+
 def paint_wood(img, ox, oy, seed, ramp):
     """Living wood: long vertical grain in fine strands, low contrast, the odd knot."""
     for x in range(T):
@@ -311,6 +355,8 @@ ZONES = {
              "under": "night-1", "outline": "night-0"},
     "branches": {"painter": paint_bough, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": None, "cap_top": 6,
                  "under": "bark-2", "outline": "night-0"},
+    "dartmoor": {"painter": paint_drowned, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "crystal-6", "cap_top": 4,
+                 "under": "night-1", "outline": "night-0"},
     "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
                  "under": "night-1", "outline": "night-0"},
 }
@@ -319,6 +365,8 @@ ZONES = {
 def paint_tile(img, ox, oy, mask, zone, seed):
     z = ZONES[zone]
     z["painter"](img, ox, oy, seed, z["ramp"])
+    if zone == "dartmoor" and (mask & (N | E | S | W)) != (N | E | S | W):
+        crystal_vein(img, ox, oy, seed)
     ramp = z["ramp"]
     out = c(z["outline"])
     # Sides: a dark outline one world pixel thick, then a soft shade.
@@ -1021,6 +1069,88 @@ def daybreak_mid():
     return img
 
 
+def dartmoor_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
+    gradient(img, "night-0", "sky-1")
+    rng = random.Random(61)
+    # The drowned capital's great hall: rows of colossal pillars and arches
+    # sunk to their knees in dark water, crystal light glowing between them.
+    water = int(BG_H * 0.72)
+    for i in range(7):
+        x0 = int((i + rng.uniform(0.0, 0.4)) * BG_W / 7)
+        w = rng.randrange(24, 40) * D
+        for y in range(BG_H):
+            for dx in range(w):
+                col = "night-1" if dx > w * 0.3 else "stone-1"
+                if y % (18 * D) == 0:
+                    col = "night-0"
+                put(img, x0 + dx, y, c(col))
+        # An arch springing to the next pillar.
+        span = BG_W // 7
+        for dx in range(span):
+            k = dx / span
+            top = int(60 * D + math.sin(k * math.pi) * -40 * D) + 90 * D
+            for y in range(top - 10 * D, top):
+                put(img, x0 + w + dx, y, c("night-1"))
+    # Crystal clusters on the far walls, glowing magenta.
+    for _ in range(9):
+        cx, cy = rng.randrange(BG_W), rng.randrange(80, water // D - 20) * D
+        for k in range(rng.randint(3, 6)):
+            h = rng.randrange(10, 34) * D
+            ang = rng.uniform(-0.7, 0.7)
+            for t in range(h):
+                wdt = max(D, int((h - t) / h * 9 * D))
+                x = cx + int(math.sin(ang) * t) - wdt // 2
+                y = cy - int(math.cos(ang) * t)
+                for dx in range(wdt):
+                    put(img, x + dx, y, c("crystal-5" if dx < D else ("crystal-2" if dx >= wdt - D else "crystal-3")))
+    # Dark water with glints and the crystals' smeared reflections.
+    for y in range(water, BG_H):
+        for x in range(BG_W):
+            col = "night-0" if (x // (6 * D) + y // D) % 9 else "sky-1"
+            put(img, x, y, c(col))
+    for _ in range(220):
+        x, y = rng.randrange(BG_W), rng.randrange(water, BG_H)
+        put(img, x, y, c(rng.choice(["sky-3", "crystal-3", "sky-2"])))
+    return img
+
+
+def dartmoor_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(62)
+    # Broken colonnades and toppled statues of dwarf kings, nearer and darker,
+    # with crystal spears grown through them.
+    for i in range(6):
+        x0 = int((i + rng.uniform(0.1, 0.7)) * BG_W / 6)
+        w = rng.randrange(14, 24) * D
+        top = rng.randrange(120, 300) * D
+        for y in range(top, BG_H):
+            for dx in range(w):
+                if y < top + 8 * D and (dx // (4 * D)) % 2 and rng.random() > 0.3:
+                    continue  # a broken top
+                col = "stone-1" if dx < w * 0.25 else "night-1"
+                if (y - top) % (24 * D) < D:
+                    col = "night-0"
+                put(img, x0 + dx, y, c(col))
+        # A crystal spear through the column.
+        sx, sy = x0 + w // 2, top + rng.randrange(20, 80) * D
+        ln = rng.randrange(30, 70) * D
+        ang = rng.choice([-1, 1]) * rng.uniform(0.4, 0.9)
+        for t in range(ln):
+            x = sx + int(math.sin(ang) * t)
+            y = sy - int(math.cos(ang) * t)
+            wdt = max(D, int((ln - t) / ln * 7 * D))
+            for k in range(wdt):
+                put(img, x + k - wdt // 2, y, c("crystal-6" if k < D else ("crystal-2" if k >= wdt - D else "crystal-4")))
+    # Hanging chains from the vault.
+    for _ in range(8):
+        x = rng.randrange(BG_W)
+        for y in range(0, rng.randrange(60, 180) * D):
+            if (y // (3 * D)) % 2 == 0:
+                put(img, x, y, c("night-1"))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -1034,6 +1164,7 @@ BACKGROUNDS = {
     "mist": (mist_far, mist_mid),
     "branches": (branches_far, branches_mid),
     "daybreak": (daybreak_far, daybreak_mid),
+    "dartmoor": (dartmoor_far, dartmoor_mid),
     "gym": (gym_far, None),
 }
 

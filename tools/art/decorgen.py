@@ -824,6 +824,116 @@ def daybreak_wall_ledge(rng):
     return c
 
 
+def dartmoor_shards(rng):
+    """Meteor crystal shards pushing up through the floor, lit from within."""
+    c = Cell()
+    base = rng.randint(8, 22)
+    for _ in range(rng.randint(2, 4)):
+        x = base + rng.randint(-6, 6)
+        h = rng.randint(6, 18)
+        lean = rng.uniform(-0.5, 0.5)
+        for k in range(h):
+            w = max(1, (h - k) * 4 // h)
+            xx = x + int(lean * k)
+            c.rect(xx - w // 2, H - 1 - k, w, 1, "crystal-4" if k < h - 3 else "crystal-6")
+            c.px(xx - w // 2, H - 1 - k, "crystal-2")
+    c.outline("night-0")
+    c.add_glow(base, H - 8)
+    return c
+
+
+def dartmoor_rubble(rng):
+    """Dark dwarf masonry fallen in the flood, slick with teal weed."""
+    c = Cell()
+    for _ in range(rng.randint(2, 3)):
+        w, h = rng.randint(6, 10), rng.randint(3, 6)
+        x = rng.randint(2, 30 - w)
+        c.rect(x, H - h, w, h, "stone-2")
+        c.rect(x, H - h, w, 1, "stone-4")
+        c.rect(x + w - 1, H - h + 1, 1, h - 1, "night-1")
+        for k in range(0, w, 2):
+            c.px(x + k, H - h - 1, "sky-3")
+    c.outline("night-0")
+    return c
+
+
+def dartmoor_helm(rng):
+    """A drowned dwarf helm, horned and rusted, half sunk in silt."""
+    c = Cell()
+    x = rng.randint(10, 18)
+    c.disc(x + 4, H - 3, 5, 4, "bark-2")
+    c.rect(x - 1, H - 3, 11, 3, "stone-1")
+    c.rect(x, H - 6, 9, 1, "bark-4")
+    c.line([(x, H - 5), (x - 3, H - 9), (x - 3, H - 11)], "stone-5")
+    c.line([(x + 8, H - 5), (x + 11, H - 9), (x + 11, H - 11)], "stone-5")
+    c.px(x + 4, H - 4, "night-0")
+    c.outline("night-0")
+    return c
+
+
+def dartmoor_weed(rng):
+    """Teal waterweed left standing when the flood went down."""
+    c = Cell()
+    for _ in range(rng.randint(5, 9)):
+        blade(c, rng.randint(2, 28), rng.randint(5, 11), rng.uniform(-1.5, 1.5), "sky-2", "sky-3", "sky-4")
+    return c
+
+
+def dartmoor_stalactites(rng):
+    """Crystal stalactites hanging from the vault, dripping."""
+    c = Cell()
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(5, 26)
+        n = rng.randint(6, 16)
+        for y in range(n):
+            w = max(1, (n - y) * 3 // n)
+            c.rect(x - w // 2, y, w, 1, "crystal-3" if y < n - 2 else "crystal-5")
+        if rng.random() > 0.5:
+            c.px(x, n + 3, "sky-5")
+    c.outline("night-0")
+    if rng.random() > 0.4:
+        c.add_glow(16, 8)
+    return c
+
+
+def dartmoor_drip(rng):
+    """Water seeping from the vault joints, a bead at each tip."""
+    c = Cell()
+    for k in range(rng.randint(2, 3)):
+        x = 6 + k * 9 + rng.randint(-2, 2)
+        n = rng.randint(6, 18)
+        c.line([(x, 0), (x, n)], "sky-2")
+        c.px(x, n + 2, "sky-5")
+    return c
+
+
+def dartmoor_wall_crystal(rng):
+    """A crystal cluster grown out of the wall, glowing."""
+    c = Cell()
+    y = rng.randint(22, 42)
+    for k in range(3):
+        n = 6 + k * 2
+        for t in range(n):
+            c.px(t, y - k * 3 + t // 2, "crystal-4" if t < n - 2 else "crystal-6")
+            c.px(t, y - k * 3 + t // 2 + 1, "crystal-2")
+    c.outline("night-0")
+    c.add_glow(5, y)
+    return c
+
+
+def dartmoor_wall_brazier(rng):
+    """A dwarf wall brazier, drowned and dark, weed hanging from its lip."""
+    c = Cell()
+    y = rng.randint(24, 42)
+    c.rect(0, y, 3, 2, "stone-3")
+    c.rect(2, y - 4, 8, 4, "bark-2")
+    c.rect(2, y - 4, 8, 1, "bark-4")
+    for x in range(3, 10, 2):
+        c.px(x, y + rng.randint(0, 3), "sky-3")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -856,6 +966,11 @@ ZONES = {
         "floor": [daybreak_grass, daybreak_rubble, daybreak_grass, daybreak_pillar, daybreak_conduit, daybreak_grass],
         "ceiling": [daybreak_roots, daybreak_crystals, daybreak_roots, daybreak_crystals],
         "wall": [daybreak_wall_rune, daybreak_wall_ledge],
+    },
+    "dartmoor": {
+        "floor": [dartmoor_weed, dartmoor_rubble, dartmoor_shards, dartmoor_weed, dartmoor_helm, dartmoor_weed],
+        "ceiling": [dartmoor_drip, dartmoor_stalactites, eolis_chain, dartmoor_stalactites],
+        "wall": [dartmoor_wall_crystal, dartmoor_wall_brazier],
     },
 }
 

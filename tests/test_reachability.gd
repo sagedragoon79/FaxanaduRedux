@@ -24,12 +24,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
 const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
-const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring"]
+const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall"]
 
 
 func _texts() -> Dictionary:
@@ -399,13 +399,20 @@ func test_fire_and_thunder_open_the_daybreak_gates() -> void:
 	# Bible 4.5: bramble holds until Fire, conduit gates until Thunder. The
 	# without-spell side is checked in the Stride test's flood.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
-		"fire": true, "thunder": true}
+		"fire": true, "thunder": true, "sky_key": true}
 	var reach := Reach.new(_texts(), set, true)
 	var lit := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	for s: Array in FIRE_SECRETS:
 		check(reach.touchable(lit, s[0], s[1], s[2]), "%s is reachable once the bramble burns" % [s])
 	var opened := _rooms_reached(lit)
-	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Thunder the Spire Stair opens")
+	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Thunder the Spire Stair opens, and with the Sky Key the stair down to Dartmoor")
 	check(reach.touchable(lit, "daybreak/spire_stair", 24, 8), "and its top landing's chest can be reached")
 	var stuck := reach.stuck(lit, _save_spots(reach))
 	check(stuck.is_empty(), "with Fire and Thunder, no soft-locks: %s" % [stuck.slice(0, 6)])
+
+
+func test_dartmoors_upper_gate_needs_the_sky_key() -> void:
+	# The flood above runs with the Sky Key; this checks the gate tile itself.
+	var texts := _texts()
+	check(Reach.new(texts, {}).solid("daybreak/sky_spring", 33, 19), "the upper gate is shut without the Sky Key")
+	check(not Reach.new(texts, {"sky_key": true}).solid("daybreak/sky_spring", 33, 19), "and open with it")

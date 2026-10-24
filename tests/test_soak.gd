@@ -113,6 +113,10 @@ func test_random_input_soak_in_every_daybreak_room() -> void:
 	await _soak_zone("daybreak", "Daybreak")
 
 
+func test_random_input_soak_in_every_dartmoor_room() -> void:
+	await _soak_zone("dartmoor", "Dartmoor")
+
+
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.

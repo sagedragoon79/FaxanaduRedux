@@ -561,3 +561,36 @@ func test_the_sky_key_opens_dartmoors_upper_gate() -> void:
 		if c is KeyDoor:
 			again += 1
 	check(again == 0, "it stays open")
+
+
+
+# --- Dartmoor (bible zone 6, pass 63) -----------------------------------------
+
+func test_the_upper_gate_drops_you_into_dartmoor() -> void:
+	var w := make_world({}, "daybreak/sky_spring", cell_feet(36, 19))
+	await frames(3)
+	for c in w.room.get_children():
+		if c is KeyDoor:
+			c.queue_free()
+	var fell := false
+	for i in 240:
+		await frames(1)
+		if w.room.id == "dartmoor/upper_stair":
+			fell = true
+			break
+	check(fell, "the shaft past the upper gate drops you into the Upper Stair (%s)" % w.room.id)
+	await frames(60)
+	check(w.player.is_on_floor() and w.player.global_position.y < 9 * Room.TILE, "onto the top landing (%s)" % w.player.global_position)
+	check(w.room.zone == "dartmoor" and Music.track == "dartmoor" and Music.ambience_track == "amb_dartmoor", "Dartmoor has its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
+	check(w.motes.zone == "dartmoor" and w.motes._motes.size() > 0, "and crystal dust in the air")
+	check(World.ZONES.has("dartmoor"), "the map knows the zone")
+
+
+func test_the_gate_hall_has_a_shrine() -> void:
+	var w := make_world({}, "dartmoor/gate_hall")
+	await frames(3)
+	var shrines := 0
+	for c in w.room.get_children():
+		if c is SaveShrine:
+			shrines += 1
+	check(shrines == 1, "the Upper Gate-Hall has a shrine to rest at")
