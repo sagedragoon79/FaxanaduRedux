@@ -844,3 +844,62 @@ func test_meteor_globs_and_embers_hold_still_in_stopped_time() -> void:
 	await frames(5)
 	check(g.position.x > 200.0, "the glob flies on when time runs")
 	check(p.hp < hp, "and the embers burn (%d)" % (hp - p.hp))
+
+
+## Bible 7: the Clockwork Hound winds up (the tell), then pounces and bites.
+func test_clockwork_hound_winds_up_then_pounces() -> void:
+	var room := _room_with({Vector2i(16, 6): "j"})
+	var p := make_player(room, Vector2i(8, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: ClockworkHound = _find(room, ClockworkHound)
+	var wind := 0
+	var hp := p.hp
+	var pounced := false
+	for i in 150:
+		await frames(1)
+		if h.state == "wind":
+			wind += 1
+		if h.state == "pounce":
+			pounced = true
+		if pounced and h.state == "skid":
+			break
+	check(wind / 60.0 >= Enemy.MIN_TELEGRAPH, "the wind-up is telegraphed (%d frames)" % wind)
+	check(pounced, "then it pounces")
+	check(p.hp < hp, "and bites a player standing still (%d)" % (hp - p.hp))
+
+
+func test_clockwork_hound_plating_and_a_parry_flips_it() -> void:
+	var room := _room_with({Vector2i(20, 6): "j"})
+	make_player(room, Vector2i(3, 6))
+	var h: ClockworkHound = _find(room, ClockworkHound)
+	await frames(3)
+	var hp0 := h.hp
+	h.take_hit(10, Vector2(1, 0))
+	check(hp0 - h.hp == 5, "its brass plating turns half a blow (%d)" % (hp0 - h.hp))
+	h.stagger()
+	check(h.flipped(), "a parry throws it on its back")
+	hp0 = h.hp
+	h.take_hit(10, Vector2(1, 0))
+	check(hp0 - h.hp == 10, "where every blow lands (%d)" % (hp0 - h.hp))
+	await frames(int(ClockworkHound.FLIPPED * 60) + 5)
+	check(not h.flipped(), "until it rights itself")
+
+
+func test_clockwork_hound_stops_dead_in_stopped_time() -> void:
+	var room := _room_with({Vector2i(20, 6): "j"})
+	make_player(room, Vector2i(3, 6))
+	var h: ClockworkHound = _find(room, ClockworkHound)
+	await frames(3)
+	h.set_state("pounce")
+	h.velocity = Vector2(-200, -200)
+	await frames(4)
+	TimeStop.start()
+	await frames(1)
+	var at := h.global_position
+	await frames(30)
+	check(h.global_position == at, "it hangs mid-leap while time holds (%s vs %s)" % [h.global_position, at])
+	check(h.state == "pounce", "its spring holds too")
+	TimeStop.reset()
+	await frames(5)
+	check(h.global_position != at, "and leaps on when time runs")
