@@ -83,6 +83,8 @@ func _embedded(room: Room, p: Player) -> bool:
 
 
 const TOWER_FRAMES := 420
+## Long enough for the Hour Glass to be turned twice in each room.
+const GLASS_FRAMES := 660
 
 
 ## Every Tower room, live (enemies, doors, gates), with every ability and a
@@ -113,8 +115,10 @@ func test_random_input_soak_in_every_daybreak_room() -> void:
 	await _soak_zone("daybreak", "Daybreak")
 
 
+## Dartmoor, with the Hour Glass turned whenever it is ready: frozen water,
+## projectiles held in the air, and time running on again, room after room.
 func test_random_input_soak_in_every_dartmoor_room() -> void:
-	await _soak_zone("dartmoor", "Dartmoor")
+	await _soak_zone("dartmoor", "Dartmoor", true)
 
 
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
@@ -297,8 +301,11 @@ func test_hydra_fight_soak_stays_lean() -> void:
 	await frames(2)
 
 
-func _soak_zone(zone: String, label: String) -> void:
+func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var problems: Array[String] = []
+	var turns := 0
+	var total_usec := 0
+	var counted := 0
 	var dir := DirAccess.open("res://levels/" + zone)
 	var ids: Array[String] = []
 	for f in dir.get_files():
@@ -320,9 +327,15 @@ func _soak_zone(zone: String, label: String) -> void:
 		await frames(2)
 		var start_nodes := _count_nodes(w)
 		var peak := start_nodes
-		for f in TOWER_FRAMES:
+		for f in (GLASS_FRAMES if glass else TOWER_FRAMES):
 			_mash(w.player, rng, hold)
+			if glass and f % 45 == 0 and TimeStop.ready_to_turn():
+				w.player.input.hourglass_pressed = true
+				turns += 1
+			var t0 := Time.get_ticks_usec()
 			await frames(1)
+			total_usec += Time.get_ticks_usec() - t0
+			counted += 1
 			var p := w.player
 			if p.dead or w.room == null:
 				continue
@@ -346,6 +359,12 @@ func _soak_zone(zone: String, label: String) -> void:
 		w.queue_free()
 		await frames(2)
 	check(problems.is_empty(), "%d %s rooms soaked with no problems: %s" % [ids.size(), label, problems])
+	var avg_ms := total_usec / 1000.0 / maxi(counted, 1)
+	print("  %s soak: %.2f ms a frame on average" % [label, avg_ms])
+	check(avg_ms < 16.6, "a %s frame averages under the 60 fps budget (%.2f ms)" % [label, avg_ms])
+	if glass:
+		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
+		TimeStop.reset()
 
 
 ## The Foreman fight at full tilt: a mashing player who can't die, 30 seconds.
@@ -400,6 +419,7 @@ func test_hud_soak_draws_every_frame_and_stays_lean() -> void:
 	hud.player = w.player
 	arena.add_child(hud)
 	w.player.max_hp = 110
+	w.player.abilities["hourglass"] = true
 	await frames(2)
 	var start := hud.draws
 	var total_usec := 0
@@ -409,6 +429,9 @@ func test_hud_soak_draws_every_frame_and_stays_lean() -> void:
 		w.player.mp = fmod(f * 3.0, w.player.max_mp + 1.0)
 		w.player.poison_left = 1.0 if (f / 60) % 2 == 1 else 0.0
 		w.player.flask_charges = f % (w.player.flask_max + 1)
+		if f % 200 == 0:
+			TimeStop.reset()
+			TimeStop.start()
 		var t0 := Time.get_ticks_usec()
 		await frames(1)
 		total_usec += Time.get_ticks_usec() - t0
@@ -575,5 +598,30 @@ func test_roc_fight_soak_stays_lean() -> void:
 	check(states.has("dive") and states.has("volley_tell") and states.has("grounded") and states.has("rise"), "dives, volleys and groundings were soaked")
 	check(bolts > 0, "and storm bolts (%d)" % bolts)
 	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")
+	w.queue_free()
+	await frames(2)
+
+
+## The Waterfall Stair's two falls, flowing and frozen in turn: their streaks
+## are two scrolled textures each, so a frame stays cheap.
+func test_waterfalls_stay_cheap() -> void:
+	var w := make_world({}, "dartmoor/waterfall_stair")
+	w.player.abilities["hourglass"] = true
+	await frames(2)
+	var falls: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
+	check(falls.size() == 2 and falls.all(func(f: Waterfall) -> bool: return f._streaks.size() == 2), "each fall draws from two streak textures")
+	var total_usec := 0
+	const FALL_FRAMES := 600
+	for f in FALL_FRAMES:
+		if f % 300 == 0:
+			TimeStop.reset()
+			TimeStop.start()
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		total_usec += Time.get_ticks_usec() - t0
+	var avg_ms := total_usec / 1000.0 / FALL_FRAMES
+	print("  Waterfall Stair: %.2f ms a frame on average" % avg_ms)
+	check(avg_ms < 8.0, "a frame by the falls averages well under budget (%.2f ms)" % avg_ms)
+	TimeStop.reset()
 	w.queue_free()
 	await frames(2)
