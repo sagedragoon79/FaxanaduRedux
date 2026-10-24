@@ -307,6 +307,8 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(Forge.new(), pos)
 		"water_clock":
 			_spawn(WaterClock.new(), pos)
+		"zenis_gate":
+			_spawn(ZenisGate.new(), pos)
 		"lift":
 			var cage := LiftCage.new()
 			cage.room_id = id

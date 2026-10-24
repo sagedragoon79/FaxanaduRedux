@@ -91,6 +91,23 @@
 			"The Tower of Trunk is ours, or was. Zoradohna holds it now. Bring a Mattock if you go: the old walls only crack for one."
 		]
 	},
+	"dartmoor_steward": {
+		"name": "Steward Hrafna", "role": "talk",
+		"look": {"robe": "#2e4f5a", "trim": "#e0b050", "skin": "#cd8c51", "hair": "#b8b8c0", "hat": "none", "build": "dwarf", "beard": true},
+		"lines": [
+			"The water is going down. I can hear it in the stair, running away below, for the first time since the king made his bargain.",
+			"He let the meteor into him so his people would live. It kept us, after a fashion: asleep under the flood. You have given him his rest, and us our waking.",
+			"His ring is yours. The gate of Zenis is up the Meteor Rise, east of here. And below us, under the last stone, the Sunken Spring still holds its water. Let it lie, for now."
+		]
+	},
+	"dartmoor_mason": {
+		"name": "Mason Brokk", "role": "talk",
+		"look": {"robe": "#4a465d", "trim": "#8a96a0", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm", "build": "dwarf"},
+		"lines": [
+			"Woke on my back in the market with weed in my beard. The tide line's a foot lower already.",
+			"We'll have the lower city dry by spring. Mind the water-clocks, though: they still hold their hour."
+		]
+	},
 	"forepaw_smith": {
 		"name": "Hrothgar the Smith", "role": "shop", "shop": "forepaw_smith",
 		"look": {"robe": "#3a2a1e", "trim": "#e0703a", "skin": "#cd8c51", "hair": "#2a1a14", "hat": "none", "build": "dwarf"}

@@ -832,3 +832,47 @@ func test_the_kings_stair_runs_down_from_the_market_to_the_kennels() -> void:
 	await frames(2)
 	var hounds := w.room.get_children().filter(func(c: Node) -> bool: return c is ClockworkHound).size()
 	check(hounds == 3, "where the king's hounds still run (%d)" % hounds)
+
+
+func test_the_way_past_the_throne_opens_once_the_king_is_at_rest() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/throne_hall")
+	await frames(3)
+	check(w.room.doors[2].target == "dartmoor/meteor_rise", "a door behind the throne leads on to the Meteor Rise")
+	var arena: BossArena = null
+	for c in w.room.get_children():
+		if c is BossArena:
+			arena = c
+	check(arena != null and arena.seals.has(2), "and it is barred while the king still sits his throne")
+	var npcs := func(world: World) -> Array: return world.room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(n: Npc) -> String: return n.npc_id)
+	check(not npcs.call(w).has("dartmoor_steward"), "no steward wakes while he lives")
+	GameState.set_flag("boss:king_grieve")
+	w._enter("dartmoor/drowned_market")
+	await frames(2)
+	check(npcs.call(w).has("dartmoor_mason"), "once he is at rest the drowned dwarves wake: a mason in the market")
+	w.queue_free()
+	await frames(2)
+	w = make_world({}, "dartmoor/kings_kennels")
+	GameState.set_flag("boss:king_grieve")
+	w._enter("dartmoor/throne_hall")
+	w.player.teleport(cell_feet(30, 19))
+	await frames(3)
+	check(npcs.call(w).has("dartmoor_steward"), "and his steward by the empty throne")
+	check(w.room.get_children().all(func(c: Node) -> bool: return not c is ArenaSeal), "and nothing bars the way on")
+
+
+func test_the_gate_of_zenis_waits_for_four_rings() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/meteor_rise")
+	await frames(2)
+	check(w.room.doors[2].target == "dartmoor/zenis_gate", "the Meteor Rise climbs to the gate of Zenis")
+	w._enter("dartmoor/zenis_gate")
+	await frames(2)
+	var gates: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is ZenisGate)
+	check(gates.size() == 1, "where the gate stands")
+	var gate: ZenisGate = gates[0]
+	GameState.data.rings = ["elf", "demon"]
+	check(gate.lit() == ["elf", "demon"], "its sockets glow for the rings you hold (%s)" % [gate.lit()])
+	check(gate.message().contains("2 of them"), "and it says how many")
+	GameState.data.rings = ["elf", "ruby", "dworf", "demon"]
+	check(gate.lit().size() == 4 and gate.message().contains("does not open"), "with all four it still waits on the shadow before it")
