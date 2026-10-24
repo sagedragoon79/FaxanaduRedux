@@ -225,7 +225,8 @@ func _add_climbs(out: Array, r: String, x: int, y: int) -> void:
 			if not body_clear(r, cx, y0) or not body_clear(r, x, y0):
 				break
 			var yy := y0
-			while body_clear(r, cx, yy - 1) and (solid(r, cx - 1, yy - 2) or solid(r, cx + 1, yy - 2)):
+			while body_clear(r, cx, yy - 1) and not _body_hurts(r, cx, yy - 1) \
+					and (solid(r, cx - 1, yy - 2) or solid(r, cx + 1, yy - 2)):
 				yy -= 1
 				if standable(r, cx, yy):
 					out.append(key(r, cx, yy))
@@ -234,6 +235,15 @@ func _add_climbs(out: Array, r: String, x: int, y: int) -> void:
 			# Reaching a ceiling door by climbing.
 			if yy <= 3:
 				_door_at(out, r, cx, 0)
+
+
+## Whether a body with its feet in row y of column x would touch a hazard
+## (no one climbs a wall through thorns).
+func _body_hurts(r: String, x: int, y: int) -> bool:
+	for yy in range(y - 2, y + 1):
+		if HAZARD.contains(ch(r, x, yy)):
+			return true
+	return false
 
 
 func _add_doors(out: Array, r: String, x: int, y: int) -> void:

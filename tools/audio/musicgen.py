@@ -870,6 +870,73 @@ def track_pakukame():
     return s.render(reverb=0.35)
 
 
+def track_daybreak():
+    """Branches (Daybreak): the storm over the Tree's crown. E dorian at a driving
+    116, a low pulsing bass under tense open-fifth pads, toms like distant thunder,
+    plucks blown about in the wind, and a bell lead that reaches for the light."""
+    rng = np.random.default_rng(131)
+    s = Song(bpm=116, bars=16)
+    root, scale = 52, SCALES["dorian"]
+    prog = [0, 0, 6, 3, 0, 5, 6, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        s.add(pad(midi_hz(tones[0]), s.bar * 1.05), b * 4, -0.4, 0.3)
+        s.add(pad(midi_hz(tones[0] + 7), s.bar * 1.05), b * 4, 0.4, 0.26)
+        low = scale_note(root - 24, scale, deg)
+        for k in range(8):
+            s.add(bass(midi_hz(low + (12 if k % 4 == 3 else 0)), s.beat * 0.42), b * 4 + k * 0.5, 0, 0.42)
+        # Gusts: plucks scattered up the chord, never quite on the beat.
+        for k in range(rng.integers(3, 6)):
+            m = tones[rng.integers(0, 3)] + 12 * rng.integers(1, 3)
+            s.add(pluck(midi_hz(m), s.beat * 0.5, bright=3200), b * 4 + rng.integers(0, 8) * 0.5 + 0.25,
+                  rng.uniform(-0.8, 0.8), 0.22)
+        s.add(kick(0.3) * 0.7, b * 4, 0, 0.8)
+        s.add(kick(0.3) * 0.5, b * 4 + 1.5, 0, 0.8)
+        s.add(kick(0.3) * 0.6, b * 4 + 2, 0, 0.8)
+        if b % 2 == 1:
+            # Thunder: a low tom roll at the bar's end.
+            for k in range(4):
+                s.add(kick(0.5) * (0.35 + 0.1 * k), b * 4 + 3 + k * 0.25, rng.uniform(-0.3, 0.3), 0.7)
+        s.add(snare(rng, 0.2) * 0.5, b * 4 + 1, 0.1, 0.4)
+        s.add(snare(rng, 0.2) * 0.5, b * 4 + 3, 0.1, 0.4)
+        for k in range(8):
+            s.add(hat(rng, 0.04), b * 4 + k * 0.5 + 0.25, 0.5, 0.15)
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=24, pan=-0.2, gain=0.55, density=0.55)
+    return s.render(reverb=0.5)
+
+
+def amb_daybreak():
+    """Storm at the top of the world: a hard, gusting wind, rain hissing in waves,
+    and thunder rolling in from far off now and then."""
+    rng = np.random.default_rng(137)
+    dur = 28.0
+    n = int(dur * RATE)
+    m = n + RATE * 4
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    gust = 0.6 + 0.4 * np.sin(2 * np.pi * t / 9.0) * np.sin(2 * np.pi * t / 3.7 + 0.5)
+    wind = fft_filter(rng.uniform(-1, 1, m), low=700, high=120) * 1.6 * gust
+    out[:, 0] += wind
+    out[:, 1] += np.roll(wind, RATE // 5)
+    rain = fft_filter(rng.uniform(-1, 1, m), low=9000, high=3000) * 0.35 * (0.7 + 0.3 * np.sin(2 * np.pi * t / 7.0))
+    out[:, 0] += rain
+    out[:, 1] += np.roll(rain, RATE // 7)
+    # Thunder: a crack, then a long low roll that fades.
+    for i in (int(3.5 * RATE), int(14.0 * RATE), int(22.5 * RATE)):
+        mm = int(rng.uniform(3.0, 4.5) * RATE)
+        tt = np.arange(mm) / RATE
+        env = np.exp(-tt * 0.9) * (1 + 0.5 * np.sin(2 * np.pi * tt * rng.uniform(1.5, 3.0)))
+        roll = fft_filter(rng.uniform(-1, 1, mm), low=160) * 5.0 * env
+        crack = fft_filter(rng.uniform(-1, 1, mm), low=3000, high=400) * np.exp(-tt * 9) * 0.6
+        pan = rng.uniform(-0.6, 0.6)
+        thunder = (roll + crack) * rng.uniform(0.6, 1.0)
+        out[i:i + mm, 0] += thunder * (1 - pan) / 2
+        out[i:i + mm, 1] += thunder * (1 + pan) / 2
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -885,6 +952,7 @@ TRACKS = {
     "branches": track_branches,
     "conflate": track_conflate,
     "pakukame": track_pakukame,
+    "daybreak": track_daybreak,
     "amb_trunk": amb_trunk,
     "amb_eolis": amb_eolis,
     "amb_tower": amb_tower,
@@ -892,6 +960,7 @@ TRACKS = {
     "amb_mine": amb_mine,
     "amb_mist": amb_mist,
     "amb_branches": amb_branches,
+    "amb_daybreak": amb_daybreak,
 }
 
 

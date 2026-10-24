@@ -80,6 +80,8 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 | opt | **Sunken Spring** | none | 8 | Under Dartmoor, the original source of the springs | Underwater swimming (Deluge-drained rooms) | Optional: The Drowned Warden |
 | opt | **Guru Trials** | Eolis | 6 | Abstract mantra-space, monochrome | Pure platforming challenges | none |
 
+**Daybreak as built (pass 54):** `levels/daybreak/`, entered by the Crown-Leaf's east door. Storm Ledge (a fallen causeway span over thorns: pogo it or stride it), Sky Steps (one-way island shelves stacked up a tall room, each gap past any jump, so an air dash at the top of the leap is the way up; storm crystals bristle on the cliffs so nothing can be climbed around them) and the Broken Shrine (a shrine, a Life Fruit, and the fallen bridge to Daybreak town). Look: pale ashlar shrine stone with gold inlay, a violet storm sky with lightning and drifting islands, rain driven on the wind. Music `daybreak` (E dorian at 116, thunder toms) and ambience `amb_daybreak` (gusting wind, rain, rolling thunder).
+
 ### 3.3 Room and map rules
 
 - **Room size:** multiples of one screen (640x360 px internal = 40x22.5 tiles of 16 px). Rooms are 1x1 up to 4x3 screens.
@@ -395,7 +397,7 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 2 (below half):** tells a fifth shorter (never under 0.35 s). Every other bite tears a four-tile chunk out of the leaf where it lands, up to three gaps with thorns below, never next to the root or the walls. You stride or bounce across, and strike the open jaws from the gap's edge.
 - **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence). Not built yet; a later pass adds it.
 - **Look:** code-drawn at 2x (a green stem, two great leaves at the root, a shelled bulb with gold-rimmed jaws, white teeth and a red maw, and a ring of pink petals). Its own theme, `pakukame`.
-- **Reward:** skill point, large gold drop, and the way east from the crown-leaf toward Daybreak (a later pass). (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival. Pass 52 put the arena past the Windloft, so the Bloom guards the way onward instead.)
+- **Reward:** skill point, large gold drop, and the way east from the crown-leaf toward Daybreak (the Crown-Leaf's east door, sealed with the rest of the arena until the Bloom falls; built in pass 54). (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival. Pass 52 put the arena past the Windloft, so the Bloom guards the way onward instead.)
 
 ### 8.6 Borabohra, the Storm Roc (Branches, Daybreak)
 - **Concept:** A titanic thunderbird nesting on the highest spire, its feathers made of rain clouds.
