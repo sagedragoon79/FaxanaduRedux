@@ -20,6 +20,9 @@ var size_tiles := Vector2i.ZERO
 var spawn_position := Vector2.ZERO
 var tiles: TileMapLayer
 var secrets: TileMapLayer
+## Hidden planks (legend `i`), seen only through the Black Onyx.
+var phantoms: TileMapLayer
+var sheen: OnyxSheen
 ## Door number -> {rect: Rect2 (pixels), edge: "left"/"right"/"top"/"bottom"/"inner",
 ## target: room id, target_door: int}.
 var doors := {}
@@ -175,6 +178,11 @@ func build(text: String) -> void:
 	for cell: Vector2i in covers:
 		if not _secret_cells.has(cell):
 			_place_secret(cell)
+	if secrets != null or phantoms != null:
+		sheen = OnyxSheen.new()
+		sheen.room = self
+		sheen.cells = _secret_cells
+		add_child(sheen)
 	var decor := Decor.new()
 	decor.name = "Decor"
 	add_child(decor)
@@ -372,6 +380,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				_one_way[cell] = true
 		"%":
 			_place_secret(cell)
+		"i":
+			_place_phantom(cell)
 		"~":
 			if _amber_on():
 				# The restored spring hardens the Trunk's sap into walkable amber.
@@ -477,7 +487,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "d", "h", "L", "W", "F", "*":
+		"G", "X", "O", "d", "h", "n", "L", "W", "F", "*":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
@@ -486,6 +496,18 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				_spawn(item, center)
 		"P":
 			spawn_position = bottom_center
+
+
+## A hidden plank: a one-way platform that is always there but drawn only
+## faintly, and only for a player carrying the Black Onyx (design bible A7).
+func _place_phantom(cell: Vector2i) -> void:
+	if phantoms == null:
+		phantoms = TilesetFactory.layer(zone)
+		phantoms.name = "Phantoms"
+		phantoms.modulate.a = 0.0
+		add_child(phantoms)
+	phantoms.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
+	_one_way[cell] = true
 
 
 func _place_secret(cell: Vector2i) -> void:

@@ -65,7 +65,9 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `Y` | Bound fog (the Mist): solid until the player brings the Lantern Key near, then every curtain in the room parts for good (a row of three is usual) |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |
-| `%` | Fake wall: looks solid, walk through it (a secret) |
+| `%` | Fake wall: looks solid, walk through it (a secret). With the Black Onyx a thin violet seam shimmers around it |
+| `i` | Hidden plank: a one-way platform that is always there but unseen; the Black Onyx shows it faintly |
+| `n` | Black Onyx (passive ability pickup) |
 | `~` | Sap pool: halves run speed and weakens jumps (Trunk Hollows) |
 | `S` | Meditation Shrine (save, refill, respawn point) |
 | `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
