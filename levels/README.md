@@ -68,6 +68,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `~` | Sap pool: halves run speed and weakens jumps (Trunk Hollows) |
 | `S` | Meditation Shrine (save, refill, respawn point) |
 | `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
+| `g` | Dartmoor's upper gate, 3 tiles tall from this cell up (opens with the Sky Key, Borabohra's reward) |
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
 | `X` | Wing Boots (ability pickup: double jump; glows in the fog) |

@@ -489,3 +489,75 @@ func test_the_spire_hatch_needs_every_conduit() -> void:
 	check(gates.all(func(g: ConduitGate) -> bool: return g.opened), "the second opens the hatch")
 	check(GameState.flag("conduits:daybreak/spire_stair"), "for good")
 
+
+
+# --- The Spring of Sky (bible 4.4, pass 62) -----------------------------------
+
+func _spring_in(w: World) -> Spring:
+	for c in w.room.get_children():
+		if c is Spring:
+			return c
+	return null
+
+
+func test_spring_of_sky_waits_for_the_roc_and_breaks_the_storm() -> void:
+	var w := make_world({}, "daybreak/sky_spring", cell_feet(4, 19))
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	await frames(3)
+	var spring := _spring_in(w)
+	check(spring != null and spring.spring_id == "sky", "the Spring of Sky stands past the roost")
+	check(not spring.is_in_group("interactable"), "it can't be cleared while Borabohra lives")
+	var rain := w.motes._motes.size()
+	check(rain == int(Motes.ZONES["daybreak"][0]), "the storm rains hard (%d drops)" % rain)
+	GameState.set_flag("boss:borabohra")
+	await frames(2)
+	check(spring.is_in_group("interactable"), "once the roc falls it can")
+	spring.interact(w.player)
+	check(GameState.flag("spring:sky"), "clearing it restores the Spring of Sky")
+	check(Fountain.level() == 3, "and the Eolis fountain runs full")
+	check(w.motes._motes.size() < rain / 2, "the storm breaks: the rain thins to a drizzle (%d drops)" % w.motes._motes.size())
+
+
+func test_eolis_holds_a_festival_for_the_last_spring() -> void:
+	GameState.new_game()
+	var names := func() -> Array:
+		var room := Room.from_file("res://levels/eolis/plaza.room")
+		arena.add_child(room)
+		var out := []
+		for c in room.get_children():
+			if c is Npc:
+				out.append((c as Npc).npc_id)
+		room.queue_free()
+		out.sort()
+		return out
+	var before: Array = names.call()
+	check(before == ["townsfolk_well"], "before: Old Wena by the dry fountain (%s)" % [before])
+	GameState.set_flag("spring:sky")
+	var after: Array = names.call()
+	check(after == ["festival_piper", "townsfolk_well_glad"], "after: a piper plays and Wena is glad (%s)" % [after])
+
+
+func test_the_sky_key_opens_dartmoors_upper_gate() -> void:
+	var w := make_world({}, "daybreak/sky_spring", cell_feet(30, 19))
+	await frames(3)
+	var gate: KeyDoor = null
+	for c in w.room.get_children():
+		if c is KeyDoor:
+			gate = c
+	check(gate != null and gate.kind == "sky", "a sky gate bars the way down")
+	w.player.input.move_x = 1
+	await frames(40)
+	check(is_instance_valid(gate) and w.player.global_position.x < gate.global_position.x, "without the Sky Key it holds")
+	GameState.add_key("sky")
+	await frames(30)
+	check(not is_instance_valid(gate) or gate.is_queued_for_deletion(), "with it, the gate opens")
+	check(GameState.key_count("sky") == 0, "and the key stays in the lock")
+	w.player.input.move_x = 0
+	w._enter("daybreak/sky_spring")
+	await frames(3)
+	var again := 0
+	for c in w.room.get_children():
+		if c is KeyDoor:
+			again += 1
+	check(again == 0, "it stays open")

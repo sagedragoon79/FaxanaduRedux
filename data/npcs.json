@@ -34,6 +34,22 @@
 			"My grandson went into the roots to look for the spring. He said the sap was moving. Sap doesn't move."
 		]
 	},
+	"townsfolk_well_glad": {
+		"name": "Old Wena", "role": "talk",
+		"look": {"robe": "#6b6380", "trim": "#c9b98f", "skin": "#e8c9a0", "hair": "#c9c4d6", "hat": "none"},
+		"lines": [
+			"Full! Forty years, and I never saw it brim like this. Listen to it.",
+			"My grandson came home this morning, soaked to the skin and laughing. He says the rain up top has stopped."
+		]
+	},
+	"festival_piper": {
+		"name": "Festival Piper", "role": "talk",
+		"look": {"robe": "#3f7a4a", "trim": "#ffd24a", "skin": "#d9b08c", "hair": "#8a5a34", "hat": "hood"},
+		"lines": [
+			"Eolis hasn't danced since the meteor fell. Three springs running, three days of music, the Elder says.",
+			"They say the dwarves of Dartmoor still sleep under the water. Somebody ought to wake them. Not me, mind. I pipe."
+		]
+	},
 	"townsfolk_gate": {
 		"name": "Gate Watch", "role": "talk",
 		"look": {"robe": "#4a4458", "trim": "#8d84a3", "skin": "#d9b08c", "hair": "#2a2538", "hat": "helm"},
