@@ -113,6 +113,44 @@ func test_random_input_soak_in_every_daybreak_room() -> void:
 	await _soak_zone("daybreak", "Daybreak")
 
 
+## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
+## the player running and dashing about. The rain stays on screen, keeps its
+## count, and the frame stays well inside budget.
+func test_daybreak_rain_stays_cheap() -> void:
+	var w := make_world({}, "daybreak/sky_steps")
+	var p := w.player
+	p.abilities["stride"] = true
+	await frames(2)
+	check(w.motes.zone == "daybreak" and w.motes._motes.size() == int(Motes.ZONES["daybreak"][0]), "the rain is falling (%d drops)" % w.motes._motes.size())
+	var total_usec := 0
+	var worst := 0
+	const RAIN_FRAMES := 600
+	for f in RAIN_FRAMES:
+		p.input.move_x = 1 if (f / 90) % 2 == 0 else -1
+		p.input.jump_pressed = f % 40 == 0
+		p.input.jump_held = f % 40 < 12
+		p.input.dash_pressed = f % 40 == 14
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		var dt := Time.get_ticks_usec() - t0
+		total_usec += dt
+		worst = maxi(worst, dt)
+	var avg_ms := total_usec / 1000.0 / RAIN_FRAMES
+	print("  Daybreak rain: %.2f ms a frame on average, %.2f ms at worst" % [avg_ms, worst / 1000.0])
+	var inside := true
+	for m: Array in w.motes._motes:
+		var at: Vector2 = m[0]
+		inside = inside and at.x >= 0.0 and at.x < Motes.VIEW.x and at.y >= 0.0 and at.y < Motes.VIEW.y
+	check(inside, "every drop wraps back onto the screen")
+	check(w.motes._motes.size() == int(Motes.ZONES["daybreak"][0]), "and none are lost or added")
+	check(avg_ms < 8.0, "a storm frame averages well under budget (%.2f ms)" % avg_ms)
+	w._enter("branches/crown_leaf")
+	await frames(2)
+	check(w.motes.zone == "branches", "back in the Branches the rain stops")
+	w.queue_free()
+	await frames(2)
+
+
 ## The fog's CPU side in every Mist room: the player walked across the room,
 ## the light list rebuilt each frame. It must stay cheap and never hit
 ## Fog.MAX_LIGHTS (the shader would drop lanterns).
