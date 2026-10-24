@@ -21,6 +21,8 @@ const BOSSES := {
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
 		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
 	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve"},
+	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1,
+		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -137,6 +139,13 @@ func _start() -> void:
 			k.position = Vector2(40 * Room.TILE, k.arena.end.y)
 			boss = k
 			k.defeated.connect(_on_defeated)
+		"shadow_eura":
+			# Your reflection, on the far side of the mirror down the middle of the hall.
+			var e := ShadowEura.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			e.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			boss = e
+			e.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return

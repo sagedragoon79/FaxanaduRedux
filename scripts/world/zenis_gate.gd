@@ -4,7 +4,7 @@ extends Node2D
 ## black meteor-iron set in the rock at the top of the Meteor Rise, four ring
 ## sockets in its face (Elf, Ruby, Dworf, Demon). Each socket glows once you
 ## hold that ring. It stays shut until all four are held and the shadow before
-## it is beaten (bible 8.8; neither is built yet), so walking up to it only
+## it (Shadow Eura, bible 8.8) is beaten; Zenis beyond is not built yet, so walking up to it only
 ## tells you what it wants. Scenery, drawn at 2x density. The origin is the
 ## bottom centre (it stands on the floor).
 
@@ -39,7 +39,9 @@ func message() -> String:
 	var n := lit().size()
 	if n < RINGS.size():
 		return "The gate of Zenis. Four sockets for four rings: %d of them glow." % n
-	return "All four rings burn in the gate. It does not open: something in the dark before it is watching you."
+	if not GameState.flag("boss:shadow_eura"):
+		return "All four rings burn in the gate. It does not open: something in the dark before it is watching you."
+	return "All four rings burn in the gate and nothing watches from the dark. The iron shudders, but the way beyond is not yet open."
 
 
 func _process(delta: float) -> void:

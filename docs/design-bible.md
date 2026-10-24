@@ -451,6 +451,14 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 2:** acts on its own, using your highest-level skill tree branch against you.
 - **Phase 3:** splits into two; one is real (only the real one shows in the floor reflection).
 - **Reward:** the Zenis gate opens.
+- **As built (phase 1, pass 74):** the gate hall (`dartmoor/zenis_gate`) is laid out symmetrically, with a landing at
+  each end, and a faint seam of light marks the mirror line down its middle. The shadow (`scripts/bosses/shadow_eura.gd`)
+  stands where you were 0.6 s ago, mirrored across that line, in your own pose, drawn as your sprite cut out of the dark
+  with a violet rim. Each swing you make comes back at you 0.6 s later from its side, its blade glinting for 0.4 s first,
+  so you can only reach each other where you meet at the line, and a blow you land is answered. Step away from the echo
+  or parry it: a parried echo leaves it reeling and out of the mirror for 1.2 s. If you hold still for 2.2 s it sinks
+  into the floor and rises right behind you, blade raised for 0.45 s, then cuts. Until phases 2 and 3 are built it has
+  150 HP, and beating it gives a skill point. The gate does not open yet, because Zenis beyond it is not built.
 
 ### 8.9 The Evil One (Zenis)
 - **Concept:** Not a demon king but a parasite: a vast eye-flower of meteor crystal rooted into the Tree's crown, feeding through veins of light.

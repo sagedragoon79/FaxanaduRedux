@@ -1513,3 +1513,124 @@ func test_the_water_clock_drains_with_the_king() -> void:
 	check(clock.level < 0.95 and clock.level >= 0.6 - 0.01, "it drains as he weakens (%.2f)" % clock.level)
 	GameState.set_flag("boss:king_grieve")
 	check(is_equal_approx(clock.target_level(), 0.0), "and stands empty once he is beaten")
+
+
+func _eura_world() -> Array:
+	var w := make_world({}, "dartmoor/zenis_gate")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(14, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var b := get_tree_boss() as ShadowEura
+	await _until(func() -> bool: return b != null and b.state == "mirror", 200)
+	return [w, arena, b]
+
+
+func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
+	var setup := await _eura_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var b: ShadowEura = setup[2]
+	check(arena.boss_id == "shadow_eura" and b != null and b.state == "mirror", "walking up to the gate wakes your shadow")
+	check(absf(b.axis() - w.room.size_tiles.x * Room.TILE * 0.5) < 1.0, "the mirror runs down the middle of the hall")
+	var p := w.player
+	check(absf(b.global_position.x - b.mirrored(p.global_position).x) < 2.0 and b.facing == -p.facing, "it stands where you stand, across the glass (%s vs %s)" % [b.global_position, p.global_position])
+	# Walk right: the shadow walks left, DELAY behind.
+	var trail: Array[Vector2] = []
+	p.input.move_x = 1
+	for i in 50:
+		await frames(1)
+		trail.append(p.global_position)
+	p.input.move_x = 0
+	var then := trail[trail.size() - 1 - roundi(ShadowEura.DELAY * 60.0)]
+	check(absf(b.global_position.x - b.mirrored(then).x) < 6.0, "it copies where you were %.1f s ago, mirrored (%.0f vs %.0f)" % [ShadowEura.DELAY, b.global_position.x, b.mirrored(then).x])
+	check(b.global_position.x > b.mirrored(p.global_position).x + 20.0, "so it lags behind you")
+	check(b.facing == -1, "facing back at you")
+
+
+func test_shadow_eura_echoes_your_swing_and_a_parry_breaks_it() -> void:
+	check(ShadowEura.SWING_TELL >= Enemy.MIN_TELEGRAPH and ShadowEura.SWING_TELL <= ShadowEura.DELAY, "an echo glints at least %.2f s before it lands" % Enemy.MIN_TELEGRAPH)
+	check(ShadowEura.RISE_TELL >= Enemy.MIN_TELEGRAPH, "and so does its cut from behind")
+	var setup := await _eura_world()
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var p := w.player
+	p.has_shield = true
+	# At the mirror line, face to face with your reflection.
+	p.teleport(Vector2(b.axis() - 10.0, 19 * Room.TILE))
+	p.facing = 1
+	await frames(int(ShadowEura.DELAY * 60.0) + 10)
+	check(absf(b.global_position.x - (b.axis() + 10.0)) < 2.0, "it meets you at the glass")
+	var hp0 := b.hp
+	var php := p.hp
+	p.input.attack_pressed = true
+	await frames(10)
+	check(b.hp < hp0, "you can strike it there (%d)" % (hp0 - b.hp))
+	var told := 0
+	for i in 60:
+		await frames(1)
+		if b.telling():
+			told += 1
+		if b.state == "echo":
+			break
+	check(b.state == "echo", "it swings your swing back at you")
+	check(told / 60.0 >= Enemy.MIN_TELEGRAPH, "after its blade glints (%d frames)" % told)
+	await frames(6)
+	check(p.hp < php, "and the echo cuts you if you stand there (%d)" % (php - p.hp))
+	# The echo of a swing, parried.
+	await frames(40)
+	p.teleport(Vector2(b.axis() - 10.0, 19 * Room.TILE))
+	p.facing = 1
+	await frames(int(ShadowEura.DELAY * 60.0) + 4)
+	p.input.attack_pressed = true
+	await _until(func() -> bool: return b.next_echo_in() <= 0.05, 60)
+	p.input.block_pressed = true
+	p.input.block_held = true
+	var reeled := await _until(func() -> bool: return b.state == "stagger", 20)
+	p.input.block_pressed = false
+	p.input.block_held = false
+	check(reeled and not b.mirroring(), "a parried echo leaves it reeling, out of the mirror (%s)" % b.state)
+	var back := await _until(func() -> bool: return b.state == "mirror", 150)
+	check(back, "then it slips back behind the glass")
+
+
+func test_shadow_eura_comes_through_the_mirror_if_you_hold_still() -> void:
+	var setup := await _eura_world()
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var p := w.player
+	p.teleport(cell_feet(20, 19))
+	p.facing = 1
+	var php := p.hp
+	var sank := await _until(func() -> bool: return b.state == "sink", roundi(ShadowEura.STILL_TIME * 60.0) + 40)
+	check(sank, "hold still and it sinks into the floor")
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.hp == hp0, "where no blow can reach it")
+	var rose := await _until(func() -> bool: return b.state == "rise", 60)
+	check(rose and b.global_position.x < p.global_position.x and absf(b.global_position.x - p.global_position.x) < ShadowEura.BEHIND + 2.0, "and rises right behind you (%s vs %s)" % [b.global_position, p.global_position])
+	var cut := await _until(func() -> bool: return b.state == "cut", 60)
+	check(cut and b.state_time < 0.1, "blade raised for %.2f s before it cuts" % ShadowEura.RISE_TELL)
+	await frames(6)
+	check(p.hp < php, "the cut lands on a player who stood still")
+	var back := await _until(func() -> bool: return b.state == "mirror", 120)
+	check(back and absf(b.global_position.x - b.mirrored(p.global_position).x) < 2.0, "then it returns to the glass")
+
+
+func test_beating_shadow_eura_breaks_the_mirror() -> void:
+	var setup := await _eura_world()
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var points := int(GameState.data.skill_points)
+	b.hp = 1
+	b.take_hit(5, Vector2.RIGHT)
+	check(b.state == "dying", "the last blow ends it")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:shadow_eura"), 600)
+	check(gone, "Shadow Eura is marked beaten")
+	check(int(GameState.data.skill_points) >= points + 1, "for a skill point")
+	await frames(90)
+	w._enter("dartmoor/zenis_gate")
+	await frames(10)
+	check(get_tree_boss() == null, "and it never returns")
