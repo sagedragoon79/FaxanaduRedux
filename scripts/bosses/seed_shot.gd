@@ -9,7 +9,13 @@ const LIFE := 3.0
 const SIZE := 6.0
 
 var velocity := Vector2.ZERO
+## What a Magic Shield's reflected shot glows with.
+var tint := Color("7cbf52")
 var _t := 0.0
+
+
+func _ready() -> void:
+	add_to_group("small_projectile")
 
 
 func _physics_process(delta: float) -> void:

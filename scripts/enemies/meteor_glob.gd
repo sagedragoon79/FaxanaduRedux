@@ -15,6 +15,8 @@ const OUTLINE := Color("120f19")
 
 var velocity := Vector2.ZERO
 var room: Room
+## What a Magic Shield's reflected shot glows with.
+var tint := HOT
 var _t := 0.0
 
 
@@ -27,6 +29,7 @@ static func launch(from: Vector2, to: Vector2, flight: float) -> Vector2:
 func _ready() -> void:
 	z_index = 2
 	add_to_group("enemy_projectile")
+	add_to_group("small_projectile")
 
 
 func _physics_process(delta: float) -> void:
@@ -37,7 +40,9 @@ func _physics_process(delta: float) -> void:
 	var next := global_position + velocity * delta
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null and not p.dead and Rect2(next - Vector2(RADIUS, RADIUS), Vector2(RADIUS, RADIUS) * 2.0).intersects(p.body_rect()):
-		p.receive_attack(DAMAGE, self, false)
+		if p.receive_attack(DAMAGE, self, false) == "parried":
+			queue_free()  # caught by the Magic Shield
+			return
 		_burst(next, false)
 		return
 	if room != null and room.is_solid_at(next):

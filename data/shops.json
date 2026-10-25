@@ -85,7 +85,8 @@
 		"name": "Stormward Armory",
 		"greeting": "Plate for the sky road. The lightning finds iron, so we forge ours from elf-silver.",
 		"stock": [
-			{"item": "full_plate", "price": 4200}
+			{"item": "full_plate", "price": 4200},
+			{"item": "magic_shield", "price": 3600}
 		]
 	},
 	"daybreak_scrolls": {

@@ -25,6 +25,7 @@ extends Node2D
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --hp=N                     start with N health (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
+##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
 ##   --drops                    drop a loaf of bread, a mana orb and a poison flask ahead of the player
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
@@ -344,6 +345,12 @@ func _debug_open() -> void:
 			d.velocity = Vector2(0, 1)
 			world.room.add_child(d)
 			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
+	if _args.has("reflect"):
+		var src := Node2D.new()
+		world.room.add_child(src)
+		src.global_position = player.global_position + Vector2(player.facing * 14, -22)
+		ReflectedShot.spawn(player, src, SapGlob.SAP)
+		src.queue_free()
 	if _args.has("xp"):
 		GameState.add_xp(int(_args["xp"]))
 	if _args.has("poisoned"):
