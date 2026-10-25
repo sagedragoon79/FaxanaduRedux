@@ -384,39 +384,125 @@ func save_game(to_slot := -1) -> bool:
 		slot = to_slot
 	data.play_time = float(data.get("play_time", 0.0)) + play_time
 	play_time = 0.0
-	var f := FileAccess.open(SAVE_PATH % slot, FileAccess.WRITE)
+	return write_safely(SAVE_PATH % slot, JSON.stringify(data, "\t"))
+
+
+## Writes `text` to `path` without ever leaving it half-written (pass 109): the
+## text goes to a temp file first and is read back, then the old file becomes
+## the `.bak` and the temp file takes its place. A failed write leaves the last
+## good file as it was.
+static func write_safely(path: String, text: String) -> bool:
+	var tmp := path + ".tmp"
+	var f := FileAccess.open(tmp, FileAccess.WRITE)
 	if f == null:
-		push_warning("Could not write save slot %d" % slot)
+		push_warning("Could not write %s" % path)
 		return false
-	f.store_string(JSON.stringify(data, "\t"))
-	return true
+	f.store_string(text)
+	f.close()
+	if FileAccess.get_file_as_string(tmp) != text:
+		push_warning("%s did not write whole; the last good copy is kept" % path)
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp))
+		return false
+	var real := ProjectSettings.globalize_path(path)
+	if FileAccess.file_exists(path):
+		if FileAccess.file_exists(path + ".bak"):
+			DirAccess.remove_absolute(real + ".bak")
+		DirAccess.rename_absolute(real, real + ".bak")
+	return DirAccess.rename_absolute(ProjectSettings.globalize_path(tmp), real) == OK
 
 
 func has_save(which: int) -> bool:
-	return FileAccess.file_exists(SAVE_PATH % which)
+	var path := SAVE_PATH % which
+	return FileAccess.file_exists(path) or FileAccess.file_exists(path + ".bak")
 
 
+## Loads a slot, or its `.bak` if the file itself is damaged. On failure the
+## current data is left untouched.
 func load_game(from_slot: int) -> bool:
-	if not has_save(from_slot):
+	var path := SAVE_PATH % from_slot
+	var loaded := {}
+	for p: String in [path, path + ".bak"]:
+		if not FileAccess.file_exists(p):
+			continue
+		loaded = sanitize(JSON.parse_string(FileAccess.get_file_as_string(p)))
+		if not loaded.is_empty():
+			if p != path:
+				push_warning("Save slot %d was damaged; loaded its backup" % from_slot)
+			break
+		push_warning("%s is not a save" % p)
+	if loaded.is_empty():
 		return false
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH % from_slot))
-	if not parsed is Dictionary:
-		push_warning("Save slot %d is corrupt" % from_slot)
-		return false
-	# Start from fresh data so saves from older versions gain new keys.
-	var loaded := fresh()
-	var src: Dictionary = parsed
-	for k: String in src:
-		if loaded.has(k) and loaded[k] is Dictionary and src[k] is Dictionary:
-			loaded[k].merge(src[k], true)
-		else:
-			loaded[k] = src[k]
 	data = loaded
 	slot = from_slot
 	play_time = 0.0
 	return true
 
 
+## Whatever a save file held, made into a whole save (pass 109): every key of
+## fresh(), each of its own type, so a damaged, hand-edited or older file can
+## never leave a hole or a wrong type behind. Keys a newer build added are
+## kept. Returns {} when it isn't a save at all (not an object, or no sign of
+## one).
+static func sanitize(src: Variant) -> Dictionary:
+	if not src is Dictionary or not (src as Dictionary).has("save_room"):
+		return {}
+	var out := fresh()
+	for k: Variant in src:
+		if k is String:
+			out[k] = _coerce(out[k], src[k]) if out.has(k) else src[k]
+	out.version = VERSION
+	# Containers whose entries the game reads by shape.
+	out.skills = out.skills.filter(func(v: Variant) -> bool: return v is String)
+	out.rings = out.rings.filter(func(v: Variant) -> bool: return v is String)
+	out.pins = out.pins.filter(func(v: Variant) -> bool:
+		return v is Array and v.size() == 3 and v[0] is String and _is_number(v[1]) and _is_number(v[2]))
+	if not _is_point(out.save_pos):
+		out.save_pos = [0, 0]
+	for room: Variant in out.gurus.keys():
+		if not _is_point(out.gurus[room]):
+			out.gurus.erase(room)
+	if not out.purse.is_empty() and not (out.purse.get("room") is String and _is_number(out.purse.get("x"))
+			and _is_number(out.purse.get("y")) and _is_number(out.purse.get("gold"))):
+		out.purse = {}
+	# Nothing falls below a new game's: no zero health, no negative gold.
+	var base := fresh()
+	for k: String in base:
+		if base[k] is int or base[k] is float:
+			var low: float = base[k] if k in ["max_hp", "max_mp", "flask_max"] else 0.0
+			out[k] = maxi(int(out[k]), int(low)) if base[k] is int else maxf(float(out[k]), low)
+	return out
+
+
+## `v` if it has the type of `default` (numbers convert, since JSON keeps every
+## number as a float), else `default`. Dictionaries are merged key by key.
+static func _coerce(default: Variant, v: Variant) -> Variant:
+	if default is Dictionary:
+		if not v is Dictionary:
+			return default
+		var d: Dictionary = default.duplicate(true)
+		for k: Variant in v:
+			if k is String:
+				d[k] = _coerce(d[k], v[k]) if d.has(k) else v[k]
+		return d
+	if default is int or default is float:
+		if not _is_number(v):
+			return default
+		return int(v) if default is int else float(v)
+	if typeof(default) != typeof(v):
+		return default
+	return v
+
+
+static func _is_number(v: Variant) -> bool:
+	return (v is int or v is float) and is_finite(float(v))
+
+
+static func _is_point(v: Variant) -> bool:
+	return v is Array and v.size() == 2 and _is_number(v[0]) and _is_number(v[1])
+
+
 func delete_save(which: int) -> void:
-	if has_save(which):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH % which))
+	var path := SAVE_PATH % which
+	for p: String in [path, path + ".bak", path + ".tmp"]:
+		if FileAccess.file_exists(p):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(p))

@@ -84,6 +84,12 @@ static func room_path(room_id: String) -> String:
 	return "res://levels/%s.room" % room_id
 
 
+## Whether a room file exists for `room_id` (a save from another build may name
+## one that doesn't).
+static func room_exists(room_id: String) -> bool:
+	return room_id.count("/") == 1 and not room_id.contains("..") and FileAccess.file_exists(room_path(room_id))
+
+
 func room_text(room_id: String) -> String:
 	if texts.has(room_id):
 		return texts[room_id]
