@@ -35,6 +35,7 @@ const ZONES := {
 	"dartmoor": {"name": "Dartmoor", "color": Color("4a9aa8")},
 	"zenis": {"name": "Zenis", "color": Color("8a3a5a")},
 	"sunken": {"name": "Sunken Spring", "color": Color("3a8a9a")},
+	"trials": {"name": "Mantra-Space", "color": Color("b8b4ac")},
 	"gym": {"name": "Movement Gym", "color": Color("8d84a3")},
 	"test": {"name": "Test Rooms", "color": Color("8d84a3")},
 }
@@ -98,12 +99,17 @@ func room_text(room_id: String) -> String:
 
 ## Reads every room file under res://levels (except the gym) plus any rooms in
 ## `texts`, so the map knows each room's place, size and doors.
+## Zone folders that aren't part of the world map (or the completion count).
+const OFF_MAP := ["gym", "trials"]
+
+
 func build_catalog() -> void:
 	catalog.clear()
 	var dir := DirAccess.open("res://levels")
 	if dir != null:
 		for zone_dir in dir.get_directories():
-			if zone_dir == "gym":
+			# The gym and the Guru Trials' mantra-space are off the map.
+			if zone_dir in OFF_MAP:
 				continue
 			var sub := DirAccess.open("res://levels/" + zone_dir)
 			for file in sub.get_files():

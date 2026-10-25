@@ -117,10 +117,28 @@ func _draw() -> void:
 		_draw_glass(origin + Vector2(row_w - 8, 27))
 	_draw_ointment(origin + Vector2(0, 42))
 	_draw_boss()
+	_draw_trial()
 	_draw_messages()
 	_draw_hurt_edge()
 	if _flash > 0.0:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
+
+
+## A Guru Trial's name and clock, top center, while one is under way.
+func _draw_trial() -> void:
+	if not Trials.active():
+		return
+	var t := Trials.find(Trials.run.id)
+	var title := String(t.get("name", "")).to_upper()
+	var clock := Trials.format_time(float(Trials.run.time))
+	var best := Trials.best(Trials.run.id)
+	var sub := "BEST " + Trials.format_time(best) if best != INF else "FIRST WALK"
+	var w := maxf(PixelFont.width(title, 10), PixelFont.width(clock, 20)) + 20.0
+	var x := get_viewport_rect().size.x * 0.5
+	_draw_plate(Rect2(Vector2(x - w * 0.5, 6), Vector2(w, 46)))
+	PixelFont.draw(self, Vector2(x - PixelFont.width(title, 10) * 0.5, 17), title, 10, MASK_FULL, OUTLINE)
+	PixelFont.draw(self, Vector2(x - PixelFont.width(clock, 20) * 0.5, 37), clock, 20, MASK_FULL, OUTLINE)
+	PixelFont.draw(self, Vector2(x - PixelFont.width(sub, 10) * 0.5, 49), sub, 10, GOLD, OUTLINE)
 
 
 ## How strongly the screen's edge glows red now: a hit's flash, or at low health

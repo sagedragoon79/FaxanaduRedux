@@ -38,7 +38,8 @@ const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_
 func _texts() -> Dictionary:
 	var out := {}
 	for zone: String in DirAccess.get_directories_at("res://levels"):
-		if zone == "gym":
+		# The trials are entered through the Guru's menu, not doors: tested on their own.
+		if zone in World.OFF_MAP:
 			continue
 		for file: String in DirAccess.get_files_at("res://levels/" + zone):
 			if file.ends_with(".room"):
@@ -548,3 +549,25 @@ func test_the_sunken_spring_lies_under_the_last_stone_of_the_rise() -> void:
 	var rooms := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
 	check(rooms.has("sunken/spring_gate") and rooms.has("sunken/drowned_aqueduct") and rooms.has("sunken/source_hall"),
 		"down through it, every room of the Sunken Spring is in reach")
+
+
+## The Guru Trials (bible 3.1) are entered through the Guru, not by doors: each
+## built trial's bell can be reached from its start with only the Climbing
+## Glove (the first trials open after the first spring), and no spot the trial
+## can put you on is cut off from the bell.
+func test_every_guru_trial_can_be_cleared_with_the_glove() -> void:
+	for t: Dictionary in Trials.built():
+		var text := FileAccess.get_file_as_string(World.room_path(t.room))
+		var reach := Reach.new({t.room: text}, {"glove": true})
+		var start := reach.spot_of(t.room, "P")
+		check(start != "", "%s has a start" % t.name)
+		var goal := ""
+		for line: String in text.split("\n"):
+			if line.begins_with("prop:") and line.ends_with("trial_goal"):
+				var parts := line.substr(5).split(",")
+				goal = Reach.key(t.room, int(parts[0]), int(parts[1]))
+		check(goal != "", "%s has a bell" % t.name)
+		var nodes := reach.reachable(start)
+		check(nodes.has(goal), "%s: the bell can be reached from the start" % t.name)
+		var stuck := reach.stuck(nodes, [goal])
+		check(stuck.is_empty(), "%s: every spot can still get to the bell: %s" % [t.name, stuck.slice(0, 6)])

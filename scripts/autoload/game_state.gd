@@ -96,6 +96,8 @@ static func fresh() -> Dictionary:
 		"clears": 0,
 		## Times you have fallen this run (the secret ending wants none).
 		"deaths": 0,
+		## Guru Trials cleared: trial id -> best time in seconds (Trials).
+		"trials": {},
 	}
 
 
@@ -458,6 +460,9 @@ static func sanitize(src: Variant) -> Dictionary:
 		return v is Array and v.size() == 3 and v[0] is String and _is_number(v[1]) and _is_number(v[2]))
 	if not _is_point(out.save_pos):
 		out.save_pos = [0, 0]
+	for id: Variant in out.trials.keys():
+		if not _is_number(out.trials[id]) or float(out.trials[id]) < 0.0:
+			out.trials.erase(id)
 	for room: Variant in out.gurus.keys():
 		if not _is_point(out.gurus[room]):
 			out.gurus.erase(room)

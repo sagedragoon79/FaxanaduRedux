@@ -22,6 +22,8 @@ const ZONES := {
 	"zenis": [32, Color("70e8f0"), Vector2(0, -9), 6.0, 0.18],
 	# The Sunken Spring: specks of the spring's light rising through the dark.
 	"sunken": [28, Color("a0f0e8"), Vector2(0, -6), 4.0, 0.12],
+	# The mantra-space: pale flecks hanging almost still.
+	"trials": [24, Color("e8e4dc"), Vector2(0, -2), 8.0, 0.1],
 }
 
 ## Zones whose air settles once their spring runs: spring flag -> share of motes

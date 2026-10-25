@@ -413,6 +413,10 @@ ZONES = {
               "under": "night-0", "outline": "night-0"},
     "sunken": {"painter": paint_spring, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "sky-6", "cap_top": 3,
                "under": "night-1", "outline": "night-0"},
+    # The Guru Trials' mantra-space (pass 113): pale grey blocks with no moss and
+    # no warmth, a place made of nothing but footholds.
+    "trials": {"painter": paint_bricks, "ramp": "stone", "cap": "stone", "light": "stone", "glow": None,
+               "under": "night-1", "outline": "night-0"},
     "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
                  "under": "night-1", "outline": "night-0"},
 }
@@ -1331,6 +1335,38 @@ def sunken_mid():
     return img
 
 
+def trials_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
+    gradient(img, "night-0", "stone-1")
+    rng = random.Random(113)
+    # A void with great faint mantra rings turning in it, each a circle of
+    # broken strokes like letters seen from far off.
+    for _ in range(7):
+        cx, cy = rng.randrange(BG_W), rng.randrange(BG_H)
+        r = rng.randrange(40, 140) * D
+        for k in range(int(r * 0.9)):
+            a = k / (r * 0.9) * math.tau
+            if (k // (6 * D)) % 3 == 2:
+                continue
+            for w in range(D):
+                put(img, cx + int(math.cos(a) * (r + w)), cy + int(math.sin(a) * (r + w)), c("stone-2"))
+    return img
+
+
+def trials_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(114)
+    # Nearer: pale slabs hanging in the void, each with a darker underside.
+    for _ in range(18):
+        w = rng.randrange(14, 60) * D
+        h = rng.randrange(4, 10) * D
+        x0, y0 = rng.randrange(BG_W), rng.randrange(BG_H - h)
+        for y in range(h):
+            for x in range(w):
+                put(img, x0 + x, y0 + y, c("stone-3" if y < D else ("stone-2" if y < h - 2 * D else "night-1")))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -1347,6 +1383,7 @@ BACKGROUNDS = {
     "dartmoor": (dartmoor_far, dartmoor_mid),
     "zenis": (zenis_far, zenis_mid),
     "sunken": (sunken_far, sunken_mid),
+    "trials": (trials_far, trials_mid),
     "gym": (gym_far, None),
 }
 

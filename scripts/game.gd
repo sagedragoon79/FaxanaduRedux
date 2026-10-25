@@ -18,7 +18,7 @@ extends Node2D
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
-##   --open=shop:ID|guru|title|skills|pause|options|controls
+##   --open=shop:ID|guru|trials|title|skills|pause|options|controls
 ##                              (title: the nearest Guru names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
@@ -29,6 +29,7 @@ extends Node2D
 ##   --drops                    drop a loaf of bread, a mana orb and a poison flask ahead of the player
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
+##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
 ##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
@@ -415,9 +416,16 @@ func _debug_open() -> void:
 	if _args.has("say"):
 		var npc: Dictionary = GameData.npc(_args["say"])
 		GameState.say(npc.get("name", ""), npc.get("lines", [npc.get("greeting", "")]))
+	if _args.has("trial"):
+		var spec := String(_args["trial"]).split(",")
+		Trials.begin(spec[0], Trials.TEMPLE, Vector2(22 * Room.TILE, 20 * Room.TILE))
+		if spec.size() > 1:
+			Trials.run.time = float(spec[1])
 	var what: String = _args.get("open", "")
 	if what.begins_with("shop:"):
 		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)
+	elif what == "trials":
+		Menus.open_trials(get_tree(), player)
 	elif what == "guru":
 		Menus.open_guru(get_tree(), GameData.npc("guru").greeting, player, null)
 	elif what == "title":
