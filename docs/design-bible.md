@@ -501,6 +501,15 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     **Meteor Seed**: a crystal that hangs where it died and swells for 0.7 s, then bursts in a ring (30 px,
     10 damage, unparryable). One slash or a pogo cracks it harmlessly, so pressing forward is safer than
     backing off, and seeds give a corrupted fight a rhythm of pogo chains. The Hour Glass holds seeds.
+  - **Wrong gravity, as built (pass 79):** pockets of `GravityDrift` (legend `v`) where the player keeps 40% of
+    their weight (`Player.gravity_scale`, gravity and top fall speed alike). A plain jump rises about 11 tiles and
+    a fall drifts down. Leave the pocket mid-flight and the true pull takes hold. They read as violet columns
+    with cyan motes rising through them. Only the player is affected. The movement numbers in section 6 are
+    unchanged; the pocket scales them. The reachability checker allows a 9-tile rise from inside a pocket when
+    the column is drift up to the landing.
+  - **Drift Well** (64,-11, 40x45), beyond the Heart Stair's upper door: three drift pockets carry you up
+    nine-tile ledges a jump could never reach, past a slug, a hound, a Crystal Dwarf, a hornet in the second
+    pocket and a Shade Knight. A shrine is at the top. The heart beyond is not open yet.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

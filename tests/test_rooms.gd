@@ -915,3 +915,37 @@ func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
 	check(w.room.zone == "zenis" and Music.track == "zenis" and Music.ambience_track == "amb_zenis", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
 	check(World.ZONES.has("zenis") and w.motes.zone == "zenis", "the map knows the zone, and spores drift in the air")
 	check(w.room.doors[2].target == "zenis/heart_stair", "the Threshold leads on to the Heart Stair")
+
+
+## Bible 8.9: the Heart Stair leads up into the Drift Well, where wrong gravity
+## carries a plain jump up ledges no jump could reach.
+func test_the_drift_well_lifts_you_up_its_ledges() -> void:
+	GameState.new_game()
+	var w := make_world({}, "zenis/heart_stair")
+	await frames(2)
+	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/drift_well", "the Heart Stair leads on to the Drift Well")
+	w._enter("zenis/drift_well")
+	await frames(2)
+	check(w.room.get_children().filter(func(c: Node) -> bool: return c is GravityDrift).size() == 3, "three pockets of wrong gravity")
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	p.teleport(cell_feet(18, 42))
+	await frames(10)
+	# A full jump straight up the first pocket, then drift right onto the ledge nine tiles up.
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var landed := false
+	for i in 240:
+		await frames(1)
+		if p.global_position.y < cell_feet(18, 33).y - 8.0:
+			p.input.move_x = 1
+		if p.is_on_floor() and i > 10:
+			landed = p.global_position.y <= cell_feet(20, 33).y + 1.0
+			break
+	p.input.move_x = 0
+	p.input.jump_held = false
+	check(landed, "a jump in the drift lands on the ledge nine tiles up (%s)" % p.global_position)

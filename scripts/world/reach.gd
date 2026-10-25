@@ -21,6 +21,10 @@ const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
 const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
 ## Off a bounce-pod (legend `@`): pod_bounce 600 rises about nine tiles in play.
 const POD_JUMP := {0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 4, 7: 3}
+## Inside wrong gravity (legend `v`, GravityDrift.PULL 0.4) a jump rises about 11
+## tiles and hangs long; past the plain envelope the column must stay drift up to
+## the landing height, or the true pull takes hold.
+const DRIFT_JUMP := {0: 6, 1: 6, 2: 6, 3: 6, 4: 6, 5: 6, 6: 5, 7: 5, 8: 4, 9: 3}
 ## With the Elven Stride: dash_speed 380 for 0.15 s is about 3.5 tiles, held level.
 const STRIDE_REACH := 3
 const DROP_DRIFT := 4
@@ -217,10 +221,15 @@ func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
 	var envelope: Dictionary = BOOT_JUMP if abilities.get("boots", false) else JUMP
 	if ch(r, x, y) == "@":
 		envelope = POD_JUMP
+	var drifting := ch(r, x, y) == "v"
+	if drifting:
+		envelope = DRIFT_JUMP
 	if abilities.get("stride", false):
 		envelope = _strided(envelope)
 	for rise: int in envelope:
 		var top := y - rise
+		if drifting and not JUMP.has(rise) and ch(r, x, top) != "v":
+			break
 		var ok := true
 		for yy in range(top - 2, y - 2):
 			if not clear(r, x, yy):
