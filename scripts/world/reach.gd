@@ -38,6 +38,19 @@ var abilities := {}    # ability -> bool
 var keys := false      # may Jack doors be opened?
 
 var _edges := {}       # node key -> Array of node keys
+# Per-room caches, for speed only (a full flood visits each cell many times):
+# solidity for these abilities, and memos of standable() and drop(). A room's
+# caches are dropped when its root-gates open.
+var _solid := {}       # room id -> Array of bool, row-major
+var _stand := {}       # room id -> Array: 0 unknown, 1 no, 2 yes
+var _drops := {}       # room id -> Array: -2 unknown, else drop()'s answer
+var _climbs := {}      # node key -> where a climb from there leads
+var _jumps := {}       # node key and side -> where a jump from there leads
+# The room the last query was about, so runs of queries skip the lookups.
+var _lr := ""
+var _lw := 0
+var _lh := 0
+var _lsolid: Array = []
 var _roots_open := {}  # room id -> true once its Root Heart is in reach
 
 
@@ -80,7 +93,49 @@ func ch(room_id: String, x: int, y: int) -> String:
 
 
 func solid(room_id: String, x: int, y: int) -> bool:
-	var c := ch(room_id, x, y)
+	if y < 0:
+		return false  # open sky above the room (ch gives ".")
+	if room_id != _lr:
+		_use(room_id)
+	if y >= _lh or x < 0 or x >= _lw:
+		return true
+	return _lsolid[y * _lw + x]
+
+
+## Points the fast path at a room, building its solidity map on first use.
+func _use(room_id: String) -> void:
+	_lr = room_id
+	var size: Vector2i = rooms[room_id].size
+	_lw = size.x
+	_lh = size.y
+	if not _solid.has(room_id):
+		var map := []
+		map.resize(_lw * _lh)
+		for y in _lh:
+			for x in _lw:
+				map[y * _lw + x] = _solid_char(room_id, ch(room_id, x, y))
+		_solid[room_id] = map
+		var stand := []
+		stand.resize(_lw * _lh)
+		stand.fill(0)
+		_stand[room_id] = stand
+		var drops := []
+		drops.resize(_lw * _lh)
+		drops.fill(-2)
+		_drops[room_id] = drops
+	_lsolid = _solid[room_id]
+
+
+## Forgets a room's caches (its root-gates just opened).
+func _forget(room_id: String) -> void:
+	_solid.erase(room_id)
+	_stand.erase(room_id)
+	_drops.erase(room_id)
+	_lr = ""
+
+
+## Whether a tile of character `c` in the room blocks the body, for these abilities.
+func _solid_char(room_id: String, c: String) -> bool:
 	if c == "J":
 		return not keys
 	if c == "f":
@@ -145,10 +200,16 @@ func _foothold(room_id: String, x: int, y: int) -> bool:
 
 
 func standable(room_id: String, x: int, y: int) -> bool:
-	var size: Vector2i = rooms[room_id].size
-	if x < 0 or x >= size.x or y < 0 or y >= size.y:
+	if room_id != _lr:
+		_use(room_id)
+	if x < 0 or x >= _lw or y < 0 or y >= _lh:
 		return false
-	return body_clear(room_id, x, y) and supported(room_id, x, y) and not HAZARD.contains(ch(room_id, x, y))
+	var memo: Array = _stand[room_id]
+	var i := y * _lw + x
+	if memo[i] == 0:
+		var ok := body_clear(room_id, x, y) and supported(room_id, x, y) and not HAZARD.contains(ch(room_id, x, y))
+		memo[i] = 2 if ok else 1
+	return memo[i] == 2
 
 
 ## Where something falling down column x from row y lands, or -1 if it leaves
@@ -156,6 +217,18 @@ func standable(room_id: String, x: int, y: int) -> bool:
 ## spikes or a thorn bulb is a pogo: it "lands" just above the hazard, and the
 ## bounce works like a jump from there.
 func drop(room_id: String, x: int, y: int) -> int:
+	if room_id != _lr:
+		_use(room_id)
+	if x < 0 or x >= _lw or y < 0 or y >= _lh:
+		return _drop(room_id, x, y)
+	var memo: Array = _drops[room_id]
+	var i := y * _lw + x
+	if memo[i] == -2:
+		memo[i] = _drop(room_id, x, y)
+	return memo[i]
+
+
+func _drop(room_id: String, x: int, y: int) -> int:
 	var h: int = rooms[room_id].size.y
 	var yy := y
 	while yy < h:
@@ -221,6 +294,15 @@ static func _strided(envelope: Dictionary) -> Dictionary:
 ## A jump from (x, y): rise straight up to the target's height (head room in
 ## column x), then travel across with the body clear, then land.
 func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
+	var k := "%s|%d|%d|%d" % [r, x, y, s]
+	if not _jumps.has(k):
+		var found := []
+		_jump_from(found, r, x, y, s)
+		_jumps[k] = found
+	out.append_array(_jumps[k])
+
+
+func _jump_from(out: Array, r: String, x: int, y: int, s: int) -> void:
 	var envelope: Dictionary = BOOT_JUMP if abilities.get("boots", false) else JUMP
 	if ch(r, x, y) == "@":
 		envelope = POD_JUMP
@@ -260,17 +342,29 @@ func _add_climbs(out: Array, r: String, x: int, y: int) -> void:
 			var y0 := y - lift
 			if not body_clear(r, cx, y0) or not body_clear(r, x, y0):
 				break
-			var yy := y0
-			while body_clear(r, cx, yy - 1) and not _body_hurts(r, cx, yy - 1) \
-					and (solid(r, cx - 1, yy - 2) or solid(r, cx + 1, yy - 2)):
-				yy -= 1
-				if standable(r, cx, yy):
-					out.append(key(r, cx, yy))
-				for s: int in [-1, 1]:
-					_add_jumps(out, r, cx, yy, s)
-			# Reaching a ceiling door by climbing.
-			if yy <= 3:
-				_door_at(out, r, cx, 0)
+			out.append_array(_climb(r, cx, y0))
+
+
+## Everywhere a climb up column cx from row y0 leads (memoized: many nearby
+## spots start the same climb).
+func _climb(r: String, cx: int, y0: int) -> Array:
+	var k := key(r, cx, y0)
+	if _climbs.has(k):
+		return _climbs[k]
+	var out := []
+	var yy := y0
+	while body_clear(r, cx, yy - 1) and not _body_hurts(r, cx, yy - 1) \
+			and (solid(r, cx - 1, yy - 2) or solid(r, cx + 1, yy - 2)):
+		yy -= 1
+		if standable(r, cx, yy):
+			out.append(key(r, cx, yy))
+		for s: int in [-1, 1]:
+			_add_jumps(out, r, cx, yy, s)
+	# Reaching a ceiling door by climbing.
+	if yy <= 3:
+		_door_at(out, r, cx, 0)
+	_climbs[k] = out
+	return out
 
 
 ## Whether a body with its feet in row y of column x would touch a hazard
@@ -367,10 +461,13 @@ func reachable(start: String) -> Dictionary:
 				var x := g[y].find("N")
 				if x >= 0 and touchable(seen, id, x, y):
 					_roots_open[id] = true
+					_forget(id)
 					opened = true
 		if not opened:
 			return seen
 		_edges.clear()
+		_climbs.clear()
+		_jumps.clear()
 	return {}
 
 

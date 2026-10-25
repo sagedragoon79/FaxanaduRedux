@@ -866,3 +866,106 @@ func test_evil_heart_fight_soak_stays_lean() -> void:
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("bound") and states.has("float"), "the roots bound it and let it go again")
 
+
+
+## Every room id in the game (not the gym), in a fixed order.
+func _all_room_ids(w: World) -> Array:
+	var ids := w.catalog.keys()
+	ids.sort()
+	return ids
+
+
+## Clears foes from the room so an arrival is judged on the room, not on a fight.
+func _clear_foes(w: World) -> void:
+	for c in w.room.get_children():
+		if c is Enemy:
+			c.queue_free()
+
+
+## Walks through every door of every room, one at a time, starting fresh in its
+## room each time: the far side must load, put the player in its matching door
+## inside the room and out of the walls, standing (side doors) and unhurt, and a
+## lap of the whole game must leave no nodes behind.
+func test_every_door_in_the_game_lands_you_safely() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	for a: String in w.player.abilities:
+		w.player.abilities[a] = true
+	# The gate of Zenis stands open for whoever reaches the far side of it.
+	GameState.data.rings = ZenisGate.RINGS.duplicate()
+	GameState.set_flag(ZenisGate.FLAG)
+	await frames(5)
+	var start_count := runner.get_tree().get_node_count()
+	var problems: Array[String] = []
+	var walked := 0
+	for id: String in _all_room_ids(w):
+		w.start(id)
+		var doors: Dictionary = w.room.doors.duplicate()
+		for n: int in doors:
+			var d: Dictionary = doors[n]
+			w.start(id)
+			_clear_foes(w)
+			await frames(1)
+			var hp := w.player.hp
+			w.use_door(n)
+			await frames(1)
+			_clear_foes(w)
+			await frames(20)
+			walked += 1
+			var p := w.player
+			var where := "%s door %d -> %s" % [id, n, w.room.id]
+			if w.room.id == id:
+				problems.append(where + ": never left")
+			elif p.dead or p.hp < hp:
+				problems.append(where + ": hurt on arrival")
+			elif _embedded(w.room, p) or not w.room.pixel_rect().has_point(p.global_position):
+				problems.append(where + ": inside a wall at %s" % p.global_position)
+			elif String(d.edge) in ["left", "right"] and not p.is_on_floor():
+				problems.append(where + ": not standing at %s" % p.global_position)
+	w.start("eolis/west_gate")
+	await frames(10)
+	var end_count := runner.get_tree().get_node_count()
+	print("  Door walk: %d doors, nodes %d -> %d" % [walked, start_count, end_count])
+	check(walked > 150, "walked every door in the game (%d)" % walked)
+	check(problems.is_empty(), "every door lands you safely: %s" % [problems])
+	check(end_count - start_count < 40, "and a lap of the whole game leaves nothing behind (%d -> %d nodes)" % [start_count, end_count])
+
+
+## Rests at every shrine in the game, then loads that save into a fresh world
+## the way Continue does: you wake in the shrine's room, standing, out of the walls.
+func test_every_shrine_saves_and_continues_where_you_rested() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	await frames(2)
+	const SLOT := 9
+	GameState.slot = SLOT
+	var problems: Array[String] = []
+	var shrines := 0
+	for id: String in _all_room_ids(w):
+		w.start(id)
+		var found: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is SaveShrine)
+		if found.is_empty():
+			continue
+		for shrine: SaveShrine in found:
+			shrines += 1
+			w.player.teleport(shrine.global_position)
+			shrine.interact(w.player)
+			GameState.data.save_room = ""
+			if not GameState.load_game(SLOT) or GameState.data.save_room != id:
+				problems.append("%s: the save did not come back" % id)
+				continue
+			var w2 := World.new()
+			w2.instant = true
+			arena.add_child(w2)
+			w2.start(String(GameState.data.save_room), Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1])))
+			w2.player.input.scripted = true
+			await frames(20)
+			var p := w2.player
+			if w2.room.id != id or p.dead or not p.is_on_floor() or _embedded(w2.room, p):
+				problems.append("%s: woke at %s (on floor %s)" % [w2.room.id, p.global_position, p.is_on_floor()])
+			w2.queue_free()
+			await frames(1)
+	GameState.delete_save(SLOT)
+	check(shrines >= 15, "rested at every shrine (%d)" % shrines)
+	check(problems.is_empty(), "every shrine's save continues where you rested: %s" % [problems])
+
