@@ -11,6 +11,10 @@ var volume_db := -6.0
 ## every playback to the end and report them as leaks at exit.
 var silent := false
 
+## Sounds loaded from disk so far. All of them load at start (`load_all`), so
+## this never grows mid-play: a first slash or phase break never waits on the disk.
+var loads := 0
+
 var _players: Array[AudioStreamPlayer] = []
 var _streams := {}
 var _next := 0
@@ -25,6 +29,16 @@ func _ready() -> void:
 		p.bus = "Sfx"
 		add_child(p)
 		_players.append(p)
+	load_all()
+
+
+## Loads every sound in SFX_DIR (about 80 small files, some 20 ms once at start).
+func load_all() -> void:
+	for f in DirAccess.get_files_at(SFX_DIR):
+		# Exported games list "name.wav.import" (or ".remap") in place of the file.
+		var file := f.trim_suffix(".remap").trim_suffix(".import")
+		if file.ends_with(".wav"):
+			_get_stream(file.get_basename())
 
 
 ## Plays a sound by name with a little random pitch so repeats don't sound robotic.
@@ -46,5 +60,7 @@ func _get_stream(sound: String) -> AudioStream:
 		return _streams[sound]
 	var path := SFX_DIR + sound + ".wav"
 	var stream: AudioStream = load(path) if ResourceLoader.exists(path) else null
+	if stream != null:
+		loads += 1
 	_streams[sound] = stream
 	return stream
