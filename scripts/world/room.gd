@@ -456,6 +456,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(LanternGhost.new(), center)
 		"V":
 			_spawn_enemy(BogMyconid.new(), bottom_center)
+		"p":
+			_spawn_enemy(DrownedDwarf.new(), bottom_center)
 		"m":
 			_spawn_enemy(LeafMantis.new(), bottom_center)
 		"t":
