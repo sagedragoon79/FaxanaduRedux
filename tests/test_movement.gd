@@ -442,3 +442,171 @@ func test_swim_numbers_match_the_bible() -> void:
 	check(t.swim_speed_multiplier == 0.7 and t.swim_float == 50.0 and t.swim_sink == 120.0, "swim speed, float and sink are the bible's (6.8)")
 	check(t.swim_drag == 520.0 and t.swim_stroke == 230.0, "drag and stroke too")
 	check(t.swim_stroke < t.jump_velocity, "a stroke is weaker than a jump")
+
+
+
+# --- Bible 6.2 to 6.6, pinned (pass 107) -------------------------------------------
+
+const LIP := [
+	"################",
+	"#..............#",
+	"#..............#",
+	"#..............#",
+	"#..............#",
+	"#..............#",
+	"#..............#",
+	"#..............#",
+	"#.........######",
+	"#.........######",
+	"#.........######",
+	"#.........######",
+	"################",
+]
+## LIP's ledge: its top edge and its left face.
+const LIP_TOP := 128.0
+const LIP_FACE := 160.0
+
+
+func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
+	var t := MovementTuning.new()
+	# 6.2
+	check_near(t.coyote_time, 0.10, 0.0001, "coyote time")
+	check_near(t.jump_buffer_time, 0.12, 0.0001, "jump buffer")
+	check(t.corner_correction_px == 6, "corner correction 6 px")
+	check(t.ledge_correction_px == 4, "ledge correction 4 px")
+	# 6.3
+	check_near(t.wall_slide_speed, 90.0, 0.0001, "wall slide speed")
+	check_near(t.wall_stick_time, 0.08, 0.0001, "wall stick")
+	check_near(t.wall_jump_x, 220.0, 0.0001, "wall jump outward")
+	check_near(t.wall_jump_y, 380.0, 0.0001, "wall jump up")
+	check_near(t.wall_climb_jump_x, 120.0, 0.0001, "climb jump outward")
+	check_near(t.wall_jump_lock, 0.10, 0.0001, "wall jump input lock")
+	check_near(t.wall_climb_jump_lock, 0.06, 0.0001, "climb jump input lock")
+	check_near(t.wall_jump_blend, 0.10, 0.0001, "control blends back over 0.10 s")
+	check_near(t.wall_coyote_time, 0.08, 0.0001, "wall coyote")
+	# 6.4
+	check_near(t.double_jump_height, 48.0, 0.0001, "double jump height")
+	check_near(t.double_jump_velocity, 326.0, 1.0, "double jump velocity")
+	# 6.6
+	check_near(t.pogo_bounce, 380.0, 0.0001, "pogo bounce")
+	check_near(t.pogo_bounce_held, 420.0, 0.0001, "pogo bounce, jump held")
+	check_near(t.down_strike_active, 0.14, 0.0001, "down-strike active")
+	check(Player.DOWN_STRIKE_SIZE == Vector2(28, 24), "down-strike hitbox 28x24")
+
+
+## Frames off a ledge before Jump is pressed -> whether it jumped.
+func _jump_after_ledge(k: int) -> bool:
+	var room := make_room(LEDGE)
+	var p := make_player(room, Vector2i(2, 3), {"boots": false, "glove": false})
+	await _settle(p)
+	await _walk_off_ledge(p)
+	await frames(k - 1)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	var jumped := p.velocity.y < -300.0
+	room.free()
+	return jumped
+
+
+func test_coyote_time_is_a_tenth_of_a_second() -> void:
+	# 0.10 s is 6 frames: a jump on the 6th frame off the ledge still counts.
+	var last := 0
+	for k in range(4, 10):
+		if await _jump_after_ledge(k):
+			last = k
+	check(last == 6, "the last frame a ledge jump counts is the 6th, 0.10 s (got %d)" % last)
+
+
+## Drops from row 4 onto FLAT's floor with Jump pressed `early` frames before
+## the first frame on the floor (`land`, measured first); returns whether it jumped.
+func _buffered_landing(early: int, land: int) -> bool:
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 4), {"boots": false})
+	var jumped := false
+	for i in land + 4:
+		if i == land - early:
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+		await frames(1)
+		if p.velocity.y < -300.0:
+			jumped = true
+			break
+	room.free()
+	return jumped
+
+
+func test_jump_buffer_holds_a_press_for_0_12_s() -> void:
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 4), {"boots": false})
+	var land := 0
+	for i in 90:
+		await frames(1)
+		if p.is_on_floor():
+			land = i + 1  # the next frame starts on the floor
+			break
+	room.free()
+	check(land > 10, "the drop takes a while (%d frames)" % land)
+	# 0.12 s is 7.2 frames: a press 7 frames early still jumps, 8 is too early.
+	check(await _buffered_landing(7, land), "a press 7 frames (0.117 s) before landing jumps")
+	check(await _buffered_landing(3, land), "a press 3 frames before landing jumps")
+	check(not await _buffered_landing(8, land), "a press 8 frames (0.133 s) before landing is dropped")
+
+
+## Jumps under a block that overhangs the body by `overlap` px; returns the rise.
+func _rise_under_corner(overlap: float) -> float:
+	var rows := [
+		"############",
+		"#..........#",
+		"#..........#",
+		"#..........#",
+		"#...#......#",
+		"#..........#",
+		"#..........#",
+		"#..........#",
+		"#..........#",
+		"############",
+	]
+	# The block at cell (4,4) starts at x 64; the body is 12 wide.
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 8), {"boots": false})
+	p.position.x = 64.0 - 6.0 + overlap
+	await _settle(p)
+	var start_y := p.global_position.y
+	var min_y := start_y
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	for i in 30:
+		await frames(1)
+		min_y = minf(min_y, p.global_position.y)
+	room.free()
+	return start_y - min_y
+
+
+func test_corner_correction_reaches_6_px_and_no_further() -> void:
+	check(await _rise_under_corner(6.0) > 55.0, "a 6 px overhang is slid past")
+	check(await _rise_under_corner(7.0) < 40.0, "a 7 px overhang bumps the head")
+
+
+## Falls toward LIP's ledge from `depth` px below its top, already touching it.
+func _clip_lip(depth: float, glove: bool) -> bool:
+	var room := make_room(LIP)
+	var p := make_player(room, Vector2i(3, 3), {"glove": glove})
+	await frames(1)  # a body collides only from its second frame
+	p.position = Vector2(LIP_FACE - 6.0 - 0.3, LIP_TOP + depth)
+	p.velocity = Vector2(p.tuning.run_speed, 0.0)
+	for i in 12:
+		p.input.move_x = 1
+		await frames(1)
+	var up := p.is_on_floor() and p.global_position.y <= LIP_TOP + 0.5
+	room.free()
+	return up
+
+
+func test_ledge_correction_lifts_you_4_px_onto_a_ledge() -> void:
+	for glove in [false, true]:
+		var with := "with" if glove else "without"
+		check(await _clip_lip(2.0, glove), "%s the glove, clipping a ledge by 2 px steps onto it" % with)
+		check(await _clip_lip(4.0, glove), "%s the glove, clipping it by 4 px steps onto it" % with)
+		check(not await _clip_lip(5.0, glove), "%s the glove, 5 px below the top is too far" % with)
+

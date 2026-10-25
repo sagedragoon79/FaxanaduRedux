@@ -46,6 +46,10 @@ const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
 ## Seconds between the feathers a glide sheds.
 const GLIDE_FEATHERS := 0.14
+## Corner and ledge correction step a hair past each whole pixel, so a clip of
+## exactly 6 (or 4) px still clears: a body left flush against a tile counts as
+## touching it (pass 107).
+const CORRECTION_SLOP := 0.1
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -360,8 +364,13 @@ func _tick_timers(delta: float) -> void:
 	_coyote_timer -= delta
 	_jump_buffer_timer -= delta
 	_wall_coyote_timer -= delta
-	_control_lock_timer -= delta
-	_control_blend_timer -= delta
+	# After a wall jump the steering blends back only once the lock is over.
+	if _control_lock_timer > 0.0:
+		_control_lock_timer -= delta
+		if _control_lock_timer <= 0.0:
+			_control_blend_timer += _control_lock_timer
+	else:
+		_control_blend_timer -= delta
 	_dash_cooldown -= delta
 	_invuln_timer -= delta
 	if _ointment_timer > 0.0:
@@ -854,22 +863,28 @@ func _apply_corner_correction(delta: float) -> void:
 		return
 	for i in range(1, tuning.corner_correction_px + 1):
 		for s in [1, -1]:
-			var offset := Vector2(i * s, 0)
+			var offset := Vector2((i + CORRECTION_SLOP) * s, 0)
 			if not test_move(global_transform, offset) and not test_move(global_transform.translated(offset), motion):
 				global_position += offset
 				return
 
 
 func _apply_ledge_correction(delta: float, on_floor: bool) -> void:
-	if on_floor or velocity.y < 0.0 or velocity.x == 0.0 or is_wall_sliding:
+	if on_floor or velocity.y < 0.0 or velocity.x == 0.0:
 		return
-	var motion := Vector2(velocity.x * delta, 0)
+	# A wall slide holds you against the wall at a crawl, so probe as far as the
+	# wall contact does, and step onto the lip as well as up (pass 107: with the
+	# Climbing Glove a clipped ledge used to catch you in a slide instead).
+	var motion := Vector2(wall_dir * 2.0, 0) if is_wall_sliding else Vector2(velocity.x * delta, 0)
 	if not test_move(global_transform, motion):
 		return
 	for i in range(1, tuning.ledge_correction_px + 1):
-		var up := Vector2(0, -i)
+		var up := Vector2(0, -(i + CORRECTION_SLOP))
 		if not test_move(global_transform, up) and not test_move(global_transform.translated(up), motion):
 			global_position += up
+			if is_wall_sliding:
+				global_position += motion
+				is_wall_sliding = false
 			return
 
 
