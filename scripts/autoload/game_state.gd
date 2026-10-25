@@ -92,6 +92,8 @@ static func fresh() -> Dictionary:
 		"play_time": 0.0,
 		## Times the game has been finished on this save (the ending sets the `cleared` flag too).
 		"clears": 0,
+		## Times you have fallen this run (the secret ending wants none).
+		"deaths": 0,
 	}
 
 
@@ -125,11 +127,19 @@ func set_flag(id: String, value := true) -> void:
 ## The Evil One is dead: mark the save cleared and start the ending.
 func begin_ending() -> void:
 	set_flag("cleared")
+	if secret_ending():
+		set_flag("cleared_secret")
 	data.clears = int(data.get("clears", 0)) + 1
 	ending_started.emit()
 
 
 ## Seconds played on this save, counting the time since the last save.
+## The secret ending (design bible 11): the Evil One reached without a single
+## death, wearing the Drowned Warden's Battle Suit.
+func secret_ending() -> bool:
+	return int(data.get("deaths", 0)) == 0 and String(data.equipment.get("armor", "")) == "battle_suit"
+
+
 func total_play_time() -> float:
 	return float(data.get("play_time", 0.0)) + play_time
 

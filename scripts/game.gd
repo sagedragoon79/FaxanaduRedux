@@ -34,6 +34,7 @@ extends Node2D
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
 ##   --ending=SECONDS[,PART]    play the ending on frame 2 and run it SECONDS in (PART:
 ##                              epilogue, credits or thanks to start there)
+##   --secret                   with --ending: the secret ending (no deaths, the Battle Suit)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 const SAVE_SLOT := 1
@@ -220,6 +221,9 @@ func _process(_delta: float) -> void:
 		_debug_open()
 	if _args.has("ending") and _frames == 2:
 		var parts: PackedStringArray = String(_args["ending"]).split(",")
+		if _args.has("secret"):
+			GameState.data.equipment.armor = "battle_suit"
+			GameState.data.deaths = 0
 		GameState.begin_ending()
 		if parts.size() > 1 and parts[1] == "thanks":
 			ending.skip()
@@ -282,7 +286,7 @@ func _play_ending() -> void:
 	menu.close()
 	hud.visible = false
 	Music.play("ending", 2.0)
-	ending.start(GameState.rank_name(), GameState.total_play_time())
+	ending.start(GameState.rank_name(), GameState.total_play_time(), GameState.secret_ending(), int(GameState.data.get("deaths", 0)))
 
 
 ## The ending is over: keep the cleared save and go back to the title.

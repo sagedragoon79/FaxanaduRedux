@@ -277,3 +277,71 @@ func test_the_game_plays_the_ending_then_returns_to_the_title() -> void:
 	await frames(2)
 	_restore()
 
+
+
+## Bible 11: the secret ending counts every death of the run.
+func test_deaths_are_counted_and_kept_in_the_save() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	await frames(3)
+	check(int(GameState.data.deaths) == 0, "a new game starts with no deaths")
+	w.player._die(w.player.global_position)
+	await frames(2)
+	check(int(GameState.data.deaths) == 1, "falling counts one (%d)" % int(GameState.data.deaths))
+	const SLOT := 9
+	GameState.slot = SLOT
+	GameState.save_game()
+	GameState.new_game()
+	check(int(GameState.data.deaths) == 0, "a new game clears the count")
+	GameState.load_game(SLOT)
+	check(int(GameState.data.deaths) == 1, "and loading the save brings it back")
+
+
+func test_the_secret_ending_needs_no_deaths_and_the_battle_suit() -> void:
+	GameState.new_game()
+	check(not GameState.secret_ending(), "no deaths alone is not enough")
+	GameState.data.equipment.armor = "battle_suit"
+	check(GameState.secret_ending(), "no deaths in the Battle Suit is the secret ending")
+	GameState.data.deaths = 1
+	check(not GameState.secret_ending(), "one death and it is gone")
+	GameState.data.deaths = 0
+	GameState.begin_ending()
+	check(GameState.flag("cleared") and GameState.flag("cleared_secret"), "a secret clear is marked in the save")
+	GameState.new_game()
+
+
+func test_the_secret_ending_adds_the_sources_cards() -> void:
+	var e := EndingScreen.new()
+	arena.add_child(e)
+	e.start("Lord", 0.0, false, 3)
+	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 0.1)
+	check(e.phase == "credits", "the plain ending climbs after its four cards")
+	e.start("Lord", 0.0, true, 0)
+	check(e.cards().size() == EndingScreen.EPILOGUE.size() + EndingScreen.SECRET_EPILOGUE.size(), "the secret ending has more cards")
+	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 0.1)
+	check(e.phase == "epilogue" and e.cards()[e.card] == EndingScreen.SECRET_EPILOGUE[0], "after the four, the Sunken Spring wakes")
+	e.tick(EndingScreen.SECRET_EPILOGUE.size() * EndingScreen.CARD_TIME)
+	check(e.phase == "credits", "then the climb")
+	e.queue_free()
+
+
+func test_the_game_plays_the_secret_ending_for_a_flawless_run() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("zenis/heart")
+	g.world.use_game_state = false
+	await frames(5)
+	GameState.data.equipment.armor = "battle_suit"
+	GameState.begin_ending()
+	await frames(2)
+	check(g.ending.visible and g.ending.secret and g.ending.deaths == 0, "no deaths in the Battle Suit plays the secret ending")
+	g.ending.skip()
+	g.ending.tick(EndingScreen.THANKS_GRACE)
+	g.ending.advance()
+	await frames(3)
+	g.menu.close()
+	GameState.new_game()

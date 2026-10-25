@@ -8,7 +8,11 @@ extends Control
 ##    in the trunk light one by one, and four cards tell what happened.
 ## 2. **Credits**: the view climbs the Tree from Eolis at its roots, past every
 ##    zone, to the crown at dawn, while the credits rise over it.
-## 3. **Thanks**: a card with your rank and time, until you press a button.
+## 3. **Thanks**: a card with your rank, time and deaths, until you press a button.
+##
+## The secret ending (design bible 11: no deaths and the Battle Suit) adds three
+## epilogue cards: the Sunken Spring wakes under the roots, its water climbs the
+## whole trunk and the crown flowers. Its thanks card says so.
 ##
 ## Jump or attack moves to the next card in the epilogue, holds the climb at
 ## four times its speed during the credits and leaves the thanks card. Pause
@@ -21,6 +25,12 @@ const EPILOGUE := [
 	"Its light drains out of Zenis like a fever breaking.",
 	"Down the trunk, the springs run clear again.",
 	"And in Eolis, the fountain fills.",
+]
+## The secret ending's cards, after the others.
+const SECRET_EPILOGUE := [
+	"Far under Dartmoor, the Sunken Spring wakes.",
+	"Its water climbs the whole Tree, root to crown.",
+	"No one saw you fall. The Tree remembers that.",
 ]
 ## Seconds each epilogue card shows (fading in and out).
 const CARD_TIME := 4.0
@@ -88,6 +98,9 @@ var card := 0
 var rank := ""
 var seconds := 0.0
 var fast := false
+## The secret ending (no deaths, the Battle Suit), and the deaths shown on the thanks card.
+var secret := false
+var deaths := 0
 
 
 func _ready() -> void:
@@ -97,14 +110,21 @@ func _ready() -> void:
 
 
 ## Starts the ending from the top.
-func start(rank_name: String, play_seconds: float) -> void:
+func start(rank_name: String, play_seconds: float, secret_ending := false, death_count := 0) -> void:
 	rank = rank_name
 	seconds = play_seconds
+	secret = secret_ending
+	deaths = death_count
 	phase = "epilogue"
 	t = 0.0
 	climb = 0.0
 	card = 0
 	visible = true
+
+
+## The epilogue's cards: the secret ending's follow the others.
+func cards() -> Array:
+	return EPILOGUE + SECRET_EPILOGUE if secret else EPILOGUE
 
 
 ## Height of the credits block (it rises from below the screen to above it).
@@ -129,7 +149,7 @@ func tick(delta: float) -> void:
 	match phase:
 		"epilogue":
 			card = int(t / CARD_TIME)
-			if card >= EPILOGUE.size():
+			if card >= cards().size():
 				_to("credits")
 		"credits":
 			climb = minf(CLIMB, climb + SPEED * delta * (FAST if fast else 1.0))
@@ -182,7 +202,7 @@ func _centered(y: float, text: String, size: int, color: Color) -> void:
 
 func _draw_epilogue() -> void:
 	draw_rect(Rect2(0, 0, 640, 360), NIGHT)
-	var total := EPILOGUE.size() * CARD_TIME
+	var total := cards().size() * CARD_TIME
 	var k := clampf(t / total, 0.0, 1.0)
 	# The sky warms toward dawn as the story goes on.
 	for i in 12:
@@ -218,11 +238,47 @@ func _draw_epilogue() -> void:
 		draw_circle(at, 3.0, Color(WATER_LIGHT, lit))
 		if lit > 0.0:
 			draw_rect(Rect2(at.x - 1, at.y, 2, (360.0 - at.y) * lit), Color(WATER, 0.5 * lit))
+	if secret:
+		_draw_source()
 	# The card, fading in and out.
-	if card < EPILOGUE.size():
+	if card < cards().size():
 		var into := t - card * CARD_TIME
 		var a := clampf(minf(into / 0.6, (CARD_TIME - into) / 0.6), 0.0, 1.0)
-		_centered(300.0, EPILOGUE[card], 12, Color(TEXT, a))
+		_centered(300.0, cards()[card], 12, Color(TEXT, a))
+
+
+## The secret ending: the Source wakes under the roots, its water climbs the
+## trunk to the crown, and the crown flowers in gold.
+func _draw_source() -> void:
+	var start := EPILOGUE.size() * CARD_TIME
+	var wake := clampf((t - start) / 1.5, 0.0, 1.0)
+	if wake <= 0.0:
+		return
+	# The spring at the roots, a ring of light pulsing out from it.
+	var root := Vector2(320, 352)
+	draw_circle(root, 30.0 * wake, Color(WATER, 0.18 * wake))
+	draw_circle(root, 12.0 * wake, Color(WATER, 0.8 * wake))
+	draw_circle(root, 5.0 * wake, Color(WATER_LIGHT, wake))
+	var ring := fmod(t - start, 1.2) / 1.2
+	draw_arc(root, 12.0 + ring * 50.0, PI, TAU, 24, Color(WATER_LIGHT, (1.0 - ring) * 0.6 * wake), 2.0)
+	# Its water climbs the trunk over the second card, to the crown.
+	var climb_k := clampf((t - start - CARD_TIME) / CARD_TIME, 0.0, 1.0)
+	if climb_k > 0.0:
+		var top := lerpf(352.0, 80.0, climb_k)
+		draw_rect(Rect2(316, top, 8, 352.0 - top), Color(WATER, 0.55))
+		draw_rect(Rect2(319, top, 2, 352.0 - top), Color(WATER_LIGHT, 0.8))
+		for i in 6:
+			var f := fmod((t - start) * 0.8 + i / 6.0, 1.0)
+			var y := lerpf(352.0, top, f)
+			draw_rect(Rect2(317 + sin(i * 2.1 + t) * 3.0, y, 2, 2), Color(WATER_LIGHT, 1.0 - f))
+	# Then the crown flowers.
+	var bloom := clampf((t - start - CARD_TIME * 2.0) / 1.5, 0.0, 1.0)
+	for i in 22:
+		var at := Vector2(320 + sin(i * 2.7) * 150.0, 96 + cos(i * 1.9) * 26.0 + absf(sin(i * 2.7)) * 30.0)
+		var r := (2.0 + float(i % 3)) * bloom
+		if r > 0.0:
+			draw_circle(at, r + 1.0, Color(OUTLINE, 0.6))
+			draw_circle(at, r, GOLD if i % 2 else Color("f0e0f0"))
 
 
 # --- The credits: a climb up the whole Tree ------------------------------------------
@@ -338,5 +394,9 @@ func _draw_thanks() -> void:
 		_centered(180.0, "Rank: %s" % rank, 12, Color(TEXT, a))
 	var mins := int(seconds / 60.0)
 	_centered(200.0, "Time: %d:%02d" % [mins / 60, mins % 60], 12, Color(TEXT, a))
+	_centered(220.0, "Deaths: %d" % deaths, 12, Color(TEXT, a))
+	if secret:
+		_centered(250.0, "The Source runs again.", 12, Color(WATER_LIGHT, a))
+		_centered(266.0, "A flawless climb, in the Warden's Battle Suit.", 12, Color(GOLD, a))
 	if t >= THANKS_GRACE:
 		_centered(300.0, "Press jump to return to the title", 12, Color(SUB, 0.5 + 0.5 * sin(t * 3.0)))

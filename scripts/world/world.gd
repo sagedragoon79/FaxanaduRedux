@@ -392,6 +392,7 @@ func save_at(pos: Vector2) -> void:
 func _on_player_died() -> void:
 	if not use_game_state:
 		return
+	GameState.data.deaths = int(GameState.data.get("deaths", 0)) + 1
 	if is_instance_valid(player.purse):
 		var pos := player.purse.position
 		GameState.data.purse = {"room": room.id, "x": pos.x, "y": pos.y, "value": player.purse.value}
