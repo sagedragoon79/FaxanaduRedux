@@ -591,5 +591,35 @@ def main():
     out[-len(snap):] += snap
     save("eel_lunge", out, 0.5)
 
+    # Attack telegraphs and strikes (pass 102). Each tell rises so it reads as
+    # "about to happen"; the whoosh is the fast strike that follows a lunge.
+    # A blade being drawn back: a thin metal scrape climbing in pitch.
+    d = 0.32
+    n = int(RATE * d)
+    ring = osc(slide(900, 1700, d, 0.8), "saw") * env(n, 0.2, 0.8) * 0.25
+    scrape = lowpass(highpass(noise(d), 2500), slide(3000, 7000, d)) * env(n, 0.25, 0.7) * 0.6
+    save("tell_blade", lowpass(mix(ring, scrape), 6000), 0.4)
+
+    # A heavy body gathering itself: a low groan swelling up from the floor.
+    d = 0.45
+    n = int(RATE * d)
+    groan = lowpass(osc(slide(55, 95, d, 0.7), "saw"), slide(200, 700, d)) * env(n, 0.35, 0.5)
+    grit = lowpass(noise(d), slide(150, 600, d)) * env(n, 0.3, 0.6) * 0.5
+    save("tell_heavy", mix(groan, grit), 0.6)
+
+    # Power drawn in for a shot: a hum with a wobble rising to a high whine.
+    d = 0.4
+    n = int(RATE * d)
+    wob = 1.0 + 0.04 * np.sin(2 * np.pi * 18 * t_axis(d))
+    hum = osc(slide(220, 880, d, 1.4) * wob, "tri") * env(n, 0.3, 0.6) * 0.6
+    air = highpass(noise(d), 4000) * env(n, 0.35, 0.5) * 0.15
+    save("tell_charge", mix(hum, air), 0.42)
+
+    # A body cutting through the air on a swoop or lunge.
+    d = 0.24
+    n = int(RATE * d)
+    rush = lowpass(highpass(noise(d), 300), slide(900, 3500, d, 0.4)) * env(n, 0.06, 1.6)
+    save("whoosh", rush, 0.55)
+
 if __name__ == "__main__":
     main()

@@ -263,6 +263,7 @@ func _think(delta: float) -> void:
 			if state_time >= UNDERTOW_TIME:
 				face_player()
 				set_state("slam_tell")
+				Sfx.play("tell_heavy", 0.05, -2.0)
 		"slam_tell":
 			if state_time >= tell(SLAM_TELL):
 				_struck = false

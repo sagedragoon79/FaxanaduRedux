@@ -45,6 +45,7 @@ func _think(delta: float) -> void:
 			if state_time >= WINDUP:
 				_dir = player_offset().normalized() if player_offset().x != INF else Vector2(facing, 0)
 				set_state("swoop")
+				Sfx.play("whoosh", 0.1, -6.0)
 		"swoop":
 			velocity = _dir * SWOOP_SPEED
 			if state_time >= SWOOP_TIME or get_slide_collision_count() > 0:

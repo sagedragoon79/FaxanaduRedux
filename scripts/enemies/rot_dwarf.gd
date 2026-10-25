@@ -50,6 +50,7 @@ func _think(delta: float) -> void:
 			if in_front:
 				velocity.x = 0.0
 				set_state("windup")
+				Sfx.play("tell_blade", 0.08, -4.0)
 				return
 			_behind_time = _behind_time + delta if behind else 0.0
 			if _behind_time > TURN_DELAY:

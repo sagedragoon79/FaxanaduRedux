@@ -62,7 +62,8 @@ func _think(delta: float) -> void:
 				face_player()
 				velocity.x = 0.0
 				set_state("rev")
-				_rev_sfx = 0.0
+				_sound("brake", -6.0)
+				_rev_sfx = 0.2
 				return
 			if is_on_floor() and (_wall_ahead() or not _floor_ahead()):
 				facing = -facing

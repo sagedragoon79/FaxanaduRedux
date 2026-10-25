@@ -279,6 +279,7 @@ func _think(delta: float) -> void:
 					var p := player()
 					web_target = p.global_position + Vector2(0, -16) if p != null else global_position + Vector2(0, 200)
 					set_state("web_tell")
+					Sfx.play("tell_charge", 0.08, -4.0)
 				else:
 					_next_hang = "web"
 					set_state("drop_tell")
