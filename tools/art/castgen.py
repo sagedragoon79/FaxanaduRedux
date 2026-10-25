@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1038,6 +1038,130 @@ BOG_MYCONID = [
 ]
 
 
+# --- Drowned Dwarf: a Victim miner the marsh took, risen with his anchor -------
+# Drawn at the 2x render density. `depth` sinks the whole body below the ground
+# line (y = 0) and clips it there, for lying in wait and rising out of the mire.
+
+DD_SCALE = 2
+DD_SKIN = mat("sky", 7, 6, 4, 2)  # drowned pallor, gone blue-white
+DD_SKIN_BACK = mat("sky", 6, 5, 3, 2)
+DD_MAIL = mat("stone", 3, 2, 1, 0)
+DD_MAIL_BACK = mat("stone", 2, 1, 1, 0)
+DD_RUST = mat("ember", 3, 2, 1, 0)
+DD_WEED = mat("leaf", 2, 1, 1, 0)
+DD_HELM = mat("stone", 4, 3, 2, 0)
+DD_BEARD = mat("stone", 5, 4, 3, 1)
+DD_ANCHOR = mat("stone", 5, 4, 2, 0)
+DD_MUD = mat("bark", 2, 1, 0, 0)
+DD_BOOT = mat("bark", 3, 2, 1, 0)
+DD_EYE = PAL["crystal-6"]
+
+
+def drowned_dwarf(hip=(0, -11), lean=0, feet=((5, 0), (-5, 0)), hands=(7, -14), anchor=100, bob=0,
+                  depth=0.0, reach_up=0.0, mire=False):
+    """anchor: degrees of the shank from the hands toward the flukes (90 = hanging down,
+    -90 = straight up). reach_up lifts the free hand, clawing out of the mud."""
+    def render(_):
+        cv = Canvas(72, 64, (32, 61), DD_SCALE)
+        dy = depth
+        hx, hy = hip[0], hip[1] + dy
+        sx, sy = hx + lean, hy - 13 + bob
+        head = (sx + 1.5, sy - 6)
+        fts = [(f[0], f[1] + dy) for f in feet]
+
+        def leg(h, foot, m):
+            foot = reach(h, foot, 10.5)
+            knee = ik(h, foot, 5.5, 5.5, 1)
+            cv.part(cv.capsule(h, knee, 3.0) | cv.capsule(knee, foot, 2.6), m)
+            cv.part(cv.capsule((foot[0] - 2, foot[1] - 2), (foot[0] + 3, foot[1] - 1.6), 2.4), DD_BOOT)
+
+        # The anchor, by its shank: a ring at the hands, a crown of two flukes at the end.
+        a = math.radians(anchor)
+        grip = reach((sx, sy + 2), (hands[0], hands[1] + dy), 12)
+        ring = (grip[0] - math.cos(a) * 3, grip[1] - math.sin(a) * 3)
+        crown = (grip[0] + math.cos(a) * 19, grip[1] + math.sin(a) * 19)
+        perp = (-math.sin(a), math.cos(a))
+        leg((hx - 3, hy), fts[1], DD_MAIL_BACK)
+        free = (sx - 6 - 2 * reach_up, sy + 4 - 14 * reach_up)
+        elbow_b = ik((sx - 4, sy + 2), free, 6.0, 6.0, -1)
+        cv.part(cv.capsule((sx - 4, sy + 2), elbow_b, 2.5) | cv.capsule(elbow_b, free, 2.2), DD_SKIN_BACK)
+        cv.part(cv.ellipse(free, 2.2, 2.2), DD_SKIN_BACK)
+        cv.part(cv.capsule(ring, crown, 1.7), DD_ANCHOR)
+        cv.part(cv.ellipse(ring, 2.4, 2.4) & ~cv.ellipse(ring, 1.1, 1.1), DD_ANCHOR)
+        stock = [(ring[0] + perp[0] * s * 5 + math.cos(a) * 2.5, ring[1] + perp[1] * s * 5 + math.sin(a) * 2.5) for s in (-1, 1)]
+        cv.part(cv.capsule(stock[0], stock[1], 0.9), DD_RUST)
+        for s in (-1, 1):
+            tip = (crown[0] + perp[0] * s * 9 - math.cos(a) * 6, crown[1] + perp[1] * s * 9 - math.sin(a) * 6)
+            mid = (crown[0] + perp[0] * s * 5.5 + math.cos(a) * 0.5, crown[1] + perp[1] * s * 5.5 + math.sin(a) * 0.5)
+            cv.part(cv.capsule(crown, mid, 2.0) | cv.capsule(mid, tip, 1.5), DD_ANCHOR)
+            cv.part(cv.polygon([(tip[0] - math.cos(a) * 1.5, tip[1] - math.sin(a) * 1.5), (tip[0] + math.cos(a) * 3 + perp[0] * s * 2.5, tip[1] + math.sin(a) * 3 + perp[1] * s * 2.5),
+                                (tip[0] - perp[0] * s * 2.5, tip[1] - perp[1] * s * 2.5)]), DD_ANCHOR)
+        cv.pixel((crown[0] + perp[0] * 2, crown[1] + perp[1] * 2), PAL["ember-3"])
+        cv.pixel((grip[0] + math.cos(a) * 8, grip[1] + math.sin(a) * 8), PAL["ember-2"])
+        leg((hx + 3, hy), fts[0], DD_MAIL)
+        # A sodden torso in rotted mail, a rope belt and weed hanging off it.
+        torso = cv.polygon([(sx - 8, sy), (sx + 8, sy), (hx + 8.5, hy + 1), (hx - 8.5, hy + 1)]) | cv.ellipse((sx, sy + 2), 8.5, 4)
+        cv.part(torso, DD_MAIL, deep=True)
+        cv.part(cv.capsule((hx - 8, hy - 1.5), (hx + 8, hy - 1.5), 1.2), mat("bark", 4, 3, 2, 0))
+        for wx, wl in ((-5, 6), (-1, 4), (4, 7)):
+            cv.part(cv.capsule((hx + wx, hy - 1), (hx + wx - 0.5, hy - 1 + wl), 0.7), DD_WEED)
+        cv.part(cv.ellipse((sx + 5, sy + 1), 3.6, 3.0), DD_RUST)  # a rusted pauldron
+        # Front arm on the shank.
+        elbow_f = ik((sx + 4, sy + 2), grip, 6.5, 6.5, -1)
+        cv.part(cv.capsule((sx + 4, sy + 2), elbow_f, 2.6) | cv.capsule(elbow_f, grip, 2.3), DD_SKIN)
+        cv.part(cv.ellipse(grip, 2.3, 2.3), DD_SKIN)
+        # Head: a bloated face under a dented helm, the beard matted with weed.
+        cv.part(cv.ellipse(head, 5.4, 5.0), DD_SKIN)
+        helm = cv.ellipse((head[0] - 0.3, head[1] - 2.2), 6.3, 4.2) & ~cv.below(head[1] - 0.8)
+        cv.part(helm, DD_HELM)
+        cv.part(cv.capsule((head[0] - 6, head[1] - 1.6), (head[0] + 6, head[1] - 1.6), 1.1), DD_HELM)
+        cv.part(cv.capsule((head[0] - 1, head[1] - 6.2), (head[0] - 3.5, head[1] - 8.4), 0.9), DD_RUST)  # the crest
+        beard = cv.polygon([(head[0] - 1.5, head[1] + 2.2), (head[0] + 5.2, head[1] + 2.2), (head[0] + 4.2, sy + 6),
+                            (head[0] + 1.6, sy + 8.5), (head[0] - 0.8, sy + 5)])
+        cv.part(beard, DD_BEARD)
+        cv.part(cv.capsule((head[0] + 2.2, sy + 3), (head[0] + 2.8, sy + 9), 0.6), DD_WEED)
+        cv.part(cv.capsule((head[0] - 0.5, head[1] + 3), (head[0] - 2.5, sy + 4), 0.6), DD_WEED)
+        # Drowned eyes: a cold pale light under the brim.
+        cv.pixel((head[0] + 2, head[1] - 0.2), DD_EYE)
+        cv.pixel((head[0] + 4, head[1] - 0.2), DD_EYE)
+        if depth > 0 or mire:
+            # Cut at the ground line, with a ring of churned mud where the body breaks it.
+            gone = cv.below(0.0)
+            cv.filled &= ~gone
+            ring_w = 11.0 if depth > 0 else 9.0
+            cv.part(cv.ellipse((0, 0.6), ring_w, 2.2) & ~cv.below(1.5), DD_MUD)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def drowned_walk(i):
+    t = i / 4 * math.tau
+    fx = 4.0 * math.cos(t)
+    return drowned_dwarf(hip=(0, -11 - (1 if i % 2 else 0)), lean=1,
+                         feet=((fx, -max(0, 2 * math.sin(t))), (-fx, -max(0, -2 * math.sin(t)))),
+                         hands=(7, -13), anchor=96 + 6 * math.cos(t))
+
+
+DROWNED_DWARF = [
+    ("sunk", [drowned_dwarf(depth=33.5, reach_up=0.0), drowned_dwarf(depth=32.5, reach_up=0.0)], [0, 1], 2, True),
+    ("rise", [drowned_dwarf(depth=26, reach_up=1.0, anchor=60), drowned_dwarf(depth=18, reach_up=1.0, anchor=70),
+              drowned_dwarf(depth=9, reach_up=0.6, anchor=85), drowned_dwarf(depth=2, reach_up=0.2, anchor=95, mire=True)],
+     [0, 1, 2, 3], 6, False),
+    ("sink", [drowned_dwarf(depth=2, reach_up=0.2, anchor=95, mire=True), drowned_dwarf(depth=9, reach_up=0.6, anchor=85),
+              drowned_dwarf(depth=18, reach_up=1.0, anchor=70), drowned_dwarf(depth=26, reach_up=1.0, anchor=60)],
+     [0, 1, 2, 3], 6, False),
+    ("walk", [drowned_walk(i) for i in range(4)], [0, 1, 2, 3], 4, True),
+    ("heave", [drowned_dwarf(lean=-3, hands=(-1, -32), anchor=-115, feet=((6, 0), (-6, 0))),
+               drowned_dwarf(lean=-4, hands=(-2, -33), anchor=-108, feet=((6, 0), (-6, 0)), bob=-1)], [0, 1], 8, True),
+    ("slam", [drowned_dwarf(lean=3, hands=(10, -26), anchor=-20, feet=((7, 0), (-6, 0))),
+              drowned_dwarf(lean=5, hands=(13, -10), anchor=70, feet=((8, 0), (-6, 0)), hip=(0, -9))], [0, 1], 16, False),
+    ("mired", [drowned_dwarf(lean=6, hands=(13, -8), anchor=80, feet=((8, 0), (-6, 0)), hip=(0, -8)),
+               drowned_dwarf(lean=5, hands=(13, -9), anchor=78, feet=((8, 0), (-6, 0)), hip=(0, -8), bob=1)], [0, 1], 4, True),
+    ("stagger", [drowned_dwarf(lean=-5, feet=((3, 0), (-7, 0)), hands=(-3, -26), anchor=-160)], [0], 1, False),
+]
+
+
 def autosprite_only(_):
     """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
     animation it names is swapped for the imported frames."""
@@ -1069,6 +1193,7 @@ def main():
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
     write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
     write_sheet("bog_myconid", (40, 40), (20, 38), BOG_MYCONID, lambda r: r(None), density=BM_SCALE)
+    write_sheet("drowned_dwarf", (72, 64), (32, 61), DROWNED_DWARF, lambda r: r(None), density=DD_SCALE)
     write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():

@@ -1160,7 +1160,7 @@ func test_every_attack_tell_and_strike_has_a_sound() -> void:
 	var calm := ("idle walk patrol recover dying dead intro stalk hover crawl drift return rest trot "
 		+ "circle climb grounded wade swim slack hide spent bare wake f_recover fallen to_throne fight "
 		+ "float watch retract withdraw stuck staggered stunned flinch winded skid stagger opening "
-		+ "dropped exposed hang possessed roll fade mirror echo dormant sink dangle dangle_up "
+		+ "dropped exposed hang possessed roll fade mirror echo dormant sink sunk dangle dangle_up "
 		+ "plunge_hold plunge_up").split(" ")
 	var gaps: Array[String] = []
 	var tells := 0
@@ -1237,3 +1237,99 @@ func test_every_attack_tell_and_strike_has_a_sound() -> void:
 					gaps.append("%s: %s makes no sound" % [f, s])
 	check(tells > 25 and strikes > 60, "the scan finds the telegraphs (%d) and attacks (%d)" % [tells, strikes])
 	check(gaps.is_empty(), "every attack has a sound: %s" % [gaps])
+
+
+## Bible 7: the Drowned Dwarf lies sunk in the mire, out of reach, and hauls
+## himself out when you come near; rising, he is soft.
+func test_drowned_dwarf_lies_sunk_then_rises_when_you_come_near() -> void:
+	var room := _room_with({Vector2i(22, 6): "p"})
+	var p := make_player(room, Vector2i(3, 6))
+	var d: DrownedDwarf = _find(room, DrownedDwarf)
+	await frames(30)
+	check(d.is_sunk(), "far off, he stays sunk (%s)" % d.state)
+	check(d.collision_layer == 0 and d.contact_damage == 0, "sunk, nothing can hit him and he hurts nothing")
+	p.teleport(Vector2(d.global_position.x - 64.0, 7 * 16))
+	var rise := 0
+	var soft := -1
+	for i in 90:
+		await frames(1)
+		if d.state == "rise":
+			rise += 1
+			if soft < 0 and rise == 10:
+				var before := d.hp
+				d.take_hit(10, Vector2.RIGHT)
+				soft = before - d.hp
+		elif rise > 0:
+			break
+	check(absf(rise / 60.0 - DrownedDwarf.RISE) < 0.05, "four tiles off, he rises over 0.7 s (%d frames)" % rise)
+	check(soft == 15, "half out of the mud, a 10 hit deals 15 (%d)" % soft)
+	check(d.collision_layer == Player.LAYER_ENEMY and d.contact_damage > 0, "risen, he can be hit and hurts to touch")
+	var x0 := d.global_position.x
+	await frames(30)
+	check(d.global_position.x < x0 - 5.0, "then he shambles toward you")
+
+
+## Bible 7: close in, he heaves his anchor overhead (the tell), slams it down in
+## front of him, and is soft while it is buried. The slam can be parried.
+func test_drowned_dwarf_heaves_then_slams_and_the_slam_can_be_parried() -> void:
+	var room := _room_with({Vector2i(22, 6): "p"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var d: DrownedDwarf = _find(room, DrownedDwarf)
+	await frames(3)
+	p.teleport(Vector2(d.global_position.x - 30.0, 7 * 16))
+	var tell := 0
+	var lit := false
+	var hp := p.hp
+	for i in 150:
+		await frames(1)
+		if d.state == "windup":
+			tell += 1
+			lit = lit or d.telegraph_pulse()
+		if d.state == "mired":
+			break
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the heave lasts at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell])
+	check(lit, "and he flashes as he heaves")
+	check(hp - p.hp >= DrownedDwarf.SLAM_DAMAGE, "the slam catches a player standing still (%d)" % (hp - p.hp))
+	var before := d.hp
+	d.take_hit(10, Vector2.RIGHT)
+	check(before - d.hp == 15, "with the anchor buried, a 10 hit deals 15 (%d)" % (before - d.hp))
+	# The next heave, meet the slam with a parry.
+	for i in 200:
+		await frames(1)
+		if d.state == "windup" and d.state_time >= DrownedDwarf.HEAVE - 3.0 / 60.0:
+			break
+	p.teleport(Vector2(d.global_position.x - 30.0, 7 * 16))
+	p.facing = 1
+	hp = p.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(10)
+	check(p.hp == hp, "a parried slam does no damage (%d)" % (hp - p.hp))
+	check(d.is_staggered(), "and he reels")
+
+
+## Bible 7: lose him and he sinks back into the mire to wait.
+func test_drowned_dwarf_sinks_back_once_he_loses_you() -> void:
+	var room := _room_with({Vector2i(22, 6): "p"})
+	var p := make_player(room, Vector2i(3, 6))
+	var d: DrownedDwarf = _find(room, DrownedDwarf)
+	await frames(3)
+	p.teleport(Vector2(d.global_position.x - 64.0, 7 * 16))
+	for i in 60:
+		await frames(1)
+		if d.state == "walk":
+			break
+	check(d.state == "walk", "he rose")
+	p.teleport(Vector2(2.5 * 16, 7 * 16))
+	d.global_position.x = 26 * 16
+	var sank := 0
+	for i in 300:
+		await frames(1)
+		if d.is_sunk():
+			sank = i
+			break
+	check(sank > 0, "out of sight, he sinks again")
+	check(sank / 60.0 >= DrownedDwarf.LOSE_TIME, "but only after 3 s (%.2f s)" % (sank / 60.0))
+	check(d.collision_layer == 0, "and is out of reach once more")
