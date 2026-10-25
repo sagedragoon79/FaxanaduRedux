@@ -4,6 +4,8 @@ extends Node2D
 
 const KINDS := {
 	"run": {"count": 3, "speed": Vector2(40, 15), "life": 0.25, "color": Color("cdbfa6"), "size": 2, "rise": -20.0},
+	"dash": {"count": 10, "speed": Vector2(260, 50), "life": 0.35, "color": Color("cdbfa6"), "size": 3, "rise": -30.0},
+	"airdash": {"count": 6, "speed": Vector2(90, 30), "life": 0.22, "color": Color("f3f0e2"), "size": 2, "rise": 0.0},
 	"jump": {"count": 5, "speed": Vector2(55, 10), "life": 0.25, "color": Color("cdbfa6"), "size": 2, "rise": -10.0},
 	"land": {"count": 8, "speed": Vector2(90, 15), "life": 0.3, "color": Color("cdbfa6"), "size": 3, "rise": -15.0},
 	"wall": {"count": 1, "speed": Vector2(15, 10), "life": 0.25, "color": Color("cdbfa6"), "size": 2, "rise": -25.0},
@@ -23,13 +25,16 @@ const KINDS := {
 	"embers": {"count": 12, "speed": Vector2(110, 110), "life": 0.45, "color": Color("f8a040"), "size": 2, "rise": -60.0},
 }
 
+## The kind this puff was set up as (tests).
+var kind := ""
 var _particles: Array = []  # [pos, vel, life, max_life]
 var _color := Color.WHITE
 var _size := 2
 var _rise := 0.0
 
 
-func setup(kind: String, facing := 1) -> void:
+func setup(kind_name: String, facing := 1) -> void:
+	kind = kind_name
 	var k: Dictionary = KINDS.get(kind, KINDS["run"])
 	_color = k["color"]
 	_size = k["size"]
@@ -37,8 +42,11 @@ func setup(kind: String, facing := 1) -> void:
 	var speed: Vector2 = k["speed"]
 	for i in int(k["count"]):
 		var dir := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 0.2))
-		if kind == "run":
+		if kind in ["run", "airdash"]:
 			dir.x = -absf(dir.x) * facing
+		if kind == "dash":
+			# Kicked hard back off the heel, low along the floor.
+			dir = Vector2(-randf_range(0.4, 1.0) * facing, randf_range(-1.0, 0.0))
 		if kind in ["debris", "hit", "pogo", "walljump", "splash", "parry", "guard", "coin", "sap", "bark", "embers"]:
 			dir = Vector2.from_angle(randf() * TAU)
 		var life: float = k["life"] * randf_range(0.7, 1.2)

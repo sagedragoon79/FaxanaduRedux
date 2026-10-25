@@ -34,6 +34,7 @@ extends Node2D
 ##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
 ##   --glide=FRAME              glide with Feather Fall from FRAME on, drifting right
+##   --dash=FRAME               dash right on this frame (Elven Stride)
 ##   --ending=SECONDS[,PART]    play the ending on frame 2 and run it SECONDS in (PART:
 ##                              epilogue, credits or thanks to start there)
 ##   --secret                   with --ending: the secret ending (no deaths, the Battle Suit)
@@ -261,6 +262,12 @@ func _process(_delta: float) -> void:
 		player.input.scripted = true
 		player.input.jump_held = true
 		player.input.move_x = 1
+	if _args.has("dash") and _frames == int(_args["dash"]):
+		# Screenshots: dash right on this frame.
+		player.abilities["stride"] = true
+		player.input.scripted = true
+		player.input.move_x = 1
+		player.input.dash_pressed = true
 	if _args.has("swing") and _frames == int(_args["swing"]):
 		# Screenshots: swing the blade on this frame.
 		player.input.scripted = true

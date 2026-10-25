@@ -188,8 +188,7 @@ func die() -> void:
 	for b in get_parent().get_children():
 		if b is CoreBeam:
 			b.queue_free()
-	Feel.hitstop(0.15)
-	Feel.slowmo(0.3, 1.2)
+	Feel.boss_kill(1.2)
 	Feel.add_trauma(0.9)
 	Sfx.play("roar", 0.0, 3.0)
 

@@ -353,8 +353,7 @@ func die() -> void:
 	for n in get_parent().get_children():
 		if n is CoreBeam or n is MeteorSeed or n is CrystalSpike:
 			n.queue_free()
-	Feel.hitstop(0.2)
-	Feel.slowmo(0.3, 1.5)
+	Feel.boss_kill(1.5)
 	Feel.add_trauma(1.0)
 	Sfx.play("roar", 0.0, 4.0)
 

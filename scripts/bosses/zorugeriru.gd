@@ -392,8 +392,7 @@ func die() -> void:
 		h.remove_from_group("light")
 	if is_instance_valid(flood):
 		flood.target = 0.0
-	Feel.hitstop(0.12)
-	Feel.slowmo(0.3, 1.0)
+	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.7)
 	Sfx.play("hydra_roar", 0.0, 4.0)
 

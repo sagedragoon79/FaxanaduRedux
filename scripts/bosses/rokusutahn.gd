@@ -508,8 +508,7 @@ func _die() -> void:
 	for s in segments:
 		s.set_active(false)
 		s.contact_damage = 0
-	Feel.hitstop(0.12)
-	Feel.slowmo(0.3, 1.4)
+	Feel.boss_kill(1.4)
 	Feel.add_trauma(1.0)
 	Feel.rumble(1.0, 1.0, 0.8)
 	GameState.flash.emit(1.0)

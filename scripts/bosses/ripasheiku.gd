@@ -405,8 +405,7 @@ func die() -> void:
 	collision_layer = 0
 	for l in lanterns:
 		l.set_active(false)
-	Feel.hitstop(0.12)
-	Feel.slowmo(0.3, 1.0)
+	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.7)
 	Sfx.play("wail", 0.0, 4.0)
 
