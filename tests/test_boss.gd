@@ -1021,7 +1021,7 @@ func test_crown_leaf_wakes_pakukame() -> void:
 
 func test_pakukame_telegraphs_are_fair() -> void:
 	var k := Pakukame.new()
-	for ph in [1, 2]:
+	for ph in [1, 2, 3]:
 		k.phase = ph
 		for t: float in [Pakukame.BITE_TELL, Pakukame.WHIP_TELL, Pakukame.SPIT_TELL]:
 			check(k.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, k.tell(t), Enemy.MIN_TELEGRAPH])
@@ -1144,6 +1144,109 @@ func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	w._enter("branches/crown_leaf")
 	await frames(10)
 	check(get_tree_boss() == null, "and never returns")
+
+
+func _leaf_fall(w: World) -> LeafFall:
+	for c in w.room.get_children():
+		if c is LeafFall and not c.is_queued_for_deletion():
+			return c
+	return null
+
+
+## Drops the Bloom into phase 3 with a blow on its open jaws and waits for it to uproot.
+func _uprooted_bloom() -> Array:
+	var setup := await _bloom_world()
+	var k: Pakukame = setup[2]
+	k.phase = 2
+	k.hp = roundi(k.max_hp * Pakukame.PHASES[1]) + 4
+	k.set_state("gape")
+	k.head.take_hit(10, Vector2.RIGHT)
+	await _until(func() -> bool: return k.uprooted and k.state == "idle", 300)
+	return setup
+
+
+func test_pakukame_uproots_below_a_quarter() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	k.phase = 2
+	k.hp = roundi(k.max_hp * Pakukame.PHASES[1]) + 4
+	k.set_state("gape")
+	k.head.take_hit(10, Vector2.RIGHT)
+	check(k.phase == 3 and k.state == "gape", "below a quarter it enters phase 3, but the open jaws stay open (%s)" % k.state)
+	var tore := await _until(func() -> bool: return k.state == "uproot", 200)
+	check(tore, "once the head draws back, it wrenches its root out of the leaf")
+	var uproot_frames := 0
+	while k.state == "uproot" and uproot_frames < 200:
+		await frames(1)
+		uproot_frames += 1
+	check(uproot_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the uprooting is a tell of at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, uproot_frames])
+	check(k.uprooted and _leaf_fall(w) != null, "then it is free and the leaf falls")
+	for t: float in [Pakukame.BITE_TELL, Pakukame.WHIP_TELL, Pakukame.SPIT_TELL]:
+		check(k.tell(t) >= Enemy.MIN_TELEGRAPH, "phase 3 tell %.2f s is fair" % k.tell(t))
+
+
+func test_the_uprooted_bloom_chases_you() -> void:
+	var setup := await _uprooted_bloom()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	k.uprooted = true
+	var x0 := k.global_position.x
+	w.player.teleport(Vector2(k.arena.end.x - 64.0, k.floor_y()))
+	k.set_state("idle")
+	k._last = ""
+	await frames(20)
+	var moved := k.global_position.x - x0
+	check(moved > Pakukame.CHASE_SPEED * 0.2, "it scuttles after you on its roots (%.0f px)" % moved)
+	check(moved < Pakukame.CHASE_SPEED * 0.5, "at a walk, slower than your run")
+	# Right up against a wall, it stops short of it.
+	k.global_position.x = k.arena.end.x - 10.0
+	k._chase(0.1)
+	check(k.global_position.x <= k.arena.end.x - Pakukame.WALL_MARGIN, "and keeps clear of the walls")
+
+
+func test_the_uprooted_bloom_lunges_behind_its_bite() -> void:
+	var setup := await _uprooted_bloom()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var hp := w.player.hp
+	var x0 := k.global_position.x
+	var tell_frames := await _provoke(w, k, 100.0, "bite")
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the head rears for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	var gaped := await _until(func() -> bool: return k.state == "gape", 30)
+	var hopped := k.global_position.x - x0
+	check(gaped and hopped > 20.0 and hopped <= Pakukame.LUNGE + Pakukame.CHASE_SPEED * 0.6, "the whole plant hops in behind the jaws (%.0f px)" % hopped)
+	check(w.player.hp < hp, "and the bite lands on a player standing still")
+	var hp0 := k.hp
+	k.head.take_hit(10, Vector2.RIGHT)
+	check(hp0 - k.hp == 10, "the jaws still hang open for full blows (%d)" % (hp0 - k.hp))
+
+
+func test_the_falling_leaf_lightens_you() -> void:
+	var setup := await _uprooted_bloom()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var lf := _leaf_fall(w)
+	check(lf != null, "the leaf is falling")
+	# Hold the Bloom still so nothing knocks the jump about.
+	k.set_state("dormant")
+	await frames(10)
+	w.player.input.jump_pressed = true
+	w.player.input.jump_held = true
+	var top := w.player.global_position.y
+	for i in 90:
+		await frames(1)
+		top = minf(top, w.player.global_position.y)
+	w.player.input.jump_held = false
+	var rise := k.floor_y() - top
+	check(rise > MovementTuning.new().jump_height * 1.05, "a jump on the falling leaf carries higher (%.0f px)" % rise)
+	k.hp = 1
+	k.set_state("gape")
+	k.head.take_hit(5, Vector2.RIGHT)
+	check(not lf.falling, "when the Bloom dies the wind dies away")
+	Feel.reset()
+	var settled := await _until(func() -> bool: return _leaf_fall(w) == null, int(LeafFall.SETTLE_TIME * 60) * 3)
+	check(settled, "and the leaf settles")
 
 
 # --- Borabohra, the Storm Roc (bible 8.6) --------------------------------------

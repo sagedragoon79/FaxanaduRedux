@@ -15,13 +15,28 @@ extends Enemy
 ## Phase 2 (below half): tells a fifth shorter (never under Enemy.MIN_TELEGRAPH),
 ## and every other bite tears a chunk out of the leaf where it lands, leaving a
 ## thorny gap to stride or bounce over.
+## Phase 3 (below a quarter): it tears its root out of the leaf (tell), and the
+## crown-leaf, cut loose, falls through the sky (LeafFall: wind rushing up, and
+## you weigh a little less). The Bloom scuttles after you on its roots, and its
+## bites lunge: the whole plant hops in behind the jaws. Run under its head or
+## stride through it to get past, and strike the jaws where they land.
 
 signal defeated
 
 const DISPLAY_NAME := "Pakukame"
 const EPITHET := "the Devouring Bloom"
 const MAX_HP := 260
-const PHASES := [0.5]
+const PHASES := [0.5, 0.25]
+## Phase 3: tearing the root out of the leaf (the tell before the chase).
+const UPROOT_TIME := 1.2
+## How fast it scuttles after you on its roots (px/s); a walk, slower than your run.
+const CHASE_SPEED := 80.0
+## It stops this close to you (px) and lets the bite do the rest.
+const CHASE_NEAR := 40.0
+## How far a phase-3 bite carries the whole plant (px).
+const LUNGE := 80.0
+## It keeps this far from the walls (px).
+const WALL_MARGIN := 48.0
 const INTRO_TIME := 1.4
 const IDLE_TIME := 0.9
 const BITE_RANGE := 110.0
@@ -79,6 +94,11 @@ var _from := Vector2.ZERO
 var _to := Vector2.ZERO
 var _whip_dir := 1
 var _rng := RandomNumberGenerator.new()
+var _root_from := 0.0
+var _root_to := 0.0
+## Phase 3: torn out of the leaf and chasing.
+var uprooted := false
+var leaf_fall: LeafFall
 
 
 func _init() -> void:
@@ -135,7 +155,7 @@ func health_fraction() -> float:
 
 
 func tell(base: float) -> float:
-	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase == 2 else 1.0))
+	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase >= 2 else 1.0))
 
 
 func gaping() -> bool:
@@ -158,6 +178,9 @@ func take_hit(damage: int, dir: Vector2) -> void:
 		phase = 2
 		Sfx.play("roar", 0.0, 0.0)
 		Feel.add_trauma(0.35)
+	if not dead and phase == 2 and health_fraction() <= PHASES[1]:
+		# It finishes what it's doing, then uproots (from idle).
+		phase = 3
 
 
 func _on_blocked(_dir: Vector2) -> void:
@@ -192,8 +215,25 @@ func _think(delta: float) -> void:
 			open = move_toward(open, 0.1, delta * 3.0)
 			var t := Time.get_ticks_msec() * 0.001
 			head.global_position = rest_point() + Vector2(sin(t * 1.3) * 6.0, sin(t * 2.1) * 4.0)
-			if state_time >= IDLE_TIME * (FAST if phase == 2 else 1.0):
+			if phase == 3 and not uprooted:
+				_from = head.global_position
+				set_state("uproot")
+				Sfx.play("roar", 0.0, 1.0)
+				Sfx.play("break", 0.05, -2.0)
+				return
+			if uprooted:
+				_chase(delta)
+			if state_time >= IDLE_TIME * (FAST if phase >= 2 else 1.0):
 				_choose()
+		"uproot":
+			# It rears and wrenches its root out of the leaf.
+			var k := clampf(state_time / UPROOT_TIME, 0.0, 1.0)
+			open = 0.6 + sin(state_time * 30.0) * 0.2
+			head.global_position = _from.lerp(rest_point() + Vector2(0, -20), k) + Vector2(sin(state_time * 50.0) * 3.0 * (1.0 - k), 0)
+			Feel.add_trauma(delta * 0.6)
+			if state_time >= UPROOT_TIME:
+				_uproot()
+				set_state("idle")
 		"bite_tell":
 			var k := clampf(state_time / tell(BITE_TELL), 0.0, 1.0)
 			open = k
@@ -201,12 +241,19 @@ func _think(delta: float) -> void:
 			if state_time >= tell(BITE_TELL):
 				_to = _bite_target()
 				_from = head.global_position
+				_root_from = global_position.x
+				_root_to = _root_from
+				if uprooted:
+					# The whole plant hops in behind its jaws.
+					var dir := signf(_to.x - _root_from)
+					_root_to = _arena_x(_root_from + dir * minf(LUNGE, maxf(0.0, absf(_to.x - _root_from) - CHASE_NEAR)))
 				_hit_done = false
 				_gape_for = GAPE_TIME
 				set_state("bite")
 				Sfx.play("hydra_bite", 0.08, 2.0)
 		"bite":
 			var k := clampf(state_time / BITE_TIME, 0.0, 1.0)
+			global_position.x = lerpf(_root_from, _root_to, k)
 			head.global_position = _from.lerp(_to, k * k)
 			if not _hit_done:
 				var res := hit_player_in_rect(bite_rect(), BITE_DAMAGE)
@@ -247,6 +294,31 @@ func _think(delta: float) -> void:
 			set_state("idle")
 
 
+## Phase 3: the Bloom tears free and the leaf begins to fall.
+func _uproot() -> void:
+	uprooted = true
+	Feel.add_trauma(0.6)
+	GameState.flash.emit(0.3)
+	if leaf_fall == null and get_parent() != null:
+		leaf_fall = LeafFall.new()
+		leaf_fall.area = arena
+		get_parent().add_child(leaf_fall)
+
+
+## Scuttles toward the player along the leaf, stopping short of them.
+func _chase(delta: float) -> void:
+	var p := player()
+	if p == null:
+		return
+	var dx := p.global_position.x - global_position.x
+	if absf(dx) > CHASE_NEAR:
+		global_position.x = _arena_x(global_position.x + signf(dx) * CHASE_SPEED * delta)
+
+
+func _arena_x(x: float) -> float:
+	return clampf(x, arena.position.x + WALL_MARGIN, arena.end.x - WALL_MARGIN)
+
+
 func _choose() -> void:
 	var p := player()
 	if p == null:
@@ -267,7 +339,7 @@ func _choose() -> void:
 
 ## Phase 2: every other bite tears the leaf.
 func _chomps() -> bool:
-	return phase == 2 and _bites % 2 == 0 and gaps.size() < MAX_GAPS
+	return phase >= 2 and _bites % 2 == 0 and gaps.size() < MAX_GAPS
 
 
 func _bite_target() -> Vector2:
@@ -335,6 +407,8 @@ func die() -> void:
 	set_state("dying")
 	dead = true
 	head.set_active(false)
+	if is_instance_valid(leaf_fall):
+		leaf_fall.settle()
 	Feel.hitstop(0.12)
 	Feel.slowmo(0.3, 1.0)
 	Feel.add_trauma(0.8)
@@ -369,7 +443,10 @@ func _draw() -> void:
 		return
 	_draw_whip(t)
 	_draw_stem(t)
-	_draw_leaves(t)
+	if uprooted:
+		_draw_roots(t)
+	else:
+		_draw_leaves(t)
 	_draw_head(t, white)
 
 
@@ -387,6 +464,24 @@ func _draw_leaves(t: float) -> void:
 		draw_colored_polygon(_grow(pts, 1.0), OUTLINE)
 		draw_colored_polygon(pts, STEM if s < 0 else STEM_DARK)
 		draw_line(Vector2(s * 4, 0), Vector2(s * 38, -10 + sway), STEM_LIGHT, 1.0)
+
+
+## Uprooted: a tangle of roots it scuttles on, torn leaf still clinging.
+func _draw_roots(t: float) -> void:
+	var walking := state == "idle" or state == "bite"
+	for i in 6:
+		var s := -1.0 if i % 2 == 0 else 1.0
+		var row := i >> 1
+		var reach := 10.0 + row * 9.0
+		var step := sin(t * 14.0 + i * 1.7) * (4.0 if walking else 1.0)
+		var knee := Vector2(s * reach * 0.6, -10.0 - row * 2.0)
+		var foot := Vector2(s * reach + step, -absf(step) * 0.5)
+		draw_line(Vector2(0, -6), knee, OUTLINE, 5.0)
+		draw_line(knee, foot, OUTLINE, 4.0)
+		draw_line(Vector2(0, -6), knee, STEM_DARK, 3.0)
+		draw_line(knee, foot, Color("8a6a3a"), 2.0)
+	draw_circle(Vector2(0, -6), 7.0, OUTLINE)
+	draw_circle(Vector2(0, -6), 6.0, STEM_DARK)
 
 
 ## A thick stem curving from the root up to the head.

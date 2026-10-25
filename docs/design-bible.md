@@ -426,7 +426,14 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
   - Vine whip (farther off): a vine coils at the root for 0.6 s, then lashes 170 px along the leaf on your side for 16, too long to parry. Jump it, or stride through it on the dash's invulnerability.
   - Seed spit (alternating with the whip): the bulb swells for 0.5 s and spits three seeds in arcs, 12 each, parryable.
 - **Phase 2 (below half):** tells a fifth shorter (never under 0.35 s). Every other bite tears a four-tile chunk out of the leaf where it lands, up to three gaps with thorns below, never next to the root or the walls. You stride or bounce across, and strike the open jaws from the gap's edge.
-- **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence). Not built yet; a later pass adds it.
+- **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence).
+  - **As built (pass 90), below a quarter:**
+    - When its head next draws back, it spends 1.2 s wrenching its root out of the leaf (the tell). The crown-leaf, cut loose, starts to fall (`LeafFall`): wind and torn leaves rush up past it, and the player weighs 85% while it falls, so jumps hang longer.
+    - The Bloom scuttles after you on its roots at 80 px/s, slower than your run. It keeps 48 px from the walls and stops 40 px short of you.
+    - Its bites lunge: the whole plant hops up to 80 px in behind its jaws. Every other bite still tears the leaf.
+    - Get past it by running under its head or striding through it, and strike the jaws where they land.
+    - When it dies the wind dies away.
+  - **Deviation:** the chase stays inside the Crown-Leaf arena rather than scrolling along a separate falling leaf. The whole leaf is falling, which keeps the fight in one room and its doors sealed.
 - **Look:** code-drawn at 2x (a green stem, two great leaves at the root, a shelled bulb with gold-rimmed jaws, white teeth and a red maw, and a ring of pink petals). Its own theme, `pakukame`.
 - **Reward:** skill point, large gold drop, and the way east from the crown-leaf toward Daybreak (the Crown-Leaf's east door, sealed with the rest of the arena until the Bloom falls; built in pass 54). (Changed in pass 50 from "the Conflate gate opens": the town is the zone's save and shop stop, so it opens to you on arrival. Pass 52 put the arena past the Windloft, so the Bloom guards the way onward instead.)
 
