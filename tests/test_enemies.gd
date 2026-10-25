@@ -903,3 +903,94 @@ func test_clockwork_hound_stops_dead_in_stopped_time() -> void:
 	TimeStop.reset()
 	await frames(5)
 	check(h.global_position != at, "and leaps on when time runs")
+
+
+## Bible 8.9: everything in Zenis is a corrupted remix: tougher, richer, crystal grown through it.
+func test_zenis_foes_are_corrupted_with_meteor_crystal() -> void:
+	var rows := _room_rows({Vector2i(5, 6): "s", Vector2i(12, 6): "q", Vector2i(20, 6): "e"})
+	var plain := Room.from_text("\n".join(PackedStringArray(rows)))
+	arena.add_child(plain)
+	var slug: MeteorSlug = _find(plain, MeteorSlug)
+	check(not slug.corrupted, "outside Zenis a slug is only a slug")
+	var base_hp := slug.max_hp
+	plain.queue_free()
+	await frames(1)
+	var room := Room.from_text("zone: zenis\n---\n" + "\n".join(PackedStringArray(rows)))
+	arena.add_child(room)
+	var foes := room.get_children().filter(func(c: Node) -> bool: return c is Enemy)
+	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "in Zenis every foe is corrupted")
+	var cslug: MeteorSlug = _find(room, MeteorSlug)
+	check(cslug.max_hp == ceili(base_hp * Enemy.CORRUPT_HP) and cslug.hp == cslug.max_hp, "and tougher (%d vs %d)" % [cslug.max_hp, base_hp])
+	check(cslug.get_children().any(func(c: Node) -> bool: return c is CorruptionGrowth), "with the meteor's crystal grown through it")
+	var off := Room.from_text("zone: zenis\ncorrupted: false\n---\n" + "\n".join(PackedStringArray(rows)))
+	arena.add_child(off)
+	check(not (_find(off, MeteorSlug) as Enemy).corrupted, "a room can say otherwise")
+	await frames(30)
+	check(not cslug.dead, "and the corrupted foes live and move (%s)" % cslug.state)
+
+
+## Bible 8.9: a corrupted foe leaves a seed of crystal that tells, then bursts.
+func test_a_corrupted_foe_leaves_a_seed_that_bursts() -> void:
+	var room := Room.from_text("corrupted: true\n---\n" + "\n".join(PackedStringArray(_room_rows({Vector2i(14, 6): "M"}))))
+	arena.add_child(room)
+	# Close enough for the burst to reach, too far for the Monodron to touch first.
+	var p := make_player(room, Vector2i(16, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var m: Monodron = _find(room, Monodron)
+	await frames(2)
+	m.take_hit(999, Vector2(1, 0))
+	await frames(2)
+	var seed: MeteorSeed = _find(room, MeteorSeed)
+	if not check(seed != null, "the crystal is left hanging where it died"):
+		return
+	var hp := p.hp
+	var tell := 0
+	while is_instance_valid(seed) and seed.state == "tell" and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "it swells first (%d frames)" % tell)
+	check(p.hp == hp, "and does nothing while it swells")
+	await frames(15)
+	check(p.hp < hp, "then bursts and hurts whoever stands by it (%d)" % (hp - p.hp))
+	check(not is_instance_valid(seed), "and is gone")
+
+
+## Striking the seed before it bursts cracks it harmlessly, so pressing on is safe.
+func test_a_struck_seed_cracks_without_bursting() -> void:
+	var room := _room_with({})
+	var p := make_player(room, Vector2i(14, 6))
+	var seed := MeteorSeed.new()
+	room.add_child(seed)
+	seed.global_position = p.global_position + Vector2(0, -20)
+	await frames(10)
+	var hp := p.hp
+	seed.take_hit(5, Vector2(0, 1))
+	check(seed.cracked and seed.dead, "a blow cracks it")
+	await frames(60)
+	check(p.hp == hp, "and it never bursts (%d)" % (hp - p.hp))
+	check(room.get_children().filter(func(c: Node) -> bool: return c is Coin).is_empty(), "nor leaves gold")
+
+
+func test_a_seed_holds_in_stopped_time() -> void:
+	var room := _room_with({})
+	var p := make_player(room, Vector2i(14, 6))
+	var seed := MeteorSeed.new()
+	room.add_child(seed)
+	seed.global_position = p.global_position + Vector2(0, -20)
+	TimeStop.start()
+	var hp := p.hp
+	await frames(90)
+	check(is_instance_valid(seed) and seed.state == "tell", "the seed waits while time holds")
+	check(p.hp == hp, "and hurts no one")
+	TimeStop.reset()
+	await frames(60)
+	check(p.hp < hp, "then bursts when time runs (%d)" % (hp - p.hp))
+
+
+func _room_rows(spots: Dictionary) -> Array:
+	var rows := WIDE.duplicate()
+	for cell: Vector2i in spots:
+		var row: String = rows[cell.y]
+		rows[cell.y] = row.substr(0, cell.x) + spots[cell] + row.substr(cell.x + 1)
+	return rows
