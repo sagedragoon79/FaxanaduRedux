@@ -27,6 +27,9 @@ extends Resource
 @export var hurt_knockback := Vector2(160, 220)
 @export var hurt_control_lock := 0.18
 @export var hazard_damage := 20
+## At or below this much health (one mask) the heart beats and the screen's edge pulses red.
+@export var low_health := 20
+@export var heartbeat_interval := 0.85
 
 @export_group("Magic")
 @export var max_mp := 60.0

@@ -2731,6 +2731,7 @@ func test_a_phase_break_stings_and_lifts_the_music() -> void:
 	await frames(2)
 	check(breaks == [1] and arena.phases_passed == 1, "crossing the first mark is a phase break (%s)" % [breaks])
 	check(Music.intensity == 1, "and the music rises a step")
+	check_near(Feel.last_hitstop, BossArena.PHASE_HITSTOP, 0.001, "the world holds 200 ms on the break")
 	await frames(int(Music.PHASE_SHIFT_TIME * 60.0) + 5)
 	var pitch: float = Music._players[Music._active].pitch_scale
 	check_near(pitch, Music.PHASE_STEP, 0.001, "a semitone up, faster with it (%.4f)" % pitch)

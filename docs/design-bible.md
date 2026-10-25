@@ -235,7 +235,8 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Down-strike (Mattock):** see pogo in 6.6.
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
 - **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Dash and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
-- **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash.
+- **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98).
+- **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
 
 **Starting combat values** (in `scripts/player/combat_tuning.gd`, asserted by tests):
 
@@ -247,6 +248,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
 | Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed |
 | Knockback when hit | 160 px/s back, 220 px/s up, 0.18 s control lock |
+| Low health | 20 HP or less: heartbeat every 0.85 s, red edge pulse |
 | MP | 60 max, +2/s, +4 per melee hit on an enemy |
 | Red Potion | 2 charges, +40 HP, 0.7 s to drink, cancelled (charge kept) if hit |
 | Deluge | 15 MP, 12 damage, 300 px/s |
@@ -337,14 +339,14 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 
 - **Squash and stretch:** jump 0.85x1.2 for 3 frames; land 1.25x0.8 scaled by fall speed; wall jump stretch toward direction.
 - **Dust:** on run start, turnaround, land, wall slide (every 0.06 s), wall jump.
-- **Hit-stop:** 50 ms normal hit, 90 ms heavy, 140 ms parry, 200 ms boss stagger, 350 ms boss kill (with slow-mo ramp).
+- **Hit-stop:** 50 ms normal hit, 90 ms heavy, 140 ms parry, 200 ms boss stagger (each phase break, pass 98), 350 ms boss kill (with slow-mo ramp).
 - **Screen shake:** trauma model (shake = trauma²), decays 1.5/s. Light hit 0.15, heavy 0.3, boss slam 0.6. Option to reduce or turn it off.
-- **Flash:** enemy flashes white for 2 frames on hit; player flashes red and blinks during invulnerability.
+- **Flash:** enemy flashes white for 2 frames on hit; player flashes red and blinks during invulnerability, and the screen's edge flashes red (pass 98, 5.3).
 - **Camera:** look-ahead 48 px in facing direction (eased over 0.4 s); vertical look-down when holding down for 0.4 s; lerp smoothing with deadzone 16x24 px.
 - **Wide camera (pass 94):** a room with `camera: wide` in its header (big arenas, sky rooms) eases the framing out over about 0.6 s to 0.8 scale, showing 25% more each way (800x450 world pixels). It never frames past the room's edges: a room too small for the full pull-out gets as much as fits. Leaving for a normal room snaps back at once. The world still renders on whole render pixels, the HUD and PixelFont are unscaled, and the weather motes tile across the wider view.
 - **Rumble:** on gamepads, light for hits, strong for damage and boss slams. A landing from 7 tiles or more thuds with a light rumble and a little shake (pass 97); an ordinary jump's landing doesn't shake.
 - **Sound:** layered footsteps per surface; distinct jump, double jump, wall jump, dash, pogo and land sounds.
-- **Particles:** spark burst on hit, gold coins that bounce and magnet to the player after 0.4 s.
+- **Particles:** spark burst on hit (pass 98: `HitSpark`, a white core, an opening ring and five rays thrown along the swing, with a hot orange rim so it reads over the foe's white flash; it sits where the blade meets the foe, holds through the hit-stop, lasts 0.14 s, and the heavy finisher's is 1.6x), gold coins that bounce and magnet to the player after 0.4 s.
 - **Input:** every action responds on the same frame it is pressed. 60 fps physics, fixed timestep; rendering uncapped with interpolation.
 
 ### 6.8 Swimming (the Sunken Spring)

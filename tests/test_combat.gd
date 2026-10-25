@@ -498,3 +498,99 @@ func _until(cond: Callable, max_frames: int) -> bool:
 			return true
 		await frames(1)
 	return cond.call()
+
+
+func test_a_hit_sparks_where_the_blade_meets_the_foe() -> void:
+	var room := _arena_with("E", Vector2i(5, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.input.attack_pressed = true
+	await frames(2)
+	var spark: HitSpark = _find(room, HitSpark)
+	if not check(spark != null, "a hit throws a spark"):
+		return
+	check(spark.dir.x > 0.0 and spark.size == 1.0, "along the swing, light-sized")
+	var swing := p._attack_rect().grow(1.0)
+	check(swing.has_point(spark.global_position), "inside the swing, where it meets the foe (%s)" % spark.global_position)
+	check(spark.global_position.x <= dummy.global_position.x + 0.5, "on the near side of the foe")
+	await frames(int(HitSpark.LIFE * 60.0) + 4)
+	check(_find(room, HitSpark) == null, "and is gone in a blink")
+	# The third hit of the combo is the heavy one: a bigger spark.
+	await frames(30)
+	for i in 3:
+		p.input.attack_pressed = true
+		await frames(1)
+		if i < 2:
+			await frames(int(p.combat.combo_cooldowns[i] * 60.0) + 1)
+	var big: HitSpark = null
+	for c in room.get_children():
+		if c is HitSpark:
+			big = c
+	check(p.is_heavy_swing and big != null and big.size == Player.HEAVY_SPARK, "the heavy finisher sparks bigger")
+	await frames(3)
+	var count := room.get_children().filter(func(c: Node) -> bool: return c is HitSpark).size()
+	check(count == 1, "one spark per foe per swing (%d)" % count)
+
+
+func test_a_miss_throws_no_spark() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.input.attack_pressed = true
+	await frames(3)
+	check(_find(room, HitSpark) == null, "a swing at the air sparks nothing")
+
+
+func test_being_hurt_flashes_the_screen_edge_red() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	var hud := GameHud.new()
+	hud.player = p
+	arena.add_child(hud)
+	await frames(2)
+	check(hud.edge_strength() == 0.0, "no glow at full health")
+	p.take_damage(30)
+	await frames(2)
+	check(hud.hurt > 0.8 and hud.edge_strength() > 0.4, "a hit flashes the edge (%.2f)" % hud.edge_strength())
+	await frames(40)
+	check(hud.edge_strength() < 0.05, "and it fades in well under a second (%.2f)" % hud.edge_strength())
+	Feel.flash_scale = 0.0
+	p._invuln_timer = 0.0
+	p.take_damage(10)
+	await frames(2)
+	check(hud.edge_strength() == 0.0, "the Flashes option turns it off")
+	Feel.flash_scale = 1.0
+	p._invuln_timer = 0.0
+	p.hp = 50
+	await frames(2)
+	p.take_damage(5)
+	await frames(1)
+	var healed := p.hp
+	p.hp = healed + 20
+	await frames(2)
+	check(hud.hurt < 1.0, "healing doesn't flash")
+
+
+func test_low_health_beats_and_pulses() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	var hud := GameHud.new()
+	hud.player = p
+	arena.add_child(hud)
+	await frames(30)
+	check(p.heartbeats == 0 and hud.edge_strength() == 0.0, "no heartbeat at full health")
+	p.hp = p.combat.low_health
+	await frames(2)
+	check(p.is_low_health() and p.heartbeats == 1, "down to one mask, the heart beats at once")
+	var lo := 1.0
+	var hi := 0.0
+	for i in int(p.combat.heartbeat_interval * 60.0) + 2:
+		await frames(1)
+		lo = minf(lo, hud.edge_strength())
+		hi = maxf(hi, hud.edge_strength())
+	check(p.heartbeats == 2, "and again each %.2f s (%d)" % [p.combat.heartbeat_interval, p.heartbeats])
+	check(lo > 0.0 and hi - lo > 0.08, "the edge pulses with it (%.2f to %.2f)" % [lo, hi])
+	p.hp = p.combat.low_health + 1
+	await frames(60)
+	check(p.heartbeats == 2 and hud.edge_strength() == 0.0, "healed above a mask, it stops")

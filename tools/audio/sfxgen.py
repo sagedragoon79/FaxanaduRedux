@@ -484,6 +484,18 @@ def main():
     pluck = osc(np.concatenate([rise, np.full(n - len(rise), 1760.0)]), "sine")
     save("seed", mix(sweep, pluck * env(n, 0.002, 3.0) * 0.7), 0.55)
 
+    # Low health: a muffled double heartbeat, lub then dub.
+    d = 0.42
+    n = int(RATE * d)
+    def thump(f0, at, amp):
+        m = int(RATE * 0.16)
+        x = lowpass(osc(slide(f0, f0 * 0.55, 0.16), "sine"), 400) * env(m, 0.004, 2.2) * amp
+        out = np.zeros(n)
+        i = int(RATE * at)
+        out[i:i + m] = x[:n - i]
+        return out
+    save("heartbeat", thump(95, 0.0, 1.0) + thump(80, 0.2, 0.7), 0.5)
+
     # Dry bramble catching: a rush of flame and quick snapping twigs.
     d = 0.7
     n = int(RATE * d)

@@ -35,6 +35,8 @@ const BOSSES := {
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
 ## How far the player must be from the entry door before the fight starts.
+## Hit-stop when a phase breaks (design bible 6.7, "boss stagger").
+const PHASE_HITSTOP := 0.2
 const START_DISTANCE := 64.0
 const OPEN_DELAY := 1.2
 ## Seconds from the Evil One's death to the ending (the banner shows first).
@@ -100,6 +102,8 @@ func _track_phases() -> void:
 		Music.duck(1.4, 12.0)
 		Music.intensify(crossed)
 		Feel.add_trauma(0.35)
+		# The boss stagger hit-stop (bible 6.7): the world holds on the break.
+		Feel.hitstop(PHASE_HITSTOP)
 		phase_broken.emit(crossed)
 
 
