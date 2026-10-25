@@ -2,8 +2,9 @@ name: Drift Well
 zone: zenis
 map: 64, -11
 sign: 3, 41, The meteor's pull is wrong here. Where the light drifts upward, so will you.
-sign: 25, 14, THE HEART lies beyond the flesh above. It has not opened to you yet.
 door: 1, zenis/heart_stair, 2
+sign: 25, 14, Ahead, the way into the heart.
+door: 2, zenis/heart_gate, 1
 ---
 ########################################
 ########################################
@@ -18,11 +19,11 @@ door: 1, zenis/heart_stair, 2
 #.vvvvvv...............................#
 #.vvvvvv...............................#
 #.vvvvvv...............................#
-#.vvvvvv...............................#
-#.vvvvvv...............................#
-#.vvvvvv....S.........e................#
-#.vvvvvv####################...........#
-#.vvvvvv####################...........#
+#.vvvvvv...............................2
+#.vvvvvv...............................2
+#.vvvvvv....S.........e................2
+#.vvvvvv################################
+#.vvvvvv################################
 #.vvvvvv......................vvvvvv...#
 #.vvvvvv......................vvvvvv...#
 #.vvvvvv......................vvvvvv...#

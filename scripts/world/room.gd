@@ -33,6 +33,8 @@ var _secret_cells := {}
 var _falls := {}
 ## Wrong-gravity cells (legend `v`), gathered into GravityDrifts after the grid.
 var _drifts := {}
+## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
+var _seals := {}
 var _sap_cells := {}
 var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
@@ -395,6 +397,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_falls[cell] = true
 		"v":
 			_drifts[cell] = true
+		"+":
+			_seals[cell] = true
 		"~":
 			if _amber_on():
 				# The restored spring hardens the Trunk's sap into walkable amber.
@@ -506,7 +510,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = int(header.get("chest_gold", "100"))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*":
+		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*", "&":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
@@ -527,6 +531,11 @@ func _place_falls() -> void:
 		var drift := GravityDrift.new()
 		drift.cells = box
 		add_child(drift)
+	for box in _blocks(_seals):
+		var seal := HeartSeal.new()
+		seal.cells = box
+		seal.persist_id = _pickup_id(box.position)
+		add_child(seal)
 
 
 ## The bounding boxes of each connected block of `cells`.

@@ -15,6 +15,7 @@ const KIND_BY_CHAR := {
 	"W": "mana_dew",
 	"F": "potion_shard",
 	"*": "mantra_shard",
+	"&": "dragon_slayer",
 }
 
 const INFO := {
@@ -29,6 +30,7 @@ const INFO := {
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
+	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
 }
 
 ## Kinds that grant an ability rather than a stat.
@@ -44,7 +46,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	z_index = 1
-	if kind in ABILITIES:
+	if kind in ABILITIES or kind == "dragon_slayer":
 		add_to_group("light")
 
 
@@ -64,6 +66,11 @@ func grant(p: Player) -> void:
 		p.abilities[kind] = true
 		if Spells.DATA.has(kind) and not p.abilities.get(p.equipped_spell, false):
 			p.equipped_spell = kind
+	elif kind == "dragon_slayer":
+		# Found, not bought: it goes straight into your hand (design bible 5.2, A10).
+		p.abilities[kind] = true
+		GameState.data.equipment.blade = kind
+		GameState.refresh_stats(p)
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
 	if pickup_id != "":
@@ -187,6 +194,23 @@ func _draw() -> void:
 			var bot_h := roundi(8.0 * sand)
 			_hp(o, -5, 12 - bot_h, 10, bot_h, c)
 			_hp(o, -5, -11, 2, 4, Color("ffffff"))
+		"dragon_slayer":
+			# A long blade of pale meteor steel, point down, a cyan light running
+			# up its fuller; a dragon's-wing guard in gold and a dark grip.
+			var run := fmod(_t * 0.8, 1.0)
+			_poly(o, [Vector2(-3, -6), Vector2(3, -6), Vector2(3, 18), Vector2(0, 24), Vector2(-3, 18)], Color("120f19"), 2.0)
+			_poly(o, [Vector2(-2, -6), Vector2(2, -6), Vector2(2, 18), Vector2(0, 23), Vector2(-2, 18)], Color("d8e8f0"))
+			_hp(o, -2, -6, 1, 24, Color("ffffff"))
+			_hp(o, 0, -4, 1, 22, Color("7a98a8"))
+			_hp(o, 0, -4 + roundi(20.0 * (1.0 - run)), 1, 4, c)
+			var guard := [Vector2(-12, -10), Vector2(-4, -8), Vector2(0, -6), Vector2(4, -8), Vector2(12, -10), Vector2(8, -5), Vector2(-8, -5)]
+			_poly(o, guard, Color("120f19"), 2.0)
+			_poly(o, guard, Color("ffd24a"))
+			_hp(o, -8, -9, 16, 1, Color("fff4c0"))
+			_hp(o, -2, -18, 4, 9, Color("120f19"))
+			_hp(o, -1, -17, 2, 7, Color("4a2a3a"))
+			_hp(o, -3, -21, 6, 4, Color("120f19"))
+			_hp(o, -2, -20, 4, 2, c)
 		"onyx":
 			# A black stone cut in facets, a violet light sliding over it as it turns.
 			var spin := sin(_t * 2.0)

@@ -195,7 +195,7 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 | Slot | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
 |------|--------|--------|--------|--------|
-| Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc) | Dragon Slayer (found) |
+| Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret) |
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
 
@@ -510,6 +510,13 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
   - **Drift Well** (64,-11, 40x45), beyond the Heart Stair's upper door: three drift pockets carry you up
     nine-tile ledges a jump could never reach, past a slug, a hound, a Crystal Dwarf, a hornet in the second
     pocket and a Shade Knight. A shrine is at the top. The heart beyond is not open yet.
+  - **The Dragon Slayer and the Heart Gate, as built (pass 80):** the Drift Well's top platform runs to an upper
+    door into the **Heart Gate** (65,-11, 56x23). A hall with a Shade Knight, a Crystal Dwarf and a hound leads
+    past a drift pocket to the flesh. The pocket lifts you to an altar where the **Dragon Slayer** lies (legend
+    `&`; tier 4 blade: slash 18, heavy 30, reach 12). Taking it puts it straight into your hand. The way on is
+    closed by a **heart seal** (legend `+`, `HeartSeal`): a wall of living flesh with a seam of cyan light and a
+    watching eye. Every other blade glances off it, and one cut with the Dragon Slayer tears it open for good.
+    Beyond it, the heart (the Evil One's arenas) is next.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

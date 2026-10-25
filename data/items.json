@@ -1,6 +1,7 @@
 {
 	"hand_dagger": {"name": "Hand Dagger", "kind": "blade", "tier": 1, "slash": 8, "heavy": 14, "reach": 0, "desc": "Your starting blade. Quick, but short."},
 	"long_sword": {"name": "Long Sword", "kind": "blade", "tier": 2, "slash": 11, "heavy": 19, "reach": 8, "desc": "Reaches further and hits harder than the dagger."},
+	"dragon_slayer": {"name": "Dragon Slayer", "kind": "blade", "tier": 4, "slash": 18, "heavy": 30, "reach": 12, "desc": "The only blade that can wound the Evil One. It hums near meteor flesh."},
 	"leather_armor": {"name": "Leather Armor", "kind": "armor", "tier": 1, "defense": 0.15, "desc": "Take 15% less damage."},
 	"studded_mail": {"name": "Studded Mail", "kind": "armor", "tier": 2, "defense": 0.3, "desc": "Take 30% less damage."},
 	"small_shield": {"name": "Small Shield", "kind": "shield", "tier": 1, "desc": "Hold Block to guard (halves damage). Tap it just before a hit to parry.", "guard": 0.5},
