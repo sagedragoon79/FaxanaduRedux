@@ -1333,3 +1333,119 @@ func test_drowned_dwarf_sinks_back_once_he_loses_you() -> void:
 	check(sank > 0, "out of sight, he sinks again")
 	check(sank / 60.0 >= DrownedDwarf.LOSE_TIME, "but only after 3 s (%.2f s)" % (sank / 60.0))
 	check(d.collision_layer == 0, "and is out of reach once more")
+
+
+## Bible 7: the Bark Knight braces (the telegraph), then thrusts his lance far
+## out in front of him. The thrust can be parried.
+func test_bark_knight_braces_then_thrusts_his_lance_and_the_thrust_can_be_parried() -> void:
+	var room := _room_with({Vector2i(22, 6): "!"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	# Well out of a Rot Dwarf's reach, but inside the lance's.
+	p.teleport(Vector2(k.global_position.x - 56.0, 7 * 16))
+	var tell := 0
+	var lit := false
+	var hp := p.hp
+	for i in 150:
+		await frames(1)
+		k.global_position.x = 22.5 * 16
+		if k.state == "windup":
+			tell += 1
+			lit = lit or k.telegraph_pulse()
+		if k.state == "rooted":
+			break
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the brace lasts at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell])
+	check(lit, "and he flashes as he braces")
+	check(hp - p.hp >= BarkKnight.THRUST_DAMAGE, "the thrust reaches a player 3.5 tiles off (%d)" % (hp - p.hp))
+	check(k.lance_rect().size.x >= 56.0, "the lance reaches at least 3.5 tiles (%.0f px)" % k.lance_rect().size.x)
+	# The next brace, meet the thrust with a parry.
+	for i in 300:
+		await frames(1)
+		if k.state == "windup" and k.state_time >= BarkKnight.BRACE - 3.0 / 60.0:
+			break
+	check(k.state == "windup", "he braces again")
+	p.teleport(Vector2(k.global_position.x - 56.0, 7 * 16))
+	p.facing = 1
+	hp = p.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(10)
+	check(p.hp == hp, "a parried thrust does no damage (%d)" % (hp - p.hp))
+	check(k.is_staggered(), "and he reels")
+
+
+## Bible 7: his bark is a guard that blows chip away; bare, or rooted, he takes
+## full damage, and a plate grows back as he pulls his roots free.
+func test_bark_knight_bark_guards_until_stripped_and_regrows_as_he_uproots() -> void:
+	var room := _room_with({Vector2i(22, 6): "!"})
+	var p := make_player(room, Vector2i(3, 6))
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	var before := k.hp
+	k.take_hit(10, Vector2.RIGHT)
+	check(before - k.hp == 3, "in bark, a 10 hit only chips for 3 (%d)" % (before - k.hp))
+	check(k.bark == BarkKnight.BARK - 1, "and knocks off a plate")
+	k.take_hit(10, Vector2.RIGHT)
+	k.take_hit(10, Vector2.RIGHT)
+	check(k.bark == 0, "three blows strip him bare")
+	before = k.hp
+	k.take_hit(10, Vector2.RIGHT)
+	check(before - k.hp == 10, "bare, a 10 hit deals 10 (%d)" % (before - k.hp))
+	# Bark him up again and catch him rooted.
+	k.bark = BarkKnight.BARK - 1
+	p.max_hp = 9999
+	p.hp = 9999
+	p.teleport(Vector2(k.global_position.x - 56.0, 7 * 16))
+	for i in 200:
+		await frames(1)
+		if k.is_rooted():
+			break
+	check(k.is_rooted(), "he roots after a thrust")
+	before = k.hp
+	k.take_hit(10, Vector2.RIGHT)
+	check(before - k.hp == 10, "rooted, the bark doesn't guard him (%d)" % (before - k.hp))
+	check(k.bark == BarkKnight.BARK - 1, "and a blow then takes no plate")
+	for i in 120:
+		await frames(1)
+		if not k.is_rooted():
+			break
+	check(k.bark == BarkKnight.BARK, "a plate grows back as he pulls free (%d)" % k.bark)
+
+
+## Bible 7: rooted, his lance is a bough you can stand on; it goes when he moves.
+func test_bark_knight_rooted_lance_is_a_ledge() -> void:
+	var room := _room_with({Vector2i(14, 6): "!"})
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	check(not k.bough_solid(), "walking, the lance is no ledge")
+	p.teleport(Vector2(k.global_position.x - 56.0, 7 * 16))
+	for i in 200:
+		await frames(1)
+		if k.is_rooted():
+			break
+	await frames(2)
+	check(k.bough_solid(), "rooted, it is")
+	# Drop onto the lance from above.
+	var lance := k.lance_rect()
+	p.teleport(Vector2(lance.get_center().x, lance.position.y - 20.0))
+	p.velocity = Vector2.ZERO
+	var stood := false
+	for i in 30:
+		await frames(1)
+		if p.is_on_floor() and p.global_position.y < 7 * 16 - 8:
+			stood = true
+			break
+	check(stood, "you can stand on the rooted lance (y %.0f)" % p.global_position.y)
+	for i in 120:
+		await frames(1)
+		if not k.is_rooted():
+			break
+	await frames(20)
+	check(not k.bough_solid(), "it goes when he pulls free")
+	check(p.global_position.y >= 7 * 16 - 1, "and you drop to the floor (y %.0f)" % p.global_position.y)

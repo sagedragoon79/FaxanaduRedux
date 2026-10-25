@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1162,6 +1162,120 @@ DROWNED_DWARF = [
 ]
 
 
+# --- Bark Knight: a knight of living bark from the Branches, with a growing lance -----
+# Drawn at the 2x render density. `armored` False strips the bark plates to the pale
+# heartwood beneath; `lance` is the length of the living branch it carries (it grows
+# to its full reach in the thrust); `roots` spreads roots from the feet into the bough.
+
+BK_SCALE = 2
+BK_BARK = mat("bark", 4, 3, 2, 0)
+BK_BARK_BACK = mat("bark", 3, 2, 1, 0)
+BK_HEART = mat("bark", 6, 5, 4, 2)
+BK_HEART_BACK = mat("bark", 5, 4, 3, 1)
+BK_LEAF = mat("leaf", 5, 4, 3, 1)
+BK_MOSS = mat("leaf", 3, 2, 1, 0)
+BK_LANCE = mat("bark", 5, 4, 3, 1)
+BK_THORN = mat("stone", 7, 6, 4, 2)
+BK_EYE = PAL["gold-6"]
+
+
+def bark_knight(hip=(0, -15), lean=0, feet=((4, 0), (-4, 0)), hand=(8, -22), angle=-70, lance=20,
+                armored=True, roots=0.0, bob=0, glow=False):
+    """angle: degrees of the lance from the hand to its tip (0 = forward, -90 = up)."""
+    def render(_):
+        cv = Canvas(112, 64, (36, 61), BK_SCALE)
+        hx, hy = hip
+        sx, sy = hx + lean, hy - 15 + bob
+        head = (sx + 1, sy - 6)
+        body_m = BK_BARK if armored else BK_HEART
+        back_m = BK_BARK_BACK if armored else BK_HEART_BACK
+
+        def leg(h, foot, m):
+            foot = reach(h, foot, 14.5)
+            knee = ik(h, foot, 7.5, 7.5, 1)
+            cv.part(cv.capsule(h, knee, 2.4) | cv.capsule(knee, foot, 2.0), m)
+            # Root-toes splay from each foot.
+            for dx in (-3, 1, 4):
+                cv.part(cv.capsule(foot, (foot[0] + dx, foot[1] + 0.5), 1.0), back_m)
+
+        if roots > 0:
+            for i, dx in enumerate((-14, -9, -4, 5, 10, 15)):
+                cv.part(cv.capsule((dx * 0.25, -0.5), (dx * roots, 0.5 + (i % 2) * 0.6), 1.2), BK_BARK_BACK)
+        leg((hx - 2, hy), feet[1], back_m)
+        # The back arm hangs at his side.
+        cv.part(cv.capsule((sx - 4, sy + 2), (sx - 6, sy + 13), 2.0), back_m)
+        leg((hx + 2, hy), feet[0], body_m)
+        # A lean torso, plated with bark (or bare heartwood once the plates are gone).
+        torso = cv.polygon([(sx - 6, sy), (sx + 6, sy), (hx + 5, hy + 1), (hx - 5, hy + 1)]) | cv.ellipse((sx, sy + 2), 6.5, 3.2)
+        cv.part(torso, body_m, deep=True)
+        if armored:
+            for py in (sy + 3, sy + 8, sy + 12):
+                cv.part(cv.capsule((sx - 5, py), (sx + 5, py - 1), 0.6), BK_BARK_BACK)
+            cv.part(cv.ellipse((sx - 4, sy + 1), 3.6, 3.0), BK_BARK)  # pauldron
+            cv.part(cv.ellipse((sx - 4.5, sy - 1.5), 2.6, 1.2), BK_MOSS)
+        else:
+            for py in (sy + 4, sy + 9):
+                cv.part(cv.capsule((sx - 3, py), (sx + 3, py + 1), 0.4), BK_HEART_BACK)
+        # The lance: a living branch in the front hand, budding leaves, a thorn at its tip.
+        a = math.radians(angle)
+        grip = reach((sx + 4, sy + 2), hand, 13)
+        tip = (grip[0] + math.cos(a) * lance, grip[1] + math.sin(a) * lance)
+        butt = (grip[0] - math.cos(a) * 6, grip[1] - math.sin(a) * 6)
+        cv.part(cv.capsule(butt, tip, 1.3), BK_LANCE)
+        perp = (-math.sin(a), math.cos(a))
+        n = max(1, int(lance // 10))
+        for i in range(n):
+            k = (i + 0.6) / (n + 0.4)
+            bud = (grip[0] + math.cos(a) * lance * k, grip[1] + math.sin(a) * lance * k)
+            side = 1 if i % 2 else -1
+            cv.part(cv.ellipse((bud[0] + perp[0] * side * 2.2, bud[1] + perp[1] * side * 2.2), 1.6, 1.0), BK_LEAF)
+        cv.part(cv.polygon([(tip[0] + perp[0] * 1.6, tip[1] + perp[1] * 1.6), (tip[0] - perp[0] * 1.6, tip[1] - perp[1] * 1.6),
+                            (tip[0] + math.cos(a) * 5, tip[1] + math.sin(a) * 5)]), BK_THORN)
+        elbow = ik((sx + 4, sy + 2), grip, 7, 7, -1)
+        cv.part(cv.capsule((sx + 4, sy + 2), elbow, 2.2) | cv.capsule(elbow, grip, 1.9), body_m)
+        cv.part(cv.ellipse(grip, 2.1, 2.1), back_m)
+        # A knotted helm with a crest of leaves, and two amber eyes in the knot.
+        cv.part(cv.ellipse(head, 4.6, 5.2), body_m)
+        if armored:
+            cv.part(cv.ellipse((head[0], head[1] - 2), 5.2, 3.6) & ~cv.below(head[1] - 0.5), BK_BARK_BACK)
+        for i, (dx, dy) in enumerate(((-3, -7), (-1, -8.5), (1.5, -8), (3.5, -6.5))):
+            cv.part(cv.ellipse((head[0] + dx, head[1] + dy), 1.8, 1.2 + 0.3 * (i % 2)), BK_LEAF)
+        eye = PAL["gold-7"] if glow else BK_EYE
+        cv.pixel((head[0] + 1.5, head[1] - 0.5), eye)
+        cv.pixel((head[0] + 3.5, head[1] - 0.5), eye)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def bark_walk(i, armored):
+    t = i / 4 * math.tau
+    fx = 4.0 * math.cos(t)
+    return bark_knight(hip=(0, -15 - (1 if i % 2 else 0)), armored=armored,
+                       feet=((fx, -max(0, 2 * math.sin(t))), (-fx, -max(0, -2 * math.sin(t)))),
+                       hand=(8, -22), angle=-72 + 4 * math.cos(t))
+
+
+def bark_set(armored):
+    pre = "" if armored else "bare_"
+    return [
+        (pre + "walk", [bark_walk(i, armored) for i in range(4)], [0, 1, 2, 3], 5, True),
+        (pre + "brace", [bark_knight(lean=-3, hand=(-4, -20), angle=-8, lance=20, feet=((6, 0), (-6, 0)), armored=armored, glow=True),
+                         bark_knight(lean=-4, hand=(-5, -20), angle=-6, lance=20, feet=((6, 0), (-6, 0)), armored=armored, bob=1)],
+         [0, 1], 8, True),
+        (pre + "thrust", [bark_knight(lean=3, hand=(10, -19), angle=0, lance=36, feet=((7, 0), (-6, 0)), armored=armored, glow=True),
+                          bark_knight(lean=4, hand=(11, -18), angle=0, lance=56, feet=((8, 0), (-6, 0)), armored=armored, glow=True)],
+         [0, 1], 16, False),
+        (pre + "rooted", [bark_knight(lean=4, hand=(11, -18), angle=0, lance=56, feet=((8, 0), (-6, 0)), armored=armored, roots=1.0),
+                          bark_knight(lean=4, hand=(11, -18), angle=0, lance=56, feet=((8, 0), (-6, 0)), armored=armored, roots=1.1, bob=1)],
+         [0, 1], 3, True),
+        (pre + "stagger", [bark_knight(lean=-5, feet=((2, 0), (-7, 0)), hand=(2, -30), angle=-120, armored=armored)], [0], 1, False),
+    ]
+
+
+BARK_KNIGHT = bark_set(True) + bark_set(False)
+
+
 def autosprite_only(_):
     """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
     animation it names is swapped for the imported frames."""
@@ -1194,6 +1308,7 @@ def main():
     write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
     write_sheet("bog_myconid", (40, 40), (20, 38), BOG_MYCONID, lambda r: r(None), density=BM_SCALE)
     write_sheet("drowned_dwarf", (72, 64), (32, 61), DROWNED_DWARF, lambda r: r(None), density=DD_SCALE)
+    write_sheet("bark_knight", (112, 64), (36, 61), BARK_KNIGHT, lambda r: r(None), density=BK_SCALE)
     write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
