@@ -458,6 +458,13 @@ def main():
     thud = osc(slide(110, 50, d, 0.7), "sine") * env(n, 0.002, 2.2) * 0.5
     save("fire_burst", mix(whump, pops, thud), 0.6)
 
+    # A Tilte orb striking: a glassy two-note chime over a soft breathy puff.
+    d = 0.45
+    n = int(RATE * d)
+    chime = (osc(np.full(n, 1318.0), "sine") + osc(np.full(n, 1976.0), "sine") * 0.6) * env(n, 0.002, 2.4) * 0.5
+    puff = lowpass(noise(d), slide(4000, 600, d, 0.6)) * env(n, 0.004, 2.0) * 0.5
+    save("tilte_hit", mix(chime, puff), 0.55)
+
     # Dry bramble catching: a rush of flame and quick snapping twigs.
     d = 0.7
     n = int(RATE * d)

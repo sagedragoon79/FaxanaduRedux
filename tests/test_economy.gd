@@ -827,3 +827,18 @@ func test_the_final_tier_comes_with_the_spring_of_sky() -> void:
 	check(Shop.buy("daybreak_items", fruit, p) and Shop.status("daybreak_items", fruit, p) == "sold out", "the fruit is sold once")
 	GameState.data.equipment.blade = "dragon_slayer"
 	check(Shop.status("eolis_arms", blade, p) == "owned", "with the Dragon Slayer in hand the Giant Blade counts as owned")
+
+
+func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	var stock: Array = GameData.shop("daybreak_scrolls").stock
+	check(stock[1].item == "tilte_scroll" and int(stock[1].price) == 2500, "the scriptorium sells Tilte for 2,500 g")
+	p.gold = 2500
+	check(not p.abilities.get("tilte", false), "you start without it")
+	check(Shop.buy("daybreak_scrolls", 1, p) and p.abilities.tilte, "bought, it is learned")
+	check(Shop.status("daybreak_scrolls", 1, p) == "owned", "and can't be bought twice")
+	GameState.data.skills = ["clear_mind", "siphon", "deluge_pierce", "tilte_swarm"]
+	GameState.refresh_stats(p)
+	check(p.tilte_swarm, "the Tilte Swarm skill reaches the player")

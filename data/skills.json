@@ -8,6 +8,7 @@
 		{"id": "clear_mind", "branch": "Arcana", "name": "Clear Mind", "cost": 1, "needs": "", "desc": "+20 max MP."},
 		{"id": "siphon", "branch": "Arcana", "name": "Siphon", "cost": 1, "needs": "clear_mind", "desc": "Melee hits restore 50% more MP."},
 		{"id": "deluge_pierce", "branch": "Arcana", "name": "Deluge Pierce", "cost": 1, "needs": "siphon", "desc": "Water bolts pass through foes and strike every one in line."},
+		{"id": "tilte_swarm", "branch": "Arcana", "name": "Tilte Swarm", "cost": 2, "needs": "deluge_pierce", "desc": "Tilte throws three orbs in a fan, each 10 damage. Needs the Tilte scroll."},
 		{"id": "deep_pockets", "branch": "Wanderer", "name": "Deep Pockets", "cost": 1, "needs": "", "desc": "+1 Red Potion charge."},
 		{"id": "gold_sense", "branch": "Wanderer", "name": "Gold Sense", "cost": 1, "needs": "deep_pockets", "desc": "Coins fly to you from farther away, and you find 10% more gold."},
 		{"id": "quick_draught", "branch": "Wanderer", "name": "Quick Draught", "cost": 1, "needs": "gold_sense", "desc": "You drink a Red Potion 40% faster."},

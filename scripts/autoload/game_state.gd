@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "onyx": false, "hourglass": false},
+		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false},
 		## The spell on the Spell button (an id in `Spells.ORDER`).
 		"spell": "deluge",
 		"max_hp": 100,
@@ -311,6 +311,7 @@ func refresh_stats(p: Player) -> void:
 	p.rising_cut = has_skill("rising_cut")
 	p.down_strike_mult = 1.5 if has_skill("mattock_mastery") else 1.0
 	p.spell_pierce = has_skill("deluge_pierce")
+	p.tilte_swarm = has_skill("tilte_swarm")
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
 	p.max_hp = int(data.max_hp)

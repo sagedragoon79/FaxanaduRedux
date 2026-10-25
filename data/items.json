@@ -23,5 +23,6 @@
 	"chart_mist": {"name": "Chart of the Mist", "kind": "chart", "zone": "mist", "desc": "The drowned marsh of the Mist outlined on your map, as far as the fog let the skywatchers see. Rooms you have not seen show dimmed."},
 	"chart_branches": {"name": "Chart of the Branches", "kind": "chart", "zone": "branches", "desc": "The boughs of the Branches outlined on your map. Rooms you have not seen show dimmed."},
 	"chart_daybreak": {"name": "Chart of Daybreak", "kind": "chart", "zone": "daybreak", "desc": "The sky isles of Daybreak outlined on your map, as the bell-ringers see them. Rooms you have not seen show dimmed."},
-	"fire_scroll": {"name": "Fire Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Fire: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."}
+	"fire_scroll": {"name": "Fire Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Fire: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."},
+	"tilte_scroll": {"name": "Tilte Scroll", "kind": "spell", "spell": "tilte", "desc": "Teaches Tilte: a spirit orb that wakes, chooses the nearest foe and flies to it. The Next Spell button switches spells."}
 }
