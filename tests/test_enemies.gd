@@ -1496,3 +1496,31 @@ func test_the_bark_knights_lance_drops_through_and_gives_coyote_time() -> void:
 			await frames(1)
 			check(p.velocity.y < -300.0, "and a jump 4 frames later still counts (vy %.0f)" % p.velocity.y)
 		room.free()
+
+
+## Pass 112: the foes built after the pass-102 sound pass have voices of their
+## own. Each of these sounds exists, its foe plays it, and nothing else does, so
+## a tell can be told apart by ear.
+func test_the_newer_foes_have_voices_of_their_own() -> void:
+	var own := {
+		"bark_knight": ["bark_creak", "lance_thrust", "root_grip", "bark_chip"],
+		"drowned_dwarf": ["anchor_heave", "anchor_slam"],
+		"leaf_mantis": ["mantis_unfold", "scythe"],
+	}
+	var played := {}  # sound -> scripts that play it
+	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:
+		for f in DirAccess.get_files_at(dir):
+			if not f.ends_with(".gd"):
+				continue
+			var src := FileAccess.get_file_as_string(dir + f)
+			var re := RegEx.create_from_string("Sfx\\.play\\(\"([a-z_0-9]+)\"")
+			for m in re.search_all(src):
+				var name := m.get_string(1)
+				if not played.has(name):
+					played[name] = []
+				if not (f.get_basename() in played[name]):
+					played[name].append(f.get_basename())
+	for foe: String in own:
+		for sound: String in own[foe]:
+			check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
+			check(played.get(sound, []) == [foe], "%s is played by the %s alone (%s)" % [sound, foe, played.get(sound, [])])

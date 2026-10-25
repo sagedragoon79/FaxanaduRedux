@@ -64,7 +64,7 @@ func _think(delta: float) -> void:
 			if state_time >= UNFOLD:
 				_struck = false
 				set_state("lunge")
-				Sfx.play("slash", 0.1, -3.0)
+				Sfx.play("scythe", 0.1, -3.0)
 		"lunge":
 			if _edge_ahead():
 				velocity.x = 0.0
@@ -102,7 +102,7 @@ func _unfold() -> void:
 	velocity.x = 0.0
 	face_player()
 	set_state("unfold")
-	Sfx.play("skitter", 0.1, -6.0)
+	Sfx.play("mantis_unfold", 0.1, -4.0)
 
 
 ## Where its scythes cut during a lunge.

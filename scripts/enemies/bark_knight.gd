@@ -90,7 +90,7 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	d.setup("debris")
 	get_parent().add_child(d)
 	d.global_position = center()
-	Sfx.play("crumble", 0.1, -4.0 if bark > 0 else 0.0)
+	Sfx.play("bark_chip", 0.1, -3.0 if bark > 0 else 1.0)
 	return ceili(damage * GUARD)
 
 
@@ -122,7 +122,7 @@ func _think(delta: float) -> void:
 				face_player()
 				velocity.x = 0.0
 				set_state("windup")
-				Sfx.play("tell_charge", 0.06, -3.0)
+				Sfx.play("bark_creak", 0.06, -2.0)
 				return
 			if off.x != INF and absf(off.x) < REACH * 2.5 and absf(off.y) < LEVEL_Y * 2.0:
 				face_player()
@@ -134,7 +134,7 @@ func _think(delta: float) -> void:
 			if state_time >= BRACE:
 				_thrust_hit = false
 				set_state("thrust")
-				Sfx.play("whoosh", 0.05, -1.0)
+				Sfx.play("lance_thrust", 0.05, -1.0)
 		"thrust":
 			velocity.x = 0.0
 			if not _thrust_hit and hit_player_in_rect(lance_rect(), THRUST_DAMAGE, true) != "":
@@ -142,7 +142,7 @@ func _think(delta: float) -> void:
 			if state_time >= THRUST:
 				_set_bough(true)
 				set_state("rooted")
-				Sfx.play("thorn", 0.08, -4.0)
+				Sfx.play("root_grip", 0.08, -3.0)
 				var d := Dust.new()
 				d.setup("land")
 				get_parent().add_child(d)
