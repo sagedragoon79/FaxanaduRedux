@@ -533,6 +533,18 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     cleave comes back for a second swing and its pull is stronger. Beaten, the avatar shatters ("The Avatar
     Shatters", 1 skill point) and the light flees up the veins. Phase 2 (The Veins) is next. Theme: `evil_one`
     (B locrian at 120, a quickened double-kick heartbeat, a bass that drops a tritone, a cold lead).
+  - **Phase 2, as built (pass 82):** the throne's door 2, high on its east wall, opens on **The Veins**
+    (`zenis/veins`, 69,-13, 40x68, `boss: evil_veins`), a tall shaft of meteor flesh climbed on zigzag one-way
+    ledges three rows apart. At its vault hangs the **core** (`EvilCore`), a crystal eye-flower that watches you.
+    No blade reaches it. It feeds through six **light veins** (legend `x`, `LightVein`) grown above the ledges up
+    the shaft; one cut (or a pogo, which also bounces you) severs a vein, and its health bar is the veins still
+    lit (10 each). While you climb it fires **core beams** (`CoreBeam`) at you: the line flickers for its tell
+    (0.6 s) and then burns for 0.35 s, 16 damage, unparryable. Below half (three veins left) the tell is 0.45 s,
+    volleys come every 1.6 s instead of 2.2 s, and every other volley is a pair of beams fanned to either side of
+    you (stand still between them). The Hour Glass holds the core and its beams. With the last vein cut the core
+    gutters ("The Veins Go Dark", 1 skill point); the veins stay dark for good (`boss:evil_veins`). Deviation:
+    the bible asked for wall jump and dash here too; the as-built shaft is a ledge climb so the beams are the
+    pressure, and wall jumps are allowed but not required. Phase 3 (The Core) is next.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

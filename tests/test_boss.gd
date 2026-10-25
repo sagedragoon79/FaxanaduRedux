@@ -1966,3 +1966,130 @@ func test_evil_avatar_defeat_shatters_it_for_good() -> void:
 	w._enter("zenis/throne")
 	await frames(10)
 	check(get_tree_boss() == null, "and it never returns")
+
+
+# --- The Evil One, phase 2: the Veins (bible 8.9) -------------------------------
+
+func _veins_world() -> Array:
+	var w := make_world({}, "zenis/veins")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	w.player.abilities["hourglass"] = true
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(8, 65))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var c := get_tree_boss() as EvilCore
+	await _until(func() -> bool: return c != null and c.state == "watch", 200)
+	return [w, arena, c]
+
+
+func _cut_veins(c: EvilCore, n: int) -> void:
+	var cut := 0
+	for v in c.veins:
+		if cut >= n:
+			return
+		if not v.is_cut:
+			v.take_hit(10, Vector2.RIGHT)
+			cut += 1
+
+
+func test_the_veins_wake_the_core() -> void:
+	var setup := await _veins_world()
+	var arena: BossArena = setup[1]
+	var c: EvilCore = setup[2]
+	check(arena.boss_id == "evil_veins" and c != null and c.state == "watch", "climbing into the Veins wakes the core")
+	check(c.veins.size() == 6 and c.max_hp == 6 * EvilCore.VEIN_HP and c.hp == c.max_hp, "it feeds through six veins (%d)" % c.veins.size())
+	check(Music.track == "evil_one", "to the Evil One's theme (%s)" % Music.track)
+	var hp := c.hp
+	c.take_hit(50, Vector2.UP)
+	check(c.hp == hp, "no blade reaches the core itself")
+
+
+func test_the_cores_beams_are_telegraphed_and_burn_the_line() -> void:
+	var setup := await _veins_world()
+	var w: World = setup[0]
+	var c: EvilCore = setup[2]
+	for ph in [1, 2]:
+		c.phase = ph
+		check(c.tell() >= Enemy.MIN_TELEGRAPH, "phase %d beam tell %.2f s is at least %.2f s" % [ph, c.tell(), Enemy.MIN_TELEGRAPH])
+	c.phase = 1
+	# Hold its own volleys and clear any in flight, so only this beam counts.
+	c._volley = 99.0
+	for b in w.room.get_children():
+		if b is CoreBeam:
+			b.queue_free()
+	await frames(30)
+	var p := w.player
+	var hp := p.hp
+	c._fire()
+	var beam: CoreBeam = w.room.get_children().filter(func(n: Node) -> bool: return n is CoreBeam)[0]
+	var tell := 0
+	while is_instance_valid(beam) and not beam.firing() and p.hp == hp and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "a beam's line flickers harmlessly first (%d frames)" % tell)
+	await frames(10)
+	check(p.hp < hp, "then burns whoever stands in it (%d)" % (hp - p.hp))
+
+
+func test_the_hour_glass_holds_the_cores_beams() -> void:
+	var setup := await _veins_world()
+	var w: World = setup[0]
+	var c: EvilCore = setup[2]
+	var p := w.player
+	c._fire()
+	TimeStop.start()
+	var hp := p.hp
+	await frames(90)
+	var beams := w.room.get_children().filter(func(n: Node) -> bool: return n is CoreBeam)
+	check(beams.size() == 1 and not beams[0].firing(), "the beam's line hangs, unfired, while time holds")
+	check(p.hp == hp, "and hurts no one")
+	TimeStop.reset()
+
+
+func test_cutting_the_veins_starves_the_core() -> void:
+	var setup := await _veins_world()
+	var w: World = setup[0]
+	var c: EvilCore = setup[2]
+	var points := int(GameState.data.skill_points)
+	_cut_veins(c, 3)
+	check(c.hp == 3 * EvilCore.VEIN_HP and c.phase == 2, "each cut vein drains it; at half it grows desperate (%d, phase %d)" % [c.hp, c.phase])
+	c._volleys = 1
+	for b in w.room.get_children():
+		if b is CoreBeam:
+			b.queue_free()
+	await frames(1)
+	c._fire()
+	check(w.room.get_children().filter(func(n: Node) -> bool: return n is CoreBeam and not n.is_queued_for_deletion()).size() == 2, "and fans its beams in pairs")
+	_cut_veins(c, 3)
+	check(c.state == "dying", "the last vein cut, its light gutters out")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_veins"), 600)
+	check(gone, "the Veins are marked beaten")
+	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
+	await frames(90)
+	w._enter("zenis/veins")
+	await frames(10)
+	check(get_tree_boss() == null, "the core never fights here again")
+	check(w.room.get_children().filter(func(n: Node) -> bool: return n is LightVein).all(func(v: LightVein) -> bool: return v.is_cut), "and its veins stay dark")
+
+
+func test_a_pogo_bounces_off_a_vein() -> void:
+	var setup := await _veins_world()
+	var w: World = setup[0]
+	var c: EvilCore = setup[2]
+	var v: LightVein = c.veins[0]
+	var p := w.player
+	p.abilities["mattock"] = true
+	p.teleport(v.global_position + Vector2(0, -40))
+	var bounced := false
+	for i in 60:
+		if p.velocity.y > 0.0 and not p.is_attacking:
+			p.input.down = true
+			p.input.attack_pressed = true
+		await frames(1)
+		if p.velocity.y < -250.0:
+			bounced = true
+			break
+	p.input.down = false
+	check(bounced and v.is_cut, "a down-strike cuts a vein and bounces off it")
