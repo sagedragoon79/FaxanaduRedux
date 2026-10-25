@@ -300,6 +300,7 @@ func refresh_stats(p: Player) -> void:
 	p.defense = float(GameData.item(eq.armor).get("defense", 0.0))
 	p.has_shield = eq.shield != ""
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
+	p.reflects = bool(GameData.item(eq.shield).get("reflect", false))
 	p.melee_mult = 1.1 if has_skill("keen_edge") else 1.0
 	p.ground_combo_length = 4 if has_skill("fourth_strike") else 3
 	p.mp_hit_mult = 1.5 if has_skill("siphon") else 1.0

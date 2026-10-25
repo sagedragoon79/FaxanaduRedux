@@ -61,6 +61,9 @@ var defense := 0.0
 var has_shield := true
 ## Share of damage a guard blocks; the shield sets it (data/items.json "guard").
 var guard_reduction := 0.5
+## The Magic Shield: a parry also catches small shots that can't otherwise be
+## parried (group "small_projectile") and flings them back (ReflectedShot).
+var reflects := false
 ## Elixirs carried: dying with one revives you where you fell.
 var elixirs := 0
 ## Ointments carried: each makes you immune to harm for OINTMENT_TIME.
@@ -877,7 +880,8 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		return "ignored"
 	var src_dir := int(signf(source.global_position.x - global_position.x))
 	var from_front := src_dir == 0 or src_dir == facing
-	if parryable and _parry_timer > 0.0 and from_front:
+	var catches := reflects and source.is_in_group("small_projectile")
+	if (parryable or catches) and _parry_timer > 0.0 and from_front:
 		_parry_timer = 0.0
 		_invuln_timer = maxf(_invuln_timer, 0.25)
 		mp = minf(mp + combat.parry_mp_gain, max_mp)
@@ -888,7 +892,11 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		_spawn_dust(Vector2(facing * 12, -24), "parry")
 		visual.squash(Vector2(1.15, 0.9))
 		if source.has_method("stagger"):
+			# Feathers, gears and bolts turn back on their own.
 			source.stagger()
+		elif catches:
+			ReflectedShot.spawn(self, source, source.get("tint") if source.get("tint") is Color else ReflectedShot.GOLD)
+			Sfx.play("zap", 0.1, 6.0)
 		return "parried"
 	if invulnerable:
 		return "ignored"

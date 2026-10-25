@@ -635,6 +635,98 @@ func test_a_parried_harpy_feather_flies_back() -> void:
 	check(harpy_hp - h.hp == HarpyFeather.REFLECT_DAMAGE, "and it strikes her for %d (%d)" % [HarpyFeather.REFLECT_DAMAGE, harpy_hp - h.hp])
 
 
+## Lobs `shot` at the player from 40 px in front and taps Block as it closes.
+## Returns the player's health lost.
+func _parry_shot(p: Player, room: Room, shot: Node2D) -> int:
+	room.add_child(shot)
+	shot.global_position = p.global_position + Vector2(40, -20)
+	shot.set("velocity", Vector2(-200, 0))
+	var hp := p.hp
+	for i in 20:
+		if is_instance_valid(shot) and absf(shot.global_position.x - p.global_position.x) < 26.0:
+			p.input.block_pressed = true
+		await frames(1)
+		if not is_instance_valid(shot):
+			break
+	return hp - p.hp
+
+
+func _reflected(room: Room) -> ReflectedShot:
+	return _find(room, ReflectedShot) as ReflectedShot
+
+
+func test_the_magic_shield_flings_a_sap_glob_back() -> void:
+	var rows := TALL.duplicate()
+	rows[12] = "#...................T........#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(8, 12))
+	p.has_shield = true
+	p.reflects = true
+	p.facing = 1
+	var t: SapSpitter = _find(room, SapSpitter)
+	await frames(3)
+	t.set_physics_process(false)
+	var g := SapGlob.new()
+	g.room = room
+	var lost := await _parry_shot(p, room, g)
+	check(lost == 0 and not is_instance_valid(g), "the Magic Shield catches a sap glob, which no other shield can parry")
+	var shot := _reflected(room)
+	check(shot != null and shot.velocity.x > 0.0, "and flings it back the way you face")
+	var hp := t.hp
+	for i in 60:
+		await frames(1)
+		if t.hp < hp or t.dead:
+			break
+	check(t.dead or hp - t.hp == ReflectedShot.DAMAGE, "it strikes the spitter for %d (%d)" % [ReflectedShot.DAMAGE, hp - t.hp])
+	check(room._sap_cells.is_empty(), "a caught glob leaves no puddle")
+
+
+func test_other_shields_cannot_catch_a_sap_glob() -> void:
+	var room := make_room(TALL)
+	var p := make_player(room, Vector2i(8, 12))
+	p.has_shield = true
+	p.facing = 1
+	await frames(3)
+	var lost := await _parry_shot(p, room, SapGlob.new())
+	check(lost > 0, "without the Magic Shield, a parry can't stop sap (%d lost)" % lost)
+	check(_reflected(room) == null, "and nothing flies back")
+
+
+func test_the_magic_shield_turns_seeds_into_shots() -> void:
+	var room := make_room(TALL)
+	var p := make_player(room, Vector2i(8, 12))
+	p.has_shield = true
+	p.facing = 1
+	await frames(3)
+	var lost := await _parry_shot(p, room, SeedShot.new())
+	check(lost == 0 and _reflected(room) == null, "a plain shield parries a seed, and it just bursts")
+	p.reflects = true
+	lost = await _parry_shot(p, room, SeedShot.new())
+	var shot := _reflected(room)
+	check(lost == 0 and shot != null, "the Magic Shield sends it back as a shot of light")
+	check(shot != null and shot.tint == Color("7cbf52"), "glowing with the seed's green")
+
+
+func test_a_reflected_shot_seeks_the_nearest_foe_ahead() -> void:
+	var rows := TALL.duplicate()
+	rows[5] = "#..................H.........#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(8, 12))
+	p.facing = 1
+	await frames(3)
+	var h := _find(room, Enemy) as Enemy
+	h.set_physics_process(false)
+	var src := Node2D.new()
+	room.add_child(src)
+	src.global_position = p.global_position + Vector2(20, -20)
+	var shot := ReflectedShot.spawn(p, src)
+	var aim := (h.center() - src.global_position).normalized()
+	check(shot.velocity.normalized().dot(aim) > 0.99, "it flies at the foe in front of you, up in the air")
+	p.facing = -1
+	var back := ReflectedShot.spawn(p, src)
+	check(back.velocity.x < 0.0 and absf(back.velocity.y) < 0.01, "with no foe that way, it flies straight ahead")
+
+
 func test_crystal_dwarf_raises_his_fist_then_erupts_spikes() -> void:
 	var room := _room_with({Vector2i(22, 6): "q"})
 	var p := make_player(room, Vector2i(3, 6))

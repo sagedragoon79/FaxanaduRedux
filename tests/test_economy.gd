@@ -496,6 +496,22 @@ func test_large_shield_guards_more() -> void:
 	check(Shop.status("eolis_arms", 2, p) == "owned", "the Small Shield counts as owned once you have a better one")
 
 
+func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	GameState.data.equipment.shield = "large_shield"
+	GameState.refresh_stats(p)
+	check(not p.reflects, "the Large Shield doesn't reflect")
+	var stock: Array = GameData.shop("daybreak_armor").stock
+	check(stock[1].item == "magic_shield" and int(stock[1].price) == 3600, "Calder's armory sells the Magic Shield for 3,600 g")
+	p.gold = 3600
+	check(Shop.buy("daybreak_armor", 1, p), "bought the Magic Shield")
+	check(p.reflects and p.has_shield, "it reflects small shots on a parry")
+	check_near(p.guard_reduction, 0.7, 0.001, "and guards like the Large Shield")
+	check(Shop.status("apolune_armor", 1, p) == "owned", "the Large Shield counts as owned once you have it")
+
+
 func test_elixir_revives_once_and_is_limited_to_one() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

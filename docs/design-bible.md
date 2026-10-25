@@ -202,6 +202,13 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered. The Meteor Shard cost joins when shards are placed in the world.)
 
+**Magic Shield (built pass 91):**
+- It guards 70%, like the Large Shield.
+- A parry also catches small shots no other shield can parry: Sap Spitter globs and Meteor Slug globs (group `small_projectile`). It catches Pakukame's seeds too, which any shield can parry.
+- The caught shot flies back as a mote of shield light, glowing with the colour of what it caught (`ReflectedShot`). It goes at 340 px/s toward the nearest foe within 260 px on the side you face, or straight ahead, and strikes the first foe it meets for 16.
+- Feathers, gears and shadow bolts already turn back on any shield's parry, and still do.
+- A caught sap glob leaves no puddle.
+
 You start with no shield: Block and parry come with the Small Shield, the first purchase most players make in Eolis. Gear values live in `data/items.json`:
 
 | Item | Values |
@@ -717,7 +724,7 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 | Cartographer | every town | zone map outlines (200 to 800 g), map pins |
 | Spell scrolls | Mascon, Daybreak | Fire (1,200 g), Tilte (2,500 g) |
 
-Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joins his stock with its reflect mechanic in a later pass. The scribe sells Fire; Tilte waits for its spell. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
+Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joined his stock in pass 91 (see 5.2). The scribe sells Fire; Tilte waits for its spell. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
 | Guru | every town | save, skill tree, respec, rank-up |
 
 **Gold sinks:** respecs, Ointments and Elixirs, keys for optional doors (each guards a reward), smith upgrades, cosmetics (cloak dyes, 6 total, purely visual).
