@@ -1172,6 +1172,7 @@ func _conduits(w: World) -> Array:
 ## Makes it pick `move` next and counts the frames of its tell.
 func _roc_provoke(b: Borabohra, move: String) -> int:
 	b._last = "dive" if move == "volley" else "volley"
+	b._last_move = b._last
 	b._choose()
 	var tell_frames := 0
 	for i in 240:
@@ -1336,6 +1337,114 @@ func test_a_lone_conduit_drains_in_the_storm() -> void:
 	b._storm = 999.0
 	await frames(int(Borabohra.DRAIN_TIME * 60) + 20)
 	check(not cs[0].powered, "in the storm it drains unless all three wake together")
+
+
+func _updraft(w: World) -> Updraft:
+	for c in w.room.get_children():
+		if c is Updraft and not c.is_queued_for_deletion():
+			return c
+	return null
+
+
+## Phase 3 with the player on the floor under the left lane; the roc starts its gale.
+func _roc_duel() -> Array:
+	var setup := await _roc_world()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	b.phase = 3
+	b._storm = 0.05
+	var lane := b.gale_point(0.0)
+	w.player.teleport(Vector2(lane.x, b.floor_y()))
+	await frames(2)
+	b._last = "volley"
+	b._last_move = "volley"
+	b._choose()
+	return setup
+
+
+func test_borabohra_duel_begins_below_a_quarter() -> void:
+	var setup := await _roc_world()
+	var b: Borabohra = setup[2]
+	b.hp = roundi(b.max_hp * Borabohra.PHASE_2) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.phase == 2, "the storm first")
+	b.hp = roundi(b.max_hp * Borabohra.PHASE_3) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.phase == 3, "below a quarter the duel begins (%d hp)" % b.hp)
+	check(b.tell(Borabohra.GALE_TELL) >= Enemy.MIN_TELEGRAPH, "the gale's tell is fair")
+	b._last = "volley"
+	b._last_move = "volley"
+	b._choose()
+	check(b.state == "gale_tell", "its next move is the gale (%s)" % b.state)
+
+
+func test_borabohra_holds_a_gale_over_an_open_lane() -> void:
+	var setup := await _roc_duel()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var u := _updraft(w)
+	check(b.state == "gale_tell" and u != null and not u.active, "it beats its wings and the dust stirs where the wind will rise")
+	var tell_frames := 0
+	while b.state == "gale_tell" and tell_frames < 120:
+		tell_frames += 1
+		await frames(1)
+	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the tell lasts at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
+	check(b.holding_gale() and u.active, "then it holds the gale over a column of rising wind")
+	var lane := b.gale_point(w.player.global_position.x)
+	check(b.global_position.distance_to(lane) < 2.0, "hovering over the open lane between the islands")
+	check(u.column_rect().position.y < b.body_rect().position.y - 8.0, "the wind reaches above its head")
+	check(b.contact_damage == 0, "it doesn't touch you while it beats")
+	check(_storm_bolt(w) == null, "and the storm waits")
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 3, "a blow from the side is still turned by its cloud (%d)" % (hp0 - b.hp))
+	hp0 = b.hp
+	b.take_hit(10, Vector2.DOWN)
+	check(hp0 - b.hp == 10, "a blow from above lands in full (%d)" % (hp0 - b.hp))
+	var climbed := await _until(func() -> bool: return b.state == "climb", int(Borabohra.GALE_TIME * 60) + 30)
+	check(climbed and _updraft(w) == null, "then it climbs away and the wind dies")
+	b._choose()
+	check(b.state != "gale_tell", "it doesn't hold two gales in a row (%s)" % b.state)
+
+
+func test_the_updraft_carries_you_up_to_pogo_its_head() -> void:
+	var setup := await _roc_duel()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var p := w.player
+	p.abilities["mattock"] = true
+	await _until(func() -> bool: return b.holding_gale(), 90)
+	var rose := await _until(func() -> bool: return p.body_rect().end.y < b.body_rect().position.y, 120)
+	check(rose, "the wind carries you up past its head")
+	check(p.has_double_jump, "and gives back your air moves")
+	var hp0 := b.hp
+	var bounced := false
+	for i in 90:
+		if p.velocity.y > 0.0 and not p.is_attacking:
+			p.input.down = true
+			p.input.attack_pressed = true
+		await frames(1)
+		if b.hp < hp0 and p.velocity.y < -200.0:
+			bounced = true
+			break
+	p.input.down = false
+	var full := roundi(p.slash_damage * p.melee_mult * p.down_strike_mult)
+	check(bounced, "holding Down drops you onto its head, and the pogo bounces you back up")
+	check(hp0 - b.hp == full, "the pogo lands in full (%d of %d)" % [hp0 - b.hp, full])
+
+
+func test_holding_down_drops_out_of_the_updraft() -> void:
+	var setup := await _roc_duel()
+	var w: World = setup[0]
+	var b: Borabohra = setup[2]
+	var p := w.player
+	await _until(func() -> bool: return b.holding_gale(), 90)
+	p.input.down = true
+	await frames(30)
+	check(p.is_on_floor(), "with Down held the wind doesn't lift you")
+	p.input.down = false
+	await frames(30)
+	check(not p.is_on_floor() and p.velocity.y < 0.0, "let go and it carries you up")
 
 
 # --- King Grieve, the Drowned Sovereign (bible 8.7) -----------------------------

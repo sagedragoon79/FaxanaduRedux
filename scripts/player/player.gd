@@ -33,6 +33,8 @@ const POISON_DAMAGE := 2
 const SLASH_SIZE := Vector2(36, 26)
 const UP_SLASH_SIZE := Vector2(34, 36)
 const DOWN_STRIKE_SIZE := Vector2(28, 24)
+## How fast an updraft brings the body to its lift speed (px/s²).
+const UPDRAFT_ACCEL := 1100.0
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -126,6 +128,9 @@ var water_push := 0.0
 ## How much of their weight the player has this frame: a GravityDrift pocket in
 ## Zenis lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
 var gravity_scale := 1.0
+## Rising wind under the player this frame (px/s up): Borabohra's updraft in its
+## third phase (design bible 8.6). Set by an Updraft each frame; Down drops out.
+var updraft := 0.0
 ## Deep water around the body's centre this frame (the Sunken Spring, legend
 ## `a`), and the y of its surface in that column. Set by SwimWater each frame.
 var in_water := false
@@ -260,6 +265,8 @@ func _physics_process(delta: float) -> void:
 	if not is_dashing:
 		if swimming:
 			_swim_drift(delta)
+		elif updraft > 0.0 and not input.down:
+			_ride_updraft(delta)
 		else:
 			_apply_gravity(delta, on_floor)
 	_apply_wall_slide()
@@ -268,6 +275,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = maxf(velocity.y, water_push)
 	water_push = 0.0
 	gravity_scale = 1.0
+	updraft = 0.0
 	in_water = false
 
 	if is_attacking:
@@ -485,6 +493,16 @@ func _apply_gravity(delta: float, on_floor: bool) -> void:
 	velocity.y += g * gravity_scale * delta
 	var max_fall := tuning.max_fast_fall_speed if input.down else tuning.max_fall_speed
 	velocity.y = minf(velocity.y, max_fall * gravity_scale)
+
+
+## An updraft carries the body up toward its lift speed, and the air moves come
+## back, as in water. Anything rising faster (a jump, a pogo) runs on.
+func _ride_updraft(delta: float) -> void:
+	_refresh_air_moves()
+	if velocity.y < -updraft:
+		velocity.y += tuning.gravity * delta
+		return
+	velocity.y = move_toward(velocity.y, -updraft, UPDRAFT_ACCEL * delta)
 
 
 # --- Swimming -------------------------------------------------------------------
