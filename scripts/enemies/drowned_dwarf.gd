@@ -107,7 +107,7 @@ func _think(delta: float) -> void:
 				if absf(off.x) < REACH:
 					velocity.x = 0.0
 					set_state("windup")
-					Sfx.play("tell_heavy", 0.08, -3.0)
+					Sfx.play("anchor_heave", 0.08, -3.0)
 					return
 			if is_on_floor() and (_wall_ahead() or not _floor_ahead()):
 				velocity.x = 0.0
@@ -118,7 +118,7 @@ func _think(delta: float) -> void:
 			if state_time >= HEAVE:
 				_slammed = false
 				set_state("slam")
-				Sfx.play("heavy", 0.05, -2.0)
+				Sfx.play("anchor_slam", 0.05, -3.0)
 		"slam":
 			velocity.x = 0.0
 			if not _slammed:

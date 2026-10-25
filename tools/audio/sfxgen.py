@@ -621,5 +621,80 @@ def main():
     rush = lowpass(highpass(noise(d), 300), slide(900, 3500, d, 0.4)) * env(n, 0.06, 1.6)
     save("whoosh", rush, 0.55)
 
+    # Voices of their own for the foes built after pass 102 (pass 112). Each tell
+    # still rises toward the strike, but in the foe's own material.
+    # Bark Knight bracing: living wood under strain, a stick-slip creak climbing.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    slip = 0.55 + 0.45 * (np.sin(2 * np.pi * (22 * t + 30 * t * t)) > 0.3)
+    creak = lowpass(osc(slide(70, 150, d, 0.8) + 8 * np.sin(2 * np.pi * 9 * t), "saw"), slide(500, 1600, d)) * slip
+    grain = lowpass(highpass(noise(d), 700), 2200) * slip * 0.35
+    save("bark_creak", mix(creak, grain) * env(n, 0.3, 0.5), 0.5)
+
+    # The lance driven out: a woody rush ending on a hard thock.
+    d = 0.2
+    n = int(RATE * d)
+    rush = lowpass(highpass(noise(d), 400), slide(1200, 4200, d, 0.5)) * env(n, 0.08, 1.4)
+    thock = lowpass(osc(slide(320, 160, 0.06), "tri"), 2000) * env(int(RATE * 0.06), 0.0005, 2.0)
+    out = rush * 0.7
+    out[-len(thock):] += thock
+    save("lance_thrust", out, 0.6)
+
+    # A bark plate knocked off: a dry crack with a hollow wooden knock under it.
+    d = 0.11
+    n = int(RATE * d)
+    crack = highpass(noise(0.025), 2500) * env(int(RATE * 0.025), 0.0005, 2.5)
+    knock = lowpass(osc(slide(360, 170, d), "tri"), 1800) * env(n, 0.001, 1.6)
+    save("bark_chip", mix(crack, knock * 0.8), 0.6)
+
+    # Rooting: roots biting into the branch, a low crunch with splinters.
+    d = 0.4
+    n = int(RATE * d)
+    splinters = highpass(noise(d) * (np.random.default_rng(11).random(n) > 0.93), 1500)
+    bite = lowpass(noise(d), slide(500, 120, d)) * 1.2
+    save("root_grip", mix(bite, splinters * 0.5) * env(n, 0.01, 1.3), 0.6)
+
+    # Drowned Dwarf heaving the anchor: a sodden groan with bubbles rising
+    # through it and water pouring off the iron.
+    d = 0.55
+    n = int(RATE * d)
+    groan = lowpass(osc(slide(48, 85, d, 0.7), "saw"), slide(180, 600, d)) * env(n, 0.35, 0.5)
+    bubbles = np.zeros(n)
+    brng = np.random.default_rng(23)
+    for i in range(9):
+        start = int(n * (0.1 + 0.8 * i / 9 + brng.uniform(0, 0.05)))
+        m = int(RATE * 0.04)
+        if start + m > n:
+            break
+        bubbles[start:start + m] += osc(slide(300 + 40 * i, 700 + 60 * i, 0.04), "sine") * env(m, 0.002, 2.0)
+    pour = lowpass(highpass(noise(d), 900), 3000) * env(n, 0.4, 0.4) * 0.25
+    save("anchor_heave", mix(groan, bubbles * 0.5, pour), 0.6)
+
+    # The anchor coming down: a deep iron thud into mud, then a wet slap.
+    d = 0.32
+    n = int(RATE * d)
+    thud = lowpass(osc(slide(110, 40, d), "square", 0.45), 900) * env(n, 0.001, 1.4)
+    slap = lowpass(highpass(noise(d), 300), slide(3000, 400, d)) * env(n, 0.003, 2.2) * 0.8
+    save("anchor_slam", mix(thud, slap), 0.8)
+
+    # Leaf Mantis unfolding: a rustle of leaves, then a quick chitter.
+    d = 0.3
+    n = int(RATE * d)
+    rustle = highpass(lowpass(noise(d), slide(2500, 6000, d)), 1200) * env(n, 0.15, 0.8) * 0.6
+    t = t_axis(d)
+    chitter = osc(np.full(n, 2400.0), "square", 0.2) * (np.sin(2 * np.pi * 38 * t) > 0.6) * (t > 0.16) * 0.25
+    save("mantis_unfold", mix(rustle, lowpass(chitter, 5000)), 0.45)
+
+    # The mantis' scythes: two thin cuts a hair apart.
+    d = 0.16
+    n = int(RATE * d)
+    cut = highpass(lowpass(noise(0.07), slide(9000, 2500, 0.07)), 1500) * env(int(RATE * 0.07), 0.002, 1.5)
+    out = np.zeros(n)
+    out[:len(cut)] += cut
+    out[int(RATE * 0.06):int(RATE * 0.06) + len(cut)] += cut * 0.8
+    save("scythe", out, 0.55)
+
+
 if __name__ == "__main__":
     main()
