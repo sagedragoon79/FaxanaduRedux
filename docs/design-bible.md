@@ -382,6 +382,21 @@ Bands of wind blow across the open sky between Conflate's boughs (legend `>` blo
 
 The reachability checker rides a current downwind (turned after `sky_spring`) from wherever a jump or fall enters it, adding every spot it can stand on or drop to with Down, and at the band's end it lands or falls on. The Thicket Road's sealed niche (its chest) faces the far side of a current, so only the turned wind carries you into it.
 
+### 6.10 Feather Fall (skill, pass 101)
+
+The Wanderer skill Feather Fall [2] (after Second Stride, needs the Wing Boots) turns a held Jump into a glide once the double jump is spent. The numbers live in `movement_tuning.gd` (Feather Fall group).
+
+| Parameter | Value |
+|-----------|-------|
+| When | airborne, falling, double jump spent, Jump held, Down not held, not on a wall |
+| Glide fall speed | 60 px/s (a normal fall reaches 520) |
+| Settling | a fast fall brakes to glide speed at 1,500 px/s²; a slow one falls into it at the normal fall gravity |
+| Air control | unchanged (1,400 / 900 px/s², run speed 165), so a glide carries about 2.75 px across for every 1 px down |
+| Leaving it | release Jump, or hold Down to drop at full speed; landing, a wall, a dash, water, wind or an updraft end it |
+| Feel | a wide squash and a soft whoosh (`glide`) as it opens; the cloak-spread apex pose held; a feather shed every 0.14 s |
+
+The glide replaces gravity while it lasts. It doesn't refresh any air move, so it never opens a route a double jump and a dash couldn't reach. It makes long drops readable and gentle, and makes crossing wide gaps easier for players who bought it.
+
 ---
 
 ## 7. Enemies
@@ -678,7 +693,7 @@ Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need 
 
 Nodes are built tier by tier as the acts that need them arrive. In the game now: Blade 1-4, Arcana 1-3 plus Tilte Swarm (after Deluge Pierce, 2 points: three orbs fanned 0.5 rad apart, 10 damage each, for one cast's MP; pass 95) and Wanderer 1-4 (`data/skills.json`). Rising Cut lifts any walking foe of 40 HP or less (`Enemy.LAUNCH_MAX_HP`) and leaves it helpless for 0.5 s; rooted foes (Sap Spitter, Bog Myconid), fliers and bosses stay put. Deluge Pierce strikes each foe in the bolt's path once. Second Stride does nothing until you own the Elven Stride.
 
-**The Act III tier (pass 100).** Ten more nodes take the built tree from 15 points to 36, past the 29 points the game hands out, so a full build needs choices:
+**The Act III tier (pass 100).** Ten more nodes take the built tree from 15 points to 36, past the 29 points the game hands out (38 with Feather Fall, pass 101), so a full build needs choices:
 - **Blade**, after Mattock Mastery: Riposte [2], Keener Edge [2], Bloodletting [2].
   - Riposte: a parry answers with a free heavy cut at the foe that swung (`Player._riposte`).
   - Keener Edge stacks with Keen Edge, for +20% melee damage in all.
@@ -687,14 +702,14 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
   - Thrift makes spells cost 15% less.
   - With Chain Thunder, a Thunder bolt that strikes a foe leaps to the 2 nearest other foes within 110 px, one after another, for 75% damage each. The arcs fall from above, so shields don't stop them.
   - Time Thief makes the Hour Glass hold 3.5 s instead of 2.5 s (`TimeStop.start(extra)`, `TimeStop.total`).
-- **Wanderer**, after Second Stride: Treasure Sense [2], Resilience [2], Last Stand [2], Second Wind [3].
+- **Wanderer**, after Second Stride: Feather Fall [2] (pass 101, see 6.10), Treasure Sense [2], Resilience [2], Last Stand [2], Second Wind [3].
   - Treasure Sense puts an orange star on every room the map shows (seen or charted) that still holds an item or chest. The World's catalog lists each room's treasures.
   - Resilience adds one mask (`GameState.RESILIENCE_HP`).
   - Last Stand: below 20% health, you take 25% less damage.
   - Second Wind: once between rests (a shrine, a Guru or a respawn), a killing blow leaves you at 1 HP.
 
 Deviations, and why:
-- The build order skips Thrust, Wildfire, Feather Fall and the rest. They are bigger mechanics and still come later in their branches.
+- The build order skips Thrust, Wildfire and the rest. They are bigger mechanics and still come later in their branches.
 - Light Step is dropped: a dash's own invulnerability already carries you over spikes, so the node did nothing.
 - Pathfinder is dropped: shrines already refill potions.
 - Treasure Sense takes Light Step's place in the build order, at 2 points.

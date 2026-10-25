@@ -44,6 +44,8 @@ const BLOODLETTING_HEAL := 2
 const LAST_STAND_BELOW := 0.2
 const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
+## Seconds between the feathers a glide sheds.
+const GLIDE_FEATHERS := 0.14
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -110,6 +112,11 @@ var chain_thunder := false
 var time_thief := false
 var last_stand := false
 var second_wind := false
+## Feather Fall (skill): glide after the double jump by holding Jump.
+var feather_fall := false
+## True while gliding (set each frame).
+var is_gliding := false
+var _glide_feather_timer := 0.0
 ## Spent until the next rest (a shrine, a Guru, or a respawn).
 var second_wind_used := false
 ## Set each frame by the World when the feet are in a sap pool.
@@ -303,6 +310,9 @@ func _physics_process(delta: float) -> void:
 		_try_jump()
 	_apply_jump_cut()
 
+	# A glide lasts only while _glide keeps it going this frame.
+	var was_gliding := is_gliding
+	is_gliding = false
 	if not is_dashing:
 		if swimming:
 			_swim_drift(delta)
@@ -311,7 +321,7 @@ func _physics_process(delta: float) -> void:
 		elif wind != 0.0 and velocity.y >= 0.0:
 			# The current bears you level once you stop rising.
 			velocity.y = move_toward(velocity.y, 0.0, tuning.wind_drag * delta)
-		else:
+		elif not _glide(delta, on_floor, was_gliding):
 			_apply_gravity(delta, on_floor)
 	_apply_wall_slide()
 	if water_push > 0.0:
@@ -568,6 +578,29 @@ func _apply_gravity(delta: float, on_floor: bool) -> void:
 	velocity.y += g * gravity_scale * delta
 	var max_fall := tuning.max_fast_fall_speed if input.down else tuning.max_fall_speed
 	velocity.y = minf(velocity.y, max_fall * gravity_scale)
+
+
+## Feather Fall (skill, bible 6.10): with the double jump spent and Jump held,
+## a fall eases down to a slow glide. Down cancels it, like any fast fall.
+## Returns true while gliding (it stands in for gravity that frame).
+func _glide(delta: float, on_floor: bool, was_gliding: bool) -> bool:
+	var can: bool = feather_fall and abilities.boots and not on_floor and not has_double_jump \
+		and input.jump_held and not input.down and not is_wall_sliding and velocity.y > 0.0
+	if not can:
+		return false
+	is_gliding = true
+	if not was_gliding:
+		_glide_feather_timer = 0.0
+		visual.squash(Vector2(1.2, 0.88))
+		Sfx.play("glide", 0.05, -4.0)
+	# A fast fall brakes down to glide speed; a slow one falls into it.
+	var rate := tuning.glide_brake if velocity.y > tuning.glide_fall_speed else tuning.gravity * tuning.fall_gravity_multiplier
+	velocity.y = move_toward(velocity.y, tuning.glide_fall_speed, rate * delta)
+	_glide_feather_timer -= delta
+	if _glide_feather_timer <= 0.0:
+		_glide_feather_timer = GLIDE_FEATHERS
+		_spawn_dust(Vector2(-facing * 6, -18), "glide")
+	return true
 
 
 ## An updraft carries the body up toward its lift speed, and the air moves come

@@ -855,7 +855,7 @@ func test_act_three_skills_chain_and_apply() -> void:
 		check(Skills.status(id) == "locked", id + " waits on the end of its branch")
 	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte", "keener_edge", "bloodletting",
 			"clear_mind", "siphon", "deluge_pierce", "tilte_swarm", "thrift", "chain_thunder", "time_thief",
-			"deep_pockets", "gold_sense", "quick_draught", "second_stride", "treasure_sense", "resilience", "last_stand", "second_wind"]:
+			"deep_pockets", "gold_sense", "quick_draught", "second_stride", "feather_fall", "treasure_sense", "resilience", "last_stand", "second_wind"]:
 		check(Skills.learn(id, p), "learned " + id)
 	check(p.riposte and p.bloodletting and p.chain_thunder and p.time_thief, "Riposte, Bloodletting, Chain Thunder and Time Thief switch on")
 	check(p.last_stand and p.second_wind and GameState.has_skill("treasure_sense"), "Treasure Sense, Last Stand and Second Wind are learned")
@@ -878,7 +878,7 @@ func _learn_all(p: Player, ids: Array) -> void:
 
 const BLADE_TO := ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte", "keener_edge", "bloodletting"]
 const ARCANA_TO := ["clear_mind", "siphon", "deluge_pierce", "tilte_swarm", "thrift", "chain_thunder", "time_thief"]
-const WANDERER_TO := ["deep_pockets", "gold_sense", "quick_draught", "second_stride", "treasure_sense", "resilience", "last_stand", "second_wind"]
+const WANDERER_TO := ["deep_pockets", "gold_sense", "quick_draught", "second_stride", "feather_fall", "treasure_sense", "resilience", "last_stand", "second_wind"]
 
 
 func test_riposte_answers_a_parry_with_a_heavy_cut() -> void:
@@ -974,7 +974,7 @@ func test_treasure_sense_marks_rooms_with_something_left() -> void:
 	check(info.treasures == ["test/town:20,19", "test/town:30,19"], "the catalog knows the room's fruit and chest (%s)" % [info.treasures])
 	check(MapScreen.unfound(info) == 2, "two things left to find")
 	check(not MapScreen.senses_treasure(info, "visited"), "no mark without the skill")
-	_learn_all(p, WANDERER_TO.slice(0, 5))
+	_learn_all(p, WANDERER_TO.slice(0, 6))
 	check(MapScreen.senses_treasure(info, "visited") and MapScreen.senses_treasure(info, "charted"), "with Treasure Sense the map marks it, seen or charted")
 	check(not MapScreen.senses_treasure(info, ""), "but never a room the map doesn't show")
 	GameState.collect("test/town:20,19")

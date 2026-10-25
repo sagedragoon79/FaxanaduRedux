@@ -467,3 +467,111 @@ func test_only_a_big_drop_thuds() -> void:
 		if q.is_on_floor():
 			break
 	check(q.is_on_floor() and Feel.last_rumble.y > 0.0, "a fall of a whole shaft lands with a rumble (%s)" % Feel.last_rumble)
+
+
+## A tall open room for falls: 40 rows of air above the floor.
+func _tall_room() -> Room:
+	var rows := ["################"]
+	for i in 40:
+		rows.append("#..............#")
+	rows.append("################")
+	return make_room(rows)
+
+
+func test_feather_fall_glides_after_the_double_jump() -> void:
+	var room := _tall_room()
+	var p := make_player(room, Vector2i(7, 5), {"boots": true})
+	p.feather_fall = true
+	await frames(2)
+	# Holding Jump with the double jump unspent is an ordinary fall.
+	p.input.jump_held = true
+	await frames(30)
+	check(not p.is_gliding and p.velocity.y > p.tuning.glide_fall_speed * 2.0, "no glide before the double jump (vy %.0f)" % p.velocity.y)
+	p.input.jump_pressed = true
+	await frames(1)
+	check(not p.has_double_jump, "double jump spent")
+	var peak_frames := 0
+	while p.velocity.y < 0.0 and peak_frames < 60:
+		await frames(1)
+		peak_frames += 1
+	await frames(30)
+	check(p.is_gliding, "holding Jump after the double jump glides")
+	check_near(p.velocity.y, p.tuning.glide_fall_speed, 0.5, "at the glide speed")
+	var y0 := p.global_position.y
+	await frames(30)
+	check_near(p.global_position.y - y0, p.tuning.glide_fall_speed * 0.5, 2.0, "half a second sinks 30 px")
+	p.input.move_x = 1
+	await frames(20)
+	check(p.is_gliding and p.velocity.x > p.tuning.run_speed * 0.9, "air control is unchanged in a glide (vx %.0f)" % p.velocity.x)
+	p.input.move_x = 0
+	p.input.down = true
+	await frames(10)
+	check(not p.is_gliding and p.velocity.y > p.tuning.glide_fall_speed * 2.0, "Down drops out of it (vy %.0f)" % p.velocity.y)
+	p.input.down = false
+	p.input.jump_held = false
+	await frames(2)
+	p.input.jump_held = true
+	await frames(10)
+	check(p.is_gliding, "and Jump held again catches the air")
+	p.input.jump_held = false
+	await frames(5)
+	check(not p.is_gliding, "letting go of Jump falls")
+
+
+func test_feather_fall_needs_the_skill_and_brakes_a_fast_fall() -> void:
+	var room := _tall_room()
+	var p := make_player(room, Vector2i(7, 3), {"boots": true})
+	await frames(2)
+	p.input.jump_pressed = true
+	await frames(1)
+	p.input.jump_held = true
+	await frames(60)
+	check(not p.is_gliding and p.velocity.y > p.tuning.glide_fall_speed * 3.0, "without the skill there is no glide (vy %.0f)" % p.velocity.y)
+	p.feather_fall = true
+	var fast := p.velocity.y
+	await frames(1)
+	check(p.is_gliding and p.velocity.y < fast, "with it, a fast fall starts to brake")
+	var n := 0
+	while p.velocity.y > p.tuning.glide_fall_speed + 0.5 and n < 60:
+		await frames(1)
+		n += 1
+	var expected := (fast - p.tuning.glide_fall_speed) / p.tuning.glide_brake * 60.0
+	check(absf(n + 1 - expected) <= 2.0, "reaching glide speed in about %.0f frames (%d)" % [expected, n + 1])
+
+
+## Bible 6.2: air acceleration 1,400 px/s² and deceleration 900 px/s².
+func test_air_control_matches_the_bible() -> void:
+	var room := _tall_room()
+	var p := make_player(room, Vector2i(3, 3))
+	await frames(1)
+	p.velocity = Vector2.ZERO
+	p.input.move_x = 1
+	await frames(5)
+	check_near(p.velocity.x, p.tuning.air_accel * 5.0 / 60.0, 1.0, "in the air, speed builds at 1,400 px/s²")
+	await frames(20)
+	check_near(p.velocity.x, p.tuning.run_speed, 0.5, "up to run speed")
+	p.input.move_x = 0
+	await frames(6)
+	check_near(p.velocity.x, p.tuning.run_speed - p.tuning.air_decel * 6.0 / 60.0, 1.0, "and lets go at 900 px/s²")
+
+
+## Bible 6.5: invulnerable for the first 0.10 s of a dash, and 0.25 s between ground dashes.
+func test_dash_invulnerability_and_cooldown() -> void:
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(2, 18))
+	await frames(6)
+	p.input.dash_pressed = true
+	await frames(1)
+	check(p.invulnerable, "invulnerable as the dash starts")
+	await frames(int(p.tuning.dash_invuln * 60.0) + 1)
+	check(not p.invulnerable and p.is_dashing, "but not for the whole dash")
+	while p.is_dashing:
+		await frames(1)
+	check(p.velocity.y == 0.0 or p.is_on_floor(), "it ends level")
+	p.input.dash_pressed = true
+	await frames(1)
+	check(not p.is_dashing, "the next ground dash waits on the cooldown")
+	await frames(int(p.tuning.ground_dash_cooldown * 60.0) + 1)
+	p.input.dash_pressed = true
+	await frames(1)
+	check(p.is_dashing, "then goes")

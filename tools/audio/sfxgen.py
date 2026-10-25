@@ -484,6 +484,12 @@ def main():
     pluck = osc(np.concatenate([rise, np.full(n - len(rise), 1760.0)]), "sine")
     save("seed", mix(sweep, pluck * env(n, 0.002, 3.0) * 0.7), 0.55)
 
+    # Feather Fall opening: a soft cloth-and-air whoosh, rising then settling.
+    d = 0.35
+    n = int(RATE * d)
+    whoosh = highpass(lowpass(noise(d), slide(900, 2600, d, 0.6)), 300) * env(n, 0.06, 1.4)
+    save("glide", whoosh, 0.35)
+
     # Low health: a muffled double heartbeat, lub then dub.
     d = 0.42
     n = int(RATE * d)

@@ -313,6 +313,7 @@ func refresh_stats(p: Player) -> void:
 	p.time_thief = has_skill("time_thief")
 	p.last_stand = has_skill("last_stand")
 	p.second_wind = has_skill("second_wind")
+	p.feather_fall = has_skill("feather_fall")
 	p.ground_combo_length = 4 if has_skill("fourth_strike") else 3
 	p.mp_hit_mult = 1.5 if has_skill("siphon") else 1.0
 	p.gold_mult = 1.1 if has_skill("gold_sense") else 1.0

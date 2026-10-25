@@ -102,6 +102,9 @@ static func current_pose(p: Player) -> String:
 		return "block"
 	if p.is_casting:
 		return "cast"
+	if p.is_gliding:
+		# Feather Fall: the cloak-spread hang of the apex, held.
+		return "apex"
 	if not p.is_on_floor():
 		if absf(p.velocity.y) < 60.0:
 			return "apex"

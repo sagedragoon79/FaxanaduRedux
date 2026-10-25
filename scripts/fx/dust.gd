@@ -8,6 +8,7 @@ const KINDS := {
 	"land": {"count": 8, "speed": Vector2(90, 15), "life": 0.3, "color": Color("cdbfa6"), "size": 3, "rise": -15.0},
 	"wall": {"count": 1, "speed": Vector2(15, 10), "life": 0.25, "color": Color("cdbfa6"), "size": 2, "rise": -25.0},
 	"walljump": {"count": 6, "speed": Vector2(50, 50), "life": 0.3, "color": Color("cdbfa6"), "size": 2, "rise": 0.0},
+	"glide": {"count": 2, "speed": Vector2(30, 20), "life": 0.6, "color": Color("f3f0e2"), "size": 2, "rise": -20.0},
 	"feathers": {"count": 7, "speed": Vector2(60, 40), "life": 0.45, "color": Color("f3f0e2"), "size": 2, "rise": 40.0},
 	"pogo": {"count": 8, "speed": Vector2(80, 50), "life": 0.25, "color": Color("ffe27a"), "size": 2, "rise": 0.0},
 	"hit": {"count": 6, "speed": Vector2(120, 90), "life": 0.2, "color": Color("fff4d6"), "size": 2, "rise": 0.0},
