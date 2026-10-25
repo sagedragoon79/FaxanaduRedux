@@ -31,6 +31,18 @@ const DRIFT_JUMP := {0: 6, 1: 6, 2: 6, 3: 6, 4: 6, 5: 6, 6: 5, 7: 5, 8: 4, 9: 3}
 ## rows up) you can jump out, a little short of a jump from the floor.
 const WATER := "al"
 const WATER_JUMP := {0: 4, 1: 4, 2: 4, 3: 3}
+## Wind currents (legend `>` east, `<` west; the Branches, bible 6.9), reversed
+## with the "sky_spring" ability (the Spring of Sky restored). A jump whose top
+## puts the middle of the body (the row above the feet) in a current is caught:
+## it rides the current downwind along that row, and can touch down on any spot
+## it passes, drop out (Down) anywhere, or fly out of the band's far end and
+## fall. A jump that rises through a current to a top above it, or that runs
+## into one sideways, is caught where it meets it and goes no further. Walking
+## on a floor in a current is unaffected (you brace).
+const WIND := "<>"
+## A bounce-pod throws you higher than its landing envelope: a pod launch is
+## caught by a current up to this many rows above it.
+const POD_CATCH := 9
 ## With the Elven Stride: dash_speed 380 for 0.15 s is about 3.5 tiles, held level.
 const STRIDE_REACH := 3
 const DROP_DRIFT := 4
@@ -314,9 +326,58 @@ func _add_jumps(out: Array, r: String, x: int, y: int, s: int) -> void:
 	out.append_array(_jumps[k])
 
 
+## Which way the current at (x, y) blows: 1 east, -1 west, 0 none.
+func wind_dir(room_id: String, x: int, y: int) -> int:
+	var c := ch(room_id, x, y)
+	if not WIND.contains(c):
+		return 0
+	var d := 1 if c == ">" else -1
+	return -d if abilities.get("sky_spring", false) else d
+
+
+## Rides the current that holds a body with its feet at (x, y) downwind: every
+## spot it can touch down on or drop out to, and where it falls off the far end.
+func _ride(out: Array, r: String, x: int, y: int) -> void:
+	var d := wind_dir(r, x, y - 1)
+	var cx := x
+	while true:
+		if standable(r, cx, y):
+			out.append(key(r, cx, y))
+		var below := drop(r, cx, y + 1) if body_clear(r, cx, y + 1) else -1
+		if below > y:
+			out.append(key(r, cx, below))
+		var nx := cx + d
+		if not body_clear(r, nx, y):
+			return
+		cx = nx
+		if wind_dir(r, cx, y - 1) == 0:
+			# Out of the far end: on ground there, or falling with the drift it carried.
+			if standable(r, cx, y):
+				out.append(key(r, cx, y))
+				return
+			for dx in range(0, DROP_DRIFT + 1):
+				var fx := cx + d * dx
+				if not body_clear(r, fx, y):
+					break
+				var land := drop(r, fx, y)
+				if land >= 0:
+					out.append(key(r, fx, land))
+			return
+
+
+## A body rising up column x from feet row y to `top` meets a current on the way
+## (below the top): the row whose feet it is caught at, or -1.
+func _caught_rising(r: String, x: int, y: int, top: int) -> int:
+	for yy in range(y - 1, top, -1):
+		if wind_dir(r, x, yy - 1) != 0:
+			return yy
+	return -1
+
+
 func _jump_from(out: Array, r: String, x: int, y: int, s: int) -> void:
 	var envelope: Dictionary = BOOT_JUMP if abilities.get("boots", false) else JUMP
-	if ch(r, x, y) == "@":
+	var pod := ch(r, x, y) == "@"
+	if pod:
 		envelope = POD_JUMP
 	var drifting := ch(r, x, y) == "v"
 	if drifting:
@@ -327,6 +388,17 @@ func _jump_from(out: Array, r: String, x: int, y: int, s: int) -> void:
 		envelope = WATER_JUMP
 	if abilities.get("stride", false):
 		envelope = _strided(envelope)
+	if pod:
+		# Caught by a current above the landing envelope's reach.
+		for rise in range(envelope.size(), POD_CATCH + 1):
+			var top := y - rise
+			if not _column_clear(r, x, top - 2, y - 3):
+				break
+			if _caught_rising(r, x, y, top) >= 0:
+				break
+			if wind_dir(r, x, top - 1) != 0:
+				_ride(out, r, x, top)
+				break
 	for rise: int in envelope:
 		var top := y - rise
 		if drifting and not JUMP.has(rise) and ch(r, x, top) != "v":
@@ -338,9 +410,17 @@ func _jump_from(out: Array, r: String, x: int, y: int, s: int) -> void:
 				break
 		if not ok:
 			break
+		if _caught_rising(r, x, y, top) >= 0:
+			break  # a current caught it lower down (that rise rides it)
+		if wind_dir(r, x, top - 1) != 0:
+			_ride(out, r, x, top)
+			continue
 		for dx in range(1, int(envelope[rise]) + 1):
 			var cx := x + s * dx
 			if not body_clear(r, cx, top):
+				break
+			if wind_dir(r, cx, top - 1) != 0:
+				_ride(out, r, cx, top)
 				break
 			if standable(r, cx, top):
 				out.append(key(r, cx, top))

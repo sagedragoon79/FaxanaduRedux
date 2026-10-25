@@ -61,6 +61,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Deluge bolt across the tank fills it and the run becomes a one-way raft for good |
 | `b` | Drowned boardwalk (the Mist): nothing until the Spring of Mist flows (`spring:mist`), then a one-way platform. Lay it over a spiked dip |
 | `@` | Bounce-pod (Branches): stands on the floor of its cell; land on it and it throws you about nine tiles up. Not solid |
+| `>` `<` | Wind current (Branches): a band of wind blowing east (`>`) or west (`<`) that carries an airborne player and bears up a fall; holding Down drops out. Once the Spring of Sky is restored every current blows the other way. Draw them as whole rectangles over open sky
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |
 | `Y` | Bound fog (the Mist): solid until the player brings the Lantern Key near, then every curtain in the room parts for good (a row of three is usual) |

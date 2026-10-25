@@ -73,7 +73,7 @@ The world is one vertical map: **the World Tree**, about **190 rooms** across 7 
 | 1 | **Trunk Hollows** | Apolune | 28 | Tunnels through living wood, glowing fungus, amber sap | Sap pools slow you; root-gates | Rokusutahn |
 | 2 | **Tower of Trunk** | Forepaw | 26 | Dwarven mining tower bolted into the trunk, gears, minecarts | Vertical climb; cracked stone; elevators | Zoradohna |
 | 3 | **The Mist** | Victim, Mascon | 34 | Fog-drowned limb-marsh, lanterns, rotting boardwalks | Fog limits vision; lanterns; water levels | Ripasheiku, Zorugeriru |
-| 4 | **Branches (Conflate)** | Conflate | 24 | Sunlit canopy, enormous leaves, wind | Wind currents; bounce-pods (legend `@`: land on one and it throws you about nine tiles up, 6.6) | Pakukame |
+| 4 | **Branches (Conflate)** | Conflate | 24 | Sunlit canopy, enormous leaves, wind | Wind currents (legend `>`/`<`: carry you while airborne, turned by the Spring of Sky, 6.9); bounce-pods (legend `@`: land on one and it throws you about nine tiles up, 6.6) | Pakukame |
 | 5 | **Branches (Daybreak) and Canopy Spires** | Daybreak | 26 | Sky islands, storms, ruined elf shrines | Lightning conduits; air dash routes | Borabohra |
 | 6 | **Dartmoor** | Dartmoor | 28 | Flooded dwarf capital, meteor crystals growing through masonry | Time-stop puzzles; illusory walls | King Grieve, Shadow Eura |
 | 7 | **Zenis** | none | 14 | Inside the meteor: organic stone, alien light, gravity wrong | Gauntlet using every ability | The Evil One |
@@ -156,7 +156,7 @@ All story triggers check items, not route order.
 | Ripasheiku defeated | Her lanterns go dark and she gives up the Lantern Key, which opens the way to the Spring of Mist and Zorugeriru. The key's light parts the bound fog (a pale wall of unmoving mist, legend `Y`, that tells you it wants a lantern) sealing the shaft above Lantern Landing; it parts for good and the key is kept. Beyond it the Veiled Rise climbs to the Victim Causeway, a spiked boardwalk dip on the road west to Victim, and past it Feather Hollow, where the Wing Boots wait on a perch below a Life Fruit only a second jump reaches. Her chapel's east door opens on the Marsh Road toward Mascon, where the Deluge scroll lies before a fire seal; the Scorched Hall waits behind it, the Dry Cistern past that, and past the cistern the Spring of Mist, Zorugeriru's lair |
 | Zorugeriru defeated | Dworf Ring; the Spring of Mist's tanks stay full, and the spring on its shelf can be cleared; the arena's east door opens on the Windward Climb, where bounce-pods throw you up out of the Mist into the Branches (the Sunlit Bough, then Leaf Landing, a shrine on the elves' leaf road) |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface (legend `b`: one-way planks over the spiked dips of the Fog Cut and the Victim Causeway, nothing before); fountain 2/3 |
-| Spring of Sky restored | The storm breaks: Daybreak's rain thins to a drizzle (Motes.SETTLES). Eolis festival: the fountain runs full, a piper plays in the plaza and Old Wena rejoices (pass 62). Still to come: wind currents reverse in the Branches (new routes, once the Branches have wind) and the final shop tier |
+| Spring of Sky restored | The storm breaks: Daybreak's rain thins to a drizzle (Motes.SETTLES). Eolis festival: the fountain runs full, a piper plays in the plaza and Old Wena rejoices (pass 62). The Branches' wind currents turn and blow the other way (pass 92), carrying you into the Thicket Road's sealed wind niche. Still to come: the final shop tier |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
 | Evil One defeated | Post-game: Tree blooms, palette shift to spring colors, all enemies respawn as "remnants" for 100% cleanup |
 
@@ -356,6 +356,21 @@ Deep water (legend `a`) is a volume, not a surface: while the middle of the body
 | Feel | a "dive" splash and spray when the body crosses the surface fast; a soft "swim" whoosh per stroke; the water is drawn over the bodies in it, translucent, with a rippling waterline, drifting caustics and bubbles |
 
 The reachability checker treats a spot with the feet in water as a standing spot: it swims to the water cells beside, above and below, and from a spot with the head out (no water two rows up) it jumps out a little short of a floor jump (rise 3, 3 across).
+
+### 6.9 Wind currents (the Branches)
+
+Bands of wind blow across the open sky between Conflate's boughs (legend `>` blows east, `<` west). A current only carries you while you are airborne, and only while the middle of your body is in it. Numbers live in `movement_tuning.gd` (Wind group).
+
+| Parameter | Value |
+|-----------|-------|
+| Push | 200 px/s added to your horizontal target speed (with it you outrun a run, against it you hang nearly still) |
+| Bear up | falling, your fall eases to level at 2,400 px/s², so you sail the band; a jump rises through it as normal |
+| Ground | none: standing on a floor or platform inside a band, you aren't moved |
+| Drop out | hold Down to fall out of it |
+| Reversal | once the Spring of Sky is restored (`spring:sky`), every current in the Branches blows the other way (pass 92) |
+| Look | a faint wash of the sky, streaks racing downwind and torn leaves tumbling with them |
+
+The reachability checker rides a current downwind (turned after `sky_spring`) from wherever a jump or fall enters it, adding every spot it can stand on or drop to with Down, and at the band's end it lands or falls on. The Thicket Road's sealed niche (its chest) faces the far side of a current, so only the turned wind carries you into it.
 
 ---
 
