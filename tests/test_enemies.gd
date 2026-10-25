@@ -994,3 +994,63 @@ func _room_rows(spots: Dictionary) -> Array:
 		var row: String = rows[cell.y]
 		rows[cell.y] = row.substr(0, cell.x) + spots[cell] + row.substr(cell.x + 1)
 	return rows
+
+
+## A pool (rows 4-11, cols 1-20) with a dry bank to its right, level with the surface.
+func _eel_pool(eel_at: Vector2i) -> Room:
+	var rows := ["##############################"]
+	for y in range(1, 4):
+		rows.append("#............................#")
+	for y in range(4, 12):
+		var row := "#" + "a".repeat(20) + "#".repeat(9)
+		if y == eel_at.y:
+			row = row.substr(0, eel_at.x) + "l" + row.substr(eel_at.x + 1)
+		rows.append(row)
+	rows.append("##############################")
+	return make_room(rows)
+
+
+func test_spring_eel_coils_then_darts_and_never_leaves_the_water() -> void:
+	var room := _eel_pool(Vector2i(14, 8))
+	var p := make_player(room, Vector2i(8, 10))
+	p.max_hp = 9999
+	p.hp = 9999
+	var e: SpringEel = _find(room, SpringEel)
+	var water: SwimWater = _find(room, SwimWater)
+	var coil := 0
+	var darted := false
+	var dry := 0
+	var hp := p.hp
+	for i in 180:
+		# Hold the player still on the pool floor.
+		p.input.down = true
+		await frames(1)
+		if e.state == "coil":
+			coil += 1
+		if e.state == "dart":
+			darted = true
+		if not water.has_point(e.global_position - water.global_position):
+			dry += 1
+	check(coil / 60.0 >= Enemy.MIN_TELEGRAPH, "it coils before it darts (%d frames)" % coil)
+	check(darted and p.hp < hp, "then darts and bites (%d)" % (hp - p.hp))
+	check(dry == 0, "and never leaves the water (%d frames out)" % dry)
+
+
+func test_spring_eel_cannot_reach_the_bank() -> void:
+	var room := _eel_pool(Vector2i(18, 5))
+	var p := make_player(room, Vector2i(23, 3))
+	p.max_hp = 9999
+	p.hp = 9999
+	var e: SpringEel = _find(room, SpringEel)
+	var hp := p.hp
+	var darts := 0
+	for i in 240:
+		await frames(1)
+		if e.state == "dart" and e.state_time < 0.02:
+			darts += 1
+	check(darts > 0, "it darts at a player on the bank")
+	check(p.hp == hp, "but stops dead at the water's edge (%d)" % (hp - p.hp))
+	e.set_state("slack")
+	var hp0 := e.hp
+	e.take_hit(10, Vector2(1, 0))
+	check(hp0 - e.hp == 15, "spent, it takes every blow at half again (%d)" % (hp0 - e.hp))

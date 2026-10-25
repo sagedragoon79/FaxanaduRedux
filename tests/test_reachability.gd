@@ -24,12 +24,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
 const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
-const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart"]
+const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall"]
 
 
 func _texts() -> Dictionary:
@@ -463,3 +463,40 @@ func test_the_throne_lies_behind_the_flesh_only_the_dragon_slayer_cuts() -> void
 	reach = Reach.new(_texts(), set, true)
 	rooms = _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
 	check(rooms.has("zenis/throne"), "with it, the way to the throne is open")
+
+
+func test_checker_swims_through_deep_water() -> void:
+	# A ledge (left) over a pool whose only way on is a passage under a low wall,
+	# and a bank (right) level with the surface. Without water the drop is a pit.
+	var rows := [
+		"##############################",
+		"#............................#",
+		"#............................#",
+		"#............................#",
+		"#............................#",
+		"#P.....######................#",
+		"#####aaa######aaaaaaa#########",
+		"#####aaa######aaaaaaa#########",
+		"#####aaaaaaaaaaaaaaaa#########",
+		"#####aaaaaaaaaaaaaaaa#########",
+		"#####aaaaaaaaaaaaaaaa#########",
+		"##############################",
+	]
+	var reach := Reach.new({"t/pool": "zone: test\n---\n" + "\n".join(PackedStringArray(rows))}, {})
+	var nodes := reach.reachable(reach.spot_of("t/pool", "P"))
+	check(nodes.has(Reach.key("t/pool", 6, 10)), "the checker swims down to the bottom of the pool")
+	check(nodes.has(Reach.key("t/pool", 15, 9)), "and under the low wall into the next pool")
+	check(nodes.has(Reach.key("t/pool", 22, 5)), "and jumps out of the surface onto the bank")
+	check(reach.stuck(nodes, [reach.spot_of("t/pool", "P")]).is_empty(), "and can always swim back up and out the way it came")
+
+
+func test_the_sunken_spring_lies_under_the_last_stone_of_the_rise() -> void:
+	var texts := _texts()
+	check(Reach.new(texts, {}).solid("dartmoor/meteor_rise", 14, 60), "the cracked stone holds without the Mattock")
+	check(not Reach.new(texts, {"mattock": true}).solid("dartmoor/meteor_rise", 14, 60), "and breaks with it")
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
+	var reach := Reach.new(texts, set, true)
+	var rooms := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
+	check(rooms.has("sunken/spring_gate") and rooms.has("sunken/drowned_aqueduct") and rooms.has("sunken/source_hall"),
+		"down through it, every room of the Sunken Spring is in reach")

@@ -9,7 +9,7 @@ const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
 ## What each zone's ground is made of, for footsteps (design bible 11). A room's
 ## `surface:` header overrides it; platforms are planks and sap pools are sap.
-const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss"}
+const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone"}
 
 ## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
 var id := ""
@@ -33,6 +33,8 @@ var _secret_cells := {}
 var _falls := {}
 ## Wrong-gravity cells (legend `v`), gathered into GravityDrifts after the grid.
 var _drifts := {}
+## Deep water cells (legend `a`), one SwimWater for the room after the grid.
+var _water := {}
 ## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
 var _seals := {}
 var _sap_cells := {}
@@ -397,6 +399,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_falls[cell] = true
 		"v":
 			_drifts[cell] = true
+		"a":
+			_water[cell] = true
 		"+":
 			_seals[cell] = true
 		"~":
@@ -457,6 +461,10 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(ClockworkHound.new(), bottom_center)
 		"s":
 			_spawn_enemy(MeteorSlug.new(), bottom_center)
+		"l":
+			# A Spring Eel, in a cell of the water it never leaves.
+			_water[cell] = true
+			_spawn_enemy(SpringEel.new(), center)
 		"R":
 			var gate := RootGate.new()
 			_spawn(gate, center)
@@ -536,6 +544,13 @@ func _place_falls() -> void:
 		var drift := GravityDrift.new()
 		drift.cells = box
 		add_child(drift)
+	if not _water.is_empty():
+		var water := SwimWater.new()
+		water.cells = _water
+		for c: Vector2i in _water:
+			if _solid_look.has(c + Vector2i.UP):
+				water.roofed[c] = true
+		add_child(water)
 	for box in _blocks(_seals):
 		var seal := HeartSeal.new()
 		seal.cells = box

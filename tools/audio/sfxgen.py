@@ -524,5 +524,28 @@ def main():
     whine = lowpass(osc(slide(300, 900, d, 0.6), "saw"), 1800) * env(n, 0.15, 1.0) * 0.18
     save("ratchet", mix(clicks, whine), 0.5)
 
+    # A swim stroke: a soft muffled whoosh with a couple of bubbles rising.
+    d = 0.32
+    n = int(RATE * d)
+    whoosh = lowpass(noise(d), slide(300, 1200, d, 0.5)) * env(n, 0.04, 1.4) * 0.7
+    bub = osc(slide(380, 900, d, 0.7), "sine") * np.exp(-np.arange(n) / RATE * 14.0) * 0.25
+    save("swim", mix(whoosh, bub), 0.45)
+
+    # Breaking the surface: a bright slap of spray over a low plunge.
+    d = 0.5
+    n = int(RATE * d)
+    spray = highpass(noise(d), 1500) * env(n, 0.002, 2.2) * 0.7
+    plunge = lowpass(noise(d), slide(900, 200, d, 0.5)) * env(n, 0.01, 1.5) * 0.8
+    save("dive", mix(spray, plunge), 0.55)
+
+    # A Spring Eel lunging: a wet hiss sliding up into a snap.
+    d = 0.35
+    n = int(RATE * d)
+    hiss = lowpass(highpass(noise(d), 800), slide(1200, 4000, d, 0.6)) * env(n, 0.03, 1.2) * 0.6
+    snap = highpass(noise(0.03), 2000) * env(int(RATE * 0.03), 0.0005, 3.0)
+    out = hiss.copy()
+    out[-len(snap):] += snap
+    save("eel_lunge", out, 0.5)
+
 if __name__ == "__main__":
     main()

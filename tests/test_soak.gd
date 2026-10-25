@@ -126,6 +126,11 @@ func test_random_input_soak_in_every_zenis_room() -> void:
 	await _soak_zone("zenis", "Zenis")
 
 
+## The Sunken Spring: swimming, eels and the water drawn over everything.
+func test_random_input_soak_in_every_sunken_spring_room() -> void:
+	await _soak_zone("sunken", "Sunken Spring")
+
+
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.
@@ -921,7 +926,7 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 				problems.append(where + ": hurt on arrival")
 			elif _embedded(w.room, p) or not w.room.pixel_rect().has_point(p.global_position):
 				problems.append(where + ": inside a wall at %s" % p.global_position)
-			elif String(d.edge) in ["left", "right"] and not p.is_on_floor():
+			elif String(d.edge) in ["left", "right"] and not p.is_on_floor() and not p.swimming:
 				problems.append(where + ": not standing at %s" % p.global_position)
 	w.start("eolis/west_gate")
 	await frames(10)

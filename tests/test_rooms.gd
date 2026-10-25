@@ -1001,3 +1001,53 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	p.input.move_x = 0
 	check(w.room.id != room_id or p.global_position.x > seal_x + 32.0, "you walk through (%s)" % p.global_position)
 	check(GameState.is_collected(seal_id), "and it stays open")
+
+
+## Bible 8.10: at the foot of the Meteor Rise the last stone is cracked; under it
+## a flooded shaft drops into the Sunken Spring, a zone of its own, and the
+## water carries you back up the way you came.
+func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
+	var w := make_world({}, "dartmoor/meteor_rise", cell_feet(14, 59))
+	w.player.abilities["mattock"] = true
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	await frames(4)
+	var stones := w.room.get_children().filter(func(c: Node) -> bool: return c is CrackedBlock and absf(c.global_position.y - (60 * Room.TILE + 8)) < 1.0)
+	check(stones.size() == 3, "three cracked stones close the shaft at the foot of the Rise (%d)" % stones.size())
+	for s: CrackedBlock in stones:
+		s.break_block(true)
+	p.input.down = true
+	var arrived := false
+	for i in 400:
+		await frames(1)
+		if w.room.id == "sunken/spring_gate":
+			arrived = true
+			break
+	p.input.down = false
+	check(arrived, "down through the water in the shaft and into the Sunken Spring")
+	check(w.room.zone == "sunken" and Music.track == "sunken" and Music.ambience_track == "amb_sunken", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
+	check(World.ZONES.has("sunken") and w.motes.zone == "sunken", "the map knows the zone, and specks of light rise in the water")
+	await frames(10)
+	check(p.swimming, "the shaft is flooded: you arrive swimming")
+	# Let go and the water floats you back up the shaft and out into the Rise.
+	var back := false
+	for i in 900:
+		await frames(1)
+		if w.room.id == "dartmoor/meteor_rise":
+			back = true
+			break
+	check(back, "the water floats you back up into the Rise")
+	for i in 240:
+		await frames(1)
+	p.input.move_x = -1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	for i in 60:
+		await frames(1)
+		p.input.jump_held = true
+	p.input.move_x = 0
+	check(w.room.id == "dartmoor/meteor_rise" and p.is_on_floor() and p.global_position.y <= 60 * Room.TILE + 0.5, "and a jump from the surface lands you back on the Rise's floor (%s)" % p.global_position)

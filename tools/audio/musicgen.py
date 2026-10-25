@@ -1233,6 +1233,65 @@ def amb_dartmoor():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+def track_sunken():
+    """The Sunken Spring, the source of every spring of the Tree: E dorian at 64,
+    wide and slow and very deep. Pads that swell like a tide, a pluck rippling
+    up and down each chord like light on the water from below, a bass that
+    barely moves, and a bell melody far off, as if heard through the water."""
+    rng = np.random.default_rng(186)
+    s = Song(bpm=64, bars=16)
+    root, scale = 52, SCALES["dorian"]
+    prog = [0, 0, 3, 3, 5, 5, 4, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            for cents in (-7, 7):
+                f = midi_hz(m - 12) * 2 ** (cents / 1200)
+                s.add(fft_filter(pad(f, s.bar * 1.2), low=900), b * 4, 0.5 if cents > 0 else -0.5, 0.2)
+        s.add(bass(midi_hz(scale_note(root - 24, scale, deg)), s.bar * 0.9), b * 4, 0, 0.32)
+        # The ripple: up the chord and back down in eighths, an octave up.
+        ripple = tones + [tones[0] + 12] + tones[::-1][1:]
+        for k, m in enumerate(ripple[:8]):
+            s.add(fft_filter(pluck(midi_hz(m + 12), s.beat * 0.9, bright=1400), low=2600), b * 4 + k * 0.5,
+                  -0.4 + 0.1 * k, 0.12)
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=12, pan=0.3, gain=0.2, density=0.3)
+    return s.render(reverb=0.8)
+
+
+def amb_sunken():
+    """Under the water: a deep pressure hum, the slow wash of a current moving
+    through stone, and bubbles rising in short bursts now and then."""
+    rng = np.random.default_rng(187)
+    dur = 24.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    hum = fft_filter(rng.uniform(-1, 1, m), low=120, high=25) * 2.0
+    out[:, 0] += hum
+    out[:, 1] += np.roll(hum, RATE // 5)
+    wash = fft_filter(rng.uniform(-1, 1, m), low=700, high=150) * 0.35 * (0.5 + 0.5 * np.sin(2 * np.pi * t / 8.0))
+    out[:, 0] += wash
+    out[:, 1] += np.roll(wash, RATE // 2)
+    pos = 1.0
+    while pos < dur:
+        pan = rng.uniform(-0.8, 0.8)
+        for _ in range(rng.integers(3, 8)):
+            i = int(pos * RATE)
+            mm = int(0.12 * RATE)
+            tt = np.arange(mm) / RATE
+            f = rng.uniform(300, 700)
+            bub = np.sin(2 * np.pi * f * tt * (1 + tt * 6)) * np.exp(-tt * 30) * rng.uniform(0.05, 0.12)
+            if i + mm < m:
+                out[i:i + mm, 0] += bub * (1 - pan) / 2
+                out[i:i + mm, 1] += bub * (1 + pan) / 2
+            pos += rng.uniform(0.05, 0.18)
+        pos += rng.uniform(2.0, 5.0)
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 def track_ending():
     """The ending and credits: the Eolis theme's F lydian come home, slower and
     wider. Pads swell under a rising arpeggio (the climb up the Tree), the bass
@@ -1290,6 +1349,8 @@ TRACKS = {
     "amb_branches": amb_branches,
     "amb_daybreak": amb_daybreak,
     "amb_dartmoor": amb_dartmoor,
+    "sunken": track_sunken,
+    "amb_sunken": amb_sunken,
 }
 
 

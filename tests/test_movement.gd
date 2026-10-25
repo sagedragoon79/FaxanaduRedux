@@ -277,3 +277,80 @@ func test_wrong_gravity_lifts_a_jump_and_slows_a_fall() -> void:
 		await frames(1)
 		min_y = minf(min_y, q.global_position.y)
 	check_near(start_y - min_y, q.tuning.jump_height, 3.0, "outside it a jump is a normal jump")
+
+
+## A pool 10 tiles deep (rows 8-17) with a stone bank on its right whose top is
+## level with the water (row 8).
+func _pool_room() -> Room:
+	var rows := ["##############################"]
+	for y in range(1, 8):
+		rows.append("#............................#")
+	for y in range(8, 18):
+		rows.append("#aaaaaaaaaaaaaaaa#############")
+	rows.append("##############################")
+	return make_room(rows)
+
+
+## Bible 6.8: in deep water the player floats up to the surface, sinks while
+## Down is held, strokes up with jump, moves slower, and jumps out from the surface.
+func test_swimming_floats_sinks_strokes_and_jumps_out() -> void:
+	var room := _pool_room()
+	var p := make_player(room, Vector2i(6, 16))
+	await frames(4)
+	check(p.swimming, "deep in the pool the player is swimming")
+	var surface := 8.0 * Room.TILE
+	# Floats up to the surface and bobs there with the head out.
+	for i in 240:
+		await frames(1)
+	var mid := p.body_rect().get_center().y
+	check(absf(mid - surface) < 6.0, "floats up until the body's middle sits at the surface (%.1f vs %.1f)" % [mid, surface])
+	check(p.global_position.y - Player.BODY_SIZE.y < surface, "with the head above the water")
+	# Holding Down sinks, no faster than swim_sink.
+	p.input.down = true
+	var fastest := 0.0
+	for i in 60:
+		await frames(1)
+		fastest = maxf(fastest, p.velocity.y)
+	p.input.down = false
+	check(p.global_position.y > surface + 3.0 * Room.TILE, "holding Down sinks (feet at %.0f)" % p.global_position.y)
+	check(fastest <= p.tuning.swim_sink + 0.5, "slowly (%.0f px/s)" % fastest)
+	# A jump press under water is a stroke up.
+	var y0 := p.global_position.y
+	p.input.jump_pressed = true
+	await frames(1)
+	check_near(p.velocity.y, -p.tuning.swim_stroke, 30.0, "a jump press under water is a stroke up")
+	for i in 20:
+		await frames(1)
+	check(p.global_position.y < y0 - Room.TILE, "and it carries the body up (%.0f -> %.0f)" % [y0, p.global_position.y])
+	# Swimming across is slower than running.
+	p.input.move_x = 1
+	var top := 0.0
+	for i in 40:
+		await frames(1)
+		top = maxf(top, absf(p.velocity.x))
+	p.input.move_x = 0
+	check_near(top, p.tuning.run_speed * p.tuning.swim_speed_multiplier, 2.0, "swimming across is slower than a run")
+	# At the surface, a jump is a full jump out onto the bank.
+	p.global_position = Vector2(15 * Room.TILE + 8, surface + 20.0)
+	p.velocity = Vector2.ZERO
+	for i in 60:
+		await frames(1)
+	p.input.move_x = 1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	p.input.jump_held = true
+	for i in 50:
+		await frames(1)
+		p.input.jump_held = true
+		if p.is_on_floor():
+			break
+	p.input.move_x = 0
+	check(p.is_on_floor() and not p.swimming and p.global_position.x > 17 * Room.TILE, "from the surface a jump carries you out onto the bank (%s)" % p.global_position)
+
+
+func test_swim_numbers_match_the_bible() -> void:
+	var t := MovementTuning.new()
+	check(t.swim_speed_multiplier == 0.7 and t.swim_float == 50.0 and t.swim_sink == 120.0, "swim speed, float and sink are the bible's (6.8)")
+	check(t.swim_drag == 520.0 and t.swim_stroke == 230.0, "drag and stroke too")
+	check(t.swim_stroke < t.jump_velocity, "a stroke is weaker than a jump")

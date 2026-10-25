@@ -71,6 +71,8 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `n` | Black Onyx (passive ability pickup) |
 | `f` | Time-locked water: a block of falling water that bears you down; frozen by the Hour Glass, it has a foothold every 3 rows up from its bottom. Fill a shaft wall to wall so nothing climbs past it |
 | `v` | Wrong gravity (Zenis): a block where the player keeps 40% of their weight, so a jump rises about 11 tiles and a fall drifts. The checker allows a 9-tile rise from a spot inside one when the column up to the landing is drift too |
+| `a` | Deep water (the Sunken Spring): the player swims while the middle of the body is in it (floats up, sinks holding Down, jump strokes up, and with the head out jumps clear). Not solid. Draw pools as whole blocks; the checker swims through water cells and jumps out from the surface |
+| `l` | Spring Eel (the Sunken Spring), in a cell of water: it never leaves the water; it coils, then darts and bites |
 | `+` | Heart seal (Zenis): living flesh across a passage, a wall to every blade but the Dragon Slayer, which tears it open for good |
 | `&` | The Dragon Slayer (bible A10): found, it goes straight into your hand |
 | `z` | Hour Glass (ability pickup) |

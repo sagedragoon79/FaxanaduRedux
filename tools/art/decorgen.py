@@ -1034,6 +1034,70 @@ def zenis_wall_growth(rng):
     return c
 
 
+def sunken_rimstone(rng):
+    """Little rimstone dams the spring built on the floor, each holding a skin of water."""
+    c = Cell()
+    x = rng.randint(1, 6)
+    while x < 28:
+        w = rng.randint(5, 9)
+        h = rng.randint(2, 4)
+        c.rect(x, H - h, w, h, "stone-4")
+        c.rect(x + 1, H - h, w - 2, 1, "sky-4")
+        c.px(x, H - h, "stone-6")
+        c.px(x + w - 1, H - h, "stone-6")
+        x += w + rng.randint(1, 3)
+    c.outline("night-0")
+    return c
+
+
+def sunken_pearls(rng):
+    """Spring pearls in a hollow of the floor, each glowing faintly."""
+    c = Cell()
+    cx = rng.randint(8, 22)
+    c.rect(cx - 5, H - 2, 12, 2, "stone-2")
+    for k in range(rng.randint(3, 5)):
+        x = cx - 3 + k * 2 + rng.randint(0, 1)
+        c.disc(x, H - 3, 1, 1, "sky-6")
+        c.px(x, H - 4, "gold-7")
+    c.outline("night-0")
+    c.add_glow(cx, H - 4)
+    return c
+
+
+def sunken_straws(rng):
+    """Limestone straws hanging from the vault, a drop at each tip."""
+    c = Cell()
+    for _ in range(rng.randint(3, 6)):
+        x = rng.randint(2, 29)
+        n = rng.randint(3, 14)
+        c.rect(x, 0, 2 if n > 8 else 1, n, "stone-4")
+        c.px(x, n, "sky-5")
+    c.outline("night-0")
+    return c
+
+
+def sunken_wall_seep(rng):
+    """The spring's light seeping out of a crack in the wall."""
+    c = Cell()
+    y = rng.randint(20, 40)
+    for t in range(rng.randint(6, 12)):
+        c.px(1 + (t % 3 == 0), y + t, "sky-6" if t % 4 else "sky-4")
+        c.px(0, y + t, "night-1")
+    c.add_glow(2, y + 4)
+    return c
+
+
+def sunken_wall_flowstone(rng):
+    """A curtain of flowstone poured down the wall in pale ridges."""
+    c = Cell()
+    y = rng.randint(18, 36)
+    for k in range(rng.randint(8, 14)):
+        w = 5 - abs(k % 6 - 3)
+        c.rect(0, y + k, w + 2, 1, "stone-5" if k % 3 else "stone-3")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -1076,6 +1140,11 @@ ZONES = {
         "floor": [zenis_veins, zenis_polyps, zenis_shards, zenis_veins, zenis_polyps, zenis_veins],
         "ceiling": [zenis_tendrils, zenis_eyes, zenis_tendrils, zenis_tendrils],
         "wall": [zenis_wall_eye, zenis_wall_growth],
+    },
+    "sunken": {
+        "floor": [sunken_rimstone, dartmoor_weed, sunken_pearls, sunken_rimstone, dartmoor_weed, sunken_rimstone],
+        "ceiling": [sunken_straws, dartmoor_drip, sunken_straws, sunken_straws],
+        "wall": [sunken_wall_seep, sunken_wall_flowstone],
     },
 }
 

@@ -25,6 +25,12 @@ const POD_JUMP := {0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 4, 7: 3}
 ## tiles and hangs long; past the plain envelope the column must stay drift up to
 ## the landing height, or the true pull takes hold.
 const DRIFT_JUMP := {0: 6, 1: 6, 2: 6, 3: 6, 4: 6, 5: 6, 6: 5, 7: 5, 8: 4, 9: 3}
+## Deep water (legend `a`, and `l`, an eel in it): a spot with the feet in water
+## is a swimming spot whether or not anything is under it. From one you can swim
+## to the water cells beside, above and below; with the head out (no water two
+## rows up) you can jump out, a little short of a jump from the floor.
+const WATER := "al"
+const WATER_JUMP := {0: 4, 1: 4, 2: 4, 3: 3}
 ## With the Elven Stride: dash_speed 380 for 0.15 s is about 3.5 tiles, held level.
 const STRIDE_REACH := 3
 const DROP_DRIFT := 4
@@ -207,7 +213,8 @@ func standable(room_id: String, x: int, y: int) -> bool:
 	var memo: Array = _stand[room_id]
 	var i := y * _lw + x
 	if memo[i] == 0:
-		var ok := body_clear(room_id, x, y) and supported(room_id, x, y) and not HAZARD.contains(ch(room_id, x, y))
+		var ok := body_clear(room_id, x, y) and (supported(room_id, x, y) or WATER.contains(ch(room_id, x, y))) \
+			and not HAZARD.contains(ch(room_id, x, y))
 		memo[i] = 2 if ok else 1
 	return memo[i] == 2
 
@@ -238,7 +245,7 @@ func _drop(room_id: String, x: int, y: int) -> int:
 			if abilities.get("mattock", false) and yy > y:
 				return yy - 1
 			return -1
-		if supported(room_id, x, yy):
+		if supported(room_id, x, yy) or WATER.contains(ch(room_id, x, yy)):
 			return yy
 		yy += 1
 	return -1
@@ -269,6 +276,11 @@ func neighbors(k: String) -> Array:
 					out.append(key(r, cx, land))
 		# Jumps up, across and down.
 		_add_jumps(out, r, x, y, s)
+	# Swim up (float) and down (Down held).
+	if WATER.contains(ch(r, x, y)):
+		for dy: int in [-1, 1]:
+			if WATER.contains(ch(r, x, y + dy)) and standable(r, x, y + dy):
+				out.append(key(r, x, y + dy))
 	# Drop through a one-way platform (Down + Jump).
 	# (Frozen water's footholds melt away when time runs again: the same way down.)
 	if ch(r, x, y + 1) in ["-", "i"] or _foothold(r, x, y + 1):
@@ -309,6 +321,10 @@ func _jump_from(out: Array, r: String, x: int, y: int, s: int) -> void:
 	var drifting := ch(r, x, y) == "v"
 	if drifting:
 		envelope = DRIFT_JUMP
+	if WATER.contains(ch(r, x, y)):
+		if WATER.contains(ch(r, x, y - 2)):
+			return
+		envelope = WATER_JUMP
 	if abilities.get("stride", false):
 		envelope = _strided(envelope)
 	for rise: int in envelope:
