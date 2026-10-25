@@ -1049,6 +1049,8 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 | Stability and performance | 5 | 60 fps budget, no crashes in a 2-hour soak bot run, load times |
 | Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One |
 
+**Stability measures (pass 99):** the journey soak (`test_soak.gd`) walks the world twice, door to door with mashing play between. It rests and Continues into a fresh world every 20 rooms and opens the pause and skills screens on the way. The second lap must leave no live objects, orphan nodes or tree nodes behind. No frame of play (room loads aside) may pass 50 ms. Anything a room will need mid-play is loaded while the room loads: a boss arena loads its boss's sprite sheet and music (`BossArena.warm`), because a fight starts mid-play.
+
 **Exit rule:** weighted score of at least 95, no category below 85, zero open blocker bugs, and a full bot playthrough from new game to credits succeeds.
 
 **Honest limit:** an automated score cannot fully measure "feel". The rubric uses measurable proxies benchmarked against the reference games. A short playtest by Sean at M1 (movement) and M3 (slice) would be the single most valuable input, but the loop does not wait for it.

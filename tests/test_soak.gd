@@ -974,3 +974,154 @@ func test_every_shrine_saves_and_continues_where_you_rested() -> void:
 	check(shrines >= 15, "rested at every shrine (%d)" % shrines)
 	check(problems.is_empty(), "every shrine's save continues where you rested: %s" % [problems])
 
+
+
+const JOURNEY_DOORS := 160
+const JOURNEY_SAVE_EVERY := 20
+const JOURNEY_SLOT := 8
+
+## A long run through the whole game the way a player strings it together: a
+## walk from door to door (leaning toward rooms not seen yet) with real play
+## between (mashing, foes left in), a rest and a Continue into a fresh world every
+## few rooms, and the pause and skills screens opened and shut on the way. It runs
+## twice: the first lap may fill caches, the second must leave nothing behind
+## (live objects, orphan nodes), and no frame of play may spike far past budget.
+func test_a_long_journey_through_the_whole_game_stays_lean() -> void:
+	GameState.slot = JOURNEY_SLOT
+	var first: Dictionary = await _journey(1987)
+	var obj0 := Performance.get_monitor(Performance.OBJECT_COUNT)
+	var orphans0 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	var nodes0 := runner.get_tree().get_node_count()
+	var second: Dictionary = await _journey(2026)
+	var obj1 := Performance.get_monitor(Performance.OBJECT_COUNT)
+	var orphans1 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	var nodes1 := runner.get_tree().get_node_count()
+	GameState.delete_save(JOURNEY_SLOT)
+	for r: Dictionary in [first, second]:
+		print("  Journey: %d rooms, %d reloads, worst frame %.1f ms (%s), %d over 33 ms" % [r.rooms, r.reloads, r.worst / 1000.0, r.where, r.spikes])
+	print("  Second lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
+	for r: Dictionary in [first, second]:
+		check(r.problems.is_empty(), "every rest continues where it was taken: %s" % [r.problems])
+		check(r.rooms >= 30, "the walk saw much of the world (%d rooms)" % r.rooms)
+		check(r.reloads >= JOURNEY_DOORS / JOURNEY_SAVE_EVERY - 1, "and rested and continued along the way (%d)" % r.reloads)
+	check(orphans1 <= orphans0, "no orphan nodes left behind (%d -> %d)" % [orphans0, orphans1])
+	check(obj1 - obj0 < 50, "a second lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
+	check(nodes1 <= nodes0, "and the tree is no bigger (%d -> %d)" % [nodes0, nodes1])
+	for r: Dictionary in [first, second]:
+		check(r.worst < 50_000, "no frame of play spikes past 50 ms (%.1f ms, %s)" % [r.worst / 1000.0, r.where])
+
+
+## A boss fight starts mid-play, so its arena loads the boss's sheet and music
+## while the room loads (pass 99): the fight's first frame must not hitch.
+func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
+	Sheet._cache.erase("zoradohna")
+	Music._streams.erase("zoradohna")
+	var w := make_world({}, "tower/forepaw_lift")
+	await frames(2)
+	var a := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+	check(a != null and a.warmed, "the arena warmed up with the room")
+	check(Sheet._cache.has("zoradohna") and Music._streams.has("zoradohna"), "the drill's sheet and theme are loaded before the fight")
+	w.player.input.move_x = 1
+	var worst := 0
+	var started := false
+	for i in 90:
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		worst = maxi(worst, Time.get_ticks_usec() - t0)
+		started = started or a.fighting
+	check(started, "the fight began as the player walked in")
+	check(worst < 33_000, "and no frame of the walk in hitched (worst %.1f ms)" % (worst / 1000.0))
+	w.queue_free()
+	await frames(2)
+
+
+func _journey(seed: int) -> Dictionary:
+	var w := make_world({}, "eolis/west_gate")
+	GameState.data.rings = ZenisGate.RINGS.duplicate()
+	GameState.set_flag(ZenisGate.FLAG)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var menus := ListMenu.new()
+	arena.add_child(menus)
+	_journey_buff(w)
+	await frames(10)
+	var r := {"rooms": 0, "reloads": 0, "worst": 0, "where": "", "spikes": 0, "problems": []}
+	var visited := {w.room.id: true}
+	for i in JOURNEY_DOORS:
+		var doors: Array = w.room.doors.keys()
+		if doors.is_empty():
+			break
+		var fresh := doors.filter(func(k: int) -> bool: return not visited.has(String(w.room.doors[k].target)))
+		var pick: Array = fresh if not fresh.is_empty() and rng.randf() < 0.8 else doors
+		var n: int = pick[rng.randi() % pick.size()]
+		w.use_door(n)
+		visited[w.room.id] = true
+		var entered := 0
+		for f in 40:
+			_mash(w.player, rng, hold)
+			var before := w.room
+			var t0 := Time.get_ticks_usec()
+			await frames(1)
+			var dt := Time.get_ticks_usec() - t0
+			if w.room != before:
+				# Mashing walked out through an edge door: a load, not play.
+				entered = f
+				visited[w.room.id] = true
+			# The first frames in a room build it; judge play, not loading.
+			if f >= entered + 3:
+				if dt > r.worst:
+					r.worst = dt
+					r.where = "%s frame %d" % [w.room.id, f]
+				if dt > 33_000:
+					r.spikes += 1
+					print("    spike %.1f ms in %s frame %d" % [dt / 1000.0, w.room.id, f])
+		if w.player.dead:
+			await frames(int(w.player.combat.respawn_delay * 60.0) + 30)
+			_journey_buff(w)
+		if i % 7 == 3:
+			Menus.open_pause(runner.get_tree(), w.player, func() -> void: pass)
+			await frames(3)
+			_close_menus()
+			Menus.open_skills(runner.get_tree(), w.player)
+			await frames(3)
+			_close_menus()
+		if i % JOURNEY_SAVE_EVERY == JOURNEY_SAVE_EVERY - 1:
+			# Rest, then Continue into a brand-new world, as after quitting.
+			var room_id := w.room.id
+			w.save_at(w.player.global_position)
+			w.queue_free()
+			await frames(2)
+			if not GameState.load_game(JOURNEY_SLOT):
+				r.problems.append("the save at %s did not load" % room_id)
+				break
+			w = World.new()
+			w.instant = true
+			arena.add_child(w)
+			w.build_catalog()
+			w.start(String(GameState.data.save_room), Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1])))
+			w.player.input.scripted = true
+			_journey_buff(w)
+			r.reloads += 1
+			await frames(5)
+			if w.room.id != room_id:
+				r.problems.append("continued in %s, not %s" % [w.room.id, room_id])
+	r.rooms = visited.size()
+	w.queue_free()
+	menus.queue_free()
+	await frames(10)
+	return r
+
+
+func _journey_buff(w: World) -> void:
+	for k: String in GameState.data.abilities:
+		GameState.data.abilities[k] = true
+		w.player.abilities[k] = true
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+
+
+func _close_menus() -> void:
+	for m in runner.get_tree().get_nodes_in_group("list_menu"):
+		m.close()
+	runner.get_tree().paused = false

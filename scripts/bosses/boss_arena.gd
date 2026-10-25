@@ -43,6 +43,8 @@ const OPEN_DELAY := 1.2
 const ENDING_DELAY := 4.0
 
 var boss_id := ""
+## True once the fight's assets are loaded (tests).
+var warmed := false
 var room: Room
 var boss: Node2D
 var fighting := false
@@ -56,6 +58,19 @@ var phases_passed := 0
 
 func _ready() -> void:
 	add_to_group("boss_arena")
+	warm.call_deferred()
+
+
+## Loads what the fight will need while the room itself is loading, so the
+## fight doesn't hitch when it starts mid-play: the boss's sprite sheet and its
+## music (pass 99; Zoradohna's first frame cost about 140 ms).
+func warm() -> void:
+	warmed = true
+	if boss_id == "" or defeated_before():
+		return
+	if Sheet.exists(boss_id):
+		Sheet.get_sheet(boss_id)
+	Music.stream_for(String(BOSSES.get(boss_id, {}).get("music", "boss")))
 
 
 func defeated_before() -> bool:
