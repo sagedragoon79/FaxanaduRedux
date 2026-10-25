@@ -1758,3 +1758,68 @@ func test_shadow_eura_wanders_dashes_and_drinks() -> void:
 	b.take_hit(5, Vector2.RIGHT)
 	await frames(2)
 	check(b.state != "drink" and b.hp == hp0 - 5, "a blow spills the draught")
+
+
+func _eura_split() -> Array:
+	var setup := await _eura_free([])
+	var b: ShadowEura = setup[2]
+	await _until(func() -> bool: return b.state == "stalk", 150)
+	b.hp = roundi(b.max_hp * 0.2) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	return setup
+
+
+func test_shadow_eura_splits_in_two_below_a_fifth() -> void:
+	var setup := await _eura_split()
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	check(b.phase == 3 and b.state == "split", "below a fifth it splits (%s)" % b.state)
+	var shadows: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is ShadowEura)
+	check(shadows.size() == 2, "into two shadows (%d)" % shadows.size())
+	var d := b.double
+	check(d != null and d.decoy and not d.is_in_group("boss") and get_tree_boss() == b, "one of them false, and the boss bar follows the real one")
+	check(b.reflects() and not d.reflects(), "only the real one casts a reflection")
+	check(absf(d.global_position.x - b.global_position.x) >= 40.0, "they part (%.0f apart)" % absf(d.global_position.x - b.global_position.x))
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.hp == hp0, "untouchable while it splits")
+	var out := await _until(func() -> bool: return b.state == "stalk" and d.state == "stalk", 120)
+	check(out, "then both come on (%s, %s)" % [b.state, d.state])
+
+
+func test_striking_the_false_shadow_makes_it_burst() -> void:
+	check(ShadowEura.BURST_TELL >= Enemy.MIN_TELEGRAPH, "the false one swells for at least %.2f s before it bursts" % Enemy.MIN_TELEGRAPH)
+	var setup := await _eura_split()
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var d := b.double
+	await _until(func() -> bool: return d.state == "stalk", 120)
+	var p := w.player
+	var hp0 := b.hp
+	d.take_hit(10, Vector2.RIGHT)
+	check(d.state == "burst_tell", "struck, the false one swells")
+	check(b.hp == hp0, "and the real one loses nothing")
+	p.teleport(d.global_position + Vector2(20.0, 0.0))
+	b.global_position = Vector2(b.arena.end.x - 30.0 if d.global_position.x < b.axis() else b.arena.position.x + 30.0, b.global_position.y)
+	b.set_state("f_recover")
+	var php := p.hp
+	var gone := await _until(func() -> bool: return not is_instance_valid(d), 60)
+	check(gone, "then bursts")
+	check(p.hp < php, "hurting you if you stay beside it (%d)" % (php - p.hp))
+	check(b.double == null, "the real one is alone")
+	await frames(roundi(ShadowEura.RESPLIT * 60.0) + 90)
+	var again := b.double != null and is_instance_valid(b.double)
+	check(again, "until it splits again")
+
+
+func test_beating_the_real_shadow_ends_the_false_one() -> void:
+	var setup := await _eura_split()
+	var b: ShadowEura = setup[2]
+	var d := b.double
+	await _until(func() -> bool: return b.state == "stalk", 120)
+	b.hp = 1
+	b.take_hit(5, Vector2.RIGHT)
+	await frames(2)
+	check(not is_instance_valid(d), "the false one goes with the real one")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:shadow_eura"), 600)
+	check(gone, "and the fight is won")
