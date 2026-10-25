@@ -31,6 +31,8 @@ var _one_way := {}
 var _secret_cells := {}
 ## Time-locked water cells (legend `f`), gathered into Waterfalls after the grid.
 var _falls := {}
+## Wrong-gravity cells (legend `v`), gathered into GravityDrifts after the grid.
+var _drifts := {}
 var _sap_cells := {}
 var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
@@ -391,6 +393,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_place_phantom(cell)
 		"f":
 			_falls[cell] = true
+		"v":
+			_drifts[cell] = true
 		"~":
 			if _amber_on():
 				# The restored spring hardens the Trunk's sap into walkable amber.
@@ -515,8 +519,21 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 
 ## Each connected block of `f` cells becomes one Waterfall over its bounding box.
 func _place_falls() -> void:
+	for box in _blocks(_falls):
+		var fall := Waterfall.new()
+		fall.cells = box
+		add_child(fall)
+	for box in _blocks(_drifts):
+		var drift := GravityDrift.new()
+		drift.cells = box
+		add_child(drift)
+
+
+## The bounding boxes of each connected block of `cells`.
+func _blocks(cells: Dictionary) -> Array[Rect2i]:
+	var out: Array[Rect2i] = []
 	var seen := {}
-	for start: Vector2i in _falls:
+	for start: Vector2i in cells:
 		if seen.has(start):
 			continue
 		var box := Rect2i(start, Vector2i.ONE)
@@ -526,12 +543,11 @@ func _place_falls() -> void:
 			var c: Vector2i = todo.pop_back()
 			box = box.merge(Rect2i(c, Vector2i.ONE))
 			for d: Vector2i in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
-				if _falls.has(c + d) and not seen.has(c + d):
+				if cells.has(c + d) and not seen.has(c + d):
 					seen[c + d] = true
 					todo.append(c + d)
-		var fall := Waterfall.new()
-		fall.cells = box
-		add_child(fall)
+		out.append(box)
+	return out
 
 
 ## A hidden plank: a one-way platform that is always there but drawn only

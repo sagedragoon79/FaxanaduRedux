@@ -123,6 +123,9 @@ var pull := Vector2.ZERO
 ## Falling water bearing down on you this frame (px/s, a floor on velocity.y).
 ## Set by a Waterfall while you are in it; cleared every frame.
 var water_push := 0.0
+## How much of their weight the player has this frame: a GravityDrift pocket in
+## Zenis lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
+var gravity_scale := 1.0
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -249,6 +252,7 @@ func _physics_process(delta: float) -> void:
 		# A waterfall beats you down: no climbing or jumping up through it.
 		velocity.y = maxf(velocity.y, water_push)
 	water_push = 0.0
+	gravity_scale = 1.0
 
 	if is_attacking:
 		_process_attack_hits()
@@ -460,9 +464,9 @@ func _apply_gravity(delta: float, on_floor: bool) -> void:
 		g *= tuning.apex_gravity_multiplier
 	elif velocity.y > 0.0:
 		g *= tuning.fall_gravity_multiplier
-	velocity.y += g * delta
+	velocity.y += g * gravity_scale * delta
 	var max_fall := tuning.max_fast_fall_speed if input.down else tuning.max_fall_speed
-	velocity.y = minf(velocity.y, max_fall)
+	velocity.y = minf(velocity.y, max_fall * gravity_scale)
 
 
 # --- Dash -----------------------------------------------------------------------

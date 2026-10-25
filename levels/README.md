@@ -70,6 +70,7 @@ surface: stone     (optional: the ground's footstep sound if not the zone's: sto
 | `i` | Hidden plank: a one-way platform that is always there but unseen; the Black Onyx shows it faintly |
 | `n` | Black Onyx (passive ability pickup) |
 | `f` | Time-locked water: a block of falling water that bears you down; frozen by the Hour Glass, it has a foothold every 3 rows up from its bottom. Fill a shaft wall to wall so nothing climbs past it |
+| `v` | Wrong gravity (Zenis): a block where the player keeps 40% of their weight, so a jump rises about 11 tiles and a fall drifts. The checker allows a 9-tile rise from a spot inside one when the column up to the landing is drift too |
 | `z` | Hour Glass (ability pickup) |
 | `e` | Shade Knight (Dartmoor: tower shield turns frontal blows; parry his thrust or cut) |
 | `j` | Clockwork Hound (Dartmoor: winds up and pounces; parry flips it; the Hour Glass stops it) |

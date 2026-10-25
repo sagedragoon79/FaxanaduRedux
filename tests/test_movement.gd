@@ -232,3 +232,48 @@ func test_one_way_platform_and_drop_through() -> void:
 	p.input.down = false
 	await frames(20)
 	check(p.global_position.y > platform_y + 20.0, "dropped through the platform (y %.1f)" % p.global_position.y)
+
+
+func _drift_room() -> Room:
+	var rows := ["##############################"]
+	for y in 28:
+		rows.append("#...vvvvvv...................#")
+	rows.append("##############################")
+	return make_room(rows)
+
+
+## Bible 8.9: in a wrong-gravity pocket the player keeps GravityDrift.PULL of
+## their weight: a full jump rises well past the 9 tiles the checker allows,
+## and a fall drifts down slowly.
+func test_wrong_gravity_lifts_a_jump_and_slows_a_fall() -> void:
+	var room := _drift_room()
+	var p := make_player(room, Vector2i(6, 28))
+	await _settle(p)
+	var start_y := p.global_position.y
+	var min_y := start_y
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var fastest := 0.0
+	for i in 240:
+		await frames(1)
+		min_y = minf(min_y, p.global_position.y)
+		fastest = maxf(fastest, p.velocity.y)
+		if i > 10 and p.is_on_floor():
+			break
+	var rise := start_y - min_y
+	check(rise >= 9.5 * Room.TILE, "a jump in the drift rises past nine tiles (%d px)" % rise)
+	check(rise > p.tuning.jump_height * 2.0, "over twice a normal jump")
+	check(fastest <= p.tuning.max_fall_speed * GravityDrift.PULL + 1.0, "and the fall drifts (%d px/s)" % fastest)
+	check(p.is_on_floor(), "it lands again")
+	# Outside the pocket, the jump is a plain jump.
+	var q := make_player(room, Vector2i(20, 28))
+	p.queue_free()
+	await _settle(q)
+	start_y = q.global_position.y
+	min_y = start_y
+	q.input.jump_pressed = true
+	q.input.jump_held = true
+	for i in 70:
+		await frames(1)
+		min_y = minf(min_y, q.global_position.y)
+	check_near(start_y - min_y, q.tuning.jump_height, 3.0, "outside it a jump is a normal jump")
