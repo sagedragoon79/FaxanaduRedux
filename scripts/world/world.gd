@@ -179,6 +179,9 @@ func _enter(room_id: String) -> void:
 	if room != null:
 		if player.get_parent() == room:
 			room.remove_child(player)
+		# Out of the tree at once: its walls must not shove the player in the new
+		# room on the next physics step (queue_free alone keeps them a frame).
+		remove_child(room)
 		room.queue_free()
 	room = next
 	add_child(room)
