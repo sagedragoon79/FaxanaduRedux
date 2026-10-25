@@ -934,6 +934,106 @@ def dartmoor_wall_brazier(rng):
     return c
 
 
+def zenis_polyps(rng):
+    """Polyps of meteor flesh budding from the floor, each tipped with a cyan eye."""
+    c = Cell()
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(4, 27)
+        h = rng.randint(4, 12)
+        for k in range(h):
+            w = 3 if k < h - 2 else 2
+            c.rect(x - w // 2, H - 1 - k, w, 1, "night-2" if k % 3 else "ember-1")
+        c.rect(x - 1, H - h - 2, 3, 2, "night-1")
+        c.px(x, H - h - 2, "sky-6")
+        c.px(x - 1, H - h - 1, "sky-3")
+    c.outline("night-0")
+    c.add_glow(16, H - 8)
+    return c
+
+
+def zenis_shards(rng):
+    """Black-violet crystal splinters, red light deep inside them."""
+    c = Cell()
+    base = rng.randint(8, 22)
+    for _ in range(rng.randint(2, 3)):
+        x = base + rng.randint(-6, 6)
+        h = rng.randint(8, 20)
+        lean = rng.uniform(-0.4, 0.4)
+        for k in range(h):
+            w = max(1, (h - k) * 4 // h)
+            xx = x + int(lean * k)
+            c.rect(xx - w // 2, H - 1 - k, w, 1, "crystal-1" if k % 4 else "ember-2")
+            c.px(xx - w // 2, H - 1 - k, "crystal-3")
+    c.outline("night-0")
+    return c
+
+
+def zenis_veins(rng):
+    """Veins of light crawling over the floor, pulsing toward the core."""
+    c = Cell()
+    x, y = 0, H - 2
+    while x < 32:
+        c.px(x, y, "sky-5")
+        c.px(x, y + 1, "sky-2")
+        x += 1
+        if rng.random() > 0.7:
+            y = max(H - 4, min(H - 2, y + rng.choice([-1, 1])))
+    return c
+
+
+def zenis_tendrils(rng):
+    """Tendrils hanging from the vault, each ending in a red bead."""
+    c = Cell()
+    for _ in range(rng.randint(2, 4)):
+        x = rng.randint(4, 27)
+        n = rng.randint(8, 22)
+        for y in range(n):
+            xx = x + int(math.sin(y / 4.0) * 1.5)
+            c.px(xx, y, "night-2" if y % 4 else "crystal-1")
+            c.px(xx + 1, y, "night-1")
+        c.px(x, n, "ember-4")
+        c.px(x, n + 1, "ember-2")
+    c.outline("night-0")
+    return c
+
+
+def zenis_eyes(rng):
+    """A cluster of lidless cyan eyes in the vault, watching."""
+    c = Cell()
+    for _ in range(rng.randint(2, 3)):
+        x, y = rng.randint(5, 26), rng.randint(2, 10)
+        c.disc(x, y, 3, 2, "night-2")
+        c.rect(x - 1, y, 3, 1, "sky-5")
+        c.px(x, y, "night-0")
+    c.outline("night-0")
+    c.add_glow(16, 6)
+    return c
+
+
+def zenis_wall_eye(rng):
+    """One great eye opening in the wall, red-veined."""
+    c = Cell()
+    y = rng.randint(22, 42)
+    c.disc(4, y, 5, 3, "night-2")
+    c.rect(1, y - 1, 7, 3, "ember-1")
+    c.rect(2, y - 1, 5, 3, "sky-5")
+    c.rect(4, y - 1, 1, 3, "night-0")
+    c.outline("night-0")
+    c.add_glow(4, y)
+    return c
+
+
+def zenis_wall_growth(rng):
+    """A shelf of meteor flesh grown out of the wall."""
+    c = Cell()
+    y = rng.randint(24, 42)
+    for k in range(4):
+        c.rect(0, y + k, 9 - k * 2, 1, "night-2" if k else "crystal-2")
+    c.px(3, y + 1, "sky-6")
+    c.outline("night-0")
+    return c
+
+
 ZONES = {
     "trunk": {
         "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
@@ -971,6 +1071,11 @@ ZONES = {
         "floor": [dartmoor_weed, dartmoor_rubble, dartmoor_shards, dartmoor_weed, dartmoor_helm, dartmoor_weed],
         "ceiling": [dartmoor_drip, dartmoor_stalactites, eolis_chain, dartmoor_stalactites],
         "wall": [dartmoor_wall_crystal, dartmoor_wall_brazier],
+    },
+    "zenis": {
+        "floor": [zenis_veins, zenis_polyps, zenis_shards, zenis_veins, zenis_polyps, zenis_veins],
+        "ceiling": [zenis_tendrils, zenis_eyes, zenis_tendrils, zenis_tendrils],
+        "wall": [zenis_wall_eye, zenis_wall_growth],
     },
 }
 

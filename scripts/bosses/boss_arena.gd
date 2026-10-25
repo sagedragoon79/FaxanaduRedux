@@ -210,7 +210,7 @@ func _seal(n: int) -> void:
 		_:
 			return
 	var seal := ArenaSeal.new()
-	seal.style = "iron" if room.zone in ["tower", "daybreak", "dartmoor"] else "roots"
+	seal.style = "iron" if room.zone in ["tower", "daybreak", "dartmoor", "zenis"] else "roots"
 	seal.size = area.size
 	seal.position = area.position
 	room.add_child(seal)

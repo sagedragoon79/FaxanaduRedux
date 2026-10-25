@@ -168,6 +168,35 @@ def paint_drowned(img, ox, oy, seed, ramp):
             img.putpixel((ox + x, oy + y), c(col))
 
 
+def paint_meteor(img, ox, oy, seed, ramp):
+    """Zenis, the inside of the meteor: organic stone grown in rounded cells
+    like a honeycomb of scar tissue, black-violet, with blood-red sinew in the
+    seams and the odd pore of alien cyan light."""
+    cell = 7 * D
+    pts = []
+    for gy in range(-1, T // cell + 2):
+        for gx in range(-1, T // cell + 2):
+            pts.append(((gx + hash2(gx, gy, seed + 1)) * cell, (gy + hash2(gx, gy, seed + 2)) * cell, gx, gy))
+    for y in range(T):
+        for x in range(T):
+            d = sorted(((x - px) ** 2 + (y - py) ** 2, gx, gy) for px, py, gx, gy in pts)
+            d1, d2 = math.sqrt(d[0][0]), math.sqrt(d[1][0])
+            gx, gy = d[0][1], d[0][2]
+            edge = d2 - d1
+            shade = 3 if hash2(gx, gy, seed + 3) > 0.5 else 2
+            if edge < 1.0 * D:
+                col = "ember-1" if hash2(gx + gy, 0, seed + 4) > 0.55 else f"{ramp}-1"
+            elif edge < 2.0 * D:
+                col = f"{ramp}-{shade - 1}"
+            elif d1 < 2.0 * D:
+                col = f"{ramp}-{shade + 1}"
+            else:
+                col = f"{ramp}-{shade}"
+            if d1 < 1.0 * D and hash2(gx, gy, seed + 6) > 0.8:
+                col = "sky-6"
+            img.putpixel((ox + x, oy + y), c(col))
+
+
 def crystal_vein(img, ox, oy, seed):
     """Dartmoor: a vein of meteor crystal, a jagged run of shards up through the
     joints. Only on tiles with an open face, so the solid fill doesn't repeat it."""
@@ -357,6 +386,8 @@ ZONES = {
                  "under": "bark-2", "outline": "night-0"},
     "dartmoor": {"painter": paint_drowned, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "crystal-6", "cap_top": 4,
                  "under": "night-1", "outline": "night-0"},
+    "zenis": {"painter": paint_meteor, "ramp": "night", "cap": "moss", "light": "crystal", "glow": "sky-6", "cap_top": 4,
+              "under": "night-0", "outline": "night-0"},
     "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
                  "under": "night-1", "outline": "night-0"},
 }
@@ -1151,6 +1182,67 @@ def dartmoor_mid():
     return img
 
 
+def zenis_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
+    gradient(img, "night-0", "crystal-1")
+    rng = random.Random(77)
+    # The meteor's hollow heart: vast ribbed walls curving away like the inside
+    # of a shell, cyan veins of light pulsing through them toward a red glow.
+    for i in range(9):
+        cx = int((i + rng.uniform(0.0, 0.5)) * BG_W / 9)
+        w = rng.randrange(30, 60) * D
+        bend = rng.uniform(-60, 60) * D
+        for y in range(BG_H):
+            k = y / BG_H
+            x0 = cx + int(math.sin(k * math.pi) * bend)
+            for dx in range(w):
+                col = "night-1" if dx > w * 0.35 else "crystal-1"
+                if (y + dx) % (22 * D) < D:
+                    col = "night-0"
+                put(img, x0 + dx, y, c(col))
+    # Veins: wandering lines of cyan light.
+    for _ in range(14):
+        x, y = rng.randrange(BG_W), rng.randrange(BG_H)
+        for t in range(rng.randrange(80, 240) * D // 2):
+            put(img, x, y, c("sky-5" if t % 7 else "sky-6"))
+            put(img, x + 1, y, c("sky-3"))
+            x += rng.choice([-1, 0, 1])
+            y += 1 if rng.random() > 0.3 else -1
+    # A red glow far below: the core.
+    for y in range(int(BG_H * 0.8), BG_H):
+        for x in range(BG_W):
+            if hash2(x // (4 * D), y // (4 * D), 7) > 0.55 - (y - BG_H * 0.8) / BG_H:
+                put(img, x, y, c("ember-1"))
+    return img
+
+
+def zenis_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(78)
+    # Nearer: tendrils of meteor flesh hanging and rising, crystal growing on them.
+    for i in range(8):
+        x0 = int((i + rng.uniform(0.1, 0.8)) * BG_W / 8)
+        down = rng.random() > 0.5
+        ln = rng.randrange(120, 320) * D
+        w0 = rng.randrange(10, 20) * D
+        for t in range(ln):
+            y = t if down else BG_H - 1 - t
+            wdt = max(D, int(w0 * (1 - t / ln)))
+            sway = int(math.sin(t / (30 * D) + i) * 8 * D)
+            for dx in range(wdt):
+                col = "night-1" if dx > wdt * 0.3 else "crystal-1"
+                if (t // (6 * D)) % 5 == 0 and dx == wdt // 2:
+                    col = "ember-2"
+                put(img, x0 + sway + dx - wdt // 2, y, c(col))
+        # A cyan bulb at the tip.
+        tip_y = ln if down else BG_H - 1 - ln
+        for dy in range(-3 * D, 3 * D):
+            for dx in range(-3 * D, 3 * D):
+                if dx * dx + dy * dy < 9 * D * D:
+                    put(img, x0 + int(math.sin(ln / (30 * D) + i) * 8 * D) + dx, tip_y + dy, c("sky-6" if dx * dx + dy * dy < 2 * D * D else "sky-3"))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -1165,6 +1257,7 @@ BACKGROUNDS = {
     "branches": (branches_far, branches_mid),
     "daybreak": (daybreak_far, daybreak_mid),
     "dartmoor": (dartmoor_far, dartmoor_mid),
+    "zenis": (zenis_far, zenis_mid),
     "gym": (gym_far, None),
 }
 

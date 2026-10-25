@@ -121,6 +121,11 @@ func test_random_input_soak_in_every_dartmoor_room() -> void:
 	await _soak_zone("dartmoor", "Dartmoor", true)
 
 
+## Zenis: spores, flesh and the meteor's light, room after room.
+func test_random_input_soak_in_every_zenis_room() -> void:
+	await _soak_zone("zenis", "Zenis")
+
+
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.
