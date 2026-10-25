@@ -19,6 +19,8 @@ var trauma := 0.0
 var shake_offset := Vector2.ZERO
 ## The last rumble asked for (weak, strong, seconds), even with rumble off (tests).
 var last_rumble := Vector3.ZERO
+## The last hit-stop asked for, in seconds, even with hit-stop off (tests).
+var last_hitstop := 0.0
 
 var _hitstop_until_usec := 0
 ## Slow motion (boss kills): the time scale hit-stop returns to, and until when.
@@ -38,6 +40,7 @@ func _ready() -> void:
 
 ## Freezes game time for `seconds`. Overlapping calls keep the longest end time.
 func hitstop(seconds: float) -> void:
+	last_hitstop = seconds
 	if not hitstop_enabled or seconds <= 0.0:
 		return
 	var until := Time.get_ticks_usec() + int(seconds * 1_000_000.0)

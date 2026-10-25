@@ -14,6 +14,13 @@ const MP_DARK := Color("23385e")
 const POTION := Color("e0404a")
 const POTION_EMPTY := Color("4a2a34")
 const GOLD := Color("ffd24a")
+const HURT_RED := Color("d0202c")
+## Peak alpha of the hurt edge, how fast it fades (per second), the low-health
+## pulse at its height, and how many bands the edge fades over.
+const HURT_EDGE := 0.5
+const HURT_FADE := 2.5
+const LOW_EDGE := 0.24
+const EDGE_STEPS := 6
 const OINTMENT := Color("f0c02e")
 const POISONED := Color("6fb83a")
 const POISONED_SHINE := Color("c8f08a")
@@ -30,6 +37,10 @@ var _banner_t := 0.0
 var _toast := ""
 var _toast_t := 0.0
 var _flash := 0.0
+## The red edge flash when you're hurt (design bible 5.3), and the health it last saw.
+var hurt := 0.0
+var _last_hp := -1
+var _pulse_t := 0.0
 ## The boss bar's shown health trails the real value, like the gold counter.
 var _boss_shown := 1.0
 var _mask_cache := {}
@@ -60,6 +71,12 @@ func _process(delta: float) -> void:
 	_banner_t = maxf(_banner_t - delta, 0.0)
 	_toast_t = maxf(_toast_t - delta, 0.0)
 	_flash = maxf(_flash - delta * 1.6, 0.0)
+	hurt = maxf(hurt - delta * HURT_FADE, 0.0)
+	_pulse_t += delta
+	if player:
+		if _last_hp >= 0 and player.hp < _last_hp:
+			hurt = maxf(hurt, Feel.flash_scale)
+		_last_hp = player.hp
 	if player:
 		# The counter rolls up toward the real total, like an arcade score.
 		_shown_gold = move_toward(_shown_gold, player.gold, maxf(40.0, absf(player.gold - _shown_gold) * 6.0) * delta)
@@ -101,8 +118,35 @@ func _draw() -> void:
 	_draw_ointment(origin + Vector2(0, 42))
 	_draw_boss()
 	_draw_messages()
+	_draw_hurt_edge()
 	if _flash > 0.0:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
+
+
+## How strongly the screen's edge glows red now: a hit's flash, or at low health
+## a slow pulse in time with the heartbeat.
+func edge_strength() -> float:
+	var s := hurt * HURT_EDGE
+	if player and player.is_low_health():
+		var beat := 0.5 + 0.5 * cos(_pulse_t * TAU / player.combat.heartbeat_interval)
+		s = maxf(s, LOW_EDGE * (0.4 + 0.6 * beat) * maxf(Feel.flash_scale, 0.5))
+	return s
+
+
+func _draw_hurt_edge() -> void:
+	var s := edge_strength()
+	if s <= 0.01:
+		return
+	var r := get_viewport_rect()
+	var band := r.size.y * 0.035
+	for i in EDGE_STEPS:
+		var a := s * pow(1.0 - float(i) / EDGE_STEPS, 2.0)
+		var c := Color(HURT_RED, a)
+		var o := band * i
+		draw_rect(Rect2(r.position + Vector2(o, o), Vector2(r.size.x - o * 2.0, band)), c)
+		draw_rect(Rect2(r.position + Vector2(o, r.size.y - o - band), Vector2(r.size.x - o * 2.0, band)), c)
+		draw_rect(Rect2(r.position + Vector2(o, o + band), Vector2(band, r.size.y - o * 2.0 - band * 2.0)), c)
+		draw_rect(Rect2(r.position + Vector2(r.size.x - o - band, o + band), Vector2(band, r.size.y - o * 2.0 - band * 2.0)), c)
 
 
 # --- 2x icons --------------------------------------------------------------------

@@ -37,6 +37,8 @@ const DOWN_STRIKE_SIZE := Vector2(28, 24)
 const UPDRAFT_ACCEL := 1100.0
 ## A landing from at least this far above (px, 7 tiles) thuds: shake and rumble.
 const BIG_DROP := 112.0
+## How far a heavy hit's impact spark reaches past a light one's.
+const HEAVY_SPARK := 1.6
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -46,6 +48,9 @@ var input := PlayerInput.new()
 var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "tilte": true, "onyx": true, "hourglass": true}
 
 var max_hp := 100
+## Heartbeats played at low health (tests).
+var heartbeats := 0
+var _heartbeat_timer := 0.0
 var hp := 100
 var max_mp := 60.0
 var mp := 60.0
@@ -340,6 +345,23 @@ func _tick_timers(delta: float) -> void:
 	_attack_buffer_timer -= delta
 	_parry_timer -= delta
 	_cast_cooldown -= delta
+	_tick_heartbeat(delta)
+
+
+## Low health (design bible 5.3): a heartbeat while you're down to one mask.
+func is_low_health() -> bool:
+	return not dead and hp > 0 and hp <= combat.low_health
+
+
+func _tick_heartbeat(delta: float) -> void:
+	if not is_low_health():
+		_heartbeat_timer = 0.0
+		return
+	_heartbeat_timer -= delta
+	if _heartbeat_timer <= 0.0:
+		_heartbeat_timer = combat.heartbeat_interval
+		heartbeats += 1
+		Sfx.play("heartbeat", 0.0, -3.0)
 
 
 func _refresh_air_moves() -> void:
@@ -690,6 +712,8 @@ func _process_attack_hits() -> void:
 			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_something = true
+			if collider is Node2D:
+				HitSpark.spawn(get_parent(), _contact_point(rect, collider), dir, HEAVY_SPARK if is_heavy_swing else 1.0)
 			if attack_kind == "up" and rising_cut and collider.has_method("launch"):
 				collider.launch()
 			if collider.is_in_group("enemy"):
@@ -706,6 +730,12 @@ func _process_attack_hits() -> void:
 			velocity.x = -facing * tuning.slash_recoil
 	if attack_kind == "down" and bounced:
 		_attack_timer = 0.0
+
+
+## Where a swing meets what it hits: the target's middle, pulled inside the swing.
+func _contact_point(rect: Rect2, target: Node2D) -> Vector2:
+	var c: Vector2 = target.center() if target.has_method("center") else Vector2(target.global_position.x, rect.get_center().y)
+	return c.clamp(rect.position, rect.end)
 
 
 func _pogo_bounce() -> void:
