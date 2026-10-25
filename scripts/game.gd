@@ -32,6 +32,8 @@ extends Node2D
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
 ##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
+##   --ending=SECONDS[,PART]    play the ending on frame 2 and run it SECONDS in (PART:
+##                              epilogue, credits or thanks to start there)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 const SAVE_SLOT := 1
@@ -48,6 +50,7 @@ var dialog: DialogBox
 var map_screen: MapScreen
 var menu: ListMenu
 var title_screen: TitleScreen
+var ending: EndingScreen
 var fader: ColorRect
 var debug_hud: DebugHud
 
@@ -105,6 +108,11 @@ func _ready() -> void:
 	ui.add_child(menu)
 	map_screen = MapScreen.new()
 	ui.add_child(map_screen)
+	ending = EndingScreen.new()
+	ending.visible = false
+	ending.finished.connect(_end_of_ending)
+	ui.add_child(ending)
+	GameState.ending_started.connect(_play_ending)
 	fader = ColorRect.new()
 	fader.color = Color(0.07, 0.06, 0.11, 0.0)
 	fader.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -210,6 +218,14 @@ func _process(_delta: float) -> void:
 	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
 	if _frames == 2:
 		_debug_open()
+	if _args.has("ending") and _frames == 2:
+		var parts: PackedStringArray = String(_args["ending"]).split(",")
+		GameState.begin_ending()
+		if parts.size() > 1 and parts[1] == "thanks":
+			ending.skip()
+		elif parts.size() > 1 and parts[1] == "credits":
+			ending._to("credits")
+		ending.tick(float(parts[0]))
 	if _args.has("cast") and _frames == 10:
 		var spell := String(_args["cast"])
 		player.abilities[spell] = true
@@ -260,10 +276,36 @@ func _process(_delta: float) -> void:
 	_take_shot()
 
 
+## The Evil One is dead: freeze the world and play the ending over it.
+func _play_ending() -> void:
+	get_tree().paused = true
+	menu.close()
+	hud.visible = false
+	Music.play("ending", 2.0)
+	ending.start(GameState.rank_name(), GameState.total_play_time())
+
+
+## The ending is over: keep the cleared save and go back to the title.
+func _end_of_ending() -> void:
+	if world != null and world.use_game_state:
+		GameState.save_game()
+	if world != null:
+		world.queue_free()
+		world = null
+	if debug_hud != null:
+		debug_hud.queue_free()
+		debug_hud = null
+	hud.player = null
+	hud.visible = true
+	map_screen.world = null
+	get_tree().paused = false
+	_title()
+
+
 ## Pause opens the pause menu during play, unless another screen is up or the
 ## press just closed one.
 func _check_pause() -> void:
-	if not Input.is_action_just_pressed("pause") or player == null or player.dead:
+	if not Input.is_action_just_pressed("pause") or player == null or player.dead or ending.visible:
 		return
 	if menu.is_open or menu.closed_frame == Engine.get_process_frames() or map_screen.is_open or map_screen.closed_frame == Engine.get_process_frames() or dialog.is_open:
 		return

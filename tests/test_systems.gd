@@ -202,3 +202,78 @@ func test_no_sound_starts_without_a_sound_device() -> void:
 	Sfx.play("blip")
 	var playing := Sfx.get_children().any(func(p: Node) -> bool: return (p as AudioStreamPlayer).playing)
 	check(not playing, "so a sound is never started")
+
+
+func test_the_ending_tells_climbs_and_thanks() -> void:
+	var e := EndingScreen.new()
+	arena.add_child(e)
+	e.start("Hero", 3725.0)
+	check(e.phase == "epilogue" and e.card == 0, "the ending opens on its first card")
+	e.tick(EndingScreen.CARD_TIME + 0.1)
+	check(e.card == 1, "the cards turn on their own")
+	e.advance()
+	e.tick(0.01)
+	check(e.card == 2, "and a press turns one sooner")
+	e.tick(EndingScreen.CARD_TIME * 2.0)
+	check(e.phase == "credits", "then the climb up the Tree begins")
+	e.tick(10.0)
+	check(e.climb > 0.0 and e.climb < EndingScreen.CLIMB, "climbing at its own pace (%.0f px)" % e.climb)
+	var slow := e.climb
+	e.fast = true
+	e.tick(1.0)
+	check(e.climb - slow > EndingScreen.SPEED * 3.0, "faster while a button is held")
+	e.fast = false
+	e.tick(EndingScreen.CLIMB / EndingScreen.SPEED)
+	check(e.phase == "thanks", "the credits end on the thanks card")
+	var done := [false]
+	e.finished.connect(func() -> void: done[0] = true)
+	e.advance()
+	check(not done[0], "a press held over from the credits does not skip it")
+	e.tick(EndingScreen.THANKS_GRACE)
+	e.advance()
+	check(done[0] and not e.visible, "a press after a moment ends it")
+	e.queue_free()
+
+
+func test_pause_skips_the_ending_to_the_thanks_card() -> void:
+	var e := EndingScreen.new()
+	arena.add_child(e)
+	e.start("Hero", 0.0)
+	e.tick(1.0)
+	e.skip()
+	check(e.phase == "thanks", "from the epilogue")
+	e.start("Hero", 0.0)
+	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 1.0)
+	e.skip()
+	check(e.phase == "thanks", "and from the climb")
+	e.queue_free()
+
+
+func test_the_game_plays_the_ending_then_returns_to_the_title() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("zenis/heart")
+	# A test must not write the real save.
+	g.world.use_game_state = false
+	await frames(5)
+	GameState.begin_ending()
+	await frames(2)
+	check(g.ending.visible and g.ending.phase == "epilogue", "the Evil One's death plays the ending")
+	check(runner.get_tree().paused, "over a frozen world")
+	check(Music.track == "ending", "to its own music (%s)" % Music.track)
+	g.ending.skip()
+	g.ending.tick(EndingScreen.THANKS_GRACE)
+	g.ending.advance()
+	await frames(3)
+	check(g.world == null and g.title_screen.visible and g.menu.is_open, "then the game goes back to the title")
+	check(not g.ending.visible and g.hud.visible, "with the ending gone and the HUD back for the next game")
+	g.menu.close()
+	g.queue_free()
+	await frames(2)
+	_restore()
+

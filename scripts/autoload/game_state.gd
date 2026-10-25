@@ -11,6 +11,8 @@ signal toast(text: String)
 signal flash(strength: float)
 ## Asks the HUD to show a dialog box; it freezes the player until closed.
 signal dialog_requested(speaker: String, pages: Array)
+## The Evil One is dead: the game shows the ending (EndingScreen).
+signal ending_started
 
 const SAVE_PATH := "user://save_%d.json"
 const VERSION := 1
@@ -88,6 +90,8 @@ static func fresh() -> Dictionary:
 		"save_room": "",
 		"save_pos": [0, 0],
 		"play_time": 0.0,
+		## Times the game has been finished on this save (the ending sets the `cleared` flag too).
+		"clears": 0,
 	}
 
 
@@ -116,6 +120,18 @@ func flag(id: String) -> bool:
 
 func set_flag(id: String, value := true) -> void:
 	data.flags[id] = value
+
+
+## The Evil One is dead: mark the save cleared and start the ending.
+func begin_ending() -> void:
+	set_flag("cleared")
+	data.clears = int(data.get("clears", 0)) + 1
+	ending_started.emit()
+
+
+## Seconds played on this save, counting the time since the last save.
+func total_play_time() -> float:
+	return float(data.get("play_time", 0.0)) + play_time
 
 
 ## Map pins you may place at once (design bible 3.3).

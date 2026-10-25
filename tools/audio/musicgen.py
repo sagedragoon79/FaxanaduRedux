@@ -1233,6 +1233,29 @@ def amb_dartmoor():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+def track_ending():
+    """The ending and credits: the Eolis theme's F lydian come home, slower and
+    wider. Pads swell under a rising arpeggio (the climb up the Tree), the bass
+    walks up a step each pair of bars, and a bell and a lead trade the tune, warm
+    where Zenis was wrong. Plays over the whole credits climb."""
+    rng = np.random.default_rng(84)
+    s = Song(bpm=76, bars=24)
+    root, scale = 53, SCALES["lydian"]
+    prog = [0, 4, 5, 3, 0, 1, 4, 0] * 3
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.1), b * 4, rng.uniform(-0.3, 0.3), 0.5)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 3.6), b * 4, 0, 0.7)
+        arp = tones + [tones[0] + 12, tones[1] + 12]
+        for k in range(8):
+            m = arp[min(k, 4) if b % 2 == 0 else [4, 3, 2, 3, 4, 3, 2, 1][k]] + 12
+            s.add(pluck(midi_hz(m), s.beat * 0.5, bright=1400), b * 4 + k * 0.5, -0.3 + 0.6 * (k / 7), 0.4)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=12, pan=0.25, gain=0.7, density=0.35)
+    melody(s, rng, root, scale, prog, lead, start_bar=10, octave=12, pan=-0.2, gain=0.55, density=0.3)
+    return s.render(reverb=0.6)
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -1253,6 +1276,7 @@ TRACKS = {
     "eura": track_eura,
     "zenis": track_zenis,
     "evil_one": track_evil_one,
+    "ending": track_ending,
     "amb_zenis": amb_zenis,
     "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,

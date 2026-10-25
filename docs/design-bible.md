@@ -565,6 +565,22 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     `boss:evil_one`, 1 skill point) and every light goes home. Deviation: the bible had each strike restore a
     spring; as built it is each third, so the restoration lands as a beat rather than a trickle. The ending and
     credits are next.
+  - **The ending, as built (pass 84):** four seconds after the heart dies (the banner shows first) the game
+    marks the save `cleared` (and counts `clears`), freezes the world and plays the **EndingScreen** to its own
+    theme (`ending`: the Eolis lydian come home at 76 bpm, a rising arpeggio for the climb):
+    1. **Epilogue**: the World Tree against the night, the dead meteor at its crown. Its cyan light drains
+       away as motes, then the three springs in the trunk light one by one, under four cards ("The heart of the
+       meteor is dead." ... "And in Eolis, the fountain fills.").
+    2. **Credits**: the view climbs the Tree from the houses of Eolis at its roots, past each zone's name
+       (Eolis, the Trunk, the Tower, the Mist, the Branches, Daybreak, Dartmoor, the Crown), the springs running
+       clear in the trunk, branches and leaves thickening, the sky warming from night to dawn. It ends on the
+       crown in leaf where the meteor was, with the sun coming up. The credits rise over the trunk.
+    3. **Thanks**: "Thank you for playing", your rank and time played; a press returns to the title.
+
+    Jump or attack turns an epilogue card early and holds the climb at 4x; pause skips to the thanks card,
+    which ignores presses for its first second. The save is written with the cleared flag (save room and
+    spot unchanged), so Continue resumes at your last shrine. The secret ending (no deaths and the Battle Suit,
+    section 11) waits on the Sunken Spring and the Battle Suit.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.
