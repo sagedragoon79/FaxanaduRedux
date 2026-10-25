@@ -8,7 +8,10 @@ extends Control
 ##    in the trunk light one by one, and four cards tell what happened.
 ## 2. **Credits**: the view climbs the Tree from Eolis at its roots, past every
 ##    zone, to the crown at dawn, while the credits rise over it.
-## 3. **Thanks**: a card with your rank, time and deaths, until you press a button.
+## 3. **Thanks**: the completion card (pass 106): how much of the world you saw
+##    (Completion.tally: rooms, hidden rooms, treasures, bosses and their
+##    average as one percent), then your rank, time, deaths and clears, until
+##    you press a button. The rows count up as the card fades in.
 ##
 ## The secret ending (design bible 11: no deaths and the Battle Suit) adds three
 ## epilogue cards: the Sunken Spring wakes under the roots, its water climbs the
@@ -70,6 +73,8 @@ const ZONES := [
 ]
 ## Seconds before the thanks card takes a press (so a held button doesn't skip it).
 const THANKS_GRACE := 1.0
+## Seconds the completion card's numbers take to count up.
+const COUNT_TIME := 1.2
 
 const NIGHT := Color("120f19")
 const DUSK := Color("2a1e3a")
@@ -101,6 +106,8 @@ var fast := false
 ## The secret ending (no deaths, the Battle Suit), and the deaths shown on the thanks card.
 var secret := false
 var deaths := 0
+## Completion.tally of the save (empty: the card shows only rank, time and deaths).
+var stats := {}
 
 
 func _ready() -> void:
@@ -110,7 +117,8 @@ func _ready() -> void:
 
 
 ## Starts the ending from the top.
-func start(rank_name: String, play_seconds: float, secret_ending := false, death_count := 0) -> void:
+func start(rank_name: String, play_seconds: float, secret_ending := false, death_count := 0, completion := {}) -> void:
+	stats = completion
 	rank = rank_name
 	seconds = play_seconds
 	secret = secret_ending
@@ -389,14 +397,49 @@ func _sky(k: float) -> void:
 func _draw_thanks() -> void:
 	_sky(1.0)
 	var a := clampf(t / 0.8, 0.0, 1.0)
-	_centered(140.0, "Thank you for playing", 24, Color(GOLD, a))
+	_centered(56.0, "Thank you for playing", 24, Color(GOLD, a))
+	var y := 100.0
+	if not stats.is_empty():
+		# The rows count up over COUNT_TIME as the card fades in.
+		var k := clampf(t / COUNT_TIME, 0.0, 1.0)
+		var shown := int(floor(int(stats.get("percent", 0)) * k))
+		_centered(y, "%d%%" % shown, 24, Color(GOLD if shown >= 100 else TEXT, a))
+		_centered(y + 26.0, "of the world", 12, Color(SUB, a))
+		y += 52.0
+		for row: Array in completion_rows():
+			var label: String = row[0]
+			var got := int(floor(int(row[1]) * k))
+			_row(y, label, "%d / %d" % [got, int(row[2])], Color(GOLD if got >= int(row[2]) else TEXT, a))
+			y += 16.0
+		y += 8.0
 	if rank != "":
-		_centered(180.0, "Rank: %s" % rank, 12, Color(TEXT, a))
+		_row(y, "Rank", rank, Color(TEXT, a))
+		y += 16.0
 	var mins := int(seconds / 60.0)
-	_centered(200.0, "Time: %d:%02d" % [mins / 60, mins % 60], 12, Color(TEXT, a))
-	_centered(220.0, "Deaths: %d" % deaths, 12, Color(TEXT, a))
+	_row(y, "Time", "%d:%02d" % [mins / 60, mins % 60], Color(TEXT, a))
+	_row(y + 16.0, "Deaths", "%d" % deaths, Color(TEXT, a))
+	y += 32.0
+	if int(stats.get("clears", 0)) > 1:
+		_row(y, "Clears", "%d" % int(stats.clears), Color(TEXT, a))
+		y += 16.0
 	if secret:
-		_centered(250.0, "The Source runs again.", 12, Color(WATER_LIGHT, a))
-		_centered(266.0, "A flawless climb, in the Warden's Battle Suit.", 12, Color(GOLD, a))
+		_centered(y + 6.0, "The Source runs again.", 12, Color(WATER_LIGHT, a))
+		_centered(y + 22.0, "A flawless climb, in the Warden's Battle Suit.", 12, Color(GOLD, a))
 	if t >= THANKS_GRACE:
-		_centered(300.0, "Press jump to return to the title", 12, Color(SUB, 0.5 + 0.5 * sin(t * 3.0)))
+		_centered(334.0, "Press jump to return to the title", 12, Color(SUB, 0.5 + 0.5 * sin(t * 3.0)))
+
+
+## The completion card's counted rows: [label, found, total].
+func completion_rows() -> Array:
+	return [
+		["Rooms explored", stats.get("rooms", 0), stats.get("rooms_total", 0)],
+		["Hidden rooms", stats.get("secrets", 0), stats.get("secrets_total", 0)],
+		["Treasures", stats.get("treasures", 0), stats.get("treasures_total", 0)],
+		["Bosses", stats.get("bosses", 0), stats.get("bosses_total", 0)],
+	]
+
+
+## A label on the left of the middle and its value on the right, on one line.
+func _row(y: float, label: String, value: String, color: Color) -> void:
+	PixelFont.draw(self, Vector2(roundf(312.0 - PixelFont.width(label, 12)), y), label, 12, Color(SUB, color.a), OUTLINE)
+	PixelFont.draw(self, Vector2(328.0, y), value, 12, color, OUTLINE)

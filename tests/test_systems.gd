@@ -460,3 +460,60 @@ func test_an_old_save_gains_the_new_keys() -> void:
 	check(missing.is_empty() and d.pins == [] and int(d.deaths) == 0, "every newer key is there, at its new-game value (missing %s)" % [missing])
 	GameState.delete_save(OLD_SLOT)
 	GameState.new_game()
+
+
+# --- Completion (pass 106) --------------------------------------------------------
+
+func test_completion_tallies_rooms_hidden_rooms_treasures_and_bosses() -> void:
+	GameState.new_game()
+	var catalog := {
+		"a/x": {"secret": true, "treasures": ["a/x:1,1", "a/x:2,2"]},
+		"a/y": {"secret": false, "treasures": []},
+	}
+	var none := Completion.tally(catalog)
+	check(none.percent == 0 and none.rooms_total == 2 and none.secrets_total == 1 and none.treasures_total == 2, "a new save has seen nothing (%s)" % [none])
+	check(none.bosses_total == BossArena.BOSSES.size(), "and every boss counts")
+	GameState.visit("a/x")
+	GameState.set_flag("secret:a/x")
+	GameState.collect("a/x:1,1")
+	GameState.set_flag("boss:rokusutahn")
+	var some := Completion.tally(catalog)
+	check(some.rooms == 1 and some.secrets == 1 and some.treasures == 1 and some.bosses == 1, "each find counts once (%s)" % [some])
+	var want := int(floor((0.5 + 1.0 + 0.5 + 1.0 / BossArena.BOSSES.size()) / 4.0 * 100.0))
+	check(some.percent == want, "the percent is the average of the four shares, rounded down (%d, want %d)" % [some.percent, want])
+	GameState.visit("a/y")
+	GameState.collect("a/x:2,2")
+	for id: String in BossArena.BOSSES:
+		GameState.set_flag("boss:" + id)
+	check(Completion.tally(catalog).percent == 100, "everything found is 100%")
+	GameState.new_game()
+
+
+func test_the_whole_world_is_counted() -> void:
+	var w := World.new()
+	w.build_catalog()
+	GameState.new_game()
+	var c := Completion.tally(w.catalog)
+	check(c.rooms_total > 100 and c.secrets_total >= 5 and c.treasures_total > 50, "the real world has rooms, hidden rooms and treasures to find (%s)" % [c])
+	w.free()
+
+
+func test_the_thanks_card_counts_up_the_completion() -> void:
+	var e := EndingScreen.new()
+	arena.add_child(e)
+	var stats := {"rooms": 50, "rooms_total": 100, "secrets": 3, "secrets_total": 7, "treasures": 40, "treasures_total": 106,
+		"bosses": 13, "bosses_total": 13, "percent": 60, "clears": 2}
+	e.start("Hero", 3725.0, false, 4, stats)
+	e.skip()
+	check(e.phase == "thanks" and e.stats.percent == 60, "the thanks card carries the save's completion")
+	var rows := e.completion_rows()
+	check(rows.size() == 4 and rows[0] == ["Rooms explored", 50, 100] and rows[3] == ["Bosses", 13, 13], "four rows of found against total (%s)" % [rows])
+	e.tick(EndingScreen.COUNT_TIME + 0.1)
+	await frames(1)
+	check(e.visible, "it draws through the count")
+	e.start("Hero", 10.0)
+	e.skip()
+	e.tick(0.5)
+	await frames(1)
+	check(e.stats.is_empty(), "with no tally it shows only rank, time and deaths")
+	e.queue_free()

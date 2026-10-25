@@ -320,7 +320,17 @@ func _play_ending() -> void:
 	menu.close()
 	hud.visible = false
 	Music.play("ending", 2.0)
-	ending.start(GameState.rank_name(), GameState.total_play_time(), GameState.secret_ending(), int(GameState.data.get("deaths", 0)))
+	ending.start(GameState.rank_name(), GameState.total_play_time(), GameState.secret_ending(), int(GameState.data.get("deaths", 0)),
+		_completion())
+
+
+## The completion card's numbers: the world's tally, plus the clears so far.
+func _completion() -> Dictionary:
+	if world == null:
+		return {}
+	var c := Completion.tally(world.catalog)
+	c.clears = int(GameState.data.get("clears", 0))
+	return c
 
 
 ## The ending is over: keep the cleared save and go back to the title.
