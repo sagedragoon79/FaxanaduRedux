@@ -203,7 +203,8 @@ func _draw() -> void:
 			_hp(o, -2, -6, 1, 24, Color("ffffff"))
 			_hp(o, 0, -4, 1, 22, Color("7a98a8"))
 			_hp(o, 0, -4 + roundi(20.0 * (1.0 - run)), 1, 4, c)
-			var guard := [Vector2(-12, -10), Vector2(-4, -8), Vector2(0, -6), Vector2(4, -8), Vector2(12, -10), Vector2(8, -5), Vector2(-8, -5)]
+			# A plain trapezoid: a grown outline of anything more jagged fails to triangulate.
+			var guard := [Vector2(-12, -10), Vector2(12, -10), Vector2(8, -5), Vector2(-8, -5)]
 			_poly(o, guard, Color("120f19"), 2.0)
 			_poly(o, guard, Color("ffd24a"))
 			_hp(o, -8, -9, 16, 1, Color("fff4c0"))

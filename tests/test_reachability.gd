@@ -24,12 +24,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
 const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
-const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate"]
+const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne"]
 
 
 func _texts() -> Dictionary:
@@ -429,7 +429,7 @@ func test_fire_and_thunder_open_the_daybreak_gates() -> void:
 	# Bible 4.5: bramble holds until Fire, conduit gates until Thunder. The
 	# without-spell side is checked in the Stride test's flood.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
-		"fire": true, "thunder": true, "sky_key": true, "hourglass": true}
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "dragon_slayer": true}
 	var reach := Reach.new(_texts(), set, true)
 	var lit := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	for s: Array in FIRE_SECRETS:
@@ -451,3 +451,15 @@ func test_dartmoors_upper_gate_needs_the_sky_key() -> void:
 	var texts := _texts()
 	check(Reach.new(texts, {}).solid("daybreak/sky_spring", 33, 19), "the upper gate is shut without the Sky Key")
 	check(not Reach.new(texts, {"sky_key": true}).solid("daybreak/sky_spring", 33, 19), "and open with it")
+
+
+func test_the_throne_lies_behind_the_flesh_only_the_dragon_slayer_cuts() -> void:
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true}
+	var reach := Reach.new(_texts(), set, true)
+	var rooms := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
+	check(rooms.has("zenis/heart_gate") and not rooms.has("zenis/throne"), "without the Dragon Slayer the flesh holds the throne shut")
+	set["dragon_slayer"] = true
+	reach = Reach.new(_texts(), set, true)
+	rooms = _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
+	check(rooms.has("zenis/throne"), "with it, the way to the throne is open")

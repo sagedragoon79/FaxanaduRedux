@@ -517,6 +517,22 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     closed by a **heart seal** (legend `+`, `HeartSeal`): a wall of living flesh with a seam of cyan light and a
     watching eye. Every other blade glances off it, and one cut with the Dragon Slayer tears it open for good.
     Beyond it, the heart (the Evil One's arenas) is next.
+  - **Phase 1, as built (pass 81):** the Heart Gate's door 2, past the flesh, opens on the **Throne of Zenis**
+    (`zenis/throne`, 67,-11, 60x23, `boss: evil_avatar`), a long hall with two hanging planks and the throne's
+    dais at the east end. The **Avatar on the Throne** (`EvilAvatar`, 360 HP, code-drawn at 1.3x) is a knight of
+    black meteor crystal with a horned crown, a slit of light for eyes and a crystal greatsword. It stalks you
+    and chooses from four attacks:
+    - **Cleave** (close, tell 0.55 s): a wide overhead arc, 20 damage, parryable.
+    - **Lunge** (middle, tell 0.5 s): a crouch, then a drive across the floor, 18 damage, parryable.
+    - **Pull** (tell 0.6 s, a raised glowing palm): the meteor's wrong gravity drags you toward it for 1.2 s,
+      then it bursts in a 52 px ring, 14 damage, unparryable. Run or dash against it.
+    - **Rain** (far, tell 0.6 s): crystal spikes erupt in a line toward you, each marking its spot.
+
+    It uses pull at least every fourth attack. Its plate halves blows to its front; its back, its crown and a
+    parried guard (1.2 s reeling) are bare. Below half health its tells shrink to 0.75x (never under 0.35 s), its
+    cleave comes back for a second swing and its pull is stronger. Beaten, the avatar shatters ("The Avatar
+    Shatters", 1 skill point) and the light flees up the veins. Phase 2 (The Veins) is next. Theme: `evil_one`
+    (B locrian at 120, a quickened double-kick heartbeat, a bass that drops a tritone, a cold lead).
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.
