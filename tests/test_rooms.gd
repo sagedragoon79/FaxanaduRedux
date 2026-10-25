@@ -949,3 +949,51 @@ func test_the_drift_well_lifts_you_up_its_ledges() -> void:
 	p.input.move_x = 0
 	p.input.jump_held = false
 	check(landed, "a jump in the drift lands on the ledge nine tiles up (%s)" % p.global_position)
+
+
+## Bible 8.9, A10: past the Drift Well the heart's flesh turns every blade but
+## the Dragon Slayer, which lies on an altar a drift pocket lifts you to.
+func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
+	GameState.new_game()
+	var w := make_world({}, "zenis/drift_well")
+	await frames(2)
+	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/heart_gate", "the Drift Well leads on to the Heart Gate")
+	w._enter("zenis/heart_gate")
+	await frames(2)
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var seal: HeartSeal = w.room.get_children().filter(func(c: Node) -> bool: return c is HeartSeal)[0]
+	var p := w.player
+	p.max_hp = 9999
+	p.hp = 9999
+	GameState.data.equipment.blade = "long_sword"
+	GameState.refresh_stats(p)
+	# Walk up to the flesh and cut at it with common steel.
+	p.teleport(cell_feet(47, 20))
+	await frames(10)
+	p.input.move_x = 1
+	await frames(30)
+	p.input.move_x = 0
+	check(p.global_position.x < seal.global_position.x, "the flesh is a wall (%s)" % p.global_position)
+	p.input.attack_pressed = true
+	await frames(30)
+	check(not seal.is_open(), "a long sword glances off it")
+	# The Dragon Slayer on its altar goes straight into your hand.
+	var sword: ItemPickup = w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup and c.kind == "dragon_slayer")[0]
+	p.teleport(sword.global_position + Vector2(0, 20))
+	await frames(10)
+	check(not is_instance_valid(sword) or sword.is_queued_for_deletion(), "the sword is taken")
+	check(GameState.data.equipment.blade == "dragon_slayer" and p.abilities.get("dragon_slayer", false), "and goes straight into your hand")
+	check(p.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts harder than any bought blade (%d)" % p.slash_damage)
+	p.teleport(cell_feet(48, 20))
+	await frames(10)
+	p.facing = 1
+	p.input.attack_pressed = true
+	await frames(30)
+	check(seal.is_open(), "and one cut tears the flesh open")
+	p.input.move_x = 1
+	await frames(40)
+	p.input.move_x = 0
+	check(p.global_position.x > seal.global_position.x + 32.0, "you walk through (%s)" % p.global_position)
+	check(GameState.is_collected(seal.persist_id), "and it stays open")

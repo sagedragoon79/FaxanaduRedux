@@ -106,6 +106,9 @@ func solid(room_id: String, x: int, y: int) -> bool:
 	if c == "k":
 		# A conduit gate slides open once Thunder powers the room's conduits.
 		return not abilities.get("thunder", false)
+	if c == "+":
+		# The heart's flesh parts only for the Dragon Slayer.
+		return not abilities.get("dragon_slayer", false)
 	if c == "w":
 		# A bramble wall burns away for good under a Fire spell.
 		return not abilities.get("fire", false)
