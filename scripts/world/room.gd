@@ -420,6 +420,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn(Spikes.new(), bottom_center)
 		"@":
 			_spawn(BouncePod.new(), bottom_center)
+		"r":
+			_spawn(StrideSeed.new(), center)
 		"o":
 			_spawn(ThornBulb.new(), center)
 		"C":

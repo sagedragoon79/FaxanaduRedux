@@ -476,6 +476,14 @@ def main():
     ring = (osc(np.full(n, 440.0), "sine") + osc(np.full(n, 659.3), "sine") * 0.7 + osc(np.full(n, 880.0), "sine") * 0.4) * env(n, 0.01, 1.4) * 0.3
     save("phase_break", mix(boom, crack, swell, ring), 0.75)
 
+    # A stride seed bursting: a quick upward airy sweep and a bright pluck.
+    d = 0.35
+    n = int(RATE * d)
+    sweep = highpass(lowpass(noise(d), slide(1500, 7000, d, 0.5)), 600) * env(n, 0.01, 2.0) * 0.6
+    rise = slide(880, 1760, 0.08, 0.5)
+    pluck = osc(np.concatenate([rise, np.full(n - len(rise), 1760.0)]), "sine")
+    save("seed", mix(sweep, pluck * env(n, 0.002, 3.0) * 0.7), 0.55)
+
     # Dry bramble catching: a rush of flame and quick snapping twigs.
     d = 0.7
     n = int(RATE * d)
