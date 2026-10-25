@@ -610,3 +610,175 @@ func test_ledge_correction_lifts_you_4_px_onto_a_ledge() -> void:
 		check(await _clip_lip(4.0, glove), "%s the glove, clipping it by 4 px steps onto it" % with)
 		check(not await _clip_lip(5.0, glove), "%s the glove, 5 px below the top is too far" % with)
 
+
+
+# --- Pass 111: the core moves on special terrain ---------------------------------
+
+const ONE_WAY_LEDGE := [
+	"#####################",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#----...............#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#...................#",
+	"#####################",
+]
+
+
+func _jump_after_one_way_edge(k: int) -> bool:
+	var room := make_room(ONE_WAY_LEDGE)
+	var p := make_player(room, Vector2i(2, 3), {"boots": false, "glove": false})
+	await _settle(p)
+	await _walk_off_ledge(p)
+	await frames(k - 1)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	var jumped := p.velocity.y < -300.0
+	room.free()
+	return jumped
+
+
+## Bible 6.2: coyote time off a one-way platform's end is the same 0.10 s.
+func test_coyote_time_off_a_one_way_platform() -> void:
+	var last := 0
+	for k in range(4, 10):
+		if await _jump_after_one_way_edge(k):
+			last = k
+	check(last == 6, "the last frame a jump off a one-way's end counts is the 6th (got %d)" % last)
+
+
+## Falls past the end of ONE_WAY_LEDGE's platform with the feet `d` px under its
+## top, moving toward it; returns whether the player ends up standing on it.
+func _clip_one_way_lip(d: float) -> bool:
+	var room := make_room(ONE_WAY_LEDGE)
+	var p := make_player(room, Vector2i(10, 13), {"boots": false, "glove": false})
+	await frames(3)
+	var lip := 5.0 * Room.TILE
+	var top := 4.0 * Room.TILE
+	p.teleport(Vector2(lip + Player.BODY_SIZE.x * 0.5 + 1.5, top + d))
+	p.velocity = Vector2(-120, 0)
+	var stood := false
+	for i in 12:
+		p.input.move_x = -1
+		await frames(1)
+		if p.is_on_floor() and p.global_position.y < top + 1.0:
+			stood = true
+	room.free()
+	return stood
+
+
+## Bible 6.2: ledge correction lifts you onto a one-way platform's lip as it does
+## a solid ledge's. A one-way has no side to bump, so before pass 111 a clip of
+## even 1 px fell straight past it.
+func test_ledge_correction_lifts_you_onto_a_one_way_lip() -> void:
+	for d in [1.0, 2.0, 4.0]:
+		check(await _clip_one_way_lip(d), "a %.0f px clip steps up onto the one-way" % d)
+	check(not await _clip_one_way_lip(5.0), "a 5 px clip doesn't")
+	# Dropping through while running along it isn't lifted back up.
+	var room := make_room(ONE_WAY_LEDGE)
+	var p := make_player(room, Vector2i(2, 3), {"boots": false, "glove": false})
+	await _settle(p)
+	p.input.move_x = 1
+	await frames(2)
+	p.input.down = true
+	p.input.jump_pressed = true
+	await frames(1)
+	p.input.down = false
+	for i in 30:
+		p.input.move_x = 1
+		await frames(1)
+	check(p.global_position.y > 8.0 * Room.TILE, "a drop-through on the run still drops (y %.0f)" % p.global_position.y)
+
+
+## Bible 6.8: bobbing at the surface lifts the body clear of the water for a few
+## frames. Water counts as footing for coyote time, so a jump pressed at any point
+## of the bob jumps out on that frame (before pass 111 it could wait 6 frames, or
+## come out as a weak stroke).
+func test_a_jump_at_the_surface_jumps_out_at_any_point_of_the_bob() -> void:
+	var late := 0
+	var out_of_water := 0
+	for phase in 20:
+		var room := _pool_room()
+		var p := make_player(room, Vector2i(6, 10), {"boots": false})
+		await frames(240 + phase)
+		if not p.swimming:
+			out_of_water += 1
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(1)
+		if p.velocity.y > -300.0:
+			late += 1
+		room.free()
+	check(out_of_water > 0, "the bob does lift the body out of the water (%d of 20 frames)" % out_of_water)
+	check(late == 0, "a jump at every point of the bob jumps out at once (%d late)" % late)
+
+
+## Bible 6.9: a wind current doesn't change coyote time.
+func test_coyote_time_holds_in_a_wind_current() -> void:
+	var rows := [
+		"#####################",
+		"#...................#",
+		"#.....>>>>>>>>>>....#",
+		"#.....>>>>>>>>>>....#",
+		"#######>>>>>>>>>....#",
+		"#.....>>>>>>>>>>....#",
+		"#...................#",
+		"#...................#",
+		"#...................#",
+		"#####################",
+	]
+	var last := 0
+	for k in range(4, 10):
+		var room := make_room(rows)
+		var p := make_player(room, Vector2i(4, 3), {"boots": false, "glove": false})
+		await _settle(p)
+		await _walk_off_ledge(p)
+		await frames(k - 1)
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(1)
+		if p.velocity.y < -300.0:
+			last = k
+		room.free()
+	check(last == 6, "off a ledge into the wind, the 6th frame is still the last (got %d)" % last)
+
+
+## Bible 8.9: in a drift pocket you fall slowly, but the jump buffer is still 0.12 s.
+func test_the_jump_buffer_holds_in_a_drift_pocket() -> void:
+	var rows := ["##############################"]
+	for y in 12:
+		rows.append("#...vvvvvv...................#")
+	rows.append("##############################")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(6, 3), {"boots": false})
+	var land := 0
+	for i in 400:
+		await frames(1)
+		if p.is_on_floor():
+			land = i + 1
+			break
+	room.free()
+	check(land > 30, "the drop is slow in the pocket (%d frames)" % land)
+	for early in [7, 8]:
+		room = make_room(rows)
+		p = make_player(room, Vector2i(6, 3), {"boots": false})
+		var jumped := false
+		for i in land + 4:
+			if i == land - early:
+				p.input.jump_pressed = true
+				p.input.jump_held = true
+			await frames(1)
+			if p.velocity.y < -300.0:
+				jumped = true
+				break
+		room.free()
+		check(jumped == (early == 7), "a press %d frames before landing %s" % [early, "jumps" if early == 7 else "is dropped"])
