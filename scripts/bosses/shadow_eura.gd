@@ -241,6 +241,7 @@ func _split() -> void:
 	_stagger = 0.0
 	velocity = Vector2.ZERO
 	set_state("split")
+	Sfx.play("tell_charge", 0.05, -2.0)
 	var p := player()
 	var px := p.global_position.x if p != null else axis()
 	var other := clampf(2.0 * px - global_position.x, arena.position.x + 16.0, arena.end.x - 16.0)
@@ -321,6 +322,7 @@ func _break_free() -> void:
 	uses_gravity = true
 	collision_mask = Player.LAYER_WORLD
 	set_state("shatter")
+	Sfx.play("break", 0.05, 2.0)
 	# The glass down the middle of the hall bursts.
 	for i in 8:
 		var d := Dust.new()
@@ -493,6 +495,7 @@ func _blink_out() -> void:
 	_cut = ""
 	velocity = Vector2.ZERO
 	set_state("blink")
+	Sfx.play("whoosh", 0.1, -6.0)
 
 
 ## Phase 2: out of the glass, fighting with your strongest branch.

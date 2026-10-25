@@ -1146,3 +1146,94 @@ func test_spring_eel_cannot_reach_the_bank() -> void:
 	var hp0 := e.hp
 	e.take_hit(10, Vector2(1, 0))
 	check(hp0 - e.hp == 15, "spent, it takes every blow at half again (%d)" % (hp0 - e.hp))
+
+
+## Every attack is heard as well as seen (bible 7 and 13.3). Scans the enemy and boss
+## scripts: entering a telegraph state (windup, *_tell, coil, rev...) must play a
+## sound right there, and every other attack state must play one where it is
+## entered or while it runs. Calm states (walking, recovering, intros) are exempt.
+func test_every_attack_tell_and_strike_has_a_sound() -> void:
+	var tell_re := RegEx.create_from_string("windup|tell|^wind$|^coil$|^rev$|^unfold$|^gather$")
+	var set_re := RegEx.create_from_string("set_state\\(\"([a-z_0-9]+)\"\\)")
+	var call_re := RegEx.create_from_string("\\b(_[a-z_0-9]+)\\(")
+	var func_re := RegEx.create_from_string("^func ([a-z_0-9]+)\\(")
+	var calm := ("idle walk patrol recover dying dead intro stalk hover crawl drift return rest trot "
+		+ "circle climb grounded wade swim slack hide spent bare wake f_recover fallen to_throne fight "
+		+ "float watch retract withdraw stuck staggered stunned flinch winded skid stagger opening "
+		+ "dropped exposed hang possessed roll fade mirror echo dormant sink dangle dangle_up "
+		+ "plunge_hold plunge_up").split(" ")
+	var gaps: Array[String] = []
+	var tells := 0
+	var strikes := 0
+	for dir: String in ["res://scripts/enemies", "res://scripts/bosses"]:
+		for f in DirAccess.get_files_at(dir):
+			if not f.ends_with(".gd"):
+				continue
+			var lines := FileAccess.get_file_as_string(dir + "/" + f).split("\n")
+			# Functions that play a sound, directly or through one helper.
+			var bodies := {}
+			var cur := ""
+			for l in lines:
+				var m := func_re.search(l)
+				if m != null:
+					cur = m.get_string(1)
+					bodies[cur] = ""
+				elif cur != "":
+					bodies[cur] += l + "\n"
+			var sounding := {}
+			for _pass in 2:
+				for fn: String in bodies:
+					var b: String = bodies[fn]
+					if b.contains("Sfx.play(") or b.contains("_sound("):
+						sounding[fn] = true
+						continue
+					for c in call_re.search_all(b):
+						if sounding.has(c.get_string(1)):
+							sounding[fn] = true
+			var sounds_in := func(text: String, strict: bool) -> bool:
+				if text.contains("Sfx.play(") or text.contains("_sound("):
+					return true
+				if strict:
+					return false
+				for c in call_re.search_all(text):
+					if sounding.has(c.get_string(1)):
+						return true
+				return false
+			var heard := {}
+			for i in lines.size():
+				for m in set_re.search_all(lines[i]):
+					var s := m.get_string(1)
+					if s in calm:
+						continue
+					var window := "\n".join(lines.slice(maxi(0, i - 3), i + 4))
+					var tell := tell_re.search(s) != null
+					var ok: bool = sounds_in.call(window, tell)
+					if tell and not ok:
+						gaps.append("%s:%d %s plays nothing as it starts" % [f, i + 1, s])
+					heard[s] = heard.get(s, false) or ok
+			for s: String in heard:
+				if tell_re.search(s) != null:
+					tells += 1
+					continue
+				strikes += 1
+				if heard[s]:
+					continue
+				# Not heard where it starts: look for a sound while the state runs.
+				var arm := RegEx.create_from_string("^(\\t+)(\"[a-z_0-9]+\", )*\"%s\"(, \"[a-z_0-9]+\")*:\\s*$" % s)
+				var found := false
+				for i in lines.size():
+					var a := arm.search(lines[i])
+					if a == null:
+						continue
+					var depth := a.get_string(1).length()
+					var body := ""
+					for j in range(i + 1, lines.size()):
+						var l := lines[j]
+						if l.strip_edges() != "" and l.length() - l.lstrip("\t").length() <= depth:
+							break
+						body += l + "\n"
+					found = found or sounds_in.call(body, false)
+				if not found:
+					gaps.append("%s: %s makes no sound" % [f, s])
+	check(tells > 25 and strikes > 60, "the scan finds the telegraphs (%d) and attacks (%d)" % [tells, strikes])
+	check(gaps.is_empty(), "every attack has a sound: %s" % [gaps])

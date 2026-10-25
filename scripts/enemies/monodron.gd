@@ -26,6 +26,7 @@ func _think(_delta: float) -> void:
 			if absf(off.x) < SIGHT.x and absf(off.y) < SIGHT.y and is_on_floor():
 				face_player()
 				set_state("windup")
+				Sfx.play("swell", 0.12, -8.0)
 		"windup":
 			velocity.x = 0.0
 			if state_time >= WINDUP:

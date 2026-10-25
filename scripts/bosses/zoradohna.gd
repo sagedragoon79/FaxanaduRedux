@@ -219,6 +219,7 @@ func _think(delta: float) -> void:
 					dive_target.x = clampf(dive_target.x, arena.position.x + 40.0, arena.end.x - 40.0)
 					facing = int(signf(dive_target.x - global_position.x)) if absf(dive_target.x - global_position.x) > 2.0 else facing
 					set_state("dive_tell")
+					Sfx.play("tell_heavy", 0.05, -2.0)
 		"dive_tell":
 			velocity = Vector2.ZERO
 			if state_time >= tell(DIVE_TELL):

@@ -189,6 +189,7 @@ func _think(delta: float) -> void:
 					_second = true
 					face_player()
 					set_state("cleave_tell")
+					Sfx.play("tell_blade", 0.05, -2.0)
 				else:
 					_second = false
 					set_state("recover")

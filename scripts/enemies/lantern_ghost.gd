@@ -80,6 +80,7 @@ func _think(delta: float) -> void:
 			if state_time >= WINDUP:
 				_dir = off.normalized() if off.x != INF else Vector2(facing, 0)
 				set_state("lunge")
+				Sfx.play("whoosh", 0.08, -4.0)
 		"lunge":
 			velocity = _dir * LUNGE_SPEED
 			if state_time >= LUNGE_TIME:

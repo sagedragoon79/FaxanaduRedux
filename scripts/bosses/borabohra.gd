@@ -428,11 +428,11 @@ func _choose() -> void:
 func _begin_gale(x: float) -> void:
 	_to = gale_point(x)
 	set_state("gale_tell")
+	Sfx.play("screech", 0.05, 0.0)
 	_gale = Updraft.new()
 	_gale.height = floor_y() - (_to.y - body_size.y * 0.5 - GALE_HEADROOM)
 	get_parent().add_child(_gale)
 	_gale.global_position = Vector2(_to.x, floor_y())
-	Sfx.play("screech", 0.05, 0.0)
 
 
 func _volley() -> void:

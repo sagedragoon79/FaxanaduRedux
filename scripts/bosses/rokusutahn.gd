@@ -294,6 +294,7 @@ func _physics_process(delta: float) -> void:
 			if state_time >= DANGLE_TELL:
 				Sfx.play("rumble", 0.1)
 				_set_state("dangle_down")
+				Sfx.play("whoosh", 0.1, -4.0)
 		"dangle_down":
 			_head_s = maxf(_head_s - DANGLE_SPEED * delta, _head_stop)
 			if _head_s <= _head_stop:
@@ -384,6 +385,8 @@ func _start_lunge(lane: float, stuck: bool) -> void:
 	_head_stop = absf(far_x - start_x)
 	_stuck_lunge = stuck
 	_set_state("lunge_tell")
+	# The wall cracks where it will burst out.
+	Sfx.play("crumble", 0.1, -8.0)
 
 
 func _start_rain() -> void:
@@ -415,6 +418,7 @@ func _start_dangle() -> void:
 	var hidden := tail_len + (DANGLE_TIP - ARENA.position.y) + TAIL_RADIUS * 2.0
 	_set_rail(Vector2(_target_x, DANGLE_TIP), Vector2.UP, hidden)
 	_set_state("dangle_tell")
+	Sfx.play("tell_heavy", 0.1, -4.0)
 
 
 func _start_plunge() -> void:
@@ -423,6 +427,7 @@ func _start_plunge() -> void:
 	_set_rail(Vector2(_target_x, top), Vector2.DOWN, 0.0)
 	_head_stop = FLOOR_Y - HEAD_RADIUS - top
 	_set_state("plunge_tell")
+	Sfx.play("tell_heavy", 0.05, 0.0)
 
 
 func _tear_floor() -> void:
