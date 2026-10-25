@@ -1,0 +1,148 @@
+{
+ "cell": [
+  224,
+  128
+ ],
+ "origin": [
+  72,
+  122
+ ],
+ "columns": 4,
+ "animations": {
+  "walk": {
+   "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 5,
+   "loop": true
+  },
+  "brace": {
+   "row": 1,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 8,
+   "loop": true
+  },
+  "thrust": {
+   "row": 2,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 16,
+   "loop": false
+  },
+  "rooted": {
+   "row": 3,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 3,
+   "loop": true
+  },
+  "stagger": {
+   "row": 4,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "bare_walk": {
+   "row": 5,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 5,
+   "loop": true
+  },
+  "bare_brace": {
+   "row": 6,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 8,
+   "loop": true
+  },
+  "bare_thrust": {
+   "row": 7,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 16,
+   "loop": false
+  },
+  "bare_rooted": {
+   "row": 8,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 3,
+   "loop": true
+  },
+  "bare_stagger": {
+   "row": 9,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ },
+ "density": 2
+}
