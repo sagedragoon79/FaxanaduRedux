@@ -1292,6 +1292,38 @@ def amb_sunken():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+def track_warden():
+    """The Drowned Warden: the Sunken Spring's E dorian dragged down to E minor
+    and driven at 126. A surging bass that rolls up and back like a swell every
+    bar, toms in a galloping 3+3+2, pads that rise like a tide each half, the
+    spring's ripple turned into a fast urgent arpeggio, and a bell lead high
+    over it all: the oldest thing in the world, still at its post."""
+    rng = np.random.default_rng(2611)
+    s = Song(bpm=126, bars=16)
+    root, scale = 52, SCALES["minor"]
+    prog = [0, 5, 3, 4, 0, 5, 6, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m - 12), s.bar * 1.05), low=1200), b * 4, rng.uniform(-0.5, 0.5), 0.26)
+        low = scale_note(root - 24, scale, deg)
+        for k, step in enumerate([0, 0, 7, 12, 7, 0, 3, 7]):
+            s.add(bass(midi_hz(low + step), s.beat * 0.45), b * 4 + k * 0.5, 0, 0.5)
+        for at in (0, 1.5, 3):
+            s.add(kick(0.35), b * 4 + at, 0, 0.9)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.45)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.45)
+        for k in range(8):
+            s.add(hat(rng), b * 4 + k * 0.5, rng.uniform(-0.4, 0.4), 0.1)
+        ripple = tones + [tones[0] + 12]
+        for k in range(16):
+            m = ripple[k % 4] + 12
+            s.add(fft_filter(pluck(midi_hz(m), s.beat * 0.3, bright=2600), low=4200), b * 4 + k * 0.25,
+                  -0.5 + (k % 4) * 0.33, 0.08)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=12, pan=0.2, gain=0.45, density=0.55)
+    return s.render(reverb=0.55)
+
+
 def track_ending():
     """The ending and credits: the Eolis theme's F lydian come home, slower and
     wider. Pads swell under a rising arpeggio (the climb up the Tree), the bass
@@ -1351,6 +1383,7 @@ TRACKS = {
     "amb_dartmoor": amb_dartmoor,
     "sunken": track_sunken,
     "amb_sunken": amb_sunken,
+    "warden": track_warden,
 }
 
 

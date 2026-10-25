@@ -197,7 +197,7 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 | Slot | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
 |------|--------|--------|--------|--------|
 | Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
-| Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret) |
+| Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered. The Meteor Shard cost joins when shards are placed in the world.)
@@ -604,6 +604,13 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.
+  - **As built (pass 87):** the Source Hall's east wall opens on **the Wellspring** (64,-5, 60x45): a deep pool from row 20 down, an entry ledge and a far ledge with steps down to the water, two islands level with the surface and a plank over the middle. The Warden (`DrownedWarden`, 520 HP, boss id `drowned_warden`, music `warden`: E minor at 126, a rolling bass under a galloping beat and a fast ripple) is a colossus of pale limestone and green bronze with a dwarf-king's helm, lamp eyes and a trident, standing waist-deep; it rises out of the deep to begin and wades the pool between the islands (they hide its lower half).
+    - **Thrust** (within about 12 tiles): the trident draws back, aimed at you and tracking for most of the 0.6 s tell, tines glowing, then drives 150 px along that line for 18. Parry it and it reels for 1.4 s, open.
+    - **Wave** (farther, and every third attack in phase 1): arms raised and the water churning for 0.7 s, then a `TidalWave` runs across the surface at 230 px/s, 40 px tall and 24 px deep, 16 unparryable. Jump it, or dive under it (swimming, 6.8). In phase 3 a second wave follows from the far side.
+    - **Geyser** (phase 2+, every third attack): it sinks out of sight (untouchable) and stalks you under the water, a trail of bubbles the only sign; the water boils at your spot for 0.6 s, then it bursts up through it in a 44 px column of water, 20 unparryable, and hangs streaming for 1.3 s, open to every blow.
+    - **Undertow** (phase 3, every fourth attack): its chest lamp opens (0.6 s) and the current drags you toward it at 85 px/s for 1.4 s; then the trident goes up (0.45 s) and it slams around itself for 22, parryable.
+    - Its stone halves blows from the front; from above (the plank is there for a pogo), from behind, reeling or hanging open it takes them all. At two-thirds and one-third it roars (1 s, untouchable) into the next phase; tells shrink to 0.88x and 0.75x, never under `Enemy.MIN_TELEGRAPH`. Contact hurts for 14.
+    - **Reward:** the **Battle Suit** (armor tier 4, 60% less damage) goes straight on (BossArena reward key `armor`), with a skill point; every armor in the shops then shows as owned. It crumbles and sinks back into the spring.
 
 Mini-bosses (about one per zone): The Foreman (rock golem), Marsh Hag Matriarch, Bark Knight Captain, Clockwork Alpha.
 
