@@ -94,7 +94,8 @@
 		"name": "The Bell-Tower Scriptorium",
 		"greeting": "Every scroll here was copied by lamplight while the storm rang the bells.",
 		"stock": [
-			{"item": "fire_scroll", "price": 1200}
+			{"item": "fire_scroll", "price": 1200},
+			{"item": "tilte_scroll", "price": 2500}
 		]
 	},
 	"daybreak_items": {

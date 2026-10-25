@@ -321,6 +321,7 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	await frames(6)
 	p.abilities["fire"] = false
 	p.abilities["thunder"] = false
+	p.abilities["tilte"] = false
 	p.equipped_spell = "deluge"
 	p.input.spell_next_pressed = true
 	await frames(1)
@@ -427,3 +428,73 @@ func test_the_roost_frames_the_storm_wide() -> void:
 	check(w.room.wide_camera(), "the Roost asks for the wide camera")
 	check_near(w.camera.frame_goal, GameCamera.WIDE, 0.001, "and has the sky to frame it (%.3f)" % w.camera.frame_goal)
 	check(w.room.pixel_rect().size.y >= w.camera.view_size.y / GameCamera.WIDE, "it is tall enough for the wide view")
+
+
+func test_tilte_wakes_then_seeks_the_nearest_foe() -> void:
+	# Bible 4.1: Tilte is a homing spirit orb.
+	var room := _arena_with("E", Vector2i(12, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.equipped_spell = "tilte"
+	var mp0 := p.mp
+	p.input.spell_pressed = true
+	await frames(1)
+	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "Tilte costs %.0f MP" % Spells.cost("tilte"))
+	var orbs := runner.get_tree().get_nodes_in_group("projectile")
+	check(orbs.size() == 1 and orbs[0] is TilteOrb, "one spirit orb leaves the hand")
+	if orbs.is_empty():
+		return
+	var orb := orbs[0] as TilteOrb
+	await frames(int(TilteOrb.WAKE * 60.0) - 2)
+	check(orb.velocity.length() < TilteOrb.DRIFT, "it hangs while it wakes, the tell (%.0f px/s)" % orb.velocity.length())
+	await frames(4)
+	check(orb.target == dummy, "then it chooses the dummy")
+	await _until(func() -> bool: return dummy.hits_taken > 0, 90)
+	check(dummy.hits_taken == 1 and dummy.hp == TrainingDummy.HP - 14, "and strikes it for 14 (hp %d)" % dummy.hp)
+
+
+func test_tilte_turns_back_for_a_foe_behind() -> void:
+	var rows := ARENA.duplicate()
+	for i in 4:
+		rows.insert(1, "#..................#")
+	rows[10] = "#.E................#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(9, 10))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.facing = 1
+	p.equipped_spell = "tilte"
+	p.input.spell_pressed = true
+	await frames(1)
+	var hit := await _until(func() -> bool: return dummy.hits_taken > 0, 120)
+	check(hit, "an orb cast away from the only foe wheels round and finds it")
+
+
+func test_tilte_swarm_fans_three_orbs() -> void:
+	var room := _arena_with("E", Vector2i(12, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.tilte_swarm = true
+	p.equipped_spell = "tilte"
+	var mp0 := p.mp
+	p.input.spell_pressed = true
+	await frames(1)
+	var orbs := runner.get_tree().get_nodes_in_group("projectile")
+	check(orbs.size() == 3, "Tilte Swarm throws three orbs (%d)" % orbs.size())
+	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "for the cost of one")
+	if orbs.size() == 3:
+		var a := [(orbs[0] as TilteOrb).heading.angle(), (orbs[1] as TilteOrb).heading.angle(), (orbs[2] as TilteOrb).heading.angle()]
+		a.sort()
+		check(a[1] - a[0] > 0.4 and a[2] - a[1] > 0.4, "in a fan (%s)" % [a])
+	await _until(func() -> bool: return dummy.hits_taken >= 3, 150)
+	check(dummy.hp == TrainingDummy.HP - 30, "each strikes for 10 (hp %d)" % dummy.hp)
+
+
+func _until(cond: Callable, max_frames: int) -> bool:
+	for i in max_frames:
+		if cond.call():
+			return true
+		await frames(1)
+	return cond.call()

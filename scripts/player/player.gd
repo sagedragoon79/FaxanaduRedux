@@ -41,7 +41,7 @@ const UPDRAFT_ACCEL := 1100.0
 @export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "onyx": true, "hourglass": true}
+var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "tilte": true, "onyx": true, "hourglass": true}
 
 var max_hp := 100
 var hp := 100
@@ -82,6 +82,8 @@ var rising_cut := false
 var down_strike_mult := 1.0
 var spell_pierce := false
 var drink_mult := 1.0
+## Tilte Swarm (skill): Tilte throws three orbs.
+var tilte_swarm := false
 var bonus_air_dashes := 0
 ## Set each frame by the World when the feet are in a sap pool.
 var in_sap := false
@@ -856,9 +858,9 @@ func _try_cast() -> void:
 		return
 	mp -= cost
 	_cast_cooldown = combat.cast_cooldown
-	var bolt := Spells.cast(equipped_spell, self)
-	get_parent().add_child(bolt)
-	bolt.global_position = global_position + Vector2(facing * 12, -24)
+	for bolt in Spells.cast_all(equipped_spell, self):
+		get_parent().add_child(bolt)
+		bolt.global_position = global_position + Vector2(facing * 12, -24)
 	visual.squash(Vector2(1.1, 0.95))
 	Sfx.play("cast")
 

@@ -122,7 +122,7 @@ Abilities are permanent and listed in acquisition order. Each one opens new rout
 | A9 | **Elf, Ruby, Dworf and Demon Rings** | Rings | Story keys: the four rings open the gate of Zenis | The Zenis gate | Rokusutahn, Zoradohna, Zorugeriru, King Grieve |
 | A10 | **Dragon Slayer** | Dragon Slayer | The only blade that can hurt the Evil One's core | Final boss | Zenis, inside the gate |
 
-Supporting spells (optional, combat-focused, found or bought): **Fire** (arcing fireball, burns bramble walls for secrets), **Tilte** (homing spirit orb), **Death** (screen-wide, very expensive, late secret).
+Supporting spells (optional, combat-focused, found or bought): **Fire** (arcing fireball, burns bramble walls for secrets), **Tilte** (homing spirit orb; built pass 95: 22 MP, 14 damage. It leaves the hand drifting up and forward and hangs 0.15 s, pulsing, then locks on the nearest foe within 240 px, a foe behind counting as twice as far, and flies at 230 px/s, turning at most 6 rad/s, so a quick foe can slip it; walls stop it; 2,500 g at the Daybreak scriptorium), **Death** (screen-wide, very expensive, late secret).
 
 **Fire as built (pass 57):** sold by Daybreak's scribe for 1,200 g (the Mascon shop comes with Mascon). 20 MP; the ball is thrown forward and up (170 px/s across, 150 up, falling at 520 px/s²), so it lands about seven tiles ahead and arcs over a low foe's head at point-blank range. It bursts on a wall, floor or foe, scorching every foe within 20 px for 18 and lighting every bramble in reach. It lights the fog as it flies. The Next Spell button (G or O; right stick click) cycles the spells you own, and the HUD's magic-bar gem shows the equipped spell's color. The save keeps the choice.
 
@@ -674,7 +674,7 @@ Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900
 
 Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need the one before.
 
-Nodes are built tier by tier as the acts that need them arrive. In the game now: Blade 1-4, Arcana 1-3 and Wanderer 1-4 (`data/skills.json`). Rising Cut lifts any walking foe of 40 HP or less (`Enemy.LAUNCH_MAX_HP`) and leaves it helpless for 0.5 s; rooted foes (Sap Spitter, Bog Myconid), fliers and bosses stay put. Deluge Pierce strikes each foe in the bolt's path once. Second Stride does nothing until you own the Elven Stride.
+Nodes are built tier by tier as the acts that need them arrive. In the game now: Blade 1-4, Arcana 1-3 plus Tilte Swarm (after Deluge Pierce, 2 points: three orbs fanned 0.5 rad apart, 10 damage each, for one cast's MP; pass 95) and Wanderer 1-4 (`data/skills.json`). Rising Cut lifts any walking foe of 40 HP or less (`Enemy.LAUNCH_MAX_HP`) and leaves it helpless for 0.5 s; rooted foes (Sap Spitter, Bog Myconid), fliers and bosses stay put. Deluge Pierce strikes each foe in the bolt's path once. Second Stride does nothing until you own the Elven Stride.
 
 **Blade (melee)**
 1. Keen Edge: +10% melee damage [1]
@@ -748,7 +748,7 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 | Spell scrolls | Mascon, Daybreak | Fire (1,200 g), Tilte (2,500 g) |
 | Guru | every town | save, skill tree, respec, rank-up |
 
-Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joined his stock in pass 91 (see 5.2). The scribe sells Fire; Tilte waits for its spell. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
+Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joined his stock in pass 91 (see 5.2). The scribe sells Fire, and Tilte (2,500 g) since pass 95. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
 
 **The final tier (pass 93):** a shop entry can name a GameState flag (`requires`), and it stays off the shelf until that flag is set (`Shop.shelf`). With the Spring of Sky restored (`spring:sky`), trade returns on the sky road: Eolis Arms stocks the Giant Blade (2,800 g, 5.2) and Daybreak's grocer a Life Fruit (2,000 g, once), the top of the Life Fruit range. (Deviation: the bible paired the Giant Blade with no shop or moment. It arrives here because the sky road is what the Spring of Sky restores, and because by then the player can afford it.)
 

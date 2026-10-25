@@ -247,6 +247,11 @@ func _process(_delta: float) -> void:
 		for id: String in String(_args["equip"]).split(","):
 			GameState.data.equipment[String(GameData.item(id).kind)] = id
 		GameState.refresh_stats(player)
+	if _args.has("skills") and _frames == 2:
+		# Screenshots: learn skills (e.g. --skills=tilte_swarm).
+		for id: String in String(_args["skills"]).split(","):
+			GameState.data.skills.append(id)
+		GameState.refresh_stats(player)
 	if _args.has("swing") and _frames == int(_args["swing"]):
 		# Screenshots: swing the blade on this frame.
 		player.input.scripted = true
