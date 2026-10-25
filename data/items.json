@@ -1,6 +1,7 @@
 {
 	"hand_dagger": {"name": "Hand Dagger", "kind": "blade", "tier": 1, "slash": 8, "heavy": 14, "reach": 0, "desc": "Your starting blade. Quick, but short."},
 	"long_sword": {"name": "Long Sword", "kind": "blade", "tier": 2, "slash": 11, "heavy": 19, "reach": 8, "desc": "Reaches further and hits harder than the dagger."},
+	"giant_blade": {"name": "Giant Blade", "kind": "blade", "tier": 3, "slash": 15, "heavy": 28, "reach": 16, "arc": 20, "swing": 1.3, "desc": "Storm-iron as long as you are tall. Slow, but every cut sweeps a huge arc, high and low."},
 	"dragon_slayer": {"name": "Dragon Slayer", "kind": "blade", "tier": 4, "slash": 18, "heavy": 30, "reach": 12, "desc": "The only blade that can wound the Evil One. It hums near meteor flesh."},
 	"leather_armor": {"name": "Leather Armor", "kind": "armor", "tier": 1, "defense": 0.15, "desc": "Take 15% less damage."},
 	"studded_mail": {"name": "Studded Mail", "kind": "armor", "tier": 2, "defense": 0.3, "desc": "Take 30% less damage."},

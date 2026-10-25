@@ -242,6 +242,15 @@ func _process(_delta: float) -> void:
 		# Screenshots: hand the player abilities (e.g. --give=onyx,glove).
 		for a: String in String(_args["give"]).split(","):
 			player.abilities[a] = true
+	if _args.has("equip") and _frames == 2:
+		# Screenshots: equip gear (e.g. --equip=giant_blade,magic_shield).
+		for id: String in String(_args["equip"]).split(","):
+			GameState.data.equipment[String(GameData.item(id).kind)] = id
+		GameState.refresh_stats(player)
+	if _args.has("swing") and _frames == int(_args["swing"]):
+		# Screenshots: swing the blade on this frame.
+		player.input.scripted = true
+		player.input.attack_pressed = true
 	if _args.has("timestop") and _frames == int(_args["timestop"]):
 		TimeStop.start()
 	if _args.has("conduits") and _frames == int(_args["conduits"]):

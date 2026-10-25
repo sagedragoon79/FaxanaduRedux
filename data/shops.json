@@ -5,7 +5,8 @@
 		"stock": [
 			{"item": "long_sword", "price": 400},
 			{"item": "leather_armor", "price": 200},
-			{"item": "small_shield", "price": 150}
+			{"item": "small_shield", "price": 150},
+			{"item": "giant_blade", "price": 2800, "requires": "spring:sky"}
 		]
 	},
 	"eolis_items": {
@@ -103,7 +104,8 @@
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150},
-			{"item": "mana_dew", "price": 1200, "once": true}
+			{"item": "mana_dew", "price": 1200, "once": true},
+			{"item": "life_fruit", "price": 2000, "once": true, "requires": "spring:sky"}
 		]
 	},
 	"daybreak_charts": {

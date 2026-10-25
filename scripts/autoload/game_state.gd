@@ -297,6 +297,8 @@ func refresh_stats(p: Player) -> void:
 	p.slash_damage = roundi(int(blade.slash) * temper)
 	p.heavy_damage = roundi(int(blade.heavy) * temper)
 	p.reach_bonus = float(blade.reach)
+	p.arc_bonus = float(blade.get("arc", 0.0))
+	p.swing_mult = float(blade.get("swing", 1.0))
 	p.defense = float(GameData.item(eq.armor).get("defense", 0.0))
 	p.has_shield = eq.shield != ""
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
