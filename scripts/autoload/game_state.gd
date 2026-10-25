@@ -24,6 +24,8 @@ const RANKS := ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier"
 const TEMPER_BONUS := 0.15
 const RANK_XP := [0, 40, 100, 180, 300, 460, 660, 900, 1200, 1560, 2000, 2500, 3100, 3800, 4600, 5500]
 const LIFE_FRUIT_HP := 10
+## Resilience (skill tree): one more mask.
+const RESILIENCE_HP := 20
 const MANA_DEW_MP := 10.0
 const RESPEC_BASE := 200
 const RESPEC_MAX := 2000
@@ -303,7 +305,14 @@ func refresh_stats(p: Player) -> void:
 	p.has_shield = eq.shield != ""
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
 	p.reflects = bool(GameData.item(eq.shield).get("reflect", false))
-	p.melee_mult = 1.1 if has_skill("keen_edge") else 1.0
+	p.melee_mult = 1.0 + (0.1 if has_skill("keen_edge") else 0.0) + (0.1 if has_skill("keener_edge") else 0.0)
+	p.riposte = has_skill("riposte")
+	p.bloodletting = has_skill("bloodletting")
+	p.spell_cost_mult = 0.85 if has_skill("thrift") else 1.0
+	p.chain_thunder = has_skill("chain_thunder")
+	p.time_thief = has_skill("time_thief")
+	p.last_stand = has_skill("last_stand")
+	p.second_wind = has_skill("second_wind")
 	p.ground_combo_length = 4 if has_skill("fourth_strike") else 3
 	p.mp_hit_mult = 1.5 if has_skill("siphon") else 1.0
 	p.gold_mult = 1.1 if has_skill("gold_sense") else 1.0
@@ -314,7 +323,7 @@ func refresh_stats(p: Player) -> void:
 	p.tilte_swarm = has_skill("tilte_swarm")
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
-	p.max_hp = int(data.max_hp)
+	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0)
 	p.max_mp = float(data.max_mp) + (20.0 if has_skill("clear_mind") else 0.0)
 	p.flask_max = int(data.flask_max) + (1 if has_skill("deep_pockets") else 0)
 	p.hp = mini(p.hp, p.max_hp)

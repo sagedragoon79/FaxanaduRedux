@@ -39,6 +39,11 @@ const UPDRAFT_ACCEL := 1100.0
 const BIG_DROP := 112.0
 ## How far a heavy hit's impact spark reaches past a light one's.
 const HEAVY_SPARK := 1.6
+## Skill tree numbers (design bible 9).
+const BLOODLETTING_HEAL := 2
+const LAST_STAND_BELOW := 0.2
+const LAST_STAND_TAKEN := 0.75
+const TIME_THIEF_EXTRA := 1.0
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -50,6 +55,8 @@ var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true,
 var max_hp := 100
 ## Heartbeats played at low health (tests).
 var heartbeats := 0
+## Riposte counter-cuts dealt (tests).
+var ripostes := 0
 var _heartbeat_timer := 0.0
 var hp := 100
 var max_mp := 60.0
@@ -92,6 +99,19 @@ var drink_mult := 1.0
 ## Tilte Swarm (skill): Tilte throws three orbs.
 var tilte_swarm := false
 var bonus_air_dashes := 0
+## Riposte: a parry answers with a heavy counter-cut. Bloodletting: hits on a
+## staggered foe heal. Thrift scales spell costs; Chain Thunder lets Thunder leap;
+## Time Thief lengthens the Hour Glass (Treasure Sense lives on the map); Last
+## Stand cuts damage at low health; Second Wind survives one killing blow per rest.
+var riposte := false
+var bloodletting := false
+var spell_cost_mult := 1.0
+var chain_thunder := false
+var time_thief := false
+var last_stand := false
+var second_wind := false
+## Spent until the next rest (a shrine, a Guru, or a respawn).
+var second_wind_used := false
 ## Set each frame by the World when the feet are in a sap pool.
 var in_sap := false
 var dead := false
@@ -710,7 +730,12 @@ func _process_attack_hits() -> void:
 			continue
 		if collider.has_method("take_hit"):
 			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
+			var was_staggered: bool = collider.has_method("is_staggered") and collider.is_staggered()
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
+			if bloodletting and was_staggered and hp < max_hp:
+				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
+				health_changed.emit(hp, max_hp)
+				_spawn_dust(Vector2(0, -20), "heal")
 			hit_something = true
 			if collider is Node2D:
 				HitSpark.spawn(get_parent(), _contact_point(rect, collider), dir, HEAVY_SPARK if is_heavy_swing else 1.0)
@@ -889,7 +914,7 @@ func _try_cycle_spell() -> void:
 func _try_hourglass() -> void:
 	if not input.hourglass_pressed or not abilities.get("hourglass", false):
 		return
-	if not TimeStop.start():
+	if not TimeStop.start(TIME_THIEF_EXTRA if time_thief else 0.0):
 		Sfx.play("fizzle")
 		return
 	Sfx.play("hourglass")
@@ -902,7 +927,7 @@ func _try_cast() -> void:
 		return
 	if not abilities.get(equipped_spell, false):
 		return
-	var cost := Spells.cost(equipped_spell)
+	var cost := Spells.cost(equipped_spell) * spell_cost_mult
 	if mp < cost:
 		Sfx.play("fizzle")
 		return
@@ -959,6 +984,8 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		if source.has_method("stagger"):
 			# Feathers, gears and bolts turn back on their own.
 			source.stagger()
+		if riposte and source.is_in_group("enemy") and source.has_method("take_hit"):
+			_riposte(source)
 		elif catches:
 			ReflectedShot.spawn(self, source, source.get("tint") if source.get("tint") is Color else ReflectedShot.GOLD)
 			Sfx.play("zap", 0.1, 6.0)
@@ -976,11 +1003,32 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 	return "hit"
 
 
+## Riposte (skill): the parry's answer, a heavy cut at the foe that swung.
+func _riposte(foe: Node2D) -> void:
+	var fx := SlashFx.new()
+	fx.setup("side", facing, 3, true, 1.0 + arc_bonus / SLASH_SIZE.y)
+	add_child(fx)
+	foe.take_hit(roundi(heavy_damage * melee_mult), Vector2(facing, 0) * 1.8)
+	var at: Vector2 = foe.center() if foe.has_method("center") else foe.global_position
+	HitSpark.spawn(get_parent(), at, Vector2(facing, 0), HEAVY_SPARK)
+	Sfx.play("heavy", 0.05)
+	ripostes += 1
+
+
 func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if invulnerable or dead:
 		return
 	if defense > 0.0:
 		amount = maxi(1, roundi(amount * (1.0 - defense)))
+	if last_stand and hp < max_hp * LAST_STAND_BELOW:
+		amount = maxi(1, roundi(amount * LAST_STAND_TAKEN))
+	if second_wind and not second_wind_used and amount >= hp and hp > 1:
+		# Second Wind (skill): the killing blow leaves you standing at 1 HP.
+		amount = hp - 1
+		second_wind_used = true
+		GameState.toast.emit("Second Wind!")
+		Sfx.play("heal", 0.0)
+		_spawn_dust(Vector2(0, -16), "heal")
 	hp -= amount
 	_invuln_timer = tuning.hurt_invuln
 	_drink_timer = 0.0
@@ -1091,6 +1139,7 @@ func _die(where: Vector2) -> void:
 func _respawn() -> void:
 	dead = false
 	_poison_timer = 0.0
+	second_wind_used = false
 	hp = max_hp
 	mp = max_mp
 	flask_charges = flask_max
@@ -1117,6 +1166,7 @@ func add_gold(amount: int, found := false) -> void:
 ## Refills health, magic and potion charges (save shrines, the Guru).
 func restore() -> void:
 	_poison_timer = 0.0
+	second_wind_used = false
 	hp = max_hp
 	mp = max_mp
 	flask_charges = flask_max

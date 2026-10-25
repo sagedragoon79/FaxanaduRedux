@@ -10,6 +10,8 @@ extends Node2D
 
 signal room_changed(room: Room)
 
+## Legend characters that are something to find: items and chests (Treasure Sense).
+const TREASURE_CHARS := "GXOdhnzLWF*&$"
 const FADE_OUT := 0.12
 const FADE_IN := 0.18
 ## Side and shaft doors between rooms of one zone scroll the view instead of
@@ -126,10 +128,13 @@ func _catalog_room(room_id: String, text: String) -> void:
 		if found.has(n) and parts.size() >= 3:
 			doors[n] = {"rect": found[n].rect, "edge": found[n].edge, "target": parts[1].strip_edges(), "target_door": int(parts[2])}
 	var shrines: Array[Vector2i] = []
+	var treasures: Array[String] = []
 	for y in grid.size():
 		for x in grid[y].length():
 			if grid[y][x] == "S":
 				shrines.append(Vector2i(x, y))
+			elif TREASURE_CHARS.contains(grid[y][x]):
+				treasures.append("%s:%d,%d" % [room_id, x, y])
 	catalog[room_id] = {
 		"name": header.get("name", room_id),
 		"zone": header.get("zone", ""),
@@ -138,6 +143,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"screens": Room.screens_for(size),
 		"doors": doors,
 		"shrines": shrines,
+		## Pickup ids of the room's items and chests (Treasure Sense, design bible 9).
+		"treasures": treasures,
 	}
 
 
