@@ -22,7 +22,7 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 	var shop := GameData.shop(shop_id)
 	var provider := func() -> Array:
 		var out := []
-		for i in shop.stock.size():
+		for i in Shop.shelf(shop_id):
 			var entry: Dictionary = shop.stock[i]
 			var item := GameData.item(entry.item)
 			var st := Shop.status(shop_id, i, p)
@@ -45,7 +45,8 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 				detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
 			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
 		return out
-	var on_select := func(i: int) -> void:
+	var on_select := func(row: int) -> void:
+		var i: int = Shop.shelf(shop_id)[row]
 		if Shop.buy(shop_id, i, p):
 			Sfx.play("coin", 0.0, 2.0)
 			GameState.toast.emit("Bought: " + String(GameData.item(shop.stock[i].item).name))

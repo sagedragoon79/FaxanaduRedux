@@ -156,7 +156,7 @@ All story triggers check items, not route order.
 | Ripasheiku defeated | Her lanterns go dark and she gives up the Lantern Key, which opens the way to the Spring of Mist and Zorugeriru. The key's light parts the bound fog (a pale wall of unmoving mist, legend `Y`, that tells you it wants a lantern) sealing the shaft above Lantern Landing; it parts for good and the key is kept. Beyond it the Veiled Rise climbs to the Victim Causeway, a spiked boardwalk dip on the road west to Victim, and past it Feather Hollow, where the Wing Boots wait on a perch below a Life Fruit only a second jump reaches. Her chapel's east door opens on the Marsh Road toward Mascon, where the Deluge scroll lies before a fire seal; the Scorched Hall waits behind it, the Dry Cistern past that, and past the cistern the Spring of Mist, Zorugeriru's lair |
 | Zorugeriru defeated | Dworf Ring; the Spring of Mist's tanks stay full, and the spring on its shelf can be cleared; the arena's east door opens on the Windward Climb, where bounce-pods throw you up out of the Mist into the Branches (the Sunlit Bough, then Leaf Landing, a shrine on the elves' leaf road) |
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface (legend `b`: one-way planks over the spiked dips of the Fog Cut and the Victim Causeway, nothing before); fountain 2/3 |
-| Spring of Sky restored | The storm breaks: Daybreak's rain thins to a drizzle (Motes.SETTLES). Eolis festival: the fountain runs full, a piper plays in the plaza and Old Wena rejoices (pass 62). The Branches' wind currents turn and blow the other way (pass 92), carrying you into the Thicket Road's sealed wind niche. Still to come: the final shop tier |
+| Spring of Sky restored | The storm breaks: Daybreak's rain thins to a drizzle (Motes.SETTLES). Eolis festival: the fountain runs full, a piper plays in the plaza and Old Wena rejoices (pass 62). The Branches' wind currents turn and blow the other way (pass 92), carrying you into the Thicket Road's sealed wind niche. The final shop tier comes in on the sky road (pass 93, 10.2): the Giant Blade in Eolis and a Life Fruit in Daybreak |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
 | Evil One defeated | Post-game: Tree blooms, palette shift to spring colors, all enemies respawn as "remnants" for 100% cleanup |
 
@@ -196,11 +196,18 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 | Slot | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
 |------|--------|--------|--------|--------|
-| Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
+| Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc; built pass 93: slash 15, heavy 28, reach 16) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered. The Meteor Shard cost joins when shards are placed in the world.)
+
+**Giant Blade (built pass 93):**
+- Slash 15, heavy 28, and 16 px more reach than the dagger.
+- Its side slash sweeps 20 px taller, so it covers you from head to heel and catches fliers and crawlers a plainer blade misses (`arc` in `data/items.json`).
+- Every swing takes 30% longer to recover (`swing` 1.3), so its pace is about the Long Sword's damage per second, traded for reach and coverage. Commit to a cut and space your foes.
+- It is drawn two pixels broader, with a larger smear.
+- Eolis Arms sells it for 2,800 g once the Spring of Sky is restored (10.2). With the Dragon Slayer in hand it shows as owned.
 
 **Magic Shield (built pass 91):**
 - It guards 70%, like the Large Shield.
@@ -738,9 +745,11 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 | Key master | Eolis, Victim, Dartmoor | Jack (150 g), Queen (400 g), King (900 g), Ace (1,800 g) keys; the Joker key is found |
 | Cartographer | every town | zone map outlines (200 to 800 g), map pins |
 | Spell scrolls | Mascon, Daybreak | Fire (1,200 g), Tilte (2,500 g) |
+| Guru | every town | save, skill tree, respec, rank-up |
 
 Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4,200 g); the Magic Shield (3,600 g, parry reflects small projectiles) joined his stock in pass 91 (see 5.2). The scribe sells Fire; Tilte waits for its spell. The grocer sells Elixir, Ointment, Jack keys and a Mana Dew (1,200 g, once), and the bell-ringer the Daybreak chart (700 g).
-| Guru | every town | save, skill tree, respec, rank-up |
+
+**The final tier (pass 93):** a shop entry can name a GameState flag (`requires`), and it stays off the shelf until that flag is set (`Shop.shelf`). With the Spring of Sky restored (`spring:sky`), trade returns on the sky road: Eolis Arms stocks the Giant Blade (2,800 g, 5.2) and Daybreak's grocer a Life Fruit (2,000 g, once), the top of the Life Fruit range. (Deviation: the bible paired the Giant Blade with no shop or moment. It arrives here because the sky road is what the Spring of Sky restores, and because by then the player can afford it.)
 
 **Gold sinks:** respecs, Ointments and Elixirs, keys for optional doors (each guards a reward), smith upgrades, cosmetics (cloak dyes, 6 total, purely visual).
 

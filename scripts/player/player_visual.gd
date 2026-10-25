@@ -182,12 +182,14 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 	var side := dir.orthogonal()
 	var base := hand + dir * 2.0
 	var tip := base + dir * length
+	# A broad blade (the Giant Blade's arc) is drawn two pixels thicker.
+	var broad := 2.0 if player.arc_bonus > 0.0 else 0.0
 	# Outline, steel with a bright edge, then the crossguard and pommel.
-	draw_line(base, tip + dir, OUTLINE, 4.0)
-	draw_line(base, tip, STEEL * tint, 2.0)
+	draw_line(base, tip + dir, OUTLINE, 4.0 + broad)
+	draw_line(base, tip, STEEL * tint, 2.0 + broad)
 	draw_line(base + side * 0.5, tip + side * 0.5, STEEL_EDGE * tint, 1.0)
 	draw_line(base - side * 0.5 + dir * 2.0, tip - side * 0.5 - dir, STEEL_DARK * tint, 1.0)
-	draw_line(base - side * 3.0, base + side * 3.0, OUTLINE, 3.0)
+	draw_line(base - side * (3.0 + broad), base + side * (3.0 + broad), OUTLINE, 3.0)
 	draw_line(base - side * 2.0, base + side * 2.0, HILT * tint, 1.0)
 	draw_rect(Rect2((hand - dir * 2.0).round() - Vector2(1, 1), Vector2(2, 2)), HILT * tint)
 

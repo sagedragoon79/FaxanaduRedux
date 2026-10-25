@@ -9,11 +9,27 @@ const ELIXIR_MAX := 1
 const OINTMENT_MAX := 3
 
 
-## Why an entry can't be bought right now: "" (it can), "owned", "full", "sold out",
-## "locked" (a second temper before the first) or "gold".
+## The stock indices on the shelf now. An entry with "requires" (a GameState flag)
+## stays off the shelf until that flag is set: the final tier comes in on the
+## sky road once the Spring of Sky is restored (design bible 10.2).
+static func shelf(shop_id: String) -> Array[int]:
+	var out: Array[int] = []
+	var stock: Array = GameData.shop(shop_id).stock
+	for i in stock.size():
+		var needs := String(stock[i].get("requires", ""))
+		if needs == "" or GameState.flag(needs):
+			out.append(i)
+	return out
+
+
+## Why an entry can't be bought right now: "" (it can), "hidden" (not on the
+## shelf yet), "owned", "full", "sold out", "locked" (a second temper before the
+## first) or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
+	if not shelf(shop_id).has(index):
+		return "hidden"
 	if entry.get("once", false) and GameState.is_collected(_once_id(shop_id, index)):
 		return "sold out"
 	match item.kind:

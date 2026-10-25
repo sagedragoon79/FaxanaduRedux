@@ -12,9 +12,12 @@ var _facing := 1
 var _combo := 1
 var _heavy := false
 var _life := LIFE
+## Scales the smear for a bigger blade (the Giant Blade's arc).
+var _size := 1.0
 
 
-func setup(kind: String, facing: int, combo := 1, heavy := false) -> void:
+func setup(kind: String, facing: int, combo := 1, heavy := false, size := 1.0) -> void:
+	_size = size
 	_kind = kind
 	_facing = facing
 	_combo = combo
@@ -52,8 +55,8 @@ func _draw() -> void:
 		var t := from
 		from = to
 		to = t
-	var radius := 26.0 if _heavy else 20.0
-	var width := 9.0 if _heavy else 6.0
+	var radius := (26.0 if _heavy else 20.0) * _size
+	var width := (9.0 if _heavy else 6.0) * _size
 	var sweep := lerpf(0.35, 1.0, 1.0 - k)
 	var end := lerpf(from, to, sweep)
 	draw_arc(center, radius, from, end, 12, Color(HEAVY if _heavy else COLOR, k), width)

@@ -57,6 +57,10 @@ var equipped_spell := "deluge"
 var slash_damage := 8
 var heavy_damage := 14
 var reach_bonus := 0.0
+## Extra height (px) of a side slash, from the blade (the Giant Blade's huge arc).
+var arc_bonus := 0.0
+## Multiplies the wait after each swing: a heavy blade swings slower.
+var swing_mult := 1.0
 var defense := 0.0
 var has_shield := true
 ## Share of damage a guard blocks; the shield sets it (data/items.json "guard").
@@ -622,10 +626,11 @@ func _try_attack(on_floor: bool) -> void:
 		_attack_cooldown = cd[cd.size() - 1] if is_heavy_swing else cd[mini(combo_index - 1, cd.size() - 2)]
 		if is_heavy_swing:
 			_swing_damage = roundi(heavy_damage * melee_mult)
+	_attack_cooldown *= swing_mult
 	_attack_hits.clear()
 	swing_count += 1
 	var fx := SlashFx.new()
-	fx.setup(attack_kind, facing, combo_index, is_heavy_swing)
+	fx.setup(attack_kind, facing, combo_index, is_heavy_swing, 1.0 + arc_bonus / SLASH_SIZE.y)
 	add_child(fx)
 	if is_heavy_swing:
 		visual.squash(Vector2(1.2, 0.9))
@@ -644,7 +649,7 @@ func _attack_rect() -> Rect2:
 			size = UP_SLASH_SIZE
 			center = Vector2(0, -BODY_SIZE.y - 14)
 		_:
-			size = SLASH_SIZE + Vector2(reach_bonus, 0)
+			size = SLASH_SIZE + Vector2(reach_bonus, arc_bonus)
 			center = Vector2(facing * (BODY_SIZE.x * 0.5 + 16 + reach_bonus * 0.5), -BODY_SIZE.y * 0.55)
 	return Rect2(global_position + center - size * 0.5, size)
 

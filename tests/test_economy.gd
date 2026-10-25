@@ -800,3 +800,30 @@ func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
 	p.equipped_spell = "deluge"
 	GameState.apply(p)
 	check(p.equipped_spell == "fire", "and puts it back on load")
+
+
+func test_the_final_tier_comes_with_the_spring_of_sky() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	p.gold = 10000
+	var arms: Array = GameData.shop("eolis_arms").stock
+	var blade := -1
+	for i in arms.size():
+		if arms[i].item == "giant_blade":
+			blade = i
+	check(blade >= 0 and int(arms[blade].price) == 2800, "Eolis Arms stocks the Giant Blade at 2,800 g")
+	check(not Shop.shelf("eolis_arms").has(blade), "but not before the Spring of Sky")
+	check(Shop.status("eolis_arms", blade, p) == "hidden" and not Shop.buy("eolis_arms", blade, p), "so it can't be bought")
+	var stores: Array = GameData.shop("daybreak_items").stock
+	var fruit := stores.size() - 1
+	check(stores[fruit].item == "life_fruit" and int(stores[fruit].price) == 2000 and stores[fruit].get("once", false), "Daybreak's grocer keeps one Life Fruit for 2,000 g")
+	check(Shop.status("daybreak_items", fruit, p) == "hidden", "off the shelf while the storm lasts")
+	GameState.set_flag("spring:sky")
+	check(Shop.shelf("eolis_arms").has(blade) and Shop.status("eolis_arms", blade, p) == "", "the sky road opens and the blade comes in")
+	check(Shop.buy("eolis_arms", blade, p) and GameState.data.equipment.blade == "giant_blade", "bought the Giant Blade")
+	check(p.gold == 7200 and p.reach_bonus == 16.0 and p.arc_bonus == 20.0, "its reach and arc are yours")
+	check(Shop.status("eolis_arms", 0, p) == "owned", "the Long Sword counts as owned")
+	check(Shop.buy("daybreak_items", fruit, p) and Shop.status("daybreak_items", fruit, p) == "sold out", "the fruit is sold once")
+	GameState.data.equipment.blade = "dragon_slayer"
+	check(Shop.status("eolis_arms", blade, p) == "owned", "with the Dragon Slayer in hand the Giant Blade counts as owned")
