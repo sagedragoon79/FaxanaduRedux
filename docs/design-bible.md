@@ -494,6 +494,13 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     pores), backdrops (ribbed walls, light veins, a red glow below), decor (polyps, veins, tendrils, wall eyes),
     cyan spore motes, a theme (B locrian over a heartbeat, detuned pads) and an ambience (breathing drone, heartbeat,
     glassy whines).
+  - **Corrupted foes, as built (pass 78):** every foe spawned in a Zenis room is `corrupted` (a room header
+    `corrupted:` overrides it either way). Corruption is one remix applied to every family rather than new
+    species: x1.5 health, double gold and experience, poison drops, a violet cast and meteor crystal grown out of
+    the back with red veins and a cyan eye that beat with the meteor's heart. When it dies it leaves a
+    **Meteor Seed**: a crystal that hangs where it died and swells for 0.7 s, then bursts in a ring (30 px,
+    10 damage, unparryable). One slash or a pogo cracks it harmlessly, so pressing forward is safer than
+    backing off, and seeds give a corrupted fight a rhythm of pogo chains. The Hour Glass holds seeds.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

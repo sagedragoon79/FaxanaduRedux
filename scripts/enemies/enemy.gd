@@ -21,6 +21,14 @@ const MIN_TELEGRAPH := 0.35
 @export var respawn_time := 0.0
 ## May this enemy leave poison (Drop.poison_chance)? The Tower and beyond.
 @export var poison_drops := false
+## Grown through with meteor crystal (Zenis, design bible 8.9): tougher, richer,
+## and it leaves a MeteorSeed that bursts where it dies. Set before it enters the tree.
+@export var corrupted := false
+
+## What corruption does to a foe's health, gold and experience.
+const CORRUPT_HP := 1.5
+const CORRUPT_GOLD := 2
+const CORRUPT_XP := 2
 
 var hp := 0
 var dead := false
@@ -57,8 +65,21 @@ func _ready() -> void:
 	shape.shape = rect
 	shape.position = Vector2.ZERO if body_centered else Vector2(0, -body_size.y * 0.5)
 	add_child(shape)
+	if corrupted and not is_in_group("boss"):
+		_corrupt()
 	hp = max_hp
 	home = global_position
+
+
+func _corrupt() -> void:
+	max_hp = ceili(max_hp * CORRUPT_HP)
+	gold_min *= CORRUPT_GOLD
+	gold_max *= CORRUPT_GOLD
+	xp *= CORRUPT_XP
+	poison_drops = true
+	# A violet cast over the body, with the crystal and its eye drawn on top.
+	self_modulate = Color(0.86, 0.74, 1.0)
+	add_child(CorruptionGrowth.new())
 
 
 func player() -> Player:
@@ -185,6 +206,10 @@ func die() -> void:
 	Feel.hitstop(0.08)
 	Feel.add_trauma(0.25)
 	Sfx.play("enemy_die")
+	if corrupted:
+		var seed := MeteorSeed.new()
+		seed.position = get_parent().to_local(center())
+		get_parent().add_child.call_deferred(seed)
 	died.emit(self)
 	if respawn_time > 0.0:
 		_respawn_timer = respawn_time
