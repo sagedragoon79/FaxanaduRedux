@@ -1057,6 +1057,46 @@ def track_grieve():
     return s.render(reverb=0.6)
 
 
+class _Mirror:
+    """Wraps a Song so every note is answered three-quarters of a beat later,
+    softer and from the other side: the shadow's echo."""
+
+    def __init__(self, song, lag=0.75):
+        self.song, self.lag = song, lag
+        self.beats, self.beat = song.beats, song.beat
+
+    def add(self, note, at_beats, pan=0.0, gain=1.0):
+        self.song.add(note, at_beats, pan, gain)
+        self.song.add(note, at_beats + self.lag, -pan, gain * 0.55)
+
+
+def track_eura():
+    """Shadow Eura, the Mirror: the hero's own theme turned dark. E minor at 132,
+    swelling reversed pads (sound drawn backwards out of the glass), a driving
+    octave bass, tight hats, and a lead whose every note is echoed a beat late
+    from the other side, the way the shadow answers each of your swings."""
+    rng = np.random.default_rng(1874)
+    s = Song(bpm=132, bars=16)
+    root, scale = 52, SCALES["minor"]
+    prog = [0, 5, 3, 6, 0, 5, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            # A pad played backwards: it swells up to the barline instead of fading.
+            s.add(fft_filter(pad(midi_hz(m - 12), s.bar)[::-1], low=1400), b * 4, rng.uniform(-0.6, 0.6), 0.26)
+        low = scale_note(root - 24, scale, deg)
+        for k in range(8):
+            s.add(bass(midi_hz(low + (12 if k % 2 else 0)), s.beat * 0.45), b * 4 + k * 0.5, 0, 0.42)
+        s.add(kick(0.3), b * 4, 0, 0.9)
+        s.add(kick(0.25), b * 4 + 2.5, 0, 0.7)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.45)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.45)
+        for k in range(8):
+            s.add(hat(rng), b * 4 + k * 0.5, rng.uniform(-0.4, 0.4), 0.18 if k % 2 else 0.1)
+    melody(_Mirror(s), rng, root, scale, prog, lead, start_bar=2, octave=12, pan=0.35, gain=0.42, density=0.55)
+    return s.render(reverb=0.45)
+
+
 def amb_dartmoor():
     """A drowned hall: a deep, still drone of water in stone, drops falling into
     pools at uneven intervals, a slow trickle somewhere, and the faint glassy hum
@@ -1113,6 +1153,7 @@ TRACKS = {
     "pakukame": track_pakukame,
     "borabohra": track_borabohra,
     "grieve": track_grieve,
+    "eura": track_eura,
     "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,
     "daybreak_town": track_daybreak_town,

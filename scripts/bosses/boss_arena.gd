@@ -21,7 +21,7 @@ const BOSSES := {
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
 		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
 	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve"},
-	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1,
+	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1, "music": "eura",
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
 }
 ## How far the player must be from the entry door before the fight starts.

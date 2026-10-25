@@ -459,6 +459,16 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
   or parry it: a parried echo leaves it reeling and out of the mirror for 1.2 s. If you hold still for 2.2 s it sinks
   into the floor and rises right behind you, blade raised for 0.45 s, then cuts. Until phases 2 and 3 are built it has
   150 HP, and beating it gives a skill point. The gate does not open yet, because Zenis beyond it is not built.
+- **As built (phase 2, pass 75):** HP is now 240, and below half the glass bursts. The shadow is untouchable for 1 s,
+  then steps out with real physics and fights with the skill tree branch you have the most nodes in (Blade on a tie or
+  an empty tree):
+  - **Blade:** two cuts and a lunging heavy blow (tells 0.4/0.4/0.5 s).
+  - **Arcana:** it keeps about 150 px away and casts shadow bolts (0.5 s tell); parry one and it flies back into the
+    shadow.
+  - **Wanderer:** it air-dashes through you (0.45 s tell), and once, below a quarter health, it stops to drink a
+    draught (+12%) that a blow spills.
+  - A parried blow staggers it for 1.2 s. It has its own theme, `eura` (E minor, reversed pads, and a lead echoed a
+    beat late from the other side).
 
 ### 8.9 The Evil One (Zenis)
 - **Concept:** Not a demon king but a parasite: a vast eye-flower of meteor crystal rooted into the Tree's crown, feeding through veins of light.

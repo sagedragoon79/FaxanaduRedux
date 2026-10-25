@@ -14,17 +14,26 @@ extends Enemy
 ## at you from behind, rising out of the floor beside you with its blade
 ## raised (the tell) before it strikes.
 ##
-## Phases 2 and 3 (acting on its own, then splitting in two) come later; for
-## now the mirror is the whole fight.
+## Phase 2 (below half), its own: the mirror shatters and the shadow steps out
+## of the glass to fight as you would, with the skill tree branch you have put
+## the most into (Blade on a tie or an empty tree):
+##   Blade: it walks you down and cuts twice, then lunges with a heavy blow.
+##   Arcana: it keeps its distance and casts shadow bolts; parry one and it
+##     flies back at the shadow. Come close and it cuts once.
+##   Wanderer: it air-dashes through you, and once, low on health, stops to
+##     drink a draught that a blow can spill.
+## Every blow has a tell of at least MIN_TELEGRAPH, and a parried cut, heavy or
+## dash leaves it reeling.
+##
+## Phase 3 (splitting in two) comes later.
 
 signal defeated
 
 const DISPLAY_NAME := "Shadow Eura"
 const EPITHET := "the Mirror"
-const MAX_HP := 150
-## Health fractions where later phases begin (none yet: the mirror is the
-## whole fight until phases 2 and 3 are built).
-const PHASES := []
+const MAX_HP := 240
+## Health fractions where later phases begin: below half it breaks the mirror.
+const PHASES := [0.5]
 ## How far behind you the reflection runs (s).
 const DELAY := 0.6
 ## How long its blade glints before an echoed swing lands (within DELAY).
@@ -44,6 +53,29 @@ const RECOVER := 0.6
 const BLINK_TIME := 0.35
 const STAGGER := 1.2
 const INTRO_TIME := 1.2
+## Phase 2: the mirror shatters, untouchable this long.
+const SHATTER_TIME := 1.0
+const WALK := 96.0
+const BLADE_RANGE := 46.0
+const CUT_TELL := 0.4
+const HEAVY_TELL := 0.5
+const HEAVY_DAMAGE := 20
+const HEAVY_LUNGE := 220.0
+const HEAVY_TIME := 0.2
+const FREE_RECOVER := 0.6
+## Arcana: how far it keeps from you, and its casting.
+const KEEP := 150.0
+const CAST_TELL := 0.5
+const CAST_GAP := 1.4
+## Wanderer: the air-dash through you, and its one draught.
+const DASH_RANGE := 150.0
+const DASH_TELL := 0.45
+const DASH_SPEED := 380.0
+const DASH_TIME := 0.4
+const DASH_DAMAGE := 14
+const DRAUGHT_AT := 0.25
+const DRAUGHT_TIME := 0.8
+const DRAUGHT_HEAL := 0.12
 const DYING_TIME := 1.6
 
 const SHADOW := Color("120a1c")
@@ -68,6 +100,13 @@ var _frame := 0
 var _cut := ""
 var _cut_time := 0.0
 var _struck := false
+var phase := 1
+## The skill tree branch it fights with in phase 2.
+var branch := "Blade"
+var _cuts := 0
+var _cast_wait := 0.0
+var _drunk := false
+var _spilled := false
 
 
 func _init() -> void:
@@ -126,11 +165,26 @@ func next_echo_in() -> float:
 
 ## True while its blade glints before a blow.
 func telling() -> bool:
-	return state == "rise" or (mirroring() and next_echo_in() <= SWING_TELL)
+	if state in ["rise", "cut_tell", "heavy_tell", "cast_tell", "dash_tell"]:
+		return true
+	return mirroring() and next_echo_in() <= SWING_TELL
+
+
+## The skill tree branch the player has put the most into (Blade on a tie).
+static func strongest_branch() -> String:
+	var counts := {"Blade": 0, "Arcana": 0, "Wanderer": 0}
+	for n: Dictionary in Skills.nodes():
+		if GameState.has_skill(n.id) and counts.has(n.branch):
+			counts[n.branch] += 1
+	var best := "Blade"
+	for b: String in ["Arcana", "Wanderer"]:
+		if counts[b] > counts[best]:
+			best = b
+	return best
 
 
 func _modify_damage(damage: int, _dir: Vector2) -> int:
-	if state in ["dormant", "intro", "dying", "sink", "blink"]:
+	if state in ["dormant", "intro", "dying", "sink", "blink", "shatter"]:
 		return 0
 	return damage
 
@@ -138,11 +192,39 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 func take_hit(damage: int, dir: Vector2) -> void:
 	super.take_hit(damage, dir)
 	_hitstun = 0.0
+	if state == "drink" and not dead:
+		_spilled = true
+	if not dead and phase == 1 and health_fraction() <= PHASES[0]:
+		_break_free()
+
+
+## Below half the mirror shatters and it steps out to fight on its own.
+func _break_free() -> void:
+	phase = 2
+	branch = strongest_branch()
+	_echoes.clear()
+	_cut = ""
+	_stagger = 0.0
+	velocity = Vector2.ZERO
+	uses_gravity = true
+	collision_mask = Player.LAYER_WORLD
+	set_state("shatter")
+	# The glass down the middle of the hall bursts.
+	for i in 8:
+		var d := Dust.new()
+		d.setup("debris")
+		get_parent().add_child(d)
+		d.global_position = Vector2(axis(), arena.position.y + arena.size.y * (i + 0.5) / 8.0)
+	Sfx.play("break", 0.0, 2.0)
+	Sfx.play("wail", 0.05, -2.0)
+	Feel.add_trauma(0.5)
+	Feel.rumble(0.8, 0.6, 0.3)
+	GameState.toast.emit("The mirror shatters. Your shadow fights with your %s." % branch.to_lower())
 
 
 ## A parried echo leaves it reeling: it stops copying you and stands open.
 func stagger() -> void:
-	if dead or state in ["dormant", "intro", "dying", "sink", "blink"]:
+	if dead or state in ["dormant", "intro", "dying", "sink", "blink", "shatter"]:
 		return
 	super.stagger()
 	_stagger = STAGGER
@@ -154,6 +236,9 @@ func stagger() -> void:
 func _think(delta: float) -> void:
 	_clock += delta
 	_record()
+	if phase == 2:
+		_think_free(delta)
+		return
 	match state:
 		"dormant":
 			pass
@@ -298,6 +383,134 @@ func _blink_out() -> void:
 	set_state("blink")
 
 
+## Phase 2: out of the glass, fighting with your strongest branch.
+func _think_free(delta: float) -> void:
+	if state not in ["heavy", "dash"]:
+		velocity.x = 0.0
+	_cast_wait -= delta
+	var p := player()
+	var dx := (p.global_position.x - global_position.x) if p != null else 0.0
+	var dy := (p.global_position.y - global_position.y) if p != null else 0.0
+	match state:
+		"shatter":
+			if state_time >= SHATTER_TIME and is_on_floor():
+				set_state("stalk")
+		"idle", "stalk":
+			if state == "idle":
+				set_state("stalk")
+			face_player()
+			if branch == "Wanderer" and not _drunk and health_fraction() <= DRAUGHT_AT and absf(dx) > 80.0:
+				_drunk = true
+				_spilled = false
+				set_state("drink")
+				return
+			var close := absf(dx) <= BLADE_RANGE and absf(dy) < 48.0
+			match branch:
+				"Arcana":
+					if close:
+						_tell("cut_tell")
+					elif _cast_wait <= 0.0 and absf(dy) < 64.0:
+						_tell("cast_tell")
+					elif absf(dx) < KEEP - 24.0:
+						velocity.x = -signf(dx) * WALK * 0.8
+					elif absf(dx) > KEEP + 40.0:
+						velocity.x = signf(dx) * WALK
+				"Wanderer":
+					if close:
+						_tell("cut_tell")
+					elif absf(dx) <= DASH_RANGE and absf(dy) < 48.0 and state_time > 0.3:
+						_tell("dash_tell")
+					else:
+						velocity.x = signf(dx) * WALK
+				_:
+					if close:
+						_cuts = 0
+						_tell("cut_tell")
+					else:
+						velocity.x = signf(dx) * WALK
+		"cut_tell":
+			if state_time >= CUT_TELL:
+				_swing("side", "f_cut")
+		"f_cut":
+			_strike(delta)
+			if state_time >= SWING_TIME:
+				_cut = ""
+				_cuts += 1
+				if branch == "Blade" and _cuts < 2:
+					_tell("cut_tell")
+				elif branch == "Blade":
+					_tell("heavy_tell")
+				else:
+					set_state("f_recover")
+		"heavy_tell":
+			if state_time >= HEAVY_TELL:
+				_swing("side", "heavy")
+				velocity.x = facing * HEAVY_LUNGE
+		"heavy":
+			velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
+			if not _struck:
+				_struck = hit_player_in_rect(blade_rect(), HEAVY_DAMAGE) != ""
+			if state_time >= HEAVY_TIME:
+				_cut = ""
+				set_state("f_recover")
+				Feel.add_trauma(0.15)
+		"cast_tell":
+			if state_time >= CAST_TELL:
+				_cast()
+				_cast_wait = CAST_GAP
+				set_state("f_recover")
+		"dash_tell":
+			if state_time >= DASH_TELL:
+				_struck = false
+				velocity = Vector2(facing * DASH_SPEED, 0.0)
+				set_state("dash")
+				Sfx.play("dash", 0.05, -2.0)
+		"dash":
+			velocity.y = 0.0
+			if not _struck:
+				_struck = hit_player_in_rect(Rect2(center() - body_size * 0.5, body_size).grow(4.0), DASH_DAMAGE) != ""
+			if state_time >= DASH_TIME:
+				velocity.x = 0.0
+				set_state("f_recover")
+		"drink":
+			if _spilled:
+				set_state("f_recover")
+			elif state_time >= DRAUGHT_TIME:
+				hp = mini(max_hp, hp + roundi(max_hp * DRAUGHT_HEAL))
+				Sfx.play("item", 0.0, -4.0)
+				set_state("stalk")
+		"f_recover":
+			if state_time >= FREE_RECOVER:
+				set_state("stalk")
+		_:
+			set_state("stalk")
+
+
+func _tell(s: String) -> void:
+	velocity.x = 0.0
+	face_player()
+	set_state(s)
+
+
+func _swing(kind: String, next: String) -> void:
+	_cut = kind
+	_cut_time = 0.0
+	_struck = false
+	set_state(next)
+	Sfx.play("heavy" if next == "heavy" else "slash", 0.05, -2.0)
+
+
+## A bolt of shadow from its hand, straight at you.
+func _cast() -> void:
+	var b := ShadowBolt.new()
+	b.boss = self
+	b.direction = facing
+	b.bounds = arena
+	get_parent().add_child(b)
+	b.global_position = global_position + Vector2(facing * 14.0, -body_size.y * 0.6)
+	Sfx.play("swell", 0.1, 2.0)
+
+
 func die() -> void:
 	if state == "dying":
 		return
@@ -328,6 +541,32 @@ func _process(delta: float) -> void:
 		super.die()
 
 
+## Its own pose once it fights on its own: [anim, frame].
+func _free_pose() -> Array:
+	match state:
+		"cut_tell", "heavy_tell":
+			return ["slash1", 0]
+		"f_cut":
+			return ["slash1", 2]
+		"heavy":
+			return ["slash3", 2]
+		"cast_tell":
+			return ["cast", 0]
+		"dash_tell":
+			return ["idle", 0]
+		"dash":
+			return ["dash", 0]
+		"drink":
+			return ["drink", PlayerVisual.frame_at("drink", state_time)]
+		"stagger":
+			return ["hurt", 0]
+	if not is_on_floor():
+		return ["fall", 0]
+	if absf(velocity.x) > 10.0:
+		return ["run", PlayerVisual.frame_at("run", state_time)]
+	return ["idle", PlayerVisual.frame_at("idle", state_time)]
+
+
 ## How solid it is drawn: it fades into the floor and back.
 func presence() -> float:
 	match state:
@@ -347,7 +586,7 @@ func presence() -> float:
 func _draw() -> void:
 	var t := Time.get_ticks_msec() * 0.001
 	# The mirror line: a faint seam of light down the middle of the hall.
-	if state != "dormant" and not dead or state == "dying":
+	if phase == 1 and (state != "dormant" and not dead or state == "dying"):
 		var ax := axis() - global_position.x
 		var top := arena.position.y - global_position.y
 		var k := 0.5 + 0.5 * sin(t * 1.5)
@@ -363,6 +602,10 @@ func _draw() -> void:
 	if state == "rise" or state == "cut":
 		anim = "slash1"
 		frame = 0 if state == "rise" else 2
+	elif phase == 2:
+		var pose := _free_pose()
+		anim = pose[0]
+		frame = pose[1]
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
 	# A violet rim around a body of shadow: you, cut out of the dark.
 	for o: Vector2 in [Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1)]:
