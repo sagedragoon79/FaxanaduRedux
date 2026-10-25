@@ -19,6 +19,7 @@ const SCROLL_TIME := 0.34
 const ARRIVE_INSET := 14.0
 ## Upward speed when arriving through a floor door from below.
 const RISE_SPEED := -430.0
+const TOP_ARRIVE_FALL := 120.0
 ## Falling this far below the room without a door puts the player back on safe ground.
 const FALL_RESCUE := 64.0
 
@@ -31,6 +32,7 @@ const ZONES := {
 	"daybreak": {"name": "Daybreak", "color": Color("a58cd0")},
 	"dartmoor": {"name": "Dartmoor", "color": Color("4a9aa8")},
 	"zenis": {"name": "Zenis", "color": Color("8a3a5a")},
+	"sunken": {"name": "Sunken Spring", "color": Color("3a8a9a")},
 	"gym": {"name": "Movement Gym", "color": Color("8d84a3")},
 	"test": {"name": "Test Rooms", "color": Color("8d84a3")},
 }
@@ -345,6 +347,9 @@ func _place_at_door(door: Dictionary, vel: Vector2) -> void:
 			vel.y = minf(vel.y, 0.0)
 		"top":
 			pos.y = r.end.y + 40.0
+			# Down through a floor door you come falling, even into water that
+			# would otherwise float you straight back up through it.
+			vel.y = maxf(vel.y, TOP_ARRIVE_FALL)
 		"bottom":
 			pos.y = r.position.y + 8.0
 			vel.y = RISE_SPEED

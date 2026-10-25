@@ -1,0 +1,53 @@
+name: Spring Gate
+zone: sunken
+map: 60, -6
+sign: 32, 17, THE SUNKEN SPRING. Every spring of the Tree rose from here once. It has not seen the sky in an age.
+chest_gold: 120
+door: 1, dartmoor/meteor_rise, 3
+door: 2, sunken/drowned_aqueduct, 1
+---
+#############111########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa########################
+#############aaa######................##
+#############aaa######................##
+#########aaaaaaa######................##
+#########aaaaaaa######................##
+##aaaaaaaaaaaaaa######................##
+##aaaaaaaaaaaaaa######................##
+##aaaaaaaaaaaaaa######................##
+##aaaaaaaaaaaaaa######...........PS...##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaa##########
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaa##########
+##aaaaaaaalaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#######
+##aaaaaa#######aaaaaaaaaaaaaaaaaa#######
+##aaaaaa#######aaaaaaaaaaaaaaaaaa#######
+##aaaaaa#######aaaaaaaaaaaaaaaaaa#######
+##aaaaaa#######aaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaa#######aaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaa########aaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaa########aaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaa########aaaaaaa##
+##aaaaaaaaaaaaaaaaaaaaa########aaaaaaa##
+##aaaaFaaaaaaaaaaaaaaaa########aaaaaaa##
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa##
+######aaaaaaaaaaaaaaaaaaaaaaaalaaaaaaa##
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2
+######aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$aa2
+########################################
+########################################

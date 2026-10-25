@@ -126,6 +126,12 @@ var water_push := 0.0
 ## How much of their weight the player has this frame: a GravityDrift pocket in
 ## Zenis lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
 var gravity_scale := 1.0
+## Deep water around the body's centre this frame (the Sunken Spring, legend
+## `a`), and the y of its surface in that column. Set by SwimWater each frame.
+var in_water := false
+var water_surface := 0.0
+## True while swimming (the body was in deep water on the last physics frame).
+var swimming := false
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -237,22 +243,32 @@ func _physics_process(delta: float) -> void:
 	_try_hourglass()
 	_try_attack(on_floor)
 
+	swimming = in_water
+	if swimming:
+		_refresh_air_moves()
 	if is_dashing:
 		_dash_step(delta)
 	else:
 		_horizontal_step(delta, on_floor)
 
-	_try_jump()
+	if swimming:
+		_try_stroke()
+	else:
+		_try_jump()
 	_apply_jump_cut()
 
 	if not is_dashing:
-		_apply_gravity(delta, on_floor)
+		if swimming:
+			_swim_drift(delta)
+		else:
+			_apply_gravity(delta, on_floor)
 	_apply_wall_slide()
 	if water_push > 0.0:
 		# A waterfall beats you down: no climbing or jumping up through it.
 		velocity.y = maxf(velocity.y, water_push)
 	water_push = 0.0
 	gravity_scale = 1.0
+	in_water = false
 
 	if is_attacking:
 		_process_attack_hits()
@@ -353,6 +369,8 @@ func _horizontal_step(delta: float, on_floor: bool) -> void:
 		target *= combat.guard_move_multiplier
 	if in_sap:
 		target *= SAP_SPEED
+	if swimming:
+		target *= tuning.swim_speed_multiplier
 	var accel: float
 	if on_floor:
 		if input.move_x != 0:
@@ -467,6 +485,32 @@ func _apply_gravity(delta: float, on_floor: bool) -> void:
 	velocity.y += g * gravity_scale * delta
 	var max_fall := tuning.max_fast_fall_speed if input.down else tuning.max_fall_speed
 	velocity.y = minf(velocity.y, max_fall * gravity_scale)
+
+
+# --- Swimming -------------------------------------------------------------------
+
+## In deep water a jump press is a stroke up, or, with the head above the
+## surface, a full jump out onto the bank.
+func _try_stroke() -> void:
+	if _jump_buffer_timer <= 0.0:
+		return
+	if global_position.y - BODY_SIZE.y < water_surface:
+		_do_jump()
+		return
+	_jump_buffer_timer = 0.0
+	velocity.y = minf(velocity.y, -tuning.swim_stroke)
+	visual.squash(Vector2(1.1, 0.9))
+	Sfx.play("swim", 0.1)
+
+
+## The water holds the body up: it eases toward a slow float to the surface,
+## or a sink while Down is held. Anything rising faster (a jump out) runs on.
+func _swim_drift(delta: float) -> void:
+	var target := tuning.swim_sink if input.down else -tuning.swim_float
+	if velocity.y < -tuning.swim_stroke - 1.0:
+		velocity.y += tuning.gravity * delta
+		return
+	velocity.y = move_toward(velocity.y, target, tuning.swim_drag * delta)
 
 
 # --- Dash -----------------------------------------------------------------------

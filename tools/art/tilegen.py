@@ -197,6 +197,29 @@ def paint_meteor(img, ox, oy, seed, ramp):
             img.putpixel((ox + x, oy + y), c(col))
 
 
+def paint_spring(img, ox, oy, seed, ramp):
+    """The Sunken Spring: pale limestone laid down by the spring itself over an
+    age, in wavy strata like the rims of terraced pools, pocked with pores, a
+    blue-green mineral stain bleeding along some layers."""
+    for y in range(T):
+        for x in range(T):
+            wave = math.sin((x + seed * 3) / (5.0 * D)) * 1.5 * D + math.sin((x + seed) / (2.3 * D)) * 0.6 * D
+            layer = int((y + wave) // (5 * D))
+            ly = (y + wave) % (5 * D)
+            shade = 4 if hash2(layer, seed, seed + 2) > 0.5 else 3
+            if ly < D:
+                col = f"{ramp}-{shade + 1}"
+            elif ly > 4 * D:
+                col = f"{ramp}-{shade - 2}"
+            else:
+                col = f"{ramp}-{shade}"
+            if hash2(x // D, y // D, seed + 5) > 0.93:
+                col = f"{ramp}-{shade - 2}"   # a pore
+            if hash2(layer, 7, seed + 9) > 0.7 and ly > 3 * D and hash2(x // (2 * D), layer, seed) > 0.35:
+                col = "sky-3"                  # the spring's mineral stain
+            img.putpixel((ox + x, oy + y), c(col))
+
+
 def crystal_vein(img, ox, oy, seed):
     """Dartmoor: a vein of meteor crystal, a jagged run of shards up through the
     joints. Only on tiles with an open face, so the solid fill doesn't repeat it."""
@@ -388,6 +411,8 @@ ZONES = {
                  "under": "night-1", "outline": "night-0"},
     "zenis": {"painter": paint_meteor, "ramp": "night", "cap": "moss", "light": "crystal", "glow": "sky-6", "cap_top": 4,
               "under": "night-0", "outline": "night-0"},
+    "sunken": {"painter": paint_spring, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "sky-6", "cap_top": 3,
+               "under": "night-1", "outline": "night-0"},
     "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
                  "under": "night-1", "outline": "night-0"},
 }
@@ -1243,6 +1268,69 @@ def zenis_mid():
     return img
 
 
+def sunken_far():
+    img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
+    gradient(img, "night-0", "sky-2")
+    rng = random.Random(86)
+    # Deep under the water: a vast flooded cavern of terraced limestone pools
+    # stepping down into the dark, shafts of pale light falling from far above.
+    for i in range(10):
+        y0 = int((i + rng.uniform(0.0, 0.5)) * BG_H / 10)
+        x0 = rng.randrange(-BG_W // 4, BG_W // 2)
+        wdt = rng.randrange(BG_W // 3, BG_W)
+        for dx in range(wdt):
+            x = x0 + dx
+            bump = int(math.sin(dx / (14.0 * D) + i) * 3 * D)
+            for dy in range(3 * D):
+                put(img, x, y0 + bump + dy, c("sky-2" if dy < D else "night-1"))
+            for dy in range(3 * D, 14 * D):
+                if hash2(x // (3 * D), (y0 + dy) // (3 * D), 86 + i) > 0.25:
+                    put(img, x, y0 + bump + dy, c("stone-1" if dy < 6 * D else "night-1"))
+    # Light falling from far above, in slanted shafts.
+    for _ in range(6):
+        x = rng.randrange(BG_W)
+        w = rng.randrange(12, 30) * D
+        for y in range(BG_H):
+            for dx in range(w):
+                if (dx + y // 3) % (6 * D) < D and hash2(x + dx, y // (2 * D), 87) > 0.5:
+                    put(img, x + dx + y // 4, y, c("sky-3"))
+    # Specks drifting in the water.
+    for _ in range(260):
+        put(img, rng.randrange(BG_W), rng.randrange(BG_H), c(rng.choice(["sky-4", "sky-3", "stone-3"])))
+    return img
+
+
+def sunken_mid():
+    img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
+    rng = random.Random(87)
+    # Nearer: the dwarves' drowned aqueduct, a line of arches on piers, and
+    # long weed swaying up from the bottom.
+    deck = int(BG_H * 0.42)
+    span = BG_W // 5
+    for i in range(5):
+        x0 = i * span
+        pw = rng.randrange(16, 24) * D
+        for y in range(deck, BG_H):
+            for dx in range(pw):
+                col = "stone-2" if dx < pw * 0.25 else "night-1"
+                if (y - deck) % (16 * D) < D:
+                    col = "night-0"
+                put(img, x0 + dx, y, c(col))
+        for dx in range(span - pw):
+            k = dx / (span - pw)
+            top = deck + 30 * D - int(math.sin(k * math.pi) * 34 * D)
+            for y in range(deck - 10 * D, top):
+                put(img, x0 + pw + dx, y, c("night-1" if y > deck - 8 * D else "stone-2"))
+    for _ in range(22):
+        x = rng.randrange(BG_W)
+        h = rng.randrange(60, 220) * D
+        for t in range(h):
+            sx = x + int(math.sin(t / (18.0 * D) + x) * 5 * D)
+            put(img, sx, BG_H - 1 - t, c("leaf-2" if t % (7 * D) else "leaf-3"))
+            put(img, sx + D, BG_H - 1 - t, c("night-1"))
+    return img
+
+
 def gym_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
@@ -1258,6 +1346,7 @@ BACKGROUNDS = {
     "daybreak": (daybreak_far, daybreak_mid),
     "dartmoor": (dartmoor_far, dartmoor_mid),
     "zenis": (zenis_far, zenis_mid),
+    "sunken": (sunken_far, sunken_mid),
     "gym": (gym_far, None),
 }
 

@@ -56,6 +56,16 @@ extends Resource
 @export var attack_cooldown := 0.28
 @export var slash_recoil := 90.0
 
+@export_group("Swimming")
+## Deep water (the Sunken Spring, bible 6.8): the body floats up toward the
+## surface, sinks while Down is held, and each jump press is a stroke upward.
+## With the head above water a jump press is a full jump out.
+@export var swim_speed_multiplier := 0.7
+@export var swim_float := 50.0
+@export var swim_sink := 120.0
+@export var swim_drag := 520.0
+@export var swim_stroke := 230.0
+
 @export_group("Damage")
 @export var hurt_invuln := 0.8
 
