@@ -1125,3 +1125,71 @@ func _close_menus() -> void:
 	for m in runner.get_tree().get_nodes_in_group("list_menu"):
 		m.close()
 	runner.get_tree().paused = false
+
+
+## Every boss fight, mashed for 15 s with the boss knocked down a phase every
+## 5 s, holds the frame budget (bible 15.3) and loads nothing from disk once it
+## has begun: the boss's sheet comes with the arena (`BossArena.warm`) and every
+## sound with the game (`Sfx.load_all`).
+const BOSS_ROOMS := ["trunk/root_chamber", "tower/foreman_hall", "tower/forepaw_lift",
+	"mist/sunken_chapel", "mist/spring_of_mist", "branches/crown_leaf", "daybreak/roost",
+	"dartmoor/throne_hall", "dartmoor/zenis_gate", "zenis/throne", "zenis/veins", "zenis/heart",
+	"sunken/wellspring"]
+const BOSS_AUDIT_FRAMES := 900
+
+
+func test_every_boss_fight_holds_the_frame_budget() -> void:
+	var report: Array[String] = []
+	var problems: Array[String] = []
+	var wavs := Array(DirAccess.get_files_at(Sfx.SFX_DIR)).filter(func(f: String) -> bool: return f.ends_with(".wav"))
+	check(Sfx.loads >= wavs.size() and wavs.size() > 80, "every sound loaded with the game (%d of %d)" % [Sfx.loads, wavs.size()])
+	for id: String in BOSS_ROOMS:
+		GameState.new_game()
+		Sheet._cache.clear()
+		var w := make_world({}, id)
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		w.player.has_shield = true
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		if not check(ar != null, "%s has a boss arena" % id):
+			continue
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 103
+		var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+		var sheets := Sheet._cache.size()
+		var loads := Sfx.loads
+		var start_nodes := _count_nodes(w)
+		var peak := start_nodes
+		var times: Array[int] = []
+		var total := 0
+		for f in BOSS_AUDIT_FRAMES:
+			_mash(w.player, rng, hold)
+			w.player.hp = 99999
+			if f % 300 == 299 and is_instance_valid(boss) and boss.has_method("take_hit") and boss.hp > 50:
+				boss.take_hit(int(boss.max_hp * 0.2), Vector2.RIGHT)
+			var t0 := Time.get_ticks_usec()
+			await frames(1)
+			var dt := Time.get_ticks_usec() - t0
+			times.append(dt)
+			total += dt
+			peak = maxi(peak, _count_nodes(w))
+		times.sort()
+		var avg := total / 1000.0 / BOSS_AUDIT_FRAMES
+		var p99 := times[int(BOSS_AUDIT_FRAMES * 0.99)] / 1000.0
+		report.append("%s %.2f/%.2f ms" % [id.get_file(), avg, p99])
+		if avg > 8.0 or p99 > 16.6:
+			problems.append("%s: average %.2f ms, 99th percentile %.2f ms" % [id, avg, p99])
+		if Sheet._cache.size() != sheets or Sfx.loads != loads:
+			problems.append("%s: loaded %d sheets and %d sounds mid-fight" % [id, Sheet._cache.size() - sheets, Sfx.loads - loads])
+		if peak >= start_nodes + 40:
+			problems.append("%s: nodes piled up (%d -> %d)" % [id, start_nodes, peak])
+		w.queue_free()
+		await frames(2)
+	TimeStop.reset()
+	print("  Boss frames (average/99th): %s" % ", ".join(report))
+	check(report.size() == BOSS_ROOMS.size(), "every boss fight ran (%d)" % report.size())
+	check(problems.is_empty(), "every fight holds the budget and loads nothing mid-fight: %s" % [problems])
