@@ -599,8 +599,15 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 
     Jump or attack turns an epilogue card early and holds the climb at 4x; pause skips to the thanks card,
     which ignores presses for its first second. The save is written with the cleared flag (save room and
-    spot unchanged), so Continue resumes at your last shrine. The secret ending (no deaths and the Battle Suit,
-    section 11) waits on the Sunken Spring and the Battle Suit.
+    spot unchanged), so Continue resumes at your last shrine.
+  - **The secret ending, as built (pass 88):** the save counts every death of the run (`deaths`, World adds one
+    each time the player falls; a new game starts at 0). If the heart dies with `deaths` at 0 and the Battle Suit
+    worn (`GameState.secret_ending()`), the save is also marked `cleared_secret` and the epilogue runs three more
+    cards: "Far under Dartmoor, the Sunken Spring wakes." (a fourth spring lights under the roots, ringing),
+    "Its water climbs the whole Tree, root to crown." (a column of spring light rises up the trunk) and "No one
+    saw you fall. The Tree remembers that." (the crown flowers in gold and white). Every thanks card now shows
+    your deaths; the secret one adds "The Source runs again." and "A flawless climb, in the Warden's Battle
+    Suit." Shoot it with `--ending=SECONDS[,PART] --secret`.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.
