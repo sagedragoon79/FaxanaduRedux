@@ -33,6 +33,7 @@ extends Node2D
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
 ##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
+##   --glide=FRAME              glide with Feather Fall from FRAME on, drifting right
 ##   --ending=SECONDS[,PART]    play the ending on frame 2 and run it SECONDS in (PART:
 ##                              epilogue, credits or thanks to start there)
 ##   --secret                   with --ending: the secret ending (no deaths, the Battle Suit)
@@ -252,6 +253,14 @@ func _process(_delta: float) -> void:
 		for id: String in String(_args["skills"]).split(","):
 			GameState.data.skills.append(id)
 		GameState.refresh_stats(player)
+	if _args.has("glide") and _frames >= int(_args["glide"]):
+		# Screenshots: glide from this frame on (Feather Fall, double jump spent).
+		player.feather_fall = true
+		player.abilities["boots"] = true
+		player.has_double_jump = false
+		player.input.scripted = true
+		player.input.jump_held = true
+		player.input.move_x = 1
 	if _args.has("swing") and _frames == int(_args["swing"]):
 		# Screenshots: swing the blade on this frame.
 		player.input.scripted = true

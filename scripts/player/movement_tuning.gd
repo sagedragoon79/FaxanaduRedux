@@ -39,6 +39,13 @@ extends Resource
 @export_group("Double jump")
 @export var double_jump_height := 48.0
 
+@export_group("Feather Fall")
+## Feather Fall (skill, bible 6.10): with the double jump spent, holding Jump
+## while falling eases the fall to glide_fall_speed, braking at glide_brake.
+## Air control is unchanged, so a glide carries you as far as you can steer.
+@export var glide_fall_speed := 60.0
+@export var glide_brake := 1500.0
+
 @export_group("Dash")
 @export var dash_speed := 380.0
 @export var dash_time := 0.15
