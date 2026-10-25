@@ -822,3 +822,47 @@ func test_evil_core_fight_soak_stays_lean() -> void:
 	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(beams > 10, "it fired beams all the while (%d)" % beams)
+
+
+func test_evil_heart_fight_soak_stays_lean() -> void:
+	GameState.new_game()
+	GameState.data.equipment["blade"] = "dragon_slayer"
+	var w := make_world({}, "zenis/heart", cell_feet(14, 20))
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	w.player.abilities["hourglass"] = true
+	GameState.data.equipment["blade"] = "dragon_slayer"
+	await frames(30)
+	var boss := runner.get_tree().get_first_node_in_group("boss") as EvilHeart
+	check(boss != null, "the heart wakes")
+	if boss == null:
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 83
+	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+	var start_nodes := _count_nodes(w)
+	var peak := start_nodes
+	var total_usec := 0
+	var states := {}
+	const FIGHT_FRAMES := 2400
+	for f in FIGHT_FRAMES:
+		if f == FIGHT_FRAMES / 3:
+			boss.phase = 2
+		if f == FIGHT_FRAMES * 2 / 3:
+			boss.phase = 3
+		if f % 400 == 200 and TimeStop.ready_to_turn():
+			TimeStop.start()
+		_mash(w.player, rng, hold)
+		var t0 := Time.get_ticks_usec()
+		await frames(1)
+		total_usec += Time.get_ticks_usec() - t0
+		if is_instance_valid(boss):
+			states[boss.state] = true
+		peak = maxi(peak, _count_nodes(w))
+	TimeStop.reset()
+	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+	print("  Heart soak: %.2f ms a frame on average, nodes %d -> %d, states %s" % [avg_ms, start_nodes, peak, states.keys()])
+	check(peak < start_nodes + 80, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
+	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	check(states.has("bound") and states.has("float"), "the roots bound it and let it go again")
+

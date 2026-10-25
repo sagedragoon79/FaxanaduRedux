@@ -27,6 +27,8 @@ const BOSSES := {
 		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the meteor."},
 	"evil_veins": {"title": "The Veins Go Dark", "skill_points": 1, "music": "evil_one",
 		"text": "Starved of its light, the core gutters. Above, the heart of the meteor lies open."},
+	"evil_one": {"title": "The Heart of the Meteor Dies", "skill_points": 1, "music": "evil_one",
+		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -167,6 +169,14 @@ func _start() -> void:
 			c.position = Vector2(w * 0.5, 6 * Room.TILE)
 			boss = c
 			c.defeated.connect(_on_defeated)
+		"evil_one":
+			# The heart hangs high over the middle of its chamber, out of any blade's reach.
+			var e := EvilHeart.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			e.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 17 * Room.TILE)
+			e.position = Vector2(w * 0.5, 8 * Room.TILE)
+			boss = e
+			e.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
