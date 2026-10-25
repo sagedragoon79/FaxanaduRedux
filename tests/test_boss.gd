@@ -2718,3 +2718,28 @@ func test_every_boss_marks_its_phases_on_the_health_bar() -> void:
 		if consts.has("DISPLAY_NAME") and not consts.has("PHASES"):
 			missing.append(f)
 	check(missing.is_empty(), "every boss with a health bar lists its phases: missing %s" % [missing])
+
+
+func test_a_phase_break_stings_and_lifts_the_music() -> void:
+	var setup := await _roc_world()
+	var arena: BossArena = setup[1]
+	var b: Borabohra = setup[2]
+	var breaks: Array[int] = []
+	arena.phase_broken.connect(func(level: int) -> void: breaks.append(level))
+	check(Music.track == "borabohra" and Music.intensity == 0, "the fight opens on its theme as written")
+	b.hp = roundi(b.max_hp * 0.45)
+	await frames(2)
+	check(breaks == [1] and arena.phases_passed == 1, "crossing the first mark is a phase break (%s)" % [breaks])
+	check(Music.intensity == 1, "and the music rises a step")
+	await frames(int(Music.PHASE_SHIFT_TIME * 60.0) + 5)
+	var pitch: float = Music._players[Music._active].pitch_scale
+	check_near(pitch, Music.PHASE_STEP, 0.001, "a semitone up, faster with it (%.4f)" % pitch)
+	await frames(10)
+	check(breaks == [1], "a break sounds once")
+	b.hp = roundi(b.max_hp * 0.2)
+	await frames(2)
+	check(breaks == [1, 2] and Music.intensity == 2, "the second mark lifts it again (%s)" % [breaks])
+	check_near(Music.pitch_for(2), pow(2.0, 2.0 / 12.0), 0.0005, "two semitones in all")
+	Music.play("title", 0.01)
+	await frames(2)
+	check(Music.intensity == 0 and Music._players[Music._active].pitch_scale == 1.0, "a new track starts as written")

@@ -7,6 +7,8 @@ extends Node2D
 
 signal started
 signal won
+## The boss crossed a PHASES mark (1 for the first, 2 for the second).
+signal phase_broken(level: int)
 
 ## Boss id -> how to make it and what it gives.
 const BOSSES := {
@@ -46,6 +48,8 @@ var entry_door := 0
 var seals := {}  # door number -> ArenaSeal
 
 var _open_timer := -1.0
+## Phase marks (the boss's PHASES) its health has crossed this fight.
+var phases_passed := 0
 
 
 func _ready() -> void:
@@ -59,6 +63,7 @@ func defeated_before() -> bool:
 func _physics_process(delta: float) -> void:
 	if room == null or defeated_before() and not fighting:
 		return
+	_track_phases()
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p == null or p.get_parent() != room:
 		return
@@ -75,6 +80,27 @@ func _physics_process(delta: float) -> void:
 		return
 	if not fighting and _distance_to_door(entry_door, p.global_position) >= START_DISTANCE and p.is_on_floor():
 		_start()
+
+
+## Watches the boss's health against its PHASES marks. Crossing one is a phase
+## break (design bible 13.3, Audio): a stinger, the music ducks under it and then
+## rises a semitone, and the screen shakes.
+func _track_phases() -> void:
+	if not fighting or boss == null or not is_instance_valid(boss) or boss.get("state") == "dead":
+		return
+	var marks: Array = boss.get_script().get_script_constant_map().get("PHASES", [])
+	var frac: float = boss.health_fraction()
+	var crossed := 0
+	for m: float in marks:
+		if frac <= m:
+			crossed += 1
+	if crossed > phases_passed:
+		phases_passed = crossed
+		Sfx.play("phase_break", 0.0, 3.0)
+		Music.duck(1.4, 12.0)
+		Music.intensify(crossed)
+		Feel.add_trauma(0.35)
+		phase_broken.emit(crossed)
 
 
 func _start() -> void:
