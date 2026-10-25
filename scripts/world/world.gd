@@ -172,7 +172,7 @@ func start(room_id: String, at := Vector2.INF) -> void:
 		add_child(camera)
 		camera.make_current()
 		add_child(TimeTint.new())
-	camera.set_room_limits(room.pixel_rect())
+	camera.set_room_limits(room.pixel_rect(), room.wide_camera())
 	camera.snap_to_target()
 
 
@@ -200,7 +200,7 @@ func _enter(room_id: String) -> void:
 	if use_game_state:
 		GameState.visit(room_id)
 	if camera != null:
-		camera.set_room_limits(room.pixel_rect())
+		camera.set_room_limits(room.pixel_rect(), room.wide_camera())
 	room_changed.emit(room)
 
 

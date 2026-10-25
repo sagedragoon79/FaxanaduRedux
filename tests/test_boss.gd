@@ -1257,7 +1257,7 @@ func _roc_world() -> Array:
 	w.player.hp = 9999
 	await frames(3)
 	var arena := _arena(w)
-	w.player.teleport(cell_feet(8, 19))
+	w.player.teleport(cell_feet(8, 25))
 	await _until(func() -> bool: return arena.fighting, 30)
 	var b := get_tree_boss() as Borabohra
 	await _until(func() -> bool: return b != null and b.state == "circle", 200)
@@ -1402,7 +1402,7 @@ func test_the_storm_strikes_you_when_you_stand_high() -> void:
 	var b: Borabohra = setup[2]
 	b.phase = 2
 	b._storm = 999.0
-	w.player.teleport(cell_feet(8, 13))
+	w.player.teleport(cell_feet(8, 19))
 	await frames(5)
 	b._call_storm()
 	var bolt := _storm_bolt(w)
@@ -2706,3 +2706,15 @@ func test_the_drowned_warden_gives_up_the_battle_suit() -> void:
 	await _until(func() -> bool: return not arena.fighting, 400)
 	check(not arena.fighting, "and the way back opens")
 	check(Shop.status("eolis_arms", 1, w.player) == "owned", "and no armor in the shops is better")
+
+
+func test_every_boss_marks_its_phases_on_the_health_bar() -> void:
+	# GameHud draws a tick per entry of PHASES; a boss without it broke the bar.
+	var missing: Array[String] = []
+	for f: String in DirAccess.get_files_at("res://scripts/bosses"):
+		if not f.ends_with(".gd"):
+			continue
+		var consts := (load("res://scripts/bosses/" + f) as Script).get_script_constant_map()
+		if consts.has("DISPLAY_NAME") and not consts.has("PHASES"):
+			missing.append(f)
+	check(missing.is_empty(), "every boss with a health bar lists its phases: missing %s" % [missing])

@@ -375,3 +375,55 @@ func test_the_giant_blade_sweeps_wide_but_swings_slow() -> void:
 	GameState.data.equipment.blade = "long_sword"
 	GameState.refresh_stats(p)
 	check(p.arc_bonus == 0.0 and p.swing_mult == 1.0, "other blades keep the plain arc and pace")
+
+
+func test_a_wide_room_eases_the_camera_out() -> void:
+	# Bible 6.7: a room with `camera: wide` frames 25% more each way, easing out.
+	var rows := ARENA.duplicate()
+	for i in 30:
+		rows.insert(1, "#..................#")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 36))
+	var cam := GameCamera.new()
+	cam.target = p
+	cam.view_size = Vector2(160, 90)
+	cam.set_room_limits(room.pixel_rect(), true)
+	arena.add_child(cam)
+	check(cam.frame_goal == GameCamera.WIDE and cam.frame_scale == 1.0, "it starts at the normal framing and aims wide")
+	await frames(6)
+	var mid := cam.frame_scale
+	check(mid < 1.0 and mid > GameCamera.WIDE, "it eases out, not in one jump (%.3f)" % mid)
+	await frames(int(GameCamera.ZOOM_EASE * 60.0 * 3.0))
+	check_near(cam.frame_scale, GameCamera.WIDE, 0.002, "and settles wide")
+	check(cam.zoom.is_equal_approx(Vector2.ONE * GameCamera.DETAIL * GameCamera.WIDE), "the zoom follows (%s)" % cam.zoom)
+	check(cam.visible_size().is_equal_approx(Vector2(200, 112.5)), "showing 25%% more each way (%s)" % cam.visible_size())
+	var half := cam.visible_size() * 0.5
+	var r := room.pixel_rect()
+	var e := cam.exact_position
+	check(e.x >= r.position.x + half.x - 0.01 and e.y <= r.end.y - half.y + 0.01, "the wider view still stays inside the room (%s)" % e)
+	var step := 1.0 / GameCamera.DETAIL
+	check(cam.subpixel.x >= 0.0 and cam.subpixel.x < step and cam.subpixel.y < step, "the sub-pixel shift stays under one render pixel (%s)" % cam.subpixel)
+	cam.set_room_limits(r)
+	check(cam.frame_scale == 1.0 and cam.frame_goal == 1.0, "a normal room snaps back at once, so the view never shows past its edges")
+	cam.queue_free()
+
+
+func test_the_wide_camera_never_shows_past_a_small_room() -> void:
+	var room := make_room(ARENA)  # 320 x 128 px
+	var cam := GameCamera.new()
+	cam.view_size = Vector2(160, 90)
+	cam.set_room_limits(room.pixel_rect(), true)
+	check(cam.visible_size().y <= 128.0 and cam.frame_goal >= 90.0 / 128.0 - 0.001, "the framing stops where the room's height runs out (%.3f)" % cam.frame_goal)
+	cam.set_room_limits(Rect2(0, 0, 170, 200), true)
+	check_near(cam.frame_goal, 160.0 / 170.0, 0.001, "and where its width runs out")
+	cam.set_room_limits(Rect2(0, 0, 150, 80), true)
+	check(cam.frame_goal == 1.0, "a room smaller than the screen is never zoomed in")
+	cam.free()
+
+
+func test_the_roost_frames_the_storm_wide() -> void:
+	var w := make_world({}, "daybreak/roost")
+	await frames(3)
+	check(w.room.wide_camera(), "the Roost asks for the wide camera")
+	check_near(w.camera.frame_goal, GameCamera.WIDE, 0.001, "and has the sky to frame it (%.3f)" % w.camera.frame_goal)
+	check(w.room.pixel_rect().size.y >= w.camera.view_size.y / GameCamera.WIDE, "it is tall enough for the wide view")

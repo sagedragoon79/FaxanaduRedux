@@ -46,6 +46,8 @@ const PHASE_2 := 0.5
 const VOLLEY_FEATHERS_2 := 7
 ## Health fraction where the duel begins.
 const PHASE_3 := 0.25
+## The phase marks on the health bar (GameHud).
+const PHASES := [PHASE_2, PHASE_3]
 const GALE_TELL := 0.8
 const GALE_TIME := 3.5
 ## How high over the arena's top it hovers to hold the gale.

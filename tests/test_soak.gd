@@ -560,7 +560,7 @@ func test_bloom_fight_soak_stays_lean() -> void:
 ## The Storm Roc fight at full tilt: a mashing player who can't die, 30 seconds,
 ## with the conduits woken every ten seconds so it is grounded and rises again.
 func test_roc_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "daybreak/roost", cell_feet(9, 19))
+	var w := make_world({}, "daybreak/roost", cell_feet(9, 25))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.abilities["stride"] = true

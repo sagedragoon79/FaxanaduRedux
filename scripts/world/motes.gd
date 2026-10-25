@@ -90,6 +90,8 @@ func _draw() -> void:
 	if _motes.is_empty():
 		return
 	var origin := _view_origin()
+	var t := get_viewport().get_canvas_transform()
+	var tiles := _tiles(get_viewport().get_visible_rect().size / t.get_scale())
 	var color: Color = _spec[1]
 	var sway: float = _spec[3]
 	var streak := Vector2.ZERO
@@ -102,11 +104,23 @@ func _draw() -> void:
 		var p: Vector2 = m[0] + Vector2(sin(_t * 0.9 + phase) * sway * depth, 0)
 		var a := (0.25 + 0.35 * depth) * (0.6 + 0.4 * sin(_t * 2.1 + phase * 3.0))
 		var s := 2.0 if float(i) / _motes.size() < float(_spec[4]) else 1.0
-		if streak != Vector2.ZERO:
-			var at := (origin + p).floor()
-			draw_line(at, at - streak * depth, Color(color, a * 0.8), 1.0)
-		else:
-			draw_rect(Rect2((origin + p).floor(), Vector2(s, s)), Color(color, a))
+		# The motes wrap over one normal screen; a wide camera sees past it, so
+		# the same field tiles across the extra width and height.
+		for off: Vector2 in tiles:
+			var at := (origin + p + off).floor()
+			if streak != Vector2.ZERO:
+				draw_line(at, at - streak * depth, Color(color, a * 0.8), 1.0)
+			else:
+				draw_rect(Rect2(at, Vector2(s, s)), Color(color, a))
+
+
+## Offsets of the copies of the VIEW-sized mote field that cover `seen`.
+func _tiles(seen: Vector2) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for y in ceili(seen.y / VIEW.y):
+		for x in ceili(seen.x / VIEW.x):
+			out.append(Vector2(x, y) * VIEW)
+	return out
 
 
 ## The world position of the screen's top-left corner.
