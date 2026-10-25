@@ -288,8 +288,8 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Max fall speed | 520 px/s; 620 px/s while holding down |
 | Air acceleration | 1,400 px/s²; air deceleration 900 px/s² |
 | Coyote time | 0.10 s |
-| Jump buffer | 0.12 s (works on ground, wall and double jump) |
-| Corner correction | nudge up to 6 px horizontally on head bump; 4 px vertically on ledge clip |
+| Jump buffer | 0.12 s (works on ground, wall and double jump; a double jump pressed late in an air dash fires the frame the dash ends) |
+| Corner correction | nudge up to 6 px horizontally on head bump; 4 px vertically on ledge clip, including while wall-sliding with the Climbing Glove (the clip steps you onto the ledge instead of catching you in a slide). Both limits are inclusive (pass 107) |
 | Minimum jump height | about 18 px (tap) |
 
 ### 6.3 Wall slide and wall jump (Climbing Glove)
@@ -300,7 +300,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Wall stick | 0.08 s before pushing away detaches |
 | Wall jump velocity | 220 px/s outward, 380 px/s up (pushing away from the wall) |
 | Climb jump velocity | 120 px/s outward, 380 px/s up (neutral or toward the wall; lock 0.06 s) |
-| Input lock after wall jump | 0.10 s, then control blends back over 0.10 s |
+| Input lock after wall jump | 0.10 s, then control blends back over the next 0.10 s (the blend starts when the lock ends; until pass 107 the two ran together, so there was no blend) |
 | Same-wall climb | allowed (neutral wall jump goes up and slightly out, Hollow Knight style) |
 | Wall coyote | 0.08 s after leaving a wall |
 

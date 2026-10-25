@@ -698,3 +698,156 @@ func test_a_boss_kill_freezes_then_ramps_back_from_slow_motion() -> void:
 	check(Engine.time_scale == 1.0, "reset ends it")
 
 
+
+
+# --- Bible 6.3, 6.4 and 6.6, pinned (pass 107) ----------------------------------
+
+## Slides down the right wall of SHAFT, then returns the player mid-slide.
+func _sliding(abilities := {}) -> Player:
+	var p := await _start_on_right_wall(abilities)
+	await frames(10)
+	return p
+
+
+func test_pushing_off_a_wall_sticks_for_0_08_s() -> void:
+	var p := await _sliding({"boots": false})
+	check(p.is_wall_sliding, "sliding")
+	p.input.move_x = -1
+	var held := 0
+	for i in 20:
+		await frames(1)
+		if not p.is_wall_sliding:
+			break
+		held += 1
+	# 0.08 s is 4.8 frames.
+	check(held >= 4 and held <= 5, "pushing away holds the slide for 0.08 s (%d frames)" % held)
+
+
+## Wall-jumps off the right wall with `jump_x` held, then holds `then_x`;
+## returns vx for each of the next 16 frames.
+func _wall_jump_vx(jump_x: int, then_x: int) -> Array[float]:
+	var p := await _sliding({"boots": false})
+	p.input.move_x = jump_x
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var vx: Array[float] = []
+	for i in 16:
+		await frames(1)
+		vx.append(p.velocity.x)
+		p.input.move_x = then_x
+	return vx
+
+
+func test_the_wall_jump_locks_input_then_blends_it_back() -> void:
+	var t := MovementTuning.new()
+	# Away from the wall, then straight back toward it.
+	var vx := await _wall_jump_vx(-1, 1)
+	check_near(vx[0], -t.wall_jump_x, 0.01, "a wall jump pushing away leaves at 220 px/s")
+	check_near(vx[5], -t.wall_jump_x, 0.01, "steering is locked for 0.10 s (6 frames)")
+	check(vx[7] > vx[6], "then control returns (%.1f -> %.1f)" % [vx[6], vx[7]])
+	var first := vx[7] - vx[6]
+	var full := t.air_accel / 60.0
+	check(first < full * 0.5, "eased in, not all at once (%.1f of %.1f px/s a frame)" % [first, full])
+	check_near(vx[13] - vx[12], full, 0.5, "full air control after the 0.10 s blend")
+
+
+func test_a_climb_jump_goes_up_and_slightly_out() -> void:
+	var t := MovementTuning.new()
+	var vx := await _wall_jump_vx(0, 1)
+	check_near(vx[0], -t.wall_climb_jump_x, 0.01, "a neutral wall jump leaves at 120 px/s")
+	check_near(vx[3], -t.wall_climb_jump_x, 0.01, "locked for 0.06 s (4 frames)")
+	check(vx[5] > vx[4], "then you can steer back to the wall")
+	var p := await _sliding({"boots": false})
+	p.input.move_x = 1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	check_near(p.velocity.x, -t.wall_climb_jump_x, 0.01, "holding toward the wall is a climb jump too")
+	check(p.velocity.y < -t.wall_jump_y + 30.0, "rising at about 380 px/s (vy %.1f)" % p.velocity.y)
+
+
+## Lets go of the right wall, then presses Jump `k` frames after the last frame
+## that touched it (k >= 2).
+func _jump_after_wall(k: int) -> bool:
+	var p := await _sliding({"boots": false})
+	p.input.move_x = -1
+	for i in 30:
+		await frames(1)
+		if p.wall_dir == 0:
+			break  # the first frame off the wall has run
+	await frames(k - 2)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	return p.velocity.y < -300.0
+
+
+func test_wall_coyote_lasts_0_08_s() -> void:
+	# 0.08 s is 4.8 frames after the last frame on the wall.
+	check(await _jump_after_wall(2), "a wall jump 2 frames off the wall still counts")
+	check(await _jump_after_wall(4), "and 4 frames (0.067 s) off")
+	check(not await _jump_after_wall(5), "5 frames (0.083 s) off is too late")
+
+
+func test_double_jump_numbers_and_refresh() -> void:
+	var t := MovementTuning.new()
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(5, 10), {"glove": true})
+	await frames(4)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	# Read after its first frame, which already carries a frame of gravity.
+	check_near(p.velocity.y, -t.double_jump_velocity + t.gravity / 60.0, 0.05, "a double jump leaves at 326 px/s")
+	check(not p.has_double_jump, "spent")
+	# Touching a wall gives it back.
+	p.input.move_x = 1
+	for i in 60:
+		await frames(1)
+		if p.wall_dir == 1:
+			break
+	check(p.has_double_jump, "touching a wall gives the double jump back")
+
+
+func test_the_buffer_carries_a_double_jump_through_an_air_dash() -> void:
+	# Bible 6.2: the buffer works on the double jump too. Pressed late in an air
+	# dash, it fires the frame the dash ends.
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(3, 6), {"glove": false})
+	await frames(3)
+	p.input.dash_pressed = true
+	await frames(1)
+	check(p.is_dashing, "air dash")
+	var n := 1
+	while n < 30:
+		if n == 5:
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+		await frames(1)
+		n += 1
+		if not p.is_dashing:
+			break
+	check(p.velocity.y < -300.0, "the double jump fires the frame the dash ends (vy %.1f)" % p.velocity.y)
+	check(not p.has_double_jump, "and is spent")
+
+
+## Pogos off SPIKE_FLOOR with Jump held or not; returns the bounce speed.
+func _pogo_speed(hold_jump: bool) -> float:
+	var p := _drop_onto_spikes()
+	for i in 60:
+		if p.velocity.y > 0.0 and p.global_position.y > SPIKE_TOP - 28.0 and not p.is_attacking:
+			p.input.down = true
+			p.input.attack_pressed = true
+		p.input.jump_held = hold_jump
+		await frames(1)
+		if p.velocity.y < -300.0:
+			return -p.velocity.y
+	return 0.0
+
+
+func test_pogo_numbers_match_the_bible() -> void:
+	var t := MovementTuning.new()
+	Feel.last_hitstop = 0.0
+	check_near(await _pogo_speed(false), t.pogo_bounce, 0.5, "a pogo bounces at 380 px/s")
+	check_near(Feel.last_hitstop, 0.045, 0.0001, "with a 45 ms hit-stop")
+	check_near(await _pogo_speed(true), t.pogo_bounce_held, 0.5, "holding Jump bounces at 420 px/s")
