@@ -19,13 +19,22 @@ const LOOK_DOWN := 72.0
 const LOOK_DOWN_DELAY := 0.4
 const FOLLOW_SPEED := 10.0
 const FOCUS_OFFSET := Vector2(0, -28)
+## A wide room (header `camera: wide`, design bible 6.7) is framed at this
+## scale: the world shows 25% more of the room each way.
+const WIDE := 0.8
+## Seconds the zoom takes to ease most of the way to a new room's framing.
+const ZOOM_EASE := 0.6
 
 var target: Player
-## Size of the visible area in world pixels (the base resolution).
+## Size of the visible area in world pixels at the normal framing.
 var view_size := Vector2(640, 360)
 var bounds := Rect2()
-## Fractional part of the camera position below one render pixel, in world
-## pixels, in [0, 1 / DETAIL).
+## The framing now: 1 is normal, below 1 shows more of the world (WIDE).
+var frame_scale := 1.0
+## The framing the camera eases toward (set_room_limits).
+var frame_goal := 1.0
+## Fractional part of the camera position below one render pixel, in screen
+## pixels (world pixels at the normal framing), in [0, 1 / DETAIL).
 var subpixel := Vector2.ZERO
 ## The unrounded camera center.
 var exact_position := Vector2.ZERO
@@ -45,14 +54,29 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	zoom = Vector2(DETAIL, DETAIL)
+	zoom = Vector2(DETAIL, DETAIL) * frame_scale
 	position_smoothing_enabled = false
 	if target:
 		snap_to_target()
 
 
-func set_room_limits(rect: Rect2) -> void:
+## Sets the room's bounds and framing. A wide room eases out to WIDE, but
+## never so far that the view would show past the room's edges.
+func set_room_limits(rect: Rect2, wide := false) -> void:
 	bounds = rect
+	frame_goal = 1.0
+	if wide and rect.size != Vector2.ZERO:
+		var fits := maxf(view_size.x / rect.size.x, view_size.y / rect.size.y)
+		frame_goal = clampf(maxf(WIDE, fits), WIDE, 1.0)
+	if frame_goal > frame_scale:
+		# Out of a wide room into a normal one: frame it at once, or the view
+		# would show past the smaller room's edges while it eased in.
+		frame_scale = frame_goal
+
+
+## The visible area in world pixels at the current framing.
+func visible_size() -> Vector2:
+	return view_size / frame_scale
 
 
 func snap_to_target() -> void:
@@ -90,21 +114,25 @@ func _process(delta: float) -> void:
 	var down_goal := LOOK_DOWN if _down_hold > LOOK_DOWN_DELAY else 0.0
 	_look_down = lerpf(_look_down, down_goal, 1.0 - exp(-delta * 6.0))
 
+	if frame_scale != frame_goal:
+		frame_scale = move_toward(lerpf(frame_scale, frame_goal, 1.0 - exp(-delta * (3.0 / ZOOM_EASE))), frame_goal, 0.0005)
+		zoom = Vector2(DETAIL, DETAIL) * frame_scale
 	var goal := _clamp_to_bounds(_focus + Vector2(_look_ahead, _look_down))
 	exact_position = exact_position.lerp(goal, 1.0 - exp(-delta * FOLLOW_SPEED))
 	_apply(exact_position + Feel.shake_offset)
 
 
 func _apply(exact: Vector2) -> void:
-	var whole := (exact * DETAIL).floor() / DETAIL
-	subpixel = exact - whole
+	var px := DETAIL * frame_scale
+	var whole := (exact * px).floor() / px
+	subpixel = (exact - whole) * frame_scale
 	global_position = whole
 
 
 func _clamp_to_bounds(c: Vector2) -> Vector2:
 	if bounds.size == Vector2.ZERO:
 		return c
-	var half := view_size * 0.5
+	var half := visible_size() * 0.5
 	var lo := bounds.position + half
 	var hi := bounds.end - half
 	return Vector2(

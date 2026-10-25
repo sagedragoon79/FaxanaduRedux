@@ -137,7 +137,10 @@ func _start() -> void:
 			# The roc comes down out of the storm over the middle island.
 			var b := Borabohra.new()
 			var w := float(room.size_tiles.x * Room.TILE)
-			b.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			# The roost has open sky above the fight for the wide camera; the roc
+			# keeps to the 16 rows above the floor.
+			var top := float((room.size_tiles.y - 19) * Room.TILE)
+			b.arena = Rect2(Room.TILE, top, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = b
 			b.defeated.connect(_on_defeated)
 		"king_grieve":

@@ -769,3 +769,8 @@ func _sap_pool() -> SapPool:
 		_sap_node.cells = _sap_cells
 		add_child(_sap_node)
 	return _sap_node
+
+
+## True when the header asks for the wide camera (`camera: wide`, design bible 6.7).
+func wide_camera() -> bool:
+	return str(header.get("camera", "")) == "wide"
