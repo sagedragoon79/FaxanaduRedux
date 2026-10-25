@@ -13,7 +13,8 @@ bible changes substantially (link in the project memory).
   Look at screenshots of anything visual you change.
 - Regenerate sound effects: `python3 tools/audio/sfxgen.py`. Placeholder music and ambience:
   `python3 tools/audio/musicgen.py` (needs ffmpeg). A file Sean supplies with the same name in
-  `assets/music/` (.ogg, .mp3 or .wav) replaces a placeholder. Palette: `python3 tools/art/palette.py`.
+  `assets/music/` (.ogg, .mp3 or .wav) replaces a placeholder. Check the mix for clipping and stray levels:
+  `python3 tools/audio/levels.py --check`. Palette: `python3 tools/art/palette.py`.
 - Regenerate zone tilesets and parallax backgrounds: `python3 tools/art/tilegen.py` (every new
   zone folder in `levels/` needs a material spec there; a test checks it).
 - Player sprite sheet: `python3 tools/art/spritegen.py`. Enemy and NPC sheets (NPCs from their

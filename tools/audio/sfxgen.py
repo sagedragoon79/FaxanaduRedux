@@ -166,7 +166,7 @@ def main():
     save("drink", lowpass(noise(d), 700 + 400 * np.sin(2 * np.pi * 8 * t_axis(d)) ** 2) * env(int(RATE * d), 0.02, 0.8), 0.45)
 
     d = 0.9
-    save("death", lowpass(osc(slide(330, 55, d, 0.6), "square", 0.5), slide(3000, 400, d)) * env(int(RATE * d), 0.005, 0.9), 0.7)
+    save("death", lowpass(osc(slide(330, 55, d, 0.6), "square", 0.5), slide(3000, 400, d)) * env(int(RATE * d), 0.005, 0.9), 0.4)
 
     d = 0.12
     save("fizzle", highpass(lowpass(noise(d), 2500), 800) * env(int(RATE * d), 0.002, 2.0), 0.35)
@@ -464,6 +464,17 @@ def main():
     chime = (osc(np.full(n, 1318.0), "sine") + osc(np.full(n, 1976.0), "sine") * 0.6) * env(n, 0.002, 2.4) * 0.5
     puff = lowpass(noise(d), slide(4000, 600, d, 0.6)) * env(n, 0.004, 2.0) * 0.5
     save("tilte_hit", mix(chime, puff), 0.55)
+
+    # A boss crossing into its next phase: a deep impact, a reversed swell and a
+    # bright ringing fifth over it, so the moment lands even under the music.
+    d = 1.4
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    boom = osc(slide(70, 34, d, 0.5), "sine") * env(n, 0.002, 2.2) * 1.2
+    crack = highpass(noise(0.12), 1200) * env(int(RATE * 0.12), 0.001, 2.5) * 0.8
+    swell = lowpass(noise(d), slide(300, 5000, d, 0.4)) * np.clip(t / 0.35, 0, 1) * np.exp(-np.maximum(t - 0.35, 0) * 5) * 0.35
+    ring = (osc(np.full(n, 440.0), "sine") + osc(np.full(n, 659.3), "sine") * 0.7 + osc(np.full(n, 880.0), "sine") * 0.4) * env(n, 0.01, 1.4) * 0.3
+    save("phase_break", mix(boom, crack, swell, ring), 0.75)
 
     # Dry bramble catching: a rush of flame and quick snapping twigs.
     d = 0.7

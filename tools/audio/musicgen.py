@@ -179,7 +179,9 @@ class Song:
         tail = out[self.length:]
         loop[: len(tail)] += tail[: self.length]
         peak = np.max(np.abs(loop)) + 1e-9
-        return loop / peak * 0.85
+        # 0.7 (-3 dBFS) leaves room for the Vorbis encoder's overshoot: at 0.85
+        # most tracks decoded past full scale and clipped (tools/audio/levels.py).
+        return loop / peak * 0.7
 
 
 def chord_tones(root_midi, scale, degree, count=3):

@@ -11,11 +11,17 @@ extends Node
 const DIR := "res://assets/music/"
 const EXTENSIONS := ["ogg", "mp3", "wav"]
 const FADE := 1.2
-const MUSIC_DB := -10.0
+const MUSIC_DB := -8.3
 const AMBIENCE_DB := -18.0
 const SILENT_DB := -60.0
+## Each boss phase raises the music a semitone (and its tempo with it), the
+## old "key change" lift (design bible 13.3, Audio).
+const PHASE_STEP := 1.0594631
+const PHASE_SHIFT_TIME := 0.8
 
 var track := ""
+## How many phase lifts the playing track has taken (0 = as written).
+var intensity := 0
 var ambience_track := ""
 
 ## True with no sound device (the Dummy driver: headless tests and CI). Nothing
@@ -50,9 +56,11 @@ func play(name: String, fade := FADE) -> void:
 	if name == track:
 		return
 	track = name
+	intensity = 0
 	var old := _players[_active]
 	_active = 1 - _active
 	var next := _players[_active]
+	next.pitch_scale = 1.0
 	_fade(old, SILENT_DB, fade, true)
 	var stream := stream_for(name)
 	if stream == null:
@@ -73,6 +81,21 @@ func duck(time: float, depth_db := 14.0) -> void:
 	tw.tween_property(p, "volume_db", MUSIC_DB - depth_db, 0.15)
 	tw.tween_interval(maxf(time - 0.8, 0.0))
 	tw.tween_property(p, "volume_db", MUSIC_DB, 0.65)
+
+
+## Lifts the playing track to `level` phase steps (a semitone each) over
+## PHASE_SHIFT_TIME. A new track starts back at 0.
+func intensify(level: int) -> void:
+	if level == intensity:
+		return
+	intensity = level
+	var tw := create_tween()
+	tw.tween_property(_players[_active], "pitch_scale", pitch_for(level), PHASE_SHIFT_TIME)
+
+
+## The pitch (and tempo) scale for a number of phase steps.
+static func pitch_for(level: int) -> float:
+	return pow(PHASE_STEP, level)
 
 
 func ambience(name: String, fade := FADE) -> void:
