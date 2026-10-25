@@ -650,7 +650,7 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
        (Eolis, the Trunk, the Tower, the Mist, the Branches, Daybreak, Dartmoor, the Crown), the springs running
        clear in the trunk, branches and leaves thickening, the sky warming from night to dawn. It ends on the
        crown in leaf where the meteor was, with the sun coming up. The credits rise over the trunk.
-    3. **Thanks**: "Thank you for playing", your rank and time played; a press returns to the title.
+    3. **Thanks**: "Thank you for playing", the completion card (section 11, pass 106), your rank and time played; a press returns to the title.
 
     Jump or attack turns an epilogue card early and holds the climb at 4x; pause skips to the thanks card,
     which ignores presses for its first second. The save is written with the cleared flag (save room and
@@ -813,7 +813,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 **Easter eggs:** a hidden room in Eolis rendered in authentic 8-bit NES palette and resolution, with the original's music style; the Guru recites the old password mantra as a joke ("Your mantra is..."): resting with him shows a 16-letter mantra made from your progress (`GameState.mantra()`); it is never typed back in. A secret ending if you reach the Evil One with no deaths and the Battle Suit.
 
-**Completion screen:** shows % with category ticks; 100% unlocks a boss rush and a "Lord" title glow on the cloak.
+**Completion screen:** shows % with category ticks; 100% unlocks a boss rush and a "Lord" title glow on the cloak. As built (pass 106), it is the ending's thanks card: "Thank you for playing", then one percent "of the world" in large type, and four rows counted up over 1.2 s as the card fades in. The rows are rooms explored, hidden rooms (rooms with a `secret:` cover whose flag `secret:<room>` is set), treasures (the catalog's item and chest ids collected) and bosses beaten. The percent is their average, rounded down, so 100% means every row is whole. A whole row turns gold. Below come rank, time and deaths, plus the clear count from the second clear on (`Completion.tally`, `EndingScreen.completion_rows`). The boss rush and the cloak's glow at 100% are not built yet.
 
 ---
 

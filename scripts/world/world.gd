@@ -145,6 +145,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"shrines": shrines,
 		## Pickup ids of the room's items and chests (Treasure Sense, design bible 9).
 		"treasures": treasures,
+		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
+		"secret": not parsed.lists.get("secret", []).is_empty(),
 	}
 
 
