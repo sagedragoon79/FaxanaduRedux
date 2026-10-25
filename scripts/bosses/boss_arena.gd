@@ -29,6 +29,8 @@ const BOSSES := {
 		"text": "Starved of its light, the core gutters. Above, the heart of the meteor lies open."},
 	"evil_one": {"title": "The Heart of the Meteor Dies", "skill_points": 1, "music": "evil_one",
 		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
+	"drowned_warden": {"armor": "battle_suit", "title": "Battle Suit", "skill_points": 1, "music": "warden",
+		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -179,6 +181,14 @@ func _start() -> void:
 			e.position = Vector2(w * 0.5, 8 * Room.TILE)
 			boss = e
 			e.defeated.connect(_on_defeated)
+		"drowned_warden":
+			# The Warden rises out of the middle of the Wellspring.
+			var d := DrownedWarden.new()
+			d.surface_y = _surface_y()
+			d.lane = Vector2(14 * Room.TILE, (room.size_tiles.x - 14) * Room.TILE)
+			d.position = Vector2(room.size_tiles.x * Room.TILE * 0.5, d.surface_y + DrownedWarden.LURK_DEPTH)
+			boss = d
+			d.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
@@ -203,6 +213,14 @@ func _on_defeated() -> void:
 		GameState.add_key(reward.key)
 		if reward.get("mana_dew", false) and p != null:
 			GameState.grant_stat_item("mana_dew", p)
+		GameState.banner.emit(reward.title, reward.text)
+	elif reward.has("armor"):
+		# Armor the boss wore or kept goes straight on (the Warden's Battle Suit).
+		var p := get_tree().get_first_node_in_group("player") as Player
+		GameState.data.equipment.armor = reward.armor
+		if p != null:
+			GameState.refresh_stats(p)
+			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("ability"):
 		# The ability the boss guarded (the Foreman drops the Mattock from its back).
@@ -246,11 +264,22 @@ func _seal(n: int) -> void:
 		_:
 			return
 	var seal := ArenaSeal.new()
-	seal.style = "iron" if room.zone in ["tower", "daybreak", "dartmoor", "zenis"] else "roots"
+	seal.style = "iron" if room.zone in ["tower", "daybreak", "dartmoor", "zenis", "sunken"] else "roots"
 	seal.size = area.size
 	seal.position = area.position
 	room.add_child(seal)
 	seals[n] = seal
+
+
+## The top of the room's deep water (the Wellspring), from its SwimWater.
+func _surface_y() -> float:
+	for c in room.get_children():
+		if c is SwimWater:
+			var top := INF
+			for cell: Vector2i in c.cells:
+				top = minf(top, cell.y * Room.TILE)
+			return top
+	return float(room.size_tiles.y * Room.TILE) * 0.5
 
 
 func p_x() -> float:

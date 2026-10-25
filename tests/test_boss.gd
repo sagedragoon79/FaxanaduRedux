@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one", "sunken", "amb_sunken", "warden"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -2286,3 +2286,211 @@ func test_the_heart_of_the_meteor_dies_for_good() -> void:
 	await frames(10)
 	check(get_tree_boss() == null, "and its heart never fights again")
 
+
+
+# --- The Drowned Warden (bible 8.10) ----------------------------------------------
+
+func _warden_world() -> Array:
+	var w := make_world({}, "sunken/wellspring")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	w.player.has_shield = true
+	for a: String in w.player.abilities:
+		w.player.abilities[a] = true
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(6, 14))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var b := get_tree_boss() as DrownedWarden
+	await _until(func() -> bool: return b != null and b.state == "wade", 200)
+	return [w, arena, b]
+
+
+func test_the_wellspring_wakes_the_drowned_warden() -> void:
+	var setup := await _warden_world()
+	var arena: BossArena = setup[1]
+	var b: DrownedWarden = setup[2]
+	check(arena.boss_id == "drowned_warden" and b != null and b.state == "wade", "walking into the Wellspring raises the Warden")
+	check_near(b.surface_y, 20.0 * Room.TILE, 0.5, "it knows where the water's surface is")
+	check(absf(b.global_position.y - (b.surface_y + DrownedWarden.WADE_DEPTH)) < 2.0, "and wades waist-deep in it")
+	check(Music.track == "warden", "the fight plays the Warden's theme (%s)" % Music.track)
+
+
+func test_drowned_warden_telegraphs_are_fair() -> void:
+	var b := DrownedWarden.new()
+	for p in [1, 2, 3]:
+		b.phase = p
+		for t: float in [DrownedWarden.THRUST_TELL, DrownedWarden.WAVE_TELL, DrownedWarden.GEYSER_TELL, DrownedWarden.UNDERTOW_TELL, DrownedWarden.SLAM_TELL]:
+			check(b.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [p, b.tell(t), Enemy.MIN_TELEGRAPH])
+	b.free()
+
+
+func test_drowned_warden_thrusts_along_its_aim_and_a_parry_opens_it() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var b: DrownedWarden = setup[2]
+	var p := w.player
+	b.global_position.x = 30 * Room.TILE
+	p.teleport(cell_feet(37, 19))
+	await frames(4)
+	b.set_state("thrust_tell")
+	var hp := p.hp
+	var tell := 0
+	for i in 90:
+		await frames(1)
+		if b.state == "thrust_tell":
+			tell += 1
+		if b.state == "recover":
+			break
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the thrust is telegraphed (%d frames)" % tell)
+	check(p.hp < hp, "and the trident reaches a player on the island (%d)" % (hp - p.hp))
+	b.facing = 1
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.LEFT)
+	check(hp0 - b.hp == 5, "its stone turns half a blow to the front (%d)" % (hp0 - b.hp))
+	hp0 = b.hp
+	b.take_hit(10, Vector2.DOWN)
+	check(hp0 - b.hp == 10, "but not one from above (%d)" % (hp0 - b.hp))
+	b.set_state("thrust")
+	b.stagger()
+	hp0 = b.hp
+	b.take_hit(10, Vector2.LEFT)
+	check(b.state == "staggered" and hp0 - b.hp == 10, "a parry leaves it reeling and open (%d)" % (hp0 - b.hp))
+
+
+func test_a_tidal_wave_catches_you_at_the_surface_but_not_deep_down() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var b: DrownedWarden = setup[2]
+	var p := w.player
+	b.set_state("recover")
+	b.global_position.x = 44 * Room.TILE
+	# Deep under the surface: the wave passes over.
+	p.teleport(Vector2(26 * Room.TILE, b.surface_y + 110.0))
+	var wave := TidalWave.new()
+	wave.lane = Vector2(0, 60 * Room.TILE)
+	w.room.add_child(wave)
+	wave.global_position = Vector2(16 * Room.TILE, b.surface_y)
+	var hp := p.hp
+	for i in 60:
+		p.input.down = true
+		await frames(1)
+	p.input.down = false
+	check(wave.global_position.x > 30 * Room.TILE and p.hp == hp, "diving deep, the wave runs over you (%d)" % (hp - p.hp))
+	# Standing on an island level with the surface, it knocks you down.
+	p.teleport(cell_feet(37, 19))
+	var w2 := TidalWave.new()
+	w2.lane = Vector2(0, 60 * Room.TILE)
+	w.room.add_child(w2)
+	w2.global_position = Vector2(30 * Room.TILE, b.surface_y)
+	hp = p.hp
+	await frames(40)
+	check(p.hp < hp, "but it catches a player standing in its path (%d)" % (hp - p.hp))
+
+
+func test_drowned_warden_waves_from_its_tell() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var b: DrownedWarden = setup[2]
+	b.set_state("wave_tell")
+	var tell := 0
+	while b.state == "wave_tell" and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "it raises its arms first (%d frames)" % tell)
+	var waves := w.room.get_children().filter(func(c: Node) -> bool: return c is TidalWave)
+	check(waves.size() == 1, "then one wave runs (%d)" % waves.size())
+	b.phase = 3
+	b.set_state("wave_tell")
+	await _until(func() -> bool: return b.state == "wade", 240)
+	await frames(1)
+	var later := 0
+	for c in w.room.get_children():
+		if c is TidalWave:
+			later += 1
+	check(b.state == "wade", "in the third phase the waves keep coming (%d running)" % later)
+
+
+func test_drowned_warden_geysers_up_under_you_then_hangs_open() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var b: DrownedWarden = setup[2]
+	var p := w.player
+	b.phase = 2
+	b.global_position.x = 40 * Room.TILE
+	p.teleport(Vector2(28 * Room.TILE, b.surface_y + 24.0))
+	await frames(4)
+	b.set_state("dive")
+	var hp0 := b.hp
+	await _until(func() -> bool: return b.state == "stalk", 60)
+	b.take_hit(10, Vector2.DOWN)
+	check(b.hp == hp0 and b.collision_layer == 0, "under the water it can't be touched")
+	await _until(func() -> bool: return b.state == "geyser_tell", 120)
+	check(absf(b.global_position.x - p.global_position.x) < 12.0, "it stalks you to your spot (%.0f px off)" % absf(b.global_position.x - p.global_position.x))
+	var hp := p.hp
+	var tell := 0
+	while b.state == "geyser_tell" and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the water boils first (%d frames)" % tell)
+	await _until(func() -> bool: return b.state == "exposed", 60)
+	check(p.hp < hp, "then the geyser throws you (%d)" % (hp - p.hp))
+	b.facing = 1
+	hp0 = b.hp
+	b.take_hit(10, Vector2.LEFT)
+	check(hp0 - b.hp == 10, "streaming, it hangs open to every blow (%d)" % (hp0 - b.hp))
+
+
+func test_drowned_warden_undertow_drags_you_in_then_slams() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var b: DrownedWarden = setup[2]
+	var p := w.player
+	b.phase = 3
+	b.global_position.x = 30 * Room.TILE
+	p.teleport(cell_feet(38, 19))
+	await frames(4)
+	var x0 := p.global_position.x
+	b.set_state("undertow_tell")
+	var tell := 0
+	while b.state == "undertow_tell" and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "its chest opens on the light first (%d frames)" % tell)
+	await _until(func() -> bool: return b.state == "slam_tell", 120)
+	check(p.global_position.x < x0 - 40.0, "the current drags you toward it (%d px)" % (x0 - p.global_position.x))
+	var hp := p.hp
+	await _until(func() -> bool: return b.state == "recover", 60)
+	check(p.hp < hp, "and the slam lands around it (%d)" % (hp - p.hp))
+
+
+func test_drowned_warden_roars_into_each_phase() -> void:
+	var setup := await _warden_world()
+	var b: DrownedWarden = setup[2]
+	b.take_hit(int(b.max_hp * 0.36), Vector2.DOWN)
+	check(b.phase == 2 and b.state == "roar", "at two-thirds of its life the second phase begins")
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.DOWN)
+	check(b.hp == hp0, "and it shrugs off blows while it roars")
+	b.set_state("wade")
+	b.take_hit(int(b.max_hp * 0.34), Vector2.DOWN)
+	check(b.phase == 3, "at a third, the third")
+
+
+func test_the_drowned_warden_gives_up_the_battle_suit() -> void:
+	var setup := await _warden_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var b: DrownedWarden = setup[2]
+	var points := int(GameState.data.skill_points)
+	b.phase = 3
+	b.hp = 1
+	b.set_state("wade")
+	b.take_hit(5, Vector2.DOWN)
+	await _until(func() -> bool: return GameState.flag("boss:drowned_warden"), 480)
+	check(GameState.flag("boss:drowned_warden"), "the Warden falls")
+	check(GameState.data.equipment.armor == "battle_suit" and absf(w.player.defense - 0.6) < 0.001, "and its Battle Suit goes straight on (%s, %.2f)" % [GameState.data.equipment.armor, w.player.defense])
+	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
+	await _until(func() -> bool: return not arena.fighting, 400)
+	check(not arena.fighting, "and the way back opens")
+	check(Shop.status("eolis_arms", 1, w.player) == "owned", "and no armor in the shops is better")

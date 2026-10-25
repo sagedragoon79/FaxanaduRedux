@@ -1,8 +1,9 @@
 name: Source Hall
 zone: sunken
 map: 63, -5
-sign: 26, 14, THE SOURCE lies deeper still. Something vast turns over in its sleep down there, and the water will not let you pass.
+sign: 26, 14, THE SOURCE lies beyond. Something vast keeps it. Turn back if you have ever been afraid of deep water.
 door: 1, sunken/drowned_aqueduct, 2
+door: 2, sunken/wellspring, 1
 ---
 ########################################
 ########################################
@@ -16,9 +17,9 @@ door: 1, sunken/drowned_aqueduct, 2
 #......................................#
 #..............................L.......#
 #...........................######.....#
-#......................................#
-#aaaaaaaaaaaaaaaaaaaaaa................#
-#aaaaaaaaaaaaaaaaaaaaaa...P........e...#
+#......................................2
+#aaaaaaaaaaaaaaaaaaaaaa................2
+#aaaaaaaaaaaaaaaaaaaaaa...P........e...2
 #aaaaaaaaaaaaaaaaaaaaaa#################
 #aaaaaaaaaaaaaaaaaaaaaa#################
 1aaaaaaaaaaalaaaaaaaaaa#################

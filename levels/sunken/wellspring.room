@@ -1,0 +1,52 @@
+name: The Wellspring
+zone: sunken
+map: 64, -5
+boss: drowned_warden
+sign: 4, 14, THE WELLSPRING. Every spring of the Tree rises from this water. Its Warden has never let anyone near it.
+door: 1, sunken/source_hall, 2
+---
+############################################################
+############################################################
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+#..........................................................#
+1..........................................................#
+1..........................................................#
+1..........................................................#
+##########........................................##########
+##########.................------.................##########
+##########........................................##########
+#############..................................#############
+#############..................................#############
+#############aaaaaaa####aaaaaaaaaaaa####aaaaaaa#############
+#############aaaaaaa####aaaaaaaaaaaa####aaaaaaa#############
+#############aaaaaaa####aaaaaaaaaaaa####aaaaaaa#############
+#############aaaaaaa####aaaaaaaaaaaa####aaaaaaa#############
+#############aaaaaaa####aaaaaaaaaaaa####aaaaaaa#############
+#############aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#############
+#############aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#############
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#
+############################################################
+############################################################
+############################################################
+############################################################
