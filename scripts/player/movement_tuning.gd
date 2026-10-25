@@ -61,7 +61,7 @@ extends Resource
 @export var slash_active := 0.10
 @export var down_strike_active := 0.14
 @export var attack_cooldown := 0.28
-@export var slash_recoil := 90.0
+@export var slash_recoil := 120.0
 
 @export_group("Swimming")
 ## Deep water (the Sunken Spring, bible 6.8): the body floats up toward the

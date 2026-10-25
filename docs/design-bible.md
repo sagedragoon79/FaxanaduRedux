@@ -230,8 +230,8 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 ### 5.3 Combat moves
 
-- **Slash:** 3-hit ground combo, 2-hit air combo. Each hit pushes the player back 4 px (knockback against enemy on hit).
-- **Up-slash:** hits above; a hit on a launcher-type enemy pops the player up slightly.
+- **Slash:** 3-hit ground combo, 2-hit air combo. Each hit pushes the player back 4 px (knockback against enemy on hit; `slash_recoil` 120 px/s, raised from 90 in pass 105, which only gave 2.3 px). A hit stops a foe's thinking for 0.18 s (`Enemy.HITSTUN`); the heavy finisher drives it back 1.8x as hard and holds it 1.8x as long (0.32 s), so a full combo buys a breath.
+- **Up-slash:** hits above. In midair, an up-slash that lands on a foe holds you up: a fall turns into a 150 px/s rise (`up_slash_pop`, about 7 px), once per swing, never adding to a jump (built pass 105; it applies to every foe, not only launcher types, so juggling a flier slows your fall without letting you climb).
 - **Down-strike (Mattock):** see pogo in 6.6.
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
 - **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Dash and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.

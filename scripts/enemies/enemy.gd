@@ -40,6 +40,8 @@ var body_size := Vector2(18, 18)
 var body_centered := false
 var uses_gravity := true
 ## Rising Cut launches: how hard, how long it hangs helpless, how big a foe it lifts.
+## How long a hit stops a foe's thinking; the heavy finisher's lasts 1.8x (0.32 s).
+const HITSTUN := 0.18
 const LAUNCH_SPEED := 330.0
 const LAUNCH_STUN := 0.5
 const LAUNCH_MAX_HP := 40
@@ -152,7 +154,8 @@ func take_hit(damage: int, dir: Vector2) -> void:
 	velocity = dir * knockback
 	if dir.y < 0.0 and uses_gravity:
 		velocity.y = -knockback
-	_hitstun = 0.18
+	# A heavy blow comes in longer (dir 1.8x, the combo finisher): it reels longer.
+	_hitstun = HITSTUN * maxf(dir.length(), 1.0)
 
 
 func _on_blocked(dir: Vector2) -> void:

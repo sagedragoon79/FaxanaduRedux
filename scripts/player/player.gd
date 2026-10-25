@@ -206,6 +206,8 @@ var _poison_tick := 0.0
 var _attack_timer := 0.0
 var _attack_cooldown := 0.0
 var _attack_hits := {}
+## This swing's up-slash pop is spent (combat.up_slash_pop).
+var _up_popped := false
 var _was_on_floor := false
 var _peak_fall_speed := 0.0
 ## The highest point (smallest y) of the current time in the air.
@@ -724,6 +726,7 @@ func _try_attack(on_floor: bool) -> void:
 			_swing_damage = roundi(heavy_damage * melee_mult)
 	_attack_cooldown *= swing_mult
 	_attack_hits.clear()
+	_up_popped = false
 	swing_count += 1
 	var fx := SlashFx.new()
 	fx.setup(attack_kind, facing, combo_index, is_heavy_swing, 1.0 + arc_bonus / SLASH_SIZE.y)
@@ -755,6 +758,7 @@ func _process_attack_hits() -> void:
 	var rect := _attack_rect()
 	var bounced := false
 	var hit_something := false
+	var hit_foe := false
 	for collider: Variant in _query_rect(rect, LAYER_WORLD | LAYER_HAZARD | LAYER_ENEMY):
 		var id: int = collider.get_instance_id()
 		if _attack_hits.has(id):
@@ -768,6 +772,7 @@ func _process_attack_hits() -> void:
 			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
 			var was_staggered: bool = collider.has_method("is_staggered") and collider.is_staggered()
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
+			hit_foe = true
 			if bloodletting and was_staggered and hp < max_hp:
 				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
 				health_changed.emit(hp, max_hp)
@@ -782,6 +787,10 @@ func _process_attack_hits() -> void:
 		if attack_kind == "down" and collider.is_in_group("pogo") and not bounced:
 			bounced = true
 			_pogo_bounce()
+	if hit_foe and attack_kind == "up" and not is_on_floor() and not _up_popped:
+		# Design bible 5.3: a midair up-slash that lands holds you up a little.
+		_up_popped = true
+		velocity.y = minf(velocity.y, -combat.up_slash_pop)
 	if hit_something and not bounced:
 		Feel.hitstop(combat.heavy_hitstop if is_heavy_swing else combat.hit_hitstop)
 		Feel.add_trauma(0.3 if is_heavy_swing else 0.15)
