@@ -842,3 +842,167 @@ func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
 	GameState.data.skills = ["clear_mind", "siphon", "deluge_pierce", "tilte_swarm"]
 	GameState.refresh_stats(p)
 	check(p.tilte_swarm, "the Tilte Swarm skill reaches the player")
+
+
+## The Act III tier (pass 100): three more nodes in each branch, each after the
+## one before, and a tree that now costs more than the 29 points the game gives.
+func test_act_three_skills_chain_and_apply() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	GameState.data.skill_points = 40
+	var hp0 := p.max_hp
+	for id: String in ["riposte", "thrift", "treasure_sense"]:
+		check(Skills.status(id) == "locked", id + " waits on the end of its branch")
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte", "keener_edge", "bloodletting",
+			"clear_mind", "siphon", "deluge_pierce", "tilte_swarm", "thrift", "chain_thunder", "time_thief",
+			"deep_pockets", "gold_sense", "quick_draught", "second_stride", "treasure_sense", "resilience", "last_stand", "second_wind"]:
+		check(Skills.learn(id, p), "learned " + id)
+	check(p.riposte and p.bloodletting and p.chain_thunder and p.time_thief, "Riposte, Bloodletting, Chain Thunder and Time Thief switch on")
+	check(p.last_stand and p.second_wind and GameState.has_skill("treasure_sense"), "Treasure Sense, Last Stand and Second Wind are learned")
+	check(is_equal_approx(p.melee_mult, 1.2), "Keener Edge stacks with Keen Edge: +20%% (%.2f)" % p.melee_mult)
+	check(is_equal_approx(p.spell_cost_mult, 0.85), "Thrift: spells cost 15% less")
+	check(p.max_hp == hp0 + GameState.RESILIENCE_HP, "Resilience: one more mask (%d)" % p.max_hp)
+	var total := 0
+	for n: Dictionary in Skills.nodes():
+		total += int(n.cost)
+	check(total > 29, "the tree costs more than the game's 29 points, so choices matter (%d)" % total)
+	p.gold = 1000
+	check(Skills.respec(p) and not p.riposte and p.max_hp == hp0 and is_equal_approx(p.spell_cost_mult, 1.0), "a respec takes them all back")
+
+
+func _learn_all(p: Player, ids: Array) -> void:
+	GameState.data.skill_points = 60
+	for id: String in ids:
+		Skills.learn(id, p)
+
+
+const BLADE_TO := ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte", "keener_edge", "bloodletting"]
+const ARCANA_TO := ["clear_mind", "siphon", "deluge_pierce", "tilte_swarm", "thrift", "chain_thunder", "time_thief"]
+const WANDERER_TO := ["deep_pockets", "gold_sense", "quick_draught", "second_stride", "treasure_sense", "resilience", "last_stand", "second_wind"]
+
+
+func test_riposte_answers_a_parry_with_a_heavy_cut() -> void:
+	var w := make_world(_town({Vector2i(9, 19): "D"}), "test/town", cell_feet(6, 19))
+	var p := w.player
+	_learn_all(p, BLADE_TO.slice(0, 5))
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(p)
+	var dwarf: RotDwarf = _find(w.room, RotDwarf)
+	for i in 180:
+		if dwarf.state == "windup" and dwarf.state_time >= RotDwarf.WINDUP - 3 / 60.0:
+			break
+		await frames(1)
+	var hp0 := dwarf.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(6)
+	check(p.hp == p.max_hp and dwarf.is_staggered(), "the parry lands")
+	check(p.ripostes == 1, "and Riposte answers it once")
+	check(hp0 - dwarf.hp == roundi(p.heavy_damage * p.melee_mult) or dwarf.dead, "for a heavy hit (%d -> %d)" % [hp0, dwarf.hp])
+
+
+func test_bloodletting_heals_on_a_staggered_foe() -> void:
+	var w := make_world(_town({Vector2i(8, 19): "D"}), "test/town", cell_feet(6, 19))
+	var p := w.player
+	_learn_all(p, BLADE_TO)
+	var dwarf: RotDwarf = _find(w.room, RotDwarf)
+	dwarf.max_hp = 999
+	dwarf.hp = 999
+	await frames(3)
+	# Hold the dwarf still: this is about the heal, not its swing.
+	dwarf.set_physics_process(false)
+	p.hp = 50
+	p.facing = 1
+	p.input.attack_pressed = true
+	await frames(2)
+	check(p.hp == 50, "a hit on a foe on its feet heals nothing (%d)" % p.hp)
+	await frames(30)
+	dwarf.stagger()
+	p.input.attack_pressed = true
+	await frames(2)
+	check(p.hp == 50 + Player.BLOODLETTING_HEAL, "a hit on a staggered foe heals 2 (%d)" % p.hp)
+
+
+func test_thrift_and_time_thief() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.abilities["deluge"] = true
+	p.abilities["hourglass"] = true
+	_learn_all(p, ARCANA_TO)
+	await frames(3)
+	p.mp = p.max_mp
+	p.equipped_spell = "deluge"
+	p.input.spell_pressed = true
+	await frames(1)
+	check_near(p.max_mp - p.mp, Spells.cost("deluge") * 0.85, 0.2, "Thrift: a Deluge costs 15% less")
+	TimeStop.reset()
+	p.input.hourglass_pressed = true
+	await frames(1)
+	check_near(TimeStop.total, TimeStop.DURATION + Player.TIME_THIEF_EXTRA, 0.01, "Time Thief: the glass holds a second longer")
+	TimeStop.reset()
+
+
+func test_chain_thunder_leaps_to_two_more_foes() -> void:
+	var foes := {Vector2i(10, 19): "D", Vector2i(14, 19): "D", Vector2i(18, 19): "D", Vector2i(36, 19): "D"}
+	var w := make_world(_town(foes), "test/town", cell_feet(6, 19))
+	var p := w.player
+	p.abilities["thunder"] = true
+	_learn_all(p, ARCANA_TO.slice(0, 6))
+	var dwarves: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is RotDwarf)
+	for d: RotDwarf in dwarves:
+		d.max_hp = 999
+		d.hp = 999
+	await frames(3)
+	p.facing = 1
+	p.mp = p.max_mp
+	p.equipped_spell = "thunder"
+	p.input.spell_pressed = true
+	await frames(20)
+	var hit := dwarves.filter(func(d: RotDwarf) -> bool: return d.hp < 999)
+	check(hit.size() == 3, "the bolt strikes one and leaps to two more (%d struck)" % hit.size())
+	check(dwarves[3].hp == 999, "but not to one far away")
+
+
+func test_treasure_sense_marks_rooms_with_something_left() -> void:
+	var a := grid_rows(40, 23)
+	put_tiles(a, 5, 19, "P")
+	put_tiles(a, 20, 19, "L")
+	put_tiles(a, 30, 19, "$")
+	var w := make_world({"test/town": room_text(["name: Town", "zone: test"], a)}, "test/town")
+	var p := w.player
+	var info: Dictionary = w.catalog["test/town"]
+	check(info.treasures == ["test/town:20,19", "test/town:30,19"], "the catalog knows the room's fruit and chest (%s)" % [info.treasures])
+	check(MapScreen.unfound(info) == 2, "two things left to find")
+	check(not MapScreen.senses_treasure(info, "visited"), "no mark without the skill")
+	_learn_all(p, WANDERER_TO.slice(0, 5))
+	check(MapScreen.senses_treasure(info, "visited") and MapScreen.senses_treasure(info, "charted"), "with Treasure Sense the map marks it, seen or charted")
+	check(not MapScreen.senses_treasure(info, ""), "but never a room the map doesn't show")
+	GameState.collect("test/town:20,19")
+	GameState.collect("test/town:30,19")
+	check(MapScreen.unfound(info) == 0 and not MapScreen.senses_treasure(info, "visited"), "and the mark goes once all is found")
+
+
+func test_last_stand_and_second_wind() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	_learn_all(p, WANDERER_TO)
+	await frames(2)
+	p.hp = 100
+	p.take_damage(20)
+	check(p.hp == 80, "Last Stand does nothing at good health (%d)" % p.hp)
+	p._invuln_timer = 0.0
+	p.hp = 15
+	p.take_damage(8)
+	check(p.hp == 9, "below 20%%, a hit does 25%% less (%d)" % p.hp)
+	p._invuln_timer = 0.0
+	p.take_damage(200)
+	check(p.hp == 1 and not p.dead and p.second_wind_used, "Second Wind: a killing blow leaves you at 1 HP")
+	p._invuln_timer = 0.0
+	p.hp = 5
+	p.take_damage(200)
+	check(p.dead, "but only once between rests")
+	await frames(int(p.combat.respawn_delay * 60.0) + 10)
+	check(not p.dead and not p.second_wind_used, "a respawn (like a rest) gives it back")
+	p.second_wind_used = true
+	p.restore()
+	check(not p.second_wind_used, "and so does resting at a shrine")

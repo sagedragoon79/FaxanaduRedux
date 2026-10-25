@@ -9,10 +9,17 @@ const SIZE := Vector2(12, 6)
 const LIFE := 0.7
 ## How far the bolt leaps to a conduit.
 const ARC := 72.0
+## Chain Thunder (skill): leaps from the struck foe to this many more within
+## CHAIN_REACH of the last, each for CHAIN_DAMAGE of the bolt's damage. The arcs
+## fall from above, past shields.
+const CHAIN_JUMPS := 2
+const CHAIN_REACH := 110.0
+const CHAIN_DAMAGE := 0.75
 const CORE := Color("f8f0b0")
 const BODY := Color("b8a8ff")
 
 var damage := 16
+var chain := 0
 var velocity := Vector2.ZERO
 var light_radius := 36.0
 
@@ -40,6 +47,8 @@ func _physics_process(delta: float) -> void:
 	for c: Variant in Query.rect(get_world_2d(), area, Player.LAYER_WORLD | Player.LAYER_ENEMY):
 		if c.is_in_group("enemy") and c.has_method("take_hit"):
 			c.take_hit(damage, Vector2(signf(velocity.x), 0))
+			if chain > 0:
+				_chain_from(c)
 			Feel.hitstop(0.05)
 			_fizzle()
 			return
@@ -69,6 +78,35 @@ func _conduit_in_reach() -> Conduit:
 			best = c
 			best_d = d
 	return best
+
+
+## Leaps foe to foe: each jump goes to the nearest living foe not yet struck.
+func _chain_from(first: Node2D) -> void:
+	var struck := [first]
+	var from := _middle(first)
+	for i in chain:
+		var best: Node2D = null
+		var best_d := CHAIN_REACH
+		for n in get_tree().get_nodes_in_group("enemy"):
+			var e := n as Node2D
+			if e == null or e in struck or bool(e.get("dead")) or not e.has_method("take_hit"):
+				continue
+			var d := _middle(e).distance_to(from)
+			if d <= best_d:
+				best = e
+				best_d = d
+		if best == null:
+			return
+		var to := _middle(best)
+		LightningArc.spawn(get_parent(), from, to)
+		# The arc falls on its target from above, so a raised shield doesn't stop it.
+		best.take_hit(roundi(damage * CHAIN_DAMAGE), Vector2.DOWN)
+		struck.append(best)
+		from = to
+
+
+func _middle(n: Node2D) -> Vector2:
+	return n.center() if n.has_method("center") else n.global_position
 
 
 func _fizzle() -> void:

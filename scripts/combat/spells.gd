@@ -71,6 +71,7 @@ static func cast(id: String, caster: Player) -> Node2D:
 		"thunder":
 			var bolt := ThunderBolt.new()
 			bolt.damage = DATA[id]["damage"]
+			bolt.chain = ThunderBolt.CHAIN_JUMPS if caster.chain_thunder else 0
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			return bolt
 	return null

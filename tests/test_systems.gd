@@ -345,3 +345,118 @@ func test_the_game_plays_the_secret_ending_for_a_flawless_run() -> void:
 	await frames(3)
 	g.menu.close()
 	GameState.new_game()
+
+
+## Every field of the save, set away from its new-game value, must come back
+## exactly through save_game and load_game (JSON makes whole numbers floats, so
+## numbers compare by value), and a fresh world must hand it to the player.
+func test_every_save_field_survives_a_round_trip() -> void:
+	const ROUND_SLOT := 7
+	GameState.new_game()
+	var d := GameState.data
+	var fresh := GameState.fresh()
+	for k: String in d.abilities:
+		d.abilities[k] = true
+	d.spell = "tilte"
+	d.max_hp = 150
+	d.max_mp = 90.0
+	d.flask_max = 4
+	d.gold = 4321
+	d.xp = 2600
+	d.rank = 7
+	d.named_rank = 6
+	d.skill_points = 3
+	d.skills = ["keen_edge", "deluge_pierce", "tilte_swarm"]
+	d.respecs = 2
+	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield"}
+	d.tempers = {"giant_blade": 2, "long_sword": 1}
+	d.keys = {"jack": true, "lantern": true}
+	d.rings = ["elf", "ruby"]
+	d.potion_shards = 5
+	d.mantra_shards = 3
+	d.elixirs = 1
+	d.ointments = 2
+	d.collected = {"eolis/plaza:12,30": true}
+	d.visited = {"eolis/plaza": true, "trunk/entrance": true}
+	d.gurus = {"eolis/guru_hall": [120, 304]}
+	d.charts = {"trunk": true}
+	d.pins = [["trunk/entrance", 64, 96], ["mist/fog_gate", 200, 40]]
+	d.flags = {"spring:trunk": true, "boss:rokusutahn": true}
+	d.purse = {"room": "trunk/sap_tunnel", "x": 100, "y": 200, "gold": 77}
+	d.save_room = "eolis/guru_hall"
+	d.save_pos = [120, 304]
+	d.play_time = 3725.5
+	d.clears = 1
+	d.deaths = 4
+	var unset: Array[String] = []
+	for k: String in fresh:
+		if k != "version" and _same(d[k], fresh[k]):
+			unset.append(k)
+	check(unset.is_empty(), "the test sets every field of the save (missing: %s)" % [unset])
+	var before := d.duplicate(true)
+	GameState.save_game(ROUND_SLOT)
+	GameState.new_game()
+	check(GameState.load_game(ROUND_SLOT), "the save loads")
+	var lost: Array[String] = []
+	for k: String in before:
+		if not _same(GameState.data[k], before[k]):
+			lost.append("%s: %s became %s" % [k, before[k], GameState.data[k]])
+	check(lost.is_empty(), "every field comes back as it was saved: %s" % [lost])
+	# A fresh world hands it all to the player.
+	var w := World.new()
+	w.instant = true
+	arena.add_child(w)
+	w.build_catalog()
+	w.start(String(GameState.data.save_room), Vector2(120, 304))
+	w.player.input.scripted = true
+	await frames(2)
+	var p := w.player
+	check(p.gold == 4321 and p.elixirs == 1 and p.ointments == 2 and p.equipped_spell == "tilte", "gold, elixirs, ointments and the spell reach the player")
+	check(p.max_hp == 150 and p.flask_max == 4 and p.tilte_swarm and p.spell_pierce and p.reflects, "and the stats, skills and gear behind them")
+	check(p.abilities.values().all(func(v: bool) -> bool: return v), "and every ability")
+	w.queue_free()
+	await frames(1)
+	GameState.delete_save(ROUND_SLOT)
+	GameState.new_game()
+
+
+## Equal by value: numbers ignore int and float, containers compare deeply.
+func _same(a: Variant, b: Variant) -> bool:
+	if (a is int or a is float) and (b is int or b is float):
+		return is_equal_approx(float(a), float(b))
+	if a is Array and b is Array:
+		if a.size() != b.size():
+			return false
+		for i in a.size():
+			if not _same(a[i], b[i]):
+				return false
+		return true
+	if a is Dictionary and b is Dictionary:
+		if a.size() != b.size():
+			return false
+		for k: Variant in a:
+			if not b.has(k) or not _same(a[k], b[k]):
+				return false
+		return true
+	return typeof(a) == typeof(b) and a == b
+
+
+## A save from an older build lacks keys added since: loading it fills them
+## with their new-game values and keeps what it has.
+func test_an_old_save_gains_the_new_keys() -> void:
+	const OLD_SLOT := 6
+	var old := {"version": 1, "gold": 300, "abilities": {"glove": true}, "save_room": "eolis/plaza", "save_pos": [100, 200]}
+	var f := FileAccess.open(GameState.SAVE_PATH % OLD_SLOT, FileAccess.WRITE)
+	f.store_string(JSON.stringify(old))
+	f.close()
+	check(GameState.load_game(OLD_SLOT), "the old save loads")
+	var d := GameState.data
+	check(int(d.gold) == 300 and bool(d.abilities.glove), "what it had is kept")
+	check(d.abilities.has("hourglass") and not bool(d.abilities.hourglass), "abilities added since start off")
+	var missing: Array[String] = []
+	for k: String in GameState.fresh():
+		if not d.has(k):
+			missing.append(k)
+	check(missing.is_empty() and d.pins == [] and int(d.deaths) == 0, "every newer key is there, at its new-game value (missing %s)" % [missing])
+	GameState.delete_save(OLD_SLOT)
+	GameState.new_game()

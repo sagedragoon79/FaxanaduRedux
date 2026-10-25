@@ -10,6 +10,8 @@ const DURATION := 2.5
 const COOLDOWN := 8.0
 
 static var left := 0.0
+## How long the current stop was turned for (Time Thief adds to DURATION).
+static var total := DURATION
 static var cooldown := 0.0
 
 
@@ -22,10 +24,11 @@ static func ready_to_turn() -> bool:
 
 
 ## Stops time. Returns false while the glass is still running back.
-static func start() -> bool:
+static func start(extra := 0.0) -> bool:
 	if not ready_to_turn():
 		return false
-	left = DURATION
+	left = DURATION + extra
+	total = left
 	cooldown = COOLDOWN
 	return true
 

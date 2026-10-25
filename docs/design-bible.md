@@ -678,6 +678,27 @@ Three branches, 12 nodes each. Costs in brackets. Nodes deeper in a branch need 
 
 Nodes are built tier by tier as the acts that need them arrive. In the game now: Blade 1-4, Arcana 1-3 plus Tilte Swarm (after Deluge Pierce, 2 points: three orbs fanned 0.5 rad apart, 10 damage each, for one cast's MP; pass 95) and Wanderer 1-4 (`data/skills.json`). Rising Cut lifts any walking foe of 40 HP or less (`Enemy.LAUNCH_MAX_HP`) and leaves it helpless for 0.5 s; rooted foes (Sap Spitter, Bog Myconid), fliers and bosses stay put. Deluge Pierce strikes each foe in the bolt's path once. Second Stride does nothing until you own the Elven Stride.
 
+**The Act III tier (pass 100).** Ten more nodes take the built tree from 15 points to 36, past the 29 points the game hands out, so a full build needs choices:
+- **Blade**, after Mattock Mastery: Riposte [2], Keener Edge [2], Bloodletting [2].
+  - Riposte: a parry answers with a free heavy cut at the foe that swung (`Player._riposte`).
+  - Keener Edge stacks with Keen Edge, for +20% melee damage in all.
+  - Bloodletting heals 2 HP per hit on a staggered foe.
+- **Arcana**, after Tilte Swarm: Thrift [2], Chain Thunder [2], Time Thief [2].
+  - Thrift makes spells cost 15% less.
+  - With Chain Thunder, a Thunder bolt that strikes a foe leaps to the 2 nearest other foes within 110 px, one after another, for 75% damage each. The arcs fall from above, so shields don't stop them.
+  - Time Thief makes the Hour Glass hold 3.5 s instead of 2.5 s (`TimeStop.start(extra)`, `TimeStop.total`).
+- **Wanderer**, after Second Stride: Treasure Sense [2], Resilience [2], Last Stand [2], Second Wind [3].
+  - Treasure Sense puts an orange star on every room the map shows (seen or charted) that still holds an item or chest. The World's catalog lists each room's treasures.
+  - Resilience adds one mask (`GameState.RESILIENCE_HP`).
+  - Last Stand: below 20% health, you take 25% less damage.
+  - Second Wind: once between rests (a shrine, a Guru or a respawn), a killing blow leaves you at 1 HP.
+
+Deviations, and why:
+- The build order skips Thrust, Wildfire, Feather Fall and the rest. They are bigger mechanics and still come later in their branches.
+- Light Step is dropped: a dash's own invulnerability already carries you over spikes, so the node did nothing.
+- Pathfinder is dropped: shrines already refill potions.
+- Treasure Sense takes Light Step's place in the build order, at 2 points.
+
 **Blade (melee)**
 1. Keen Edge: +10% melee damage [1]
 2. Fourth Strike: ground combo gains a 4th heavy hit [2]

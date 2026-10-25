@@ -300,7 +300,7 @@ func _draw_glass(at: Vector2) -> void:
 	var can_turn := TimeStop.ready_to_turn()
 	var top := 1.0 if can_turn else 1.0 - TimeStop.cooldown / TimeStop.COOLDOWN
 	if TimeStop.active():
-		top = TimeStop.left / TimeStop.DURATION
+		top = TimeStop.left / TimeStop.total
 	var sand := GLASS_SAND if can_turn or TimeStop.active() else GLASS_SAND.darkened(0.45)
 	draw_rect(Rect2(at + Vector2(0, 0), Vector2(8, 12)), OUTLINE)
 	draw_rect(Rect2(at + Vector2(1, 1), Vector2(6, 10)), Color(GLASS, 0.25))

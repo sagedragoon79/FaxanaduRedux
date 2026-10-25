@@ -17,6 +17,8 @@ const PLAYER := Color("e0404a")
 const TEXT := Color("f1ead2")
 const DIM := Color("8d84a3")
 const PIN := Color("f0c02e")
+## Treasure Sense's mark on a room that still holds an item or chest.
+const TREASURE := Color("ff9a3c")
 
 var world: World
 var is_open := false
@@ -85,6 +87,20 @@ func _process(delta: float) -> void:
 
 
 ## Map-space rectangle (in pixels relative to the map origin) for a catalog room.
+## Items and chests in a room not yet taken (Treasure Sense, design bible 9).
+static func unfound(info: Dictionary) -> int:
+	var n := 0
+	for id: String in info.get("treasures", []):
+		if not GameState.is_collected(id):
+			n += 1
+	return n
+
+
+## Does the map mark this room for Treasure Sense? Only rooms the map shows.
+static func senses_treasure(info: Dictionary, how: String) -> bool:
+	return how != "" and GameState.has_skill("treasure_sense") and unfound(info) > 0
+
+
 static func room_rect(info: Dictionary) -> Rect2:
 	return Rect2(Vector2(info.map) * CELL, Vector2(info.screens) * CELL)
 
@@ -121,6 +137,8 @@ func _draw() -> void:
 			draw_rect(r.grow(1), OUTLINE)
 			draw_rect(r, zone.color.darkened(0.82))
 			draw_rect(r, zone.color.darkened(0.5), false, 1.0)
+			if MapScreen.senses_treasure(info, how):
+				_draw_treasure(r)
 			continue
 		var fill: Color = zone.color.darkened(0.55)
 		if how == "here":
@@ -132,6 +150,8 @@ func _draw() -> void:
 		for cell: Vector2i in info.shrines:
 			var sp := r.position + Vector2(cell) / Vector2(info.size) * r.size
 			draw_rect(Rect2(sp - Vector2(1.5, 2.5), Vector2(3, 4)), SHRINE)
+		if MapScreen.senses_treasure(info, how):
+			_draw_treasure(r)
 
 	for p: Array in GameState.data.pins:
 		var info: Dictionary = world.catalog.get(String(p[0]), {})
@@ -161,6 +181,8 @@ func _draw() -> void:
 	# The legend, laid out right to left from measured widths: swatch, label, gap.
 	var legend := [["Map: Tab", Color.TRANSPARENT, Vector2.ZERO], ["You", PLAYER, Vector2(2, 2)],
 		["Shrine", SHRINE, Vector2(3, 4)], ["Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], PIN, Vector2(3, 3)]]
+	if GameState.has_skill("treasure_sense"):
+		legend.insert(3, ["Treasure", TREASURE, Vector2(3, 3)])
 	var lx := screen.x - 16
 	for item: Array in legend:
 		var label: String = item[0]
@@ -171,6 +193,16 @@ func _draw() -> void:
 			lx -= swatch.x + 4
 			draw_rect(Rect2(Vector2(lx, screen.y - 15 - swatch.y), swatch), item[1])
 		lx -= 14
+
+
+## A small twinkling star in the room's top-right corner.
+func _draw_treasure(r: Rect2) -> void:
+	var c := r.position + Vector2(r.size.x - 5, 5)
+	var k := 2.0 + sin(_t * 5.0)
+	draw_rect(Rect2(c - Vector2(1.5, k + 1.5), Vector2(3, k * 2 + 3)), OUTLINE)
+	draw_rect(Rect2(c - Vector2(k + 1.5, 1.5), Vector2(k * 2 + 3, 3)), OUTLINE)
+	draw_rect(Rect2(c - Vector2(0.5, k + 0.5), Vector2(1, k * 2 + 1)), TREASURE)
+	draw_rect(Rect2(c - Vector2(k + 0.5, 0.5), Vector2(k * 2 + 1, 1)), TREASURE)
 
 
 func _draw_doors(info: Dictionary, r: Rect2, fill: Color) -> void:
