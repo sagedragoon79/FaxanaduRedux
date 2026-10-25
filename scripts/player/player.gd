@@ -447,7 +447,8 @@ func _apply_wall_slide() -> void:
 		velocity.y = minf(velocity.y, tuning.wall_slide_speed)
 		facing = -wall_dir
 		if _dust_timer <= 0.0:
-			_dust_timer = 0.06
+			# Carry the overshoot so the puffs keep a true 0.06 s beat.
+			_dust_timer = 0.06 + maxf(_dust_timer, -0.06)
 			_spawn_dust(Vector2(wall_dir * BODY_SIZE.x * 0.5, -BODY_SIZE.y * 0.6), "wall")
 
 
@@ -660,6 +661,8 @@ func _try_dash(on_floor: bool) -> void:
 	velocity = Vector2(_dash_dir * tuning.dash_speed, 0.0)
 	visual.squash(Vector2(1.3, 0.8))
 	_afterimage_timer = 0.0
+	# A kick of dust off the floor, or a puff of air in midair, thrown back.
+	_spawn_dust(Vector2(-_dash_dir * 6, -3 if on_floor else -14), "dash" if on_floor else "airdash")
 	Sfx.play("dash")
 	Feel.add_trauma(0.05)
 

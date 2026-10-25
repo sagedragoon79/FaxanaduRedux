@@ -338,8 +338,8 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 ### 6.7 Juice checklist (all required before the movement milestone closes)
 
 - **Squash and stretch:** jump 0.85x1.2 for 3 frames; land 1.25x0.8 scaled by fall speed; wall jump stretch toward direction.
-- **Dust:** on run start, turnaround, land, wall slide (every 0.06 s), wall jump.
-- **Hit-stop:** 50 ms normal hit, 90 ms heavy, 140 ms parry, 200 ms boss stagger (each phase break, pass 98), 350 ms boss kill (with slow-mo ramp).
+- **Dust:** on run start, turnaround, land, wall slide (every 0.06 s, the overshoot carried so the beat holds at 60 fps), wall jump, and a dash: a kick of dust thrown back off the heel on the ground, a pale puff of air in midair (pass 104). The dash also leaves a trail of afterimages.
+- **Hit-stop:** 50 ms normal hit, 90 ms heavy, 140 ms parry, 200 ms boss stagger (each phase break, pass 98), 350 ms boss kill (with slow-mo ramp): `Feel.boss_kill(seconds)` freezes 350 ms, then runs at 0.3x easing back up to full speed (quadratic) over the boss's slow-motion time, 1 to 1.5 s. Every boss uses it (pass 104; until then the kills held only 120 to 200 ms and the slow motion ended in a step).
 - **Screen shake:** trauma model (shake = trauma²), decays 1.5/s. Light hit 0.15, heavy 0.3, boss slam 0.6. Option to reduce or turn it off.
 - **Flash:** enemy flashes white for 2 frames on hit; player flashes red and blinks during invulnerability, and the screen's edge flashes red (pass 98, 5.3).
 - **Camera:** look-ahead 48 px in facing direction (eased over 0.4 s); vertical look-down when holding down for 0.4 s; lerp smoothing with deadzone 16x24 px.

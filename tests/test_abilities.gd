@@ -575,3 +575,126 @@ func test_dash_invulnerability_and_cooldown() -> void:
 	p.input.dash_pressed = true
 	await frames(1)
 	check(p.is_dashing, "then goes")
+
+
+# --- Juice checklist (design bible 6.7) -----------------------------------------
+
+## Counts the Dust puffs, by kind, spawned in `room` over the next `n` frames.
+func _dust_during(room: Node, n: int) -> Dictionary:
+	var seen := {}
+	for c in room.get_children():
+		seen[c.get_instance_id()] = true
+	var counts := {}
+	for i in n:
+		await frames(1)
+		for c in room.get_children():
+			if c is Dust and not seen.has(c.get_instance_id()):
+				seen[c.get_instance_id()] = true
+				counts[c.kind] = int(counts.get(c.kind, 0)) + 1
+	return counts
+
+
+func test_juice_on_the_ground_dust_and_squash() -> void:
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(3, 18))
+	await frames(10)
+	p.input.move_x = 1
+	var start := await _dust_during(room, 12)
+	check(int(start.get("run", 0)) >= 1, "starting a run kicks dust (%s)" % [start])
+	await frames(12)
+	p.input.move_x = -1
+	var turn := await _dust_during(room, 8)
+	check(int(turn.get("run", 0)) >= 1, "turning around at speed kicks dust (%s)" % [turn])
+	p.input.move_x = 0
+	await frames(30)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var jump := await _dust_during(room, 1)
+	p.input.jump_pressed = false
+	check(int(jump.get("jump", 0)) == 1, "a jump puffs dust (%s)" % [jump])
+	check(p.visual.squash_scale.x < 0.92 and p.visual.squash_scale.y > 1.12, "and stretches thin and tall (%s)" % p.visual.squash_scale)
+	p.input.jump_held = false
+	var land := {}
+	for i in 90:
+		var got := await _dust_during(room, 1)
+		if got.has("land"):
+			land = got
+			break
+	check(land.has("land") and p.is_on_floor(), "landing puffs dust (%s)" % [land])
+	check(p.visual.squash_scale.x > 1.02 and p.visual.squash_scale.y < 0.98, "and squashes wide and low (%s)" % p.visual.squash_scale)
+	await frames(20)
+	p.input.dash_pressed = true
+	var dash := await _dust_during(room, 1)
+	p.input.dash_pressed = false
+	check(int(dash.get("dash", 0)) == 1, "a ground dash kicks dust off the floor (%s)" % [dash])
+	var ghosts := 0
+	for i in 10:
+		await frames(1)
+		for c in room.get_children():
+			if c is Afterimage:
+				ghosts = maxi(ghosts, room.get_children().filter(func(n: Node) -> bool: return n is Afterimage).size())
+	check(ghosts >= 2, "and leaves a trail of afterimages (%d)" % ghosts)
+
+
+func test_juice_on_walls_and_in_the_air() -> void:
+	var p := await _start_on_right_wall()
+	var room := p.get_parent()
+	var slide := await _dust_during(room, 36)
+	# One puff every 0.06 s: 10 in 36 frames, give or take the first.
+	check(p.is_wall_sliding and int(slide.get("wall", 0)) >= 9 and int(slide.get("wall", 0)) <= 11, "a wall slide sheds dust every 0.06 s (%s)" % [slide])
+	p.input.move_x = -1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var wj := await _dust_during(room, 1)
+	p.input.jump_pressed = false
+	check(int(wj.get("walljump", 0)) == 1, "a wall jump bursts dust off the wall (%s)" % [wj])
+	check(p.visual.squash_scale.x > 1.05, "and stretches along the leap (%s)" % p.visual.squash_scale)
+	await frames(6)
+	p.input.dash_pressed = true
+	var air := await _dust_during(room, 1)
+	p.input.dash_pressed = false
+	check(int(air.get("airdash", 0)) == 1 and not air.has("dash"), "an air dash puffs air, not floor dust (%s)" % [air])
+
+
+func test_juice_camera_and_feel_numbers_match_the_bible() -> void:
+	check(GameCamera.LOOK_AHEAD == 48.0 and GameCamera.LOOK_AHEAD_EASE == 0.4, "look-ahead 48 px eased over 0.4 s")
+	check(GameCamera.LOOK_DOWN_DELAY == 0.4 and GameCamera.DEADZONE == Vector2(16, 24), "look-down after 0.4 s, deadzone 16x24")
+	check(Feel.TRAUMA_DECAY == 1.5 and Feel.BOSS_KILL_HITSTOP == 0.35, "trauma decays 1.5/s; a boss kill holds 350 ms")
+	var c := CombatTuning.new()
+	check(c.hit_hitstop == 0.05 and c.heavy_hitstop == 0.09 and c.parry_hitstop == 0.14 and BossArena.PHASE_HITSTOP == 0.2, "hit-stops 50/90/140/200 ms")
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18))
+	var cam := GameCamera.new()
+	cam.target = p
+	cam.view_size = Vector2(160, 90)
+	cam.set_room_limits(room.pixel_rect())
+	arena.add_child(cam)
+	await frames(60)
+	p.facing = -1
+	await frames(24)
+	check(cam._look_ahead < -0.9 * GameCamera.LOOK_AHEAD, "turning eases the look-ahead most of the way over in 0.4 s (%.1f)" % cam._look_ahead)
+	p.input.down = true
+	await frames(18)
+	check(cam._look_down < 1.0, "holding down 0.3 s doesn't look down yet (%.1f)" % cam._look_down)
+	await frames(42)
+	check(cam._look_down > 40.0, "holding it longer looks down (%.1f)" % cam._look_down)
+	p.input.down = false
+	cam.queue_free()
+
+
+func test_a_boss_kill_freezes_then_ramps_back_from_slow_motion() -> void:
+	Feel.reset()
+	Feel.boss_kill(1.0)
+	check_near(Feel.last_hitstop, 0.35, 0.001, "the death blow holds 350 ms")
+	var from := Feel._ramp_from_usec
+	var span := Feel._slowmo_until_usec - from
+	check(span > 990000 and span < 1010000, "then a second of slow motion (%d us)" % span)
+	var start := Feel._ramped_scale(from)
+	var mid := Feel._ramped_scale(from + span / 2)
+	var late := Feel._ramped_scale(from + span * 9 / 10)
+	check_near(start, Feel.BOSS_KILL_SLOWMO, 0.001, "it starts at 0.3x")
+	check(mid > start and late > mid and late < 1.0, "and ramps back toward full speed (%.2f, %.2f, %.2f)" % [start, mid, late])
+	Feel.reset()
+	check(Engine.time_scale == 1.0, "reset ends it")
+
+

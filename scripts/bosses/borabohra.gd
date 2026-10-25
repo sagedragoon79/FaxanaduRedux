@@ -459,8 +459,7 @@ func die() -> void:
 	dead = true
 	collision_layer = 0
 	contact_damage = 0
-	Feel.hitstop(0.12)
-	Feel.slowmo(0.3, 1.0)
+	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.8)
 	Sfx.play("roar", 0.0, 2.0)
 

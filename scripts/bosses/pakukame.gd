@@ -409,8 +409,7 @@ func die() -> void:
 	head.set_active(false)
 	if is_instance_valid(leaf_fall):
 		leaf_fall.settle()
-	Feel.hitstop(0.12)
-	Feel.slowmo(0.3, 1.0)
+	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.8)
 	Sfx.play("roar", 0.0, 3.0)
 
