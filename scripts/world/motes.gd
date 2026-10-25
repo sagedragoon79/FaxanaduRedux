@@ -18,6 +18,8 @@ const ZONES := {
 	"daybreak": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
 	# Dartmoor: motes of meteor crystal dust hanging over the drowned halls.
 	"dartmoor": [36, Color("e0a0f0"), Vector2(2, -5), 5.0, 0.15],
+	# Zenis: cyan spores drifting up out of the meteor's flesh.
+	"zenis": [32, Color("70e8f0"), Vector2(0, -9), 6.0, 0.18],
 }
 
 ## Zones whose air settles once their spring runs: spring flag -> share of motes

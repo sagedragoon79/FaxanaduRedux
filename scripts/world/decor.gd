@@ -11,7 +11,7 @@ const DIR := "res://assets/decor/"
 const FLOOR_CHANCE := 30
 const CEILING_CHANCE := 24
 const WALL_CHANCE := 8
-const GLOW_COLORS := {"trunk": Color("84cbd6"), "eolis": Color("f0c02e"), "tower": Color("f09040"), "mist": Color("f0d070"), "branches": Color("f0e090"), "daybreak": Color("f0d070"), "dartmoor": Color("e070e0")}
+const GLOW_COLORS := {"trunk": Color("84cbd6"), "eolis": Color("f0c02e"), "tower": Color("f09040"), "mist": Color("f0d070"), "branches": Color("f0e090"), "daybreak": Color("f0d070"), "dartmoor": Color("e070e0"), "zenis": Color("60e8f0")}
 
 ## [kind row, variant, cell] for every placed piece.
 var pieces: Array = []

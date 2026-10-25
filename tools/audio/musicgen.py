@@ -30,6 +30,7 @@ SCALES = {
     "lydian": [0, 2, 4, 6, 7, 9, 11],
     "phrygian": [0, 1, 3, 5, 7, 8, 10],
     "mixolydian": [0, 2, 4, 5, 7, 9, 10],
+    "locrian": [0, 1, 3, 5, 6, 8, 10],
 }
 
 
@@ -1097,6 +1098,73 @@ def track_eura():
     return s.render(reverb=0.45)
 
 
+def track_zenis():
+    """Zenis, inside the meteor: no tune the Tree would know. B locrian at 84 over a
+    heartbeat (two kicks, a rest), a throbbing low pulse, pads detuned against each
+    other so they beat and shimmer, and a far bell picking out the tritone, the
+    sound of something alive and wrong."""
+    rng = np.random.default_rng(177)
+    s = Song(bpm=84, bars=16)
+    root, scale = 47, SCALES["locrian"]
+    prog = [0, 0, 4, 0, 5, 0, 4, 1] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            for cents in (-14, 14):
+                f = midi_hz(m - 12) * 2 ** (cents / 1200)
+                s.add(fft_filter(pad(f, s.bar * 1.1), low=1000), b * 4, 0.6 if cents > 0 else -0.6, 0.22)
+        low = scale_note(root - 24, scale, deg)
+        for k in range(8):
+            s.add(bass(midi_hz(low), s.beat * 0.4) * (1.0 if k % 2 == 0 else 0.5), b * 4 + k * 0.5, 0, 0.35)
+        # The heartbeat.
+        for at in (0, 0.45, 2, 2.45):
+            s.add(kick(0.35), b * 4 + at, 0, 0.75 if at in (0, 2) else 0.5)
+        if b % 2 == 1:
+            s.add(fft_filter(bell(midi_hz(root + 6), s.beat * 3.0), low=2400), b * 4 + 3, rng.uniform(-0.6, 0.6), 0.18)
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=24, pan=-0.3, gain=0.22, density=0.25)
+    return s.render(reverb=0.7)
+
+
+def amb_zenis():
+    """The meteor's insides: a deep living drone that swells and ebbs like breath,
+    a slow heartbeat under everything, and now and then a glassy whine as light
+    moves through the veins."""
+    rng = np.random.default_rng(178)
+    dur = 24.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    breath = 0.6 + 0.4 * np.sin(2 * np.pi * t / 6.0)
+    drone = fft_filter(rng.uniform(-1, 1, m), low=160, high=30) * 1.6 * breath
+    out[:, 0] += drone
+    out[:, 1] += np.roll(drone, RATE // 4)
+    beat = np.zeros(m)
+    for k in range(int(dur / 1.5)):
+        for off in (0.0, 0.32):
+            i = int((k * 1.5 + off) * RATE)
+            tt = np.arange(int(0.25 * RATE)) / RATE
+            thump = np.sin(2 * np.pi * 48 * tt) * np.exp(-tt * 18) * (0.35 if off == 0 else 0.22)
+            beat[i:i + len(thump)] += thump
+    out[:, 0] += beat
+    out[:, 1] += beat
+    pos = 1.5
+    while pos < dur:
+        i = int(pos * RATE)
+        mm = int(1.6 * RATE)
+        tt = np.arange(mm) / RATE
+        f = rng.uniform(1400, 2600)
+        whine = np.sin(2 * np.pi * f * tt * (1 + tt * 0.08)) * np.sin(np.pi * tt / 1.6) * rng.uniform(0.02, 0.04)
+        pan = rng.uniform(-0.8, 0.8)
+        end = min(i + mm, m)
+        out[i:end, 0] += whine[: end - i] * (1 - pan) / 2
+        out[i:end, 1] += whine[: end - i] * (1 + pan) / 2
+        pos += rng.uniform(3.0, 6.0)
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 def amb_dartmoor():
     """A drowned hall: a deep, still drone of water in stone, drops falling into
     pools at uneven intervals, a slow trickle somewhere, and the faint glassy hum
@@ -1154,6 +1222,8 @@ TRACKS = {
     "borabohra": track_borabohra,
     "grieve": track_grieve,
     "eura": track_eura,
+    "zenis": track_zenis,
+    "amb_zenis": amb_zenis,
     "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,
     "daybreak_town": track_daybreak_town,

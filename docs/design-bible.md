@@ -483,6 +483,17 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 - **Phase 2 (The Veins):** the avatar shatters; you climb a vertical chamber cutting light-veins while the core fires beams (uses wall jump, dash, pogo, Hour Glass).
 - **Phase 3 (The Core):** only the Dragon Slayer can hurt the core; each strike restores a spring's light and the Tree fights alongside you (roots lash the core).
 - **Reward:** ending; credits climb up the Tree from Eolis to the crown.
+- **The way in, as built (pass 77):** the gate of Zenis stands against the east wall of the gate hall, and the hall's
+  door 2 is behind it. While shut, it bars the way from floor to vault. Once all four rings are held and
+  `boss:shadow_eura` is set, its leaves swing back on the meteor's cyan light and you walk through into `levels/zenis/`:
+  - **Threshold** (62,-9): a landing and a shrine, flesh pillars grown up from the floor and down from the vault, a
+    spiked trench, and a Shade Knight and a Crystal Dwarf.
+  - **Heart Stair** (63,-10, 40x45): switchback shelves of meteor flesh with a Meteor Slug, Crystal Dwarf, Shade
+    Knights and a Clockwork Hound. At the top, the heart is not open yet.
+  - Zenis has its own tiles (`paint_meteor`: rounded cells of black-violet scar tissue with blood-red seams and cyan
+    pores), backdrops (ribbed walls, light veins, a red glow below), decor (polyps, veins, tendrils, wall eyes),
+    cyan spore motes, a theme (B locrian over a heartbeat, detuned pads) and an ambience (breathing drone, heartbeat,
+    glassy whines).
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

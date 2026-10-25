@@ -878,3 +878,40 @@ func test_the_gate_of_zenis_waits_for_four_rings() -> void:
 	check(gate.lit().size() == 4 and gate.message().contains("does not open"), "with all four it still waits on the shadow before it")
 	GameState.set_flag("boss:shadow_eura")
 	check(gate.message().contains("nothing watches"), "and once the shadow is broken it says so")
+
+
+func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/meteor_rise")
+	await frames(2)
+	# The shadow is beaten (else walking in starts the fight).
+	GameState.set_flag("boss:shadow_eura")
+	w._enter("dartmoor/zenis_gate")
+	await frames(2)
+	var gate: ZenisGate = w.room.get_children().filter(func(c: Node) -> bool: return c is ZenisGate)[0]
+	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/threshold", "the way into Zenis lies behind the gate")
+	GameState.data.rings = ["elf", "ruby", "dworf"]
+	check(not gate.is_open(), "three rings do not open it")
+	# Shut, it bars the way: walk at it and you stop at its face.
+	var p := w.player
+	p.teleport(Vector2(gate.global_position.x - 80.0, gate.global_position.y))
+	p.input.move_x = 1
+	await frames(90)
+	check(w.room.id == "dartmoor/zenis_gate" and p.global_position.x < gate.global_position.x - 20.0, "shut, it bars the way (%s)" % p.global_position)
+	p.input.move_x = 0
+	GameState.data.rings = ["elf", "ruby", "dworf", "demon"]
+	check(gate.is_open(), "four rings and the shadow beaten open it")
+	await frames(90)
+	check(gate.swing >= 1.0, "its leaves swing wide")
+	p.input.move_x = 1
+	var through := false
+	for i in 180:
+		await frames(1)
+		if w.room.id == "zenis/threshold":
+			through = true
+			break
+	p.input.move_x = 0
+	check(through, "and you walk through into Zenis")
+	check(w.room.zone == "zenis" and Music.track == "zenis" and Music.ambience_track == "amb_zenis", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
+	check(World.ZONES.has("zenis") and w.motes.zone == "zenis", "the map knows the zone, and spores drift in the air")
+	check(w.room.doors[2].target == "zenis/heart_stair", "the Threshold leads on to the Heart Stair")
