@@ -305,6 +305,10 @@ func _physics_process(delta: float) -> void:
 	swimming = in_water
 	if swimming:
 		_refresh_air_moves()
+		# Water is footing for coyote time (pass 111): bobbing at the surface
+		# lifts the body clear of the water for a few frames, and a jump pressed
+		# then still jumps out at once.
+		_coyote_timer = tuning.coyote_time
 	if is_dashing:
 		_dash_step(delta)
 	else:
@@ -572,11 +576,23 @@ func _try_drop_through(on_floor: bool) -> void:
 	if not (on_floor and input.down and input.jump_pressed):
 		return
 	var room: Variant = get_tree().get_first_node_in_group("room")
-	if room and room.has_method("is_one_way_at") and room.is_one_way_at(global_position + Vector2(0, 2)):
+	var tile: bool = room and room.has_method("is_one_way_at") and room.is_one_way_at(global_position + Vector2(0, 2))
+	if tile or _standing_on_one_way_body():
 		global_position.y += 3.0
 		_jump_buffer_timer = 0.0
 		input.jump_pressed = false
 		_coyote_timer = 0.0
+
+
+## True when the floor under the feet is a one-way body that isn't a room tile
+## (a Bark Knight's rooted lance), so Down + Jump drops through it as well.
+func _standing_on_one_way_body() -> bool:
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i)
+		var shape: Object = c.get_collider_shape()
+		if c.get_normal().y < -0.7 and shape is CollisionShape2D and shape.one_way_collision:
+			return true
+	return false
 
 
 # --- Gravity --------------------------------------------------------------------
@@ -877,6 +893,7 @@ func _apply_ledge_correction(delta: float, on_floor: bool) -> void:
 	# Climbing Glove a clipped ledge used to catch you in a slide instead).
 	var motion := Vector2(wall_dir * 2.0, 0) if is_wall_sliding else Vector2(velocity.x * delta, 0)
 	if not test_move(global_transform, motion):
+		_apply_one_way_ledge_correction(motion)
 		return
 	for i in range(1, tuning.ledge_correction_px + 1):
 		var up := Vector2(0, -(i + CORRECTION_SLOP))
@@ -885,6 +902,26 @@ func _apply_ledge_correction(delta: float, on_floor: bool) -> void:
 			if is_wall_sliding:
 				global_position += motion
 				is_wall_sliding = false
+			return
+
+
+## A one-way platform has no side to bump, so the probe above misses its lip and
+## a fall that clips it by a pixel went straight past (pass 111). Here the lip is
+## found from above instead: lifted by i px and moved on, the feet would come down
+## on something within i px, where unmoved they would not (so a drop-through
+## isn't lifted straight back up), and unlifted they pass through it.
+func _apply_one_way_ledge_correction(motion: Vector2) -> void:
+	var gt := global_transform
+	if test_move(gt.translated(motion), Vector2(0, 0.5)):
+		return
+	for i in range(1, tuning.ledge_correction_px + 1):
+		var lift := i + CORRECTION_SLOP
+		var up := Vector2(0, -lift)
+		var down := Vector2(0, lift + 0.5)
+		if test_move(gt, up) or test_move(gt.translated(up), motion):
+			return
+		if test_move(gt.translated(up + motion), down) and not test_move(gt.translated(up), down):
+			global_position += up
 			return
 
 

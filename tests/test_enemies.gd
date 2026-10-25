@@ -1449,3 +1449,50 @@ func test_bark_knight_rooted_lance_is_a_ledge() -> void:
 	await frames(20)
 	check(not k.bough_solid(), "it goes when he pulls free")
 	check(p.global_position.y >= 7 * 16 - 1, "and you drop to the floor (y %.0f)" % p.global_position.y)
+
+
+## Bible 6.2 on the Bark Knight's lance (pass 111): Down + Jump drops through it
+## like any one-way, and when it goes from under you, coyote time still holds.
+func test_the_bark_knights_lance_drops_through_and_gives_coyote_time() -> void:
+	for mode in ["drop", "coyote"]:
+		var room := _room_with({Vector2i(14, 6): "!"})
+		var p := make_player(room, Vector2i(3, 6), {"boots": false})
+		p.max_hp = 9999
+		p.hp = 9999
+		var k: BarkKnight = _find(room, BarkKnight)
+		await frames(3)
+		p.teleport(Vector2(k.global_position.x - 56.0, 7 * 16))
+		for i in 200:
+			await frames(1)
+			if k.is_rooted():
+				break
+		await frames(2)
+		var lance := k.lance_rect()
+		p.teleport(Vector2(lance.get_center().x, lance.position.y - 20.0))
+		p.velocity = Vector2.ZERO
+		for i in 20:
+			await frames(1)
+			if p.is_on_floor():
+				break
+		check(p.is_on_floor() and p.global_position.y < 7 * 16 - 8, "%s: standing on the lance" % mode)
+		if mode == "drop":
+			p.input.down = true
+			p.input.jump_pressed = true
+			await frames(1)
+			p.input.down = false
+			await frames(20)
+			check(p.global_position.y >= 7 * 16 - 1, "Down + Jump drops through the lance (y %.0f)" % p.global_position.y)
+		else:
+			var gone := 0
+			for i in 120:
+				await frames(1)
+				if not p.is_on_floor():
+					gone = i
+					break
+			check(gone > 0, "the lance goes from under you")
+			await frames(3)
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+			await frames(1)
+			check(p.velocity.y < -300.0, "and a jump 4 frames later still counts (vy %.0f)" % p.velocity.y)
+		room.free()
