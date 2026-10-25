@@ -17,6 +17,8 @@ var game_speed := 1.0
 
 var trauma := 0.0
 var shake_offset := Vector2.ZERO
+## The last rumble asked for (weak, strong, seconds), even with rumble off (tests).
+var last_rumble := Vector3.ZERO
 
 var _hitstop_until_usec := 0
 ## Slow motion (boss kills): the time scale hit-stop returns to, and until when.
@@ -77,6 +79,7 @@ func add_trauma(amount: float) -> void:
 
 
 func rumble(weak: float, strong: float, seconds: float) -> void:
+	last_rumble = Vector3(weak, strong, seconds)
 	if not rumble_enabled:
 		return
 	for pad in Input.get_connected_joypads():

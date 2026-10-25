@@ -54,6 +54,8 @@ label(99, 12, "Gap: 10 tiles")
 # Dash gap x 116..129
 rect(116, 18, 129, 19, '.')
 label(114, 12, "Dash gap: 14 tiles")
+g[14][123] = 'r'                           # a stride seed over the dash gap
+label(118, 8, "Stride seed: dash, touch it, dash again")
 # Thorn bulb chain over gap x 136..156
 rect(136, 18, 156, 19, '.')
 for x in (140, 146, 152): g[16][x] = 'o'

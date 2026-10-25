@@ -353,3 +353,117 @@ func test_falling_water_beats_you_down_until_time_stops() -> void:
 	TimeStop.reset()
 	await frames(40)
 	check(absf(p.global_position.y - 19 * 16) < 2.0, "and when time runs again the water carries you down (y %.0f)" % p.global_position.y)
+
+
+# --- Stride seeds (bible 6.4) ----------------------------------------------------
+
+func _seed_shaft() -> Room:
+	var rows := SHAFT.duplicate()
+	rows[8] = "#......r.......#"
+	return make_room(rows)
+
+
+func _find_seed(room: Room) -> StrideSeed:
+	for c in room.get_children():
+		if c is StrideSeed:
+			return c
+	return null
+
+
+func test_a_stride_seed_gives_back_the_double_jump_and_dash() -> void:
+	var room := _seed_shaft()
+	var seed := _find_seed(room)
+	check(seed != null and seed.is_whole(), "legend r grows a stride seed")
+	var p := make_player(room, Vector2i(7, 3))
+	await frames(1)
+	p.has_double_jump = false
+	p.air_dash_charges = 0
+	check(p.needs_air_refresh(), "with both spent, the player needs it")
+	var burst := false
+	for i in 60:
+		await frames(1)
+		if not seed.is_whole():
+			burst = true
+			break
+	check(burst, "falling through it bursts it")
+	check(p.has_double_jump and p.air_dash_charges == p.tuning.air_dash_charges, "and gives back the double jump and the dash")
+	check(not p.is_on_floor(), "in mid-air")
+	await frames(int(StrideSeed.REGROW * 60.0) + 2)
+	check(seed.is_whole(), "it grows back after %.1f s" % StrideSeed.REGROW)
+
+
+func test_a_stride_seed_is_never_wasted() -> void:
+	var room := _seed_shaft()
+	var seed := _find_seed(room)
+	var p := make_player(room, Vector2i(7, 3))
+	await frames(40)
+	check(p.global_position.y > seed.global_position.y + 20.0, "the player fell past the seed")
+	check(seed.is_whole(), "with nothing spent it stays whole for later")
+	var q := make_player(_seed_shaft(), Vector2i(7, 3), {"boots": false, "stride": false})
+	await frames(1)
+	q.has_double_jump = false
+	q.air_dash_charges = 0
+	check(not q.needs_air_refresh(), "moves you don't own can't be spent")
+
+
+# --- Audit checks (pass 97) -------------------------------------------------------
+
+func test_the_jump_buffer_catches_a_wall_jump() -> void:
+	# Bible 6.2: the buffer works on ground, wall and double jump.
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(11, 4), {"boots": false})
+	p.input.move_x = 1
+	var pressed := false
+	var jumped := false
+	for i in 60:
+		await frames(1)
+		var gap := (15 * Room.TILE) - (p.global_position.x + Player.BODY_SIZE.x * 0.5)
+		if not pressed and p.wall_dir == 0 and gap > 0.0 and gap < 8.0:
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+			pressed = true
+		elif pressed and p.velocity.x < -100.0:
+			jumped = true
+			break
+	check(pressed, "jump was pressed just short of the wall")
+	check(jumped, "and the wall jump fires on contact")
+
+
+func test_apex_hang_halves_gravity_near_the_top() -> void:
+	# Bible 6.2: gravity x 0.5 while holding jump and |vy| < 40 px/s.
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18))
+	await frames(6)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var dv := -1.0
+	for i in 60:
+		var before := p.velocity.y
+		await frames(1)
+		if absf(before) < p.tuning.apex_threshold - 15.0 and absf(p.velocity.y) < p.tuning.apex_threshold - 15.0 and before != 0.0:
+			dv = p.velocity.y - before
+			break
+	check_near(dv, p.tuning.gravity * p.tuning.apex_gravity_multiplier / 60.0, 0.6, "near the apex, holding jump, it falls at half gravity")
+
+
+func test_only_a_big_drop_thuds() -> void:
+	# Bible 6.7: shake and rumble are for real impacts, not every jump.
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18))
+	await frames(6)
+	Feel.trauma = 0.0
+	Feel.last_rumble = Vector3.ZERO
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	for i in 90:
+		await frames(1)
+		if i > 5 and p.is_on_floor():
+			break
+	check(p.is_on_floor() and Feel.last_rumble == Vector3.ZERO, "landing a full jump doesn't rumble")
+	var q := make_player(room, Vector2i(4, 2))
+	p.queue_free()
+	for i in 120:
+		await frames(1)
+		if q.is_on_floor():
+			break
+	check(q.is_on_floor() and Feel.last_rumble.y > 0.0, "a fall of a whole shaft lands with a rumble (%s)" % Feel.last_rumble)

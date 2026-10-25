@@ -307,7 +307,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Parameter | Value |
 |-----------|-------|
 | Height | 48 px (3 tiles), velocity 326 px/s |
-| Count | 1, refreshed by ground, wall touch, pogo, and dash-reset orbs |
+| Count | 1, refreshed by ground, wall touch, pogo, and stride seeds (the dash-reset orbs, pass 97: legend `r`, a glowing elf-seed floating in open air. Touched in the air with a double jump or dash spent, it bursts and gives both back, then grows again after 2.5 s. With nothing spent it stays whole. Seeds only help and never gate a route. In the gym over the dash gap, and three in the Sky Steps) |
 | Feel | feather burst, small upward squash, wing whoosh |
 
 ### 6.5 Air dash (Elven Stride)
@@ -342,7 +342,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 - **Flash:** enemy flashes white for 2 frames on hit; player flashes red and blinks during invulnerability.
 - **Camera:** look-ahead 48 px in facing direction (eased over 0.4 s); vertical look-down when holding down for 0.4 s; lerp smoothing with deadzone 16x24 px.
 - **Wide camera (pass 94):** a room with `camera: wide` in its header (big arenas, sky rooms) eases the framing out over about 0.6 s to 0.8 scale, showing 25% more each way (800x450 world pixels). It never frames past the room's edges: a room too small for the full pull-out gets as much as fits. Leaving for a normal room snaps back at once. The world still renders on whole render pixels, the HUD and PixelFont are unscaled, and the weather motes tile across the wider view.
-- **Rumble:** on gamepads, light for hits, strong for damage and boss slams.
+- **Rumble:** on gamepads, light for hits, strong for damage and boss slams. A landing from 7 tiles or more thuds with a light rumble and a little shake (pass 97); an ordinary jump's landing doesn't shake.
 - **Sound:** layered footsteps per surface; distinct jump, double jump, wall jump, dash, pogo and land sounds.
 - **Particles:** spark burst on hit, gold coins that bounce and magnet to the player after 0.4 s.
 - **Input:** every action responds on the same frame it is pressed. 60 fps physics, fixed timestep; rendering uncapped with interpolation.

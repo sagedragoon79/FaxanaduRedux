@@ -35,6 +35,8 @@ const UP_SLASH_SIZE := Vector2(34, 36)
 const DOWN_STRIKE_SIZE := Vector2(28, 24)
 ## How fast an updraft brings the body to its lift speed (px/s²).
 const UPDRAFT_ACCEL := 1100.0
+## A landing from at least this far above (px, 7 tiles) thuds: shake and rumble.
+const BIG_DROP := 112.0
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -174,6 +176,8 @@ var _attack_cooldown := 0.0
 var _attack_hits := {}
 var _was_on_floor := false
 var _peak_fall_speed := 0.0
+## The highest point (smallest y) of the current time in the air.
+var _air_top_y := INF
 var _dust_timer := 0.0
 var _step_timer := 0.0
 var _combo_timer := 0.0
@@ -341,6 +345,18 @@ func _tick_timers(delta: float) -> void:
 func _refresh_air_moves() -> void:
 	has_double_jump = true
 	air_dash_charges = tuning.air_dash_charges + bonus_air_dashes
+
+
+## True when a double jump or an air dash the player owns has been spent (a
+## stride seed only bursts for someone who needs it).
+func needs_air_refresh() -> bool:
+	return (abilities.boots and not has_double_jump) \
+		or (abilities.stride and air_dash_charges < tuning.air_dash_charges + bonus_air_dashes)
+
+
+## Gives back the double jump and air dashes (a stride seed, bible 6.4).
+func refresh_air_moves() -> void:
+	_refresh_air_moves()
 
 
 # --- Walls ----------------------------------------------------------------------
@@ -761,6 +777,7 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 	var on_floor := is_on_floor()
 	if not on_floor:
 		_peak_fall_speed = maxf(_peak_fall_speed, velocity.y)
+		_air_top_y = minf(_air_top_y, global_position.y)
 	if on_floor and not _was_on_floor:
 		var impact := maxf(_peak_fall_speed, pre_velocity.y)
 		var k := clampf(impact / tuning.max_fall_speed, 0.0, 1.0)
@@ -769,10 +786,13 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 			_spawn_dust(Vector2.ZERO, "land")
 			Sfx.play("land", 0.08, lerpf(-8.0, 0.0, k))
 			_footstep(lerpf(-10.0, -4.0, k))
-		if impact > 450.0:
+		# Only a real drop thuds; an ordinary jump lands without a shake.
+		if global_position.y - _air_top_y >= BIG_DROP and impact > 450.0:
 			Feel.add_trauma(0.12)
+			Feel.rumble(0.35, 0.15, 0.08)
 		landed.emit(impact)
 		_peak_fall_speed = 0.0
+		_air_top_y = INF
 	if on_floor and absf(velocity.x) > 40.0 and _step_timer <= 0.0:
 		_step_timer = 0.26
 		_footstep(-10.0)
