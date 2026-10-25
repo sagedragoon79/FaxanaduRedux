@@ -17,7 +17,12 @@ extends Enemy
 ## or else one of the dead conduits, which wakes it. Stay low and let the storm
 ## help, or climb and risk it. But now a woken conduit drains after a few
 ## seconds unless all three wake together, and the volley throws seven.
-## Phase 3 (the updraft duel) comes in a later pass.
+## Phase 3 (below a quarter): the duel. Between dives and volleys it hovers
+## over one of the open lanes between the islands and beats its wings (tell,
+## dust stirring where the wind will rise), then holds there over a column of
+## rising air (Updraft) while the storm waits. Ride the wind up past it and
+## pogo its head: blows from above land in full while it holds the gale. It
+## doesn't touch you while it beats. Grounding it with the conduits still works.
 
 signal defeated
 
@@ -39,6 +44,14 @@ const DYING_TIME := 1.6
 ## Health fraction where the storm breaks.
 const PHASE_2 := 0.5
 const VOLLEY_FEATHERS_2 := 7
+## Health fraction where the duel begins.
+const PHASE_3 := 0.25
+const GALE_TELL := 0.8
+const GALE_TIME := 3.5
+## How high over the arena's top it hovers to hold the gale.
+const GALE_HOVER := 120.0
+## How far above its body's top the updraft reaches.
+const GALE_HEADROOM := 24.0
 ## Seconds between storm bolts in phase 2 (the first comes sooner).
 const STORM_EVERY := 3.2
 ## In phase 2 a woken conduit goes dead again after this long, unless all three are awake.
@@ -70,6 +83,9 @@ const ARC := Color("b8a8ff")
 var arena := Rect2(16, 64, 928, 256)
 var phase := 1
 var _last := ""
+## The last of the volley and the dive (the gale comes between them in phase 3).
+var _last_move := ""
+var _gale: Updraft
 var _from := Vector2.ZERO
 var _to := Vector2.ZERO
 var _hit_done := false
@@ -123,6 +139,26 @@ func grounded() -> bool:
 	return state == "grounded"
 
 
+## Hovering over its updraft in phase 3: blows from above land in full.
+func holding_gale() -> bool:
+	return state == "gale"
+
+
+## Where it hovers for the gale: over the open lane between the islands nearest x.
+func gale_point(x: float) -> Vector2:
+	var left := arena.position.x + arena.size.x / 3.0
+	var right := arena.position.x + arena.size.x * 2.0 / 3.0
+	var lane := left if absf(x - left) <= absf(x - right) else right
+	return Vector2(lane, arena.position.y + GALE_HOVER)
+
+
+func set_state(s: String) -> void:
+	if not s.begins_with("gale") and is_instance_valid(_gale):
+		_gale.queue_free()
+		_gale = null
+	super.set_state(s)
+
+
 func airborne() -> bool:
 	return not state in ["dormant", "fall", "grounded", "dying", "dead"]
 
@@ -152,8 +188,10 @@ func all_awake() -> bool:
 	return true
 
 
-func _modify_damage(damage: int, _dir: Vector2) -> int:
+func _modify_damage(damage: int, dir: Vector2) -> int:
 	if grounded():
+		return damage
+	if holding_gale() and dir.y > 0.0:
 		return damage
 	return maxi(1, roundi(damage * CLOUD))
 
@@ -174,6 +212,12 @@ func _check_phase() -> void:
 		Sfx.play("roar", 0.05, 1.0)
 		Feel.add_trauma(0.5)
 		GameState.flash.emit(0.4)
+	if phase == 2 and not dead and hp <= roundi(max_hp * PHASE_3):
+		phase = 3
+		Sfx.play("roar", 0.05, 3.0)
+		Sfx.play("hydra_roar", 0.05, 0.0)
+		Feel.add_trauma(0.6)
+		GameState.flash.emit(0.5)
 
 
 func _on_blocked(_dir: Vector2) -> void:
@@ -187,10 +231,11 @@ func stagger() -> void:
 
 func _think(delta: float) -> void:
 	_clock += delta
-	contact_damage = TOUCH_DAMAGE if airborne() else 0
+	contact_damage = TOUCH_DAMAGE if airborne() and not state.begins_with("gale") else 0
 	if phase >= 2:
 		_drain(delta)
-		if airborne() and state != "intro":
+		# It draws the storm into its wings while it holds the gale.
+		if airborne() and state != "intro" and not state.begins_with("gale"):
 			_storm -= delta
 			if _storm <= 0.0:
 				_storm = STORM_EVERY
@@ -232,6 +277,26 @@ func _think(delta: float) -> void:
 				_hit_done = false
 				set_state("dive")
 				Sfx.play("hydra_roar", 0.05, -2.0)
+		"gale_tell":
+			face_player()
+			velocity = ((_to - global_position) * 6.0).limit_length(320.0)
+			if _check_grounding():
+				return
+			if state_time >= tell(GALE_TELL):
+				global_position = _to
+				velocity = Vector2.ZERO
+				_gale.active = true
+				set_state("gale")
+				Sfx.play("hydra_roar", 0.05, -4.0)
+				Feel.add_trauma(0.25)
+		"gale":
+			face_player()
+			velocity = Vector2.ZERO
+			if _check_grounding():
+				return
+			if state_time >= GALE_TIME:
+				_from = global_position
+				set_state("climb")
 		"dive":
 			var k := clampf(state_time / DIVE_TIME, 0.0, 1.0)
 			velocity = Vector2.ZERO
@@ -338,15 +403,34 @@ func _choose() -> void:
 	if p == null:
 		return
 	# Alternate, but a player perched high on the islands gets feathers.
-	var pick := "dive" if _last == "volley" else "volley"
-	if p.global_position.y < arena.end.y - 5 * Room.TILE and _last == "dive":
+	var pick := "dive" if _last_move == "volley" else "volley"
+	if p.global_position.y < arena.end.y - 5 * Room.TILE and _last_move == "dive":
 		pick = "volley"
+	# In the duel every other move is the gale.
+	if phase >= 3 and _last != "gale":
+		pick = "gale"
 	_last = pick
+	if pick != "gale":
+		_last_move = pick
+	if pick == "gale":
+		_begin_gale(p.global_position.x)
+		return
 	set_state(pick + "_tell")
 	if pick == "volley":
 		Sfx.play("screech", 0.05, 2.0)
 	else:
 		Sfx.play("screech", 0.05, 4.0)
+
+
+## It flies to the lane nearest x and beats its wings: dust stirs where the wind will rise.
+func _begin_gale(x: float) -> void:
+	_to = gale_point(x)
+	set_state("gale_tell")
+	_gale = Updraft.new()
+	_gale.height = floor_y() - (_to.y - body_size.y * 0.5 - GALE_HEADROOM)
+	get_parent().add_child(_gale)
+	_gale.global_position = Vector2(_to.x, floor_y())
+	Sfx.play("screech", 0.05, 0.0)
 
 
 func _volley() -> void:
@@ -410,6 +494,10 @@ func _draw() -> void:
 			flap = -0.5 + sin(t * 30.0) * 0.05
 		"dive":
 			flap = 0.9
+		"gale_tell":
+			flap = -0.6 + sin(t * 18.0) * 0.25
+		"gale":
+			flap = sin(t * 14.0) * 0.6
 		"fall", "grounded", "dying":
 			flap = 0.75
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1) * SCALE)

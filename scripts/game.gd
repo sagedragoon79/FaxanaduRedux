@@ -258,6 +258,7 @@ func _process(_delta: float) -> void:
 			boss._check_phase()
 		elif boss is Borabohra and boss.state == "intro" and boss.hp == Borabohra.MAX_HP:
 			boss.hp = roundi(Borabohra.MAX_HP * float(_args["boss-hp"]))
+			boss._check_phase()
 		elif boss is KingGrieve and boss.state == "intro" and boss.hp == KingGrieve.MAX_HP:
 			boss.hp = roundi(KingGrieve.MAX_HP * float(_args["boss-hp"]))
 			if boss.health_fraction() <= KingGrieve.PHASES[1]:
