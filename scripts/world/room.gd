@@ -33,6 +33,9 @@ var _secret_cells := {}
 var _falls := {}
 ## Wrong-gravity cells (legend `v`), gathered into GravityDrifts after the grid.
 var _drifts := {}
+## Wind cells (legend `>` east, `<` west), by the way they blow as drawn.
+var _winds_east := {}
+var _winds_west := {}
 ## Deep water cells (legend `a`), one SwimWater for the room after the grid.
 var _water := {}
 ## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
@@ -399,6 +402,10 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_falls[cell] = true
 		"v":
 			_drifts[cell] = true
+		">":
+			_winds_east[cell] = true
+		"<":
+			_winds_west[cell] = true
 		"a":
 			_water[cell] = true
 		"+":
@@ -544,6 +551,12 @@ func _place_falls() -> void:
 		var drift := GravityDrift.new()
 		drift.cells = box
 		add_child(drift)
+	for pair: Array in [[_winds_east, 1], [_winds_west, -1]]:
+		for box in _blocks(pair[0]):
+			var wind := WindCurrent.new()
+			wind.cells = box
+			wind.drawn_dir = pair[1]
+			add_child(wind)
 	if not _water.is_empty():
 		var water := SwimWater.new()
 		water.cells = _water

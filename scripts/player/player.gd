@@ -134,6 +134,9 @@ var gravity_scale := 1.0
 ## Rising wind under the player this frame (px/s up): Borabohra's updraft in its
 ## third phase (design bible 8.6). Set by an Updraft each frame; Down drops out.
 var updraft := 0.0
+## A wind current pushing the airborne player this frame (px/s, + east): the
+## Branches' wind (bible 6.9). Set by a WindCurrent each frame; Down drops out.
+var wind := 0.0
 ## Deep water around the body's centre this frame (the Sunken Spring, legend
 ## `a`), and the y of its surface in that column. Set by SwimWater each frame.
 var in_water := false
@@ -270,6 +273,9 @@ func _physics_process(delta: float) -> void:
 			_swim_drift(delta)
 		elif updraft > 0.0 and not input.down:
 			_ride_updraft(delta)
+		elif wind != 0.0 and velocity.y >= 0.0:
+			# The current bears you level once you stop rising.
+			velocity.y = move_toward(velocity.y, 0.0, tuning.wind_drag * delta)
 		else:
 			_apply_gravity(delta, on_floor)
 	_apply_wall_slide()
@@ -279,6 +285,7 @@ func _physics_process(delta: float) -> void:
 	water_push = 0.0
 	gravity_scale = 1.0
 	updraft = 0.0
+	wind = 0.0
 	in_water = false
 
 	if is_attacking:
@@ -382,6 +389,7 @@ func _horizontal_step(delta: float, on_floor: bool) -> void:
 		target *= SAP_SPEED
 	if swimming:
 		target *= tuning.swim_speed_multiplier
+	target += wind
 	var accel: float
 	if on_floor:
 		if input.move_x != 0:

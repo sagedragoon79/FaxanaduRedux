@@ -349,6 +349,94 @@ func test_swimming_floats_sinks_strokes_and_jumps_out() -> void:
 	check(p.is_on_floor() and not p.swimming and p.global_position.x > 17 * Room.TILE, "from the surface a jump carries you out onto the bank (%s)" % p.global_position)
 
 
+## A 50-wide room with a current blowing east (`>`) across rows 6-9, cols 2-47,
+## and a shelf on the floor (cols 20-24, top row 8) standing up into it.
+func _wind_room() -> Room:
+	var rows := ["##################################################"]
+	for y in range(1, 18):
+		var row := "#" + ".".repeat(48) + "#"
+		if y >= 6 and y <= 9:
+			row = "#." + ">".repeat(46) + ".#"
+		if y >= 8:
+			row = row.substr(0, 20) + "#####" + row.substr(25)
+		rows.append(row)
+	rows.append("##################################################")
+	return make_room(rows)
+
+
+## Bible 6.9: in the air in a current the player is carried along it and borne
+## level; there's no headway against it; Down drops out; on a floor it does nothing.
+func test_a_current_carries_you_and_bears_you_level() -> void:
+	GameState.new_game()
+	var room := _wind_room()
+	var p := make_player(room, Vector2i(8, 9))
+	p.global_position = Vector2(8 * Room.TILE, 8 * Room.TILE + 4)
+	p.velocity = Vector2.ZERO
+	await frames(2)
+	var y0 := p.global_position.y
+	var x0 := p.global_position.x
+	for i in 40:
+		await frames(1)
+	check(p.velocity.x > p.tuning.wind_speed - 10.0, "with no input it is carried at the wind's speed (%.0f px/s)" % p.velocity.x)
+	check(absf(p.global_position.y - y0) < Room.TILE, "and borne level, not falling (%.1f px)" % (p.global_position.y - y0))
+	check(p.global_position.x > x0 + 80.0, "downwind (%.0f px)" % (p.global_position.x - x0))
+	# Running against it: still carried downwind, slowly.
+	p.global_position = Vector2(30 * Room.TILE, 8 * Room.TILE + 4)
+	p.velocity = Vector2.ZERO
+	p.input.move_x = -1
+	await frames(2)
+	x0 = p.global_position.x
+	for i in 40:
+		await frames(1)
+	check(p.global_position.x > x0, "running against it makes no headway (%.0f px)" % (p.global_position.x - x0))
+	p.input.move_x = 0
+	# Down drops out.
+	p.input.down = true
+	y0 = p.global_position.y
+	for i in 20:
+		await frames(1)
+	check(p.global_position.y > y0 + Room.TILE, "holding Down drops you out of it (%.0f px)" % (p.global_position.y - y0))
+	p.input.down = false
+
+
+func test_a_current_doesnt_move_you_on_a_floor() -> void:
+	GameState.new_game()
+	var room := _wind_room()
+	var p := make_player(room, Vector2i(22, 7))
+	for i in 20:
+		await frames(1)
+	var x0 := p.global_position.x
+	for i in 30:
+		await frames(1)
+	check(p.is_on_floor() and absf(p.global_position.x - x0) < 1.0, "standing on the shelf in the current, you brace and stay put")
+
+
+func test_the_spring_of_sky_turns_the_wind() -> void:
+	GameState.new_game()
+	var room := _wind_room()
+	var w: WindCurrent = null
+	for c in room.get_children():
+		if c is WindCurrent:
+			w = c
+	check(w != null and w.dir() == 1, "a `>` current blows east")
+	GameState.set_flag("spring:sky")
+	check(w.dir() == -1, "once the Spring of Sky is restored it blows west")
+	var p := make_player(room, Vector2i(8, 9))
+	p.global_position = Vector2(30 * Room.TILE, 8 * Room.TILE + 4)
+	await frames(2)
+	var x0 := p.global_position.x
+	for i in 30:
+		await frames(1)
+	check(p.global_position.x < x0 - 60.0, "and carries you west (%.0f px)" % (p.global_position.x - x0))
+	GameState.new_game()
+
+
+func test_wind_numbers_match_the_bible() -> void:
+	var t := MovementTuning.new()
+	check(t.wind_speed == 200.0 and t.wind_drag == 2400.0, "wind speed and drag are the bible's (6.9)")
+	check(t.wind_speed > t.run_speed, "faster than a run, so there is no headway against it")
+
+
 func test_swim_numbers_match_the_bible() -> void:
 	var t := MovementTuning.new()
 	check(t.swim_speed_multiplier == 0.7 and t.swim_float == 50.0 and t.swim_sink == 120.0, "swim speed, float and sink are the bible's (6.8)")

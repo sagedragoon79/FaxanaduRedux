@@ -66,6 +66,14 @@ extends Resource
 @export var swim_drag := 520.0
 @export var swim_stroke := 230.0
 
+@export_group("Wind")
+## A wind current in the Branches (bible 6.9): in the air inside one, the run
+## target is shifted by wind_speed along the wind, so you can't make headway
+## against it, and the current bears you level (velocity.y eases to 0 at
+## wind_drag once you stop rising). Hold Down to drop out of it.
+@export var wind_speed := 200.0
+@export var wind_drag := 2400.0
+
 @export_group("Damage")
 @export var hurt_invuln := 0.8
 

@@ -12,6 +12,9 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5).
 const STRIDE_SECRETS := [["branches/north_bough", 8, 7], ["daybreak/sky_steps", 6, 20]]
+## Pickups only the Branches' wind reaches once the Spring of Sky turns it
+## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
+const WIND_SECRETS := [["branches/thicket_road", 38, 8]]
 ## Pickups behind bramble, which only the Fire spell burns away (bible 4.5).
 const FIRE_SECRETS := [["daybreak/daybreak", 76, 19]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
@@ -109,7 +112,8 @@ func test_with_glove_everything_is_reachable() -> void:
 	check(missing_rooms.is_empty(), "with the glove and keys every room is reachable: missing %s" % [missing_rooms])
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]) and not MATTOCK_ROOMS.has(p[0]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]) and not MATTOCK_ROOMS.has(p[0]) \
+				and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
 	var opened := MATTOCK_ROOMS.filter(func(id: String) -> bool: return rooms.has(id))
@@ -136,7 +140,7 @@ func test_amber_keeps_everything_reachable() -> void:
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not MATTOCK_ROOMS.has(p[0]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not MATTOCK_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with amber, every pickup is still reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -158,7 +162,7 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) \
-				and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]):
+				and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -194,7 +198,7 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) \
-				and not THUNDER_ROOMS.has(p[0]):
+				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
@@ -294,6 +298,50 @@ func test_checker_rides_bounce_pods() -> void:
 	texts = {"t/ledge": room_text(["name: Ledge"], rows)}
 	var pod := Reach.new(texts, {})
 	check(pod.touchable(pod.reachable(pod.spot_of("t/ledge", "P")), "t/ledge", 30, 12), "a bounce-pod beside it throws you up there")
+
+
+func test_checker_rides_wind_currents_downwind_only() -> void:
+	# A current blowing east across the sky, and a ledge past its far end, far
+	# beyond any jump from the launch shelf.
+	var rows := grid_rows(60, 23)
+	put_tiles(rows, 3, 19, "P")
+	put_tiles(rows, 5, 16, "#", 4, 4)
+	put_tiles(rows, 10, 9, ">", 40, 3)
+	put_tiles(rows, 52, 13, "#", 4, 1)
+	put_tiles(rows, 53, 12, "L")
+	var texts := {"t/wind": room_text(["name: Wind"], rows)}
+	var east := Reach.new(texts, {})
+	var nodes := east.reachable(east.spot_of("t/wind", "P"))
+	check(east.touchable(nodes, "t/wind", 53, 12), "a jump into the current rides it east, past its end, onto the ledge")
+	var west := Reach.new(texts, {"sky_spring": true})
+	nodes = west.reachable(west.spot_of("t/wind", "P"))
+	check(not west.touchable(nodes, "t/wind", 53, 12), "turned west, it carries you away from the ledge")
+	check(west.stuck(nodes, [west.spot_of("t/wind", "P")]).is_empty(), "and wherever it drops you, you can walk back")
+	put_tiles(rows, 10, 9, ".", 40, 3)
+	texts = {"t/wind": room_text(["name: Wind"], rows)}
+	var calm := Reach.new(texts, {"boots": true, "stride": true})
+	check(not calm.touchable(calm.reachable(calm.spot_of("t/wind", "P")), "t/wind", 53, 12), "with no current, not even the boots and stride get there")
+
+
+func test_the_turned_wind_reaches_the_thicket_niche() -> void:
+	# Bible 6.9: the Spring of Sky turns the Branches' wind, and the Thicket
+	# Road's current then carries you west into the elves' wind-niche.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
+	var before := Reach.new(_texts(), set, true)
+	var nodes := before.reachable(before.spot_of(START_ROOM, "P"))
+	for s: Array in WIND_SECRETS:
+		check(not before.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach while the storm wind blows east" % [s])
+	set["sky_spring"] = true
+	var reach := Reach.new(_texts(), set, true)
+	var turned := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var missing: Array = []
+	for p: Array in _pickups(reach):
+		if not reach.touchable(turned, p[0], p[2], p[3]):
+			missing.append(p)
+	check(missing.is_empty(), "with the wind turned, every pickup in the game is reachable: missing %s" % [missing])
+	var stuck := reach.stuck(turned, _save_spots(reach))
+	check(stuck.is_empty(), "with the wind turned, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
@@ -410,7 +458,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not FIRE_SECRETS.has([p[0], p[2], p[3]]) \
-				and not THUNDER_ROOMS.has(p[0]):
+				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
 	var rooms := _rooms_reached(strided)
