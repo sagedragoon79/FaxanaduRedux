@@ -40,18 +40,30 @@ static func reset() -> void:
 
 static func load_settings() -> void:
 	reset()
+	# A damaged file falls back to its backup, then to the defaults (pass 109).
 	var cfg := ConfigFile.new()
 	if cfg.load(path) != OK:
-		return
-	shake = clampi(int(cfg.get_value("feel", "shake", shake)), 0, SHAKE_STEPS.size() - 1)
-	flashes = clampi(int(cfg.get_value("feel", "flashes", flashes)), 0, FLASH_STEPS.size() - 1)
-	rumble = bool(cfg.get_value("feel", "rumble", rumble))
-	speed = clampi(int(cfg.get_value("feel", "speed", speed)), 0, SPEED_STEPS.size() - 1)
-	music_volume = clampi(int(cfg.get_value("audio", "music", music_volume)), 0, VOLUME_MAX)
-	sound_volume = clampi(int(cfg.get_value("audio", "sound", sound_volume)), 0, VOLUME_MAX)
+		cfg = ConfigFile.new()
+		if cfg.load(path + ".bak") != OK:
+			return
+	shake = _index(cfg.get_value("feel", "shake", shake), SHAKE_STEPS.size(), shake)
+	flashes = _index(cfg.get_value("feel", "flashes", flashes), FLASH_STEPS.size(), flashes)
+	var r: Variant = cfg.get_value("feel", "rumble", rumble)
+	rumble = r if r is bool else rumble
+	speed = _index(cfg.get_value("feel", "speed", speed), SPEED_STEPS.size(), speed)
+	music_volume = _index(cfg.get_value("audio", "music", music_volume), VOLUME_MAX + 1, music_volume)
+	sound_volume = _index(cfg.get_value("audio", "sound", sound_volume), VOLUME_MAX + 1, sound_volume)
 	for action: String in REBINDABLE:
-		if cfg.has_section_key("keys", action):
-			keys[action] = int(cfg.get_value("keys", action))
+		var key: Variant = cfg.get_value("keys", action, null)
+		if key is int and key > 0:
+			keys[action] = key
+
+
+## A whole number in 0..count-1 from whatever the file held, else `default`.
+static func _index(v: Variant, count: int, default: int) -> int:
+	if not (v is int or v is float) or not is_finite(float(v)):
+		return default
+	return clampi(int(v), 0, count - 1)
 
 
 static func save() -> void:
@@ -64,7 +76,7 @@ static func save() -> void:
 	cfg.set_value("audio", "sound", sound_volume)
 	for action: String in keys:
 		cfg.set_value("keys", action, keys[action])
-	cfg.save(path)
+	GameState.write_safely(path, cfg.encode_to_text())
 
 
 ## Pushes the settings into Feel, the audio buses and the input map.

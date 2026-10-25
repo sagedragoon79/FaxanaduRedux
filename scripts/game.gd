@@ -171,8 +171,14 @@ func _title() -> void:
 		menu.panel = ListMenu.PANEL
 		match i:
 			0:
-				GameState.load_game(SAVE_SLOT)
-				_continue()
+				if GameState.load_game(SAVE_SLOT):
+					_continue()
+				else:
+					# Nothing in the slot could be read (pass 109): start over rather than fail.
+					GameState.new_game()
+					GameState.slot = SAVE_SLOT
+					_start(NEW_GAME_ROOM)
+					GameState.toast.emit("The old journey could not be read. A new one begins.")
 			1:
 				GameState.new_game()
 				GameState.slot = SAVE_SLOT
@@ -186,7 +192,12 @@ func _title() -> void:
 
 func _continue() -> void:
 	var at := Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1]))
-	_start(String(GameState.data.save_room), at)
+	var room := String(GameState.data.save_room)
+	if not World.room_exists(room):
+		# A rest in a room this build doesn't have: wake at the new-game spot.
+		room = NEW_GAME_ROOM
+		at = Vector2.INF
+	_start(room, at)
 	GameState.toast.emit("Welcome back. %s, rank %s." % [world.room.title, GameState.rank_name()])
 
 

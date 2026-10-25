@@ -16,7 +16,8 @@ func _restore() -> void:
 	Settings.apply()
 	Settings.path = Settings.PATH
 	Feel.rumble_enabled = false
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(TEMP_SETTINGS))
+	for suffix: String in ["", ".bak", ".tmp"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEMP_SETTINGS + suffix))
 
 
 func test_settings_save_load_and_apply() -> void:
@@ -460,6 +461,120 @@ func test_an_old_save_gains_the_new_keys() -> void:
 	check(missing.is_empty() and d.pins == [] and int(d.deaths) == 0, "every newer key is there, at its new-game value (missing %s)" % [missing])
 	GameState.delete_save(OLD_SLOT)
 	GameState.new_game()
+
+
+# --- Damaged saves and settings (pass 109) -----------------------------------------
+
+const BAD_SLOT := 8
+
+
+func _write_raw(path: String, text: String) -> void:
+	var f := FileAccess.open(path, FileAccess.WRITE)
+	f.store_string(text)
+	f.close()
+
+
+func test_a_damaged_save_is_refused_and_leaves_the_game_alone() -> void:
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+	GameState.data.gold = 777
+	var path := GameState.SAVE_PATH % BAD_SLOT
+	for text: String in ["", "{\"gold\": 5, \"save_ro", "not a save at all", "[1, 2, 3]", "42", "{\"gold\": 5}"]:
+		_write_raw(path, text)
+		check(not GameState.load_game(BAD_SLOT), "%s is refused" % JSON.stringify(text))
+		check(int(GameState.data.gold) == 777 and GameState.data.has("abilities"), "and the game in play is untouched")
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+
+
+func test_wrong_types_in_a_save_fall_back_to_their_defaults() -> void:
+	GameState.delete_save(BAD_SLOT)
+	var bad := {"save_room": "eolis/plaza", "abilities": ["glove"], "gold": "lots", "max_hp": -5, "xp": INF,
+		"equipment": {"blade": 3, "armor": "leather_armor"}, "skills": ["keen_edge", 7], "rings": "elf",
+		"pins": [["mist/fog_cut", 10, 20], "x", [1]], "save_pos": "here", "gurus": {"a/b": [1], "c/d": [3, 4]},
+		"purse": {"room": 5}, "flags": "all", "deaths": -3, "future_key": 12}
+	_write_raw(GameState.SAVE_PATH % BAD_SLOT, JSON.stringify(bad))
+	check(GameState.load_game(BAD_SLOT), "a save with wrong types still loads")
+	var d := GameState.data
+	var f := GameState.fresh()
+	check(d.abilities is Dictionary and d.abilities.size() == f.abilities.size(), "abilities of the wrong type start over")
+	check(d.gold == 0 and d.xp == 0 and d.deaths == 0, "a word, infinity or a negative becomes 0 (%s, %s, %s)" % [d.gold, d.xp, d.deaths])
+	check(d.max_hp == f.max_hp, "health never falls below a new game's (%s)" % d.max_hp)
+	check(d.equipment.blade == f.equipment.blade and d.equipment.armor == "leather_armor", "a bad blade id falls back, a good armor id stays")
+	check(d.skills == ["keen_edge"] and d.rings == [], "lists keep only well-formed entries")
+	check(_same(d.pins, [["mist/fog_cut", 10, 20]]), "and only whole pins (%s)" % [d.pins])
+	check(d.save_pos == [0, 0] and d.gurus.keys() == ["c/d"] and d.purse == {}, "points and the purse must be whole")
+	check(d.flags is Dictionary and d.flags.is_empty(), "flags of the wrong type start over")
+	check(int(d.get("future_key", 0)) == 12 and int(d.version) == GameState.VERSION, "a newer build's keys are kept")
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+
+
+func test_a_damaged_save_falls_back_to_its_backup() -> void:
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+	GameState.data.save_room = "eolis/plaza"
+	GameState.data.gold = 100
+	check(GameState.save_game(BAD_SLOT), "the first save writes")
+	GameState.data.gold = 200
+	check(GameState.save_game(BAD_SLOT), "the second save writes")
+	var path := GameState.SAVE_PATH % BAD_SLOT
+	check(FileAccess.file_exists(path + ".bak") and not FileAccess.file_exists(path + ".tmp"), "the last save is kept as a backup, no temp file left")
+	_write_raw(path, "{\"gold\": 2")
+	GameState.new_game()
+	check(GameState.load_game(BAD_SLOT) and int(GameState.data.gold) == 100, "a damaged save loads its backup (gold %s)" % GameState.data.gold)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	check(GameState.has_save(BAD_SLOT), "a backup alone still counts as a save")
+	GameState.delete_save(BAD_SLOT)
+	check(not GameState.has_save(BAD_SLOT) and not FileAccess.file_exists(path + ".bak"), "deleting a save takes its backup too")
+	GameState.new_game()
+
+
+func test_a_failed_write_keeps_the_last_good_save() -> void:
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+	GameState.data.save_room = "eolis/plaza"
+	GameState.data.gold = 100
+	GameState.save_game(BAD_SLOT)
+	var path := GameState.SAVE_PATH % BAD_SLOT
+	var good := FileAccess.get_file_as_string(path)
+	# A directory where the temp file goes: the write can't open it.
+	var tmp := ProjectSettings.globalize_path(path + ".tmp")
+	DirAccess.make_dir_absolute(tmp)
+	GameState.data.gold = 999
+	check(not GameState.save_game(BAD_SLOT), "a write that fails says so")
+	check(FileAccess.get_file_as_string(path) == good, "and the last good save is untouched")
+	DirAccess.remove_absolute(tmp)
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+
+
+func test_damaged_settings_fall_back_to_defaults_or_their_backup() -> void:
+	Settings.path = TEMP_SETTINGS
+	_write_raw(TEMP_SETTINGS, "[feel\nshake = ]]]")
+	Settings.shake = 2
+	Settings.load_settings()
+	check(Settings.shake == 0 and Settings.music_volume == 8 and Settings.keys.is_empty(), "an unreadable file gives the defaults")
+	_write_raw(TEMP_SETTINGS, "[feel]\nshake=\"strong\"\nrumble=5\nspeed=-4\n[audio]\nmusic=99\nsound=[1]\n[keys]\njump=\"space\"\ndash=4194326\n")
+	Settings.load_settings()
+	check(Settings.shake == 0 and Settings.rumble and Settings.speed == 0, "wrong types fall back and a negative clamps (%d, %s, %d)" % [Settings.shake, Settings.rumble, Settings.speed])
+	check(Settings.music_volume == Settings.VOLUME_MAX and Settings.sound_volume == 8, "an out-of-range volume clamps, a list falls back")
+	check(not Settings.keys.has("jump") and Settings.keys.get("dash", 0) == 4194326, "only a real keycode is bound")
+	# Save twice, damage the file: the backup comes back.
+	Settings.reset()
+	Settings.shake = 1
+	Settings.save()
+	Settings.shake = 2
+	Settings.save()
+	_write_raw(TEMP_SETTINGS, "[feel")
+	Settings.load_settings()
+	check(Settings.shake == 1, "a damaged settings file loads its backup (%d)" % Settings.shake)
+	_restore()
+
+
+func test_a_rest_in_a_missing_room_wakes_at_the_start() -> void:
+	check(World.room_exists("eolis/plaza"), "a real room exists")
+	check(not World.room_exists("nowhere/room") and not World.room_exists("../x") and not World.room_exists(""), "a missing or odd one doesn't")
 
 
 # --- Completion (pass 106) --------------------------------------------------------

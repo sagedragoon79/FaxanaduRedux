@@ -1032,7 +1032,7 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 - **Renderer:** Forward+ (2D lights, glow); verify Compatibility renderer as a fallback for low-end machines.
 - **Physics:** custom kinematic controller on CharacterBody2D with hand-written movement (no built-in floor snapping surprises), fixed 60 Hz.
 - **Structure:**
-  - `autoload/` GameState, SaveSystem (JSON, 3 slots, autosave on rest), EventBus, AudioDirector, InputRouter (rebinding, buffering), RoomManager.
+  - `autoload/` GameState, SaveSystem (JSON, 3 slots, autosave on rest), EventBus, AudioDirector, InputRouter (rebinding, buffering), RoomManager. As built, saving lives in GameState: one JSON file per slot in user://, written safely and read defensively (15.3, pass 109).
   - `scenes/player/`, `scenes/enemies/<family>/`, `scenes/bosses/<boss>/`, `scenes/rooms/<zone>/<room>.tscn`, `scenes/ui/`.
   - `data/` items, enemies, shops, skill tree, dialogue as `.tres` resources or JSON (so balance changes never touch code).
 - **Level authoring for an AI team:** rooms are described in a text format (`levels/<zone>/<room>.room`: an ASCII tile grid plus a YAML header for doors, entities and camera). A runtime loader (`scripts/world/room_loader.gd`) builds TileMapLayer nodes and entities from them, so no generated scenes need to be kept in sync. Text levels diff cleanly in pull requests and are easy for agents to write and review. A world graph file (`levels/world.yaml`) lists room connections, which feeds the map screen and a reachability checker.
@@ -1088,6 +1088,18 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 | Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One |
 
 **Stability measures (pass 99):** the journey soak (`test_soak.gd`) walks the world twice, door to door with mashing play between. It rests and Continues into a fresh world every 20 rooms and opens the pause and skills screens on the way. The second lap must leave no live objects, orphan nodes or tree nodes behind. No frame of play (room loads aside) may pass 50 ms. Anything a room will need mid-play is loaded while the room loads: a boss arena loads its boss's sprite sheet and music (`BossArena.warm`), because a fight starts mid-play. Every sound effect loads with the game (`Sfx.load_all`, about 20 ms once, 2.2 MB), so no first slash or phase break waits on the disk (pass 103). Every boss fight is timed for 15 s of mashing with a phase knocked off every 5 s (`test_every_boss_fight_holds_the_frame_budget`): the average frame must stay under 8 ms and the 99th percentile under 16.6 ms, and nothing may load from disk once the fight has begun.
+
+**Saves and settings (pass 109):** no file the game reads can crash it or leave it half-loaded.
+- **Writing.** Saves and `settings.cfg` are written to a `.tmp` file, read back whole, and only then swapped in, with the previous file kept as `.bak` (`GameState.write_safely`). A write that fails leaves the last good file untouched.
+- **Loading.** A damaged file (empty, cut off, not JSON, not a save) falls back to its `.bak`. If neither reads, the load is refused and the game in play is left as it was. The title's Continue then starts a new journey with a note, rather than failing.
+- **Sanitizing.** Whatever loads is rebuilt on a new game's data (`GameState.sanitize`):
+  - every key is present and has its own type, and a wrong type falls back to the default;
+  - lists keep only well-formed entries (skills, rings, pins, Guru stops), and the save point and purse must be whole;
+  - numbers are finite and never negative, and health, MP and flasks never fall below a new game's;
+  - keys from a newer build are kept.
+- **Missing rooms.** A rest in a room this build lacks wakes you at the new-game spot.
+- **Settings.** Each option must be the right type and in range, or it takes its default; only a real keycode is bound.
+- **Tests.** `test_systems.gd` covers each case.
 
 **Exit rule:** weighted score of at least 95, no category below 85, zero open blocker bugs, and a full bot playthrough from new game to credits succeeds.
 
