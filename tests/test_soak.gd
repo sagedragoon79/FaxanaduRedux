@@ -700,13 +700,20 @@ func test_shadow_eura_fight_soak_stays_lean() -> void:
 	var total_usec := 0
 	var slowest := 0
 	var states := {}
-	const FIGHT_FRAMES := 2400
+	const FIGHT_FRAMES := 3000
+	var doubles := 0
 	for f in FIGHT_FRAMES:
 		# Mash for a while, then stand still so it comes through the mirror.
 		# Halfway the mirror breaks and it fights on its own, with arcana.
 		if f == 1200:
 			GameState.data.skills = ["clear_mind"]
 			boss._break_free()
+		if f == 2000:
+			# The last fifth: it splits in two (the soak's mashing bursts the false one).
+			boss.phase = 3
+			boss._split()
+		if is_instance_valid(boss.double):
+			doubles += 1
 		if f >= 1200 or f % 500 < 330:
 			_mash(w.player, rng, hold)
 		else:
@@ -724,5 +731,6 @@ func test_shadow_eura_fight_soak_stays_lean() -> void:
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("echo") and states.has("rise"), "the soak saw it echo your swings and come through the mirror (%s)" % [states.keys()])
 	check(states.has("stalk") and states.has("cast_tell"), "and fight on its own, casting (%s)" % [states.keys()])
+	check(states.has("split") and doubles > 0, "and split in two (%d frames with a double)" % doubles)
 	GameState.data.skills = []
 	check(boss._history.size() < 60, "its memory of you stays short (%d frames)" % boss._history.size())

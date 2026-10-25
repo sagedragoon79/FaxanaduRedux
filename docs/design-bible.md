@@ -469,6 +469,12 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     draught (+12%) that a blow spills.
   - A parried blow staggers it for 1.2 s. It has its own theme, `eura` (E minor, reversed pads, and a lead echoed a
     beat late from the other side).
+- **As built (phase 3, pass 76):** below a fifth it splits in two (`SPLIT_TIME` 0.8 s, untouchable). The false
+  double appears on your far side, out of the walls, and half the time the two trade places as they part. Both fight as
+  in phase 2. Only the real one shows a faint upside-down reflection in the floor under its feet, and the boss bar
+  follows it. Strike the false one and it swells for `BURST_TELL` (0.45 s), then bursts for 10 damage (unparryable)
+  around itself, and the real one loses nothing. The real one splits again 3.5 s later. Beat the real one and the false
+  one goes with it.
 
 ### 8.9 The Evil One (Zenis)
 - **Concept:** Not a demon king but a parasite: a vast eye-flower of meteor crystal rooted into the Tree's crown, feeding through veins of light.

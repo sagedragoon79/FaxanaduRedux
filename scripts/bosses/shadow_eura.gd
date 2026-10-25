@@ -25,7 +25,11 @@ extends Enemy
 ## Every blow has a tell of at least MIN_TELEGRAPH, and a parried cut, heavy or
 ## dash leaves it reeling.
 ##
-## Phase 3 (splitting in two) comes later.
+## Phase 3 (below a fifth), two of you: it splits in two, and the two come on
+## together, both fighting as in phase 2. Only the real one casts a reflection
+## in the polished floor. Strike the false one and it swells (BURST_TELL) and
+## bursts, hurting you if you stay beside it; the real one splits again a
+## little later.
 
 signal defeated
 
@@ -33,7 +37,7 @@ const DISPLAY_NAME := "Shadow Eura"
 const EPITHET := "the Mirror"
 const MAX_HP := 240
 ## Health fractions where later phases begin: below half it breaks the mirror.
-const PHASES := [0.5]
+const PHASES := [0.5, 0.2]
 ## How far behind you the reflection runs (s).
 const DELAY := 0.6
 ## How long its blade glints before an echoed swing lands (within DELAY).
@@ -76,6 +80,13 @@ const DASH_DAMAGE := 14
 const DRAUGHT_AT := 0.25
 const DRAUGHT_TIME := 0.8
 const DRAUGHT_HEAL := 0.12
+## Phase 3: splitting in two (both untouchable), the false one's burst, and how
+## soon the real one splits again once the false one is gone.
+const SPLIT_TIME := 0.8
+const BURST_TELL := 0.45
+const BURST_DAMAGE := 10
+const BURST_SIZE := Vector2(72, 60)
+const RESPLIT := 3.5
 const DYING_TIME := 1.6
 
 const SHADOW := Color("120a1c")
@@ -107,6 +118,12 @@ var _cuts := 0
 var _cast_wait := 0.0
 var _drunk := false
 var _spilled := false
+## Phase 3: the false shadow (no reflection, no health of its own) and, on the
+## real one, its current false double and the wait before splitting again.
+var decoy := false
+var real: ShadowEura
+var double: ShadowEura
+var _resplit := 0.0
 
 
 func _init() -> void:
@@ -124,8 +141,9 @@ func _init() -> void:
 
 func _ready() -> void:
 	super._ready()
-	collision_mask = 0
-	add_to_group("boss")
+	collision_mask = Player.LAYER_WORLD if phase > 1 else 0
+	if not decoy:
+		add_to_group("boss")
 	z_index = 1
 
 
@@ -165,7 +183,7 @@ func next_echo_in() -> float:
 
 ## True while its blade glints before a blow.
 func telling() -> bool:
-	if state in ["rise", "cut_tell", "heavy_tell", "cast_tell", "dash_tell"]:
+	if state in ["rise", "cut_tell", "heavy_tell", "cast_tell", "dash_tell", "burst_tell"]:
 		return true
 	return mirroring() and next_echo_in() <= SWING_TELL
 
@@ -184,18 +202,112 @@ static func strongest_branch() -> String:
 
 
 func _modify_damage(damage: int, _dir: Vector2) -> int:
-	if state in ["dormant", "intro", "dying", "sink", "blink", "shatter"]:
+	if state in ["dormant", "intro", "dying", "sink", "blink", "shatter", "split"]:
 		return 0
 	return damage
 
 
+## True for the real shadow: the only one the floor reflects.
+func reflects() -> bool:
+	return not decoy
+
+
 func take_hit(damage: int, dir: Vector2) -> void:
+	if decoy:
+		# The false one has no life to lose: struck, it swells and bursts.
+		if state not in ["split", "burst_tell", "dying"]:
+			_flash = 0.08
+			velocity.x = 0.0
+			_cut = ""
+			set_state("burst_tell")
+			Sfx.play("swell", 0.1, 3.0)
+		return
 	super.take_hit(damage, dir)
 	_hitstun = 0.0
 	if state == "drink" and not dead:
 		_spilled = true
 	if not dead and phase == 1 and health_fraction() <= PHASES[0]:
 		_break_free()
+	if not dead and phase == 2 and health_fraction() <= PHASES[1]:
+		phase = 3
+		_split()
+		GameState.toast.emit("Your shadow splits in two. Only one of them casts a reflection.")
+
+
+## Splits in two: the false double appears on your far side, and half the time
+## the two trade places as they part, so only the reflection tells them apart.
+func _split() -> void:
+	_cut = ""
+	_stagger = 0.0
+	velocity = Vector2.ZERO
+	set_state("split")
+	var p := player()
+	var px := p.global_position.x if p != null else axis()
+	var other := clampf(2.0 * px - global_position.x, arena.position.x + 16.0, arena.end.x - 16.0)
+	if absf(other - global_position.x) < 40.0 or not _clear_at(Vector2(other, global_position.y)):
+		# No room on your far side (too close, or in the wall): toward the middle instead.
+		other = clampf(global_position.x + (80.0 if global_position.x < axis() else -80.0), arena.position.x + 16.0, arena.end.x - 16.0)
+	var d := ShadowEura.new()
+	d.decoy = true
+	d.real = self
+	d.phase = 3
+	d.branch = branch
+	d.arena = arena
+	d.uses_gravity = true
+	d.state = "split"
+	d.contact_damage = contact_damage
+	var here := global_position
+	var there := Vector2(other, global_position.y)
+	if randf() < 0.5:
+		var swap := here
+		here = there
+		there = swap
+	global_position = here
+	get_parent().add_child(d)
+	d.global_position = there
+	d.reset_physics_interpolation()
+	double = d
+	for at: Vector2 in [here, there]:
+		var dust := Dust.new()
+		dust.setup("debris")
+		get_parent().add_child(dust)
+		dust.global_position = at + Vector2(0, -20)
+	Sfx.play("wail", 0.05, 0.0)
+	Feel.add_trauma(0.35)
+
+
+## True when a body standing with its feet at `feet` would be out of the walls.
+func _clear_at(feet: Vector2) -> bool:
+	var q := PhysicsPointQueryParameters2D.new()
+	q.collision_mask = Player.LAYER_WORLD
+	for y: float in [-4.0, -20.0, -36.0]:
+		q.position = feet + Vector2(0, y)
+		if not get_world_2d().direct_space_state.intersect_point(q, 1).is_empty():
+			return false
+	return true
+
+
+## The false double is gone: the real one splits again a little later.
+func _double_gone() -> void:
+	double = null
+	_resplit = RESPLIT
+
+
+## The false double bursts, hurting a player beside it.
+func _burst() -> void:
+	var c := center()
+	hit_player_in_rect(Rect2(c - BURST_SIZE * 0.5, BURST_SIZE), BURST_DAMAGE, false)
+	for i in 6:
+		var dust := Dust.new()
+		dust.setup("debris")
+		get_parent().add_child(dust)
+		dust.global_position = c + Vector2(randf_range(-14, 14), randf_range(-18, 18))
+	Sfx.play("break", 0.1, 4.0)
+	Feel.add_trauma(0.25)
+	if is_instance_valid(real):
+		real._double_gone()
+	dead = true
+	queue_free()
 
 
 ## Below half the mirror shatters and it steps out to fight on its own.
@@ -236,7 +348,7 @@ func stagger() -> void:
 func _think(delta: float) -> void:
 	_clock += delta
 	_record()
-	if phase == 2:
+	if phase >= 2:
 		_think_free(delta)
 		return
 	match state:
@@ -391,7 +503,19 @@ func _think_free(delta: float) -> void:
 	var p := player()
 	var dx := (p.global_position.x - global_position.x) if p != null else 0.0
 	var dy := (p.global_position.y - global_position.y) if p != null else 0.0
+	if phase == 3 and not decoy and not is_instance_valid(double):
+		_resplit -= delta
+		if _resplit <= 0.0 and state == "stalk":
+			_split()
+			return
 	match state:
+		"split":
+			if state_time >= SPLIT_TIME and is_on_floor():
+				set_state("stalk")
+		"burst_tell":
+			velocity.x = 0.0
+			if state_time >= BURST_TELL:
+				_burst()
 		"shatter":
 			if state_time >= SHATTER_TIME and is_on_floor():
 				set_state("stalk")
@@ -514,6 +638,10 @@ func _cast() -> void:
 func die() -> void:
 	if state == "dying":
 		return
+	if is_instance_valid(double):
+		# The false one goes with it.
+		double.real = null
+		double._burst_quietly()
 	set_state("dying")
 	dead = true
 	collision_layer = 0
@@ -539,6 +667,15 @@ func _process(delta: float) -> void:
 		state = "dead"
 		defeated.emit()
 		super.die()
+
+
+func _burst_quietly() -> void:
+	var dust := Dust.new()
+	dust.setup("debris")
+	get_parent().add_child(dust)
+	dust.global_position = center()
+	dead = true
+	queue_free()
 
 
 ## Its own pose once it fights on its own: [anim, frame].
@@ -580,6 +717,8 @@ func presence() -> float:
 			return absf(1.0 - 2.0 * clampf(state_time / BLINK_TIME, 0.0, 1.0))
 		"dying":
 			return 1.0 - clampf(state_time / DYING_TIME, 0.0, 1.0)
+		"split":
+			return clampf(state_time / 0.3, 0.0, 1.0)
 	return 1.0
 
 
@@ -602,10 +741,21 @@ func _draw() -> void:
 	if state == "rise" or state == "cut":
 		anim = "slash1"
 		frame = 0 if state == "rise" else 2
-	elif phase == 2:
+	elif phase >= 2:
 		var pose := _free_pose()
 		anim = pose[0]
 		frame = pose[1]
+	if phase == 3 and reflects() and is_on_floor():
+		# Its reflection in the polished floor, upside down under its feet: the
+		# false one has none.
+		draw_set_transform(Vector2(0, 1), 0.0, Vector2(facing, -1))
+		PlayerVisual.draw_frame(self, anim, frame, Color(RIM, 0.32 * a), true)
+		draw_set_transform(Vector2(0, 1), 0.0, Vector2(facing, -0.5))
+		PlayerVisual.draw_frame(self, anim, frame, Color(CRYSTAL_LIGHT, 0.12 * a), true)
+	if state == "burst_tell":
+		# Struck, the false one swells with light before it bursts.
+		var k := clampf(state_time / BURST_TELL, 0.0, 1.0)
+		draw_circle(Vector2(0, -body_size.y * 0.5), 10.0 + 22.0 * k, Color(CRYSTAL, 0.18 + 0.25 * k))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
 	# A violet rim around a body of shadow: you, cut out of the dark.
 	for o: Vector2 in [Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1)]:
