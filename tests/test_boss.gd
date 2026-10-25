@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -1634,3 +1634,127 @@ func test_beating_shadow_eura_breaks_the_mirror() -> void:
 	w._enter("dartmoor/zenis_gate")
 	await frames(10)
 	check(get_tree_boss() == null, "and it never returns")
+
+
+func _eura_free(skills: Array) -> Array:
+	GameState.new_game()
+	var setup := await _eura_world()
+	var b: ShadowEura = setup[2]
+	GameState.data.skills = skills
+	b.hp = roundi(b.max_hp * 0.5) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	return setup
+
+
+func test_shadow_eura_fights_with_your_strongest_branch() -> void:
+	GameState.new_game()
+	check(ShadowEura.strongest_branch() == "Blade", "with an empty tree it fights with the blade")
+	GameState.data.skills = ["clear_mind", "siphon", "keen_edge"]
+	check(ShadowEura.strongest_branch() == "Arcana", "it takes the branch you put the most into")
+	GameState.data.skills = ["deep_pockets", "keen_edge"]
+	check(ShadowEura.strongest_branch() == "Blade", "and the blade on a tie")
+	for t: float in [ShadowEura.CUT_TELL, ShadowEura.HEAVY_TELL, ShadowEura.CAST_TELL, ShadowEura.DASH_TELL]:
+		check(t >= Enemy.MIN_TELEGRAPH, "every phase 2 tell is at least %.2f s (%.2f)" % [Enemy.MIN_TELEGRAPH, t])
+	GameState.new_game()
+
+
+func test_shadow_eura_breaks_the_mirror_at_half() -> void:
+	var setup := await _eura_free([])
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	check(b.phase == 2 and b.state == "shatter" and b.branch == "Blade", "below half the mirror shatters (%s, %s)" % [b.state, b.branch])
+	check(Music.track == "eura", "the fight plays its own theme (%s)" % Music.track)
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(b.hp == hp0, "untouchable while the glass breaks")
+	var out := await _until(func() -> bool: return b.state == "stalk", 150)
+	check(out and b.is_on_floor(), "then it steps out onto the floor (%s)" % b.state)
+	# Blade: two cuts and a heavy, every one told first.
+	w.player.teleport(b.global_position + Vector2(-30.0, 0.0))
+	var php := w.player.hp
+	var seen := {}
+	var told := 0
+	for i in 200:
+		await frames(1)
+		seen[b.state] = true
+		if b.telling():
+			told += 1
+		if b.state == "f_recover":
+			break
+	check(seen.has("cut_tell") and seen.has("f_cut") and seen.has("heavy_tell") and seen.has("heavy"), "with the blade it cuts twice and lunges heavy (%s)" % [seen.keys()])
+	check(w.player.hp < php, "and catches you standing in reach")
+	check(told >= 3 * roundi(Enemy.MIN_TELEGRAPH * 60.0), "after its tells (%d frames)" % told)
+	b.set_state("heavy")
+	b.stagger()
+	check(b.state == "stagger", "a parried blow leaves it reeling")
+	var back := await _until(func() -> bool: return b.state == "stalk", 120)
+	check(back, "until it comes on again")
+
+
+func test_shadow_eura_casts_your_arcana_back_at_you() -> void:
+	var setup := await _eura_free(["clear_mind", "siphon"])
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var p := w.player
+	p.has_shield = true
+	check(b.branch == "Arcana", "it takes up your arcana")
+	await _until(func() -> bool: return b.state == "stalk", 150)
+	p.teleport(Vector2(b.global_position.x - 160.0, b.global_position.y))
+	p.facing = 1
+	var cast := await _until(func() -> bool: return b.state == "cast_tell", 120)
+	check(cast, "from a distance it gathers a bolt")
+	var bolt: ShadowBolt = null
+	for i in 90:
+		await frames(1)
+		for c in w.room.get_children():
+			if c is ShadowBolt:
+				bolt = c
+		if bolt != null:
+			break
+	check(bolt != null and bolt.direction == -1, "and casts it at you")
+	if bolt == null:
+		return
+	await _until(func() -> bool: return absf(bolt.global_position.x - p.global_position.x) < 40.0, 120)
+	p.input.block_pressed = true
+	p.input.block_held = true
+	var turned := await _until(func() -> bool: return not is_instance_valid(bolt) or bolt.reflected, 20)
+	p.input.block_pressed = false
+	p.input.block_held = false
+	check(turned and is_instance_valid(bolt) and bolt.reflected, "a parry turns the bolt")
+	var hp0 := b.hp
+	b.set_state("f_recover")
+	var hurt := await _until(func() -> bool: return b.hp < hp0, 120)
+	check(hurt, "back into the shadow that cast it (%d)" % (hp0 - b.hp))
+
+
+func test_shadow_eura_wanders_dashes_and_drinks() -> void:
+	var setup := await _eura_free(["deep_pockets", "gold_sense"])
+	var w: World = setup[0]
+	var b: ShadowEura = setup[2]
+	var p := w.player
+	check(b.branch == "Wanderer", "it takes up your wandering")
+	await _until(func() -> bool: return b.state == "stalk", 150)
+	p.teleport(Vector2(b.global_position.x - 110.0, b.global_position.y))
+	var php := p.hp
+	var dash := await _until(func() -> bool: return b.state == "dash", 120)
+	check(dash, "it air-dashes at you")
+	await frames(30)
+	check(p.hp < php, "through you")
+	await _until(func() -> bool: return b.state == "stalk", 120)
+	b.hp = roundi(b.max_hp * 0.2)
+	p.teleport(Vector2(clampf(b.global_position.x - 140.0, 200.0, 700.0), b.global_position.y))
+	if absf(p.global_position.x - b.global_position.x) < 100.0:
+		p.teleport(Vector2(b.global_position.x + 140.0, b.global_position.y))
+	var drink := await _until(func() -> bool: return b.state == "drink", 60)
+	check(drink, "low on health it stops to drink")
+	var hp0 := b.hp
+	await _until(func() -> bool: return b.state != "drink", 90)
+	check(b.hp > hp0, "and the draught heals it (%d -> %d)" % [hp0, b.hp])
+	b._drunk = false
+	b.hp = roundi(b.max_hp * 0.2)
+	b.set_state("stalk")
+	await _until(func() -> bool: return b.state == "drink", 60)
+	hp0 = b.hp
+	b.take_hit(5, Vector2.RIGHT)
+	await frames(2)
+	check(b.state != "drink" and b.hp == hp0 - 5, "a blow spills the draught")

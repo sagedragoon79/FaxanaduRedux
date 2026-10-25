@@ -245,6 +245,10 @@ func _process(_delta: float) -> void:
 			elif boss.health_fraction() <= KingGrieve.PHASES[0]:
 				boss.phase = 2
 			boss._check_phase()
+		elif boss is ShadowEura and boss.state == "intro" and boss.hp == ShadowEura.MAX_HP:
+			boss.hp = roundi(ShadowEura.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= ShadowEura.PHASES[0]:
+				boss._break_free()
 		elif boss is Pakukame and boss.state == "intro" and boss.hp == Pakukame.MAX_HP:
 			boss.hp = roundi(Pakukame.MAX_HP * float(_args["boss-hp"]))
 			if boss.health_fraction() <= Pakukame.PHASES[0]:
