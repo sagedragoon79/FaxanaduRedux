@@ -545,6 +545,26 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
     gutters ("The Veins Go Dark", 1 skill point); the veins stay dark for good (`boss:evil_veins`). Deviation:
     the bible asked for wall jump and dash here too; the as-built shaft is a ledge climb so the beams are the
     pressure, and wall jumps are allowed but not required. Phase 3 (The Core) is next.
+  - **Phase 3, as built (pass 83):** a door high on the Veins' east wall, reached from a ledge under the vault,
+    opens on **The Heart of the Meteor** (`zenis/heart`, 70,-13, 60x23, `boss: evil_one`), a long chamber with two
+    low ledges. The **heart** (`EvilHeart`, 300 HP, `PHASES [0.66, 0.33]`) hangs far above the floor, a crystal
+    eye-flower with petals all around it, out of any blade's reach. It drifts after you and attacks every
+    2.0 / 1.7 / 1.4 s (by phase):
+    - **Beam** (a `CoreBeam`; the line flickers for its 0.6 s tell, 0.45 s in phase 3).
+    - **Seeds**: three Meteor Seeds around you that swell for 0.7 s and burst. Crack them or step clear.
+    - **Wave** (phase 2 on): crystal gathers under it for its tell, then spikes run out along the floor both ways.
+
+    **The Tree fights alongside you:** every 7 / 6 / 5 s (the first after 4 s) the floor under the heart cracks and
+    glows green for 0.8 s, and a **root** (`TreeRoot`) whips up, binds it and drags it to the floor for 2.4 s. Only
+    then can it be hurt, and only by a swing of the Dragon Slayer (other blades and magic glance off). Each third
+    of its life cut away frees one of the springs' stolen lights (`HeartLight`, three sockets in the vault): the
+    socket fills with blue light and pours a shaft down, the player regains a quarter of their health, and the
+    roots come quicker. In phase 3 the heart bursts as the root lets go (56 px, 14 damage, unparryable), flashing
+    for the last 0.5 s it is held, so step back before the release. The Hour Glass holds the heart and its roots:
+    stopping time while it is bound is time to cut. Beaten, it dies for good ("The Heart of the Meteor Dies",
+    `boss:evil_one`, 1 skill point) and every light goes home. Deviation: the bible had each strike restore a
+    spring; as built it is each third, so the restoration lands as a beat rather than a trickle. The ending and
+    credits are next.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.

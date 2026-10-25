@@ -2093,3 +2093,191 @@ func test_a_pogo_bounces_off_a_vein() -> void:
 			break
 	p.input.down = false
 	check(bounced and v.is_cut, "a down-strike cuts a vein and bounces off it")
+
+
+func _heart_world() -> Array:
+	var w := make_world({}, "zenis/heart")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	w.player.abilities["hourglass"] = true
+	GameState.data.equipment["blade"] = "dragon_slayer"
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(14, 20))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var h := get_tree_boss() as EvilHeart
+	await _until(func() -> bool: return h != null and h.state == "float", 200)
+	return [w, arena, h]
+
+
+## Clears the heart's beams, seeds and spikes so a test sees only what it makes.
+func _clear_heart_hazards(w: World) -> void:
+	for n in w.room.get_children():
+		if n is CoreBeam or n is MeteorSeed or n is CrystalSpike:
+			n.queue_free()
+
+
+## Holds the heart down as a root would, and swings the blade at it.
+func _bind(h: EvilHeart) -> void:
+	h._root = 99.0
+	h._attack = 99.0
+	h._on_root_struck()
+
+
+func _slash(w: World, h: EvilHeart, damage: int) -> void:
+	w.player._attack_timer = 0.2
+	h.take_hit(damage, Vector2.RIGHT)
+	w.player._attack_timer = 0.0
+
+
+func test_the_heart_wakes_above_any_blade() -> void:
+	var setup := await _heart_world()
+	var arena: BossArena = setup[1]
+	var h: EvilHeart = setup[2]
+	check(arena.boss_id == "evil_one" and h != null and h.state == "float", "the heart of the meteor wakes in its chamber")
+	check(h.lights.size() == 3 and h.lights_freed() == 0, "three springs' stolen light are caught in its vault")
+	check(Music.track == "evil_one", "to the Evil One's theme (%s)" % Music.track)
+	check(h.floor_y() - h.global_position.y > 10 * Room.TILE, "it hangs far above the floor (%.0f px)" % (h.floor_y() - h.global_position.y))
+	var hp := h.hp
+	_slash(setup[0], h, 50)
+	check(h.hp == hp, "while it floats free, even the Dragon Slayer glances off")
+
+
+func test_the_trees_roots_bind_the_heart_after_a_tell() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	check(TreeRoot.TELL >= Enemy.MIN_TELEGRAPH, "a root's glow lasts at least the minimum tell")
+	h._attack = 99.0
+	h._root = 0.0
+	await frames(2)
+	check(h.state == "snared", "the floor under it glows: the Tree is coming")
+	var frames_held := 0
+	while h.state == "snared" and frames_held < 120:
+		frames_held += 1
+		await frames(1)
+	check(frames_held / 60.0 >= TreeRoot.TELL - 0.05 and h.bound(), "a root whips up and binds it (%d frames)" % frames_held)
+	await frames(30)
+	check(absf(h.global_position.y - (h.floor_y() - EvilHeart.SIZE.y * 0.5)) < 4.0, "and drags it down to the floor")
+	await _until(func() -> bool: return h.state == "float", 400)
+	check(h.state == "float" and h.binds == 1, "then lets it rise again")
+
+
+func test_only_the_dragon_slayer_cuts_the_bound_heart() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	_bind(h)
+	await frames(2)
+	var hp := h.hp
+	GameState.data.equipment["blade"] = "long_sword"
+	_slash(w, h, 20)
+	check(h.hp == hp, "another blade glances off it, even held down")
+	GameState.data.equipment["blade"] = "dragon_slayer"
+	h.take_hit(20, Vector2.RIGHT)
+	check(h.hp == hp, "and so does magic")
+	_slash(w, h, 20)
+	check(h.hp == hp - 20, "the Dragon Slayer cuts it (%d)" % (hp - h.hp))
+
+
+func test_each_third_cut_frees_a_springs_light() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	var p := w.player
+	p.max_hp = 200
+	p.hp = 50
+	_bind(h)
+	await frames(2)
+	_slash(w, h, h.hp - int(h.max_hp * 0.66) + 1)
+	check(h.phase == 2 and h.lights_freed() == 1, "a third gone frees the first light (phase %d, %d lit)" % [h.phase, h.lights_freed()])
+	check(p.hp == 50 + roundi(200 * EvilHeart.LIGHT_HEAL), "and its light heals you (%d)" % p.hp)
+	_slash(w, h, h.hp - int(h.max_hp * 0.33) + 1)
+	check(h.phase == 3 and h.lights_freed() == 2, "two thirds gone frees the second")
+	check(EvilHeart.ROOT_EVERY[2] < EvilHeart.ROOT_EVERY[0], "and the Tree's roots come quicker")
+
+
+func test_the_hearts_attacks_are_telegraphed() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	for ph in [1, 2, 3]:
+		h.phase = ph
+		check(h.tell() >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least the minimum" % [ph, h.tell()])
+	check(MeteorSeed.TELL >= Enemy.MIN_TELEGRAPH and EvilHeart.BURST_TELL >= Enemy.MIN_TELEGRAPH, "its seeds and its burst warn first")
+	h.phase = 2
+	h._attack = 99.0
+	h._root = 99.0
+	_clear_heart_hazards(w)
+	await frames(2)
+	var p := w.player
+	h.global_position.x = p.global_position.x + 60.0
+	var hp := p.hp
+	h.set_state("gather")
+	var held := 0
+	while h.state == "gather" and held < 120:
+		held += 1
+		await frames(1)
+	check(held / 60.0 >= Enemy.MIN_TELEGRAPH and p.hp == hp, "crystal gathers under it before a wave (%d frames)" % held)
+	await frames(40)
+	check(p.hp < hp, "then spikes run out along the floor (%d)" % (hp - p.hp))
+	# The seeds swell around you before they burst.
+	_clear_heart_hazards(w)
+	await frames(60)
+	hp = p.hp
+	h._seeds()
+	var seeds := w.room.get_children().filter(func(n: Node) -> bool: return n is MeteorSeed)
+	check(seeds.size() == 3, "it sows three seeds around you")
+	await frames(30)
+	check(p.hp == hp, "which only swell at first")
+	await frames(30)
+	check(p.hp < hp, "then burst")
+
+
+func test_the_heart_bursts_as_the_root_lets_go_at_the_end() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	var p := w.player
+	h.phase = 3
+	_bind(h)
+	await frames(30)
+	p.teleport(Vector2(h.global_position.x + 30.0, h.floor_y()))
+	var hp := p.hp
+	await _until(func() -> bool: return h.bursting(), 200)
+	check(h.bursting() and p.hp == hp, "it flashes before it bursts")
+	await _until(func() -> bool: return h.state == "rise", 60)
+	check(p.hp < hp, "then bursts as the root lets go (%d)" % (hp - p.hp))
+
+
+func test_the_hour_glass_holds_the_heart_and_its_roots() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	h._attack = 99.0
+	h._root = 0.0
+	await frames(2)
+	TimeStop.start()
+	await frames(90)
+	var roots := w.room.get_children().filter(func(n: Node) -> bool: return n is TreeRoot)
+	check(roots.size() == 1 and roots[0].telling() and h.state == "snared", "time holds the root and the heart alike")
+	TimeStop.reset()
+
+
+func test_the_heart_of_the_meteor_dies_for_good() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	var points := int(GameState.data.skill_points)
+	_bind(h)
+	await frames(2)
+	_slash(w, h, h.hp)
+	check(h.state == "dying" and h.lights_freed() == 3, "its last life cut, every light goes home")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600)
+	check(gone, "the Evil One is beaten")
+	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
+	await frames(90)
+	w._enter("zenis/heart")
+	await frames(10)
+	check(get_tree_boss() == null, "and its heart never fights again")
+

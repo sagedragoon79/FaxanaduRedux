@@ -992,8 +992,12 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	p.input.attack_pressed = true
 	await frames(30)
 	check(seal.is_open(), "and one cut tears the flesh open")
+	# Remember the seal before walking on: the way through may lead out of the room.
+	var seal_x := seal.global_position.x
+	var seal_id := seal.persist_id
+	var room_id := w.room.id
 	p.input.move_x = 1
 	await frames(40)
 	p.input.move_x = 0
-	check(p.global_position.x > seal.global_position.x + 32.0, "you walk through (%s)" % p.global_position)
-	check(GameState.is_collected(seal.persist_id), "and it stays open")
+	check(w.room.id != room_id or p.global_position.x > seal_x + 32.0, "you walk through (%s)" % p.global_position)
+	check(GameState.is_collected(seal_id), "and it stays open")
