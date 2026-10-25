@@ -2276,7 +2276,12 @@ func test_the_heart_of_the_meteor_dies_for_good() -> void:
 	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600)
 	check(gone, "the Evil One is beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
-	await frames(90)
+	var started := [false]
+	var on_end := func() -> void: started[0] = true
+	GameState.ending_started.connect(on_end)
+	var ended := await _until(func() -> bool: return started[0], int(BossArena.ENDING_DELAY * 60) + 30)
+	GameState.ending_started.disconnect(on_end)
+	check(ended and GameState.flag("cleared") and int(GameState.data.clears) == 1, "and once its banner has shown, the ending begins and the save is marked cleared")
 	w._enter("zenis/heart")
 	await frames(10)
 	check(get_tree_boss() == null, "and its heart never fights again")

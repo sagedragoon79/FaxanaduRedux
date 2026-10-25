@@ -33,6 +33,8 @@ const BOSSES := {
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
 const OPEN_DELAY := 1.2
+## Seconds from the Evil One's death to the ending (the banner shows first).
+const ENDING_DELAY := 4.0
 
 var boss_id := ""
 var room: Room
@@ -215,6 +217,9 @@ func _on_defeated() -> void:
 	_open_timer = OPEN_DELAY
 	Music.play("", 2.5)
 	won.emit()
+	if boss_id == "evil_one":
+		# The last fight: the ending follows once the banner has had its moment.
+		get_tree().create_timer(ENDING_DELAY, true, false, true).timeout.connect(GameState.begin_ending)
 
 
 func _open_doors() -> void:
