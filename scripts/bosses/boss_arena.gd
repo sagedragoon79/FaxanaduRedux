@@ -25,6 +25,8 @@ const BOSSES := {
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
 	"evil_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "evil_one",
 		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the meteor."},
+	"evil_veins": {"title": "The Veins Go Dark", "skill_points": 1, "music": "evil_one",
+		"text": "Starved of its light, the core gutters. Above, the heart of the meteor lies open."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -156,6 +158,15 @@ func _start() -> void:
 			a.position = Vector2(46 * Room.TILE, a.arena.end.y)
 			boss = a
 			a.defeated.connect(_on_defeated)
+		"evil_veins":
+			# The core hangs in the vault at the top of the shaft; its veins are in the room.
+			var c := EvilCore.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			var h := float(room.size_tiles.y * Room.TILE)
+			c.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, h - 6 * Room.TILE)
+			c.position = Vector2(w * 0.5, 6 * Room.TILE)
+			boss = c
+			c.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return

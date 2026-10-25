@@ -517,6 +517,11 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				item.kind = ItemPickup.KIND_BY_CHAR[ch]
 				item.pickup_id = item_id
 				_spawn(item, center)
+		"x":
+			var vein := LightVein.new()
+			# Once the core is starved its veins stay dark.
+			vein.is_cut = GameState.flag("boss:evil_veins")
+			_spawn(vein, center)
 		"P":
 			spawn_position = bottom_center
 
