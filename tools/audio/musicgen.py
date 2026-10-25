@@ -1125,6 +1125,35 @@ def track_zenis():
     return s.render(reverb=0.7)
 
 
+def track_evil_one():
+    """The Evil One's avatar on its throne: the Zenis heartbeat quickened into a
+    march. B locrian at 120, a pounding double-kick heartbeat, a bass that drops
+    a tritone every other bar, detuned pads that beat against each other, and a
+    low bell answering a cold lead, the meteor singing through a borrowed body."""
+    rng = np.random.default_rng(1986)
+    s = Song(bpm=120, bars=16)
+    root, scale = 47, SCALES["locrian"]
+    prog = [0, 4, 0, 5, 0, 4, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        for m in chord_tones(root, scale, deg):
+            for cents in (-18, 18):
+                f = midi_hz(m - 12) * 2 ** (cents / 1200)
+                s.add(fft_filter(pad(f, s.bar), low=1600), b * 4, 0.6 if cents > 0 else -0.6, 0.2)
+        low = scale_note(root - 24, scale, deg) - (6 if b % 2 else 0)
+        for k in range(8):
+            s.add(bass(midi_hz(low + (12 if k in (3, 7) else 0)), s.beat * 0.45), b * 4 + k * 0.5, 0, 0.45)
+        for at in (0, 0.35, 2, 2.35):
+            s.add(kick(0.3), b * 4 + at, 0, 0.9 if at in (0, 2) else 0.6)
+        s.add(snare(rng), b * 4 + 1, 0.1, 0.4)
+        s.add(snare(rng), b * 4 + 3, 0.1, 0.4)
+        for k in range(8):
+            s.add(hat(rng), b * 4 + k * 0.5, rng.uniform(-0.4, 0.4), 0.14 if k % 2 else 0.08)
+        if b % 4 == 3:
+            s.add(fft_filter(bell(midi_hz(root - 6), s.beat * 3.0), low=1800), b * 4 + 2, -0.3, 0.3)
+    melody(s, rng, root, scale, prog, lead, start_bar=2, octave=12, pan=0.25, gain=0.36, density=0.5)
+    return s.render(reverb=0.55)
+
+
 def amb_zenis():
     """The meteor's insides: a deep living drone that swells and ebbs like breath,
     a slow heartbeat under everything, and now and then a glassy whine as light
@@ -1223,6 +1252,7 @@ TRACKS = {
     "grieve": track_grieve,
     "eura": track_eura,
     "zenis": track_zenis,
+    "evil_one": track_evil_one,
     "amb_zenis": amb_zenis,
     "dartmoor": track_dartmoor,
     "daybreak": track_daybreak,

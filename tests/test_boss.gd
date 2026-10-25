@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -1823,3 +1823,146 @@ func test_beating_the_real_shadow_ends_the_false_one() -> void:
 	check(not is_instance_valid(d), "the false one goes with the real one")
 	var gone := await _until(func() -> bool: return GameState.flag("boss:shadow_eura"), 600)
 	check(gone, "and the fight is won")
+
+
+# --- The Evil One, phase 1: the Avatar on the Throne (bible 8.9) -----------------
+
+func _avatar_world() -> Array:
+	var w := make_world({}, "zenis/throne")
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	w.player.has_shield = true
+	await frames(3)
+	var arena := _arena(w)
+	w.player.teleport(cell_feet(10, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var b := get_tree_boss() as EvilAvatar
+	await _until(func() -> bool: return b != null and b.state == "walk", 200)
+	return [w, arena, b]
+
+
+func test_the_throne_wakes_the_evil_ones_avatar() -> void:
+	var setup := await _avatar_world()
+	var arena: BossArena = setup[1]
+	var b: EvilAvatar = setup[2]
+	check(arena.boss_id == "evil_avatar" and b != null and b.state == "walk", "walking into the throne hall wakes the avatar")
+	check(b.phase == 1 and absf(b.global_position.y - b.floor_y()) < 2.0, "it comes down to duel on the floor")
+	check(Music.track == "evil_one", "the fight plays the Evil One's theme (%s)" % Music.track)
+
+
+func test_evil_avatar_telegraphs_are_fair() -> void:
+	var b := EvilAvatar.new()
+	for p in [1, 2]:
+		b.phase = p
+		for t: float in [EvilAvatar.CLEAVE_TELL, EvilAvatar.LUNGE_TELL, EvilAvatar.PULL_TELL, EvilAvatar.RAIN_TELL]:
+			check(b.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [p, b.tell(t), Enemy.MIN_TELEGRAPH])
+	b.free()
+
+
+func test_evil_avatar_cleaves_and_a_parry_opens_its_plate() -> void:
+	var setup := await _avatar_world()
+	var w: World = setup[0]
+	var b: EvilAvatar = setup[2]
+	w.player.teleport(Vector2(b.global_position.x - 40.0, b.floor_y()))
+	b.face_player()
+	b.set_state("cleave_tell")
+	var hp := w.player.hp
+	var tell := 0
+	for i in 90:
+		await frames(1)
+		if b.state == "cleave_tell":
+			tell += 1
+		if b.state == "recover":
+			break
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the cleave is telegraphed (%d frames)" % tell)
+	check(w.player.hp < hp, "and catches a player standing in front (%d)" % (hp - w.player.hp))
+	b.facing = 1
+	var hp0 := b.hp
+	b.take_hit(10, Vector2.LEFT)
+	check(hp0 - b.hp == 5, "its plate halves a blow to its front (%d)" % (hp0 - b.hp))
+	hp0 = b.hp
+	b.take_hit(10, Vector2.RIGHT)
+	check(hp0 - b.hp == 10, "but its back is bare (%d)" % (hp0 - b.hp))
+	b.set_state("cleave")
+	b.stagger()
+	check(b.open(), "a parry leaves it reeling")
+	hp0 = b.hp
+	b.take_hit(10, Vector2.LEFT)
+	check(hp0 - b.hp == 10, "and open to every blow (%d)" % (hp0 - b.hp))
+
+
+func test_evil_avatar_pulls_you_in_then_bursts() -> void:
+	var setup := await _avatar_world()
+	var w: World = setup[0]
+	var b: EvilAvatar = setup[2]
+	var p := w.player
+	p.teleport(Vector2(b.global_position.x - 100.0, b.floor_y()))
+	await frames(5)
+	b.set_state("pull_tell")
+	var x0 := p.global_position.x
+	var tell := 0
+	while b.state == "pull_tell" and tell < 120:
+		tell += 1
+		await frames(1)
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "it raises its palm first (%d frames)" % tell)
+	var hp := p.hp
+	await _until(func() -> bool: return b.state != "pull", 120)
+	check(p.global_position.x > x0 + 50.0, "the wrong gravity drags you toward it (%d px)" % (p.global_position.x - x0))
+	await frames(2)
+	check(b.state == "burst" and p.hp < hp, "and the burst catches you close (%d)" % (hp - p.hp))
+
+
+func test_evil_avatar_rains_crystal_in_a_line() -> void:
+	var setup := await _avatar_world()
+	var w: World = setup[0]
+	var b: EvilAvatar = setup[2]
+	w.player.teleport(cell_feet(8, 19))
+	await frames(3)
+	b.face_player()
+	b.set_state("rain_tell")
+	await _until(func() -> bool: return b.state == "rain", 90)
+	await frames(1)
+	var spikes := w.room.get_children().filter(func(c: Node) -> bool: return c is CrystalSpike)
+	check(spikes.size() >= 4, "spikes erupt in a line toward you (%d)" % spikes.size())
+	check(spikes.all(func(s: CrystalSpike) -> bool: return s.global_position.x < b.global_position.x), "on your side")
+
+
+func test_evil_avatar_swings_twice_below_half() -> void:
+	var setup := await _avatar_world()
+	var w: World = setup[0]
+	var b: EvilAvatar = setup[2]
+	w.player.teleport(Vector2(b.global_position.x - 40.0, b.floor_y()))
+	b.hp = roundi(b.max_hp * 0.5) + 2
+	b.facing = -1
+	b.take_hit(10, Vector2.LEFT)
+	check(b.phase == 2, "below half the second phase begins")
+	b.face_player()
+	b.set_state("cleave_tell")
+	var cleaves := 0
+	var was := ""
+	for i in 150:
+		await frames(1)
+		if b.state == "cleave" and was != "cleave":
+			cleaves += 1
+		was = b.state
+		if b.state == "recover":
+			break
+	check(cleaves == 2, "and its cleave comes back for a second swing (%d)" % cleaves)
+
+
+func test_evil_avatar_defeat_shatters_it_for_good() -> void:
+	var setup := await _avatar_world()
+	var w: World = setup[0]
+	var b: EvilAvatar = setup[2]
+	var points := int(GameState.data.skill_points)
+	b.hp = 1
+	b.facing = -1
+	b.take_hit(5, Vector2.LEFT)
+	check(b.state == "dying", "the last blow ends it")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_avatar"), 600)
+	check(gone, "the avatar is marked beaten")
+	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
+	await frames(90)
+	w._enter("zenis/throne")
+	await frames(10)
+	check(get_tree_boss() == null, "and it never returns")

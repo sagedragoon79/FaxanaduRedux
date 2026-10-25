@@ -23,6 +23,8 @@ const BOSSES := {
 	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve"},
 	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1, "music": "eura",
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
+	"evil_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "evil_one",
+		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the meteor."},
 }
 ## How far the player must be from the entry door before the fight starts.
 const START_DISTANCE := 64.0
@@ -146,6 +148,14 @@ func _start() -> void:
 			e.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = e
 			e.defeated.connect(_on_defeated)
+		"evil_avatar":
+			# The Evil One's avatar comes down off its throne at the hall's east end.
+			var a := EvilAvatar.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			a.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
+			a.position = Vector2(46 * Room.TILE, a.arena.end.y)
+			boss = a
+			a.defeated.connect(_on_defeated)
 		_:
 			push_warning("Unknown boss: " + boss_id)
 			return
