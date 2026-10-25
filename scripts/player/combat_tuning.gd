@@ -14,6 +14,9 @@ extends Resource
 @export var attack_buffer := 0.15
 @export var heavy_hitstop := 0.09
 @export var hit_hitstop := 0.05
+## An up-slash that connects in midair holds you up: a fall is turned into
+## this much rise (px/s), about 7 px. Once per swing; it never adds to a jump.
+@export var up_slash_pop := 150.0
 
 @export_group("Shield")
 @export var parry_window := 0.12

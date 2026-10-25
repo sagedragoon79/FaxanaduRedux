@@ -594,3 +594,116 @@ func test_low_health_beats_and_pulses() -> void:
 	p.hp = p.combat.low_health + 1
 	await frames(60)
 	check(p.heartbeats == 2 and hud.edge_strength() == 0.0, "healed above a mask, it stops")
+
+
+# --- Combat audit (pass 105, design bible 5.3) -----------------------------------
+
+func test_a_slash_that_lands_pushes_you_back_a_few_pixels() -> void:
+	var room := _arena_with("E", Vector2i(5, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var x0 := p.global_position.x
+	p.input.attack_pressed = true
+	await frames(1)
+	var least := x0
+	for i in 20:
+		await frames(1)
+		least = minf(least, p.global_position.x)
+	check(x0 - least >= 3.0 and x0 - least <= 6.0, "a landed slash pushes you back about 4 px (%.1f)" % (x0 - least))
+
+
+func test_the_parry_window_is_0_12_s_and_pays_6_mp() -> void:
+	var a := _dwarf_arena()
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	p.mp = 20.0
+	p.has_shield = true
+	# Pressed 5 frames (0.083 s) before the blade lands: a parry.
+	await _wait_for_swing(dwarf, 5)
+	p.input.block_pressed = true
+	await frames(1)
+	p.input.block_pressed = false
+	await frames(6)
+	check(p.hp == p.max_hp and dwarf.is_staggered(), "inside the window it parries (hp %d)" % p.hp)
+	check(p.mp >= 20.0 + p.combat.parry_mp_gain - 0.01, "a parry pays %d MP (%.1f)" % [p.combat.parry_mp_gain, p.mp])
+	check(Feel.last_hitstop == p.combat.parry_hitstop, "with a 140 ms hit-stop")
+	await frames(50)
+	check(dwarf.is_staggered(), "the foe still reels after 0.9 s")
+	await frames(10)
+	check(not dwarf.is_staggered(), "and recovers by 1.1 s")
+	# Pressed 10 frames (0.167 s) early: too soon, the blow lands.
+	(a[0] as Node).queue_free()
+	await frames(2)
+	var b := _dwarf_arena()
+	var p2: Player = b[1]
+	var dwarf2: RotDwarf = b[2]
+	p2.has_shield = true
+	await _wait_for_swing(dwarf2, 10)
+	p2.input.block_pressed = true
+	await frames(1)
+	p2.input.block_pressed = false
+	await frames(12)
+	check(p2.hp < p2.max_hp and not dwarf2.is_staggered(), "outside the window it doesn't (hp %d)" % p2.hp)
+
+
+func test_being_hit_matches_the_bible() -> void:
+	var a := _dwarf_arena()
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	await _wait_for_swing(dwarf, 1)
+	var hit_at := -1
+	for i in 6:
+		await frames(1)
+		if p.hp < p.max_hp:
+			hit_at = i
+			break
+	check(hit_at >= 0, "the swing lands")
+	check(Feel.last_hitstop == 0.15, "being hit holds 150 ms (%.2f)" % Feel.last_hitstop)
+	check(p.velocity.x < 0.0 and absf(p.velocity.x) <= p.combat.hurt_knockback.x + 0.1, "knocked back at up to 160 px/s (%.0f)" % p.velocity.x)
+	check(p._control_lock_timer > 0.0 and p._control_lock_timer <= p.combat.hurt_control_lock, "control locked for 0.18 s")
+	check(p.invulnerable, "and invulnerable")
+	dwarf.set_physics_process(false)
+	await frames(44)
+	check(p._invuln_timer > 0.0, "still safe at 0.75 s")
+	await frames(6)
+	check(p._invuln_timer <= 0.0, "and open again by 0.85 s (0.8 s of i-frames)")
+
+
+func test_the_heavy_finisher_drives_a_foe_back_and_holds_it_longer() -> void:
+	var room := _arena_with("D", Vector2i(10, 6))
+	var dwarf: RotDwarf = _find(room, RotDwarf)
+	await frames(4)
+	# From behind (it faces left; its shield guards the front).
+	dwarf.take_hit(1, Vector2(-1, 0))
+	check_near(dwarf._hitstun, Enemy.HITSTUN, 0.001, "a light hit stops it 0.18 s")
+	var light := dwarf.velocity.x
+	await frames(30)
+	dwarf.take_hit(1, Vector2(-1.8, 0))
+	check_near(dwarf._hitstun, Enemy.HITSTUN * 1.8, 0.001, "the heavy finisher holds it 0.32 s")
+	check_near(dwarf.velocity.x, light * 1.8, 0.5, "and drives it back 1.8x as hard")
+
+
+func test_a_midair_up_slash_that_lands_holds_you_up() -> void:
+	var rows := ARENA.duplicate()
+	for i in 8:
+		rows.insert(1, "#..................#")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(9, 8))
+	var foe := Hornet.new()
+	room.add_child(foe)
+	foe.set_physics_process(false)
+	for i in 3:
+		foe.global_position = p.global_position + Vector2(0, -p.BODY_SIZE.y - 10)
+		await frames(1)
+	check(not p.is_on_floor(), "falling past a hornet")
+	p.velocity.y = 120.0
+	p.input.up = true
+	p.input.attack_pressed = true
+	await frames(1)
+	p.input.attack_pressed = false
+	check(foe.hits_taken == 1, "the up-slash hits the hornet above")
+	check(p.velocity.y < -p.combat.up_slash_pop + 40.0, "and turns the fall into a little rise (%.0f)" % p.velocity.y)
+	p.velocity.y = 120.0
+	await frames(2)
+	check(p.velocity.y > 0.0, "once per swing (%.0f)" % p.velocity.y)
+	p.input.up = false
