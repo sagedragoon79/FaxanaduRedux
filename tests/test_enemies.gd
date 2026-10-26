@@ -1661,6 +1661,135 @@ func test_a_parried_seed_flies_back_at_its_bird() -> void:
 	room.free()
 
 
+## A wide flat floor for the Marsh Hag (floor row 9).
+func _hag_room(spots: Dictionary) -> Room:
+	var rows: Array = ["########################################"]
+	for i in 8:
+		rows.append("#......................................#")
+	rows.append("########################################")
+	for cell: Vector2i in spots:
+		var row: String = rows[cell.y]
+		rows[cell.y] = row.substr(0, cell.x) + spots[cell] + row.substr(cell.x + 1)
+	return make_room(rows)
+
+
+func _hag_marks(room: Room) -> Array:
+	return room.get_children().filter(func(c: Node) -> bool: return c is MireGrasp and not c.is_queued_for_deletion())
+
+
+## Bible 7 (pass 119): from a distance the Marsh Hag hexes the mire under your
+## feet. The mark is the telegraph; then a mud hand bursts up for 12 that can't
+## be parried. Step off the mark and it misses.
+func test_marsh_hag_hexes_the_mire_under_your_feet() -> void:
+	var room := _hag_room({Vector2i(30, 8): "?"})
+	var p := make_player(room, Vector2i(20, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	check(h._wisp != null and h._wisp.is_in_group("light"), "her wisp lights the fog")
+	var tell := 0
+	var lit := false
+	var mark: MireGrasp = null
+	for i in 240:
+		await frames(1)
+		if h.is_hexing():
+			tell += 1
+			lit = lit or h.telegraph_pulse()
+			if mark == null:
+				mark = h.mark()
+		elif tell > 0:
+			break
+	check(mark != null, "she marks the ground")
+	check(mark != null and absf(mark.global_position.x - p.global_position.x) < 2.0 and absf(mark.global_position.y - 9 * 16) < 1.0,
+		"under your feet, on the floor")
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH and lit, "the hex lasts at least %.2f s and she flashes (%d frames)" % [Enemy.MIN_TELEGRAPH, tell])
+	await frames(10)
+	check(9999 - p.hp == MireGrasp.DAMAGE, "the mud hand bursts up for %d (%d)" % [MireGrasp.DAMAGE, 9999 - p.hp])
+	# The next hex: step well off the mark before it erupts.
+	var hp := p.hp
+	for i in 240:
+		await frames(1)
+		if h.is_hexing():
+			break
+	check(h.is_hexing(), "she hexes again after her cooldown")
+	p.input.move_x = -1
+	await frames(30)
+	p.input.move_x = 0
+	await frames(30)
+	check(p.hp == hp, "stepping off the mark dodges it (%d)" % (hp - p.hp))
+	# The hand can't be parried.
+	var r := MireGrasp.new()
+	r.hag = h
+	room.add_child(r)
+	r.global_position = Vector2(p.global_position.x, 9 * 16)
+	p.facing = 1
+	p.input.block_pressed = true
+	await frames(1)
+	p.input.block_pressed = false
+	r.erupt()
+	await frames(4)
+	check(hp - p.hp == MireGrasp.DAMAGE, "and a parry doesn't turn it (%d)" % (hp - p.hp))
+	room.free()
+
+
+## Strike her while she hexes and the spell breaks: the mark fizzles, and she
+## fumbles her staff, taking blows at half again.
+func test_striking_the_marsh_hag_mid_hex_breaks_the_spell() -> void:
+	var room := _hag_room({Vector2i(30, 8): "?"})
+	var p := make_player(room, Vector2i(20, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	for i in 240:
+		await frames(1)
+		if h.is_hexing() and h.state_time > 0.2:
+			break
+	check(h.is_hexing(), "she is hexing")
+	var mark := h.mark()
+	var hp := h.hp
+	h.take_hit(4, Vector2.RIGHT)
+	check(hp - h.hp == 6, "a blow mid-hex lands at half again (%d)" % (hp - h.hp))
+	check(h.is_fumbling(), "she fumbles her staff")
+	check(mark != null and mark.phase == "fizzle", "the mark fizzles")
+	await frames(30)
+	check(p.hp == 9999 and _hag_marks(room).is_empty(), "no hand comes up")
+	hp = h.hp
+	h._hitstun = 0.0
+	h.take_hit(4, Vector2.RIGHT)
+	check(hp - h.hp == 6, "fumbling, she takes blows at half again (%d)" % (hp - h.hp))
+	var fumble := 0
+	for i in 120:
+		await frames(1)
+		if not h.is_fumbling():
+			break
+		fumble += 1
+	check(fumble / 60.0 >= MarshHag.FUMBLE - 0.6, "she gropes for the staff about %.1f s (%d frames after the blows)" % [MarshHag.FUMBLE, fumble])
+	room.free()
+
+
+## Close in and she hobbles away from you, but only so far: then she hexes anyway.
+func test_the_marsh_hag_backs_away_when_you_close_in() -> void:
+	var room := _hag_room({Vector2i(20, 8): "?"})
+	var p := make_player(room, Vector2i(17, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	var x0 := h.global_position.x
+	var backed := false
+	var hexed := false
+	for i in 200:
+		await frames(1)
+		backed = backed or h.state == "withdraw"
+		if h.is_hexing():
+			hexed = true
+			break
+	check(backed, "she backs away")
+	check(h.global_position.x > x0 + 16.0, "away from you (%.0f px)" % (h.global_position.x - x0))
+	check(h.facing == -1, "still facing you")
+	check(hexed, "then she hexes anyway")
+	room.free()
+
+
 ## Pass 112: the foes built after the pass-102 sound pass have voices of their
 ## own. Each of these sounds exists, its foe plays it, and nothing else does, so
 ## a tell can be told apart by ear.
@@ -1671,6 +1800,7 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"leaf_mantis": ["mantis_unfold", "scythe"],
 		"seed_bomber": ["seed_rattle", "seed_drop"],
 		"bomber_seed": ["seed_fuse", "seed_burst"],
+		"marsh_hag": ["hag_hex", "mire_grasp", "hag_fumble"],
 	}
 	var played := {}  # sound -> scripts that play it
 	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:

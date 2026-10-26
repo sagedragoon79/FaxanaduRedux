@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1365,6 +1365,103 @@ SEED_BOMBER = [
 ]
 
 
+# --- Marsh Hag: a bent crone of the drowned villages, with a wisp in her staff ------
+# Drawn at the 2x render density. A shawl of reeds over a sodden dress, moss for hair,
+# a long nose and one pale eye; she leans on a crooked willow staff. The wisp in its
+# crook is drawn in code (scripts/enemies/marsh_hag.gd) so it can light the fog.
+
+MH_SCALE = 2
+MH_SHAWL = mat("gold", 3, 2, 1, 0)  # dry reeds, dull straw
+MH_SHAWL_BACK = mat("gold", 2, 1, 0, 0)
+MH_DRESS = mat("night", 4, 3, 2, 0)
+MH_SKIN = mat("stone", 6, 5, 4, 2)  # old grey skin
+MH_SKIN_BACK = mat("stone", 5, 4, 3, 1)
+MH_MOSS = mat("leaf", 3, 2, 1, 0)
+MH_STAFF = mat("bark", 4, 3, 2, 0)
+MH_MUD = mat("bark", 2, 1, 0, 0)
+MH_EYE = PAL["crystal-6"]
+
+
+def marsh_hag(hunch=0.0, staff=(11, -30), feet=((4, 0), (-4, 0)), bob=0, hex_hand=0.0, dropped=False, tilt=0):
+    """hunch: 0 bent over the staff, 1 drawn up straight for the hex. staff: where the
+    staff's crook is (the wisp sits there). hex_hand: 0 the free hand hangs, 1 clawed
+    up beside her face. dropped: the staff lies in the mud and she gropes for it."""
+    def render(_):
+        cv = Canvas(56, 52, (24, 49), MH_SCALE)
+        hx, hy = 0.0, -9.0 + bob
+        lean = 5.0 * (1.0 - hunch) + tilt
+        sx, sy = hx + lean, hy - 9.0 + 3.0 * (1.0 - hunch)
+        head = (sx + 3.0 + 1.5 * (1.0 - hunch), sy - 4.0 + 1.5 * (1.0 - hunch))
+        # Back leg and the back of the shawl.
+        cv.part(cv.capsule((hx - 2, hy), feet[1], 1.8), MH_DRESS)
+        cv.part(cv.ellipse((feet[1][0] - 0.5, feet[1][1] - 1), 2.4, 1.4), MH_MUD)
+        # The staff: a crooked willow stick from the ground to the crook.
+        if dropped:
+            cv.part(cv.capsule((-14, -1), (16, -2.5), 1.0), MH_STAFF)
+            cv.part(cv.capsule((16, -2.5), (18, -6), 0.9), MH_STAFF)
+        else:
+            base = (staff[0] - 2.0, 0.0)
+            knot = ((base[0] + staff[0]) / 2 + 1.0, (base[1] + staff[1]) / 2)
+            cv.part(cv.capsule(base, knot, 1.1) | cv.capsule(knot, staff, 1.0), MH_STAFF)
+            # The crook bends back over the wisp.
+            cv.part(cv.capsule(staff, (staff[0] - 2.5, staff[1] - 3.0), 0.9), MH_STAFF)
+            cv.part(cv.capsule((staff[0] - 2.5, staff[1] - 3.0), (staff[0] - 4.0, staff[1] - 1.0), 0.8), MH_STAFF)
+        # A sodden dress in a bell to the ankles, ragged at the hem.
+        dress = cv.polygon([(sx - 5, sy + 1), (sx + 4, sy + 1), (hx + 7, hy + 7), (hx + 4, hy + 9), (hx, hy + 8),
+                            (hx - 4, hy + 9.5), (hx - 7.5, hy + 7)])
+        cv.part(dress, MH_DRESS, deep=True)
+        cv.part(cv.capsule((hx + 2, hy + 2), feet[0], 1.8), MH_DRESS)
+        cv.part(cv.ellipse((feet[0][0] + 0.5, feet[0][1] - 1), 2.4, 1.4), MH_MUD)
+        # The reed shawl over the hunched back, hanging in strands.
+        shawl = cv.ellipse((sx - 1.5, sy + 1.5), 7.0, 5.0) | cv.polygon([(sx - 8, sy + 2), (sx + 5, sy + 2), (sx + 3, sy + 9), (sx - 7, sy + 10)])
+        cv.part(shawl, MH_SHAWL, deep=True)
+        for rx in (-6.0, -3.0, 0.0, 3.0):
+            cv.part(cv.capsule((sx + rx, sy + 7), (sx + rx - 0.5, sy + 12.5), 0.5), MH_SHAWL_BACK)
+        # Free (back) arm: hangs, or claws up beside the face for the hex.
+        sh_b = (sx - 3, sy + 2)
+        hand_b = (sx - 6 + 3 * hex_hand, sy + 9 - 17 * hex_hand)
+        if dropped:
+            hand_b = (sx + 8, -2)
+        el_b = ik(sh_b, hand_b, 4.5, 4.5, 1)
+        cv.part(cv.capsule(sh_b, el_b, 1.1) | cv.capsule(el_b, hand_b, 1.0), MH_SKIN_BACK)
+        for k in (-1, 0, 1):
+            cv.part(cv.capsule(hand_b, (hand_b[0] + k * 1.2, hand_b[1] - 2.0), 0.45), MH_SKIN_BACK)
+        # Front arm on the staff.
+        sh_f = (sx + 2, sy + 2)
+        grip = (staff[0] - 0.5, staff[1] + 9.0) if not dropped else (sx + 9, -3)
+        el_f = ik(sh_f, grip, 5.0, 5.0, -1)
+        cv.part(cv.capsule(sh_f, el_f, 1.1) | cv.capsule(el_f, grip, 1.0), MH_SKIN)
+        cv.part(cv.ellipse(grip, 1.3, 1.3), MH_SKIN)
+        # Head: moss hair, a long hooked nose, a pointed chin, one pale eye.
+        cv.part(cv.ellipse(head, 3.8, 3.6), MH_SKIN)
+        cv.part(cv.polygon([(head[0] + 2.5, head[1] - 0.5), (head[0] + 6.5, head[1] + 2.2), (head[0] + 2.8, head[1] + 1.6)]), MH_SKIN)
+        cv.part(cv.polygon([(head[0] + 0.5, head[1] + 2.5), (head[0] + 3.0, head[1] + 2.8), (head[0] + 2.2, head[1] + 4.8)]), MH_SKIN)
+        hair = cv.ellipse((head[0] - 1.5, head[1] - 1.5), 4.8, 3.6) & ~cv.right_of(head[0] - 0.2)
+        hair |= cv.capsule((head[0] - 3.5, head[1]), (head[0] - 4.5, head[1] + 7.5), 1.3)
+        cv.part(hair, MH_MOSS)
+        cv.pixel((head[0] + 1.8, head[1] - 0.3), MH_EYE)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+def hag_walk(i):
+    t = i / 4 * math.tau
+    fx = 3.0 * math.cos(t)
+    return marsh_hag(staff=(11 + 1.5 * math.cos(t), -30), feet=((fx, -max(0, 1.5 * math.sin(t))), (-fx, -max(0, -1.5 * math.sin(t)))),
+                     bob=-(1 if i % 2 else 0))
+
+
+MARSH_HAG = [
+    ("idle", [marsh_hag(), marsh_hag(bob=1)], [0, 1], 2, True),
+    ("walk", [hag_walk(i) for i in range(4)], [0, 1, 2, 3], 4, True),
+    ("hex", [marsh_hag(hunch=1.0, staff=(11, -36), hex_hand=1.0), marsh_hag(hunch=1.0, staff=(11, -37), hex_hand=0.85, bob=-1)], [0, 1], 10, True),
+    ("cast", [marsh_hag(hunch=0.6, staff=(13, -30), hex_hand=0.3, feet=((5, 0), (-4, 0)))], [0], 1, False),
+    ("fumble", [marsh_hag(hunch=0.0, dropped=True, tilt=2), marsh_hag(hunch=0.0, dropped=True, tilt=3, bob=1)], [0, 1], 4, True),
+    ("stagger", [marsh_hag(hunch=0.4, staff=(7, -28), feet=((2, 0), (-6, 0)), tilt=-6)], [0], 1, False),
+]
+
+
 def autosprite_only(_):
     """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
     animation it names is swapped for the imported frames."""
@@ -1399,6 +1496,7 @@ def main():
     write_sheet("drowned_dwarf", (72, 64), (32, 61), DROWNED_DWARF, lambda r: r(None), density=DD_SCALE)
     write_sheet("bark_knight", (112, 64), (36, 61), BARK_KNIGHT, lambda r: r(None), density=BK_SCALE)
     write_sheet("seed_bomber", (56, 44), (28, 22), SEED_BOMBER, lambda r: r(None), density=SB_SCALE)
+    write_sheet("marsh_hag", (56, 52), (24, 49), MARSH_HAG, lambda r: r(None), density=MH_SCALE)
     write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():

@@ -1,0 +1,92 @@
+{
+ "cell": [
+  112,
+  104
+ ],
+ "origin": [
+  48,
+  98
+ ],
+ "columns": 4,
+ "animations": {
+  "idle": {
+   "row": 0,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 2,
+   "loop": true
+  },
+  "walk": {
+   "row": 1,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 4,
+   "loop": true
+  },
+  "hex": {
+   "row": 2,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "cast": {
+   "row": 3,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  },
+  "fumble": {
+   "row": 4,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 4,
+   "loop": true
+  },
+  "stagger": {
+   "row": 5,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": false
+  }
+ },
+ "density": 2
+}
