@@ -7,7 +7,8 @@ extends RefCounted
 ## its 8 neighbours are solid too (corners count only when both sides next to
 ## them are solid). The atlas has them in rows 0-5 in the order of
 ## `blob_masks()`; row 6 holds the one-way platform, amber, and darker interior
-## tiles for wall cells two (MID) or three or more (DEEP) tiles from open air.
+## tiles for wall cells two (MID) or three or more (DEEP) tiles from open air,
+## then the two 45-degree slopes (design bible 6.1).
 
 const TILE := 16
 ## Render density of the atlases (design bible 12.1): each 16 px world tile is
@@ -23,6 +24,10 @@ const ONE_WAY := Vector2i(0, 6)
 const AMBER := Vector2i(1, 6)
 const MID: Array[Vector2i] = [Vector2i(2, 6), Vector2i(3, 6)]
 const DEEP: Array[Vector2i] = [Vector2i(4, 6), Vector2i(5, 6)]
+## Legend `/`: solid below a diagonal rising to the east.
+const SLOPE_EAST := Vector2i(6, 6)
+## Legend `\`: solid below a diagonal rising to the west.
+const SLOPE_WEST := Vector2i(7, 6)
 
 ## Neighbour bits for blob masks.
 const N := 1
@@ -80,7 +85,11 @@ static func ground(mask: int, cell := Vector2i.ZERO, depth := 1) -> Vector2i:
 
 
 static func is_ground(coords: Vector2i) -> bool:
-	return coords != ONE_WAY and coords != AMBER
+	return coords != ONE_WAY and coords != AMBER and not is_slope(coords)
+
+
+static func is_slope(coords: Vector2i) -> bool:
+	return coords == SLOPE_EAST or coords == SLOPE_WEST
 
 
 ## Builds (and caches) the tileset for a zone. Without collision it is used for
@@ -109,7 +118,9 @@ static func build(zone := "", with_collision := true) -> TileSet:
 	var full := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)])
 	var lip := 4.0 * DENSITY
 	var strip := PackedVector2Array([Vector2(-half, -half), Vector2(half, -half), Vector2(half, -half + lip), Vector2(-half, -half + lip)])
-	var all: Array[Vector2i] = [ONE_WAY, AMBER]
+	var rise_east := PackedVector2Array([Vector2(-half, half), Vector2(half, -half), Vector2(half, half)])
+	var rise_west := PackedVector2Array([Vector2(-half, -half), Vector2(half, half), Vector2(-half, half)])
+	var all: Array[Vector2i] = [ONE_WAY, AMBER, SLOPE_EAST, SLOPE_WEST]
 	all.append_array(MID)
 	all.append_array(DEEP)
 	for i in blob_masks().size():
@@ -123,6 +134,10 @@ static func build(zone := "", with_collision := true) -> TileSet:
 		if coords == ONE_WAY:
 			data.set_collision_polygon_points(0, 0, strip)
 			data.set_collision_polygon_one_way(0, 0, true)
+		elif coords == SLOPE_EAST:
+			data.set_collision_polygon_points(0, 0, rise_east)
+		elif coords == SLOPE_WEST:
+			data.set_collision_polygon_points(0, 0, rise_west)
 		else:
 			data.set_collision_polygon_points(0, 0, full)
 	_cache[key] = ts

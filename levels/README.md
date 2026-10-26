@@ -34,6 +34,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | --- | --- |
 | `#` | Solid ground (top-exposed tiles get a moss edge) |
 | `-` | One-way platform (jump up through, Down + Jump to drop) |
+| `/` `\` | 45° slope, solid below the diagonal: `/` rises to the east, `\` to the west. Put ground under it and on its high side; the reachability checker counts it as a whole block |
 | `^` | Floor spikes (hazard, pogo-able) |
 | `o` | Thorn bulb (hazard, pogo target) |
 | `C` | Cracked stone (Mattock breaks it) |
@@ -135,3 +136,5 @@ Sap with open air beside it and more sap below draws as a pouring falls (Amber F
 Safe numbers for layouts (a little under the real movement): a standing jump clears 4 tiles
 up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles of headroom
 for the body. Platforms that should be reachable from the floor go 4 rows above it.
+A slope (`/`, `\`) starts on open floor at its low side and meets ground at its high side;
+stack them diagonally for a taller ramp, with ground under each. Walkers turn at a ramp.

@@ -50,6 +50,9 @@ const GLIDE_FEATHERS := 0.14
 ## exactly 6 (or 4) px still clears: a body left flush against a tile counts as
 ## touching it (pass 107).
 const CORRECTION_SLOP := 0.1
+## A contact whose normal is at least this horizontal is a wall; a 45-degree
+## slope's face (0.71) is floor.
+const WALL_NORMAL := 0.9
 
 
 @export var tuning: MovementTuning = MovementTuning.new()
@@ -432,14 +435,21 @@ func _update_wall_contact(on_floor: bool) -> void:
 	wall_dir = 0
 	if on_floor or not abilities.glove:
 		return
-	if test_move(global_transform, Vector2(2, 0)):
+	if _wall_at(1):
 		wall_dir = 1
-	elif test_move(global_transform, Vector2(-2, 0)):
+	elif _wall_at(-1):
 		wall_dir = -1
 	if wall_dir != 0:
 		_last_wall_dir = wall_dir
 		_wall_coyote_timer = tuning.wall_coyote_time
 		_refresh_air_moves()
+
+
+## A wall, not a slope, 2 px to that side: a 45-degree slope's face is
+## floor, so it never catches you in a slide (design bible 6.1, pass 115).
+func _wall_at(side: int) -> bool:
+	var hit := KinematicCollision2D.new()
+	return test_move(global_transform, Vector2(side * 2.0, 0), hit) and absf(hit.get_normal().x) > WALL_NORMAL
 
 
 func _apply_wall_slide() -> void:
@@ -892,8 +902,12 @@ func _apply_ledge_correction(delta: float, on_floor: bool) -> void:
 	# wall contact does, and step onto the lip as well as up (pass 107: with the
 	# Climbing Glove a clipped ledge used to catch you in a slide instead).
 	var motion := Vector2(wall_dir * 2.0, 0) if is_wall_sliding else Vector2(velocity.x * delta, 0)
-	if not test_move(global_transform, motion):
+	var hit := KinematicCollision2D.new()
+	if not test_move(global_transform, motion, hit):
 		_apply_one_way_ledge_correction(motion)
+		return
+	if absf(hit.get_normal().x) <= WALL_NORMAL:
+		# A slope's face: the physics walks you up it; there is no lip to clip.
 		return
 	for i in range(1, tuning.ledge_correction_px + 1):
 		var up := Vector2(0, -(i + CORRECTION_SLOP))
@@ -951,6 +965,21 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 	if on_floor and not _hazard_near():
 		safe_position = global_position
 	_was_on_floor = on_floor
+	visual.position.y = _slope_sink(on_floor)
+
+
+## On a slope the box rests on its downhill corner, up to half its width above
+## the slope under its middle, so the sprite is drawn down onto the slope
+## (design bible 6.1, pass 115). The body itself doesn't move.
+func _slope_sink(on_floor: bool) -> float:
+	if not on_floor or absf(get_floor_normal().x) < 0.1:
+		return 0.0
+	var reach := BODY_SIZE.x * 0.5 + 1.0
+	var q := PhysicsRayQueryParameters2D.create(global_position + Vector2(0, -1), global_position + Vector2(0, reach), LAYER_WORLD, [get_rid()])
+	var hit := get_world_2d().direct_space_state.intersect_ray(q)
+	if hit.is_empty():
+		return 0.0
+	return clampf(hit.position.y - global_position.y, 0.0, BODY_SIZE.x * 0.5)
 
 
 ## Plays the step sound for the ground underfoot (design bible 11), falling back
