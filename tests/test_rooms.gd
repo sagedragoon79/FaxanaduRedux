@@ -1082,3 +1082,23 @@ func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
 		p.input.jump_held = true
 	p.input.move_x = 0
 	check(w.room.id == "dartmoor/meteor_rise" and p.is_on_floor() and p.global_position.y <= 60 * Room.TILE + 0.5, "and a jump from the surface lands you back on the Rise's floor (%s)" % p.global_position)
+
+
+## Bible 11 (pass 131): every zone of five rooms or more hides at least one
+## room behind a fake wall, so each one rewards a closer look.
+func test_every_large_zone_hides_a_room() -> void:
+	var w := World.new()
+	w.build_catalog()
+	var rooms := {}
+	var hidden := {}
+	for id: String in w.catalog:
+		var zone: String = w.catalog[id].zone
+		rooms[zone] = int(rooms.get(zone, 0)) + 1
+		if w.catalog[id].secret:
+			hidden[zone] = int(hidden.get(zone, 0)) + 1
+	for zone: String in rooms:
+		if rooms[zone] >= 5:
+			check(hidden.get(zone, 0) >= 1, "%s (%d rooms) hides a room (%d)" % [zone, rooms[zone], hidden.get(zone, 0)])
+	for zone: String in ["mist", "branches", "daybreak"]:
+		check(rooms.has(zone), "the catalog has %s" % zone)
+	w.free()
