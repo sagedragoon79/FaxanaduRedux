@@ -695,6 +695,41 @@ def main():
     out[int(RATE * 0.06):int(RATE * 0.06) + len(cut)] += cut * 0.8
     save("scythe", out, 0.55)
 
+    # Seed Bomber (pass 114). The tell: hard seeds rattling in the husk of its
+    # belly, faster and higher as it squeezes them toward the drop.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    rate = 18 + 60 * (t / d) ** 1.5
+    gate = (np.sin(2 * np.pi * np.cumsum(rate) / RATE) > 0.75).astype(float)
+    clicks = lowpass(highpass(noise(d), slide(900, 2400, d)), 5200) * gate
+    husk = lowpass(osc(slide(140, 260, d, 0.8), "tri"), 900) * gate * 0.35
+    save("seed_rattle", mix(clicks, husk) * env(n, 0.3, 0.4), 0.5)
+
+    # The seed let go: a pop from the husk and a short falling whistle.
+    d = 0.22
+    n = int(RATE * d)
+    pop = lowpass(osc(slide(520, 220, 0.04), "square", 0.4), 2500) * env(int(RATE * 0.04), 0.0005, 2.0)
+    whistle = osc(slide(1700, 900, d, 0.7), "sine") * env(n, 0.03, 1.0) * 0.35
+    save("seed_drop", mix(pop, whistle), 0.5)
+
+    # A seed's fuse: a sputtering hiss that climbs as it splits open.
+    d = 0.55
+    n = int(RATE * d)
+    t = t_axis(d)
+    sput = 0.4 + 0.6 * (np.sin(2 * np.pi * (14 * t + 40 * t * t)) > 0.0)
+    hiss = lowpass(highpass(noise(d), slide(1500, 4000, d)), 7000) * sput
+    tick = osc(slide(600, 1100, d), "square", 0.3) * (np.sin(2 * np.pi * (8 * t + 16 * t * t)) > 0.92) * 0.3
+    save("seed_fuse", mix(hiss, lowpass(tick, 3000)) * env(n, 0.45, 0.3), 0.45)
+
+    # It bursts: the husk cracks and thorns spray out.
+    d = 0.3
+    n = int(RATE * d)
+    crack = lowpass(noise(d), slide(4000, 300, d)) * env(n, 0.001, 2.0)
+    body = lowpass(osc(slide(180, 60, d), "square", 0.5), 700) * env(n, 0.001, 1.8) * 0.8
+    spray = highpass(noise(d) * (np.random.default_rng(31).random(n) > 0.9), 3000) * env(n, 0.01, 1.2) * 0.5
+    save("seed_burst", mix(crack, body, spray), 0.7)
+
 
 if __name__ == "__main__":
     main()

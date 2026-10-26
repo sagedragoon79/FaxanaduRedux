@@ -1161,7 +1161,7 @@ func test_every_attack_tell_and_strike_has_a_sound() -> void:
 		+ "circle climb grounded wade swim slack hide spent bare wake f_recover fallen to_throne fight "
 		+ "float watch retract withdraw stuck staggered stunned flinch winded skid stagger opening "
 		+ "dropped exposed hang possessed roll fade mirror echo dormant sink sunk dangle dangle_up "
-		+ "plunge_hold plunge_up").split(" ")
+		+ "plunge_hold plunge_up downed rise").split(" ")
 	var gaps: Array[String] = []
 	var tells := 0
 	var strikes := 0
@@ -1498,6 +1498,169 @@ func test_the_bark_knights_lance_drops_through_and_gives_coyote_time() -> void:
 		room.free()
 
 
+## A tall room for the Seed Bomber, which keeps about five tiles over your head.
+func _sky_room(spots: Dictionary) -> Room:
+	var rows: Array = ["##############################"]
+	for i in 12:
+		rows.append("#............................#")
+	rows.append("##############################")
+	for cell: Vector2i in spots:
+		var row: String = rows[cell.y]
+		rows[cell.y] = row.substr(0, cell.x) + spots[cell] + row.substr(cell.x + 1)
+	return make_room(rows)
+
+
+func _seeds(room: Room) -> Array:
+	return room.get_children().filter(func(c: Node) -> bool: return c is BomberSeed and not c.is_queued_for_deletion())
+
+
+## Bible 7 (pass 114): the Seed Bomber hangs over your head, squeezes its husk
+## (the telegraph), and drops a seed that stings whoever it lands on.
+func test_seed_bomber_hangs_over_you_then_squeezes_and_drops_a_seed() -> void:
+	var room := _sky_room({Vector2i(20, 3): ";"})
+	var p := make_player(room, Vector2i(8, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var b: SeedBomber = _find(room, SeedBomber)
+	var tell := 0
+	var lit := false
+	var over := false
+	var seed: BomberSeed = null
+	for i in 400:
+		await frames(1)
+		if b.state == "windup":
+			tell += 1
+			lit = lit or b.telegraph_pulse()
+			over = absf(b.center().x - p.global_position.x) < SeedBomber.OVER + 2.0 \
+				and p.global_position.y - b.center().y > SeedBomber.HOVER * 0.75
+		if not _seeds(room).is_empty():
+			seed = _seeds(room)[0]
+			break
+	check(over, "it squeezes from right over your head, out of a slash's reach")
+	check(tell / 60.0 >= Enemy.MIN_TELEGRAPH, "the squeeze lasts at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell])
+	check(lit, "and it flashes as it squeezes")
+	check(seed != null and seed.phase == "fall", "then it drops a seed")
+	var hp := p.hp
+	for i in 90:
+		await frames(1)
+		if p.hp < hp:
+			break
+	check(hp - p.hp >= BomberSeed.DAMAGE, "the seed stings the player it lands on (%d)" % (hp - p.hp))
+	room.free()
+
+
+## A seed that lands sputters (its own telegraph), then bursts in thorns that
+## can't be parried.
+func test_a_seed_on_the_branch_sputters_then_bursts_in_thorns() -> void:
+	var room := _sky_room({})
+	var p := make_player(room, Vector2i(8, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var s := BomberSeed.new()
+	room.add_child(s)
+	s.global_position = Vector2(8.5 * 16 + 22.0, 8 * 16)
+	var fuse := 0
+	for i in 120:
+		await frames(1)
+		if not is_instance_valid(s) or s.is_queued_for_deletion():
+			break
+		if s.phase == "fuse":
+			fuse += 1
+			if fuse == 1:
+				check(absf(s.global_position.y + BomberSeed.RADIUS - 13 * 16) < 1.5, "it sticks on the floor (y %.1f)" % s.global_position.y)
+				p.facing = 1
+			if fuse == int(BomberSeed.FUSE * 60.0) - 4:
+				var hp := p.hp
+				# A parry tap, not a held guard.
+				p.input.block_pressed = true
+				await frames(1)
+				p.input.block_pressed = false
+				await frames(7)
+				check(hp - p.hp >= BomberSeed.BURST_DAMAGE, "the burst reaches 22 px and a parry can't turn it (%d)" % (hp - p.hp))
+				break
+	check(fuse / 60.0 >= Enemy.MIN_TELEGRAPH, "it sputters at least %.2f s first (%d frames)" % [Enemy.MIN_TELEGRAPH, fuse])
+	check(_seeds(room).is_empty(), "and it is spent")
+	room.free()
+
+
+## Strike the seed and it flies back into its bird: the burst knocks the bird
+## down, dazed and taking blows at half again, until it climbs back up.
+func test_a_struck_seed_flies_back_and_knocks_the_bomber_down() -> void:
+	var room := _sky_room({Vector2i(14, 4): ";"})
+	var p := make_player(room, Vector2i(4, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var b: SeedBomber = _find(room, SeedBomber)
+	await frames(2)
+	b.set_physics_process(false)
+	# A seed on the floor right in front of the player; slash it.
+	var s := BomberSeed.new()
+	s.bomber = b
+	room.add_child(s)
+	s.global_position = Vector2(p.global_position.x + 22.0, 13 * 16 - BomberSeed.RADIUS - 1.0)
+	await frames(2)
+	p.facing = 1
+	p.input.attack_pressed = true
+	await frames(1)
+	p.input.attack_pressed = false
+	await frames(4)
+	check(is_instance_valid(s) and s.phase == "return", "a slash sends the seed back up")
+	b.set_physics_process(true)
+	var hp := b.hp
+	for i in 90:
+		await frames(1)
+		if b.state == "downed":
+			break
+	check(hp - b.hp == BomberSeed.RETURN_DAMAGE, "it bursts on the bird for %d (%d)" % [BomberSeed.RETURN_DAMAGE, hp - b.hp])
+	check(b.is_downed(), "and knocks it out of the sky")
+	for i in 120:
+		await frames(1)
+		if b.is_on_floor():
+			break
+	check(b.is_on_floor(), "it falls to the floor")
+	hp = b.hp
+	b.take_hit(4, Vector2.RIGHT)
+	check(hp - b.hp == 6, "downed, it takes blows at half again (%d)" % (hp - b.hp))
+	var down := 0
+	for i in 200:
+		await frames(1)
+		if b.state != "downed":
+			break
+		down += 1
+	check(down / 60.0 >= SeedBomber.DAZED - 0.3, "it lies dazed about %.1f s (%d frames)" % [SeedBomber.DAZED, down])
+	var y := b.global_position.y
+	await frames(30)
+	check(b.global_position.y < y - 16.0 and not b.uses_gravity, "then it climbs back into the air")
+	room.free()
+
+
+## A seed parried as it falls flies back up too, and the player takes nothing.
+func test_a_parried_seed_flies_back_at_its_bird() -> void:
+	var room := _sky_room({Vector2i(14, 4): ";"})
+	var p := make_player(room, Vector2i(8, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var b: SeedBomber = _find(room, SeedBomber)
+	await frames(2)
+	b.set_physics_process(false)
+	var s := BomberSeed.new()
+	s.bomber = b
+	room.add_child(s)
+	s.global_position = p.global_position + Vector2(3, -60)
+	s.velocity = Vector2(0, 200)
+	var hp := p.hp
+	for i in 30:
+		await frames(1)
+		if s.global_position.y > p.global_position.y - 52.0:
+			break
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(8)
+	check(p.hp == hp, "a parried seed does no damage (%d)" % (hp - p.hp))
+	check(is_instance_valid(s) and s.phase == "return", "and flies back up")
+	room.free()
+
+
 ## Pass 112: the foes built after the pass-102 sound pass have voices of their
 ## own. Each of these sounds exists, its foe plays it, and nothing else does, so
 ## a tell can be told apart by ear.
@@ -1506,6 +1669,8 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"bark_knight": ["bark_creak", "lance_thrust", "root_grip", "bark_chip"],
 		"drowned_dwarf": ["anchor_heave", "anchor_slam"],
 		"leaf_mantis": ["mantis_unfold", "scythe"],
+		"seed_bomber": ["seed_rattle", "seed_drop"],
+		"bomber_seed": ["seed_fuse", "seed_burst"],
 	}
 	var played := {}  # sound -> scripts that play it
 	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:
