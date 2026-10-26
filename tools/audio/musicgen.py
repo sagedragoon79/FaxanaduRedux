@@ -1349,6 +1349,94 @@ def track_ending():
     return s.render(reverb=0.6)
 
 
+def track_eolis_bloom():
+    """Eolis after the ending, the Tree in flower: the town theme in F lydian
+    lifted into a festival. A touch quicker (100), the arpeggio doubled by a bell
+    an octave up, a frame drum and shaker under it, and the lead with a bell
+    answering it, so home sounds like the end of the story."""
+    rng = np.random.default_rng(23)
+    s = Song(bpm=100, bars=16)
+    root, scale = 53, SCALES["lydian"]
+    prog = [0, 4, 5, 3, 0, 4, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, 0.0, 0.4)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 1.9), b * 4, 0, 0.75)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg + 4)), s.beat * 1.9), b * 4 + 2, 0, 0.55)
+        arp = tones + [tones[0] + 12]
+        for k in range(8):
+            m = arp[[0, 1, 2, 3, 2, 1, 2, 3][k]] + 12
+            s.add(pluck(midi_hz(m), s.beat * 0.5), b * 4 + k * 0.5, -0.35, 0.5)
+            if k % 2 == 0:
+                s.add(fft_filter(bell(midi_hz(m + 12), s.beat * 1.2), low=5000), b * 4 + k * 0.5, 0.4, 0.12)
+        for k in range(4):
+            s.add(kick(0.25), b * 4 + k, 0, 0.35 if k % 2 == 0 else 0.2)
+            s.add(shaker(rng), b * 4 + k + 0.5, 0.3, 0.8)
+    melody(s, rng, root, scale, prog, lead, start_bar=4, octave=12, pan=0.15, gain=0.75)
+    melody(s, np.random.default_rng(230), root, scale, prog, bell, start_bar=8, octave=24, pan=-0.3, gain=0.25, density=0.3)
+    return s.render(reverb=0.35)
+
+
+def track_zenis_still():
+    """Zenis after the ending: the meteor is dead. The same B and the same far bell,
+    but no heartbeat and no pulse, and the pads in tune now, not beating against
+    each other: B minor at 60, slow chords that hang and fade into a long hall, and
+    once in each pass, far off, the bell climbs a B major chord: the first bright
+    thing ever heard in the meteor."""
+    rng = np.random.default_rng(1770)
+    s = Song(bpm=60, bars=12)
+    root, scale = 47, SCALES["minor"]
+    prog = [0, 5, 3, 0, 5, 6, 3, 0, 0, 5, 3, 4]
+    for b, deg in enumerate(prog):
+        for m in chord_tones(root, scale, deg):
+            s.add(fft_filter(pad(midi_hz(m - 12), s.bar * 1.3), low=900), b * 4, rng.uniform(-0.4, 0.4), 0.3)
+        s.add(bass(midi_hz(scale_note(root - 24, scale, deg)), s.bar * 0.9), b * 4, 0, 0.3)
+        if b % 3 == 2:
+            s.add(fft_filter(bell(midi_hz(scale_note(root + 12, scale, deg + 2)), s.beat * 4.0), low=2600), b * 4 + 2, rng.uniform(-0.6, 0.6), 0.16)
+    # Once, far off: a B major chord climbing, the first bright thing in the meteor.
+    for k, m in enumerate([71, 75, 78, 83]):
+        s.add(fft_filter(bell(midi_hz(m), s.beat * 3.0), low=3000), 32 + k * 1.5, -0.2 + 0.15 * k, 0.14)
+    return s.render(reverb=0.85)
+
+
+def amb_zenis_still():
+    """The dead meteor: the breath has gone out of the drone, there is no heartbeat,
+    and the stone ticks as it cools. A thin hollow wind through emptied veins, and
+    now and then a soft glassy chime as a crystal cracks."""
+    rng = np.random.default_rng(1780)
+    dur = 24.0
+    n = int(dur * RATE)
+    m = n + RATE * 3
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    swell = 0.75 + 0.25 * np.sin(2 * np.pi * t / 12.0)
+    wind = fft_filter(rng.uniform(-1, 1, m), low=900, high=180) * 0.5 * swell
+    hum = fft_filter(rng.uniform(-1, 1, m), low=120, high=30) * 0.6
+    out[:, 0] += wind + hum
+    out[:, 1] += np.roll(wind, RATE // 3) + hum
+    pos = 0.7
+    while pos < dur:
+        i = int(pos * RATE)
+        if rng.uniform() < 0.25:
+            mm = int(1.4 * RATE)
+            tt = np.arange(mm) / RATE
+            f = rng.uniform(1800, 3000)
+            chime = (np.sin(2 * np.pi * f * tt) + 0.4 * np.sin(2 * np.pi * f * 2.76 * tt)) * np.exp(-tt * 4) * 0.05
+        else:
+            mm = int(0.05 * RATE)
+            tt = np.arange(mm) / RATE
+            chime = fft_filter(rng.uniform(-1, 1, mm), low=4000, high=900) * np.exp(-tt * 120) * rng.uniform(0.05, 0.1)
+        pan = rng.uniform(-0.8, 0.8)
+        end = min(i + len(chime), m)
+        out[i:end, 0] += chime[: end - i] * (1 - pan) / 2
+        out[i:end, 1] += chime[: end - i] * (1 + pan) / 2
+        pos += rng.uniform(0.6, 2.4)
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.45
+
+
 def track_trials():
     """The Guru Trials, in the mantra-space: D lydian at 92, floating and grey.
     A low drone that never changes chord, a dry tick on every eighth like the
@@ -1450,6 +1538,9 @@ TRACKS = {
     "warden": track_warden,
     "trials": track_trials,
     "amb_trials": amb_trials,
+    "eolis_bloom": track_eolis_bloom,
+    "zenis_still": track_zenis_still,
+    "amb_zenis_still": amb_zenis_still,
 }
 
 
