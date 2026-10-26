@@ -1537,3 +1537,78 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	check(not Completion.award({"percent": 99}) and not GameState.flag("lord"), "99% of the world is not enough")
 	check(Completion.award({"percent": 100}) and Shop.shelf("eolis_dyes").has(lord), "100% puts it on the shelf")
 	check(Shop.buy("eolis_dyes", lord, p) and PlayerVisual.dye_look()[1], "it is given, and it glows")
+
+
+## A plateau that runs down a six-tile ramp, and one that ends at a lip over a pit.
+func _lunge_rooms() -> Dictionary:
+	var s := grid_rows(40, 23)
+	put_tiles(s, 1, 14, "#", 10, 6)
+	for i in 6:
+		put_tiles(s, 11 + i, 14 + i, "\\")
+		put_tiles(s, 11 + i, 15 + i, "#", 1, 5 - i)
+	var l := grid_rows(40, 23)
+	put_tiles(l, 1, 14, "#", 14, 6)
+	return {"test/slope": room_text(["name: Slope", "zone: test"], s), "test/ledge": room_text(["name: Ledge", "zone: test"], l)}
+
+
+func _charge_and_thrust(p: Player) -> void:
+	p.facing = 1
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(27)
+	p.input.attack_held = false
+	await frames(1)
+
+
+## Pass 153: the lunge is as fast as a dash, so it hugs a ramp the way a ground
+## dash does (pass 121), and off a lip you step down at no more than a run.
+func test_thrust_lunge_rides_slopes_and_steps_off_ledges() -> void:
+	var w := make_world(_lunge_rooms(), "test/slope", cell_feet(10, 13))
+	var p := w.player
+	_learn_all(p, BLADE_TO + ["thrust"])
+	await frames(10)
+	var x0 := p.global_position.x
+	var y0 := p.global_position.y
+	await _charge_and_thrust(p)
+	var air := 0
+	for i in 14:
+		air += 0 if p.is_on_floor() else 1
+		await frames(1)
+	check(air == 0 and p.global_position.y > y0 + 24.0, "a thrust down a ramp rides it all the way (%d frames in the air, %.0f px down)" % [air, p.global_position.y - y0])
+	check(p.global_position.x - x0 > 35.0, "and still lunges its length (%.0f px)" % (p.global_position.x - x0))
+	# A ground dash down the same ramp, and the slide out of it, stay on it too.
+	await frames(40)
+	p.teleport(cell_feet(10, 13))
+	await frames(10)
+	GameState.data.abilities["stride"] = true
+	GameState.apply(p)
+	p.facing = 1
+	p.input.dash_pressed = true
+	await frames(1)
+	check(p.is_dashing, "the dash goes")
+	air = 0
+	for i in 16:
+		await frames(1)
+		air += 0 if p.is_on_floor() else 1
+	check(air == 0, "a ground dash down the ramp and its slide-out never leave it (%d frames in the air)" % air)
+	w.queue_free()
+	await frames(2)
+	# Off a lip: the lunge ends there, at no more than a run.
+	w = make_world(_lunge_rooms(), "test/ledge", cell_feet(14, 13))
+	p = w.player
+	_learn_all(p, BLADE_TO + ["thrust"])
+	await frames(10)
+	await _charge_and_thrust(p)
+	var off_speed := -1.0
+	var airborne := 0
+	for i in 60:
+		await frames(1)
+		airborne += 0 if p.is_on_floor() else 1
+		if airborne == 2:
+			# The frame after the feet leave the lip is the first the lunge sees it.
+			off_speed = absf(p.velocity.x)
+		if p.is_on_floor() and p.global_position.y > 300.0:
+			break
+	check(off_speed >= 0.0 and off_speed <= p.tuning.run_speed + 0.5, "the lunge ends at the lip and you step off at no more than a run (%.0f px/s)" % off_speed)
+	var past := p.global_position.x - 15 * Room.TILE
+	check(p.is_on_floor() and past < 32.0, "and lands within two tiles of it (%.0f px out; a full-speed lunge flew 67)" % past)

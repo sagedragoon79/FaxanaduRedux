@@ -373,7 +373,10 @@ func _physics_process(delta: float) -> void:
 	elif _thrust_lunge and is_attacking and on_floor:
 		velocity.x = facing * combat.thrust_speed
 	else:
-		# Off a ledge the lunge ends: a thrust never carries you over a gap.
+		# Off a ledge the lunge ends, and you step off at no more than a run
+		# (pass 153): a thrust never carries you over a gap.
+		if _thrust_lunge and not on_floor:
+			velocity.x = clampf(velocity.x, -tuning.run_speed, tuning.run_speed)
 		_thrust_lunge = false
 		_horizontal_step(delta, on_floor)
 
@@ -419,7 +422,11 @@ func _physics_process(delta: float) -> void:
 	var pre_velocity := velocity
 	# A ground stride hugs the floor: down a slope the snap reaches far enough
 	# to hold a dash's 6 px a frame, so it doesn't sail off the ramp (pass 121).
-	floor_snap_length = tuning.ground_dash_snap if is_dashing and _ground_dash else FLOOR_SNAP
+	# A thrust's lunge is as fast, so it hugs the floor the same way, and so
+	# does the slide out of either while it is still faster than a run (pass 153).
+	var hugging := (is_dashing and _ground_dash) or (_thrust_lunge and is_attacking) \
+		or (on_floor and absf(velocity.x) > tuning.run_speed)
+	floor_snap_length = tuning.ground_dash_snap if hugging else FLOOR_SNAP
 	move_and_slide()
 	if pull != Vector2.ZERO and not is_dashing:
 		move_and_collide(pull * delta)
