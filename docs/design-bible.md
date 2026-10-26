@@ -359,7 +359,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Gravity during dash | none; exits with vy = 0 |
 | Invulnerability | first 0.10 s |
 | Charges | 1 in air (2 with skill node), refreshed like double jump |
-| Ground dash | yes, same values, 0.25 s cooldown. It hugs the floor (pass 121): a dash begun on the ground snaps to the floor from 10 px (`ground_dash_snap`, against the run's 4 px), so it rides a slope down as it already rode one up, instead of sailing off the ramp into the air. A ledge of a whole tile or more still drops away beneath it, and an air dash never snaps |
+| Ground dash | yes, same values, 0.25 s cooldown. It hugs the floor (pass 121): a dash begun on the ground snaps to the floor from 10 px (`ground_dash_snap`, against the run's 4 px), so it rides a slope down as it already rode one up, instead of sailing off the ramp into the air. A ledge of a whole tile or more still drops away beneath it, and an air dash never snaps. Since pass 153 a thrust's lunge (9) hugs the floor the same way, and so does any slide on the floor still faster than a run (the end of a lunge or a dash), so a lunge that runs out halfway down a ramp doesn't hop off it |
 | Dash buffer | 0.10 s (pass 146), like the jump's: a dash pressed when it can't go yet (on the cooldown, or in the air with the dash spent) is held and goes the first frame it can, at the cooldown's end, on the landing, or when a kill with Wanderer's Grace or a stride seed gives the dash back. Pressed earlier than that, it's dropped. Without the Elven Stride a press isn't held, so picking it up never fires a stale dash |
 | Afterimages | 3 ghost frames, elf-green tint |
 
@@ -789,7 +789,7 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
 - **Thrust (pass 149)**, the Blade branch's eighth node, after Bloodletting [2]: Faxanadu's thrust, as a charged move.
   - The press still swings at once, so the charge builds through the first cut. Held past `thrust_charge` (0.4 s), the blade rings and a spark of light runs off its point. Let go and you thrust.
   - The thrust deals the heavy hit times `thrust_mult` (1.5) through `blade_mult()`, so Keen Edge and the War Glove count. Its point is a long, low box, 52 px past the body (a cut reaches about 34) and half a cut's height. It strikes every foe in it once and drives them back like a heavy hit.
-  - On the floor it lunges at 320 px/s for 0.16 s, about 50 px. The lunge stops at the first foe it strikes and recoils like a cut, so it never carries you into a body. Off a ledge it ends. In the air the thrust strikes where you are and carries you nowhere, so it never crosses a gap the Elven Stride gates.
+  - On the floor it lunges at 320 px/s for 0.16 s, about 50 px. The lunge stops at the first foe it strikes and recoils like a cut, so it never carries you into a body. Off a ledge it ends, and you step off at no more than a run (pass 153; until then the lunge's full 320 px/s threw you about 67 px out past the lip, four times a run's step). Down a ramp it hugs the floor like a ground dash (10 px snap, 6.5) and rides the slope to the end. In the air the thrust strikes where you are and carries you nowhere, so it never crosses a gap the Elven Stride gates.
   - A blow, a dash, a guard, a drink, a ladder or the water spends the charge. Shadow Eura echoes a thrust as a cut.
   - The built tree now costs 46 points (Blade 13 over 8 nodes) against the 29 the game gives.
 
