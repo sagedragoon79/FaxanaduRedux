@@ -10,13 +10,16 @@ extends RefCounted
 ## pause menu at any time; you return a step from the Guru either way.
 
 ## In order. `springs`: how many springs must flow before the trial opens.
-## A trial whose room isn't built yet isn't offered.
+## `needs`: the abilities its course is built for (the Glove if not given);
+## by its springs every one of them is in hand. A trial whose room isn't
+## built yet isn't offered.
 const LIST := [
 	{"id": "walls", "name": "Mantra of Walls", "room": "trials/walls", "springs": 1,
 		"desc": "Three pillars over spikes, thorned on their far sides. Climb each from the ledge at its foot."},
 	{"id": "edges", "name": "Mantra of Edges", "room": "trials/edges", "springs": 1,
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
-	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "desc": ""},
+	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
+		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
 	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "desc": ""},
 	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "desc": ""},
 	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},

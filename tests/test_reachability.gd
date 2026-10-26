@@ -609,13 +609,17 @@ func test_the_sunken_spring_lies_under_the_last_stone_of_the_rise() -> void:
 
 
 ## The Guru Trials (bible 3.1) are entered through the Guru, not by doors: each
-## built trial's bell can be reached from its start with only the Climbing
-## Glove (the first trials open after the first spring), and no spot the trial
-## can put you on is cut off from the bell.
+## built trial's bell can be reached from its start with only the abilities it
+## needs (the Climbing Glove for the first two, which open after the first
+## spring; the Mattock too for Thorns), and no spot the trial can put you on is
+## cut off from the bell.
 func test_every_guru_trial_can_be_cleared_with_the_glove() -> void:
 	for t: Dictionary in Trials.built():
 		var text := FileAccess.get_file_as_string(World.room_path(t.room))
-		var reach := Reach.new({t.room: text}, {"glove": true})
+		var abilities := {}
+		for a: String in t.get("needs", ["glove"]):
+			abilities[a] = true
+		var reach := Reach.new({t.room: text}, abilities)
 		var start := reach.spot_of(t.room, "P")
 		check(start != "", "%s has a start" % t.name)
 		var goal := ""

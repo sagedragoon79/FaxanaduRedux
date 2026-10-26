@@ -911,3 +911,70 @@ func test_damage_numbers_show_what_each_blow_dealt() -> void:
 	check(Settings.damage_numbers, "the choice is saved")
 	_restore()
 	check(not Settings.damage_numbers, "and the suite runs on the default, off")
+
+
+## Pass 155: the third trial, the Mantra of Thorns, is a pogo course: a spike
+## corridor, a pit under a chain of thorn bulbs, and two bulbs up to a hanging
+## slab that nothing else reaches. A simple pogo-playing hand clears it in the
+## real game: it walks right, jumps off edges, steers over the next bulb and
+## strikes down whenever it falls.
+func test_the_mantra_of_thorns_is_cleared_by_pogo() -> void:
+	var t := Trials.find("thorns")
+	check(Trials.built().has(t) and t.needs == ["glove", "mattock"], "the Mantra of Thorns is built, for the Glove and the Mattock")
+	check(t.desc != "", "and the Guru describes it")
+	# Without the Mattock the bell is out of reach (the checker).
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bare := Reach.new({t.room: text}, {"glove": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 90, 7)), "without the Mattock the bell can't be reached")
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["mattock"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/thorns", "the Guru sends you there")
+	var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
+	var bulbs: Array = []
+	for c in w.room.get_children():
+		if c is ThornBulb:
+			bulbs.append(c)
+	bulbs.sort_custom(func(a: Node2D, b: Node2D) -> bool: return a.global_position.x < b.global_position.x)
+	check(bulbs.size() == 7, "seven thorn bulbs hang in the air (%d)" % bulbs.size())
+	var done := {}
+	var pogos := 0
+	var f := 0
+	while f < 60 * 30 and not bell.rung:
+		var on := p.is_on_floor()
+		var target: Node2D = null
+		for b: Node2D in bulbs:
+			if not done.has(b) and b.global_position.x > p.global_position.x - 24.0 and b.global_position.x < p.global_position.x + 140.0:
+				target = b
+				break
+		p.input.move_x = 1
+		if on:
+			done.clear()
+			var off_edge := not w.room.is_solid_at(p.global_position + Vector2(10, 4))
+			p.input.jump_pressed = off_edge
+			p.input.jump_held = off_edge
+		elif target != null and p.velocity.y > -100.0:
+			var dx := target.global_position.x - p.global_position.x
+			p.input.move_x = 0 if absf(dx) < 3.0 else int(signf(dx))
+		var falling := not on and p.velocity.y > 0.0
+		p.input.down = falling
+		p.input.attack_pressed = falling and f % 4 == 0
+		var vy := p.velocity.y
+		await frames(1)
+		f += 1
+		if vy > 0.0 and p.velocity.y < -300.0:
+			pogos += 1
+			if target != null and absf(target.global_position.x - p.global_position.x) < 30.0:
+				done[target] = true
+	check(bell.rung, "the pogo hand rings the bell (%.1f s, %d pogos)" % [f / 60.0, pogos])
+	check(pogos >= 5, "by pogo (%d bounces)" % pogos)
+	await frames(int(TrialGoal.RING * 60) + 10)
+	w.queue_free()
+	Trials.abandon()
