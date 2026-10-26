@@ -925,6 +925,41 @@ def main():
     swell = swell * np.clip(1.2 - t / d, 0, 1)
     save("death_wave", mix(toll, swell), 0.7)
 
+    # Wind current (pass 137): a gust catching the cloak, a rush of air that
+    # swells and blows past.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    gust = highpass(lowpass(noise(d), slide(700, 2400, d, 0.5)), 250) * np.sin(np.pi * np.clip(t / d, 0, 1)) ** 1.5
+    flap = lowpass(noise(d), 900) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 14 * t))) * env(n, 0.02, 1.2) * 0.35
+    save("wind_catch", mix(gust, flap), 0.4)
+
+    # Wrong gravity (pass 137): stepping into the pocket, a hollow glassy shimmer
+    # that rises as the weight lifts; stepping out, a low hum that drops and a
+    # soft thud as the true pull takes hold.
+    d = 0.6
+    n = int(RATE * d)
+    t = t_axis(d)
+    rise = sum(osc(slide(f, f * 1.5, d, 0.5), "sine") * a for f, a in [(330.0, 1.0), (495.0, 0.5), (742.0, 0.25)])
+    rise = rise * (1 + 0.3 * np.sin(2 * np.pi * 7 * t)) * np.sin(np.pi * np.clip(t / d, 0, 1))
+    air = highpass(lowpass(noise(d), slide(1200, 4000, d)), 600) * env(n, 0.1, 1.5) * 0.25
+    save("drift_in", mix(rise, air), 0.35)
+    d = 0.45
+    n = int(RATE * d)
+    t = t_axis(d)
+    fall = sum(osc(slide(f, f * 0.55, d, 0.7), "sine") * a for f, a in [(220.0, 1.0), (330.0, 0.4)])
+    fall = fall * env(n, 0.01, 1.6)
+    thud = lowpass(noise(0.12), 220) * env(int(RATE * 0.12), 0.002, 2.5) * 1.4
+    save("drift_out", mix(fall, thud), 0.4)
+
+    # Cloak dye (pass 137): a cloth swish and a soft shake of fabric, wearing a dye.
+    d = 0.32
+    n = int(RATE * d)
+    t = t_axis(d)
+    swish = highpass(lowpass(noise(d), slide(2500, 5000, d, 0.4)), 900) * env(n, 0.03, 1.8)
+    shake = lowpass(noise(d), 1400) * np.abs(np.sin(2 * np.pi * 9 * t)) * env(n, 0.01, 1.5) * 0.5
+    save("cloth", mix(swish, shake), 0.4)
+
 
 if __name__ == "__main__":
     main()

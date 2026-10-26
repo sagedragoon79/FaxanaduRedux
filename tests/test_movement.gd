@@ -1121,3 +1121,54 @@ func test_ladder_numbers_match_bible_6_11() -> void:
 	check(bible.contains("### 6.11 Ladders"), "the bible has the ladder section")
 	check(bible.contains("| Climb speed | 90 px/s"), "and its numbers")
 
+
+
+## Pass 137 (bible 13.3): a field that takes hold of you is heard. A wind
+## current's gust catches you; a wrong-gravity pocket shimmers as it lifts your
+## weight and hums down as you leave it, and the edge does not chatter.
+func test_wind_and_wrong_gravity_are_heard() -> void:
+	var rows := ["##############################"]
+	for y in 12:
+		rows.append("#...vvvvvv...................#")
+	rows.append("##############################")
+	var room := make_room(rows)
+	Sfx.recent.clear()
+	var p := make_player(room, Vector2i(6, 3), {"boots": false})
+	await frames(4)
+	check(Sfx.recent.count("drift_in") == 1, "the pocket lifts your weight with a shimmer, once (%s)" % [Sfx.recent])
+	for i in 300:
+		await frames(1)
+		if p.is_on_floor():
+			break
+	p.input.move_x = 1
+	for i in 120:
+		await frames(1)
+		if Sfx.recent.has("drift_out"):
+			break
+	p.input.move_x = 0
+	check(Sfx.recent.has("drift_out") and not p.gravity_scale < 1.0, "and walking out, the weight returns with a hum")
+	check(Sfx.recent.count("drift_in") == 1 and Sfx.recent.count("drift_out") == 1, "each cue sounds once at the edge")
+	room.free()
+
+	rows = [
+		"#####################",
+		"#...................#",
+		"#.....>>>>>>>>>>....#",
+		"#.....>>>>>>>>>>....#",
+		"#######>>>>>>>>>....#",
+		"#.....>>>>>>>>>>....#",
+		"#...................#",
+		"#...................#",
+		"#...................#",
+		"#####################",
+	]
+	room = make_room(rows)
+	p = make_player(room, Vector2i(4, 3), {"boots": false, "glove": false})
+	await _settle(p)
+	Sfx.recent.clear()
+	check(not Sfx.recent.has("wind_catch"), "no gust on the ledge")
+	await _walk_off_ledge(p)
+	await frames(10)
+	check(Sfx.recent.count("wind_catch") == 1, "off the ledge, the current catches you with a gust, once (%s)" % [Sfx.recent])
+	check(Player.FIELD_CUE_GAP == 0.3, "a cue waits 0.3 s before it may sound again")
+	room.free()

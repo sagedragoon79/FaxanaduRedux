@@ -52,8 +52,13 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 	var on_select := func(row: int) -> void:
 		var i: int = Shop.shelf(shop_id)[row]
 		var wearing: bool = GameData.item(shop.stock[i].item).kind == "dye" and GameState.owns_dye(String(shop.stock[i].item))
+		var dye: bool = GameData.item(shop.stock[i].item).kind == "dye"
 		if Shop.buy(shop_id, i, p):
-			Sfx.play("coin", 0.0, 2.0)
+			# A dye rustles on (pass 137); worn again for free, it costs no coin.
+			if not wearing:
+				Sfx.play("coin", 0.0, 2.0)
+			if dye:
+				Sfx.play("cloth", 0.0)
 			GameState.toast.emit(("Wearing: " if wearing else "Bought: ") + String(GameData.item(shop.stock[i].item).name))
 	menu.open(shop.name, shop.greeting, provider, on_select, _gold_footer(p))
 	return true

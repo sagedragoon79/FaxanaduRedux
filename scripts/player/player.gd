@@ -44,6 +44,9 @@ const BLOODLETTING_HEAL := 2
 const LAST_STAND_BELOW := 0.2
 const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
+## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
+## field does not chatter.
+const FIELD_CUE_GAP := 0.3
 ## Mantra of Death (pass 134): what share of its MP the Death spell costs.
 const MANTRA_OF_DEATH_MULT := 0.5
 ## Seconds between the feathers a glide sheds.
@@ -183,6 +186,12 @@ var water_push := 0.0
 ## How much of their weight the player has this frame: a GravityDrift pocket in
 ## Zenis lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
 var gravity_scale := 1.0
+## Field cues (pass 137): whether a current held you, and whether a pocket of
+## wrong gravity did, last frame, and how long until each cue may sound again.
+var _was_in_wind := false
+var _was_drifting := false
+var _wind_cue_wait := 0.0
+var _drift_cue_wait := 0.0
 ## Rising wind under the player this frame (px/s up): Borabohra's updraft in its
 ## third phase (design bible 8.6). Set by an Updraft each frame; Down drops out.
 var updraft := 0.0
@@ -360,6 +369,7 @@ func _physics_process(delta: float) -> void:
 		# A waterfall beats you down: no climbing or jumping up through it.
 		velocity.y = maxf(velocity.y, water_push)
 	water_push = 0.0
+	_field_cues(delta)
 	gravity_scale = 1.0
 	updraft = 0.0
 	wind = 0.0
@@ -1174,6 +1184,24 @@ func _try_cast() -> void:
 		bolt.global_position = global_position + Vector2(facing * 12, -24)
 	visual.squash(Vector2(1.1, 0.95))
 	Sfx.play("cast")
+
+
+## Sounds the moment a field takes hold of you (pass 137, bible 13.3): a gust
+## when a wind current or updraft catches you, a rising shimmer as a pocket of
+## wrong gravity lifts your weight, and a falling hum and thud as it returns.
+func _field_cues(delta: float) -> void:
+	_wind_cue_wait = maxf(_wind_cue_wait - delta, 0.0)
+	_drift_cue_wait = maxf(_drift_cue_wait - delta, 0.0)
+	var in_wind := wind != 0.0 or updraft > 0.0
+	if in_wind and not _was_in_wind and _wind_cue_wait <= 0.0:
+		Sfx.play("wind_catch", 0.08, -2.0)
+		_wind_cue_wait = FIELD_CUE_GAP
+	var drifting := gravity_scale < 1.0
+	if drifting != _was_drifting and _drift_cue_wait <= 0.0:
+		Sfx.play("drift_in" if drifting else "drift_out", 0.05, -2.0)
+		_drift_cue_wait = FIELD_CUE_GAP
+	_was_in_wind = in_wind
+	_was_drifting = drifting
 
 
 ## The MP a spell costs you now: Thrift for every spell, and Mantra of Death
