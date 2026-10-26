@@ -40,7 +40,9 @@ static func respec(p: Player) -> bool:
 	p.gold -= respec_cost()
 	var refund := 0
 	for id: String in GameState.data.skills:
-		refund += int(GameData.skill(id).cost)
+		# A node this build no longer has (an older save) refunds nothing,
+		# rather than stopping the respec halfway with the gold already paid.
+		refund += int(GameData.skill(id).get("cost", 0))
 	GameState.data.skill_points = int(GameState.data.skill_points) + refund
 	GameState.data.skills = []
 	GameState.data.respecs = int(GameState.data.respecs) + 1

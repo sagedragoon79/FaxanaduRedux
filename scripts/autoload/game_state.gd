@@ -309,10 +309,12 @@ func apply(p: Player) -> void:
 ## Current health, magic and potions are clamped, not refilled.
 func refresh_stats(p: Player) -> void:
 	var eq: Dictionary = data.equipment
-	var blade := GameData.item(eq.blade)
-	if blade.is_empty():
-		blade = GameData.item("hand_dagger")
-	var temper := 1.0 + TEMPER_BONUS * temper_level(String(eq.blade))
+	var blade_id := String(eq.blade)
+	if GameData.item(blade_id).is_empty():
+		# A blade this build lacks (pass 138): the Hand Dagger, untempered.
+		blade_id = "hand_dagger"
+	var blade := GameData.item(blade_id)
+	var temper := 1.0 + TEMPER_BONUS * temper_level(blade_id)
 	p.slash_damage = roundi(int(blade.slash) * temper)
 	p.heavy_damage = roundi(int(blade.heavy) * temper)
 	p.reach_bonus = float(blade.reach)
@@ -471,7 +473,8 @@ static func sanitize(src: Variant) -> Dictionary:
 			out[k] = _coerce(out[k], src[k]) if out.has(k) else src[k]
 	out.version = VERSION
 	# Containers whose entries the game reads by shape.
-	out.skills = out.skills.filter(func(v: Variant) -> bool: return v is String)
+	out.skills = _unique_strings(out.skills)
+	out.dyes = _unique_strings(out.dyes)
 	out.rings = out.rings.filter(func(v: Variant) -> bool: return v is String)
 	out.pins = out.pins.filter(func(v: Variant) -> bool:
 		return v is Array and v.size() == 3 and v[0] is String and _is_number(v[1]) and _is_number(v[2]))
@@ -497,6 +500,16 @@ static func sanitize(src: Variant) -> Dictionary:
 		if base[k] is int or base[k] is float:
 			var low: float = base[k] if k in ["max_hp", "max_mp", "flask_max"] else 0.0
 			out[k] = maxi(int(out[k]), int(low)) if base[k] is int else maxf(float(out[k]), low)
+	return out
+
+
+## The strings of `list`, each once (pass 138): a skill listed twice would be
+## refunded twice by a respec.
+static func _unique_strings(list: Array) -> Array:
+	var out := []
+	for v: Variant in list:
+		if v is String and not out.has(v):
+			out.append(v)
 	return out
 
 
