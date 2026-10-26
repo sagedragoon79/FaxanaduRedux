@@ -1102,6 +1102,31 @@ func test_treasure_sense_marks_rooms_with_something_left() -> void:
 	check(MapScreen.unfound(info) == 0 and not MapScreen.senses_treasure(info, "visited"), "and the mark goes once all is found")
 
 
+func test_the_map_marks_key_doors_still_shut() -> void:
+	# A Queen door and a plain Jack door in a test room.
+	var rooms := _town({Vector2i(12, 19): "J", Vector2i(30, 19): "J"}, ["lock: 12, 19, queen"])
+	var w := make_world(rooms, "test/town", cell_feet(5, 19))
+	var info: Dictionary = w.catalog["test/town"]
+	var shut := MapScreen.locked_doors(info)
+	check(shut.size() == 2, "the catalog lists both doors (%s)" % [shut])
+	check(shut[0].kind == "queen" and shut[0].id == "test/town:12,19" and shut[1].kind == "jack", "with their card and pickup id")
+	check(MapScreen.lock_color("queen") == KeyDoor.CARDS.queen.panel and MapScreen.lock_color("sky") == KeyDoor.SHRINE, "each marked in its own door's color")
+	GameState.collect("test/town:12,19")
+	shut = MapScreen.locked_doors(info)
+	check(shut.size() == 1 and shut[0].kind == "jack", "an opened door leaves the map")
+	# The real world: every card vault and the sky gate are on the map.
+	var real := World.new()
+	real.build_catalog()
+	var kinds := {}
+	for room_id: String in real.catalog:
+		for lock: Dictionary in real.catalog[room_id].locks:
+			kinds[lock.kind] = room_id
+	for kind: String in ["queen", "king", "ace", "joker", "sky"]:
+		check(kinds.has(kind), "the map knows where the %s door is (%s)" % [kind, kinds])
+	check(kinds.get("queen", "") == "mist/feather_hollow", "the Queen vault is in the Feather Hollow")
+	real.free()
+
+
 func test_last_stand_and_second_wind() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

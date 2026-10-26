@@ -19,6 +19,8 @@ const DIM := Color("8d84a3")
 const PIN := Color("f0c02e")
 ## Treasure Sense's mark on a room that still holds an item or chest.
 const TREASURE := Color("ff9a3c")
+## The band on a shut key door's mark (the doors' own band of gold).
+const LOCK := Color("d8b060")
 
 var world: World
 var is_open := false
@@ -101,6 +103,22 @@ static func senses_treasure(info: Dictionary, how: String) -> bool:
 	return how != "" and GameState.has_skill("treasure_sense") and unfound(info) > 0
 
 
+## The room's key doors still shut, so a key bought later has somewhere to go.
+static func locked_doors(info: Dictionary) -> Array[Dictionary]:
+	var shut: Array[Dictionary] = []
+	for lock: Dictionary in info.get("locks", []):
+		if not GameState.is_collected(lock.id):
+			shut.append(lock)
+	return shut
+
+
+## The color a shut door shows on the map: its card's panel, or the sky gate's stone.
+static func lock_color(kind: String) -> Color:
+	if kind == "sky":
+		return KeyDoor.SHRINE
+	return KeyDoor.CARDS.get(kind, KeyDoor.CARDS.jack).panel
+
+
 static func room_rect(info: Dictionary) -> Rect2:
 	return Rect2(Vector2(info.map) * CELL, Vector2(info.screens) * CELL)
 
@@ -150,6 +168,8 @@ func _draw() -> void:
 		for cell: Vector2i in info.shrines:
 			var sp := r.position + Vector2(cell) / Vector2(info.size) * r.size
 			draw_rect(Rect2(sp - Vector2(1.5, 2.5), Vector2(3, 4)), SHRINE)
+		for lock: Dictionary in MapScreen.locked_doors(info):
+			_draw_lock(r.position + (Vector2(lock.cell) + Vector2(0.5, 1)) / Vector2(info.size) * r.size, lock.kind)
 		if MapScreen.senses_treasure(info, how):
 			_draw_treasure(r)
 
@@ -181,6 +201,7 @@ func _draw() -> void:
 	# The legend, laid out right to left from measured widths: swatch, label, gap.
 	var legend := [["Map: Tab", Color.TRANSPARENT, Vector2.ZERO], ["You", PLAYER, Vector2(2, 2)],
 		["Shrine", SHRINE, Vector2(3, 4)], ["Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], PIN, Vector2(3, 3)]]
+	legend.insert(3, ["Locked door", LOCK, Vector2(3, 5)])
 	if GameState.has_skill("treasure_sense"):
 		legend.insert(3, ["Treasure", TREASURE, Vector2(3, 3)])
 	var lx := screen.x - 16
@@ -193,6 +214,15 @@ func _draw() -> void:
 			lx -= swatch.x + 4
 			draw_rect(Rect2(Vector2(lx, screen.y - 15 - swatch.y), swatch), item[1])
 		lx -= 14
+
+
+## A shut key door: a little upright slab in its card's color with a gold band,
+## standing on the door's floor cell.
+func _draw_lock(foot: Vector2, kind: String) -> void:
+	var rect := Rect2(foot - Vector2(1.5, 5), Vector2(3, 5))
+	draw_rect(rect.grow(1), OUTLINE)
+	draw_rect(rect, MapScreen.lock_color(kind))
+	draw_rect(Rect2(rect.position + Vector2(0, 1), Vector2(3, 1)), LOCK)
 
 
 ## A small twinkling star in the room's top-right corner.
