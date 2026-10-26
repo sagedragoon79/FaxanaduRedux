@@ -474,6 +474,7 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check_near(t.jump_buffer_time, 0.12, 0.0001, "jump buffer")
 	check(t.corner_correction_px == 6, "corner correction 6 px")
 	check(t.ledge_correction_px == 4, "ledge correction 4 px")
+	check(t.head_correction_px == 4, "head correction 4 px (pass 139)")
 	# 6.3
 	check_near(t.wall_slide_speed, 90.0, 0.0001, "wall slide speed")
 	check_near(t.wall_stick_time, 0.08, 0.0001, "wall stick")
@@ -1172,3 +1173,49 @@ func test_wind_and_wrong_gravity_are_heard() -> void:
 	check(Sfx.recent.count("wind_catch") == 1, "off the ledge, the current catches you with a gust, once (%s)" % [Sfx.recent])
 	check(Player.FIELD_CUE_GAP == 0.3, "a cue waits 0.3 s before it may sound again")
 	room.free()
+
+
+
+## Pass 139 (bible 6.2, 6.5): a mid-air dash that clips the top of a tunnel's
+## mouth with the head by up to 4 px slides in; 5 px stops on the lip.
+const TUNNEL := [
+	"######################",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"#....................#",
+	"#....................#",
+	"#....................#",
+	"#.........############",
+	"#.........############",
+	"#.........############",
+	"######################",
+]
+
+
+func _dash_into_tunnel(clip: float) -> bool:
+	var room := make_room(TUNNEL)
+	var p := make_player(room, Vector2i(5, 15), {"stride": true, "boots": false})
+	await _settle(p)
+	# Hang with the head `clip` px above the tunnel's ceiling (y 160), just short of its mouth.
+	p.teleport(Vector2(9 * 16 + 2, 160.0 - clip + 40.0))
+	p.velocity = Vector2.ZERO
+	p.input.move_x = 1
+	p.input.dash_pressed = true
+	await frames(12)
+	p.input.move_x = 0
+	var inside := p.global_position.x > 10 * 16 + 20
+	room.free()
+	return inside
+
+
+func test_head_correction_slides_a_dash_into_a_tunnel() -> void:
+	check(await _dash_into_tunnel(2.0), "clipping the tunnel's top by 2 px, the dash slides in")
+	check(await _dash_into_tunnel(4.0), "by 4 px, it still slides in")
+	check(not await _dash_into_tunnel(5.0), "by 5 px, it stops on the lip")
