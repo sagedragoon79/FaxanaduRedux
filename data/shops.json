@@ -136,5 +136,21 @@
 		"stock": [
 			{"item": "chart_mist", "price": 500}
 		]
+	},
+	"mascon_scrolls": {
+		"name": "Orla's Scrolls",
+		"greeting": "Fire, wanderer. It dries the bramble and the damp alike. Few in Mascon can afford to be without it.",
+		"stock": [
+			{"item": "fire_scroll", "price": 1200}
+		]
+	},
+	"mascon_items": {
+		"name": "Brannagh's Stores",
+		"greeting": "Smoked eel, salve, and keys off the drowned. Don't ask whose.",
+		"stock": [
+			{"item": "ointment", "price": 300},
+			{"item": "elixir", "price": 1500},
+			{"item": "jack_key", "price": 150}
+		]
 	}
 }

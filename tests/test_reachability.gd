@@ -27,7 +27,7 @@ const FIRE_SECRETS := [["daybreak/daybreak", 76, 19]]
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
 	"tower/crown_lookout", "tower/bell_loft", "mist/fog_cut", "mist/drowned_stair", "mist/lantern_landing", "mist/sunken_chapel",
-	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/victim", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
+	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/victim", "mist/mascon", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
 	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
@@ -197,6 +197,32 @@ func test_bound_fog_holds_until_the_lantern_key() -> void:
 	var opened := _rooms_reached(open.reachable(open.spot_of(START_ROOM, "P")))
 	check(opened.has("mist/veiled_rise") and opened.has("mist/victim_causeway"), "with the Lantern Key the shaft climbs to the causeway")
 	check(not rooms.has("mist/victim") and opened.has("mist/victim"), "and on past the Feather Hollow to Victim")
+
+
+func test_mascon_lies_across_the_black_water() -> void:
+	# Pass 148: Mascon lies under the Scorched Hall, down a ladder shaft and
+	# across the black water. Before the Spring of Mist its drowned boardwalks
+	# are nothing to stand on: only pogoing along the spikes with the Mattock and
+	# climbing the far side with the Glove gets you over (a skill route, like the
+	# Storm Ledge's). Once the spring flows they rise and the town is a walk.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
+	var dry := Reach.new(_texts(), set, true)
+	check(not dry.supported("mist/mascon", 20, 16), "before the spring the boardwalks are drowned")
+	var before := dry.reachable(dry.spot_of(START_ROOM, "P"))
+	check(dry.touchable(before, "mist/mascon", 4, 16), "the road's landing is reached down the shaft")
+	check(dry.touchable(before, "mist/scorched_hall", 5, 19), "and the ladder climbs back out")
+	set["spring_mist"] = true
+	var wet := Reach.new(_texts(), set, true)
+	check(wet.supported("mist/mascon", 20, 16), "with the spring the boardwalks rise")
+	var after := wet.reachable(wet.spot_of(START_ROOM, "P"))
+	var people := 0
+	for line: String in _texts()["mist/mascon"].split("\n"):
+		if line.begins_with("npc:"):
+			var parts := line.substr(4).split(",")
+			people += 1
+			check(dry.touchable(before, "mist/mascon", int(parts[0]), int(parts[1])) and wet.touchable(after, "mist/mascon", int(parts[0]), int(parts[1])),
+				"%s can be reached, before the spring and after" % parts[2].strip_edges())
+	check(people >= 4, "Mascon has its people (%d)" % people)
 
 
 func test_everyone_in_victim_can_be_reached() -> void:

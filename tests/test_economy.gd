@@ -1056,6 +1056,37 @@ func test_victim_has_a_guru_a_keymaster_and_a_fogwalker() -> void:
 	check(GameState.data.gurus.has("mist/victim"), "and Victim's Guru joins the Mantra Path")
 
 
+## Mascon (pass 148): the stilt town on the black water, under the Scorched
+## Hall. Bible 10.2 puts a spell-scroll shop there: Fire, a zone before Daybreak.
+func test_mascon_has_a_guru_a_scribe_and_stores() -> void:
+	GameState.set_flag("spring:mist")
+	var w := make_world({}, "mist/mascon")
+	await frames(2)
+	var ids: Array = []
+	for c in w.room.get_children():
+		if c is Npc:
+			ids.append((c as Npc).npc_id)
+	for id: String in ["guru", "mascon_scribe", "mascon_grocer", "mascon_ferryman"]:
+		check(ids.has(id), "%s lives in Mascon" % id)
+		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
+	var teague := GameData.npc("mascon_ferryman")
+	check(teague.lines.size() >= 2 and teague.has("lines_cleared"), "the poler has his say, and another once the Tree blooms")
+	for entry: Dictionary in GameData.shop("mascon_items").stock:
+		check(GameData.item(entry.item).has("name"), "the stores' %s is a real item" % entry.item)
+	var p := w.player
+	p.gold = 1500
+	var scroll: Dictionary = GameData.shop("mascon_scrolls").stock[0]
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Fire for 1,200 g, as Daybreak's does")
+	check(Shop.buy("mascon_scrolls", 0, p) and p.abilities.fire, "and the scroll teaches it")
+	check(Shop.status("daybreak_scrolls", 0, p) == "owned", "so Daybreak's scroll shows as owned")
+	var guru: Npc = null
+	for c in w.room.get_children():
+		if c is Npc and (c as Npc).npc_id == "guru":
+			guru = c
+	GameState.meet_guru(w.room.id, guru.global_position)
+	check(GameState.data.gurus.has("mist/mascon"), "and Mascon's Guru joins the Mantra Path")
+
+
 func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
 	# Bible 10.2: Daybreak has a Guru, an armorer, the spell-scroll shop (Fire,
 	# 1,200 g), a grocer and a cartographer.
