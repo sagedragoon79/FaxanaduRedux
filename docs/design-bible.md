@@ -280,6 +280,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | MP | 60 max, +2/s, +4 per melee hit on an enemy |
 | Red Potion | 2 charges, +40 HP, 0.7 s to drink, cancelled (charge kept) if hit |
 | Deluge | 15 MP, 12 damage, 300 px/s |
+| War Glove (rare drop, 7) | blade hits x1.5 for 15 s |
 | Gold coins | Magnet after 0.4 s within 100 px |
 
 ### 5.4 Death and recovery
@@ -472,6 +473,10 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 | Sunken Spring | Spring Eel (built in pass 86, the swimming enemy: a long pale eel gone blind in the dark water, with a lamp of the spring's light grown on its brow. It never leaves the water; it weaves back and forth near where it lives. Within about seven tiles it draws back into an S, its lamp blazing, for 0.5 s, then darts straight at where you were at 300 px/s and bites for 14. The dart stops dead at the water's edge, so the bank is safe. Spent, it hangs slack for 0.8 s and takes every blow at half again. 30 HP. Legend `l`, a water cell with the eel in it) |
 
 Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose, a flash and a sound, section 13.3), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s. From the Tower of Trunk on, some enemies (Iron Dwarf, Gear Bat) leave Faxanadu's **Poison** about 1 kill in 14: a violet skull flask that is a hazard to step around while collecting. Walking over it poisons you for 8 s, costing 2 health a second but never the last point; your health masks and sprite turn green. Bread, resting at a shrine or Guru, or dying cures it, and an Ointment keeps it off.
+
+**Rare drops (pass 147):** "rare items" had never been built: no foe left anything but gold, bread, mana and poison. Now about 1 kill in 40, from any foe anywhere (`Drop.rare_chance` 0.025), leaves one of the original's rare items. Both wait on the floor like bread, and both are drawn in code:
+- **War Glove** (60% of rare drops). This is the original's Glove, renamed so it can't be mistaken for the Climbing Glove. It looks like a red leather fighting glove with a gold-studded cuff. Walking over it puts it on: for 15 s every blade hit, the pogo and a Riposte included, lands 1.5x as hard (`war_glove_mult` and `war_glove_time` in `combat_tuning.gd`, through `Player.blade_mult()`). Red sparks rise off the sword hand while it lasts. A red fist and a draining bar sit on the HUD beside the Ointment's row, and the bar blinks in its last 3 s. Another glove starts the time over, and dying takes it off. It turns a lucky drop into a short push: clear the room while it burns.
+- **Ointment** (40%). It goes in your pouch like a bought one (up to 3). With the pouch full and none on, it goes straight on, as the original's did; with one already on, it is wasted.
 
 **The dissolve (pass 126):** until pass 126 a foe simply vanished in a puff of debris. Now its body stays where it fell for 0.45 s (`Enemy.DISSOLVE`). It flashes white, then breaks up pixel by pixel (one world pixel, two art pixels, at a time), the top a little first, each mote glowing pale gold as it goes (`shaders/dissolve.gdshader`). Then it is gone (freed, or hidden until it respawns). The dying body is harmless and can't be struck or touched, and the gold, drops and death sound come at once as before. Every foe that dies through `Enemy.die` uses it. Bosses keep their own deaths and go at once when they reach `Enemy.die`.
 

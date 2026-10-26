@@ -23,6 +23,7 @@ const KINDS := {
 	"sap": {"count": 9, "speed": Vector2(80, 70), "life": 0.4, "color": Color("ffb84a"), "size": 2, "rise": 260.0},
 	"bark": {"count": 14, "speed": Vector2(150, 150), "life": 0.8, "color": Color("6e4a2c"), "size": 4, "rise": 320.0},
 	"embers": {"count": 12, "speed": Vector2(110, 110), "life": 0.45, "color": Color("f8a040"), "size": 2, "rise": -60.0},
+	"might": {"count": 2, "speed": Vector2(18, 14), "life": 0.4, "color": Color("ff5a3c"), "size": 2, "rise": -50.0},
 }
 
 ## The kind this puff was set up as (tests).

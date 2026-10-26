@@ -28,7 +28,8 @@ extends Node2D
 ##   --hp=N                     start with N health (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
-##   --drops                    drop a loaf of bread, a mana orb and a poison flask ahead of the player
+##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Ointment ahead of the player
+##   --glove                    wear a War Glove (a rare drop) from the start
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
@@ -407,12 +408,14 @@ func _debug_open() -> void:
 	if _args.has("use-ointment"):
 		player.use_ointment()
 	if _args.has("drops"):
-		for i in 3:
+		for i in 5:
 			var d := Drop.new()
-			d.kind = ["bread", "mana", "poison"][i]
+			d.kind = ["bread", "mana", "poison", "glove", "ointment"][i]
 			d.velocity = Vector2(0, 1)
 			world.room.add_child(d)
 			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
+	if _args.has("glove"):
+		player.put_on_glove()
 	if _args.has("reflect"):
 		var src := Node2D.new()
 		world.room.add_child(src)

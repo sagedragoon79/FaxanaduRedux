@@ -4,6 +4,8 @@ extends CharacterBody2D
 ## are gold, MP orbs and rare items). Bread heals, as it did in Faxanadu; a
 ## mana orb refills magic. From the Tower on, some enemies leave Faxanadu's
 ## Poison instead: a skull-marked flask that sickens you if you walk over it.
+## Rarely, any foe leaves one of the original's rare items (pass 147): a War
+## Glove (the original's Glove: harder blows for a while) or an Ointment.
 ## All of them pop out, settle on the floor and wait, blinking before they vanish.
 
 const GRAVITY := 700.0
@@ -16,6 +18,9 @@ static var bread_chance := 0.08
 static var mana_chance := 0.1
 ## Chance of poison, per kill, from enemies with `poison_drops`.
 static var poison_chance := 0.07
+## Chance of a rare item, per kill, from any enemy; then the War Glove's share of it.
+static var rare_chance := 0.025
+const GLOVE_SHARE := 0.6
 
 const CRUST := Color("b0662a")
 const CRUMB := Color("e8b45a")
@@ -29,6 +34,13 @@ const VIAL_DARK := Color("3a1a5a")
 const VIAL_LIGHT := Color("b98ae0")
 const BONE := Color("e8e2d0")
 const CORK := Color("8a5a2e")
+const LEATHER := Color("8a2a22")
+const LEATHER_DARK := Color("4a1414")
+const LEATHER_LIGHT := Color("d0503a")
+const STUD := Color("f0c02e")
+const JAR := Color("e8e2d0")
+const JAR_DARK := Color("8a8478")
+const SALVE := Color("7ee0d6")
 
 var kind := "bread"
 
@@ -59,6 +71,8 @@ static func roll(parent: Node, at: Vector2, can_poison := false) -> Drop:
 		k = "mana"
 	elif can_poison and r < bread_chance + mana_chance + poison_chance:
 		k = "poison"
+	elif r < bread_chance + mana_chance + (poison_chance if can_poison else 0.0) + rare_chance:
+		k = "glove" if randf() < GLOVE_SHARE else "ointment"
 	if k == "":
 		return null
 	var d := Drop.new()
@@ -100,6 +114,21 @@ func _collect(p: Player) -> void:
 			Sfx.play("hurt", 0.1, -6.0)
 		else:
 			GameState.toast.emit("The Ointment keeps the poison off.")
+	elif kind == "glove":
+		d.setup("might")
+		p.put_on_glove()
+	elif kind == "ointment":
+		d.setup("coin")
+		Sfx.play("item", 0.0, -4.0)
+		if p.ointments < Shop.OINTMENT_MAX:
+			p.ointments += 1
+			GameState.toast.emit("An Ointment! Rub it on from the pause menu.")
+		elif p.ointment_left <= 0.0:
+			# The pouch is full: it goes straight on, as the original's did.
+			p.ointments += 1
+			p.use_ointment()
+		else:
+			GameState.toast.emit("An Ointment, but your pouch is full.")
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
@@ -142,6 +171,30 @@ func _draw() -> void:
 		var b := fmod(_age * 1.4, 1.0)
 		if b < 0.7:
 			_px(1, -17 - roundi(b * 8.0), 2, 2, VIAL_LIGHT)
+	elif kind == "glove":
+		# A red leather fighting glove, fingers up, with a gold-studded cuff.
+		var y := -2 + roundi(sin(_age * 4.0) * 1.0)
+		_px(-6, y - 16, 12, 16, LEATHER_DARK)
+		_px(-5, y - 15, 10, 14, LEATHER)
+		_px(-5, y - 15, 2, 6, LEATHER_LIGHT)
+		_px(-1, y - 15, 1, 6, LEATHER_DARK)
+		_px(2, y - 15, 1, 6, LEATHER_DARK)
+		_px(-8, y - 10, 3, 5, LEATHER_DARK)
+		_px(-7, y - 9, 2, 3, LEATHER)
+		_px(-6, y - 4, 12, 4, LEATHER_DARK)
+		_px(-5, y - 3, 10, 2, STUD)
+		_px(-3, y - 3, 1, 1, LEATHER_DARK)
+		_px(1, y - 3, 1, 1, LEATHER_DARK)
+		# A red glint that pulses.
+		if fmod(_age, 1.2) < 0.25:
+			_px(3, y - 14, 2, 2, Color("fff0c2"))
+	elif kind == "ointment":
+		# A squat white jar with a teal salve showing under the lid.
+		_px(-6, -12, 12, 12, JAR_DARK)
+		_px(-5, -11, 10, 10, JAR)
+		_px(-6, -14, 12, 3, Color("8d4e16"))
+		_px(-4, -10, 8, 2, SALVE)
+		_px(-4, -8, 2, 5, Color("f7f1de"))
 	else:
 		var y := -13 + roundi(sin(_age * 5.0) * 2.0)
 		_px(-5, y, 10, 12, MANA_DARK)

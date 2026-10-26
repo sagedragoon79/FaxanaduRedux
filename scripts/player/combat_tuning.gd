@@ -45,6 +45,12 @@ extends Resource
 @export var flask_heal := 40
 @export var drink_time := 0.7
 
+@export_group("War Glove")
+## The original's Glove, a rare drop (design bible 7, pass 147): for this long
+## every blade hit deals this much more.
+@export var war_glove_mult := 1.5
+@export var war_glove_time := 15.0
+
 @export_group("Death")
 @export var death_gold_fraction := 0.6
 @export var respawn_delay := 1.2

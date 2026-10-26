@@ -480,6 +480,84 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 
 
 
+## Bible 7 (pass 147): any foe may rarely leave one of the original's rare
+## items. The War Glove (the original's Glove) makes every blade hit land half
+## again as hard for 15 s; an Ointment goes in the pouch, or straight on when
+## the pouch is full.
+func test_rare_drops_a_war_glove_and_an_ointment() -> void:
+	var w := make_world(_town({Vector2i(12, 19): "M", Vector2i(16, 19): "M", Vector2i(24, 19): "D"}), "test/town", cell_feet(8, 19))
+	var p := w.player
+	await frames(3)
+	check(Drop.rare_chance == 0.0, "the runner keeps rare drops off")
+	check_near(p.combat.war_glove_mult, 1.5, 0.0001, "the glove multiplies blade hits by 1.5")
+	check_near(p.combat.war_glove_time, 15.0, 0.0001, "for 15 s")
+	# Rolled with the real odds, about one kill in forty leaves a rare item, and
+	# the glove is the commoner of the two.
+	Drop.rare_chance = 0.025
+	seed(147)
+	var kinds := {}
+	for i in 4000:
+		var d := Drop.roll(w.room, cell_feet(30, 10))
+		if d != null:
+			kinds[d.kind] = int(kinds.get(d.kind, 0)) + 1
+			d.free()
+	var rare := int(kinds.get("glove", 0)) + int(kinds.get("ointment", 0))
+	check(kinds.size() == 2 and rare > 60 and rare < 140, "about 1 kill in 40 leaves a rare item (%s)" % [kinds])
+	check(int(kinds.get("glove", 0)) > int(kinds.get("ointment", 0)), "the glove more often than the ointment")
+	Drop.rare_chance = 0.0
+	# The glove: a Monodron dies to it, and the next blows hit harder.
+	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)
+	var glove := Drop.new()
+	glove.kind = "glove"
+	w.room.add_child(glove)
+	glove.global_position = p.global_position + Vector2(0, -4)
+	var plain := p.blade_mult()
+	await frames(25)
+	check(not is_instance_valid(glove) and p.glove_left > 14.0, "walking over the glove puts it on (%.1f s)" % p.glove_left)
+	check_near(p.blade_mult(), plain * 1.5, 0.0001, "and blade hits land half again as hard")
+	# A real swing: the next slash at a Monodron carries the glove.
+	var mono: Monodron = monos[0]
+	mono.hp = 999
+	p.teleport(mono.global_position + Vector2(-22, 0))
+	p.facing = 1
+	await frames(2)
+	p.input.attack_pressed = true
+	await frames(8)
+	check(999 - mono.hp == roundi(p.slash_damage * plain * 1.5), "a slash deals %d with it (the dagger's %d)" % [999 - mono.hp, p.slash_damage])
+	await frames(roundi(15.0 * 60.0) + 2)
+	check(p.glove_left == 0.0 and is_equal_approx(p.blade_mult(), plain), "after 15 s it wears off")
+	# Dying takes a glove off.
+	p.put_on_glove()
+	p._invuln_timer = 0.0
+	p.take_damage(9999)
+	check(p.dead, "(a killing blow)")
+	var n := 0
+	while p.dead and n < 300:
+		await frames(1)
+		n += 1
+	await frames(5)
+	check(not p.dead and p.glove_left == 0.0, "and death takes it off")
+	for f in w.room.get_children():
+		if f is Enemy:
+			f.queue_free()
+	# The ointment: into the pouch, or straight on when the pouch is full.
+	p.ointments = 0
+	for i in 2:
+		var jar := Drop.new()
+		jar.kind = "ointment"
+		w.room.add_child(jar)
+		jar.global_position = p.global_position + Vector2(0, -4)
+		await frames(25)
+	check(p.ointments == 2 and p.ointment_left == 0.0, "an ointment goes in the pouch (%d)" % p.ointments)
+	p.ointments = Shop.OINTMENT_MAX
+	var full := Drop.new()
+	full.kind = "ointment"
+	w.room.add_child(full)
+	full.global_position = p.global_position + Vector2(0, -4)
+	await frames(25)
+	check(p.ointments == Shop.OINTMENT_MAX and p.ointment_left > 9.0, "with the pouch full it goes straight on (%.1f s)" % p.ointment_left)
+
+
 func test_tower_kills_can_leave_poison() -> void:
 	var w := make_world(_town({Vector2i(12, 19): "M"}), "test/town")
 	var p := w.player

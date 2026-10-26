@@ -105,6 +105,10 @@ var reflects := false
 var elixirs := 0
 ## Ointments carried: each makes you immune to harm for OINTMENT_TIME.
 var ointments := 0
+## Seconds left on a War Glove (the original's Glove, a rare drop): blade hits
+## deal combat.war_glove_mult more while it lasts.
+var glove_left: float:
+	get: return maxf(_glove_timer, 0.0)
 var melee_mult := 1.0
 var mp_hit_mult := 1.0
 var gold_mult := 1.0
@@ -235,6 +239,8 @@ var _ground_dash := false
 var _afterimage_timer := 0.0
 var _invuln_timer := 0.0
 var _ointment_timer := 0.0
+var _glove_timer := 0.0
+var _glove_spark := 0.0
 var _poison_timer := 0.0
 var _poison_tick := 0.0
 var _attack_timer := 0.0
@@ -428,6 +434,8 @@ func _tick_timers(delta: float) -> void:
 			GameState.toast.emit("The Ointment wears off.")
 	if _poison_timer > 0.0:
 		_tick_poison(delta)
+	if _glove_timer > 0.0:
+		_tick_glove(delta)
 	_attack_cooldown -= delta
 	_dust_timer -= delta
 	_step_timer -= delta
@@ -890,11 +898,11 @@ func _try_attack(on_floor: bool) -> void:
 		return
 	_attack_buffer_timer = 0.0
 	is_heavy_swing = false
-	_swing_damage = roundi(slash_damage * melee_mult)
+	_swing_damage = roundi(slash_damage * blade_mult())
 	if not on_floor and input.down and abilities.mattock:
 		attack_kind = "down"
 		combo_index = 0
-		_swing_damage = roundi(slash_damage * melee_mult * down_strike_mult)
+		_swing_damage = roundi(slash_damage * blade_mult() * down_strike_mult)
 		_attack_timer = tuning.down_strike_active
 		_attack_cooldown = tuning.attack_cooldown
 	elif input.up:
@@ -913,7 +921,7 @@ func _try_attack(on_floor: bool) -> void:
 		var cd: Array[float] = combat.combo_cooldowns
 		_attack_cooldown = cd[cd.size() - 1] if is_heavy_swing else cd[mini(combo_index - 1, cd.size() - 2)]
 		if is_heavy_swing:
-			_swing_damage = roundi(heavy_damage * melee_mult)
+			_swing_damage = roundi(heavy_damage * blade_mult())
 	_attack_cooldown *= swing_mult
 	_attack_hits.clear()
 	_up_popped = false
@@ -1335,7 +1343,7 @@ func _riposte(foe: Node2D) -> void:
 	var fx := SlashFx.new()
 	fx.setup("side", facing, 3, true, 1.0 + arc_bonus / SLASH_SIZE.y)
 	add_child(fx)
-	foe.take_hit(roundi(heavy_damage * melee_mult), Vector2(facing, 0) * 1.8)
+	foe.take_hit(roundi(heavy_damage * blade_mult()), Vector2(facing, 0) * 1.8)
 	var at: Vector2 = foe.center() if foe.has_method("center") else foe.global_position
 	HitSpark.spawn(get_parent(), at, Vector2(facing, 0), HEAVY_SPARK)
 	Sfx.play("heavy", 0.05)
@@ -1403,6 +1411,37 @@ func use_ointment() -> bool:
 	Sfx.play("heal", 0.0)
 	GameState.toast.emit("The Ointment shimmers on your skin.")
 	return true
+
+
+## What a blade hit is multiplied by: the skill tree's melee_mult, and the War
+## Glove's while it lasts.
+func blade_mult() -> float:
+	return melee_mult * (combat.war_glove_mult if _glove_timer > 0.0 else 1.0)
+
+
+## Pulls on a War Glove (a rare drop, design bible 7): combat.war_glove_time
+## seconds of harder blows. Another one found while it lasts starts it over.
+func put_on_glove() -> void:
+	if dead:
+		return
+	_glove_timer = combat.war_glove_time
+	_glove_spark = 0.0
+	Sfx.play("item", 0.0, -4.0)
+	GameState.toast.emit("A War Glove! Your blows land half again as hard.")
+
+
+func _tick_glove(delta: float) -> void:
+	_glove_timer -= delta
+	_glove_spark -= delta
+	if _glove_spark <= 0.0 and _glove_timer > 0.0:
+		# Red sparks rise off the sword hand while it lasts.
+		_glove_spark = 0.18
+		var d := Dust.new()
+		d.setup("might")
+		get_parent().add_child(d)
+		d.global_position = global_position + Vector2(facing * 7, -20)
+	if _glove_timer <= 0.0:
+		GameState.toast.emit("The War Glove's strength fades.")
 
 
 ## Drinks in poison: for POISON_TIME seconds you lose POISON_DAMAGE health
@@ -1476,6 +1515,7 @@ func _die(where: Vector2) -> void:
 func _respawn() -> void:
 	dead = false
 	_poison_timer = 0.0
+	_glove_timer = 0.0
 	second_wind_used = false
 	hp = max_hp
 	mp = max_mp
