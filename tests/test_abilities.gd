@@ -679,6 +679,17 @@ func test_juice_camera_and_feel_numbers_match_the_bible() -> void:
 	await frames(42)
 	check(cam._look_down > 40.0, "holding it longer looks down (%.1f)" % cam._look_down)
 	p.input.down = false
+	# Look-up (pass 133): Up held still, after the same delay.
+	check(GameCamera.LOOK_UP == 72.0, "look-up is 72 px")
+	await frames(60)
+	p.input.up = true
+	await frames(18)
+	check(absf(cam._look_down) < 2.0, "holding up 0.3 s doesn't look up yet (%.1f)" % cam._look_down)
+	await frames(42)
+	check(cam._look_down < -40.0, "holding it longer looks up (%.1f)" % cam._look_down)
+	p.input.up = false
+	await frames(60)
+	check(absf(cam._look_down) < 2.0, "letting go eases back (%.1f)" % cam._look_down)
 	cam.queue_free()
 
 

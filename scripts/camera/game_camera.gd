@@ -1,7 +1,7 @@
 class_name GameCamera
 extends Camera2D
-## Follow camera: deadzone, eased look-ahead, look-down, a lead up or down a
-## ladder, room bounds and shake.
+## Follow camera: deadzone, eased look-ahead, look-down and look-up, a lead up
+## or down a ladder, room bounds and shake.
 ##
 ## Smooth scrolling with crisp pixels (design bible 12.1): the world renders in
 ## a pixel-sized viewport, the camera itself sits on whole pixels, and the
@@ -18,6 +18,9 @@ const LOOK_AHEAD := 48.0
 const LOOK_AHEAD_EASE := 0.4
 const LOOK_DOWN := 72.0
 const LOOK_DOWN_DELAY := 0.4
+## Holding Up while standing still looks up (pass 133), after the same delay.
+## On a ladder Up climbs instead, and the climb lead takes over.
+const LOOK_UP := 72.0
 ## On a ladder (design bible 6.7, pass 130) the camera leads the way you climb
 ## and stops looking sideways; hanging still keeps the lead you had.
 const CLIMB_LEAD := 64.0
@@ -50,6 +53,7 @@ var _focus := Vector2.ZERO
 var _look_ahead := 0.0
 var _look_down := 0.0
 var _down_hold := 0.0
+var _up_hold := 0.0
 var _climb_lead := 0.0
 var _climb_goal := 0.0
 
@@ -101,6 +105,8 @@ func _physics_process(delta: float) -> void:
 	_curr_target = target.global_position
 	var still := target.is_on_floor() and absf(target.velocity.x) < 10.0
 	_down_hold = _down_hold + delta if (still and target.input.down) else 0.0
+	var looking_up := still and target.input.up and not target.input.down and not target.on_ladder
+	_up_hold = _up_hold + delta if looking_up else 0.0
 
 
 func _process(delta: float) -> void:
@@ -124,7 +130,11 @@ func _process(delta: float) -> void:
 	_climb_lead = lerpf(_climb_lead, _climb_goal, 1.0 - exp(-delta * (3.0 / CLIMB_LEAD_EASE)))
 	var ahead_goal := 0.0 if target.on_ladder else target.facing * LOOK_AHEAD
 	_look_ahead = lerpf(_look_ahead, ahead_goal, 1.0 - exp(-delta * (3.0 / LOOK_AHEAD_EASE)))
-	var down_goal := LOOK_DOWN if _down_hold > LOOK_DOWN_DELAY else 0.0
+	var down_goal := 0.0
+	if _down_hold > LOOK_DOWN_DELAY:
+		down_goal = LOOK_DOWN
+	elif _up_hold > LOOK_DOWN_DELAY:
+		down_goal = -LOOK_UP
 	_look_down = lerpf(_look_down, down_goal, 1.0 - exp(-delta * 6.0))
 
 	if frame_scale != frame_goal:
