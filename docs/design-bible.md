@@ -1155,6 +1155,12 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 
 **Stability measures (pass 99):** the journey soak (`test_soak.gd`) walks the world twice, door to door with mashing play between. It rests and Continues into a fresh world every 20 rooms and opens the pause and skills screens on the way. The second lap must leave no live objects, orphan nodes or tree nodes behind. No frame of play (room loads aside) may pass 50 ms. Anything a room will need mid-play is loaded while the room loads: a boss arena loads its boss's sprite sheet and music (`BossArena.warm`), because a fight starts mid-play. Every sound effect loads with the game (`Sfx.load_all`, about 20 ms once, 2.2 MB), so no first slash or phase break waits on the disk (pass 103). Every boss fight is timed for 15 s of mashing with a phase knocked off every 5 s (`test_every_boss_fight_holds_the_frame_budget`): the average frame must stay under 8 ms and the 99th percentile under 16.6 ms, and nothing may load from disk once the fight has begun.
 
+**After the end (pass 144):** every soak had run on a fresh save, so the post-game world (4.4: the blossom layer, `Music.after_the_end`, every boss arena idle) and Wanderer's Grace (`Player.on_kill` on every death) had never been walked. `test_a_journey_after_the_end_stays_lean` runs the journey on a cleared save: every boss beaten, every spring running, the Wanderer branch learned. Each lap walks 100 doors out of Eolis and 50 out of the dead meteor's Threshold, resting and continuing every 20 rooms (each Continue must still be cleared). The checks:
+- the second lap leaves no orphan nodes, no growth in the tree and fewer than 50 live objects behind;
+- no frame of play passes 50 ms;
+- no engine or script error is logged (`ErrorCatcher`);
+- blossom drifted, Zenis played still and Eolis its festival.
+
 **Saves and settings (pass 109):** no file the game reads can crash it or leave it half-loaded.
 - **Writing.** Saves and `settings.cfg` are written to a `.tmp` file, read back whole, and only then swapped in, with the previous file kept as `.bak` (`GameState.write_safely`). A write that fails leaves the last good file untouched.
 - **Loading.** A damaged file (empty, cut off, not JSON, not a save) falls back to its `.bak`. If neither reads, the load is refused and the game in play is left as it was. The title's Continue then starts a new journey with a note, rather than failing.

@@ -984,6 +984,8 @@ func test_every_shrine_saves_and_continues_where_you_rested() -> void:
 const JOURNEY_DOORS := 160
 const JOURNEY_SAVE_EVERY := 20
 const JOURNEY_SLOT := 8
+## Doors walked per lap of the post-game journey (pass 144).
+const POSTGAME_DOORS := 100
 
 ## A long run through the whole game the way a player strings it together: a
 ## walk from door to door (leaning toward rooms not seen yet) with real play
@@ -1016,6 +1018,40 @@ func test_a_long_journey_through_the_whole_game_stays_lean() -> void:
 		check(r.worst < 50_000, "no frame of play spikes past 50 ms (%.1f ms, %s)" % [r.worst / 1000.0, r.where])
 
 
+## The same journey on a save that has seen the ending (pass 144): every boss
+## beaten, the Tree in bloom (its blossom layer and the post-game music) and
+## Wanderer's Grace feeding the air dashes on every kill. Two laps: the second must leave nothing behind and log no errors.
+func test_a_journey_after_the_end_stays_lean() -> void:
+	GameState.slot = JOURNEY_SLOT
+	var errors := ErrorCatcher.start()
+	# Each lap walks out of Eolis and, separately, out of the dead meteor.
+	var first: Dictionary = _merge(await _journey(1987, true, POSTGAME_DOORS), await _journey(1987, true, POSTGAME_DOORS / 2, "zenis/threshold"))
+	var obj0 := Performance.get_monitor(Performance.OBJECT_COUNT)
+	var orphans0 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	var nodes0 := runner.get_tree().get_node_count()
+	var second: Dictionary = _merge(await _journey(2026, true, POSTGAME_DOORS), await _journey(2026, true, POSTGAME_DOORS / 2, "zenis/threshold"))
+	var obj1 := Performance.get_monitor(Performance.OBJECT_COUNT)
+	var orphans1 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	var nodes1 := runner.get_tree().get_node_count()
+	var caught := errors.stop()
+	GameState.delete_save(JOURNEY_SLOT)
+	for r: Dictionary in [first, second]:
+		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still meteor %d, festival %d" % [
+			r.rooms, r.reloads, r.worst / 1000.0, r.where, r.bloomed, r.still, r.festival])
+	print("  Second lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
+	check(caught.is_empty(), "no engine or script errors on the way: %s" % [caught.slice(0, 3)])
+	for r: Dictionary in [first, second]:
+		check(r.problems.is_empty(), "every rest continues where it was taken, still cleared: %s" % [r.problems])
+		check(r.rooms >= 20, "the walk saw much of the world (%d rooms)" % r.rooms)
+		check(r.bloomed > 0, "blossom drifted through the living Tree (%d room stays)" % r.bloomed)
+		check(r.still > 0 and r.festival > 0, "Zenis played still and Eolis its festival (%d, %d room stays)" % [r.still, r.festival])
+		check(r.worst < 50_000, "no frame of play spikes past 50 ms (%.1f ms, %s)" % [r.worst / 1000.0, r.where])
+	check(orphans1 <= orphans0, "no orphan nodes left behind (%d -> %d)" % [orphans0, orphans1])
+	check(obj1 - obj0 < 50, "a second lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
+	check(nodes1 <= nodes0, "and the tree is no bigger (%d -> %d)" % [nodes0, nodes1])
+	GameState.new_game()
+
+
 ## A boss fight starts mid-play, so its arena loads the boss's sheet and music
 ## while the room loads (pass 99): the fight's first frame must not hitch.
 func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
@@ -1040,10 +1076,14 @@ func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
 	await frames(2)
 
 
-func _journey(seed: int) -> Dictionary:
-	var w := make_world({}, "eolis/west_gate")
+func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eolis/west_gate") -> Dictionary:
+	var w := make_world({}, start)
 	GameState.data.rings = ZenisGate.RINGS.duplicate()
 	GameState.set_flag(ZenisGate.FLAG)
+	if postgame:
+		_clear_the_game(w)
+		# Enter the first room again as the cleared save would, bloom and all.
+		w._enter(start)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
 	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
@@ -1051,14 +1091,17 @@ func _journey(seed: int) -> Dictionary:
 	arena.add_child(menus)
 	_journey_buff(w)
 	await frames(10)
-	var r := {"rooms": 0, "reloads": 0, "worst": 0, "where": "", "spikes": 0, "problems": []}
+	var r := {"rooms": 0, "reloads": 0, "worst": 0, "where": "", "spikes": 0, "problems": [],
+		"bloomed": 0, "still": 0, "festival": 0}
 	var visited := {w.room.id: true}
-	for i in JOURNEY_DOORS:
-		var doors: Array = w.room.doors.keys()
-		if doors.is_empty():
+	if postgame:
+		_tally_bloom(w, r)
+	for i in doors:
+		var exits: Array = w.room.doors.keys()
+		if exits.is_empty():
 			break
-		var fresh := doors.filter(func(k: int) -> bool: return not visited.has(String(w.room.doors[k].target)))
-		var pick: Array = fresh if not fresh.is_empty() and rng.randf() < 0.8 else doors
+		var fresh := exits.filter(func(k: int) -> bool: return not visited.has(String(w.room.doors[k].target)))
+		var pick: Array = fresh if not fresh.is_empty() and rng.randf() < 0.8 else exits
 		var n: int = pick[rng.randi() % pick.size()]
 		w.use_door(n)
 		visited[w.room.id] = true
@@ -1081,6 +1124,8 @@ func _journey(seed: int) -> Dictionary:
 				if dt > 33_000:
 					r.spikes += 1
 					print("    spike %.1f ms in %s frame %d" % [dt / 1000.0, w.room.id, f])
+		if postgame:
+			_tally_bloom(w, r)
 		if w.player.dead:
 			await frames(int(w.player.combat.respawn_delay * 60.0) + 30)
 			_journey_buff(w)
@@ -1108,6 +1153,8 @@ func _journey(seed: int) -> Dictionary:
 			w.player.input.scripted = true
 			_journey_buff(w)
 			r.reloads += 1
+			if postgame and not GameState.flag("cleared"):
+				r.problems.append("the save at %s forgot the ending" % room_id)
 			await frames(5)
 			if w.room.id != room_id:
 				r.problems.append("continued in %s, not %s" % [w.room.id, room_id])
@@ -1116,6 +1163,44 @@ func _journey(seed: int) -> Dictionary:
 	menus.queue_free()
 	await frames(10)
 	return r
+
+
+## Counts what the room shows of the post-game: blossom, the still meteor, the festival.
+func _tally_bloom(w: World, r: Dictionary) -> void:
+	if not w.blossom.get("_motes").is_empty():
+		r.bloomed += 1
+	if Music.track == "zenis_still":
+		r.still += 1
+	if Music.track == "eolis_bloom":
+		r.festival += 1
+
+
+## Two journeys' tallies as one.
+func _merge(a: Dictionary, b: Dictionary) -> Dictionary:
+	var out := a.duplicate(true)
+	for k: String in ["rooms", "reloads", "spikes", "bloomed", "still", "festival"]:
+		out[k] = int(a[k]) + int(b[k])
+	if int(b.worst) > int(a.worst):
+		out.worst = b.worst
+		out.where = b.where
+	out.problems = a.problems + b.problems
+	return out
+
+
+## A save that has seen the ending: every boss beaten, every spring running, the
+## Tree in bloom, and Wanderer's Grace learned so kills feed the air dashes.
+func _clear_the_game(w: World) -> void:
+	for id: String in BossArena.BOSSES:
+		GameState.set_flag("boss:" + id)
+	for spring: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + spring)
+	GameState.set_flag("cleared")
+	var skills: Array = GameState.data.skills
+	for id: String in ["deep_pockets", "gold_sense", "quick_draught", "second_stride", "feather_fall", "treasure_sense",
+			"resilience", "last_stand", "second_wind", "wanderers_grace"]:
+		if not skills.has(id):
+			skills.append(id)
+	GameState.refresh_stats(w.player)
 
 
 func _journey_buff(w: World) -> void:
