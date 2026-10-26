@@ -969,3 +969,123 @@ func test_a_slope_is_solid_below_its_diagonal() -> void:
 	check(room.is_solid_at(Vector2(23 * 16 + 2, 11 * 16 + 6)), "\\ is solid under its high side")
 	check(not room.is_solid_at(Vector2(23 * 16 + 14, 11 * 16 + 6)), "\\ is open over its low side")
 	room.free()
+
+
+## Bible 6.11 (pass 124): a shaft with a ladder up through the floor of a loft,
+## and a short ladder hanging in the air on the right.
+const LADDERS := [
+	"####################",
+	"#..................#",
+	"#..................#",
+	"#..................#",
+	"#########\"#########",
+	"#........\"........#",
+	"#........\"....\"...#",
+	"#........\"....\"...#",
+	"#........\"....\"...#",
+	"#........\"........#",
+	"#........\"........#",
+	"####################",
+]
+
+
+func test_ladders_climb_hang_and_step_off_the_top() -> void:
+	var room := make_room(LADDERS)
+	var p := make_player(room, Vector2i(9, 10))
+	await frames(3)
+	var x_mid := 9.5 * 16.0
+	p.global_position.x = x_mid + 5.0
+	p.input.up = true
+	await frames(1)
+	check(p.on_ladder, "Up at a ladder takes hold of it")
+	await frames(20)
+	check(p.on_ladder and is_equal_approx(p.velocity.y, -MovementTuning.new().ladder_speed), "it climbs at ladder speed, with no gravity (vy %.0f)" % p.velocity.y)
+	check(absf(p.global_position.x - x_mid) < 0.5, "and centers you on the rungs (x %.1f)" % p.global_position.x)
+	check(PlayerVisual.current_pose(p) == "climb", "in the climbing pose")
+	p.input.up = false
+	var y := p.global_position.y
+	await frames(30)
+	check(p.on_ladder and absf(p.global_position.y - y) < 0.5, "let go of Up and you hang there")
+	p.input.up = true
+	for i in 120:
+		await frames(1)
+		if not p.on_ladder:
+			break
+	p.input.up = false
+	await frames(5)
+	check(not p.on_ladder and p.is_on_floor(), "over the top you step onto it")
+	check(absf(p.global_position.y - 4 * 16.0) < 1.0, "standing on the ladder's top plank (y %.1f)" % p.global_position.y)
+	# Back down: Down on the top plank climbs on.
+	p.input.down = true
+	await frames(2)
+	check(p.on_ladder, "Down on the top takes hold again")
+	for i in 120:
+		await frames(1)
+		if not p.on_ladder:
+			break
+	p.input.down = false
+	await frames(3)
+	check(p.is_on_floor() and absf(p.global_position.y - 11 * 16.0) < 1.0, "and climbing down onto the floor lets go (y %.1f)" % p.global_position.y)
+	room.free()
+
+
+func test_ladders_jump_off_hits_and_hanging_ends() -> void:
+	var room := make_room(LADDERS)
+	var p := make_player(room, Vector2i(9, 10))
+	await frames(3)
+	p.input.up = true
+	await frames(30)
+	p.input.up = false
+	check(p.on_ladder, "on the ladder")
+	var x0 := p.global_position.x
+	p.input.move_x = 1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	check(not p.on_ladder and p.velocity.y < -300.0, "Jump leaves with a full jump (vy %.0f)" % p.velocity.y)
+	await frames(10)
+	check(p.global_position.x > x0 + 10.0, "off to the side you pressed")
+	p.input.move_x = 0
+	p.input.jump_held = false
+	p.input.up = true
+	await frames(1)
+	check(not p.on_ladder, "and can't catch the same ladder again straight away")
+	p.input.up = false
+	# A blow knocks you off.
+	p.teleport(Vector2(9.5 * 16.0, 11 * 16.0))
+	await frames(3)
+	p.input.up = true
+	await frames(20)
+	p.input.up = false
+	check(p.on_ladder, "back on the ladder")
+	p.take_damage(1)
+	await frames(1)
+	check(not p.on_ladder, "a blow knocks you off the rungs")
+	await frames(20)
+	# The hanging ladder: climb down off its bottom and you fall.
+	p.teleport(Vector2(14.5 * 16.0, 8 * 16.0 + 2.0))
+	p.input.up = true
+	await frames(1)
+	p.input.up = false
+	check(p.on_ladder, "you catch a hanging ladder from the air")
+	p.input.down = true
+	for i in 90:
+		await frames(1)
+		if not p.on_ladder:
+			break
+	p.input.down = false
+	check(not p.on_ladder, "climb off its bottom and you let go")
+	await frames(30)
+	check(p.is_on_floor(), "and drop to the floor")
+	room.free()
+
+
+func test_ladder_numbers_match_bible_6_11() -> void:
+	var t := MovementTuning.new()
+	check(t.ladder_speed == 90.0, "ladder speed 90 px/s")
+	check(t.ladder_snap == 240.0, "ladder snap 240 px/s")
+	check(t.ladder_regrab == 0.25, "regrab 0.25 s")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("### 6.11 Ladders"), "the bible has the ladder section")
+	check(bible.contains("| Climb speed | 90 px/s"), "and its numbers")
+

@@ -84,6 +84,14 @@ extends Resource
 @export var wind_speed := 200.0
 @export var wind_drag := 2400.0
 
+@export_group("Ladders")
+## Ladders (bible 6.11, the original's own way up): Up grabs one, Up and Down
+## climb at ladder_speed with no gravity, Jump leaves with a full jump, and a
+## ladder can't be grabbed again for ladder_regrab after you leave it.
+@export var ladder_speed := 90.0
+@export var ladder_snap := 240.0
+@export var ladder_regrab := 0.25
+
 @export_group("Damage")
 @export var hurt_invuln := 0.8
 

@@ -571,3 +571,32 @@ func test_every_guru_trial_can_be_cleared_with_the_glove() -> void:
 		check(nodes.has(goal), "%s: the bell can be reached from the start" % t.name)
 		var stuck := reach.stuck(nodes, [goal])
 		check(stuck.is_empty(), "%s: every spot can still get to the bell: %s" % [t.name, stuck.slice(0, 6)])
+
+
+## Bible 6.11 (pass 124): the checker climbs ladders. A shaft through a floor too
+## high to jump has a ladder up it: the loft is in reach only with the ladder
+## there, and the ladder is the way back down.
+func test_checker_climbs_ladders() -> void:
+	var rows := [
+		"####################",
+		"#..................#",
+		"#..................#",
+		"#..................#",
+		"#########\"#########",
+		"#........\"........#",
+		"#........\"........#",
+		"#........\"........#",
+		"#........\"........#",
+		"#........\"........#",
+		"#P.......\"........#",
+		"####################",
+	]
+	var text := "zone: test\n---\n" + "\n".join(PackedStringArray(rows))
+	var reach := Reach.new({"t/shaft": text}, {})
+	var nodes := reach.reachable(reach.spot_of("t/shaft", "P"))
+	check(nodes.has(Reach.key("t/shaft", 9, 7)), "the checker hangs on the ladder halfway up")
+	check(nodes.has(Reach.key("t/shaft", 3, 3)), "and climbs over its top into the loft")
+	check(reach.stuck(nodes, [reach.spot_of("t/shaft", "P")]).is_empty(), "and can always climb back down")
+	var bare := Reach.new({"t/shaft": text.replace("\"", ".").replace("#########.#########", "####################")}, {})
+	check(not bare.reachable(bare.spot_of("t/shaft", "P")).has(Reach.key("t/shaft", 3, 3)), "without the ladder the loft is out of reach")
+

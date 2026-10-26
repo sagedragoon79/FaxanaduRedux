@@ -40,6 +40,8 @@ var _winds_west := {}
 var _water := {}
 ## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
 var _seals := {}
+## Ladder cells (legend `"`, bible 6.11). The top cell of each is also a plank.
+var _ladders := {}
 var _sap_cells := {}
 var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
@@ -416,6 +418,12 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"-":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
 			_one_way[cell] = true
+		"\"":
+			_ladders[cell] = true
+			if cell.y == 0 or grid[cell.y - 1].substr(cell.x, 1) != "\"":
+				# The ladder's top is a plank: stand on it, Down to climb back on.
+				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
+				_one_way[cell] = true
 		"/":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.SLOPE_EAST)
 		"\\":
@@ -592,6 +600,10 @@ func _place_falls() -> void:
 		var fall := Waterfall.new()
 		fall.cells = box
 		add_child(fall)
+	if not _ladders.is_empty():
+		var ladders := Ladders.new()
+		ladders.cells = _ladders
+		add_child(ladders)
 	for box in _blocks(_drifts):
 		var drift := GravityDrift.new()
 		drift.cells = box
@@ -764,6 +776,27 @@ func is_solid_at(world_pos: Vector2) -> bool:
 		var floor_y := TILE - local.x if coords == TilesetFactory.SLOPE_EAST else local.x
 		return local.y >= floor_y
 	return coords != TilesetFactory.ONE_WAY
+
+
+## True if `world_pos` is on a ladder (bible 6.11).
+func is_ladder_at(world_pos: Vector2) -> bool:
+	return _ladders.has(cell_at(world_pos))
+
+
+## The x of the middle of the ladder at `world_pos`.
+func ladder_x(world_pos: Vector2) -> float:
+	return (cell_at(world_pos).x + 0.5) * TILE
+
+
+## The y of the top of the ladder at `world_pos` (the top of its highest rung's
+## cell, where its plank is), or -INF if there is no ladder there.
+func ladder_top(world_pos: Vector2) -> float:
+	var cell := cell_at(world_pos)
+	if not _ladders.has(cell):
+		return -INF
+	while _ladders.has(cell + Vector2i.UP):
+		cell += Vector2i.UP
+	return float(cell.y * TILE)
 
 
 func is_one_way_at(world_pos: Vector2) -> bool:
