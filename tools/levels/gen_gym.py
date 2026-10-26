@@ -72,7 +72,7 @@ for i in range(4):
     g[39 - i][147 - i] = '\\'
     rect(146 - i, 39 - i, 146 - i, 39)
 rect(140, 36, 143, 39)
-label(134, 31, "Slopes: run up and down")
+label(134, 31, "Slopes: run or stride up and down")
 # Lower right: combat arena
 g[39][118] = 'M'
 g[33][132] = 'H'

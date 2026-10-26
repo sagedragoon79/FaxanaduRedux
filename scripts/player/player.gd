@@ -52,6 +52,8 @@ const GLIDE_FEATHERS := 0.14
 const CORRECTION_SLOP := 0.1
 ## A contact whose normal is at least this horizontal is a wall; a 45-degree
 ## slope's face (0.71) is floor.
+## How far the floor snap reaches when running (px, bible 6.1).
+const FLOOR_SNAP := 4.0
 const WALL_NORMAL := 0.9
 
 
@@ -205,6 +207,8 @@ var _jump_cut_available := false
 var _dash_timer := 0.0
 var _dash_cooldown := 0.0
 var _dash_dir := 1
+## The dash began on the ground: it follows the floor down a slope (bible 6.5).
+var _ground_dash := false
 var _afterimage_timer := 0.0
 var _invuln_timer := 0.0
 var _ointment_timer := 0.0
@@ -234,7 +238,7 @@ var _gold_frac := 0.0
 func _ready() -> void:
 	collision_layer = LAYER_PLAYER
 	collision_mask = LAYER_WORLD
-	floor_snap_length = 4.0
+	floor_snap_length = FLOOR_SNAP
 	floor_max_angle = deg_to_rad(46.0)
 	floor_constant_speed = true
 	safe_margin = 0.05
@@ -355,6 +359,9 @@ func _physics_process(delta: float) -> void:
 	_apply_corner_correction(delta)
 	_apply_ledge_correction(delta, on_floor)
 	var pre_velocity := velocity
+	# A ground stride hugs the floor: down a slope the snap reaches far enough
+	# to hold a dash's 6 px a frame, so it doesn't sail off the ramp (pass 121).
+	floor_snap_length = tuning.ground_dash_snap if is_dashing and _ground_dash else FLOOR_SNAP
 	move_and_slide()
 	if pull != Vector2.ZERO and not is_dashing:
 		move_and_collide(pull * delta)
@@ -690,6 +697,7 @@ func _try_dash(on_floor: bool) -> void:
 	if is_wall_sliding:
 		_dash_dir = -wall_dir
 	facing = _dash_dir
+	_ground_dash = on_floor
 	_dash_timer = tuning.dash_time
 	_invuln_timer = maxf(_invuln_timer, tuning.dash_invuln)
 	_jump_cut_available = false

@@ -487,6 +487,13 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	# 6.4
 	check_near(t.double_jump_height, 48.0, 0.0001, "double jump height")
 	check_near(t.double_jump_velocity, 326.0, 1.0, "double jump velocity")
+	# 6.5
+	check_near(t.dash_speed, 380.0, 0.0001, "dash speed")
+	check_near(t.dash_time, 0.15, 0.0001, "dash time")
+	check_near(t.dash_invuln, 0.10, 0.0001, "dash invulnerability")
+	check(t.air_dash_charges == 1, "one air dash")
+	check_near(t.ground_dash_cooldown, 0.25, 0.0001, "ground dash cooldown")
+	check_near(t.ground_dash_snap, 10.0, 0.0001, "ground dash snap")
 	# 6.6
 	check_near(t.pogo_bounce, 380.0, 0.0001, "pogo bounce")
 	check_near(t.pogo_bounce_held, 420.0, 0.0001, "pogo bounce, jump held")
@@ -859,6 +866,62 @@ func test_slopes_keep_your_speed_and_your_footing() -> void:
 	p.input.jump_held = false
 	check(vy[0] > 300.0 and absf(vy[1] - vy[0]) < 1.0, "a jump from a slope is a full jump (%.1f, flat %.1f)" % [vy[1], vy[0]])
 	room.free()
+
+
+## Pass 121: a ground stride hugs the floor (bible 6.5). Down a slope the
+## dash's 6 px a frame used to carry you off the ramp into the air for a third
+## of a second; now it rides the slope down, as it already rode one up. A
+## ledge deeper than the snap still drops away, and an air dash never snaps.
+func test_a_ground_stride_follows_a_slope() -> void:
+	var room := make_room(RAMP)
+	var p := make_player(room, Vector2i(4, 11), {"stride": true})
+	await _settle(p)
+	# [start, dir, label]: down off the plateau's edge, down from mid-ramp, up a ramp.
+	for run: Array in [[Vector2(17.5 * 16, 8 * 16), 1, "off the plateau down the ramp"],
+			[Vector2(21.7 * 16, 9.4 * 16), 1, "down from mid-ramp"],
+			[Vector2(8.5 * 16, 12 * 16), 1, "up a ramp"],
+			[Vector2(16.5 * 16, 8 * 16), -1, "down the west ramp"]]:
+		p.teleport(run[0])
+		p.velocity = Vector2.ZERO
+		await frames(15)
+		check(p.is_on_floor(), "standing to start (%s)" % run[2])
+		var start := p.global_position
+		p.input.move_x = run[1]
+		p.input.dash_pressed = true
+		await frames(1)
+		p.input.dash_pressed = false
+		var air := 0
+		var path := 0.0
+		var last := p.global_position
+		while p.is_dashing:
+			await frames(1)
+			path += last.distance_to(p.global_position)
+			last = p.global_position
+			if not p.is_on_floor():
+				air += 1
+		p.input.move_x = 0
+		check(air == 0, "a ground stride %s keeps its footing (%d frames in the air)" % [run[2], air])
+		check(path > p.tuning.dash_speed * p.tuning.dash_time * 0.9, "and covers a full stride along the floor (%.0f px)" % path)
+		check(absf(p.global_position.y - start.y) > 8.0 or run[2] == "up a ramp" and p.global_position.y < start.y, "following the slope (%.0f px)" % (p.global_position.y - start.y))
+		await frames(20)
+	room.free()
+	# Off a real ledge (a whole tile and more) the stride still sails out.
+	room = make_room(LEDGE)
+	p = make_player(room, Vector2i(2, 3), {"stride": true})
+	await _settle(p)
+	p.input.move_x = 1
+	p.input.dash_pressed = true
+	await frames(1)
+	p.input.dash_pressed = false
+	var y0 := p.global_position.y
+	var flew := false
+	while p.is_dashing:
+		await frames(1)
+		flew = flew or (not p.is_on_floor() and absf(p.global_position.y - y0) < 1.0)
+	p.input.move_x = 0
+	check(flew, "a stride off a ledge flies level out over the drop")
+	room.free()
+	check(MovementTuning.new().ground_dash_snap == 10.0, "the ground stride snaps from 10 px")
 
 
 ## A slope's face is floor, not a wall: with the Climbing Glove, falling against
