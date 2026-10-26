@@ -836,6 +836,8 @@ Daybreak as built (pass 57): Calder sells Full Plate (tier 3, 45% less damage, 4
 
 Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
+**Hidden rooms in every zone (pass 131):** the Mist, the Branches and Daybreak, 29 rooms between them, had hidden no room at all; their secrets were chests in plain sight. Each now hides one behind a fake wall at floor level, where a curious player walks into the stone: in the Veiled Rise, the hollow corner block west of the Drowned Dwarf (500 g); in the Sunlit Bough, the hollow foot of the west buttress (600 g); and in the Broken Shrine, a cell in the cliff east of the shrine (700 g). The Black Onyx shows each seam on the way back. `test_every_large_zone_hides_a_room` holds every zone of five rooms or more to at least one hidden room.
+
 | Type | Count | How it's hidden | Reward |
 |------|-------|-----------------|--------|
 | Breakable walls (Mattock) | 18 | Cracked stone, sometimes faint | Gold, Life Fruit |
