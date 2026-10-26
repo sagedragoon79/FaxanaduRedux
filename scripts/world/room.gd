@@ -44,6 +44,9 @@ var _sap_cells := {}
 var _sap_node: SapPool
 ## Cells drawn as ground (real walls and fake ones), for picking autotiles.
 var _solid_look := {}
+## Slope cells (`/`, `\`): ground to their neighbours, but half open air, so
+## the ground under a slope stays as light as any surface tile.
+var _slope_cells := {}
 var _secret_revealed := false
 var _roots_open := false
 
@@ -167,8 +170,10 @@ func build(text: String) -> void:
 	var amber := _amber_on()
 	for y in grid.size():
 		for x in grid[y].length():
-			if grid[y][x] in ["#", "%", "u"]:
+			if grid[y][x] in ["#", "%", "u", "/", "\\"]:
 				_solid_look[Vector2i(x, y)] = true
+			if grid[y][x] in ["/", "\\"]:
+				_slope_cells[Vector2i(x, y)] = true
 	# Hidden rooms: a rectangle of fake wall hides the contents until the player walks in.
 	var covers := {}
 	for spec: String in lists.get("secret", []):
@@ -365,7 +370,7 @@ func _depth(cell: Vector2i) -> int:
 			for dx in range(-r, r + 1):
 				var n := cell + Vector2i(dx, dy)
 				var inside := n.x >= 0 and n.y >= 0 and n.x < size_tiles.x and n.y < size_tiles.y
-				if inside and not _solid_look.has(n):
+				if inside and (not _solid_look.has(n) or _slope_cells.has(n)):
 					return r
 	return 3
 
@@ -391,6 +396,10 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"-":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
 			_one_way[cell] = true
+		"/":
+			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.SLOPE_EAST)
+		"\\":
+			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.SLOPE_WEST)
 		"b":
 			# A drowned boardwalk: it rises once the Spring of Mist flows.
 			if GameState.flag(Fog.SPRING_FLAG):
@@ -722,7 +731,13 @@ func is_solid_at(world_pos: Vector2) -> bool:
 	var cell := cell_at(world_pos)
 	if tiles.get_cell_source_id(cell) == -1:
 		return false
-	return tiles.get_cell_atlas_coords(cell) != TilesetFactory.ONE_WAY
+	var coords := tiles.get_cell_atlas_coords(cell)
+	if TilesetFactory.is_slope(coords):
+		# Solid below the diagonal only.
+		var local := world_pos - Vector2(cell * TILE)
+		var floor_y := TILE - local.x if coords == TilesetFactory.SLOPE_EAST else local.x
+		return local.y >= floor_y
+	return coords != TilesetFactory.ONE_WAY
 
 
 func is_one_way_at(world_pos: Vector2) -> bool:

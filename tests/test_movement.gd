@@ -782,3 +782,127 @@ func test_the_jump_buffer_holds_in_a_drift_pocket() -> void:
 				break
 		room.free()
 		check(jumped == (early == 7), "a press %d frames before landing %s" % [early, "jumps" if early == 7 else "is dropped"])
+
+
+## Pass 115: a ramp up four tiles, a plateau, and a ramp back down (design bible 6.1).
+const RAMP := [
+	"##############################",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............................#",
+	"#............/######\\........#",
+	"#.........../########\\.......#",
+	"#........../##########\\......#",
+	"#........./############\\.....#",
+	"##############################",
+]
+
+
+## Bible 6.1: slopes up to 45 degrees are floor. You run up at full speed (along
+## the slope), run down without leaving the ground, and stand still on one.
+func test_slopes_keep_your_speed_and_your_footing() -> void:
+	var room := make_room(RAMP)
+	var p := make_player(room, Vector2i(4, 11))
+	await _settle(p)
+	var airborne := 0
+	var up_speeds: Array[float] = []
+	var down_speeds: Array[float] = []
+	var x0 := p.global_position.x
+	for i in 150:
+		p.input.move_x = 1
+		var before := p.global_position
+		await frames(1)
+		if not p.is_on_floor():
+			airborne += 1
+		var step := (p.global_position - before) * 60.0
+		var x := p.global_position.x
+		if x > 11.5 * 16 and x < 13.5 * 16:
+			up_speeds.append(step.length())
+		elif x > 21.5 * 16 and x < 23.5 * 16:
+			down_speeds.append(step.length())
+		if x > 26 * 16:
+			break
+	check(airborne == 0, "never leaves the ground over the ramps (%d frames in the air)" % airborne)
+	check(not up_speeds.is_empty() and up_speeds.min() > p.tuning.run_speed * 0.9,
+		"runs up at full speed along the slope (slowest %.0f px/s)" % (up_speeds.min() if not up_speeds.is_empty() else 0.0))
+	check(not down_speeds.is_empty() and down_speeds.max() < p.tuning.run_speed * 1.1 and down_speeds.min() > p.tuning.run_speed * 0.9,
+		"and down at the same speed (%.0f to %.0f px/s)" % [down_speeds.min() if not down_speeds.is_empty() else 0.0, down_speeds.max() if not down_speeds.is_empty() else 0.0])
+	check(absf(p.global_position.y - 12 * 16) < 1.0, "and is back on the floor below (y %.1f)" % p.global_position.y)
+	check(p.visual.position.y == 0.0, "where the sprite stands on its own feet again")
+	check(p.global_position.x > x0 + 300.0, "having crossed it all")
+	# Stand still halfway up a ramp: no creeping down it.
+	p.teleport(Vector2(12.5 * 16, 9.5 * 16 - 2.0))
+	p.input.move_x = 0
+	await frames(20)
+	var rest := p.global_position
+	await frames(40)
+	check(p.is_on_floor() and rest.distance_to(p.global_position) < 0.5,
+		"stands still on a slope (moved %.2f px)" % rest.distance_to(p.global_position))
+	# The box rests on its corner; the sprite is drawn down onto the slope.
+	check(p.visual.position.y > Player.BODY_SIZE.x * 0.5 - 1.5, "the feet are drawn on the slope (sunk %.1f px)" % p.visual.position.y)
+	# And a jump from a slope is the same jump as from flat ground.
+	var vy: Array[float] = []
+	for at: Vector2 in [Vector2(5.5 * 16, 12 * 16), rest]:
+		p.teleport(at)
+		p.velocity = Vector2.ZERO
+		await frames(10)
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(1)
+		p.input.jump_pressed = false
+		vy.append(-p.velocity.y)
+		await frames(50)
+	p.input.jump_held = false
+	check(vy[0] > 300.0 and absf(vy[1] - vy[0]) < 1.0, "a jump from a slope is a full jump (%.1f, flat %.1f)" % [vy[1], vy[0]])
+	room.free()
+
+
+## A slope's face is floor, not a wall: with the Climbing Glove, falling against
+## it never catches you in a wall slide, and the ledge clip leaves it alone.
+func test_a_slope_is_floor_not_a_wall() -> void:
+	var room := make_room(RAMP)
+	var p := make_player(room, Vector2i(4, 11), {"glove": true})
+	await _settle(p)
+	var slid := false
+	var walled := false
+	# Fall onto each ramp's face, pushing into it.
+	for start: Array in [[Vector2(10.6 * 16, 7 * 16), 1], [Vector2(23.4 * 16, 7 * 16), -1]]:
+		p.teleport(start[0])
+		p.velocity = Vector2.ZERO
+		for i in 60:
+			p.input.move_x = start[1]
+			await frames(1)
+			slid = slid or p.is_wall_sliding
+			walled = walled or p.wall_dir != 0
+			if p.is_on_floor() and i > 5:
+				break
+		check(p.is_on_floor(), "lands on the slope (%s)" % ("/" if start[1] > 0 else "\\"))
+	p.input.move_x = 0
+	check(not walled, "a slope is never a wall")
+	check(not slid, "and never catches you in a slide")
+	# A real wall still does.
+	p.teleport(Vector2(1.5 * 16 + 1.0, 6 * 16))
+	p.velocity = Vector2.ZERO
+	var caught := false
+	for i in 30:
+		p.input.move_x = -1
+		await frames(1)
+		caught = caught or p.is_wall_sliding
+	p.input.move_x = 0
+	check(caught, "while the room's wall still catches you")
+	room.free()
+
+
+## Things that ask the room what is solid (seeds, globs, bolts) see the diagonal.
+func test_a_slope_is_solid_below_its_diagonal() -> void:
+	var room := make_room(RAMP)
+	# `/` at (10, 11) rises east; `\` at (23, 11) rises west.
+	check(room.is_solid_at(Vector2(10 * 16 + 14, 11 * 16 + 6)), "/ is solid under its high side")
+	check(not room.is_solid_at(Vector2(10 * 16 + 2, 11 * 16 + 6)), "/ is open over its low side")
+	check(room.is_solid_at(Vector2(23 * 16 + 2, 11 * 16 + 6)), "\\ is solid under its high side")
+	check(not room.is_solid_at(Vector2(23 * 16 + 14, 11 * 16 + 6)), "\\ is open over its low side")
+	room.free()

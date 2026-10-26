@@ -59,6 +59,9 @@ var _respawn_timer := 0.0
 func _ready() -> void:
 	collision_layer = Player.LAYER_ENEMY
 	collision_mask = Player.LAYER_WORLD
+	# A 45-degree slope is floor, as it is for the player (design bible 6.1).
+	floor_max_angle = deg_to_rad(46.0)
+	floor_snap_length = 4.0
 	add_to_group("enemy")
 	add_to_group("pogo")
 	var shape := CollisionShape2D.new()

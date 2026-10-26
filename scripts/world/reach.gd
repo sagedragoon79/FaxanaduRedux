@@ -47,7 +47,9 @@ const POD_CATCH := 9
 const STRIDE_REACH := 3
 const DROP_DRIFT := 4
 const RISE_FROM_FLOOR_DOOR := 4
-const SOLID := "#CJu"
+## Slopes (`/`, `\`) count as whole blocks: a ramp reads as a stair of
+## one-tile steps, which the model climbs with hops, so it never claims more.
+const SOLID := "#CJu/\\"
 ## Tiles the body can't stand in (hazards).
 const HAZARD := "^o"
 

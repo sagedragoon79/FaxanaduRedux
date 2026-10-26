@@ -65,6 +65,14 @@ label(158, 13, "Drop down to loop")
 for (x0, y) in [(92, 36), (98, 32), (92, 28), (98, 24), (102, 21)]:
     rect(x0, y, x0 + 4, y, '-')
 label(90, 38, "One-way stairs (down+jump drops)")
+# Lower right: a hill of 45-degree slopes, 4 tiles up and down (design bible 6.1)
+for i in range(4):
+    g[39 - i][136 + i] = '/'
+    rect(137 + i, 39 - i, 137 + i, 39)
+    g[39 - i][147 - i] = '\\'
+    rect(146 - i, 39 - i, 146 - i, 39)
+rect(140, 36, 143, 39)
+label(134, 31, "Slopes: run up and down")
 # Lower right: combat arena
 g[39][118] = 'M'
 g[33][132] = 'H'

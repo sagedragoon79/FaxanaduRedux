@@ -274,7 +274,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Ground acceleration | 1,800 px/s² (reaches max in about 0.09 s) |
 | Ground deceleration | 2,600 px/s² |
 | Turnaround boost | deceleration x 1.6 when input opposes velocity |
-| Slope handling | snap to slopes up to 45°, no speed loss going up |
+| Slope handling | snap to slopes up to 45°, no speed loss going up. Built in pass 115: 45° slope tiles (legend `/` rising east, `\` rising west) in every zone's tileset. You run up and down them at full run speed along the slope without leaving the ground (4 px floor snap), stand still on one without creeping, and jump from one as from flat ground. A slope's face is floor, never a wall: the Climbing Glove doesn't catch on it and the ledge clip leaves it alone. The box rests on its downhill corner, so the sprite is drawn down onto the slope (up to 6 px). Walkers treat a ramp as the end of their patrol. In the gym's hill, Leaf Landing's hump, the king's dais, the Spring of Sky's dais and the Ore Vault's mound |
 
 ### 6.2 Jump
 

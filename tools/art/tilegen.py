@@ -9,7 +9,8 @@ Tileset atlas (16 world px tiles at 2x render density, so 32 px each; 8 columns)
   rows 0-5: the 47 "blob" autotiles, in the order of blob_masks() below
             (scripts/world/tileset_factory.gd computes the same list)
   row 6:    one-way platform, amber, 2 interior tiles one shade darker (two
-            tiles from open air) and 2 two shades darker (three or more)
+            tiles from open air) and 2 two shades darker (three or more), then
+            the two 45-degree slopes: "/" rising to the east, "\\" rising to the west
 Backgrounds: <zone>_far.png and <zone>_mid.png, 640x480, tile horizontally.
 
 Usage: python3 tools/art/tilegen.py
@@ -547,6 +548,27 @@ def paint_amber(img, ox, oy):
         img.putpixel((ox + bx, oy + by), c("gold-7"))
 
 
+def paint_slope(img, ox, oy, zone, rising_east, seed):
+    """A 45-degree slope (design bible 6.1): the zone's capped ground tile,
+    sheared down column by column so its cap runs along the diagonal. Solid
+    below the diagonal, clear above; it meets ground on its high side and below."""
+    tmp = Image.new("RGBA", (T, T), CLEAR)
+    paint_tile(tmp, 0, 0, E | S | W | SE | SW, zone, seed)
+    for x in range(T):
+        drop = T - 1 - x if rising_east else x
+        for y in range(T):
+            sy = y - drop
+            img.putpixel((ox + x, oy + y), tmp.getpixel((x, sy)) if sy >= 0 else CLEAR)
+    # A dark outline one world pixel thick just above the cap, so the diagonal
+    # reads against the sky the way a flat top's moss does.
+    out = c(ZONES[zone]["outline"])
+    for x in range(T):
+        drop = T - 1 - x if rising_east else x
+        for k in range(1, D):
+            if drop - k >= 0:
+                img.putpixel((ox + x, oy + drop - k), out)
+
+
 def build_tileset(zone):
     masks = blob_masks()
     assert len(masks) == 47
@@ -560,6 +582,8 @@ def build_tileset(zone):
     for k in range(4):
         paint_tile(img, (2 + k) * T, 6 * T, 255, zone, 101 + k)
         darken(img, (2 + k) * T, 6 * T, 1 if k < 2 else 2)
+    paint_slope(img, 6 * T, 6 * T, zone, True, 121)
+    paint_slope(img, 7 * T, 6 * T, zone, False, 122)
     TILES.mkdir(parents=True, exist_ok=True)
     img.save(TILES / f"{zone}.png")
 
