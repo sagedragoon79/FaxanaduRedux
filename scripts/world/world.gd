@@ -141,12 +141,22 @@ func _catalog_room(room_id: String, text: String) -> void:
 			doors[n] = {"rect": found[n].rect, "edge": found[n].edge, "target": parts[1].strip_edges(), "target_door": int(parts[2])}
 	var shrines: Array[Vector2i] = []
 	var treasures: Array[String] = []
+	var kinds := {}
+	for spec: String in parsed.lists.get("lock", []):
+		var l := spec.split(",")
+		if l.size() == 3:
+			kinds[Vector2i(int(l[0]), int(l[1]))] = l[2].strip_edges()
+	var locks: Array[Dictionary] = []
 	for y in grid.size():
 		for x in grid[y].length():
 			if grid[y][x] == "S":
 				shrines.append(Vector2i(x, y))
 			elif TREASURE_CHARS.contains(grid[y][x]):
 				treasures.append("%s:%d,%d" % [room_id, x, y])
+			elif grid[y][x] in ["J", "g"]:
+				var cell := Vector2i(x, y)
+				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "jack")
+				locks.append({"cell": cell, "kind": kind, "id": "%s:%d,%d" % [room_id, x, y]})
 	catalog[room_id] = {
 		"name": header.get("name", room_id),
 		"zone": header.get("zone", ""),
@@ -159,6 +169,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"treasures": treasures,
 		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
 		"secret": not parsed.lists.get("secret", []).is_empty(),
+		## Its key doors, `{cell, kind, id}`; the map marks the ones still shut.
+		"locks": locks,
 	}
 
 
