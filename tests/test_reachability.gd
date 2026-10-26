@@ -8,6 +8,9 @@ const PICKUPS := "GXOdhnzLWF*$SN&{"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
+## Caches behind cracked stone outside the Mattock rooms (pass 135): the town
+## shows you one from the first step, and only the Mattock opens it.
+const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
 ## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5).
@@ -114,7 +117,7 @@ func test_with_glove_everything_is_reachable() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]) and not MATTOCK_ROOMS.has(p[0]) \
-				and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+				and not WIND_SECRETS.has([p[0], p[2], p[3]]) and not MATTOCK_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
 	var opened := MATTOCK_ROOMS.filter(func(id: String) -> bool: return rooms.has(id))
@@ -126,6 +129,16 @@ func test_amber_secrets_need_the_spring() -> void:
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	for s: Array in AMBER_SECRETS:
 		check(not reach.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach until the sap hardens" % [s])
+
+
+func test_mattock_secrets_need_the_mattock() -> void:
+	var reach := Reach.new(_texts(), {"glove": true, "amber": true}, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var dug := Reach.new(_texts(), {"glove": true, "amber": true, "mattock": true}, true)
+	var dug_nodes := dug.reachable(dug.spot_of(START_ROOM, "P"))
+	for s: Array in MATTOCK_SECRETS:
+		check(not reach.touchable(nodes, s[0], s[1], s[2]), "%s waits behind cracked stone" % [s])
+		check(dug.touchable(dug_nodes, s[0], s[1], s[2]), "%s opens to the Mattock" % [s])
 
 
 func test_no_soft_locks_with_glove() -> void:
@@ -141,7 +154,8 @@ func test_amber_keeps_everything_reachable() -> void:
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not MATTOCK_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not MATTOCK_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]) \
+				and not MATTOCK_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with amber, every pickup is still reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
