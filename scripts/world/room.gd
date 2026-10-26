@@ -495,6 +495,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_spawn_enemy(BarkKnight.new(), bottom_center)
 		";":
 			_spawn_enemy(SeedBomber.new(), center)
+		"?":
+			_spawn_enemy(MarshHag.new(), bottom_center)
 		"t":
 			_spawn_enemy(ThunderBeetle.new(), bottom_center)
 		"y":

@@ -730,6 +730,44 @@ def main():
     spray = highpass(noise(d) * (np.random.default_rng(31).random(n) > 0.9), 3000) * env(n, 0.01, 1.2) * 0.5
     save("seed_burst", mix(crack, body, spray), 0.7)
 
+    # Marsh Hag (pass 119). The hex: a dry cackle, four falling "heh"s through a
+    # nasal band, over bog bubbles welling up faster under the mark.
+    d = 0.6
+    n = int(RATE * d)
+    t = t_axis(d)
+    cackle = np.zeros(n)
+    for k in range(4):
+        st = int(RATE * (0.02 + k * 0.11))
+        ln = int(RATE * 0.08)
+        f0 = 520 - k * 45
+        v = osc(slide(f0 * 1.15, f0, ln / RATE), "saw", 0.5) * env(ln, 0.005, 1.6)
+        v = lowpass(highpass(v, 700), 2600)
+        cackle[st:st + ln] += v[:max(0, min(ln, n - st))]
+    rate = 6 + 30 * (t / d)
+    pops = (np.sin(2 * np.pi * np.cumsum(rate) / RATE) > 0.9).astype(float)
+    bub = lowpass(osc(slide(180, 420, d), "sine") * pops, 1200) * 0.6
+    save("hag_hex", mix(cackle * 0.8, bub) * env(n, 0.05, 0.6), 0.5)
+
+    # The mire grasp: a wet squelch as the mud hand bursts up, and a thick slap.
+    d = 0.32
+    n = int(RATE * d)
+    squelch = lowpass(noise(d), slide(1800, 250, d, 0.6)) * env(n, 0.002, 1.6)
+    gulp = lowpass(osc(slide(90, 200, 0.08), "sine"), 600) * env(int(RATE * 0.08), 0.001, 1.0)
+    out = squelch.copy()
+    out[:len(gulp)] += gulp * 0.9
+    save("mire_grasp", out, 0.6)
+
+    # Struck mid-hex: the staff clatters into the mud and she croaks.
+    d = 0.4
+    n = int(RATE * d)
+    clack = np.zeros(n)
+    for st in (0.0, 0.07, 0.12):
+        i = int(RATE * st)
+        ln = int(RATE * 0.05)
+        clack[i:i + ln] += lowpass(highpass(noise(0.05), 900), 3500)[:ln] * env(ln, 0.001, 3.0)
+    croak = lowpass(osc(slide(240, 140, d), "saw", 0.4), 900) * (np.sin(2 * np.pi * 34 * t_axis(d)) > 0).astype(float) * env(n, 0.05, 1.0) * 0.5
+    save("hag_fumble", mix(clack, croak), 0.55)
+
     # The Guru Trials (pass 116). Carried into the mantra-space: a shimmer
     # rising through a fifth, like the room drawing a breath.
     d = 0.6
