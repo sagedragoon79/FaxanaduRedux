@@ -749,6 +749,29 @@ func test_the_gate_hall_has_a_shrine() -> void:
 
 ## Eolis of Old (design bible 11, pass 152): a hidden room behind the Temple of
 ## Mantras, drawn as the NES drew it, with a four-voice chip tune.
+func test_retro_rooms_keep_everything_inside_the_frame() -> void:
+	# Playtest: Eolis of Old's way out sat behind the 4:3 frame's black bar.
+	var cols := RetroFilter.visible_columns()
+	check(cols == Vector2i(5, 34), "a one-screen room shows columns 5 to 34 in the frame (%s)" % cols)
+	var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/eolis/old_eolis.room"))
+	check(str(parsed.header.get("retro", "")) == "true", "Eolis of Old is a retro room")
+	var grid: Array[String] = parsed.grid
+	var hidden := 0
+	for y in grid.size():
+		for x in grid[y].length():
+			if (x < cols.x or x > cols.y) and grid[y][x] != "#":
+				hidden += 1
+	check(hidden == 0, "every column outside the frame is wall (%d open cells hidden)" % hidden)
+	var doors := Room.scan_doors(grid)
+	for n: int in doors:
+		var r: Rect2i = doors[n].rect
+		check(r.position.x - 1 >= cols.x and r.end.x <= cols.y, "door %d and its frame are in view (%s)" % [n, r])
+	for key: String in ["sign", "chest", "prop"]:
+		for spec: String in parsed.lists.get(key, []):
+			var x := int(spec.split(",")[0])
+			check(x >= cols.x and x <= cols.y, "%s at column %d is in view" % [key, x])
+
+
 func test_eolis_of_old_hides_behind_the_temple() -> void:
 	var w := make_world({}, "eolis/guru_temple", cell_feet(30, 19))
 	await frames(5)
