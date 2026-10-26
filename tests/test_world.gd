@@ -595,6 +595,39 @@ func test_the_town_speaks_of_the_blooming_tree() -> void:
 	GameState.new_game()
 
 
+## Victim (pass 145): a town in the fog is a string of warm pockets. Its lamp
+## posts burn holes in the murk, its houses are lit from the first visit (its
+## people never left), and the Feather Hollow's west shelf is the way in.
+func test_victims_lamps_burn_pockets_in_the_fog() -> void:
+	var w := make_world({}, "mist/victim", cell_feet(40, 19))
+	await frames(3)
+	var lamps: Array = []
+	var houses := 0
+	for c in w.room.get_children():
+		if c is TownLamp:
+			lamps.append(c)
+		elif c is HouseFront:
+			houses += 1
+			check((c as HouseFront).style == "mist" and (c as HouseFront).lit(), "a boardwalk house is lit before any spring flows")
+	check(lamps.size() >= 4 and houses >= 3, "Victim has its lamps (%d) and houses (%d)" % [lamps.size(), houses])
+	check(w.fog.visible and w.fog.density > 0.0 and w.fog.density < Fog.ZONES["mist"], "the fog lies over the town, thinner than out in the marsh (%.2f)" % w.fog.density)
+	var lamp := lamps[0] as TownLamp
+	check(lamp.is_in_group("light"), "a lamp is a light")
+	w.player.global_position = Vector2(lamp.global_position.x + 400, w.player.global_position.y)
+	await frames(2)
+	var seen := false
+	for l: Vector3 in w.fog.lights:
+		if is_equal_approx(l.x, lamp.global_position.x) and is_equal_approx(l.y, lamp.global_position.y):
+			seen = l.z >= 80.0
+	check(seen, "and the fog clears a pocket around its flame")
+	check(w.fog.clear_at(lamp.global_position + Vector2(0, 20)) > 0.5, "so the street under it can be seen")
+	check(w.fog.clear_at(lamp.global_position + Vector2(170, 0)) < 0.5, "while the dark between the lamps stays dark")
+	# The door east is the Feather Hollow's west shelf.
+	w._enter("mist/feather_hollow")
+	await frames(2)
+	check(w.room.doors.has(2) and String(w.room.doors[2].target) == "mist/victim", "the Feather Hollow's west door leads to Victim")
+
+
 ## People a player meets once the Evil One is dead: everyone but the Trunk's
 ## widow and Old Wena before their springs, who are swapped for glad selves.
 func _stands_in_a_living_town(id: String) -> bool:

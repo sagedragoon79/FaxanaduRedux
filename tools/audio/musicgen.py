@@ -524,6 +524,30 @@ def track_mist():
     return s.render(reverb=0.65)
 
 
+def track_victim():
+    """Victim, the lamp town in the fog: the Mist's drowned waltz come in out of
+    the cold. D major (the relative of the Mist's B minor) in 3/4 at 84: the
+    same music-box pluck on two and three, but dry and near, warm pads instead of
+    filtered ones, a walking bass, a lamp-bell on every other downbeat and a
+    soft lead that sings the tune the Mist only hums."""
+    rng = np.random.default_rng(311)
+    s = Song(bpm=84, bars=16, beats=3)
+    root, scale = 50, SCALES["major"]  # D major
+    prog = [0, 4, 5, 3, 0, 4, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.1), b * 3, rng.uniform(-0.5, 0.5), 0.26)
+        for k, step in enumerate((0, 2, 4)):
+            s.add(bass(midi_hz(scale_note(root - 12, scale, deg + step)), s.beat * 0.9), b * 3 + k, 0, 0.42 if k == 0 else 0.3)
+        for k in (1, 2):
+            s.add(pluck(midi_hz(tones[k] + 12), s.beat * 0.8, bright=1600), b * 3 + k, 0.35, 0.3)
+        if b % 2 == 0:
+            s.add(bell(midi_hz(tones[0] + 24), s.beat * 2.5), b * 3, -0.45, 0.16)
+    melody(s, rng, root, scale, prog, lead, start_bar=2, octave=12, pan=-0.15, gain=0.3, density=0.45)
+    return s.render(reverb=0.45)
+
+
 def amb_mist():
     """Fog on a drowned marsh: a damp hush, water lapping at the boardwalks, frogs
     and far-off bird calls, and now and then the creak of a lantern on its cord."""
@@ -1511,6 +1535,7 @@ TRACKS = {
     "zorugeriru": track_zorugeriru,
     "forepaw": track_forepaw,
     "mist": track_mist,
+    "victim": track_victim,
     "branches": track_branches,
     "conflate": track_conflate,
     "pakukame": track_pakukame,
