@@ -879,6 +879,41 @@ def main():
     creak = lowpass(highpass(noise(d), 700), 2200) * (np.sin(2 * np.pi * 45 * t_axis(d)) > 0.5).astype(float) * env(n, 0.02, 2.0) * 0.35
     save("ladder", mix(knock, creak), 0.5)
 
+    # The map (pass 128): a sheet of parchment. Opening it is a rustle that
+    # crackles as it unrolls and settles with a soft flap on the table.
+    d = 0.42
+    n = int(RATE * d)
+    t = t_axis(d)
+    grain = (rng.uniform(0, 1, n) > 0.93).astype(float) * rng.uniform(-1, 1, n)
+    crinkle = lowpass(highpass(grain + noise(d) * 0.25, 1500), slide(3200, 5200, d)) * np.clip(np.sin(np.pi * t / 0.34), 0, 1)
+    flap = lowpass(noise(0.08), 700) * env(int(RATE * 0.08), 0.004, 2.5)
+    flap = np.pad(flap, (int(RATE * 0.32), 0))[:n] * 0.9
+    save("map_open", mix(crinkle * 0.7, flap), 0.65)
+
+    # Closing: quicker, the sheet folded in on itself with a dull pat.
+    d = 0.24
+    n = int(RATE * d)
+    t = t_axis(d)
+    grain = (rng.uniform(0, 1, n) > 0.92).astype(float) * rng.uniform(-1, 1, n)
+    crinkle = lowpass(highpass(grain + noise(d) * 0.25, 1300), slide(4600, 2400, d)) * np.clip(np.sin(np.pi * t / 0.2), 0, 1)
+    pat = lowpass(osc(slide(160, 90, 0.06), "sine"), 500) * env(int(RATE * 0.06), 0.002, 2.0)
+    pat = np.pad(pat, (int(RATE * 0.17), 0))[:n]
+    save("map_close", mix(crinkle * 0.7, pat * 0.8), 0.55)
+
+    # A pin pressed into the parchment: a tiny tick and a short bright ring.
+    d = 0.18
+    n = int(RATE * d)
+    tick = highpass(noise(0.01), 2500) * env(int(RATE * 0.01), 0.0005, 3.0)
+    ring = osc(np.full(n, 2350.0), "sine") * 0.5 + osc(np.full(n, 3525.0), "sine") * 0.2
+    save("pin", mix(tick, ring * env(n, 0.001, 4.0) * 0.5), 0.6)
+
+    # Lifting it: the ring first, falling, and the tick of the pin coming free.
+    d = 0.16
+    n = int(RATE * d)
+    ring = osc(slide(2350, 1700, d), "sine") * env(n, 0.001, 4.0) * 0.4
+    tick = np.pad(highpass(noise(0.008), 2500) * env(int(RATE * 0.008), 0.0005, 3.0), (int(RATE * 0.04), 0))
+    save("pin_lift", mix(ring, tick), 0.5)
+
 
 if __name__ == "__main__":
     main()

@@ -59,7 +59,7 @@ func toggle() -> void:
 	is_open = not is_open
 	visible = is_open
 	get_tree().paused = is_open
-	Sfx.play("blip", 0.0, -4.0)
+	Sfx.play("map_open" if is_open else "map_close", 0.04)
 
 
 ## Drops a pin where the player stands, or lifts the one already there.
@@ -67,7 +67,7 @@ func pin() -> String:
 	if world == null or world.room == null or world.player == null:
 		return ""
 	var result := GameState.toggle_pin(world.room.id, world.player.global_position)
-	Sfx.play("fizzle" if result == "full" else "blip", 0.0, -2.0 if result == "placed" else -6.0)
+	Sfx.play({"full": "fizzle", "placed": "pin"}.get(result, "pin_lift"), 0.04)
 	return result
 
 
