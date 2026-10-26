@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
 the game draws on top (the Monodron's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1276,6 +1276,95 @@ def bark_set(armored):
 BARK_KNIGHT = bark_set(True) + bark_set(False)
 
 
+# --- Seed Bomber: a pod-bellied canopy bird that sows the Tree from above ---------
+# Leaf wings and a husk of hard seeds for a belly; the seed it drops is drawn in code
+# (scripts/enemies/bomber_seed.gd) in the same husk colors. 2x render density.
+
+SB_LEAF = mat("leaf", 6, 5, 3, 1)
+SB_LEAF_BACK = mat("leaf", 4, 3, 2, 0)
+SB_RIB = mat("leaf", 2, 2, 1, 1)
+SB_HUSK = mat("bark", 5, 4, 2, 0)
+SB_HUSK_HOT = mat("gold", 5, 4, 3, 1)
+SB_FEATHER = mat("leaf", 4, 3, 2, 0)
+SB_BEAK = mat("gold", 6, 5, 4, 2)
+SB_SCALE = 2
+
+
+def seed_bomber(wing=40.0, swell=0.0, hot=False, empty=False, tilt=0.0, dazed=False):
+    """wing: the wings' angle in degrees above straight back (up is positive); swell:
+    0 resting, 1 squeezing the seeds out; empty: the husk hangs open after a drop;
+    tilt turns the whole bird (downed, it lies on its back)."""
+    def render(_):
+        cv = Canvas(56, 44, (28, 22), SB_SCALE)
+        rot = math.radians(tilt)
+
+        def r(p):
+            return (p[0] * math.cos(rot) - p[1] * math.sin(rot), p[0] * math.sin(rot) + p[1] * math.cos(rot))
+
+        def leaf_wing(shoulder, ang, material, size):
+            a = math.radians(180 - ang)
+            u = (math.cos(a), -math.sin(a))
+            v = (-u[1], u[0])
+            ln = 15 * size
+            pts = []
+            for k, w in ((0.0, 0.0), (0.2, 3.2), (0.5, 4.4), (0.8, 3.0), (1.0, 0.0), (0.8, -2.0), (0.5, -2.8), (0.2, -2.0)):
+                pts.append((shoulder[0] + u[0] * ln * k + v[0] * w * size, shoulder[1] + u[1] * ln * k + v[1] * w * size))
+            cv.part(cv.polygon([r(q) for q in pts]), material)
+            tip = (shoulder[0] + u[0] * ln * 0.92, shoulder[1] + u[1] * ln * 0.92)
+            cv.flat(cv.capsule(r(shoulder), r(tip), 0.3), PAL["leaf-2"])
+
+        leaf_wing((-1, -4), wing + 14, SB_LEAF_BACK, 0.9)
+        # Tail: three leaf fronds fanned behind.
+        for da, ln in ((-12, 7.0), (6, 8.0), (22, 6.5)):
+            a = math.radians(180 + da)
+            tip = (-6 + math.cos(a) * ln, -2 + math.sin(a) * ln)
+            cv.part(cv.capsule(r((-6, -2)), r(tip), 1.4), SB_FEATHER)
+        # The husk belly: a bark pod of seeds, seamed, swelling before the drop.
+        bx, by = 0.0, 3.5 + swell * 0.8 + (1.5 if empty else 0.0)
+        rx, ry = 7.0 + swell * 1.6 - (1.2 if empty else 0.0), 5.5 + swell * 1.6 - (1.0 if empty else 0.0)
+        pod = cv.ellipse(r((bx, by)), rx, ry)
+        cv.part(pod, SB_HUSK_HOT if hot else SB_HUSK, deep=True)
+        for sx in (-0.45, 0.0, 0.45):
+            seam = cv.capsule(r((bx + sx * rx, by - ry * 0.7)), r((bx + sx * rx * 0.8, by + ry * 0.75)), 0.35) & pod
+            cv.flat(seam, PAL["gold-6"] if hot else PAL["bark-1"])
+        if empty:
+            # Split open along the bottom: a dark mouth where the seed fell out.
+            cv.flat(cv.ellipse(r((bx, by + ry * 0.7)), rx * 0.5, 1.0) & pod, DARK)
+        else:
+            for sx in (-0.25, 0.25):
+                cv.pixel(r((bx + sx * rx, by + ry * 0.85)), PAL["gold-6"] if hot else PAL["bark-5"])
+        # Body and head: a leafy breast and a round head with a hooked gold beak.
+        cv.part(cv.ellipse(r((0, -4)), 6.0, 4.2), SB_FEATHER, deep=True)
+        hd = r((6.5, -7.5))
+        cv.part(cv.ellipse(hd, 3.6, 3.3), SB_LEAF)
+        cv.part(cv.polygon([r((9.0, -8.6)), r((12.6, -7.0)), r((10.6, -5.2)), r((9.0, -6.0))]), SB_BEAK)
+        cv.part(cv.polygon([r((5.0, -10.5)), r((3.6, -14.5)), r((7.0, -10.8))]), SB_LEAF)  # a leaf crest
+        eye = r((7.6, -8.4))
+        if dazed:
+            cv.pixel(eye, PAL["stone-6"])
+            cv.pixel(r((8.4, -7.6)), PAL["stone-6"])
+        else:
+            cv.pixel(eye, PAL["ember-6"] if hot else DARK)
+        # Feet tucked under the husk.
+        for fx in (-2.5, 2.0):
+            cv.part(cv.capsule(r((fx, by + ry - 0.5)), r((fx + 0.8, by + ry + 2.0)), 0.6), SB_BEAK)
+        leaf_wing((0, -5), wing, SB_LEAF, 1.0)
+        img, mask = cv.finish()
+        return img, mask, {}
+    return render
+
+
+SEED_BOMBER = [
+    ("fly", [seed_bomber(70), seed_bomber(25), seed_bomber(-25), seed_bomber(25)], [0, 1, 2, 3], 10, True),
+    ("windup", [seed_bomber(95, 0.8, True), seed_bomber(100, 1.0, True)], [0, 1], 16, True),
+    ("drop", [seed_bomber(-10, 0.0, empty=True)], [0], 1, False),
+    ("empty", [seed_bomber(70, empty=True), seed_bomber(25, empty=True), seed_bomber(-25, empty=True), seed_bomber(25, empty=True)],
+     [0, 1, 2, 3], 10, True),
+    ("downed", [seed_bomber(-60, empty=True, tilt=170, dazed=True), seed_bomber(-50, empty=True, tilt=165, dazed=True)], [0, 1], 3, True),
+    ("stagger", [seed_bomber(110, tilt=-25)], [0], 1, False),
+]
+
+
 def autosprite_only(_):
     """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
     animation it names is swapped for the imported frames."""
@@ -1309,6 +1398,7 @@ def main():
     write_sheet("bog_myconid", (40, 40), (20, 38), BOG_MYCONID, lambda r: r(None), density=BM_SCALE)
     write_sheet("drowned_dwarf", (72, 64), (32, 61), DROWNED_DWARF, lambda r: r(None), density=DD_SCALE)
     write_sheet("bark_knight", (112, 64), (36, 61), BARK_KNIGHT, lambda r: r(None), density=BK_SCALE)
+    write_sheet("seed_bomber", (56, 44), (28, 22), SEED_BOMBER, lambda r: r(None), density=SB_SCALE)
     write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
