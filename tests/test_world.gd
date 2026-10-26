@@ -745,3 +745,43 @@ func test_the_gate_hall_has_a_shrine() -> void:
 		if c is SaveShrine:
 			shrines += 1
 	check(shrines == 1, "the Upper Gate-Hall has a shrine to rest at")
+
+
+## Eolis of Old (design bible 11, pass 152): a hidden room behind the Temple of
+## Mantras, drawn as the NES drew it, with a four-voice chip tune.
+func test_eolis_of_old_hides_behind_the_temple() -> void:
+	var w := make_world({}, "eolis/guru_temple", cell_feet(30, 19))
+	await frames(5)
+	check(not w.retro.visible and Music.track == "eolis", "the temple is drawn and scored as usual (%s)" % Music.track)
+	check(not GameState.flag("secret:eolis/guru_temple"), "the chamber starts hidden")
+	# Walk east into the stone: it is a fake wall, and the chamber behind is found.
+	var p := w.player
+	p.input.move_x = 1
+	for i in 120:
+		await frames(1)
+		if p.global_position.x > 36.5 * Room.TILE:
+			break
+	p.input.move_x = 0
+	check(p.global_position.x > 36.0 * Room.TILE, "the player walks through the temple's east wall (%s)" % p.global_position)
+	check(GameState.flag("secret:eolis/guru_temple"), "and finds the hidden chamber")
+	await frames(10)
+	p.input.up_pressed = true
+	p.input.up = true
+	await frames(1)
+	p.input.up_pressed = false
+	p.input.up = false
+	for i in 120:
+		await frames(1)
+		if not w.busy and w.room.id == "eolis/old_eolis":
+			break
+	check(w.room.id == "eolis/old_eolis", "Up at the chamber's door goes to Eolis of Old (%s)" % w.room.id)
+	check(w.retro.visible and RetroFilter.is_retro(w.room), "Eolis of Old is drawn through the NES filter")
+	check(w.retro.layer < 5, "under the game's UI layer, so the HUD is untouched")
+	check(Music.track == "old_eolis", "and plays its chip tune (%s)" % Music.track)
+	var stream := Music.stream_for("old_eolis")
+	check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "the chip tune loads as a loop")
+	check(w.room._chest_gold.values().has(1987), "its chest holds 1987 gold, the year of the original")
+	w.use_door(1)
+	while w.busy:
+		await frames(1)
+	check(w.room.id == "eolis/guru_temple" and not w.retro.visible and Music.track == "eolis", "back in the temple the filter is off and the town theme returns")
