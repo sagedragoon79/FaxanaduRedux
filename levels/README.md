@@ -58,6 +58,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `?` | Marsh Hag (the Mist): keeps her distance and hexes the mire under your feet; strike her mid-hex to break it |
 | `t` | Thunder Beetle (Daybreak: trundles the floor; its shell turns side blows but not a pogo. Near it, its wing cases crackle, then it discharges a ring of lightning (unparryable, above too); spent, it takes full damage) |
 | `y` | Storm Harpy (Daybreak: hangs above and beside you; rears and spreads her wings with a screech, then flings a fan of three parryable feathers (a parried one flies back at her); winded, she sags into reach) |
+| `]` | Spire Sentinel (Daybreak: a stone knight that moves only while your back is turned and turns every blow; raises its halberd, then slams in front of it, parryable; cracked open after a parry or a miss) |
 | `q` | Crystal Dwarf (Dartmoor: trudges toward you; raises his crystal fist, then drives it into the floor and a chain of crystal spikes erupts toward you (unparryable: jump them); his crystal back turns blows from behind except from above; rooted after, he takes every blow) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
 | `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Deluge bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |

@@ -842,6 +842,34 @@ def main():
     out[i:] += chime * np.exp(-tc * 6.0)
     save("key_turn", out * env(n, 0.001, 0.3), 0.55)
 
+    # The Spire Sentinel (pass 123). Grinding after you: stone dragged on stone,
+    # a low rumble under gritty scrape.
+    d = 0.45
+    n = int(RATE * d)
+    t = t_axis(d)
+    grit = lowpass(highpass(noise(d), 300), 1400) * (0.6 + 0.4 * np.sin(2 * np.pi * 13 * t))
+    rumble = lowpass(osc(np.full(n, 55.0) + 4 * np.sin(2 * np.pi * 7 * t), "saw"), 300) * 0.6
+    save("sentinel_grind", mix(grit, rumble) * env(n, 0.04, 1.0), 0.5)
+
+    # The halberd raised: stone creaking up over a rising electric hum as the
+    # glyph wakes.
+    d = 0.55
+    n = int(RATE * d)
+    t = t_axis(d)
+    hum = osc(slide(110, 330, d, 0.8), "saw") * 0.35
+    hum = lowpass(hum * (0.7 + 0.3 * np.sin(2 * np.pi * 60 * t)), 2400)
+    creak = lowpass(highpass(noise(d), 600), slide(900, 2600, d)) * (np.sin(2 * np.pi * 21 * t) > 0.3).astype(float) * 0.35
+    save("sentinel_raise", mix(hum, creak) * env(n, 0.25, 0.5), 0.5)
+
+    # The slam: a stone blade into the floor, a deep thud, a crack and grit.
+    d = 0.5
+    n = int(RATE * d)
+    thud = lowpass(osc(slide(140, 45, 0.25, 0.5), "sine"), 400)
+    thud = np.pad(thud, (0, n - len(thud))) * env(n, 0.001, 2.0)
+    crack = lowpass(highpass(noise(d), 1200), 6000) * env(n, 0.0005, 6.0) * 0.6
+    grit = lowpass(noise(d), 1800) * env(n, 0.01, 2.5) * 0.4
+    save("sentinel_slam", mix(thud, crack, grit), 0.65)
+
 
 if __name__ == "__main__":
     main()
