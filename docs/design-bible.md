@@ -211,6 +211,12 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - It is drawn two pixels broader, with a larger smear.
 - Eolis Arms sells it for 2,800 g once the Spring of Sky is restored (10.2). With the Dragon Slayer in hand it shows as owned.
 
+**Battle Helmet (built pass 118):**
+- The shield slot's fourth tier, found and never sold. It lies in a hidden pocket at the meteor's Threshold (`zenis/threshold`), behind fake wall west of the shrine (`secret: 1, 17, 6, 19`), so the Black Onyx's seam shows the way in. It is laid by `prop: x, y, battle_helmet`.
+- Touch it and it goes straight on in the shield's place, like the Dragon Slayer in the blade's. Your health fills to the new top.
+- It guards 70% and its parry turns shots back like the Magic Shield, and it is worth one more mask (+20 HP, `hp` in `data/items.json`). The mask comes from the gear, not the base stat, so a save keeps it through `refresh_stats`.
+- Every shield in a shop shows as owned once you wear it.
+
 **Magic Shield (built pass 91):**
 - It guards 70%, like the Large Shield.
 - A parry also catches small shots no other shield can parry: Sap Spitter globs and Meteor Slug globs (group `small_projectile`). It catches Pakukame's seeds too, which any shield can parry.

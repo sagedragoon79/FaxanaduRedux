@@ -19,7 +19,7 @@ corrupted: true    (optional: foes are grown through with meteor crystal; defaul
 chest_gold: 100    (optional: gold in each chest in this room)
 chest: 2, 19, 900   (optional, repeatable: the chest on tile (2, 19) holds 900 gold instead)
 lock: 4, 19, queen   (optional, repeatable: the `J` on tile (4, 19) is a queen, king, ace or joker door)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Guru Trial), joker_key (the one Joker Key))
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Guru Trial), joker_key (the one Joker Key), battle_helmet (the shield slot's found fourth tier))
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)

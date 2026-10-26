@@ -326,7 +326,8 @@ func refresh_stats(p: Player) -> void:
 	p.tilte_swarm = has_skill("tilte_swarm")
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
-	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0)
+	# The Battle Helmet is worth one mask on top (bible 5.2).
+	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0) + int(GameData.item(eq.shield).get("hp", 0))
 	p.max_mp = float(data.max_mp) + (20.0 if has_skill("clear_mind") else 0.0)
 	p.flask_max = int(data.flask_max) + (1 if has_skill("deep_pockets") else 0)
 	p.hp = mini(p.hp, p.max_hp)
