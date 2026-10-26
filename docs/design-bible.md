@@ -1138,7 +1138,8 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
   - keys from a newer build are kept.
 - **Missing rooms.** A rest in a room this build lacks wakes you at the new-game spot.
 - **Settings.** Each option must be the right type and in range, or it takes its default; only a real keycode is bound.
-- **Tests.** `test_systems.gd` covers each case.
+- **Older files (pass 129).** A settings file from an earlier build has no line for the actions added since. It loads with those actions on their default keys and logs nothing. It had logged an engine error for each missing action.
+- **Tests.** `test_systems.gd` covers each case. `ErrorCatcher` (in `tests/`) lets a test check that a moment logs no engine errors at all.
 
 **Exit rule:** weighted score of at least 95, no category below 85, zero open blocker bugs, and a full bot playthrough from new game to credits succeeds.
 

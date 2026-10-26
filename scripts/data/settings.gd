@@ -54,7 +54,9 @@ static func load_settings() -> void:
 	music_volume = _index(cfg.get_value("audio", "music", music_volume), VOLUME_MAX + 1, music_volume)
 	sound_volume = _index(cfg.get_value("audio", "sound", sound_volume), VOLUME_MAX + 1, sound_volume)
 	for action: String in REBINDABLE:
-		var key: Variant = cfg.get_value("keys", action, null)
+		# A file from an older build lacks the newer actions. A null default
+		# counts as none, and ConfigFile logs an error for each missing key.
+		var key: Variant = cfg.get_value("keys", action, 0)
 		if key is int and key > 0:
 			keys[action] = key
 
