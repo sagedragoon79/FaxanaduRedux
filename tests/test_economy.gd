@@ -941,6 +941,42 @@ func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
 	check(p.gold == 2000 - 500 - 650, "for 1,150 gold (%d left)" % p.gold)
 
 
+## Victim (pass 145): the original's town in the Mist, west of the Feather
+## Hollow. It has a Guru, the key master bible 10.2 puts there, a fogwalker who
+## charts the Mist, and two people who remember the drowned miners.
+func test_victim_has_a_guru_a_keymaster_and_a_fogwalker() -> void:
+	var w := make_world({}, "mist/victim")
+	await frames(2)
+	var ids: Array = []
+	for c in w.room.get_children():
+		if c is Npc:
+			ids.append((c as Npc).npc_id)
+	for id: String in ["guru", "victim_keymaster", "victim_cartographer", "victim_widow", "victim_lamplighter"]:
+		check(ids.has(id), "%s lives in Victim" % id)
+		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
+	for id: String in ["victim_widow", "victim_lamplighter"]:
+		check(GameData.npc(id).lines.size() >= 2 and GameData.npc(id).has("lines_cleared"), "%s has her say, and another once the Tree blooms" % id)
+	var keys: Array = GameData.shop("victim_keys").stock
+	var prices := {}
+	for entry: Dictionary in keys:
+		check(GameData.item(entry.item).has("name"), "the key master's %s is a real item" % entry.item)
+		prices[entry.item] = int(entry.price)
+	check(prices.get("jack_key") == 150 and prices.get("queen_key") == 400, "he cuts Jack (150 g) and Queen (400 g) keys, at bible 10.1's prices")
+	var p := w.player
+	p.gold = 1000
+	check(Shop.buy("victim_keys", keys.find_custom(func(e: Dictionary) -> bool: return e.item == "queen_key"), p), "you can buy a Queen Key")
+	check(GameState.key_count("queen") == 1, "and carry it to the Feather Hollow's vault next door")
+	check(Shop.buy("victim_charts", 0, p) and GameState.has_chart("mist"), "the fogwalker sells the Mist chart")
+	check(p.gold == 1000 - 400 - 500, "for 900 gold in all (%d left)" % p.gold)
+	# The Guru is a stop on the Mantra Path like any other.
+	var guru: Npc = null
+	for c in w.room.get_children():
+		if c is Npc and (c as Npc).npc_id == "guru":
+			guru = c
+	GameState.meet_guru(w.room.id, guru.global_position)
+	check(GameState.data.gurus.has("mist/victim"), "and Victim's Guru joins the Mantra Path")
+
+
 func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
 	# Bible 10.2: Daybreak has a Guru, an armorer, the spell-scroll shop (Fire,
 	# 1,200 g), a grocer and a cartographer.

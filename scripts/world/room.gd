@@ -324,7 +324,15 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			spring.needs_flag = "boss:borabohra"
 			_spawn(spring, pos)
 		"house":
-			_spawn(HouseFront.new(), pos)
+			var house := HouseFront.new()
+			if zone == "mist":
+				# Victim's boardwalk houses: its people never left, so they are lit.
+				house.style = "mist"
+				house.lit_flag = ""
+			_spawn(house, pos)
+		"lamp":
+			# The lantern hangs off the post's arm, over the tile's center.
+			_spawn(TownLamp.new(), pos + Vector2(8, -TownLamp.HEIGHT))
 		"taproot":
 			_spawn(Taproot.new(), pos)
 		"crucible":

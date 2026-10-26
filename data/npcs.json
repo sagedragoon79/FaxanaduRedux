@@ -227,5 +227,33 @@
 			"The old bell cellar? Bramble choked it the year the storm turned. Blades only snag in that stuff.",
 			"Ysolde sells a scroll of Fire. Dry bramble goes up like tinder. I'd do it myself, but I'm too old to aim."
 		]
+	},
+	"victim_keymaster": {
+		"name": "Keymaster Odo", "role": "shop", "shop": "victim_keys",
+		"look": {"robe": "#4a4f3a", "trim": "#c9a24a", "skin": "#d9b08c", "hair": "#6a5a4a", "hat": "cap", "beard": true}
+	},
+	"victim_cartographer": {
+		"name": "Fogwalker Bram", "role": "shop", "shop": "victim_charts",
+		"look": {"robe": "#3a5050", "trim": "#9ad0c8", "skin": "#c9a27a", "hair": "#3a2a20", "hat": "hood"}
+	},
+	"victim_widow": {
+		"lines_cleared": ["The mire gave up its men this morning. They walked out of the water dry, sat on the boardwalk, and asked for bread.", "Garrick does not remember the stair, nor the stone, nor me at first. He remembers the road home. That is enough."],
+		"name": "Marta", "role": "talk",
+		"look": {"robe": "#3d3448", "trim": "#a89cb8", "skin": "#e3cdb5", "hair": "#9a9088", "hat": "hood"},
+		"lines": [
+			"My Garrick was a miner. When the meteor fell, the dwarf king paid gold for every cart of its stone, and Victim's men went down the drowned stair to dig.",
+			"They came back up wet to the bone and would not speak. Then they went back down, and the water closed over them. You have seen them in the mire.",
+			"If you strike one down, be quick. Whatever is left of him in there, I hope it is tired."
+		]
+	},
+	"victim_lamplighter": {
+		"lines_cleared": ["Sun on the boardwalks! Real sun, not lamp-light. I stood in it so long my neck burned.", "I will keep lighting the lamps, mind. Habit. If the fog ever comes back, I will be ready."],
+		"name": "Lamplighter Nell", "role": "talk",
+		"look": {"robe": "#5a4430", "trim": "#f0c02e", "skin": "#efd6b8", "hair": "#a05a2a", "hat": "cap"},
+		"lines": [
+			"Mind the dark between the lamps. Victim was built on the boardwalks before the fog came, and the fog never left.",
+			"I light every lamp at dusk and again at dawn. You cannot tell them apart in here, so I light them twice to be sure.",
+			"East is the Feather Hollow, where the elves' messengers roosted. A pair of winged boots still sits on the perch. No one here can reach it."
+		]
 	}
 }

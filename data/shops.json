@@ -119,5 +119,22 @@
 		"stock": [
 			{"item": "chart_daybreak", "price": 700}
 		]
+	},
+	"victim_keys": {
+		"name": "Odo's Keys and Sundries",
+		"greeting": "Every lock in the Mist, I have cut a key for. Most of them still turn.",
+		"stock": [
+			{"item": "jack_key", "price": 150},
+			{"item": "queen_key", "price": 400},
+			{"item": "ointment", "price": 300},
+			{"item": "elixir", "price": 1500}
+		]
+	},
+	"victim_charts": {
+		"name": "Fogwalker's Charts",
+		"greeting": "I walked the Mist blind for thirty years. Here is what my feet remember.",
+		"stock": [
+			{"item": "chart_mist", "price": 500}
+		]
 	}
 }

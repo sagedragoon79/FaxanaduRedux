@@ -238,7 +238,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one", "sunken", "amb_sunken", "warden"]:
+	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "victim", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one", "sunken", "amb_sunken", "warden"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
 	var w := make_world({}, "trunk/boss_gate")
@@ -258,7 +258,7 @@ func test_tower_rooms_pick_their_ambience_and_theme() -> void:
 	check(Music.track == "tower" and Music.ambience_track == "amb_tower", "the Tower's halls hum with machinery")
 	GameState.set_flag("boss:zoradohna")
 	for stop: Array in [["tower/old_flue", "tower", "amb_heights"], ["tower/rafters", "tower", "amb_heights"],
-			["tower/forepaw", "forepaw", "amb_tower"], ["tower/mine_mouth", "tower", "amb_mine"], ["tower/smelter", "tower", "amb_mine"], ["mist/fog_cut", "mist", "amb_mist"], ["branches/sunlit_bough", "branches", "amb_branches"], ["branches/conflate", "conflate", "amb_branches"]]:
+			["tower/forepaw", "forepaw", "amb_tower"], ["tower/mine_mouth", "tower", "amb_mine"], ["tower/smelter", "tower", "amb_mine"], ["mist/fog_cut", "mist", "amb_mist"], ["mist/victim", "victim", "amb_mist"], ["branches/sunlit_bough", "branches", "amb_branches"], ["branches/conflate", "conflate", "amb_branches"]]:
 		w._enter(stop[0])
 		await frames(1)
 		check(Music.track == stop[1] and Music.ambience_track == stop[2], "%s plays %s over %s (%s, %s)" % [stop[0], stop[1], stop[2], Music.track, Music.ambience_track])
