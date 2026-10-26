@@ -9,6 +9,12 @@ extends RefCounted
 ## would kill you ends the rush instead and returns you to the Guru, whole. The
 ## clock runs from the first arena to the last blow; the best time is kept with
 ## the trials' (`GameState.data.trials`, under RECORD).
+##
+## Heard (pass 157): between fights the arenas play the trials' theme, the
+## mantra-space carrying you on, and each boss brings its own music when it
+## rises. A boss down rings the bronze bell soft as the mantra mends you
+## (rush_mend); the win rings it three times up the chord (rush_won); a fall
+## tolls it low (rush_fall).
 
 ## Boss id and its arena, in the order of the critical path (bible 4.2), the
 ## Drowned Warden of the optional Sunken Spring before Zenis.
@@ -36,6 +42,8 @@ const UNLOCK_FLAG := "lord"
 const MEND := 1.0 / 3.0
 ## Seconds from a boss's fall to the next arena (its banner shows first).
 const NEXT_DELAY := 2.5
+## Between fights: the trials' theme, the mantra-space.
+const MUSIC := "trials"
 
 ## The rush under way: {"index", "time", "back_room", "back_pos"}, or empty.
 static var run := {}
@@ -124,10 +132,13 @@ static func on_boss_down(world: World, p: Player) -> void:
 	if advance():
 		var result := finish()
 		GameState.banner.emit("The Rush Is Won", "%s%s" % [Trials.format_time(result.time), "  A new best!" if result.record else "  Best " + Trials.format_time(result.best)])
-		Sfx.play("trial_record" if result.record else "trial_clear", 0.0)
+		Sfx.play("rush_won", 0.0)
+		if result.record:
+			Sfx.play("trial_record", 0.0, -3.0)
 		world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: back(world, p))
 		return
 	mend(p)
+	Sfx.play("rush_mend", 0.0)
 	GameState.toast.emit("%d of %d. The mantra mends you." % [int(run.index), ORDER.size()])
 	world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: go(world))
 
@@ -137,6 +148,8 @@ static func fall(world: World, p: Player) -> void:
 	if not active():
 		return
 	GameState.banner.emit("The Rush Ends", "Fallen at %d of %d." % [int(run.index) + 1, ORDER.size()])
+	Sfx.play("rush_fall", 0.0)
+	Music.play("", 0.6)
 	back(world, p)
 
 

@@ -1021,6 +1021,8 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 		var boss_id := String(pair[0])
 		check(w.room.id == String(pair[1]), "rush %d is %s's arena (%s)" % [n + 1, boss_id, w.room.id])
 		check(BossRush.current_boss() == boss_id, "on %s" % boss_id)
+		if n < 2:
+			check(Music.track == BossRush.MUSIC, "%s's arena waits under the trials' theme (%s)" % [boss_id, Music.track])
 		var arena: BossArena = w.get_tree().get_first_node_in_group("boss_arena")
 		check(arena != null and arena.boss_id == boss_id, "%s's arena waits" % boss_id)
 		if arena == null:
@@ -1040,8 +1042,15 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 			break
 		if n == 0:
 			p.hp = 4
+		if n == 0:
+			check(Music.track != BossRush.MUSIC, "the boss brings its own music (%s)" % Music.track)
+		Sfx.recent.clear()
 		arena.boss.defeated.emit()
 		await frames(5)
+		if n < BossRush.ORDER.size() - 1:
+			check(Sfx.recent.has("rush_mend") and Music.track == BossRush.MUSIC, "%s down: the bell mends you, the theme returns" % boss_id)
+		else:
+			check(Sfx.recent.has("rush_won") and Sfx.recent.has("trial_record"), "the last down: the bell rings the win, and a first rush is a best")
 		if n == 0:
 			check(p.hp == 4 + ceili(p.max_hp / 3.0) and p.mp == p.max_mp, "a third of your health and all your magic mended (%d)" % p.hp)
 		n += 1
@@ -1060,7 +1069,9 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 	await frames(5)
 	p.hp = 2
 	p._invuln_timer = 0.0
+	Sfx.recent.clear()
 	p.take_damage(5)
+	check(Sfx.recent.has("rush_fall"), "a fall tolls the bell low")
 	await frames(5)
 	check(not BossRush.active() and not p.dead and p.hp == p.max_hp, "a killing blow ends the rush, and you live")
 	check(w.room.id == "test/a", "back at the Guru")

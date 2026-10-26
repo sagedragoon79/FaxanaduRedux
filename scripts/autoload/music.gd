@@ -125,6 +125,9 @@ func for_room(room: Room, fade := FADE) -> void:
 	var zone_track: String = room.header.get("music", room.zone)
 	if room.zone == "gym" or room.zone == "test" or room.zone == "":
 		zone_track = ""
+	if BossRush.active():
+		# A boss rush's arenas wait under the trials' theme (pass 157).
+		zone_track = BossRush.MUSIC
 	play(after_the_end(restored(zone_track)), fade)
 	# A room can name its own bed (`ambience: heights` plays amb_heights).
 	ambience(after_the_end(restored("amb_" + room.header.get("ambience", room.zone))), fade)

@@ -254,7 +254,7 @@ func _on_defeated() -> void:
 	if BossRush.active():
 		# The rush wins nothing again and opens no doors: on to the next arena.
 		Sfx.play("item", 0.0)
-		Music.play("", 2.0)
+		Music.play(BossRush.MUSIC, 2.0)
 		won.emit()
 		var world := get_tree().get_first_node_in_group("world") as World
 		var p := get_tree().get_first_node_in_group("player") as Player
