@@ -113,6 +113,10 @@ func ambience(name: String, fade := FADE) -> void:
 	_fade(_amb, AMBIENCE_DB, fade, false)
 
 
+## Tracks that change once the game is cleared: track -> its post-game self.
+const AFTER_THE_END := {"eolis": "eolis_bloom", "zenis": "zenis_still", "amb_zenis": "amb_zenis_still"}
+
+
 ## Picks the music and ambience for a room.
 func for_room(room: Room) -> void:
 	if room == null:
@@ -120,9 +124,18 @@ func for_room(room: Room) -> void:
 	var zone_track: String = room.header.get("music", room.zone)
 	if room.zone == "gym" or room.zone == "test" or room.zone == "":
 		zone_track = ""
-	play(zone_track)
+	play(after_the_end(zone_track))
 	# A room can name its own bed (`ambience: heights` plays amb_heights).
-	ambience("amb_" + room.header.get("ambience", room.zone))
+	ambience(after_the_end("amb_" + room.header.get("ambience", room.zone)))
+
+
+## The track a room's music or bed becomes once the Evil One is dead and the
+## Tree blooms (`cleared`, design bible 4.4): Eolis plays its festival, and the
+## dead meteor goes still, with no heartbeat (pass 143).
+static func after_the_end(track: String) -> String:
+	if GameState.flag("cleared"):
+		return String(AFTER_THE_END.get(track, track))
+	return track
 
 
 ## The loaded, looping stream for a track name, or null if there is no file.

@@ -264,6 +264,30 @@ func test_tower_rooms_pick_their_ambience_and_theme() -> void:
 		check(Music.track == stop[1] and Music.ambience_track == stop[2], "%s plays %s over %s (%s, %s)" % [stop[0], stop[1], stop[2], Music.track, Music.ambience_track])
 
 
+func test_after_the_end_eolis_feasts_and_the_meteor_goes_still() -> void:
+	for name: String in ["eolis_bloom", "zenis_still", "amb_zenis_still"]:
+		var stream := Music.stream_for(name)
+		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
+	var w := make_world({}, "eolis/plaza")
+	check(Music.track == "eolis", "before the end, Eolis plays its theme (%s)" % Music.track)
+	w._enter("zenis/threshold")
+	await frames(1)
+	check(Music.track == "zenis" and Music.ambience_track == "amb_zenis", "and the meteor its heartbeat (%s, %s)" % [Music.track, Music.ambience_track])
+	GameState.set_flag("cleared")
+	w._enter("zenis/heart_stair")
+	await frames(1)
+	check(Music.track == "zenis_still" and Music.ambience_track == "amb_zenis_still",
+		"after it, the dead meteor goes still (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("eolis/market")
+	await frames(1)
+	check(Music.track == "eolis_bloom" and Music.ambience_track == "amb_eolis", "and Eolis plays its festival (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("trunk/entrance")
+	await frames(1)
+	check(Music.track == "trunk", "other zones keep their own themes (%s)" % Music.track)
+	check(Music.after_the_end("boss") == "boss", "and a fight still plays its fight")
+	GameState.new_game()
+
+
 func test_reveal_bursts_out_and_withdraws() -> void:
 	var setup := _boss_world()
 	var boss: Rokusutahn = setup[1]
