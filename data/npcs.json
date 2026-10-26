@@ -1,4 +1,5 @@
 {
+	"eolis_dyer": {"name": "Ilse the Dyer", "role": "shop", "shop": "eolis_dyes", "look": {"robe": "#8a3a5a", "trim": "#e3a72c", "skin": "#e8c9a0", "hair": "#3f7fc0", "hat": "none"}},
 	"king": {
 		"name": "King of Eolis", "role": "king",
 		"look": {"robe": "#7a2e3a", "trim": "#ffd24a", "skin": "#e8c9a0", "hair": "#d8cfb4", "hat": "crown", "beard": true},

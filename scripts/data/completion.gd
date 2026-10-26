@@ -48,3 +48,12 @@ static func percent(stats: Dictionary) -> int:
 			sum += float(stats.get(k, 0)) / total
 			parts += 1
 	return int(floor(sum / parts * 100.0 + 0.0001)) if parts > 0 else 0
+
+
+## The whole world seen (100%): the "lord" flag puts the Lord's Gold on the
+## shelf at Ilse's Dyeworks, the cloak's glow (design bible 11). True if earned.
+static func award(stats: Dictionary) -> bool:
+	if int(stats.get("percent", 0)) < 100:
+		return false
+	GameState.set_flag("lord")
+	return true

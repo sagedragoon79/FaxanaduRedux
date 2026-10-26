@@ -98,6 +98,9 @@ static func fresh() -> Dictionary:
 		"deaths": 0,
 		## Guru Trials cleared: trial id -> best time in seconds (Trials).
 		"trials": {},
+		## Cloak dyes bought at Ilse's Dyeworks (pass 136), and the one worn ("" is Warden Green).
+		"dyes": [],
+		"dye": "",
 	}
 
 
@@ -129,6 +132,18 @@ func set_flag(id: String, value := true) -> void:
 
 
 ## The Evil One is dead: mark the save cleared and start the ending.
+## The cloak dye worn: an item id from data/items.json (kind "dye").
+func dye() -> String:
+	var id := String(data.get("dye", ""))
+	return id if id != "" else "warden_dye"
+
+
+## Whether this save owns a dye. Warden Green is the cloak you start in, and
+## the Lord's Gold is given, not sold.
+func owns_dye(id: String) -> bool:
+	return id == "warden_dye" or id == "lord_dye" or Array(data.get("dyes", [])).has(id)
+
+
 func begin_ending() -> void:
 	set_flag("cleared")
 	if secret_ending():

@@ -28,5 +28,13 @@
 	"chart_branches": {"name": "Chart of the Branches", "kind": "chart", "zone": "branches", "desc": "The boughs of the Branches outlined on your map. Rooms you have not seen show dimmed."},
 	"chart_daybreak": {"name": "Chart of Daybreak", "kind": "chart", "zone": "daybreak", "desc": "The sky isles of Daybreak outlined on your map, as the bell-ringers see them. Rooms you have not seen show dimmed."},
 	"fire_scroll": {"name": "Fire Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Fire: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."},
-	"tilte_scroll": {"name": "Tilte Scroll", "kind": "spell", "spell": "tilte", "desc": "Teaches Tilte: a spirit orb that wakes, chooses the nearest foe and flies to it. The Next Spell button switches spells."}
+	"tilte_scroll": {"name": "Tilte Scroll", "kind": "spell", "spell": "tilte", "desc": "Teaches Tilte: a spirit orb that wakes, chooses the nearest foe and flies to it. The Next Spell button switches spells."},
+	"warden_dye": {"name": "Warden Green", "kind": "dye", "color": "", "desc": "The deep green the Elven wardens wove. The cloak you set out in."},
+	"ember_dye": {"name": "Ember Red", "kind": "dye", "color": "d0453f", "desc": "Red as the forge-coals of Forepaw."},
+	"tide_dye": {"name": "Tide Blue", "kind": "dye", "color": "4a8ad0", "desc": "The blue of the springs running again."},
+	"dusk_dye": {"name": "Dusk Violet", "kind": "dye", "color": "9a5ad0", "desc": "The color of the Mist at the hour the lanterns are lit."},
+	"ash_dye": {"name": "Ash Grey", "kind": "dye", "color": "c9c4d6", "desc": "Bleached pale, like the dwarves' old banners."},
+	"saffron_dye": {"name": "Saffron", "kind": "dye", "color": "eaa830", "desc": "Daybreak's bell-ringers wear it on festival mornings."},
+	"night_dye": {"name": "Night", "kind": "dye", "color": "5a5078", "desc": "Nearly black, with a violet sheen under the moon."},
+	"lord_dye": {"name": "Lord's Gold", "kind": "dye", "color": "f6d870", "glow": true, "desc": "Woven with light. Only for one who has seen the whole of the World Tree."}
 }
