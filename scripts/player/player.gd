@@ -1463,6 +1463,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		Sfx.play("heal", 0.0)
 		_spawn_dust(Vector2(0, -16), "heal")
 	hp -= amount
+	DamageNumber.spawn(get_parent(), global_position + Vector2(0, -44), amount, "hurt")
 	_invuln_timer = tuning.hurt_invuln
 	if on_ladder:
 		# A blow knocks you off the rungs.

@@ -40,7 +40,11 @@ func set_active(on: bool) -> void:
 
 func take_hit(damage: int, dir: Vector2) -> void:
 	if boss != null and active and not dead:
+		var before: int = boss.get("hp") if boss.get("hp") is int else 0
 		boss.hit_segment(self, damage, dir)
+		# A boss that is an Enemy shows its number in Enemy.take_hit.
+		if not boss is Enemy and boss.get("hp") is int:
+			DamageNumber.spawn(get_parent(), global_position + Vector2(0, -14), before - int(boss.get("hp")), "heavy" if dir.length() > 1.5 else "hit")
 
 
 func stagger() -> void:

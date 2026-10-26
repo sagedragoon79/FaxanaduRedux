@@ -151,6 +151,8 @@ func take_hit(damage: int, dir: Vector2) -> void:
 		return
 	hp -= dealt
 	_flash = 0.08
+	# A heavy blow comes in at 1.8x (the finisher, a thrust): its number is gold.
+	DamageNumber.spawn(get_parent(), center() + Vector2(0, -14), dealt, "heavy" if dir.length() > 1.5 else "hit")
 	var d := Dust.new()
 	d.setup("hit")
 	get_parent().add_child(d)

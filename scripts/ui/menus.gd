@@ -276,7 +276,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 		return [
 			{"label": "Resume", "detail": "Back to the Tree."},
 			oint,
-			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
+			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
 		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else [])
@@ -322,6 +322,7 @@ const OPTIONS := [
 	["shake", "Screen shake", "How hard the screen shakes on hits and slams."],
 	["flashes", "Screen flashes", "The white flash on boss kills and the Elixir."],
 	["rumble", "Rumble", "Controller vibration."],
+	["numbers", "Damage numbers", "Show the damage each blow deals, over what it strikes."],
 	["music", "Music volume", ""],
 	["sound", "Sound volume", ""],
 	["speed", "Game speed", "Slow the whole game down if the action is too fast. Everything slows evenly."],
