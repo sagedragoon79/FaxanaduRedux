@@ -55,6 +55,9 @@ extends Resource
 @export var dash_invuln := 0.10
 @export var air_dash_charges := 1
 @export var ground_dash_cooldown := 0.25
+## A dash pressed while it can't go yet (on the cooldown, or in the air with
+## no charge) is held this long and fires the frame it can.
+@export var dash_buffer_time := 0.10
 ## A ground dash snaps to the floor from this far (px), so it follows a slope
 ## down instead of sailing off it; a ledge deeper than this still drops away.
 @export var ground_dash_snap := 10.0

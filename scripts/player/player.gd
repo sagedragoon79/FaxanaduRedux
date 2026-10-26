@@ -250,6 +250,7 @@ var _dust_timer := 0.0
 var _step_timer := 0.0
 var _combo_timer := 0.0
 var _attack_buffer_timer := 0.0
+var _dash_buffer_timer := 0.0
 var _swing_damage := 0
 var _parry_timer := 0.0
 var _drink_timer := 0.0
@@ -318,6 +319,8 @@ func _physics_process(delta: float) -> void:
 
 	if input.attack_pressed:
 		_attack_buffer_timer = combat.attack_buffer
+	if input.dash_pressed and abilities.stride:
+		_dash_buffer_timer = tuning.dash_buffer_time
 
 	if _try_interact(on_floor):
 		input.end_frame()
@@ -430,6 +433,7 @@ func _tick_timers(delta: float) -> void:
 	_step_timer -= delta
 	_combo_timer -= delta
 	_attack_buffer_timer -= delta
+	_dash_buffer_timer -= delta
 	_parry_timer -= delta
 	_cast_cooldown -= delta
 	_ladder_regrab -= delta
@@ -826,10 +830,14 @@ func _swim_drift(delta: float) -> void:
 # --- Dash -----------------------------------------------------------------------
 
 func _try_dash(on_floor: bool) -> void:
-	if not (input.dash_pressed and abilities.stride) or is_dashing or _dash_cooldown > 0.0:
+	# A press is held for a moment (bible 6.5, pass 146): a dash pressed a beat
+	# early (on the cooldown, or just before a landing or a refresh)
+	# still goes the first frame it can.
+	if _dash_buffer_timer <= 0.0 or is_dashing or _dash_cooldown > 0.0:
 		return
 	if not on_floor and air_dash_charges <= 0:
 		return
+	_dash_buffer_timer = 0.0
 	if not on_floor:
 		air_dash_charges -= 1
 	_dash_dir = input.move_x if input.move_x != 0 else facing
