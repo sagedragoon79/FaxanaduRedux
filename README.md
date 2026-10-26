@@ -16,6 +16,14 @@ Final art and music come next. The movement and combat gym is still there:
 
 ## Running
 
+**Playtest build:** every push to `main` exports a Windows build to the rolling
+[playtest release](https://github.com/sagedragoon79/FaxanaduRedux/releases/tag/playtest)
+(see [docs/playtest.md](docs/playtest.md) for controls, debug keys and launch options).
+To export locally: `godot --headless --path . --export-debug "Windows Desktop" builds/windows/FaxanaduRedux.exe`
+(needs the 4.7.2 export templates).
+
+From source:
+
 1. Install [Godot 4.7.2](https://godotengine.org/download) (standard build, not .NET).
 2. Open `project.godot` in Godot and press F5, or run `godot --path .`.
 
@@ -34,6 +42,7 @@ Final art and music come next. The movement and combat gym is still there:
 | Toggle Glove, Mattock, Wing Boots, Elven Stride, Deluge (debug builds) | F1 to F4, F7 | |
 | Reset to spawn | R / F5 | Back |
 | Toggle debug HUD | F6 | |
+| Fullscreen | F11 / Alt+Enter | |
 
 ## Tests
 
