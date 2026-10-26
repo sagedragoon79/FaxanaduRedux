@@ -176,7 +176,7 @@ func _draw() -> void:
 	var status := "%s   XP %d" % [GameState.rank_name(), int(GameState.data.xp)]
 	if GameState.next_rank_xp() > 0:
 		status += " / %d" % GameState.next_rank_xp()
-	status += "   Skill points %d   Jack Keys %d" % [int(GameState.data.skill_points), GameState.key_count("jack")]
+	status += "   Skill points %d   %s" % [int(GameState.data.skill_points), key_line()]
 	_text(Vector2(20, 40), status, 9, DIM)
 	# The legend, laid out right to left from measured widths: swatch, label, gap.
 	var legend := [["Map: Tab", Color.TRANSPARENT, Vector2.ZERO], ["You", PLAYER, Vector2(2, 2)],
@@ -226,3 +226,12 @@ func _draw_doors(info: Dictionary, r: Rect2, fill: Color) -> void:
 
 func _text(pos: Vector2, s: String, size: int, color: Color) -> void:
 	PixelFont.draw(self, pos, s, size, color, OUTLINE)
+
+
+## The card keys you hold, by name ("Keys: Jack 2, Queen 1"), or "Keys: none".
+static func key_line() -> String:
+	var held: Array[String] = []
+	for kind: String in KeyDoor.CARDS:
+		if GameState.key_count(kind) > 0:
+			held.append("%s %d" % [kind.capitalize(), GameState.key_count(kind)])
+	return "Keys: " + (", ".join(held) if not held.is_empty() else "none")

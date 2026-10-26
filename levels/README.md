@@ -17,7 +17,9 @@ secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden roo
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 corrupted: true    (optional: foes are grown through with meteor crystal; default true in zone zenis)
 chest_gold: 100    (optional: gold in each chest in this room)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Guru Trial))
+chest: 2, 19, 900   (optional, repeatable: the chest on tile (2, 19) holds 900 gold instead)
+lock: 4, 19, queen   (optional, repeatable: the `J` on tile (4, 19) is a queen, king, ace or joker door)
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Guru Trial), joker_key (the one Joker Key))
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
@@ -88,7 +90,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `s` | Meteor Slug (Dartmoor: lobs three burning globs; shell turns pogos; the Hour Glass holds the globs) |
 | `~` | Sap pool: halves run speed and weakens jumps (Trunk Hollows) |
 | `S` | Meditation Shrine (save, refill, respawn point) |
-| `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key) |
+| `J` | Jack door, 3 tiles tall from this cell up (opens with a Jack Key). A `lock:` header line makes it a Queen, King, Ace or Joker door |
 | `g` | Dartmoor's upper gate, 3 tiles tall from this cell up (opens with the Sky Key, Borabohra's reward) |
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
