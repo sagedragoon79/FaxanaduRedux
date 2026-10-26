@@ -90,6 +90,20 @@ func _has_key(action: String, key: Key) -> bool:
 	return false
 
 
+func test_fullscreen_toggle_keys() -> void:
+	var game := preload("res://scripts/game.gd")
+	var key := func(code: Key, alt := false, pressed := true) -> InputEventKey:
+		var ev := InputEventKey.new()
+		ev.physical_keycode = code
+		ev.alt_pressed = alt
+		ev.pressed = pressed
+		return ev
+	check(game.is_fullscreen_toggle(key.call(KEY_F11)), "F11 toggles fullscreen")
+	check(game.is_fullscreen_toggle(key.call(KEY_ENTER, true)), "Alt+Enter toggles fullscreen")
+	check(not game.is_fullscreen_toggle(key.call(KEY_ENTER)), "plain Enter does not")
+	check(not game.is_fullscreen_toggle(key.call(KEY_F11, false, false)), "releasing F11 does not")
+
+
 func test_ointment_is_bought_used_and_wears_off() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

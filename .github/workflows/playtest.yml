@@ -1,0 +1,65 @@
+name: Playtest build
+
+# Exports the Windows build and publishes it as the rolling "playtest" release,
+# so the newest build is always one download away.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: playtest
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ hashFiles('tools/godot-version.txt') }}-windows
+
+      - name: Install Godot and the Windows templates
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          VERSION="$(cat tools/godot-version.txt)"
+          BASE="https://github.com/godotengine/godot/releases/download/${VERSION}"
+          curl -sSL -o godot.zip "${BASE}/Godot_v${VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${VERSION}_linux.x86_64" "$HOME/godot"
+          chmod +x "$HOME/godot"
+          DIR="$HOME/.local/share/godot/export_templates/${VERSION/-/.}"
+          mkdir -p "$DIR"
+          curl -sSL -o tpl.tpz "${BASE}/Godot_v${VERSION}_export_templates.tpz"
+          unzip -q -o -j tpl.tpz 'templates/windows_*x86_64*' 'templates/version.txt' -d "$DIR"
+          rm tpl.tpz godot.zip
+
+      - name: Export
+        run: |
+          mkdir -p builds/windows
+          "$HOME/godot" --headless --path . --import >/dev/null 2>&1 || true
+          "$HOME/godot" --headless --path . --export-debug "Windows Desktop" builds/windows/FaxanaduRedux.exe
+          test -s builds/windows/FaxanaduRedux.exe
+          cp docs/playtest.md builds/windows/PLAYTEST.md
+          (cd builds/windows && zip -9 -q ../FaxanaduRedux-windows.zip FaxanaduRedux.exe PLAYTEST.md)
+
+      - name: Publish the playtest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete playtest --yes --cleanup-tag || true
+          gh release create playtest builds/FaxanaduRedux-windows.zip \
+            --prerelease --target "$GITHUB_SHA" \
+            --title "Playtest build ($(git log -1 --format=%cs) ${GITHUB_SHA::7})" \
+            --notes "Windows debug build of main at ${GITHUB_SHA::7}: $(git log -1 --format=%s). Unzip and run FaxanaduRedux.exe; PLAYTEST.md inside has controls and debug keys."

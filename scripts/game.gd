@@ -471,6 +471,10 @@ func _debug_open() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_fullscreen_toggle(event):
+		toggle_fullscreen()
+		get_viewport().set_input_as_handled()
+		return
 	if world == null or not OS.is_debug_build():
 		return
 	if event.is_action_pressed("debug_glove"):
@@ -491,6 +495,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		camera.snap_to_target()
 	elif event.is_action_pressed("debug_hud"):
 		debug_hud.visible = not debug_hud.visible
+
+
+## F11 or Alt+Enter switches between a window and fullscreen.
+static func is_fullscreen_toggle(event: InputEvent) -> bool:
+	var key := event as InputEventKey
+	if key == null or not key.pressed or key.echo:
+		return false
+	return key.physical_keycode == KEY_F11 or (key.physical_keycode == KEY_ENTER and key.alt_pressed)
+
+
+static func toggle_fullscreen() -> void:
+	var full := DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if full else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 func _toggle(ability: String) -> void:
