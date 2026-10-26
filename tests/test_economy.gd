@@ -1183,3 +1183,39 @@ func test_last_stand_and_second_wind() -> void:
 	p.second_wind_used = true
 	p.restore()
 	check(not p.second_wind_used, "and so does resting at a shrine")
+
+
+## Pass 136: Ilse the Dyer in the Market Row sells six cloak dyes (bible 10's
+## cosmetic gold sink); one you own is worn again for free, and 100% completion
+## puts the glowing Lord's Gold on her shelf (bible 11).
+func test_the_dyer_dyes_the_cloak() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(2)
+	var dyer: Npc = null
+	for c in w.room.get_children():
+		if c is Npc and (c as Npc).npc_id == "eolis_dyer":
+			dyer = c
+	check(dyer != null and Sheet.exists("npc_eolis_dyer"), "Ilse the Dyer stands in the Market Row, with a sheet")
+	var p := w.player
+	var stock: Array = GameData.shop("eolis_dyes").stock
+	var sold := stock.filter(func(e: Dictionary) -> bool: return int(e.price) > 0)
+	check(sold.size() == 6, "she sells six dyes (%d)" % sold.size())
+	check(GameState.dye() == "warden_dye" and PlayerVisual.dye_look().is_empty(), "a new game wears Warden Green, the cloak's own")
+	check(p.visual.material == null, "so the sprite is drawn as it is")
+	check(Shop.status("eolis_dyes", 0, p) == "worn", "which shows as worn")
+	p.gold = 300
+	check(Shop.buy("eolis_dyes", 1, p) and p.gold == 0, "Ember Red costs 300 g")
+	await frames(2)
+	check(GameState.dye() == "ember_dye" and PlayerVisual.dye_look()[0] == Color("d0453f"), "and goes straight on the cloak")
+	var mat := p.visual.material as ShaderMaterial
+	check(mat != null and mat.get_shader_parameter("dye") == Color("d0453f"), "the sprite takes the dye's shader")
+	check(Shop.status("eolis_dyes", 2, p) == "gold", "Tide Blue is out of reach with no gold")
+	check(Shop.buy("eolis_dyes", 0, p) and GameState.dye() == "warden_dye", "back to Warden Green, for nothing")
+	await frames(2)
+	check(p.visual.material == null, "and the shader comes off")
+	check(Shop.status("eolis_dyes", 1, p) == "" and Shop.buy("eolis_dyes", 1, p) and p.gold == 0, "Ember again, free: it is yours")
+	var lord := stock.size() - 1
+	check(stock[lord].item == "lord_dye" and not Shop.shelf("eolis_dyes").has(lord), "the Lord's Gold is not on the shelf yet")
+	check(not Completion.award({"percent": 99}) and not GameState.flag("lord"), "99% of the world is not enough")
+	check(Completion.award({"percent": 100}) and Shop.shelf("eolis_dyes").has(lord), "100% puts it on the shelf")
+	check(Shop.buy("eolis_dyes", lord, p) and PlayerVisual.dye_look()[1], "it is given, and it glows")

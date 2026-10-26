@@ -28,6 +28,8 @@ const FINISH := ["slash1", "slash2", "slash3", "slash_up", "cast"]
 ## Poses an unfinished swing may play over.
 const OVERRIDABLE := ["idle", "run", "rise", "apex", "fall"]
 
+const DYE_SHADER := preload("res://shaders/cloak_dye.gdshader")
+
 ## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
 static var forced := ""
 
@@ -39,6 +41,7 @@ var anim := "idle"
 var anim_time := 0.0
 var frame := 0
 
+var _dye_worn := ""
 var _blink_time := 0.0
 var _red_time := 0.0
 var _swings := 0
@@ -162,7 +165,33 @@ static func draw_frame(ci: CanvasItem, name: String, f: int, tint: Color, flat: 
 	Sheet.draw(ci, SHEET_NAME, name, f, tint, flat)
 
 
+## The cloak dye worn (pass 136): [lit color, glows]. Warden Green, the
+## sheet's own cloak, returns an empty array: nothing to recolor.
+static func dye_look() -> Array:
+	var item := GameData.item(GameState.dye())
+	if String(item.get("color", "")) == "":
+		return []
+	return [Color(String(item.color)), bool(item.get("glow", false))]
+
+
+## Puts the worn dye's shader on the sprite when the dye changes.
+func _sync_dye() -> void:
+	if GameState.dye() == _dye_worn:
+		return
+	_dye_worn = GameState.dye()
+	var look := dye_look()
+	if look.is_empty():
+		material = null
+		return
+	var mat := ShaderMaterial.new()
+	mat.shader = DYE_SHADER
+	mat.set_shader_parameter("dye", look[0])
+	mat.set_shader_parameter("glow", look[1])
+	material = mat
+
+
 func _draw() -> void:
+	_sync_dye()
 	var tint := Color(1.0, 0.45, 0.45) if _red_time > 0.0 else Color.WHITE
 	if player.poison_left > 0.0 and _red_time <= 0.0:
 		# Poison: a sickly green cast that throbs with each tick.

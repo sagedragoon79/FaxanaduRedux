@@ -35,6 +35,10 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 				right = "Sold out"
 			elif st == "locked":
 				right = "Needs I"
+			elif st == "worn":
+				right = "Worn"
+			elif item.kind == "dye" and GameState.owns_dye(String(entry.item)):
+				right = "Wear"
 			var detail: String = item.desc
 			if item.kind == "key":
 				detail += "  You have %d." % GameState.key_count(String(entry.item).trim_suffix("_key"))
@@ -47,9 +51,10 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 		return out
 	var on_select := func(row: int) -> void:
 		var i: int = Shop.shelf(shop_id)[row]
+		var wearing: bool = GameData.item(shop.stock[i].item).kind == "dye" and GameState.owns_dye(String(shop.stock[i].item))
 		if Shop.buy(shop_id, i, p):
 			Sfx.play("coin", 0.0, 2.0)
-			GameState.toast.emit("Bought: " + String(GameData.item(shop.stock[i].item).name))
+			GameState.toast.emit(("Wearing: " if wearing else "Bought: ") + String(GameData.item(shop.stock[i].item).name))
 	menu.open(shop.name, shop.greeting, provider, on_select, _gold_footer(p))
 	return true
 

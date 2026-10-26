@@ -24,6 +24,7 @@ extends Node2D
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --gold=N                   start with N gold (for screenshots)
+##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
 ##   --hp=N                     start with N health (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
@@ -267,6 +268,9 @@ func _process(_delta: float) -> void:
 		for id: String in String(_args["equip"]).split(","):
 			GameState.data.equipment[String(GameData.item(id).kind)] = id
 		GameState.refresh_stats(player)
+	if _args.has("dye") and _frames == 2:
+		# Screenshots: wear a cloak dye (e.g. --dye=lord_dye).
+		GameState.data.dye = String(_args["dye"])
 	if _args.has("skills") and _frames == 2:
 		# Screenshots: learn skills (e.g. --skills=tilte_swarm).
 		for id: String in String(_args["skills"]).split(","):
@@ -348,6 +352,7 @@ func _completion() -> Dictionary:
 		return {}
 	var c := Completion.tally(world.catalog)
 	c.clears = int(GameState.data.get("clears", 0))
+	Completion.award(c)
 	return c
 
 

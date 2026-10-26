@@ -55,6 +55,11 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		"spell":
 			if p.abilities.get(String(item.spell), false):
 				return "owned"
+		"dye":
+			if GameState.dye() == String(entry.item):
+				return "worn"
+			if GameState.owns_dye(String(entry.item)):
+				return ""
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
@@ -65,6 +70,10 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 		return false
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
+	if item.kind == "dye" and GameState.owns_dye(String(entry.item)):
+		GameState.data.dye = String(entry.item)
+		GameState.capture(p)
+		return true
 	p.gold -= int(entry.price)
 	match item.kind:
 		"blade", "armor", "shield":
@@ -90,6 +99,12 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 			p.abilities[String(item.spell)] = true
 			if not p.abilities.get(p.equipped_spell, false):
 				p.equipped_spell = String(item.spell)
+		"dye":
+			# A new dye goes straight on the cloak.
+			var owned: Array = GameState.data.get("dyes", [])
+			owned.append(String(entry.item))
+			GameState.data.dyes = owned
+			GameState.data.dye = String(entry.item)
 	if entry.get("once", false):
 		GameState.collect(_once_id(shop_id, index))
 	GameState.capture(p)

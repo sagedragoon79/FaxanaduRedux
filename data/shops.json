@@ -1,4 +1,5 @@
 {
+	"eolis_dyes": {"name": "Ilse's Dyeworks", "greeting": "A cloak says who you are before you do. What color are you today?", "stock": [{"item": "warden_dye", "price": 0}, {"item": "ember_dye", "price": 300}, {"item": "tide_dye", "price": 500}, {"item": "dusk_dye", "price": 800}, {"item": "ash_dye", "price": 1200}, {"item": "saffron_dye", "price": 1800}, {"item": "night_dye", "price": 2500}, {"item": "lord_dye", "price": 0, "requires": "lord"}]},
 	"eolis_arms": {
 		"name": "Eolis Arms",
 		"greeting": "Steel for the roots, wanderer. Pick what keeps you breathing.",
