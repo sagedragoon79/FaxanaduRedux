@@ -102,13 +102,20 @@ func test_card_doors_take_only_their_own_key() -> void:
 	await frames(3)
 	GameState.add_key("jack")
 	GameState.add_key("king")
+	Sfx.recent.clear()
 	p.input.move_x = 1
 	await frames(40)
 	check(is_instance_valid(door) and not door.is_queued_for_deletion(), "a Jack or King Key won't open a Queen door")
 	check(GameState.key_count("jack") == 1 and GameState.key_count("king") == 1, "and neither is spent")
+	# Pass 122: a locked door rattles its latch (not the spell-fail fizzle), once per touch.
+	check(Sfx.recent.count("door_locked") == 1 and not Sfx.recent.has("fizzle"), "a locked door rattles once, no fizzle (%s)" % [Sfx.recent])
+	Sfx.recent.clear()
 	GameState.add_key("queen")
 	await frames(30)
 	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "the Queen Key opens it")
+	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door"), "the key turns with its own click and chime (%s)" % [Sfx.recent])
+	for sound in ["door_locked", "key_turn"]:
+		check(ResourceLoader.exists("res://assets/sfx/%s.wav" % sound), "%s is rendered" % sound)
 	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Queen Key is used up")
 	check(MapScreen.key_line() == "Keys: Jack 1, King 1", "the map lists the keys you hold (%s)" % MapScreen.key_line())
 	# Every card has its look; an unknown kind falls back to the Jack's.

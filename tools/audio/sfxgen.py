@@ -802,6 +802,46 @@ def main():
         out[at:at + m] += lowpass(note, 5000)
     save("trial_record", out, 0.38)
 
+    # Card doors (pass 122). Locked: the latch rattles in its iron keep and the
+    # door knocks twice against the bolt, dull and heavy. Nothing gives.
+    d = 0.34
+    n = int(RATE * d)
+    out = np.zeros(n)
+    for st, f in ((0.0, 120.0), (0.13, 105.0)):
+        i = int(RATE * st)
+        ln = int(RATE * 0.12)
+        thud = lowpass(osc(slide(f * 1.6, f, 0.12, 0.5), "sine"), 500) * env(ln, 0.001, 2.2)
+        knock = lowpass(noise(0.12), 900) * env(ln, 0.001, 3.5) * 0.5
+        out[i:i + ln] += (thud + knock)[:max(0, min(ln, n - i))]
+    for st in (0.03, 0.055, 0.16, 0.19):
+        i = int(RATE * st)
+        ln = int(RATE * 0.025)
+        rattle = lowpass(highpass(noise(0.025), 1800), 5000) * env(ln, 0.0005, 3.0) * 0.45
+        out[i:i + ln] += rattle[:max(0, min(ln, n - i))]
+    save("door_locked", out, 0.6)
+
+    # The key turns: three ratchet clicks of the wards, the bolt's heavy thunk
+    # as it draws back, and a small bright chime: the treasure is yours.
+    d = 0.75
+    n = int(RATE * d)
+    t = t_axis(d)
+    out = np.zeros(n)
+    for st in (0.0, 0.05, 0.1):
+        i = int(RATE * st)
+        ln = int(RATE * 0.02)
+        out[i:i + ln] += lowpass(highpass(noise(0.02), 2500), 7000)[:ln] * env(ln, 0.0005, 3.0) * 0.5
+    i = int(RATE * 0.16)
+    ln = int(RATE * 0.16)
+    bolt = lowpass(osc(slide(160, 80, 0.16, 0.6), "square", 0.4), 700) * env(ln, 0.002, 2.0)
+    bolt += lowpass(noise(0.16), 1200) * env(ln, 0.001, 3.0) * 0.4
+    out[i:i + ln] += bolt
+    i = int(RATE * 0.26)
+    m = n - i
+    tc = t[:m]
+    chime = sum(osc(np.full(m, f), "sine") * a for f, a in ((1319.0, 0.35), (1976.0, 0.22), (2637.0, 0.1)))
+    out[i:] += chime * np.exp(-tc * 6.0)
+    save("key_turn", out * env(n, 0.001, 0.3), 0.55)
+
 
 if __name__ == "__main__":
     main()

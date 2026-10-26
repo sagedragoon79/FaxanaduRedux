@@ -57,7 +57,7 @@ func _physics_process(_delta: float) -> void:
 	elif not _told:
 		_told = true
 		GameState.toast.emit("A %s door. You need a %s Key." % [kind.capitalize(), kind.capitalize()])
-		Sfx.play("fizzle", 0.0)
+		Sfx.play("door_locked", 0.03)
 
 
 func open() -> void:
@@ -65,7 +65,8 @@ func open() -> void:
 	if persist_id != "":
 		GameState.collect(persist_id)
 	GameState.toast.emit("The %s Key turns." % kind.capitalize())
-	Sfx.play("door", 0.0)
+	# The wards click, the bolt draws back, and a small chime (not the plain door creak).
+	Sfx.play("key_turn", 0.03)
 	var d := Dust.new()
 	d.setup("debris")
 	get_parent().add_child(d)
