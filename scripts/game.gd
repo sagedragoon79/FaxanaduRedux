@@ -31,6 +31,7 @@ extends Node2D
 ##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Ointment ahead of the player
 ##   --glove                    wear a War Glove (a rare drop) from the start
 ##   --shot-thrust=N            thrust (the Blade skill) on frame N
+##   --damage-numbers           show damage numbers (the option) for this run
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
@@ -82,6 +83,8 @@ func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		var kv := arg.trim_prefix("--").split("=", true, 1)
 		_args[kv[0]] = kv[1] if kv.size() > 1 else ""
+	if _args.has("damage-numbers"):
+		Settings.damage_numbers = true
 
 	view = SubViewport.new()
 	view.size = (BASE_SIZE + Vector2i(MARGIN, MARGIN) * 2) * GameCamera.DETAIL

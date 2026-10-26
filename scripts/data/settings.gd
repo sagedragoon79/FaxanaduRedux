@@ -1,7 +1,7 @@
 class_name Settings
 extends RefCounted
 ## Player options (design bible 14, accessibility): screen shake, screen
-## flashes, rumble, music and sound volume, game speed and keyboard bindings.
+## flashes, rumble, damage numbers, music and sound volume, game speed and keyboard bindings.
 ## Kept apart from save slots in user://settings.cfg. The game loads and
 ## applies them at start; tests never do, so they run on the defaults.
 
@@ -19,6 +19,8 @@ const BUSES := ["Music", "Sfx"]
 static var shake := 0          # index into SHAKE_STEPS
 static var flashes := 0        # index into FLASH_STEPS
 static var rumble := true
+## Damage numbers over what a blow strikes (off by default; DamageNumber).
+static var damage_numbers := false
 static var music_volume := 8
 static var sound_volume := 8
 static var speed := 0          # index into SPEED_STEPS
@@ -32,6 +34,7 @@ static func reset() -> void:
 	shake = 0
 	flashes = 0
 	rumble = true
+	damage_numbers = false
 	music_volume = 8
 	sound_volume = 8
 	speed = 0
@@ -50,6 +53,8 @@ static func load_settings() -> void:
 	flashes = _index(cfg.get_value("feel", "flashes", flashes), FLASH_STEPS.size(), flashes)
 	var r: Variant = cfg.get_value("feel", "rumble", rumble)
 	rumble = r if r is bool else rumble
+	var dn: Variant = cfg.get_value("feel", "damage_numbers", damage_numbers)
+	damage_numbers = dn if dn is bool else damage_numbers
 	speed = _index(cfg.get_value("feel", "speed", speed), SPEED_STEPS.size(), speed)
 	music_volume = _index(cfg.get_value("audio", "music", music_volume), VOLUME_MAX + 1, music_volume)
 	sound_volume = _index(cfg.get_value("audio", "sound", sound_volume), VOLUME_MAX + 1, sound_volume)
@@ -73,6 +78,7 @@ static func save() -> void:
 	cfg.set_value("feel", "shake", shake)
 	cfg.set_value("feel", "flashes", flashes)
 	cfg.set_value("feel", "rumble", rumble)
+	cfg.set_value("feel", "damage_numbers", damage_numbers)
 	cfg.set_value("feel", "speed", speed)
 	cfg.set_value("audio", "music", music_volume)
 	cfg.set_value("audio", "sound", sound_volume)
@@ -101,6 +107,7 @@ static func adjust(option: String, step: int) -> void:
 		"shake": shake = wrapi(shake + step, 0, SHAKE_STEPS.size())
 		"flashes": flashes = wrapi(flashes + step, 0, FLASH_STEPS.size())
 		"rumble": rumble = not rumble
+		"numbers": damage_numbers = not damage_numbers
 		"speed": speed = wrapi(speed + step, 0, SPEED_STEPS.size())
 		"music": music_volume = clampi(music_volume + step, 0, VOLUME_MAX)
 		"sound": sound_volume = clampi(sound_volume + step, 0, VOLUME_MAX)
@@ -146,6 +153,7 @@ static func value_text(option: String) -> String:
 		"shake": return SHAKE_NAMES[shake]
 		"flashes": return FLASH_NAMES[flashes]
 		"rumble": return "On" if rumble else "Off"
+		"numbers": return "On" if damage_numbers else "Off"
 		"speed": return "%d%%" % roundi(SPEED_STEPS[speed] * 100.0)
 		"music": return _bar(music_volume)
 		"sound": return _bar(sound_volume)

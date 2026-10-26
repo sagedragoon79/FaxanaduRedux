@@ -36,6 +36,7 @@ func take_hit(damage: int, dir: Vector2) -> void:
 		return
 	hp -= damage
 	hits_taken += 1
+	DamageNumber.spawn(get_parent(), global_position + Vector2(0, -40), damage, "heavy" if dir.length() > 1.5 else "hit")
 	_flash = 0.07
 	_wobble = signf(dir.x) if dir.x != 0.0 else 0.5
 	var d := Dust.new()

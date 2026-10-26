@@ -838,3 +838,76 @@ func test_trial_times_are_saved_and_sanitized() -> void:
 	bad.trials = [1, 2]
 	check(_same(GameState.sanitize(bad).trials, {}), "a list in their place falls back to none")
 	GameState.new_game()
+
+
+func _numbers(room: Node) -> Array:
+	var out := []
+	for c in room.get_children():
+		if c is DamageNumber:
+			out.append(c)
+	return out
+
+
+## Pass 154 (bible 14): damage numbers, an option that is off by default.
+func test_damage_numbers_show_what_each_blow_dealt() -> void:
+	Settings.path = TEMP_SETTINGS
+	Settings.reset()
+	var rooms := _town()
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 5, 19, "P")
+	put_tiles(rows, 12, 19, "M")
+	put_tiles(rows, 22, 19, "D")
+	rooms["test/town"] = room_text(["name: Town", "zone: test"], rows)
+	var w := make_world(rooms, "test/town")
+	var mono: Monodron = null
+	var dwarf: RotDwarf = null
+	for c in w.room.get_children():
+		if c is Monodron:
+			mono = c
+		elif c is RotDwarf:
+			dwarf = c
+	mono.max_hp = 999
+	mono.hp = 999
+	mono.set_physics_process(false)
+	dwarf.set_physics_process(false)
+	await frames(3)
+	mono.take_hit(8, Vector2.RIGHT)
+	check(_numbers(w.room).is_empty() and not Settings.damage_numbers, "off by default: a blow shows no number")
+	Settings.adjust("numbers", 1)
+	check(Settings.damage_numbers and Settings.value_text("numbers") == "On", "the option turns them on")
+	check(Menus.OPTIONS.any(func(o: Array) -> bool: return o[0] == "numbers"), "from the Options menu")
+	# A cut: the number is what the foe lost.
+	var before := mono.hp
+	mono.take_hit(8, Vector2.RIGHT)
+	var nums := _numbers(w.room)
+	check(nums.size() == 1 and nums[0].amount == before - mono.hp and nums[0].kind == "hit", "a cut shows the damage it dealt (%s)" % [nums.map(func(n: DamageNumber) -> String: return "%d %s" % [n.amount, n.kind])])
+	check(nums[0].global_position.y < mono.center().y, "over the foe")
+	# A heavy blow (the finisher, a thrust) comes in at 1.8x: gold, and larger.
+	mono.take_hit(14, Vector2(1.8, 0))
+	nums = _numbers(w.room)
+	check(nums.size() == 2 and nums[1].kind == "heavy" and nums[1].amount == 14, "a heavy blow's number is gold")
+	check(DamageNumber.SIZES.heavy > DamageNumber.SIZES.hit, "and larger")
+	# A blow the shield turns deals nothing, and shows nothing.
+	dwarf.facing = -1
+	var hp_before := dwarf.hp
+	dwarf.take_hit(8, Vector2.RIGHT)
+	check(_numbers(w.room).size() == 2 and dwarf.hp == hp_before, "a blocked blow shows no number")
+	# The player's own losses, in red, as dealt after armor.
+	var p := w.player
+	p.defense = 0.4
+	var php := p.hp
+	p.take_damage(20)
+	nums = _numbers(w.room)
+	var hurt: Array = nums.filter(func(n: DamageNumber) -> bool: return n.kind == "hurt")
+	check(hurt.size() == 1 and hurt[0].amount == php - p.hp and hurt[0].amount < 20, "a hit on the player shows the HP it took, after armor (%s)" % [hurt.map(func(n: DamageNumber) -> int: return n.amount)])
+	# They rise, fade and are gone.
+	var y0: float = nums[0].offset().y
+	await frames(20)
+	check(is_instance_valid(nums[0]) and nums[0].offset().y < y0 - 8.0, "a number rises")
+	await frames(40)
+	check(_numbers(w.room).is_empty(), "and is gone after %.1f s" % DamageNumber.LIFE)
+	Settings.reset()
+	Settings.load_settings()
+	check(Settings.damage_numbers, "the choice is saved")
+	_restore()
+	check(not Settings.damage_numbers, "and the suite runs on the default, off")
