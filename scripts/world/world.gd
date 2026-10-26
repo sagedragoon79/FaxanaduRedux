@@ -260,8 +260,15 @@ func _physics_process(_delta: float) -> void:
 			break
 	if touching == 0:
 		_ignored_door = 0
-	elif touching != _ignored_door:
+	elif touching != _ignored_door or _falling_back_through(touching):
 		use_door(touching)
+
+
+## Coming up a shaft you arrive inside its floor door, rising. Fall back before
+## you clear it and the door takes you back down, rather than letting you drop
+## out of the bottom of the room (pass 146).
+func _falling_back_through(n: int) -> bool:
+	return room.doors[n].edge == "bottom" and player.velocity.y > 0.0
 
 
 ## Takes door `n` of the current room to its target room.

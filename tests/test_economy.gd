@@ -324,7 +324,8 @@ func test_second_stride_gives_two_air_dashes() -> void:
 		await frames(1)
 		if p.is_dashing:
 			dashes += 1
-		await frames(int(p.tuning.dash_time * 60.0) + 12)
+		# Past the dash and its cooldown, so each press stands alone.
+		await frames(int((p.tuning.dash_time + p.tuning.ground_dash_cooldown) * 60.0) + 2)
 	check(dashes == 2, "two air dashes, then no more (%d)" % dashes)
 	# Landing refills both.
 	var n := 0

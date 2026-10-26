@@ -628,6 +628,28 @@ func test_victims_lamps_burn_pockets_in_the_fog() -> void:
 	check(w.room.doors.has(2) and String(w.room.doors[2].target) == "mist/victim", "the Feather Hollow's west door leads to Victim")
 
 
+## Pass 146: coming up a shaft, you arrive inside the floor door of the room
+## above, still rising. Fall back before you clear it and the door takes you
+## back down; it used to be ignored, and you dropped out of the room's bottom.
+func test_falling_back_down_a_shaft_takes_the_door_down() -> void:
+	var w := make_world({}, "tower/mine_vault")
+	await frames(3)
+	w.use_door(1)
+	while w.busy:
+		await frames(1)
+	check(w.room.id == "tower/rail_gallery", "the vault's shaft rises into the Rail Gallery")
+	check(w.room.doors[2].edge == "bottom" and (w.room.doors[2].rect as Rect2).intersects(w.player.body_rect()), "arriving inside its floor door")
+	# Stall at once, as a dash into the shaft's wall does, and fall.
+	w.player.velocity = Vector2.ZERO
+	var fell_out := false
+	for i in 90:
+		await frames(1)
+		if w.room.id == "tower/rail_gallery" and w.player.global_position.y > w.room.pixel_rect().end.y + 8.0:
+			fell_out = true
+	check(not fell_out, "you never drop out of the bottom of the room")
+	check(w.room.id == "tower/mine_vault", "the door takes you back down to the vault")
+
+
 ## People a player meets once the Evil One is dead: everyone but the Trunk's
 ## widow and Old Wena before their springs, who are swapped for glad selves.
 func _stands_in_a_living_town(id: String) -> bool:

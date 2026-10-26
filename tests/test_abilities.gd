@@ -577,6 +577,67 @@ func test_dash_invulnerability_and_cooldown() -> void:
 	check(p.is_dashing, "then goes")
 
 
+## Bible 6.5 (pass 146): a dash pressed a beat early is held for 0.10 s and goes
+## the first frame it can: at the end of the cooldown, on a landing that gives
+## back the air dash, or when a kill refreshes it. Pressed too early, it's dropped.
+func test_a_dash_pressed_early_is_held_for_a_moment() -> void:
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(2, 18))
+	await frames(6)
+	check_near(p.tuning.dash_buffer_time, 0.10, 0.0001, "the dash buffer is 0.10 s")
+	# On the cooldown: a press 4 frames before it ends goes when it ends.
+	p.input.dash_pressed = true
+	await frames(1)
+	while p.is_dashing:
+		await frames(1)
+	await frames(int(p.tuning.ground_dash_cooldown * 60.0) - 4)
+	p.input.dash_pressed = true
+	await frames(1)
+	check(not p.is_dashing, "a dash pressed on the cooldown doesn't go at once")
+	await frames(5)
+	check(p.is_dashing, "but goes as the cooldown ends, without a second press")
+	while p.is_dashing:
+		await frames(1)
+	# A press long before the cooldown ends is dropped, not saved up.
+	await frames(2)
+	p.input.dash_pressed = true
+	await frames(int(p.tuning.ground_dash_cooldown * 60.0) + 2)
+	check(not p.is_dashing, "a press 0.2 s too early is dropped")
+	# In the air with the dash spent: a press just before the landing is a
+	# ground dash the frame the feet touch.
+	p.velocity = Vector2.ZERO
+	p.global_position = Vector2(p.global_position.x, 16 * 15)
+	await frames(2)
+	p.air_dash_charges = 0
+	var landed := -1
+	for i in 60:
+		if not p.is_on_floor() and p.global_position.y > 16 * 19 - 20 and not p.is_dashing and landed < 0:
+			p.input.dash_pressed = true
+			landed = 0
+		await frames(1)
+		if landed >= 0:
+			landed += 1
+		if p.is_dashing:
+			break
+	check(p.is_dashing and p.is_on_floor() and landed <= 6, "a dash pressed just before landing goes on the landing (%d frames)" % landed)
+	while p.is_dashing:
+		await frames(1)
+	await frames(30)
+	# A kill with Wanderer's Grace gives the air dash back mid-air, and a dash
+	# pressed a beat before it goes the moment it returns.
+	p.wanderers_grace = true
+	p.velocity = Vector2.ZERO
+	p.global_position = Vector2(p.global_position.x, 16 * 6)
+	await frames(2)
+	p.air_dash_charges = 0
+	p.input.dash_pressed = true
+	await frames(2)
+	check(not p.is_dashing, "with no air dash left, a press waits")
+	p.on_kill()
+	await frames(1)
+	check(p.is_dashing and not p.is_on_floor(), "a kill gives it back and the held press dashes")
+
+
 # --- Juice checklist (design bible 6.7) -----------------------------------------
 
 ## Counts the Dust puffs, by kind, spawned in `room` over the next `n` frames.

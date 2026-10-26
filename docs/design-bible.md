@@ -102,7 +102,7 @@ The fog lies over the town at 0.6 (0.88 out in the marsh). It is lit by four lam
 ### 3.3 Room and map rules
 
 - **Room size:** multiples of one screen (640x360 px internal = 40x22.5 tiles of 16 px). Rooms are 1x1 up to 4x3 screens.
-- **Camera:** room-bounded; camera locks to room edges; transitions are seamless scrolls (no fade) within a zone and a brief fade between zones. The scroll is a screen push: the old view slides out the way the player went while the new room slides in (0.34 s). Inner doorways (Up to enter) fade, since there is no direction to scroll.
+- **Camera:** room-bounded; camera locks to room edges; transitions are seamless scrolls (no fade) within a zone and a brief fade between zones. The scroll is a screen push: the old view slides out the way the player went while the new room slides in (0.34 s). Inner doorways (Up to enter) fade, since there is no direction to scroll. Coming up a shaft you arrive inside the floor door of the room above, still rising; fall back before you clear it and that door takes you back down (pass 146), instead of letting you drop out of the room.
 - **Save points:** each town has a Guru (save, respec, rank-up). Plus 2 to 3 **Meditation Shrines** per zone (save only). No room is more than 4 rooms from a save or a shortcut back to one.
 - **Fast travel:** unlocked after the first spring: Guru-to-Guru travel through the "Mantra Path" menu. Speaking to a Guru marks that Guru as a stop; the Guru's menu lists every other stop you have met, and choosing one fades you to a step beside that Guru. Before any spring flows the row is shown but dry, so players learn it exists.
 - **Map:** auto-maps visited rooms. The Cartographer in each town sells the zone outline (empty rooms shown dimmed). Map pins (custom markers) available from the start: with the map open, Jump drops a pin where you stand or lifts the one there, up to 12. Cartographers so far: Pell in the Eolis market (Eolis 40 g, Trunk Hollows 250 g), Surveyor Brin in Forepaw (Tower 400 g), and Skywatcher Orin in Conflate (Mist 500 g, Branches 650 g), and Fogwalker Bram in Victim (Mist 500 g, pass 145). Doors, gates and items get icons once seen. Built: shrines, key doors still shut (pass 127, see 4.5) and Treasure Sense's star (pass 100).
@@ -349,6 +349,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Invulnerability | first 0.10 s |
 | Charges | 1 in air (2 with skill node), refreshed like double jump |
 | Ground dash | yes, same values, 0.25 s cooldown. It hugs the floor (pass 121): a dash begun on the ground snaps to the floor from 10 px (`ground_dash_snap`, against the run's 4 px), so it rides a slope down as it already rode one up, instead of sailing off the ramp into the air. A ledge of a whole tile or more still drops away beneath it, and an air dash never snaps |
+| Dash buffer | 0.10 s (pass 146), like the jump's: a dash pressed when it can't go yet (on the cooldown, or in the air with the dash spent) is held and goes the first frame it can, at the cooldown's end, on the landing, or when a kill with Wanderer's Grace or a stride seed gives the dash back. Pressed earlier than that, it's dropped. Without the Elven Stride a press isn't held, so picking it up never fires a stale dash |
 | Afterimages | 3 ghost frames, elf-green tint |
 
 ### 6.6 Pogo (Mattock down-strike)

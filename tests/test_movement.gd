@@ -495,6 +495,7 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check(t.air_dash_charges == 1, "one air dash")
 	check_near(t.ground_dash_cooldown, 0.25, 0.0001, "ground dash cooldown")
 	check_near(t.ground_dash_snap, 10.0, 0.0001, "ground dash snap")
+	check_near(t.dash_buffer_time, 0.10, 0.0001, "dash buffer")
 	# 6.6
 	check_near(t.pogo_bounce, 380.0, 0.0001, "pogo bounce")
 	check_near(t.pogo_bounce_held, 420.0, 0.0001, "pogo bounce, jump held")
