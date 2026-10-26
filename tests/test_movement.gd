@@ -1080,6 +1080,38 @@ func test_ladders_jump_off_hits_and_hanging_ends() -> void:
 	room.free()
 
 
+## The camera on a ladder (bible 6.7, pass 130): it leads the way you climb.
+func test_the_camera_leads_the_way_up_or_down_a_ladder() -> void:
+	check(GameCamera.CLIMB_LEAD == 64.0 and GameCamera.CLIMB_LEAD_EASE == 0.5, "the climb lead is 64 px, eased over 0.5 s")
+	var room := make_room(LADDERS)
+	var p := make_player(room, Vector2i(9, 10))
+	var cam := GameCamera.new()
+	cam.target = p
+	cam.view_size = Vector2(160, 90)
+	cam.set_room_limits(room.pixel_rect())
+	arena.add_child(cam)
+	await frames(30)
+	check(absf(cam._climb_lead) < 0.5, "off a ladder there is no lead")
+	p.input.up = true
+	await frames(40)
+	check(p.on_ladder and cam._climb_lead < -0.8 * GameCamera.CLIMB_LEAD, "climbing up, it looks up the ladder (%.1f)" % cam._climb_lead)
+	check(absf(cam._look_ahead) < 0.3 * GameCamera.LOOK_AHEAD, "and stops looking sideways (%.1f)" % cam._look_ahead)
+	p.input.up = false
+	await frames(30)
+	check(p.on_ladder and cam._climb_lead < -0.8 * GameCamera.CLIMB_LEAD, "hanging still keeps the lead (%.1f)" % cam._climb_lead)
+	p.input.down = true
+	await frames(30)
+	check(cam._climb_lead > 0.8 * GameCamera.CLIMB_LEAD, "climbing down, it looks down (%.1f)" % cam._climb_lead)
+	for i in 120:
+		await frames(1)
+		if not p.on_ladder:
+			break
+	p.input.down = false
+	await frames(40)
+	check(not p.on_ladder and absf(cam._climb_lead) < 0.1 * GameCamera.CLIMB_LEAD, "off the ladder it eases back (%.1f)" % cam._climb_lead)
+	cam.queue_free()
+
+
 func test_ladder_numbers_match_bible_6_11() -> void:
 	var t := MovementTuning.new()
 	check(t.ladder_speed == 90.0, "ladder speed 90 px/s")

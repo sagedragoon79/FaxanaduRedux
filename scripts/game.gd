@@ -16,6 +16,7 @@ extends Node2D
 ##   --shot=PATH                save a screenshot and quit
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
+##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
 ##   --open=shop:ID|guru|trials|title|skills|pause|options|controls
@@ -217,6 +218,11 @@ func _start(room_id: String, at := Vector2.INF) -> void:
 		# Screenshots: hold a direction from the start (e.g. to catch a room transition).
 		world.player.input.scripted = true
 		world.player.input.move_x = int(_args["shot-move"])
+	if _args.has("shot-climb"):
+		# Screenshots: hold Up (1) or Down (-1) from the start, to climb a ladder.
+		world.player.input.scripted = true
+		world.player.input.up = int(_args["shot-climb"]) > 0
+		world.player.input.down = int(_args["shot-climb"]) < 0
 	hud.player = player
 	map_screen.world = world
 	debug_hud = DebugHud.new()
