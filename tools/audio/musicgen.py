@@ -1547,6 +1547,133 @@ def amb_trials():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+
+# --- Restored springs (pass 150, design bible 13.3) ------------------------------------
+# "Each zone track gets a 'restored' variant (filter/arrangement change) when its
+# spring returns." Each mirrors its zone track's random draws in the same order, so
+# the melody is the same tune, and changes only the arrangement around it.
+
+def track_trunk_restored():
+    """The Trunk with its spring flowing: the sap has gone to amber and the hollows
+    breathe. The same A dorian theme with the plucks opened up bright, a shaker
+    over the hand drum, and the bell melody doubled by a warm lead an octave down."""
+    rng = np.random.default_rng(37)
+    s = Song(bpm=100, bars=16)
+    root, scale = 45, SCALES["dorian"]
+    prog = [0, 0, 6, 3, 0, 0, 5, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, rng.uniform(-0.5, 0.5), 0.36)
+        for k in range(8):
+            if k in (0, 3, 6):
+                s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 0.9), b * 4 + k * 0.5, 0, 0.75)
+        for k in range(8):
+            m = tones[[0, 2, 1, 2, 0, 2, 1, 2][k]] + 12
+            s.add(pluck(midi_hz(m), s.beat * 0.5, bright=3000), b * 4 + k * 0.5, 0.4, 0.42)
+        for k, g in [(0, 1.0), (1.5, 0.5), (2.5, 0.7)]:
+            s.add(kick(0.25) * 0.5, b * 4 + k, 0, g)
+        if b % 2:
+            s.add(snare(rng) * 0.4, b * 4 + 3, 0.2)
+    twin = np.random.default_rng()
+    twin.bit_generator.state = rng.bit_generator.state
+    melody(s, rng, root, scale, prog, bell, start_bar=8, octave=24, pan=-0.2, gain=0.7, density=0.4)
+    melody(s, twin, root, scale, prog, lead, start_bar=8, octave=12, pan=0.25, gain=0.35, density=0.4)
+    shake = np.random.default_rng(38)
+    for b in range(len(prog)):
+        for k in range(4):
+            s.add(shaker(shake), b * 4 + k + 0.5, -0.3, 0.6)
+    return s.render(reverb=0.4)
+
+
+def track_mist_restored():
+    """The Mist with its spring flowing: the fog has lifted by half. The same B minor
+    waltz, a touch quicker, heard clearly now: the pads and the music box are no
+    longer muffled, the heartbeat thump gives way to a lantern-bell on the
+    downbeat, and the room is drier."""
+    rng = np.random.default_rng(97)
+    s = Song(bpm=72, bars=16, beats=3)
+    root, scale = 47, SCALES["minor"]
+    prog = [0, 5, 3, 4, 0, 5, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for m in tones:
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.1), low=3200), b * 3, rng.uniform(-0.6, 0.6), 0.4)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg)), s.beat * 2.6), b * 3, 0, 0.55)
+        for k in (1, 2):
+            m = tones[k] + 12
+            s.add(pluck(midi_hz(m), s.beat * 0.8, bright=2600), b * 3 + k, 0.35, 0.35)
+        if b % 4 == 3:
+            s.add(bell(midi_hz(tones[0] + 24), s.bar), b * 3, -0.4, 0.3)
+    melody(s, rng, root, scale, prog, bell, start_bar=2, octave=24, pan=-0.25, gain=0.6, density=0.35)
+    return s.render(reverb=0.4)
+
+
+def track_daybreak_restored():
+    """Daybreak with the Spring of Sky flowing: the storm has broken. The same E
+    dorian theme at an easy 100. The pulsing bass and the thunder rolls are gone;
+    full chords hold under it, a walking bass steps through, the plucks fall like
+    the last drops off the leaves, and the bell lead finds its light."""
+    rng = np.random.default_rng(131)
+    s = Song(bpm=100, bars=16)
+    root, scale = 52, SCALES["dorian"]
+    prog = [0, 0, 6, 3, 0, 5, 6, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        for i, m in enumerate(tones):
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 4, (-0.4, 0.0, 0.4)[i], 0.2)
+        low = scale_note(root - 12, scale, deg)
+        s.add(bass(midi_hz(low), s.beat * 1.9), b * 4, 0, 0.45)
+        s.add(bass(midi_hz(scale_note(root - 12, scale, deg + 4)), s.beat * 1.9), b * 4 + 2, 0, 0.34)
+        # The same draws as the storm's gusts, now soft drops falling off the leaves.
+        for k in range(rng.integers(3, 6)):
+            m = tones[rng.integers(0, 3)] + 12 * rng.integers(1, 3)
+            s.add(pluck(midi_hz(m), s.beat * 0.9, bright=2400), b * 4 + rng.integers(0, 8) * 0.5,
+                  rng.uniform(-0.8, 0.8), 0.18)
+        if b % 2 == 1:
+            for k in range(4):
+                rng.uniform(-0.3, 0.3)
+        snare(rng, 0.2)
+        snare(rng, 0.2)
+        for k in range(8):
+            h = hat(rng, 0.04)
+            if k % 2 == 1:
+                s.add(h, b * 4 + k * 0.5 + 0.25, 0.4, 0.08)
+    melody(s, rng, root, scale, prog, bell, start_bar=4, octave=24, pan=-0.2, gain=0.6, density=0.55)
+    return s.render(reverb=0.45)
+
+
+def amb_daybreak_restored():
+    """The crown after the storm: a soft wind that comes and goes, a fine drizzle,
+    and water dripping off the leaves, with no thunder at all."""
+    rng = np.random.default_rng(139)
+    dur = 28.0
+    n = int(dur * RATE)
+    m = n + RATE * 4
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    gust = 0.55 + 0.45 * np.sin(2 * np.pi * t / 14.0) * np.sin(2 * np.pi * t / 5.3 + 0.5)
+    wind = fft_filter(rng.uniform(-1, 1, m), low=500, high=100) * 0.9 * gust
+    out[:, 0] += wind
+    out[:, 1] += np.roll(wind, RATE // 5)
+    drizzle = fft_filter(rng.uniform(-1, 1, m), low=11000, high=4500) * 0.16 * (0.8 + 0.2 * np.sin(2 * np.pi * t / 9.0))
+    out[:, 0] += drizzle
+    out[:, 1] += np.roll(drizzle, RATE // 7)
+    # Drips: a short falling ping, scattered across the field.
+    for k in range(70):
+        i = int(rng.uniform(0, dur) * RATE)
+        mm = int(0.09 * RATE)
+        tt = np.arange(mm) / RATE
+        f0 = rng.uniform(1400, 2600)
+        ping = np.sin(2 * np.pi * (f0 * tt - f0 * 2.5 * tt * tt)) * np.exp(-tt * 45) * rng.uniform(0.25, 0.6)
+        pan = rng.uniform(-0.8, 0.8)
+        out[i:i + mm, 0] += ping * (1 - pan) / 2
+        out[i:i + mm, 1] += ping * (1 + pan) / 2
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -1591,6 +1718,10 @@ TRACKS = {
     "eolis_bloom": track_eolis_bloom,
     "zenis_still": track_zenis_still,
     "amb_zenis_still": amb_zenis_still,
+    "trunk_restored": track_trunk_restored,
+    "mist_restored": track_mist_restored,
+    "daybreak_restored": track_daybreak_restored,
+    "amb_daybreak_restored": amb_daybreak_restored,
 }
 
 

@@ -17,6 +17,8 @@ var text := "The sap hardens to amber. Water returns to Eolis."
 var needs_flag := ""
 
 var _burst := 0.0
+## Seconds the zone's music takes to turn to its restored self.
+const RESTORE_FADE := 3.0
 
 
 func _ready() -> void:
@@ -48,6 +50,9 @@ func interact(_p: Player) -> void:
 	var world := get_tree().get_first_node_in_group("world") as World
 	if world != null and world.motes != null:
 		world.motes.refresh()
+	if world != null and world.room != null:
+		# The zone's music turns to its restored self (bible 13.3, pass 150).
+		Music.for_room(world.room, RESTORE_FADE)
 	var d := Dust.new()
 	d.setup("splash")
 	get_parent().add_child(d)
