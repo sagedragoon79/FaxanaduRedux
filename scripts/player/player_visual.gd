@@ -63,7 +63,7 @@ func flash_hurt() -> void:
 
 func _physics_process(delta: float) -> void:
 	squash_scale = squash_scale.lerp(Vector2.ONE, 1.0 - exp(-delta * 16.0))
-	scale = Vector2(player.facing * squash_scale.x, squash_scale.y)
+	scale = Vector2(look_dir(player) * squash_scale.x, squash_scale.y)
 	_blink_time -= delta
 	_red_time -= delta
 	visible = player.dead or not (_blink_time > 0.0 and _red_time <= 0.0 and int(_blink_time * 20.0) % 2 == 0)
@@ -151,6 +151,13 @@ func finished() -> bool:
 	return Sheet.finished(SHEET_NAME, anim, anim_time)
 
 
+## Which way the sprite is drawn. A wall slide is drawn gripping the wall (the
+## sheet's pose reaches forward with a foot on it), while `facing` points away
+## from the wall so a wall jump or a swing still goes outward (playtest).
+static func look_dir(p: Player) -> int:
+	return p.wall_dir if p.is_wall_sliding and p.wall_dir != 0 else p.facing
+
+
 ## The current frame's metadata: hand and neck points (relative to the feet,
 ## facing right) and, in a swing, the blade angle.
 func frame_info() -> Dictionary:
@@ -160,7 +167,7 @@ func frame_info() -> Dictionary:
 ## The neck in world space, where the scarf hangs from.
 func neck_position() -> Vector2:
 	var n: Array = frame_info().neck
-	return global_position + Vector2(n[0] * player.facing * squash_scale.x, n[1] * squash_scale.y)
+	return global_position + Vector2(n[0] * look_dir(player) * squash_scale.x, n[1] * squash_scale.y)
 
 
 ## Draws one frame of the sheet (or its flat silhouette, tinted) with the feet at the origin.
