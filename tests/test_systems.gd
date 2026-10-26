@@ -592,6 +592,43 @@ func test_older_settings_load_without_errors() -> void:
 	_restore()
 
 
+## Pass 138: a save from an older or newer build can name things this build
+## doesn't have: a renamed skill node, a blade, a ring, a dye. Loading it,
+## dressing the player, learning, unlearning and the dyer must all go on
+## without an engine error, and a skill listed twice can't be refunded twice.
+func test_a_save_naming_things_this_build_lacks_plays_on() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(3)
+	var p := w.player
+	var src := GameState.fresh()
+	src.save_room = "eolis/market"
+	src.skills = ["keen_edge", "ghost_skill", "keen_edge", 7]
+	src.equipment = {"blade": "ghost_blade", "armor": "ghost_armor", "shield": "ghost_shield"}
+	src.rings = ["ghost_ring"]
+	src.dyes = [5, "ghost_dye", "tide_dye", "tide_dye"]
+	src.dye = "ghost_dye"
+	src.tempers = {"ghost_blade": 2}
+	var errors := ErrorCatcher.start()
+	GameState.data = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(GameState.data.skills == ["keen_edge", "ghost_skill"], "skills are kept once each, strings only (%s)" % [GameState.data.skills])
+	check(GameState.data.dyes == ["ghost_dye", "tide_dye"], "and so are dyes (%s)" % [GameState.data.dyes])
+	GameState.refresh_stats(p)
+	check(p.slash_damage == int(GameData.item("hand_dagger").slash), "an unknown blade falls back to the Hand Dagger (%d)" % p.slash_damage)
+	check(PlayerVisual.dye_look().is_empty(), "an unknown dye leaves the cloak as it is")
+	for n: Dictionary in Skills.nodes():
+		Skills.status(n.id)
+	for i in GameData.shop("eolis_dyes").stock.size():
+		Shop.status("eolis_dyes", i, p)
+	await frames(2)
+	p.gold = 1000
+	var cost := Skills.respec_cost()
+	check(Skills.respec(p), "unlearning goes through")
+	check(p.gold == 1000 - cost and GameState.data.skills.is_empty(), "for its price, clearing every skill")
+	check(int(GameState.data.skill_points) == int(GameData.skill("keen_edge").cost), "Keen Edge comes back once; the unknown node refunds nothing (%d)" % int(GameState.data.skill_points))
+	var caught := errors.stop()
+	check(caught.is_empty(), "and nothing logs an engine error (%s)" % [caught])
+
+
 func test_a_rest_in_a_missing_room_wakes_at_the_start() -> void:
 	check(World.room_exists("eolis/plaza"), "a real room exists")
 	check(not World.room_exists("nowhere/room") and not World.room_exists("../x") and not World.room_exists(""), "a missing or odd one doesn't")
