@@ -255,5 +255,23 @@
 			"I light every lamp at dusk and again at dawn. You cannot tell them apart in here, so I light them twice to be sure.",
 			"East is the Feather Hollow, where the elves' messengers roosted. A pair of winged boots still sits on the perch. No one here can reach it."
 		]
+	},
+	"mascon_scribe": {
+		"name": "Scribe Orla", "role": "shop", "shop": "mascon_scrolls",
+		"look": {"robe": "#3a3a5a", "trim": "#e07a3a", "skin": "#e3cdb5", "hair": "#c9c0b0", "hat": "hood"}
+	},
+	"mascon_grocer": {
+		"name": "Eelwife Brannagh", "role": "shop", "shop": "mascon_items",
+		"look": {"robe": "#3d4a3a", "trim": "#9ad0c8", "skin": "#d9b08c", "hair": "#5a3a2a", "hat": "cap"}
+	},
+	"mascon_ferryman": {
+		"lines_cleared": ["The black water's gone clear. I can see the old road under it, every stone, all the way to the Tower.", "I've a mind to pole a barge again. Bread down to Forepaw, flowers back. Will you ride with me, one day?"],
+		"name": "Old Teague the Poler", "role": "talk",
+		"look": {"robe": "#4a3e30", "trim": "#c9a24a", "skin": "#c9a27a", "hair": "#b0a090", "hat": "cap", "beard": true},
+		"lines": [
+			"Forty years I poled the dwarf king's barges down this road. Ore from the deep cuts, bread back up. A fair trade, till the meteor.",
+			"Then the king wanted only the black stone, and the barges came back empty but for his men. Quiet men. Wet men.",
+			"The spring's back, so the boardwalks are back. Victim lies west beyond the Lantern Landing, if you are going visiting."
+		]
 	}
 }

@@ -61,7 +61,7 @@ Full suite: 2673 checks, all passing, with no script errors in the log.
 | Systems | 10 | 98 | Unchanged. |
 | Audio | 5 | 98 | Unchanged. |
 | Stability and performance | 5 | 98 | Unchanged. |
-| Faithfulness | 5 | 98 | Seven of the original's eight towns now stand; only Mascon is left. |
+| Faithfulness | 5 | 98 | Victim stands; Mascon is the one town still to build. (Corrected in pass 148: this first said seven of eight towns stood. Dartmoor is a drowned city with no Guru or shop, so with Victim it was six.) |
 
 Weighted score: 96.0625 (up from 96.05). The loop's exit also needs every category at 85 or more, and Art (84.75, deferred by Sean) is still under it.
 

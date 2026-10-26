@@ -548,6 +548,30 @@ def track_victim():
     return s.render(reverb=0.45)
 
 
+def track_mascon():
+    """Mascon, the stilt town on the black water: the fishers' town, lower and
+    slower than Victim. E dorian in 3/4 at 72: a poler's song, plucked low like
+    a cittern, a drone on the open fifth that never moves, a soft frame-drum
+    stroke on each downbeat like a pole set in the mud, and a lead that dips and
+    rises like a barge."""
+    rng = np.random.default_rng(433)
+    s = Song(bpm=72, bars=16, beats=3)
+    root, scale = 52, SCALES["dorian"]  # E dorian
+    prog = [0, 3, 0, 6, 0, 3, 4, 0] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        # The drone: E and B under everything.
+        for m in (root - 12, root - 5):
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.1), low=900), b * 3, 0.0, 0.22)
+        for m in tones:
+            s.add(pad(midi_hz(m), s.bar * 1.05), b * 3, rng.uniform(-0.4, 0.4), 0.16)
+        for k, step in enumerate((0, 4, 2)):
+            s.add(pluck(midi_hz(scale_note(root, scale, deg + step)), s.beat * 0.9, bright=1100), b * 3 + k, 0.3, 0.34 if k == 0 else 0.26)
+        s.add(kick(0.35) * 0.3, b * 3, 0, 0.7)
+    melody(s, rng, root, scale, prog, lead, start_bar=2, octave=12, pan=-0.2, gain=0.28, density=0.4)
+    return s.render(reverb=0.5)
+
+
 def amb_mist():
     """Fog on a drowned marsh: a damp hush, water lapping at the boardwalks, frogs
     and far-off bird calls, and now and then the creak of a lantern on its cord."""
@@ -1536,6 +1560,7 @@ TRACKS = {
     "forepaw": track_forepaw,
     "mist": track_mist,
     "victim": track_victim,
+    "mascon": track_mascon,
     "branches": track_branches,
     "conflate": track_conflate,
     "pakukame": track_pakukame,
