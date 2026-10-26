@@ -2015,7 +2015,9 @@ func test_striking_the_false_shadow_makes_it_burst() -> void:
 	b.global_position = Vector2(b.arena.end.x - 30.0 if d.global_position.x < b.axis() else b.arena.position.x + 30.0, b.global_position.y)
 	b.set_state("f_recover")
 	var php := p.hp
-	var gone := await _until(func() -> bool: return not is_instance_valid(d), 60)
+	# A weak reference: a lambda that captures a node logs an error once it is freed.
+	var dref: WeakRef = weakref(d)
+	var gone := await _until(func() -> bool: return dref.get_ref() == null, 60)
 	check(gone, "then bursts")
 	check(p.hp < php, "hurting you if you stay beside it (%d)" % (php - p.hp))
 	check(b.double == null, "the real one is alone")

@@ -573,6 +573,23 @@ func test_damaged_settings_fall_back_to_defaults_or_their_backup() -> void:
 	_restore()
 
 
+## A settings file from an older build has no line for the actions added since.
+func test_older_settings_load_without_errors() -> void:
+	Settings.path = TEMP_SETTINGS
+	_write_raw(TEMP_SETTINGS, "[feel]\nshake=1\n[keys]\njump=4194326\n")
+	var errors := ErrorCatcher.start()
+	Settings.load_settings()
+	var caught := errors.stop()
+	check(caught.is_empty(), "the missing actions log no errors (%s)" % [caught])
+	check(Settings.shake == 1 and Settings.keys.get("jump", 0) == 4194326, "what the file holds still loads")
+	check(not Settings.keys.has("map") and not Settings.keys.has("heal"), "and the newer actions keep their default keys")
+	# The catcher itself must see an engine error, or the check above proves nothing.
+	var probe := ErrorCatcher.start()
+	ConfigFile.new().get_value("keys", "map")
+	check(not probe.stop().is_empty(), "the catcher hears an engine error")
+	_restore()
+
+
 func test_a_rest_in_a_missing_room_wakes_at_the_start() -> void:
 	check(World.room_exists("eolis/plaza"), "a real room exists")
 	check(not World.room_exists("nowhere/room") and not World.room_exists("../x") and not World.room_exists(""), "a missing or odd one doesn't")
