@@ -15,6 +15,9 @@ var silent := false
 ## this never grows mid-play: a first slash or phase break never waits on the disk.
 var loads := 0
 
+## The last few sounds asked for, newest last (for tests: what a moment sounds like).
+var recent: Array[String] = []
+
 var _players: Array[AudioStreamPlayer] = []
 var _streams := {}
 var _next := 0
@@ -43,6 +46,9 @@ func load_all() -> void:
 
 ## Plays a sound by name with a little random pitch so repeats don't sound robotic.
 func play(sound: String, pitch_jitter := 0.06, volume_offset_db := 0.0) -> void:
+	recent.append(sound)
+	if recent.size() > 32:
+		recent.remove_at(0)
 	var stream := _get_stream(sound)
 	if stream == null:
 		return

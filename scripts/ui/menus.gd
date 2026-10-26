@@ -149,7 +149,7 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 
 static func start_trial(world: World, p: Player, t: Dictionary) -> void:
 	Trials.begin(t.id, world.room.id, p.global_position)
-	Sfx.play("save", 0.0)
+	Sfx.play("trial_begin", 0.0)
 	GameState.flash.emit(0.2)
 	world.travel(t.room, Trials.start_pos(world.room_text(t.room)))
 	p.velocity = Vector2.ZERO

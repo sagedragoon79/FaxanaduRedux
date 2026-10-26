@@ -1,8 +1,6 @@
 name: Mantra of Walls
 zone: trials
 map: 0, 0
-music: eolis
-ambience: heights
 prop: 32, 6, trial_goal
 ---
 ########################################

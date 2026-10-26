@@ -730,6 +730,40 @@ def main():
     spray = highpass(noise(d) * (np.random.default_rng(31).random(n) > 0.9), 3000) * env(n, 0.01, 1.2) * 0.5
     save("seed_burst", mix(crack, body, spray), 0.7)
 
+    # The Guru Trials (pass 116). Carried into the mantra-space: a shimmer
+    # rising through a fifth, like the room drawing a breath.
+    d = 0.6
+    n = int(RATE * d)
+    t = t_axis(d)
+    rise = slide(440, 660, d, 0.6)
+    shimmer = sum(osc(rise * k, "sine") * w for k, w in ((1, 1.0), (2, 0.35), (3.01, 0.15)))
+    shimmer *= 0.6 + 0.4 * np.sin(2 * np.pi * 9 * t)
+    breath = lowpass(highpass(noise(d), 1500), slide(2000, 7000, d)) * 0.15
+    save("trial_begin", mix(shimmer, breath) * env(n, 0.25, 0.8), 0.45)
+
+    # The bell at a trial's end: a struck bronze bell, inharmonic partials
+    # ringing out long, a hum under the strike.
+    d = 1.6
+    n = int(RATE * d)
+    t = t_axis(d)
+    f0 = 523.0
+    ring = np.zeros(n)
+    for ratio, amp, decay in ((0.5, 0.5, 1.2), (1.0, 1.0, 2.0), (1.19, 0.6, 2.6), (1.5, 0.4, 3.0), (2.0, 0.45, 3.5), (2.74, 0.25, 5.0), (4.07, 0.15, 7.0)):
+        ring += osc(np.full(n, f0 * ratio), "sine") * amp * np.exp(-t * decay)
+    strike = highpass(noise(0.02), 2000) * env(int(RATE * 0.02), 0.0005, 2.0) * 0.6
+    ring[: len(strike)] += strike
+    save("trial_bell", ring * env(n, 0.001, 0.2), 0.6)
+
+    # A new best: three bright rising notes, the last held.
+    out = np.zeros(int(RATE * 0.55))
+    for i, f in enumerate((784.0, 988.0, 1175.0)):
+        dn = 0.32 if i == 2 else 0.1
+        m = int(RATE * dn)
+        note = (osc(np.full(m, f), "square", 0.3) * 0.4 + osc(np.full(m, f * 2), "sine") * 0.3) * env(m, 0.003, 1.2)
+        at = int(RATE * 0.09 * i)
+        out[at:at + m] += lowpass(note, 5000)
+    save("trial_record", out, 0.38)
+
 
 if __name__ == "__main__":
     main()
