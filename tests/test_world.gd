@@ -159,6 +159,26 @@ func _fog_world(ghost := Vector2i(-1, -1)) -> World:
 	return make_world({"test/a": room_text(["name: Fog", "zone: mist"], rows)}, "test/a")
 
 
+## Pass 120: lights that matter to play (a hag's wisp, a boss's lanterns) are
+## lit before the decor's lanterns, so a room crowded with lanterns can never
+## leave a foe dark.
+func test_play_lights_come_before_the_lanterns() -> void:
+	var w := _fog_world()
+	await frames(3)
+	var fog := w.fog
+	var decor := w.room.get_node("Decor") as Decor
+	var p := w.player
+	for i in Fog.MAX_LIGHTS + 10:
+		decor.glows.append(p.global_position + Vector2(i * 4.0, -30.0))
+	var wisp := MarshHag.HagWisp.new()
+	w.room.add_child(wisp)
+	wisp.global_position = p.global_position + Vector2(200, -40)
+	fog._update()
+	check(fog.lights.size() == Fog.MAX_LIGHTS, "the room is crowded with lanterns (%d lights)" % fog.lights.size())
+	check(fog.lights.has(Vector3(wisp.global_position.x, wisp.global_position.y, wisp.light_radius)), "and the wisp is still lit")
+	check(fog.clear_at(wisp.global_position) == 1.0, "so the fog clears around it")
+
+
 func test_the_mist_fog_hides_all_but_the_light() -> void:
 	var w := _fog_world()
 	await frames(3)

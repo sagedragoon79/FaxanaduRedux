@@ -124,6 +124,37 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	GameState.delete_save(SAVE_SLOT)
 
 
+## Pass 120: what passes 113 to 119 added comes back after a save: the card
+## keys and the Joker, the Battle Helmet and its mask, a trial's best, the
+## card vaults opened. A damaged key entry is dropped, never a crash.
+func test_late_additions_survive_a_save_round_trip() -> void:
+	var w := make_world({}, "zenis/threshold")
+	var p := w.player
+	await frames(2)
+	GameState.slot = SAVE_SLOT
+	GameState.add_key("queen", 2)
+	GameState.add_key("joker")
+	GameState.data.keys["lantern"] = true
+	GameState.data.equipment.shield = "battle_helmet"
+	GameState.refresh_stats(p)
+	var top := p.max_hp
+	GameState.data.trials["walls"] = 31.5
+	GameState.collect("mist/feather_hollow:4,19")
+	check(GameState.save_game(), "the save writes")
+	GameState.new_game()
+	check(GameState.load_game(SAVE_SLOT), "and loads")
+	check(GameState.key_count("queen") == 2 and GameState.key_count("joker") == 1, "the card keys survive")
+	check(GameState.data.keys.get("lantern") == true, "and the Lantern Key, kept for good")
+	GameState.apply(p)
+	check(GameState.data.equipment.shield == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
+	check(p.hp == p.max_hp, "loading fills the new top, not the old one (%d/%d)" % [p.hp, p.max_hp])
+	check(is_equal_approx(float(GameState.data.trials["walls"]), 31.5), "a trial's best survives")
+	check(GameState.is_collected("mist/feather_hollow:4,19"), "an opened card door stays open")
+	var bad := GameState.sanitize({"save_room": "eolis/plaza", "keys": {"jack": "two", "queen": -3, "king": [1], "ace": 1, "sky": true}})
+	check(bad.keys == {"ace": 1, "sky": true}, "a damaged key entry is dropped (%s)" % [bad.keys])
+	GameState.delete_save(SAVE_SLOT)
+
+
 ## Act II (the Mist): every world change made there comes back after a save,
 ## and the rooms rebuild in their changed state.
 func test_act_two_state_survives_a_save_round_trip() -> void:

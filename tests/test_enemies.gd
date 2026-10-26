@@ -1790,6 +1790,71 @@ func test_the_marsh_hag_backs_away_when_you_close_in() -> void:
 	room.free()
 
 
+## Pass 120: every enemy shot and ground hazard the Hour Glass should hold
+## checks it, the Marsh Hag's hex among them (it was missed in pass 119).
+func test_every_enemy_shot_honours_the_hour_glass() -> void:
+	var missing: Array[String] = []
+	var shots := 0
+	for dir in ["res://scripts/enemies", "res://scripts/bosses"]:
+		for f in DirAccess.get_files_at(dir):
+			if not f.ends_with(".gd"):
+				continue
+			var text := FileAccess.get_file_as_string(dir + "/" + f)
+			if text.contains("add_to_group(\"enemy_projectile\")"):
+				shots += 1
+				if not text.contains("TimeStop.active()"):
+					missing.append(f)
+	check(shots >= 8, "found the enemy shots (%d)" % shots)
+	check(missing.is_empty(), "each one stops for the Hour Glass: %s" % [missing])
+	# And the hex itself: a hand that rises while time is stopped waits for it.
+	var room := _hag_room({Vector2i(30, 8): "?"})
+	var p := make_player(room, Vector2i(20, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	h.set_physics_process(false)
+	var r := MireGrasp.new()
+	r.hag = h
+	room.add_child(r)
+	r.global_position = Vector2(p.global_position.x, 9 * 16)
+	TimeStop.start(1.0)
+	r.erupt()
+	await frames(20)
+	check(p.hp == 9999 and r.phase == "grasp", "held by the glass, the hand doesn't strike")
+	TimeStop.reset()
+	await frames(4)
+	check(9999 - p.hp == MireGrasp.DAMAGE, "and it does when time runs on (%d)" % (9999 - p.hp))
+	room.free()
+
+
+## A Marsh Hag that comes back (rooms with `enemy_respawn`) comes back whole:
+## no half-cast hex left over, and she backs away again as if new.
+func test_a_respawned_marsh_hag_starts_fresh() -> void:
+	var room := _hag_room({Vector2i(30, 8): "?"})
+	var p := make_player(room, Vector2i(20, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	h.respawn_time = 0.5
+	for i in 240:
+		await frames(1)
+		if h.is_hexing():
+			break
+	var mark := h.mark()
+	check(mark != null, "she is mid-hex")
+	h._backed = MarshHag.BACK_TIME
+	h.take_hit(999, Vector2.RIGHT)
+	check(h.dead, "she dies")
+	check(mark.phase == "fizzle", "her hex dies with her")
+	await frames(45)
+	check(not h.dead and h.state in ["idle", "walk"], "she comes back (%s)" % h.state)
+	check(h.mark() == null and h._backed == 0.0 and h.hp == h.max_hp, "with nothing left over")
+	await frames(30)
+	check(_hag_marks(room).is_empty() or h.is_hexing(), "and no stray mark lies about")
+	TimeStop.reset()
+	room.free()
+
+
 ## Pass 112: the foes built after the pass-102 sound pass have voices of their
 ## own. Each of these sounds exists, its foe plays it, and nothing else does, so
 ## a tell can be told apart by ear.
