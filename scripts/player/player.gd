@@ -383,6 +383,7 @@ func _physics_process(delta: float) -> void:
 
 	_apply_corner_correction(delta)
 	_apply_ledge_correction(delta, on_floor)
+	_apply_head_correction(delta, on_floor)
 	var pre_velocity := velocity
 	# A ground stride hugs the floor: down a slope the snap reaches far enough
 	# to hold a dash's 6 px a frame, so it doesn't sail off the ramp (pass 121).
@@ -1036,6 +1037,25 @@ func _apply_ledge_correction(delta: float, on_floor: bool) -> void:
 			if is_wall_sliding:
 				global_position += motion
 				is_wall_sliding = false
+			return
+
+
+## The ledge correction's mirror (pass 139): moving across in the air, level or
+## falling (a dash, a jump past its peak), the head clips the top edge of an
+## opening by a few px and the body would stop dead on it. Nudged down by up to
+## head_correction_px, it slides into the gap instead. A wall the body meets
+## below the head (a real wall) is left alone: lowered, it still blocks.
+func _apply_head_correction(delta: float, on_floor: bool) -> void:
+	if on_floor or velocity.y < 0.0 or velocity.x == 0.0 or is_wall_sliding:
+		return
+	var motion := Vector2(velocity.x * delta, 0)
+	var hit := KinematicCollision2D.new()
+	if not test_move(global_transform, motion, hit) or absf(hit.get_normal().x) <= WALL_NORMAL:
+		return
+	for i in range(1, tuning.head_correction_px + 1):
+		var down := Vector2(0, i + CORRECTION_SLOP)
+		if not test_move(global_transform, down) and not test_move(global_transform.translated(down), motion):
+			global_position += down
 			return
 
 

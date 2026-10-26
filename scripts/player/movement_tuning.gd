@@ -24,6 +24,9 @@ extends Resource
 @export var jump_buffer_time := 0.12
 @export var corner_correction_px := 6
 @export var ledge_correction_px := 4
+## Pass 139: a dash or fall that clips the top edge of an opening with the
+## head is nudged down into it, up to this many px.
+@export var head_correction_px := 4
 
 @export_group("Wall")
 @export var wall_slide_speed := 90.0

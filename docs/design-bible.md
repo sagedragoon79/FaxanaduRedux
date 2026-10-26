@@ -297,7 +297,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Air acceleration | 1,400 px/s²; air deceleration 900 px/s² |
 | Coyote time | 0.10 s, off any footing: a solid floor, a one-way platform, a ledge that vanishes from under you (a Bark Knight's lance), a ledge into a wind current or drift pocket, and the water (pass 111) |
 | Jump buffer | 0.12 s (works on ground, wall and double jump; a double jump pressed late in an air dash fires the frame the dash ends) |
-| Corner correction | nudge up to 6 px horizontally on head bump; 4 px vertically on ledge clip, including while wall-sliding with the Climbing Glove (the clip steps you onto the ledge instead of catching you in a slide). Both limits are inclusive (pass 107). The ledge clip covers one-way platforms too: having no side to bump, their lip is found from above, and a drop-through is never lifted back (pass 111) |
+| Corner correction | nudge up to 6 px horizontally on head bump; 4 px vertically on ledge clip, including while wall-sliding with the Climbing Glove (the clip steps you onto the ledge instead of catching you in a slide). Both limits are inclusive (pass 107). The ledge clip covers one-way platforms too: having no side to bump, their lip is found from above, and a drop-through is never lifted back (pass 111) Head correction (pass 139): moving across in the air, level or falling (a dash, a jump past its peak), a head that clips the top edge of an opening by up to 4 px (`head_correction_px`) is nudged down into it instead of stopping dead on the lip. A wall met below the head is left alone. |
 | Minimum jump height | about 18 px (tap) |
 
 ### 6.3 Wall slide and wall jump (Climbing Glove)
