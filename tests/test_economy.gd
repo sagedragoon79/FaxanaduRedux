@@ -91,6 +91,80 @@ func test_jack_door_needs_a_key_and_stays_open() -> void:
 	check(_find(w.room, KeyDoor) == null, "opened doors stay open")
 
 
+func test_card_doors_take_only_their_own_key() -> void:
+	# A `lock:` line turns a J into a Queen door; a `chest:` line sets one chest's gold.
+	var rooms := _town({Vector2i(12, 19): "J", Vector2i(14, 19): "$"}, ["lock: 12, 19, queen", "chest: 14, 19, 900"])
+	var w := make_world(rooms, "test/town", cell_feet(9, 19))
+	var p := w.player
+	var door := _find(w.room, KeyDoor) as KeyDoor
+	check(door != null and door.kind == "queen", "the lock line makes it a Queen door")
+	check((_find(w.room, Chest) as Chest).value == 900, "the chest line sets that chest's gold")
+	await frames(3)
+	GameState.add_key("jack")
+	GameState.add_key("king")
+	p.input.move_x = 1
+	await frames(40)
+	check(is_instance_valid(door) and not door.is_queued_for_deletion(), "a Jack or King Key won't open a Queen door")
+	check(GameState.key_count("jack") == 1 and GameState.key_count("king") == 1, "and neither is spent")
+	GameState.add_key("queen")
+	await frames(30)
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "the Queen Key opens it")
+	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Queen Key is used up")
+	check(MapScreen.key_line() == "Keys: Jack 1, King 1", "the map lists the keys you hold (%s)" % MapScreen.key_line())
+	# Every card has its look; an unknown kind falls back to the Jack's.
+	for kind in ["jack", "queen", "king", "ace", "joker"]:
+		check(KeyDoor.CARDS.has(kind), "%s door has a look" % kind)
+
+
+func test_the_card_keys_are_sold_and_the_joker_is_found() -> void:
+	var rooms := _town({}, ["prop: 12, 19, joker_key"])
+	var w := make_world(rooms, "test/town", cell_feet(5, 19))
+	var p := w.player
+	var prices := {}
+	for shop: String in ["eolis_items", "apolune_items", "forepaw_smith", "conflate_items", "daybreak_items"]:
+		var stock: Array = GameData.shop(shop).stock
+		for i in stock.size():
+			var item: String = stock[i].item
+			if item.ends_with("_key"):
+				prices[item] = int(stock[i].price)
+				if item != "jack_key":
+					p.gold = 5000
+					check(Shop.buy(shop, i, p) and GameState.key_count(item.trim_suffix("_key")) == 1, "%s sells the %s" % [shop, item])
+	check(prices.get("queen_key") == 400 and prices.get("king_key") == 900 and prices.get("ace_key") == 1800, "Queen 400, King 900, Ace 1,800 (bible 10.1): %s" % prices)
+	check(not prices.has("joker_key"), "no one sells the Joker Key")
+	# The Joker Key lies in the Drowned Market, once.
+	var market := Room.parse(FileAccess.get_file_as_string("res://levels/dartmoor/drowned_market.room"))
+	check("49, 12, joker_key" in market.lists.get("prop", []), "the Joker Key lies in the Drowned Market")
+	var key := _find(w.room, ItemPickup) as ItemPickup
+	check(key != null and key.kind == "joker_key", "the prop lays a Joker Key")
+	check(GameState.key_count("joker") == 0, "none held yet")
+	p.input.move_x = 1
+	await frames(60)
+	check(GameState.key_count("joker") == 1, "touching it gives the Joker Key")
+	w.texts["test/town"] = rooms["test/town"]
+	w._enter("test/town")
+	check(_find(w.room, ItemPickup) == null, "it never comes back")
+
+
+func test_every_card_door_guards_a_vault() -> void:
+	# The four card vaults (bible 3, Key doors): each lock names a J, and a chest waits behind it.
+	var vaults := {"mist/feather_hollow": "queen", "branches/north_bough": "king", "daybreak/spire_stair": "ace", "dartmoor/meteor_rise": "joker"}
+	for room: String in vaults:
+		var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % room))
+		var locks: Array = parsed.lists.get("lock", [])
+		check(locks.size() == 1, "%s has one lock" % room)
+		var l: PackedStringArray = locks[0].split(",")
+		var x := int(l[0])
+		var y := int(l[1])
+		var grid: Array[String] = parsed.grid
+		check(grid[y][x] == "J" and l[2].strip_edges() == vaults[room], "%s: a %s door at %d,%d" % [room, vaults[room], x, y])
+		var inside := false
+		for cx in range(1, x):
+			inside = inside or grid[y][cx] == "$"
+		check(inside, "%s: a chest behind it" % room)
+		check(grid[y - 3].substr(1, x).count("#") == x, "%s: a roof over the vault, so the door is the only way in" % room)
+
+
 # --- Skills and ranks --------------------------------------------------------------
 
 func test_skill_rules() -> void:

@@ -30,6 +30,7 @@ const INFO := {
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
+	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
 }
 
@@ -71,6 +72,8 @@ func grant(p: Player) -> void:
 		p.abilities[kind] = true
 		GameState.data.equipment.blade = kind
 		GameState.refresh_stats(p)
+	elif kind == "joker_key":
+		GameState.add_key("joker")
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
 	if pickup_id != "":
@@ -267,6 +270,23 @@ func _draw() -> void:
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(0, 17), Vector2(-wx, -2)], c)
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(-wx, -2)], light)
 			_hp(o, -2, -9, 2, 5, Color("efe4ff"))
+		"joker_key":
+			# A violet key: a star in its bow, two teeth on its bit.
+			_hp(o, -2, -4, 4, 18, Color("120f19"))
+			_hp(o, -1, -3, 2, 16, c)
+			_hp(o, 1, 6, 6, 3, Color("120f19"))
+			_hp(o, 1, 11, 5, 3, Color("120f19"))
+			_hp(o, 1, 7, 5, 1, c)
+			_hp(o, 1, 12, 4, 1, c)
+			draw_circle(o + Vector2(0, -9), 8.0, Color("120f19"))
+			draw_circle(o + Vector2(0, -9), 6.5, c)
+			draw_circle(o + Vector2(0, -9), 4.5, dark)
+			var star := []
+			for i in 10:
+				var r := 4.0 if i % 2 == 0 else 1.8
+				star.append(Vector2.from_angle(-PI / 2.0 + i * PI / 5.0) * r)
+			_poly(o + Vector2(0, -9), star, Color("ffe08a"))
+			_hp(o, -4, -14, 2, 2, light)
 
 
 func _hp(at: Vector2, x: float, y: float, w: float, h: float, col: Color) -> void:

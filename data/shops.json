@@ -34,6 +34,7 @@
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150},
+			{"item": "queen_key", "price": 400},
 			{"item": "mana_dew", "price": 800, "once": true},
 			{"item": "life_fruit", "price": 1200, "once": true}
 		]
@@ -70,6 +71,7 @@
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150},
+			{"item": "king_key", "price": 900},
 			{"item": "mana_dew", "price": 1000, "once": true},
 			{"item": "life_fruit", "price": 1600, "once": true}
 		]
@@ -105,6 +107,7 @@
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150},
+			{"item": "ace_key", "price": 1800},
 			{"item": "mana_dew", "price": 1200, "once": true},
 			{"item": "life_fruit", "price": 2000, "once": true, "requires": "spring:sky"}
 		]

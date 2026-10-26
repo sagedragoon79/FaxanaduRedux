@@ -47,6 +47,10 @@ var _solid_look := {}
 ## Slope cells (`/`, `\`): ground to their neighbours, but half open air, so
 ## the ground under a slope stays as light as any surface tile.
 var _slope_cells := {}
+## Key doors (`J`) that take another card than the Jack: cell -> kind (header `lock: x, y, kind`).
+var _locks := {}
+## Chests worth more than the room's `chest_gold`: cell -> gold (header `chest: x, y, gold`).
+var _chest_gold := {}
 var _secret_revealed := false
 var _roots_open := false
 
@@ -101,7 +105,7 @@ static func parse(text: String) -> Dictionary:
 			if colon > 0:
 				var key := line.substr(0, colon).strip_edges()
 				var value := line.substr(colon + 1).strip_edges()
-				if key in ["label", "door", "sign", "npc", "secret", "prop"]:
+				if key in ["label", "door", "sign", "npc", "secret", "prop", "lock", "chest"]:
 					if not lists.has(key):
 						lists[key] = []
 					lists[key].append(value)
@@ -174,6 +178,14 @@ func build(text: String) -> void:
 				_solid_look[Vector2i(x, y)] = true
 			if grid[y][x] in ["/", "\\"]:
 				_slope_cells[Vector2i(x, y)] = true
+	for spec: String in lists.get("lock", []):
+		var l := spec.split(",")
+		if l.size() == 3:
+			_locks[Vector2i(int(l[0]), int(l[1]))] = l[2].strip_edges()
+	for spec: String in lists.get("chest", []):
+		var c := spec.split(",")
+		if c.size() == 3:
+			_chest_gold[Vector2i(int(c[0]), int(c[1]))] = int(c[2])
 	# Hidden rooms: a rectangle of fake wall hides the contents until the player walks in.
 	var covers := {}
 	for spec: String in lists.get("secret", []):
@@ -325,6 +337,14 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(ZenisGate.new(), pos)
 		"trial_goal":
 			_spawn(TrialGoal.new(), pos)
+		"joker_key":
+			# The one Joker Key in the world: never sold, only found.
+			var item_id := _pickup_id(Vector2i(int(pos.x / TILE), int(pos.y / TILE) - 1))
+			if not GameState.is_collected(item_id):
+				var item := ItemPickup.new()
+				item.kind = "joker_key"
+				item.pickup_id = item_id
+				_spawn(item, pos - Vector2(0, TILE * 0.5))
 		"lift":
 			var cage := LiftCage.new()
 			cage.room_id = id
@@ -538,11 +558,13 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				if ch == "g":
 					# Dartmoor's upper gate: Borabohra's Sky Key opens it.
 					key_door.kind = "sky"
+				elif _locks.has(cell):
+					key_door.kind = _locks[cell]
 				_spawn(key_door, bottom_center)
 		"$":
 			var chest := Chest.new()
 			chest.pickup_id = _pickup_id(cell)
-			chest.value = int(header.get("chest_gold", "100"))
+			chest.value = _chest_gold.get(cell, int(header.get("chest_gold", "100")))
 			_spawn(chest, bottom_center)
 		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*", "&":
 			var item_id := _pickup_id(cell)
