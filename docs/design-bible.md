@@ -160,7 +160,13 @@ All story triggers check items, not route order.
 | Spring of Mist restored | Fog lifts by half in the Mist (vision radius grows); drowned boardwalks resurface (legend `b`: one-way planks over the spiked dips of the Fog Cut and the Victim Causeway, nothing before); fountain 2/3 |
 | Spring of Sky restored | The storm breaks: Daybreak's rain thins to a drizzle (Motes.SETTLES). Eolis festival: the fountain runs full, a piper plays in the plaza and Old Wena rejoices (pass 62). The Branches' wind currents turn and blow the other way (pass 92), carrying you into the Thicket Road's sealed wind niche. The final shop tier comes in on the sky road (pass 93, 10.2): the Giant Blade in Eolis and a Life Fruit in Daybreak |
 | King Grieve defeated | Dartmoor drains; Sunken Spring entrance opens |
-| Evil One defeated | Post-game: Tree blooms, palette shift to spring colors, all enemies respawn as "remnants" for 100% cleanup |
+| Evil One defeated | Post-game: the Tree blooms (built pass 141, below). ~~Palette shift to spring colors~~ waits for the art polish phase. ~~All enemies respawn as "remnants"~~: foes already return when you re-enter a room, and they are the Tree's own creatures, so they stay as they are for the 100% cleanup |
+
+**The Tree blooms (pass 141):** a save that has seen the ending (flag `cleared`) carries on into a changed world.
+- **Blossom:** a second particle layer drifts pink petals down through every living zone of the Tree: Eolis, the Trunk, the Tower, the Mist, the Branches and Daybreak (`Motes.BLOSSOM`, `World.blossom`). There are 40 at a time, each two pixels long, turning end over end as it sways.
+- **The meteor's air settles:** Dartmoor's crystal dust thins to 35% and Zenis's cyan spores to 20% (`Motes.SETTLES`, now keyed by any flag).
+- **People:** sixteen people (everyone a cleared save can meet who talks rather than trades) say something new once the Tree blooms, through a `lines_cleared` list in `data/npcs.json` that takes over from their other lines (`Npc.lines`). The King marvels at the flowering, Old Wena fishes petals out of the fountain, the dwarves of Forepaw mourn Grieve as a king, Dartmoor's mason chips grey crystal out of dry walls, and Hrothgar's digger points you to the smith with your Meteor Shards.
+- The ending still returns you to the title. Continue picks up the cleared save where you last rested.
 
 ### 4.5 Gate visual language
 

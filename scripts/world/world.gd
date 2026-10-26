@@ -60,6 +60,8 @@ var view_size := Vector2(640, 360)
 var busy := false
 var backdrop: Backdrop
 var motes: Motes
+## Blossom drifting through the Tree once the Evil One is dead (Motes.BLOSSOM).
+var blossom: Motes
 var fog: Fog
 
 var _ignored_door := 0
@@ -73,6 +75,9 @@ func _ready() -> void:
 	add_child(fog)
 	motes = Motes.new()
 	add_child(motes)
+	blossom = Motes.new()
+	blossom.table = Motes.blossom_table()
+	add_child(blossom)
 
 
 # --- Rooms -----------------------------------------------------------------------
@@ -222,6 +227,7 @@ func _enter(room_id: String) -> void:
 	add_child(room)
 	backdrop.set_zone(room.zone)
 	motes.set_zone(room.zone)
+	blossom.set_zone(room.zone if GameState.flag("cleared") else "")
 	Music.for_room(room)
 	if player.get_parent() != null:
 		player.get_parent().remove_child(player)

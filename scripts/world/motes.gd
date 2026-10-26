@@ -7,7 +7,8 @@ extends Node2D
 
 const VIEW := Vector2(640, 360)
 ## zone: [count, color, drift velocity, sway, size 2 chance, streak length (optional:
-## draws each mote as a short line along its drift, for rain)]
+## draws each mote as a short line along its drift, for rain), petal (optional:
+## draws each mote as a tumbling petal)]
 const ZONES := {
 	"trunk": [46, Color("84cbd6"), Vector2(0, -7), 7.0, 0.25],
 	"eolis": [28, Color("f0dfa8"), Vector2(3, 4), 4.0, 0.1],
@@ -26,9 +27,23 @@ const ZONES := {
 	"trials": [24, Color("e8e4dc"), Vector2(0, -2), 8.0, 0.1],
 }
 
-## Zones whose air settles once their spring runs: spring flag -> share of motes
-## left. The Spring of Sky breaks the storm, so Daybreak's rain thins to a drizzle.
-const SETTLES := {"daybreak": ["spring:sky", 0.3]}
+## Zones whose air settles once a flag is set: flag -> share of motes left.
+## The Spring of Sky breaks the storm, so Daybreak's rain thins to a drizzle;
+## with the Evil One dead (`cleared`) the meteor's dust settles out of Dartmoor
+## and its spores out of Zenis (design bible 4.4).
+const SETTLES := {
+	"daybreak": ["spring:sky", 0.3],
+	"dartmoor": ["cleared", 0.35],
+	"zenis": ["cleared", 0.2],
+}
+
+## The Tree blooms (design bible 4.4, pass 141): on a cleared save a second
+## layer of blossom drifts down through every zone of the living Tree.
+const BLOSSOM := [40, Color("ff9ec8"), Vector2(9, 16), 12.0, 0.6, 0.0, true]
+const BLOOMS := ["eolis", "trunk", "tower", "mist", "branches", "daybreak"]
+
+## The table this layer reads its zone from: ZONES, or a blossom table.
+var table: Dictionary = ZONES
 
 var zone := ""
 var _motes: Array = []  # [screen position, depth 0.5..1.2, phase]
@@ -47,12 +62,20 @@ func set_zone(next: String) -> void:
 		return
 	zone = next
 	_motes.clear()
-	_spec = ZONES.get(zone, [])
+	_spec = table.get(zone, [])
 	if _spec.is_empty():
 		return
-	_rng.seed = zone.hash()
+	_rng.seed = zone.hash() + table.size()
 	for i in count():
 		_motes.append([Vector2(_rng.randf() * VIEW.x, _rng.randf() * VIEW.y), _rng.randf_range(0.5, 1.2), _rng.randf() * TAU])
+
+
+## The blossom table for a bloom layer: every living zone of the Tree.
+static func blossom_table() -> Dictionary:
+	var out := {}
+	for z: String in BLOOMS:
+		out[z] = BLOSSOM
+	return out
 
 
 ## How many motes the zone has now.
@@ -99,6 +122,7 @@ func _draw() -> void:
 	var streak := Vector2.ZERO
 	if _spec.size() > 5:
 		streak = (_spec[2] as Vector2).normalized() * float(_spec[5])
+	var petal := _spec.size() > 6 and bool(_spec[6])
 	for i in _motes.size():
 		var m: Array = _motes[i]
 		var depth: float = m[1]
@@ -110,7 +134,14 @@ func _draw() -> void:
 		# the same field tiles across the extra width and height.
 		for off: Vector2 in tiles:
 			var at := (origin + p + off).floor()
-			if streak != Vector2.ZERO:
+			if petal:
+				# Two pixels long, tumbling: it turns end over end as it sways.
+				var c := Color(color, minf(1.0, a * 2.0))
+				var flat := sin(_t * 3.0 + phase * 2.0) > 0.0
+				draw_rect(Rect2(at, Vector2(2, 1) if flat else Vector2(1, 2)), c)
+				if s > 1.0:
+					draw_rect(Rect2(at + Vector2(1, 1), Vector2(1, 1)), c.lightened(0.3))
+			elif streak != Vector2.ZERO:
 				draw_line(at, at - streak * depth, Color(color, a * 0.8), 1.0)
 			else:
 				draw_rect(Rect2(at, Vector2(s, s)), Color(color, a))
