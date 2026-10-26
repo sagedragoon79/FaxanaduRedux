@@ -217,6 +217,9 @@ func die() -> void:
 	Coin.spray(get_parent(), center(), randi_range(gold_min, gold_max))
 	Drop.roll(get_parent(), center(), poison_drops)
 	GameState.add_xp(xp)
+	var p := get_tree().get_first_node_in_group("player") as Player
+	if p != null:
+		p.on_kill()
 	Feel.hitstop(0.08)
 	Feel.add_trauma(0.25)
 	Sfx.play("enemy_die")

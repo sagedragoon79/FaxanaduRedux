@@ -49,6 +49,9 @@ const TIME_THIEF_EXTRA := 1.0
 const FIELD_CUE_GAP := 0.3
 ## Mantra of Death (pass 134): what share of its MP the Death spell costs.
 const MANTRA_OF_DEATH_MULT := 0.5
+## Wanderer's Grace (pass 142): seconds of harm passing through you added to
+## every dash, on top of `MovementTuning.dash_invuln`.
+const GRACE_INVULN := 0.1
 ## Seconds between the feathers a glide sheds.
 const GLIDE_FEATHERS := 0.14
 ## Corner and ledge correction step a hair past each whole pixel, so a clip of
@@ -127,6 +130,9 @@ var time_thief := false
 var mantra_of_death := false
 var last_stand := false
 var second_wind := false
+## Wanderer's Grace (skill): longer dash invulnerability, and a kill gives the
+## air dashes back.
+var wanderers_grace := false
 ## Feather Fall (skill): glide after the double jump by holding Jump.
 var feather_fall := false
 ## True while gliding (set each frame).
@@ -461,6 +467,26 @@ func needs_air_refresh() -> bool:
 ## Gives back the double jump and air dashes (a stride seed, bible 6.4).
 func refresh_air_moves() -> void:
 	_refresh_air_moves()
+
+
+## Seconds of harm passing through you that a dash gives.
+func dash_invuln() -> float:
+	return tuning.dash_invuln + (GRACE_INVULN if wanderers_grace else 0.0)
+
+
+## A foe has died (Enemy.die). With Wanderer's Grace a kill gives back the air
+## dashes spent, with a puff of feathers and a catch of wind, so a strike in
+## midair can be dashed out of (bible 9). True if it gave any back.
+func on_kill() -> bool:
+	if not wanderers_grace or dead or not abilities.stride:
+		return false
+	var full := tuning.air_dash_charges + bonus_air_dashes
+	if air_dash_charges >= full:
+		return false
+	air_dash_charges = full
+	_spawn_dust(Vector2(0, -14), "feathers")
+	Sfx.play("wind_catch", 0.05, -2.0)
+	return true
 
 
 # --- Walls ----------------------------------------------------------------------
@@ -812,7 +838,7 @@ func _try_dash(on_floor: bool) -> void:
 	facing = _dash_dir
 	_ground_dash = on_floor
 	_dash_timer = tuning.dash_time
-	_invuln_timer = maxf(_invuln_timer, tuning.dash_invuln)
+	_invuln_timer = maxf(_invuln_timer, dash_invuln())
 	_jump_cut_available = false
 	_attack_timer = 0.0
 	is_wall_sliding = false

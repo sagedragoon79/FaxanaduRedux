@@ -335,6 +335,7 @@ func refresh_stats(p: Player) -> void:
 	p.mantra_of_death = has_skill("mantra_of_death")
 	p.last_stand = has_skill("last_stand")
 	p.second_wind = has_skill("second_wind")
+	p.wanderers_grace = has_skill("wanderers_grace")
 	p.feather_fall = has_skill("feather_fall")
 	p.ground_combo_length = 4 if has_skill("fourth_strike") else 3
 	p.mp_hit_mult = 1.5 if has_skill("siphon") else 1.0
