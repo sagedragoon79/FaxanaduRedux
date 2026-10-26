@@ -600,3 +600,41 @@ func test_checker_climbs_ladders() -> void:
 	var bare := Reach.new({"t/shaft": text.replace("\"", ".").replace("#########.#########", "####################")}, {})
 	check(not bare.reachable(bare.spot_of("t/shaft", "P")).has(Reach.key("t/shaft", 3, 3)), "without the ladder the loft is out of reach")
 
+
+## Pass 125: ladders are a convenience, never a key. Take every ladder out (its
+## top cell left as a plank, the rest open air) and nothing the player could
+## reach before the Glove, or with it, is lost: no ladder opens a room a gate
+## should hold shut.
+func test_ladders_never_open_a_gated_room() -> void:
+	var texts := _texts()
+	var bare := {}
+	var ladders := 0
+	for id: String in texts:
+		var parsed := Room.parse(texts[id])
+		var grid: Array[String] = parsed.grid
+		if not "\n".join(PackedStringArray(grid)).contains(Reach.LADDER):
+			bare[id] = texts[id]
+			continue
+		var head: String = texts[id].substr(0, texts[id].find("\n---\n") + 5)
+		var rows := []
+		for y in grid.size():
+			var row := grid[y]
+			var out := ""
+			for x in row.length():
+				var c := row[x]
+				if c == Reach.LADDER:
+					ladders += 1
+					var top := y == 0 or x >= grid[y - 1].length() or grid[y - 1][x] != Reach.LADDER
+					c = "-" if top else "."
+				out += c
+			rows.append(out)
+		bare[id] = head + "\n".join(PackedStringArray(rows))
+	check(ladders > 0, "the world has ladders (%d cells)" % ladders)
+	for abilities: Dictionary in [{}, {"glove": true}]:
+		var with := Reach.new(texts, abilities, true)
+		var without := Reach.new(bare, abilities, true)
+		var a := _rooms_reached(with.reachable(with.spot_of(START_ROOM, "P")))
+		var b := _rooms_reached(without.reachable(without.spot_of(START_ROOM, "P")))
+		var extra := a.keys().filter(func(id: String) -> bool: return not b.has(id))
+		check(extra.is_empty(), "with %s, ladders open no room the rooms without them keep shut: %s" % [abilities.keys(), extra])
+

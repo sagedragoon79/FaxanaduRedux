@@ -426,6 +426,11 @@ The original Faxanadu is a game of ladders: every climb in the World Tree went u
 
 The reachability checker treats a spot with the feet on a ladder as a standing spot: it climbs to the ladder cells above and below and over the top onto the plank, and jumps from a ladder as from the floor.
 
+**Where ladders go (pass 125):** where the original put them, between floors that already connect, so a ladder is the plain way up and never a key. They go in shafts you otherwise climb by a zigzag of planks, and never in a shaft that is an ability gate (the Fungus Shaft is the Glove's). `test_ladders_never_open_a_gated_room` takes every ladder out and checks that, before the Glove and with it, the ladders open no room the bare rooms keep shut. Placed so far:
+- the Hollow Mouth: floor to the high plank under the way to the Mossy Overhang;
+- the Tower Foot: the floor up the right wall to the ledge at the Winch Hall door, beside the plank zigzag;
+- the Mine Shaft: the bottom of the shaft up the right side, through the upper floor beside the miners' doors.
+
 ---
 
 ## 7. Enemies
