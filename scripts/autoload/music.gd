@@ -117,16 +117,17 @@ func ambience(name: String, fade := FADE) -> void:
 const AFTER_THE_END := {"eolis": "eolis_bloom", "zenis": "zenis_still", "amb_zenis": "amb_zenis_still"}
 
 
-## Picks the music and ambience for a room.
-func for_room(room: Room) -> void:
+## Picks the music and ambience for a room. A spring restored in the room calls
+## it again with a slow fade, so the zone's music turns as the water comes back.
+func for_room(room: Room, fade := FADE) -> void:
 	if room == null:
 		return
 	var zone_track: String = room.header.get("music", room.zone)
 	if room.zone == "gym" or room.zone == "test" or room.zone == "":
 		zone_track = ""
-	play(after_the_end(zone_track))
+	play(after_the_end(restored(zone_track)), fade)
 	# A room can name its own bed (`ambience: heights` plays amb_heights).
-	ambience(after_the_end("amb_" + room.header.get("ambience", room.zone)))
+	ambience(after_the_end(restored("amb_" + room.header.get("ambience", room.zone))), fade)
 
 
 ## The track a room's music or bed becomes once the Evil One is dead and the
@@ -135,6 +136,25 @@ func for_room(room: Room) -> void:
 static func after_the_end(track: String) -> String:
 	if GameState.flag("cleared"):
 		return String(AFTER_THE_END.get(track, track))
+	return track
+
+
+## Tracks that change once their zone's spring flows again (design bible 13.3,
+## pass 150): track -> [the spring's flag, the restored track].
+const RESTORED := {
+	"trunk": ["spring:trunk", "trunk_restored"],
+	"mist": ["spring:mist", "mist_restored"],
+	"daybreak": ["spring:sky", "daybreak_restored"],
+	"amb_daybreak": ["spring:sky", "amb_daybreak_restored"],
+}
+
+
+## The track a zone's music or bed becomes once its spring is restored: the
+## Trunk opens up over the amber, the Mist is heard through half the fog, and
+## the storm over Daybreak breaks.
+static func restored(track: String) -> String:
+	if RESTORED.has(track) and GameState.flag(String(RESTORED[track][0])):
+		return String(RESTORED[track][1])
 	return track
 
 

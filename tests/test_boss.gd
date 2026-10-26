@@ -288,6 +288,46 @@ func test_after_the_end_eolis_feasts_and_the_meteor_goes_still() -> void:
 	GameState.new_game()
 
 
+## Bible 13.3 (pass 150): each spring's zone plays a restored variant of its
+## music once the spring flows, and the storm's bed over Daybreak becomes a
+## drizzle. Restoring a spring turns the music then and there.
+func test_restored_springs_change_their_zones_music() -> void:
+	for name: String in ["trunk_restored", "mist_restored", "daybreak_restored", "amb_daybreak_restored"]:
+		var stream := Music.stream_for(name)
+		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
+	var w := make_world({}, "trunk/spring_of_trunk")
+	await frames(1)
+	check(Music.track == "trunk", "before the spring, the Trunk plays its theme (%s)" % Music.track)
+	var spring: Spring = null
+	for c in w.room.get_children():
+		if c is Spring:
+			spring = c
+	check(spring != null, "(the Spring of Trunk)")
+	spring.interact(w.player)
+	await frames(1)
+	check(Music.track == "trunk_restored", "restoring the spring turns the music at once (%s)" % Music.track)
+	w._enter("mist/drowned_stair")
+	await frames(1)
+	check(Music.track == "mist" and Music.ambience_track == "amb_mist", "the Mist waits on its own spring (%s)" % Music.track)
+	GameState.set_flag("spring:mist")
+	w._enter("mist/dry_cistern")
+	await frames(1)
+	check(Music.track == "mist_restored" and Music.ambience_track == "amb_mist", "then plays through the thinner fog (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("daybreak/broken_shrine")
+	await frames(1)
+	check(Music.track == "daybreak" and Music.ambience_track == "amb_daybreak", "the storm rages over Daybreak (%s, %s)" % [Music.track, Music.ambience_track])
+	GameState.set_flag("spring:sky")
+	w._enter("daybreak/fallen_bridge")
+	await frames(1)
+	check(Music.track == "daybreak_restored" and Music.ambience_track == "amb_daybreak_restored",
+		"until the Spring of Sky breaks it (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("mist/victim")
+	await frames(1)
+	check(Music.track == "victim", "a town keeps its own theme (%s)" % Music.track)
+	check(Music.restored("boss") == "boss" and Music.restored("branches") == "branches", "and only the springs' zones change")
+	GameState.new_game()
+
+
 func test_reveal_bursts_out_and_withdraws() -> void:
 	var setup := _boss_world()
 	var boss: Rokusutahn = setup[1]
