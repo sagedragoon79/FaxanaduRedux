@@ -248,7 +248,8 @@ func _enter(room_id: String) -> void:
 	room_changed.emit(room)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	BossRush.tick(delta)
 	if busy or player == null or room == null or player.dead or player.frozen:
 		return
 	player.in_sap = room.is_sap_at(player.global_position + Vector2(0, -6))
@@ -330,6 +331,31 @@ func travel(room_id: String, pos: Vector2) -> void:
 	player.teleport(pos)
 	player.velocity = Vector2.ZERO
 	player.safe_position = pos
+	camera.snap_to_target()
+	player.frozen = false
+	if fader != null and not instant:
+		await _fade(0.0, FADE_IN)
+	busy = false
+
+
+## Moves the player into room `room_id` through its door `n`, with a fade, as
+## if they had come through it (the boss rush).
+func travel_to_door(room_id: String, n: int) -> void:
+	if busy or not has_room(room_id):
+		return
+	busy = true
+	player.frozen = true
+	if fader != null and not instant:
+		await _fade(1.0, FADE_OUT)
+	if use_game_state:
+		GameState.capture(player)
+	_enter(room_id)
+	var arrive: Dictionary = room.doors.get(n, {})
+	if arrive.is_empty():
+		player.teleport(room.spawn_position)
+	else:
+		_place_at_door(arrive, Vector2.ZERO)
+	_ignored_door = n
 	camera.snap_to_target()
 	player.frozen = false
 	if fader != null and not instant:

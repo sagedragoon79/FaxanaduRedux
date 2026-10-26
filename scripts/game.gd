@@ -35,6 +35,7 @@ extends Node2D
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
+##   --rush=N[,SECONDS]         be on boss N (from 0) of a boss rush begun at the Guru (SECONDS on its clock)
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
 ##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
@@ -448,6 +449,12 @@ func _debug_open() -> void:
 		Trials.begin(spec[0], Trials.TEMPLE, Vector2(22 * Room.TILE, 20 * Room.TILE))
 		if spec.size() > 1:
 			Trials.run.time = float(spec[1])
+	if _args.has("rush"):
+		var spec := String(_args["rush"]).split(",")
+		BossRush.begin(Trials.TEMPLE, Vector2(22 * Room.TILE, 20 * Room.TILE))
+		BossRush.run.index = int(spec[0])
+		if spec.size() > 1:
+			BossRush.run.time = float(spec[1])
 	var what: String = _args.get("open", "")
 	if what.begins_with("shop:"):
 		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)

@@ -1,0 +1,152 @@
+class_name BossRush
+extends RefCounted
+## The boss rush (design bible 11): a whole clear at 100% (the `lord` flag)
+## opens it at the Guru of the Temple of Mantras. The mantra carries you through
+## every boss of the Tree in the order you met them, each in its own arena,
+## entered by the door you first came in by. Between fights the mantra mends a
+## third of your health and all your magic. Nothing is won again: no rings,
+## keys or skill points, and the Evil One's death plays no ending. A blow that
+## would kill you ends the rush instead and returns you to the Guru, whole. The
+## clock runs from the first arena to the last blow; the best time is kept with
+## the trials' (`GameState.data.trials`, under RECORD).
+
+## Boss id and its arena, in the order of the critical path (bible 4.2), the
+## Drowned Warden of the optional Sunken Spring before Zenis.
+const ORDER := [
+	["rokusutahn", "trunk/root_chamber"],
+	["foreman", "tower/foreman_hall"],
+	["zoradohna", "tower/forepaw_lift"],
+	["ripasheiku", "mist/sunken_chapel"],
+	["zorugeriru", "mist/spring_of_mist"],
+	["pakukame", "branches/crown_leaf"],
+	["borabohra", "daybreak/roost"],
+	["king_grieve", "dartmoor/throne_hall"],
+	["shadow_eura", "dartmoor/zenis_gate"],
+	["drowned_warden", "sunken/wellspring"],
+	["evil_avatar", "zenis/throne"],
+	["evil_veins", "zenis/veins"],
+	["evil_one", "zenis/heart"],
+]
+## The door of each arena the rush brings you through.
+const ENTRY_DOOR := 1
+## The best time's key in GameState.data.trials.
+const RECORD := "boss_rush"
+const UNLOCK_FLAG := "lord"
+## Between fights: a third of your health back, and all your magic.
+const MEND := 1.0 / 3.0
+## Seconds from a boss's fall to the next arena (its banner shows first).
+const NEXT_DELAY := 2.5
+
+## The rush under way: {"index", "time", "back_room", "back_pos"}, or empty.
+static var run := {}
+
+
+static func unlocked() -> bool:
+	return GameState.flag(UNLOCK_FLAG)
+
+
+static func active() -> bool:
+	return not run.is_empty()
+
+
+static func best() -> float:
+	return float(GameState.data.trials.get(RECORD, INF))
+
+
+## The boss the rush is on, or "".
+static func current_boss() -> String:
+	if not active() or int(run.index) >= ORDER.size():
+		return ""
+	return String(ORDER[int(run.index)][0])
+
+
+static func begin(back_room: String, back_pos: Vector2) -> void:
+	run = {"index": 0, "time": 0.0, "back_room": back_room, "back_pos": back_pos}
+
+
+static func tick(delta: float) -> void:
+	if active():
+		run.time = float(run.time) + delta
+
+
+## A boss of the rush has fallen. Returns true when it was the last.
+static func advance() -> bool:
+	run.index = int(run.index) + 1
+	return int(run.index) >= ORDER.size()
+
+
+## Ends a finished rush: keeps the best time. Returns {"time", "best", "record"}.
+static func finish() -> Dictionary:
+	if not active():
+		return {}
+	var t := float(run.time)
+	var old := best()
+	var record := t < old
+	if record:
+		GameState.data.trials[RECORD] = snappedf(t, 0.01)
+	return {"time": t, "best": minf(t, old), "record": record}
+
+
+static func abandon() -> void:
+	run = {}
+
+
+## Mends the player between fights.
+static func mend(p: Player) -> void:
+	p.hp = mini(p.max_hp, p.hp + ceili(p.max_hp * MEND))
+	p.mp = p.max_mp
+	p.health_changed.emit(p.hp, p.max_hp)
+
+
+## Starts a rush from where the player stands (by the Guru): full health,
+## magic and potions, then on to the first arena.
+static func start(world: World, p: Player) -> void:
+	begin(world.room.id, p.global_position)
+	p.hp = p.max_hp
+	p.mp = p.max_mp
+	p.flask_charges = p.flask_max
+	p.health_changed.emit(p.hp, p.max_hp)
+	Sfx.play("trial_begin", 0.0)
+	go(world)
+
+
+## Carries the player to the current boss's arena.
+static func go(world: World) -> void:
+	if not active() or current_boss() == "":
+		return
+	world.travel_to_door(String(ORDER[int(run.index)][1]), ENTRY_DOOR)
+
+
+## A boss of the rush has fallen: on to the next, or the rush is won.
+static func on_boss_down(world: World, p: Player) -> void:
+	if not active():
+		return
+	if advance():
+		var result := finish()
+		GameState.banner.emit("The Rush Is Won", "%s%s" % [Trials.format_time(result.time), "  A new best!" if result.record else "  Best " + Trials.format_time(result.best)])
+		Sfx.play("trial_record" if result.record else "trial_clear", 0.0)
+		world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: back(world, p))
+		return
+	mend(p)
+	GameState.toast.emit("%d of %d. The mantra mends you." % [int(run.index), ORDER.size()])
+	world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: go(world))
+
+
+## A blow that would have killed you: the rush ends and you go back whole.
+static func fall(world: World, p: Player) -> void:
+	if not active():
+		return
+	GameState.banner.emit("The Rush Ends", "Fallen at %d of %d." % [int(run.index) + 1, ORDER.size()])
+	back(world, p)
+
+
+## Returns the player to where the rush began and ends it.
+static func back(world: World, p: Player) -> void:
+	if not active():
+		return
+	var room_id: String = run.back_room
+	var pos: Vector2 = run.back_pos
+	abandon()
+	p.hp = p.max_hp
+	p.health_changed.emit(p.hp, p.max_hp)
+	world.travel(room_id, pos)
