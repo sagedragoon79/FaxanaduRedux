@@ -1674,6 +1674,75 @@ def amb_daybreak_restored():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
+# --- The 2A03 (pass 152) --------------------------------------------------------------------
+def chip_pulse(freq, dur, duty=0.125, decay=0.0):
+    """A raw NES pulse channel: no filter but a gentle anti-alias, a stepped volume
+    envelope in sixteen levels like the 2A03's, and no vibrato."""
+    n = int(dur * RATE)
+    x = wave_of("square", phase(freq, n), duty)
+    e = adsr(n, 0.002, 0.06, 0.7, 0.02)
+    if decay:
+        e *= np.exp(-np.arange(n) / RATE * decay)
+    e = np.floor(e * 15) / 15
+    return fft_filter(x, low=9000) * e * 0.18
+
+
+def chip_tri(freq, dur):
+    """The 2A03 triangle: a 4-bit staircase with no volume control, so it is gated."""
+    n = int(dur * RATE)
+    x = np.floor((wave_of("tri", phase(freq, n)) + 1) * 7.5) / 7.5 - 1
+    gate = np.ones(n)
+    k = min(n, int(0.004 * RATE))
+    gate[n - k:] = 0
+    return fft_filter(x, low=9000) * gate * 0.4
+
+
+def chip_noise(seed, dur, pitch=1, decay=30.0):
+    """The noise channel: a held random level per step (lower `pitch` steps
+    faster and hisses; higher thumps), with a stepped decay."""
+    n = int(dur * RATE)
+    rng = np.random.default_rng(seed)
+    steps = rng.choice([-1.0, 1.0], n // pitch + 1)
+    x = np.repeat(steps, pitch)[:n]
+    e = np.floor(np.exp(-np.arange(n) / RATE * decay) * 15) / 15
+    return x * e * 0.16
+
+
+def track_old_eolis():
+    """Eolis of Old, the hidden room behind the Temple (design bible 11): the town as
+    it sounded on a cartridge. A new tune, not the original's: F major at 132 on the
+    2A03's four voices only, a 12.5% pulse lead, a 25% pulse answering in arpeggio, the
+    stepped triangle walking the bass and the noise channel for drums, dry, with no
+    reverb, no pads and no stereo but a slight split of the two pulses."""
+    rng = np.random.default_rng(1987)
+    s = Song(bpm=132, bars=16)
+    root, scale = 53, SCALES["major"]  # F major
+    prog = [0, 3, 4, 0, 5, 3, 1, 4] * 2
+    for b, deg in enumerate(prog):
+        tones = chord_tones(root, scale, deg)
+        # The triangle walks root, fifth, octave, fifth.
+        for k, off in enumerate([0, 4, 7, 4]):
+            m = scale_note(root - 12, scale, deg + off)
+            s.add(chip_tri(midi_hz(m), s.beat * 0.9), b * 4 + k, 0, 1.0)
+        # Pulse 2 arpeggiates the chord in sixteenths, the old way of playing a chord on one voice.
+        arp = tones + [tones[0] + 12]
+        for k in range(16):
+            m = arp[k % 4] + 12
+            s.add(chip_pulse(midi_hz(m), s.beat * 0.24, 0.25, decay=6.0), b * 4 + k * 0.25, -0.25, 0.42)
+        # Noise: a low thump on 1 and 3, a hiss on 2 and 4, ticks between.
+        for k in range(4):
+            if k % 2 == 0:
+                s.add(chip_noise(b * 8 + k, 0.12, pitch=24, decay=22.0), b * 4 + k, 0, 1.0)
+            else:
+                s.add(chip_noise(b * 8 + k, 0.14, pitch=2, decay=18.0), b * 4 + k, 0, 0.9)
+            s.add(chip_noise(b * 8 + k + 4, 0.03, pitch=1, decay=90.0), b * 4 + k + 0.5, 0, 0.45)
+    melody(s, rng, root, scale, prog, lambda f, d: chip_pulse(f, d, 0.125), start_bar=0, octave=12,
+           pan=0.25, gain=1.0, density=0.75)
+    # Pulse waves are all edge: they sound far louder than a filtered mix at the
+    # same peak, and Vorbis overshoots their corners, so sit them well down.
+    return s.render(reverb=0.0) * 0.6
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -1722,6 +1791,7 @@ TRACKS = {
     "mist_restored": track_mist_restored,
     "daybreak_restored": track_daybreak_restored,
     "amb_daybreak_restored": amb_daybreak_restored,
+    "old_eolis": track_old_eolis,
 }
 
 

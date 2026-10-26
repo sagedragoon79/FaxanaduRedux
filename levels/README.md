@@ -25,6 +25,7 @@ music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
 fog: 0.5           (optional: the Mist's fog density over this room, 0 for none; the zone's otherwise)
 surface: stone     (optional: the ground's footstep sound if not the zone's: stone, moss, plank, iron, sap)
+retro: true        (optional: the world is drawn through the NES filter, RetroFilter: chunky pixels in a 4:3 frame, NES palette only. Eolis of Old)
 camera: wide       (optional: the camera eases out to show 25% more each way, for big arenas and sky rooms; never past the room's edges, so make the room at least 50x29 tiles to get all of it)
 ---
 ##########

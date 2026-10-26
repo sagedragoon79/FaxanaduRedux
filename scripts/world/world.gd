@@ -63,6 +63,8 @@ var motes: Motes
 ## Blossom drifting through the Tree once the Evil One is dead (Motes.BLOSSOM).
 var blossom: Motes
 var fog: Fog
+## The NES look over a `retro: true` room (Eolis of Old, design bible 11).
+var retro: RetroFilter
 
 var _ignored_door := 0
 
@@ -78,6 +80,8 @@ func _ready() -> void:
 	blossom = Motes.new()
 	blossom.table = Motes.blossom_table()
 	add_child(blossom)
+	retro = RetroFilter.new()
+	add_child(retro)
 
 
 # --- Rooms -----------------------------------------------------------------------
@@ -233,6 +237,7 @@ func _enter(room_id: String) -> void:
 		player.get_parent().remove_child(player)
 	room.add_child(player)
 	fog.set_room(room)
+	retro.set_room(room)
 	for c in room.get_children():
 		if c is GoldPurse:
 			player.purse = c
