@@ -52,6 +52,9 @@ extends Resource
 @export var dash_invuln := 0.10
 @export var air_dash_charges := 1
 @export var ground_dash_cooldown := 0.25
+## A ground dash snaps to the floor from this far (px), so it follows a slope
+## down instead of sailing off it; a ledge deeper than this still drops away.
+@export var ground_dash_snap := 10.0
 
 @export_group("Pogo and attacks")
 @export var pogo_bounce := 380.0

@@ -328,7 +328,7 @@ All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16
 | Gravity during dash | none; exits with vy = 0 |
 | Invulnerability | first 0.10 s |
 | Charges | 1 in air (2 with skill node), refreshed like double jump |
-| Ground dash | yes, same values, 0.25 s cooldown |
+| Ground dash | yes, same values, 0.25 s cooldown. It hugs the floor (pass 121): a dash begun on the ground snaps to the floor from 10 px (`ground_dash_snap`, against the run's 4 px), so it rides a slope down as it already rode one up, instead of sailing off the ramp into the air. A ledge of a whole tile or more still drops away beneath it, and an air dash never snaps |
 | Afterimages | 3 ghost frames, elf-green tint |
 
 ### 6.6 Pogo (Mattock down-strike)
