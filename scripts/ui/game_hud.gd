@@ -125,8 +125,12 @@ func _draw() -> void:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
 
 
-## A Guru Trial's name and clock, top center, while one is under way.
+## A Guru Trial's name and clock, top center, while one is under way; or the
+## boss rush's count and clock.
 func _draw_trial() -> void:
+	if BossRush.active():
+		_draw_rush()
+		return
 	if not Trials.active():
 		return
 	var t := Trials.find(Trials.run.id)
@@ -427,3 +431,16 @@ func _centered(text: String, y: float, size: int, color: Color) -> void:
 	var tw := PixelFont.width(text, size)
 	var pos := Vector2(roundf((w - tw) * 0.5), y)
 	PixelFont.draw(self, pos, text, size, color, Color(OUTLINE, color.a))
+
+
+func _draw_rush() -> void:
+	var title := "BOSS RUSH  %d/%d" % [mini(int(BossRush.run.index) + 1, BossRush.ORDER.size()), BossRush.ORDER.size()]
+	var clock := Trials.format_time(float(BossRush.run.time))
+	var best := BossRush.best()
+	var sub := "BEST " + Trials.format_time(best) if best != INF else "FIRST RUSH"
+	var w := maxf(PixelFont.width(title, 10), PixelFont.width(clock, 20)) + 20.0
+	var x := get_viewport_rect().size.x * 0.5
+	_draw_plate(Rect2(Vector2(x - w * 0.5, 6), Vector2(w, 46)))
+	PixelFont.draw(self, Vector2(x - PixelFont.width(title, 10) * 0.5, 17), title, 10, MASK_FULL, OUTLINE)
+	PixelFont.draw(self, Vector2(x - PixelFont.width(clock, 20) * 0.5, 37), clock, 20, MASK_FULL, OUTLINE)
+	PixelFont.draw(self, Vector2(x - PixelFont.width(sub, 10) * 0.5, 49), sub, 10, GOLD, OUTLINE)

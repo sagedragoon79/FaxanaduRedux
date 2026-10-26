@@ -73,7 +73,11 @@ func warm() -> void:
 	Music.stream_for(String(BOSSES.get(boss_id, {}).get("music", "boss")))
 
 
+## Beaten for good, so the arena stays quiet. In a boss rush every boss of
+## the rush fights again (BossRush).
 func defeated_before() -> bool:
+	if BossRush.active():
+		return BossRush.current_boss() != boss_id
 	return GameState.flag("boss:" + boss_id)
 
 
@@ -247,6 +251,16 @@ func _start() -> void:
 
 
 func _on_defeated() -> void:
+	if BossRush.active():
+		# The rush wins nothing again and opens no doors: on to the next arena.
+		Sfx.play("item", 0.0)
+		Music.play("", 2.0)
+		won.emit()
+		var world := get_tree().get_first_node_in_group("world") as World
+		var p := get_tree().get_first_node_in_group("player") as Player
+		if world != null and p != null:
+			BossRush.on_boss_down(world, p)
+		return
 	var reward: Dictionary = BOSSES.get(boss_id, {})
 	GameState.set_flag("boss:" + boss_id)
 	var rings: Array = GameState.data.rings

@@ -992,3 +992,78 @@ func test_the_mantra_of_thorns_is_cleared_by_pogo() -> void:
 	await frames(int(TrialGoal.RING * 60) + 10)
 	w.queue_free()
 	Trials.abandon()
+
+
+## Bible 11: the boss rush opens at 100% and runs every guardian again in
+## order, each through the door you first came in by, with a third of your
+## health mended between fights. It wins nothing and plays no ending; the clock
+## and its best time are kept; a killing blow ends it and sends you back whole.
+func test_the_boss_rush_runs_every_guardian_again() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(5)
+	check(not BossRush.unlocked() and not Menus._rush_row().enabled, "the rush is sealed before 100%")
+	GameState.set_flag("lord")
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+		check(w.has_room(String(pair[1])), "%s's arena exists" % pair[0])
+	check(Menus._rush_row().enabled, "and open after")
+	var flags_before: Dictionary = GameState.data.flags.duplicate()
+	var rings_before: Array = GameState.data.rings.duplicate()
+	var gold_before := p.gold
+	var back := p.global_position
+	p.hp = 3
+	BossRush.start(w, p)
+	await frames(5)
+	check(p.hp == p.max_hp, "the rush begins whole")
+	var n := 0
+	for pair: Array in BossRush.ORDER:
+		var boss_id := String(pair[0])
+		check(w.room.id == String(pair[1]), "rush %d is %s's arena (%s)" % [n + 1, boss_id, w.room.id])
+		check(BossRush.current_boss() == boss_id, "on %s" % boss_id)
+		var arena: BossArena = w.get_tree().get_first_node_in_group("boss_arena")
+		check(arena != null and arena.boss_id == boss_id, "%s's arena waits" % boss_id)
+		if arena == null:
+			break
+		# Walk in from the door until the fight starts.
+		var center := w.room.size_tiles.x * Room.TILE * 0.5
+		for i in 300:
+			if arena.fighting:
+				break
+			p.input.move_x = int(signf(center - p.global_position.x))
+			p.input.jump_pressed = i % 40 == 0
+			p.input.jump_held = i % 40 < 10
+			await frames(1)
+		p.input.clear()
+		check(arena.fighting and arena.boss != null, "%s fights again" % boss_id)
+		if not arena.fighting:
+			break
+		if n == 0:
+			p.hp = 4
+		arena.boss.defeated.emit()
+		await frames(5)
+		if n == 0:
+			check(p.hp == 4 + ceili(p.max_hp / 3.0) and p.mp == p.max_mp, "a third of your health and all your magic mended (%d)" % p.hp)
+		n += 1
+		await frames(int(BossRush.NEXT_DELAY * 60) + 10)
+	check(n == BossRush.ORDER.size(), "all %d guardians fought (%d)" % [BossRush.ORDER.size(), n])
+	check(not BossRush.active() and w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0,
+		"the rush won, the mantra carries you back to the Guru")
+	check(GameState.data.flags == flags_before and GameState.data.rings == rings_before and p.gold == gold_before,
+		"nothing is won again")
+	check(int(GameState.data.get("clears", 0)) == 0, "and the Evil One's fall plays no ending")
+	var best := BossRush.best()
+	check(best > 1.0 and best < INF, "the best time is kept (%.1f s)" % best)
+	check(Menus._rush_row().right == Trials.format_time(best), "and shown by the Guru")
+	# A killing blow ends the rush and returns you whole.
+	BossRush.start(w, p)
+	await frames(5)
+	p.hp = 2
+	p._invuln_timer = 0.0
+	p.take_damage(5)
+	await frames(5)
+	check(not BossRush.active() and not p.dead and p.hp == p.max_hp, "a killing blow ends the rush, and you live")
+	check(w.room.id == "test/a", "back at the Guru")
+	check(BossRush.best() == best, "a fallen rush keeps no time")
+	w.queue_free()
+	BossRush.abandon()

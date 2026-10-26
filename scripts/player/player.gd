@@ -1462,6 +1462,14 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		GameState.toast.emit("Second Wind!")
 		Sfx.play("heal", 0.0)
 		_spawn_dust(Vector2(0, -16), "heal")
+	if BossRush.active() and amount >= hp and elixirs <= 0:
+		# A boss rush (bible 11): the blow that would kill you ends the rush
+		# (an Elixir still saves you first).
+		var world := get_tree().get_first_node_in_group("world") as World
+		if world != null:
+			_invuln_timer = tuning.hurt_invuln
+			BossRush.fall(world, self)
+			return
 	hp -= amount
 	DamageNumber.spawn(get_parent(), global_position + Vector2(0, -44), amount, "hurt")
 	_invuln_timer = tuning.hurt_invuln
