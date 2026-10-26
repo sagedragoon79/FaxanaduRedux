@@ -342,8 +342,10 @@ func test_enemies_respawn_when_configured() -> void:
 	m.respawn_time = 0.5
 	await frames(2)
 	m.take_hit(999, Vector2(1, 0))
-	check(m.dead and not m.visible, "defeated")
-	await frames(40)
+	check(m.dead and m.dissolving(), "defeated, it breaks up")
+	await frames(28)
+	check(m.dead and not m.visible, "and is gone")
+	await frames(12)
 	check(not m.dead and m.hp == m.max_hp and m.visible, "respawned at home")
 
 
@@ -1941,6 +1943,28 @@ func test_spire_sentinel_slams_and_cracks_open() -> void:
 	hp0 = s.hp
 	s.take_hit(10, Vector2.RIGHT)
 	check(hp0 - s.hp == 10, "a blow on the staggered stone lands (%d)" % (hp0 - s.hp))
+	room.free()
+
+
+## Bible 7 (pass 126): every enemy dies with a dissolve. Its body stays a
+## moment, flashes white and breaks up into glowing motes (the dissolve shader),
+## harmless and untouchable, then is gone.
+func test_a_defeated_enemy_dissolves_then_is_gone() -> void:
+	var room := _room_with({Vector2i(12, 6): "M"})
+	var p := make_player(room, Vector2i(5, 6))
+	var m: Monodron = _find(room, Monodron)
+	await frames(2)
+	m.take_hit(999, Vector2(1, 0))
+	check(m.dead and m.dissolving() and m.visible, "it is still there, breaking up")
+	var mat := m.material as ShaderMaterial
+	check(mat != null and mat.shader == Enemy.DISSOLVE_SHADER, "with the dissolve shader")
+	check(m.collision_layer == 0, "and can't be struck or touched")
+	await frames(12)
+	var mid: float = mat.get_shader_parameter("progress")
+	check(mid > 0.2 and mid < 0.9, "partway through (progress %.2f)" % mid)
+	await frames(int(Enemy.DISSOLVE * 60.0))
+	check(not is_instance_valid(m) or m.is_queued_for_deletion(), "after %.2f s it is gone" % Enemy.DISSOLVE)
+	check(p.hp == p.max_hp, "the dissolving body never hurt anyone")
 	room.free()
 
 

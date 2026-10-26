@@ -10,6 +10,9 @@ const GRAVITY := 1200.0
 const MAX_FALL := 500.0
 ## Wind-ups shorter than this are unfair (design bible section 7).
 const MIN_TELEGRAPH := 0.35
+## How long a body takes to break up after its death.
+const DISSOLVE := 0.45
+const DISSOLVE_SHADER := preload("res://shaders/dissolve.gdshader")
 
 @export var max_hp := 24
 @export var contact_damage := 20
@@ -54,6 +57,7 @@ var _flash := 0.0
 var _hitstun := 0.0
 var _stagger := 0.0
 var _respawn_timer := 0.0
+var _dissolver: Tween
 
 
 func _ready() -> void:
@@ -200,8 +204,12 @@ func is_staggered() -> bool:
 func die() -> void:
 	dead = true
 	collision_layer = 0
-	visible = false
 	velocity = Vector2.ZERO
+	if is_in_group("boss"):
+		# A boss has played its own death by the time it gets here: it goes at once.
+		visible = false
+	else:
+		_dissolve()
 	var d := Dust.new()
 	d.setup("debris")
 	get_parent().add_child(d)
@@ -219,11 +227,43 @@ func die() -> void:
 	died.emit(self)
 	if respawn_time > 0.0:
 		_respawn_timer = respawn_time
-	else:
+	elif not visible:
 		queue_free()
 
 
+## The death (bible 7): the body flashes white and breaks up into glowing motes
+## over DISSOLVE seconds, then is gone (freed, unless it respawns).
+func _dissolve() -> void:
+	var mat := ShaderMaterial.new()
+	mat.shader = DISSOLVE_SHADER
+	material = mat
+	if _dissolver != null:
+		_dissolver.kill()
+	_dissolver = create_tween()
+	_dissolver.tween_method(func(v: float) -> void: mat.set_shader_parameter("progress", v), 0.0, 1.0, DISSOLVE)
+	_dissolver.tween_callback(_dissolved)
+
+
+func _dissolved() -> void:
+	_dissolver = null
+	if not dead:
+		return
+	visible = false
+	material = null
+	if respawn_time <= 0.0:
+		queue_free()
+
+
+## True while the body breaks up after its death.
+func dissolving() -> bool:
+	return dead and visible
+
+
 func _respawn() -> void:
+	if _dissolver != null:
+		_dissolver.kill()
+		_dissolver = null
+	material = null
 	dead = false
 	hp = max_hp
 	visible = true
