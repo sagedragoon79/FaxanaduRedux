@@ -650,6 +650,39 @@ func test_falling_back_down_a_shaft_takes_the_door_down() -> void:
 	check(w.room.id == "tower/mine_vault", "the door takes you back down to the vault")
 
 
+## Pass 151: the Mascon soak dropped down the Scorched Hall's floor shaft and met
+## Mascon's spikes before it first landed. The hazard set it back at its last
+## safe footing, which was still the Scorched Hall's, so it appeared inside
+## Mascon's ground. A floor or ceiling door now makes its arrival the first safe spot.
+func test_spikes_before_the_first_landing_set_you_back_in_the_new_room() -> void:
+	var w := make_world({}, "mist/scorched_hall", cell_feet(4, 19))
+	await frames(5)
+	var old_safe := w.player.safe_position
+	w.use_door(3)
+	while w.busy:
+		await frames(1)
+	check(w.room.id == "mist/mascon", "the Scorched Hall's floor shaft drops into Mascon")
+	var p := w.player
+	check(p.safe_position != old_safe and w.room.pixel_rect().has_point(p.safe_position) and not w.room.is_solid_at(p.safe_position + Vector2(0, -8)),
+		"the arrival under the shaft is the first safe spot (%s, was %s)" % [p.safe_position, old_safe])
+	# Spikes before any landing: set back in Mascon, in the open.
+	p._invuln_timer = 0.0
+	p.take_damage(1, true)
+	await frames(2)
+	var body := p.body_rect().grow(-3.0)
+	var embedded := false
+	for corner in [body.position, Vector2(body.end.x, body.position.y), Vector2(body.position.x, body.end.y), body.end, body.get_center()]:
+		embedded = embedded or w.room.is_solid_at(corner)
+	check(w.room.id == "mist/mascon" and not embedded, "and a hazard there sets you back in the open (%s)" % p.global_position)
+	# The first landing takes over as the safe footing.
+	for i in 60:
+		await frames(1)
+		if p.is_on_floor():
+			break
+	await frames(3)
+	check(p.is_on_floor() and absf(p.safe_position.y - p.global_position.y) < 1.0, "landing makes the footing safe again (%s)" % p.safe_position)
+
+
 ## People a player meets once the Evil One is dead: everyone but the Trunk's
 ## widow and Old Wena before their springs, who are swapped for glad selves.
 func _stands_in_a_living_town(id: String) -> bool:

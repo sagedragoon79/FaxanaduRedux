@@ -66,9 +66,15 @@ func _mash(p: Player, rng: RandomNumberGenerator, hold: Dictionary) -> void:
 		p.input.block_held = rng.randf() < 0.1
 		p.input.block_pressed = p.input.block_held
 		hold.block = rng.randi_range(5, 40)
+	# Attack is held for spans too (pass 151), most of them long enough to
+	# charge a Thrust; letting go then thrusts if the skill is learned.
+	var was_held := p.input.attack_held
+	if int(hold.get("attack", 0)) <= 0:
+		p.input.attack_held = rng.randf() < 0.3
+		hold["attack"] = rng.randi_range(4, 60)
 	for k: String in hold:
 		hold[k] -= 1
-	p.input.attack_pressed = rng.randf() < 0.08
+	p.input.attack_pressed = rng.randf() < 0.08 or (p.input.attack_held and not was_held)
 	p.input.dash_pressed = rng.randf() < 0.03
 	p.input.spell_pressed = rng.randf() < 0.01
 	p.input.heal_pressed = rng.randf() < 0.005
@@ -321,6 +327,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var turns := 0
 	var total_usec := 0
 	var counted := 0
+	var thrusts := 0
 	var dir := DirAccess.open("res://levels/" + zone)
 	var ids: Array[String] = []
 	for f in dir.get_files():
@@ -334,6 +341,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 		for k: String in GameState.data.abilities:
 			GameState.data.abilities[k] = true
 			w.player.abilities[k] = true
+		_learn_the_blade(w)
 		w.player.max_hp = 99999
 		w.player.hp = 99999
 		var rng := RandomNumberGenerator.new()
@@ -371,12 +379,17 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 			peak = maxi(peak, _count_nodes(w))
 		if peak > start_nodes + 400:
 			problems.append("%s: nodes grew from %d to %d" % [id, start_nodes, peak])
+		thrusts += w.player.thrusts
 		w.queue_free()
 		await frames(2)
 	check(problems.is_empty(), "%d %s rooms soaked with no problems: %s" % [ids.size(), label, problems])
 	var avg_ms := total_usec / 1000.0 / maxi(counted, 1)
 	print("  %s soak: %.2f ms a frame on average" % [label, avg_ms])
 	check(avg_ms < 16.6, "a %s frame averages under the 60 fps budget (%.2f ms)" % [label, avg_ms])
+	print("  %s soak: %d thrusts" % [label, thrusts])
+	if zone != "sunken":
+		# (Underwater a charge is spent: the Sunken Spring is all swimming.)
+		check(thrusts > 0, "the mashing player thrust %d times across %d %s rooms" % [thrusts, ids.size(), label])
 	if glass:
 		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
 		TimeStop.reset()
@@ -542,6 +555,11 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	const FIGHT_FRAMES := 1800
 	for f in FIGHT_FRAMES:
 		_mash(w.player, rng, hold)
+		if f % 300 == 150 and w.player.is_on_floor() and not w.player.dead:
+			# Into biting range now and then: the mashing alone may keep its
+			# distance for the whole fight, and then the bite is never soaked.
+			var side := -1.0 if w.player.global_position.x < boss.global_position.x else 1.0
+			w.player.teleport(Vector2(boss.global_position.x + side * Pakukame.BITE_RANGE * 0.5, w.player.global_position.y))
 		# Phase 2 halfway through, so the leaf gets torn too.
 		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
 			boss.phase = 2
@@ -1030,6 +1048,14 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	var orphans0 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	var nodes0 := runner.get_tree().get_node_count()
 	var second: Dictionary = _merge(await _journey(2026, true, POSTGAME_DOORS), await _journey(2026, true, POSTGAME_DOORS / 2, "zenis/threshold"))
+	# The second lap walks new ground, and the first sight of a zone's music,
+	# sheets and tiles is cached for good. So the leak check walks it again:
+	# the same lap, retraced, must leave nothing behind (pass 151).
+	obj0 = Performance.get_monitor(Performance.OBJECT_COUNT)
+	orphans0 = Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
+	nodes0 = runner.get_tree().get_node_count()
+	await _journey(2026, true, POSTGAME_DOORS)
+	await _journey(2026, true, POSTGAME_DOORS / 2, "zenis/threshold")
 	var obj1 := Performance.get_monitor(Performance.OBJECT_COUNT)
 	var orphans1 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	var nodes1 := runner.get_tree().get_node_count()
@@ -1038,7 +1064,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	for r: Dictionary in [first, second]:
 		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still meteor %d, festival %d" % [
 			r.rooms, r.reloads, r.worst / 1000.0, r.where, r.bloomed, r.still, r.festival])
-	print("  Second lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
+	print("  Retraced lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
 	check(caught.is_empty(), "no engine or script errors on the way: %s" % [caught.slice(0, 3)])
 	for r: Dictionary in [first, second]:
 		check(r.problems.is_empty(), "every rest continues where it was taken, still cleared: %s" % [r.problems])
@@ -1047,7 +1073,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 		check(r.still > 0 and r.festival > 0, "Zenis played still and Eolis its festival (%d, %d room stays)" % [r.still, r.festival])
 		check(r.worst < 50_000, "no frame of play spikes past 50 ms (%.1f ms, %s)" % [r.worst / 1000.0, r.where])
 	check(orphans1 <= orphans0, "no orphan nodes left behind (%d -> %d)" % [orphans0, orphans1])
-	check(obj1 - obj0 < 50, "a second lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
+	check(obj1 - obj0 < 50, "a retraced lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
 	check(nodes1 <= nodes0, "and the tree is no bigger (%d -> %d)" % [nodes0, nodes1])
 	GameState.new_game()
 
@@ -1086,6 +1112,10 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 		w._enter(start)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed
+	# The hand mashes on its own dice, so the doors the walk picks don't
+	# hang on how the mashing draws (pass 151).
+	var hand := RandomNumberGenerator.new()
+	hand.seed = seed * 31 + 7
 	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
 	var menus := ListMenu.new()
 	arena.add_child(menus)
@@ -1107,7 +1137,7 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 		visited[w.room.id] = true
 		var entered := 0
 		for f in 40:
-			_mash(w.player, rng, hold)
+			_mash(w.player, hand, hold)
 			var before := w.room
 			var t0 := Time.get_ticks_usec()
 			await frames(1)
@@ -1207,8 +1237,19 @@ func _journey_buff(w: World) -> void:
 	for k: String in GameState.data.abilities:
 		GameState.data.abilities[k] = true
 		w.player.abilities[k] = true
+	_learn_the_blade(w)
 	w.player.max_hp = 99999
 	w.player.hp = 99999
+
+
+## The whole Blade branch, Thrust included (pass 151): the soaks mash every
+## melee skill, Riposte's counter and Rising Cut's launch with them.
+func _learn_the_blade(w: World) -> void:
+	var skills: Array = GameState.data.skills
+	for n: Dictionary in Skills.nodes():
+		if String(n.branch) == "Blade" and not skills.has(n.id):
+			skills.append(String(n.id))
+	GameState.refresh_stats(w.player)
 
 
 func _close_menus() -> void:
