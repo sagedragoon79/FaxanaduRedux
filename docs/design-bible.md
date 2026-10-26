@@ -269,6 +269,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Slash:** 3-hit ground combo, 2-hit air combo. Each hit pushes the player back 4 px (knockback against enemy on hit; `slash_recoil` 120 px/s, raised from 90 in pass 105, which only gave 2.3 px). A hit stops a foe's thinking for 0.18 s (`Enemy.HITSTUN`); the heavy finisher drives it back 1.8x as hard and holds it 1.8x as long (0.32 s), so a full combo buys a breath.
 - **Up-slash:** hits above. In midair, an up-slash that lands on a foe holds you up: a fall turns into a 150 px/s rise (`up_slash_pop`, about 7 px), once per swing, never adding to a jump (built pass 105; it applies to every foe, not only launcher types, so juggling a flier slows your fall without letting you climb).
 - **Down-strike (Mattock):** see pogo in 6.6.
+- **Thrust (Blade skill, pass 149):** hold Attack past 0.4 s and let go for a charged lunge (see 9).
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
 - **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Dash and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98).
@@ -289,6 +290,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Red Potion | 2 charges, +40 HP, 0.7 s to drink, cancelled (charge kept) if hit |
 | Deluge | 15 MP, 12 damage, 300 px/s |
 | War Glove (rare drop, 7) | blade hits x1.5 for 15 s |
+| Thrust (skill, 9) | hold Attack 0.4 s, let go: heavy hit x1.5, a 320 px/s lunge for 0.16 s on the floor, 0.35 s cooldown |
 | Gold coins | Magnet after 0.4 s within 100 px |
 
 ### 5.4 Death and recovery
@@ -784,9 +786,15 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
   - A dash lets harm pass through you for 0.2 s instead of 0.1 s (`Player.GRACE_INVULN`, `Player.dash_invuln`).
   - Any foe's death gives back the air dashes you have spent (`Enemy.die` calls `Player.on_kill`), with a puff of feathers and a catch of wind. So a kill in midair can be dashed out of, and a run of kills across a gap can carry you over it.
   - The built tree now costs 44 points (Wanderer 19 over 10 nodes) against the 29 the game gives.
+- **Thrust (pass 149)**, the Blade branch's eighth node, after Bloodletting [2]: Faxanadu's thrust, as a charged move.
+  - The press still swings at once, so the charge builds through the first cut. Held past `thrust_charge` (0.4 s), the blade rings and a spark of light runs off its point. Let go and you thrust.
+  - The thrust deals the heavy hit times `thrust_mult` (1.5) through `blade_mult()`, so Keen Edge and the War Glove count. Its point is a long, low box, 52 px past the body (a cut reaches about 34) and half a cut's height. It strikes every foe in it once and drives them back like a heavy hit.
+  - On the floor it lunges at 320 px/s for 0.16 s, about 50 px. The lunge stops at the first foe it strikes and recoils like a cut, so it never carries you into a body. Off a ledge it ends. In the air the thrust strikes where you are and carries you nowhere, so it never crosses a gap the Elven Stride gates.
+  - A blow, a dash, a guard, a drink, a ladder or the water spends the charge. Shadow Eura echoes a thrust as a cut.
+  - The built tree now costs 46 points (Blade 13 over 8 nodes) against the 29 the game gives.
 
 Deviations, and why:
-- The build order skips Thrust, Wildfire and the rest. They are bigger mechanics and still come later in their branches.
+- The build order skipped Thrust (built in pass 149), Wildfire and the rest. They are bigger mechanics and still come later in their branches.
 - Light Step is dropped: a dash's own invulnerability already carries you over spikes, so the node did nothing.
 - Pathfinder is dropped: shrines already refill potions.
 - Treasure Sense takes Light Step's place in the build order, at 2 points.

@@ -34,6 +34,9 @@ func _physics_process(delta: float) -> void:
 
 func _draw() -> void:
 	var k := clampf(_life / LIFE, 0.0, 1.0)
+	if _kind == "thrust":
+		_draw_thrust(k)
+		return
 	var center: Vector2
 	var from: float
 	var to: float
@@ -61,3 +64,15 @@ func _draw() -> void:
 	var end := lerpf(from, to, sweep)
 	draw_arc(center, radius, from, end, 12, Color(HEAVY if _heavy else COLOR, k), width)
 	draw_arc(center, radius + 3.0, from, end, 12, Color(EDGE, k), 2.0)
+
+
+## A Thrust: a straight streak of light from the hand to the point, thinning
+## toward the tip, that shoots out and fades.
+func _draw_thrust(k: float) -> void:
+	var length := (Player.THRUST_LENGTH + 10.0) * _size * lerpf(0.5, 1.0, 1.0 - k)
+	var y := -22.0
+	var x0 := _facing * 6.0
+	var tip := Vector2(x0 + _facing * length, y)
+	draw_colored_polygon(PackedVector2Array([Vector2(x0, y - 4), tip, Vector2(x0, y + 4)]), Color(HEAVY, k * 0.85))
+	draw_line(Vector2(x0, y), tip, Color(EDGE, k), 2.0)
+	draw_circle(tip, 2.5, Color(EDGE, k))

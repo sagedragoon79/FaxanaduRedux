@@ -30,6 +30,7 @@ extends Node2D
 ##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
 ##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Ointment ahead of the player
 ##   --glove                    wear a War Glove (a rare drop) from the start
+##   --shot-thrust=N            thrust (the Blade skill) on frame N
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
 ##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
@@ -390,6 +391,10 @@ func _take_shot() -> void:
 		for e in get_tree().get_nodes_in_group("enemy"):
 			if e is Enemy and not e.is_in_group("boss") and not e.dead:
 				(e as Enemy).take_hit(9999, Vector2.RIGHT)
+	if _args.has("shot-thrust") and _frames == int(_args["shot-thrust"]):
+		# Screenshots: a Thrust from the floor on this frame (to catch the lunge).
+		player.thrust = true
+		player._thrust(player.is_on_floor())
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])

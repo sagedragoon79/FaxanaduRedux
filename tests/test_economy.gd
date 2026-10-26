@@ -1241,6 +1241,104 @@ func test_bloodletting_heals_on_a_staggered_foe() -> void:
 	check(p.hp == 50 + Player.BLOODLETTING_HEAL, "a hit on a staggered foe heals 2 (%d)" % p.hp)
 
 
+## Thrust (pass 149, bible 9): the Blade branch's eighth node. Hold Attack
+## through the first cut, and letting go past 0.4 s lunges for half again a
+## heavy hit. In the air it strikes in place; a blow spends the charge.
+func test_thrust_charges_and_lunges() -> void:
+	var w := make_world(_town({Vector2i(26, 19): "M"}), "test/town", cell_feet(8, 19))
+	var p := w.player
+	var mono: Monodron = _find(w.room, Monodron)
+	mono.max_hp = 999
+	mono.hp = 999
+	mono.set_physics_process(false)
+	await frames(3)
+	check_near(p.combat.thrust_charge, 0.4, 0.0001, "the charge takes 0.4 s")
+	check_near(p.combat.thrust_mult, 1.5, 0.0001, "for half again a heavy hit")
+	check(String(GameData.skill("thrust").needs) == "bloodletting" and int(GameData.skill("thrust").cost) == 2, "Thrust costs 2, after Bloodletting")
+	# Without the skill, a held button is only a cut.
+	p.facing = 1
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(40)
+	p.input.attack_held = false
+	await frames(2)
+	check(p.thrusts == 0 and not p.thrust_ready(), "without Thrust, holding Attack does nothing more")
+	await frames(30)
+	_learn_all(p, BLADE_TO + ["thrust"])
+	check(p.thrust, "the skill reaches the player")
+	# A tap is a cut, never a thrust.
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(5)
+	p.input.attack_held = false
+	await frames(30)
+	check(p.thrusts == 0 and p.swing_count > 0, "a tap is only a cut")
+	# Held: the press cuts at once, the charge comes ready at 0.4 s.
+	var x0 := p.global_position.x
+	var swings := p.swing_count
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(2)
+	check(p.swing_count == swings + 1 and p.attack_kind == "side", "the press still cuts at once")
+	await frames(19)
+	check(not p.thrust_ready(), "not ready at 0.35 s")
+	await frames(5)
+	check(p.thrust_ready(), "ready by 0.43 s")
+	p.input.attack_held = false
+	await frames(1)
+	check(p.thrusts == 1 and p.attack_kind == "thrust" and p.is_attacking, "letting go thrusts")
+	await frames(12)
+	var lunge := p.global_position.x - x0
+	check(lunge > 35.0 and lunge < 80.0, "on the floor it lunges forward (%.0f px)" % lunge)
+	# At a foe: the point reaches farther than a cut and bites for the full sum.
+	await frames(30)
+	p.teleport(mono.global_position + Vector2(-60, 0))
+	p.facing = 1
+	await frames(2)
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(27)
+	p.input.attack_held = false
+	await frames(12)
+	var want := roundi(p.heavy_damage * 1.5 * p.blade_mult())
+	check(999 - mono.hp == want, "a thrust deals %d (heavy %d x 1.5 x %.1f), expected %d" % [999 - mono.hp, p.heavy_damage, p.blade_mult(), want])
+	check(p.global_position.x < mono.global_position.x - 8.0, "and the lunge stops at the foe, not inside it")
+	# In the air it strikes where you are.
+	await frames(30)
+	mono.queue_free()
+	p.teleport(cell_feet(10, 19))
+	await frames(5)
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(16)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(12)
+	check(not p.is_on_floor() and p.thrust_ready(), "(charged, in the air)")
+	x0 = p.global_position.x
+	p.input.attack_held = false
+	await frames(10)
+	check(p.thrusts == 3 and p.attack_kind == "thrust" and absf(p.global_position.x - x0) < 4.0, "in the air it strikes but carries you nowhere (%.1f px)" % (p.global_position.x - x0))
+	p.input.jump_held = false
+	# A blow spends the charge.
+	var n := 0
+	while not p.is_on_floor() and n < 120:
+		await frames(1)
+		n += 1
+	await frames(30)
+	p.input.attack_pressed = true
+	p.input.attack_held = true
+	await frames(28)
+	check(p.thrust_ready(), "(charged again)")
+	p._invuln_timer = 0.0
+	p.take_damage(1)
+	await frames(1)
+	check(not p.thrust_ready(), "a blow spends the charge")
+	p.input.attack_held = false
+	await frames(2)
+	check(p.thrusts == 3, "so letting go after it doesn't thrust")
+
+
 func test_thrift_and_time_thief() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

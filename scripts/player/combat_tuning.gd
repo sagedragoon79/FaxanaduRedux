@@ -45,6 +45,17 @@ extends Resource
 @export var flask_heal := 40
 @export var drink_time := 0.7
 
+@export_group("Thrust")
+## Thrust (Blade skill, pass 149; design bible 9): hold Attack this long and
+## let go for a charged lunge. Damage is the heavy hit times thrust_mult.
+@export var thrust_charge := 0.4
+@export var thrust_mult := 1.5
+## On the floor the lunge drives you this fast (px/s) for thrust_time, about
+## 50 px. In the air the thrust strikes where you are and carries you nowhere.
+@export var thrust_speed := 320.0
+@export var thrust_time := 0.16
+@export var thrust_cooldown := 0.35
+
 @export_group("War Glove")
 ## The original's Glove, a rare drop (design bible 7, pass 147): for this long
 ## every blade hit deals this much more.
