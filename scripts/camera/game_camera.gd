@@ -1,6 +1,7 @@
 class_name GameCamera
 extends Camera2D
-## Follow camera: deadzone, eased look-ahead, look-down, room bounds and shake.
+## Follow camera: deadzone, eased look-ahead, look-down, a lead up or down a
+## ladder, room bounds and shake.
 ##
 ## Smooth scrolling with crisp pixels (design bible 12.1): the world renders in
 ## a pixel-sized viewport, the camera itself sits on whole pixels, and the
@@ -17,6 +18,10 @@ const LOOK_AHEAD := 48.0
 const LOOK_AHEAD_EASE := 0.4
 const LOOK_DOWN := 72.0
 const LOOK_DOWN_DELAY := 0.4
+## On a ladder (design bible 6.7, pass 130) the camera leads the way you climb
+## and stops looking sideways; hanging still keeps the lead you had.
+const CLIMB_LEAD := 64.0
+const CLIMB_LEAD_EASE := 0.5
 const FOLLOW_SPEED := 10.0
 const FOCUS_OFFSET := Vector2(0, -28)
 ## A wide room (header `camera: wide`, design bible 6.7) is framed at this
@@ -45,6 +50,8 @@ var _focus := Vector2.ZERO
 var _look_ahead := 0.0
 var _look_down := 0.0
 var _down_hold := 0.0
+var _climb_lead := 0.0
+var _climb_goal := 0.0
 
 
 func _init() -> void:
@@ -110,14 +117,20 @@ func _process(delta: float) -> void:
 	if absf(d.y) > DEADZONE.y * 0.5:
 		_focus.y = p.y - signf(d.y) * DEADZONE.y * 0.5
 
-	_look_ahead = lerpf(_look_ahead, target.facing * LOOK_AHEAD, 1.0 - exp(-delta * (3.0 / LOOK_AHEAD_EASE)))
+	if not target.on_ladder:
+		_climb_goal = 0.0
+	elif absf(target.velocity.y) > 1.0:
+		_climb_goal = signf(target.velocity.y) * CLIMB_LEAD
+	_climb_lead = lerpf(_climb_lead, _climb_goal, 1.0 - exp(-delta * (3.0 / CLIMB_LEAD_EASE)))
+	var ahead_goal := 0.0 if target.on_ladder else target.facing * LOOK_AHEAD
+	_look_ahead = lerpf(_look_ahead, ahead_goal, 1.0 - exp(-delta * (3.0 / LOOK_AHEAD_EASE)))
 	var down_goal := LOOK_DOWN if _down_hold > LOOK_DOWN_DELAY else 0.0
 	_look_down = lerpf(_look_down, down_goal, 1.0 - exp(-delta * 6.0))
 
 	if frame_scale != frame_goal:
 		frame_scale = move_toward(lerpf(frame_scale, frame_goal, 1.0 - exp(-delta * (3.0 / ZOOM_EASE))), frame_goal, 0.0005)
 		zoom = Vector2(DETAIL, DETAIL) * frame_scale
-	var goal := _clamp_to_bounds(_focus + Vector2(_look_ahead, _look_down))
+	var goal := _clamp_to_bounds(_focus + Vector2(_look_ahead, _look_down + _climb_lead))
 	exact_position = exact_position.lerp(goal, 1.0 - exp(-delta * FOLLOW_SPEED))
 	_apply(exact_position + Feel.shake_offset)
 
