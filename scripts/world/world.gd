@@ -403,8 +403,12 @@ func _place_at_door(door: Dictionary, vel: Vector2) -> void:
 			vel = Vector2.ZERO
 	player.teleport(pos)
 	player.velocity = vel
-	if door.edge in ["left", "right", "inner"]:
-		player.safe_position = pos
+	# The arrival is the room's first safe spot, through any door: through a
+	# floor or ceiling door it is the point under or over the opening (pass
+	# 151). It had been left as the last room's footing until the first
+	# landing, so spikes met on the way down set you back at the old room's
+	# coordinates, inside this room's walls.
+	player.safe_position = pos
 	_clear_arrival(player.body_rect())
 
 
