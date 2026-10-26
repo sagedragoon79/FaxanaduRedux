@@ -373,6 +373,11 @@ func _check_pause() -> void:
 
 
 func _take_shot() -> void:
+	if _args.has("shot-kill") and _frames == int(_args["shot-kill"]):
+		# Screenshots: strike down every foe in the room on this frame (to catch the dissolve).
+		for e in get_tree().get_nodes_in_group("enemy"):
+			if e is Enemy and not e.is_in_group("boss") and not e.dead:
+				(e as Enemy).take_hit(9999, Vector2.RIGHT)
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])

@@ -451,6 +451,8 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 
 Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose, a flash and a sound, section 13.3), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s. From the Tower of Trunk on, some enemies (Iron Dwarf, Gear Bat) leave Faxanadu's **Poison** about 1 kill in 14: a violet skull flask that is a hazard to step around while collecting. Walking over it poisons you for 8 s, costing 2 health a second but never the last point; your health masks and sprite turn green. Bread, resting at a shrine or Guru, or dying cures it, and an Ointment keeps it off.
 
+**The dissolve (pass 126):** until pass 126 a foe simply vanished in a puff of debris. Now its body stays where it fell for 0.45 s (`Enemy.DISSOLVE`). It flashes white, then breaks up pixel by pixel (one world pixel, two art pixels, at a time), the top a little first, each mote glowing pale gold as it goes (`shaders/dissolve.gdshader`). Then it is gone (freed, or hidden until it respawns). The dying body is harmless and can't be struck or touched, and the gold, drops and death sound come at once as before. Every foe that dies through `Enemy.die` uses it. Bosses keep their own deaths and go at once when they reach `Enemy.die`.
+
 ---
 
 ## 8. Bosses
