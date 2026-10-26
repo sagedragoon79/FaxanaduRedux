@@ -192,6 +192,11 @@ var in_water := false
 var water_surface := 0.0
 ## True while swimming (the body was in deep water on the last physics frame).
 var swimming := false
+## True while climbing a ladder (bible 6.11, legend `"`).
+var on_ladder := false
+var _ladder_x := 0.0
+var _ladder_top := 0.0
+var _ladder_regrab := 0.0
 
 var visual: PlayerVisual
 var scarf: Scarf
@@ -299,6 +304,13 @@ func _physics_process(delta: float) -> void:
 	if _try_interact(on_floor):
 		input.end_frame()
 		return
+	if on_ladder and input.dash_pressed:
+		# A stride leaves the ladder: the dash below takes it from here.
+		_leave_ladder()
+	if on_ladder or _try_grab_ladder(on_floor):
+		_ladder_step(delta)
+		input.end_frame()
+		return
 	_update_wall_contact(on_floor)
 	_update_block()
 	_update_drink(delta, on_floor)
@@ -400,6 +412,7 @@ func _tick_timers(delta: float) -> void:
 	_attack_buffer_timer -= delta
 	_parry_timer -= delta
 	_cast_cooldown -= delta
+	_ladder_regrab -= delta
 	_tick_heartbeat(delta)
 
 
@@ -610,6 +623,92 @@ func _standing_on_one_way_body() -> bool:
 		if c.get_normal().y < -0.7 and shape is CollisionShape2D and shape.one_way_collision:
 			return true
 	return false
+
+
+# --- Ladders ---------------------------------------------------------------------
+
+## Up with a ladder at the body (or Down standing on a ladder's top) takes hold
+## of it (bible 6.11). Not mid-dash, mid-swing, swimming or drinking.
+func _try_grab_ladder(on_floor: bool) -> bool:
+	if _ladder_regrab > 0.0 or is_dashing or is_attacking or swimming or is_drinking:
+		return false
+	var room := get_tree().get_first_node_in_group("room") as Room
+	if room == null:
+		return false
+	var probe := Vector2.INF
+	if input.up:
+		probe = global_position + Vector2(0, -12)
+	elif input.down and on_floor:
+		probe = global_position + Vector2(0, 4)
+	if probe == Vector2.INF or not room.is_ladder_at(probe):
+		return false
+	on_ladder = true
+	_ladder_x = room.ladder_x(probe)
+	_ladder_top = room.ladder_top(probe)
+	velocity = Vector2.ZERO
+	if input.down:
+		# Off the top plank and onto the rungs, like a drop through.
+		global_position.y += 3.0
+	is_wall_sliding = false
+	is_gliding = false
+	_refresh_air_moves()
+	_coyote_timer = 0.0
+	Sfx.play("ladder", 0.1, -4.0)
+	return true
+
+
+func _leave_ladder() -> void:
+	on_ladder = false
+	_ladder_regrab = tuning.ladder_regrab
+
+
+## On a ladder: Up and Down climb, no gravity, Jump leaves with a full jump.
+## Climbing past the top steps you onto it; climbing down onto a floor, or off
+## the bottom of a ladder that hangs in the air, lets go.
+func _ladder_step(delta: float) -> void:
+	var room := get_tree().get_first_node_in_group("room") as Room
+	if room == null:
+		_leave_ladder()
+		return
+	if input.jump_pressed:
+		_leave_ladder()
+		velocity.x = input.move_x * tuning.run_speed
+		if input.move_x != 0:
+			facing = input.move_x
+		_do_jump()
+		move_and_slide()
+		_check_hazards()
+		return
+	var dir := int(input.down) - int(input.up)
+	if input.move_x != 0:
+		facing = input.move_x
+	velocity = Vector2(0.0, dir * tuning.ladder_speed)
+	global_position.x = move_toward(global_position.x, _ladder_x, tuning.ladder_snap * delta)
+	if dir < 0 and global_position.y + velocity.y * delta <= _ladder_top:
+		# Over the top: stand on it.
+		global_position.y = _ladder_top
+		velocity = Vector2.ZERO
+		_leave_ladder()
+		_ladder_regrab = 0.0
+		_check_hazards()
+		return
+	if dir != 0:
+		_ladder_rung_sound(delta)
+	move_and_slide()
+	if dir > 0 and is_on_floor():
+		_leave_ladder()
+		_ladder_regrab = 0.0
+	elif not room.is_ladder_at(global_position + Vector2(0, -0.5)) and not room.is_ladder_at(global_position + Vector2(0, -20)):
+		# Climbed off the bottom of a hanging ladder: fall.
+		_leave_ladder()
+	_check_hazards()
+
+
+## A creak of the rungs about every 8 px climbed (two rungs a tile).
+func _ladder_rung_sound(_delta: float) -> void:
+	if _step_timer <= 0.0:
+		_step_timer = 8.0 / tuning.ladder_speed
+		Sfx.play("ladder", 0.12, -8.0)
 
 
 # --- Gravity --------------------------------------------------------------------
@@ -1172,6 +1271,9 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		_spawn_dust(Vector2(0, -16), "heal")
 	hp -= amount
 	_invuln_timer = tuning.hurt_invuln
+	if on_ladder:
+		# A blow knocks you off the rungs.
+		_leave_ladder()
 	_drink_timer = 0.0
 	_attack_timer = 0.0
 	_dash_timer = 0.0
@@ -1345,6 +1447,7 @@ func can_reach(node: Node2D) -> bool:
 func teleport(pos: Vector2) -> void:
 	global_position = pos
 	velocity = Vector2.ZERO
+	on_ladder = false
 	_dash_timer = 0.0
 	_attack_timer = 0.0
 	_drink_timer = 0.0

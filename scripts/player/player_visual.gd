@@ -76,6 +76,9 @@ func _physics_process(delta: float) -> void:
 	var rate := 1.0
 	if anim == "run":
 		rate = clampf(absf(player.velocity.x) / player.tuning.run_speed, 0.4, 1.3)
+	elif pose == "climb":
+		# The reach cycles only while you climb; holding still, you hang.
+		rate = 1.6 if player.velocity.y != 0.0 else 0.0
 	anim_time += delta * rate
 	frame = frame_at(anim, anim_time)
 	if forced != "":
@@ -90,6 +93,8 @@ static func current_pose(p: Player) -> String:
 		return "death"
 	if p.is_hurt:
 		return "hurt"
+	if p.on_ladder:
+		return "climb"
 	if p.is_dashing:
 		return "dash"
 	if p.is_wall_sliding:
@@ -125,6 +130,9 @@ static func anim_for(p: Player, body_pose: String) -> String:
 			return "slash_up"
 		"attack_down":
 			return "strike_down"
+		"climb":
+			# Reaching up a ladder: the wall pose's reach, turned to the rungs.
+			return "wall"
 	return body_pose
 
 

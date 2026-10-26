@@ -50,6 +50,10 @@ const RISE_FROM_FLOOR_DOOR := 4
 ## Slopes (`/`, `\`) count as whole blocks: a ramp reads as a stair of
 ## one-tile steps, which the model climbs with hops, so it never claims more.
 const SOLID := "#CJu/\\"
+## Ladders (legend `"`, bible 6.11): a spot with the feet on a ladder is a
+## standing spot (you hang there), the ladder's top is a plank, and you climb
+## to the ladder cells above and below. A jump from a ladder is a full jump.
+const LADDER := "\""
 ## Tiles the body can't stand in (hazards).
 const HAZARD := "^o"
 
@@ -204,7 +208,7 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 func supported(room_id: String, x: int, y: int) -> bool:
 	var below := ch(room_id, x, y + 1)
-	return solid(room_id, x, y + 1) or below == "-" or below == "i" or _foothold(room_id, x, y + 1) or (below == "=" and abilities.get("deluge", false)) \
+	return solid(room_id, x, y + 1) or below == "-" or below == "i" or below == LADDER or _foothold(room_id, x, y + 1) or (below == "=" and abilities.get("deluge", false)) \
 		or (below == "b" and abilities.get("spring_mist", false))
 
 
@@ -227,7 +231,7 @@ func standable(room_id: String, x: int, y: int) -> bool:
 	var memo: Array = _stand[room_id]
 	var i := y * _lw + x
 	if memo[i] == 0:
-		var ok := body_clear(room_id, x, y) and (supported(room_id, x, y) or WATER.contains(ch(room_id, x, y))) \
+		var ok := body_clear(room_id, x, y) and (supported(room_id, x, y) or WATER.contains(ch(room_id, x, y)) or ch(room_id, x, y) == LADDER) \
 			and not HAZARD.contains(ch(room_id, x, y))
 		memo[i] = 2 if ok else 1
 	return memo[i] == 2
@@ -295,6 +299,12 @@ func neighbors(k: String) -> Array:
 		for dy: int in [-1, 1]:
 			if WATER.contains(ch(r, x, y + dy)) and standable(r, x, y + dy):
 				out.append(key(r, x, y + dy))
+	# Climb a ladder up and down.
+	if ch(r, x, y) == LADDER or ch(r, x, y + 1) == LADDER:
+		if ch(r, x, y) == LADDER and standable(r, x, y - 1):
+			out.append(key(r, x, y - 1))
+		if ch(r, x, y + 1) == LADDER and standable(r, x, y + 1):
+			out.append(key(r, x, y + 1))
 	# Drop through a one-way platform (Down + Jump).
 	# (Frozen water's footholds melt away when time runs again: the same way down.)
 	if ch(r, x, y + 1) in ["-", "i"] or _foothold(r, x, y + 1):

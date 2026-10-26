@@ -36,6 +36,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | --- | --- |
 | `#` | Solid ground (top-exposed tiles get a moss edge) |
 | `-` | One-way platform (jump up through, Down + Jump to drop) |
+| `"` | Ladder (bible 6.11): a column of these; Up/Down climb, Jump leaves. The top cell is also a one-way plank you can stand on |
 | `/` `\` | 45° slope, solid below the diagonal: `/` rises to the east, `\` to the west. Put ground under it and on its high side; the reachability checker counts it as a whole block |
 | `^` | Floor spikes (hazard, pogo-able) |
 | `o` | Thorn bulb (hazard, pogo target) |

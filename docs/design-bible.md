@@ -405,6 +405,27 @@ The Wanderer skill Feather Fall [2] (after Second Stride, needs the Wing Boots) 
 
 The glide replaces gravity while it lasts. It doesn't refresh any air move, so it never opens a route a double jump and a dash couldn't reach. It makes long drops readable and gentle, and makes crossing wide gaps easier for players who bought it.
 
+### 6.11 Ladders (pass 124)
+
+The original Faxanadu is a game of ladders: every climb in the World Tree went up one. The remake's wall jump, double jump and pods do most of that work now, but ladders are still the plain way up between floors, where no ability is needed. Legend `"`: a column of ladder cells. The top cell is also a plank (a one-way platform), so you can stand on a ladder's top. Numbers live in `movement_tuning.gd` (Ladders group).
+
+| Parameter | Value |
+|-----------|-------|
+| Take hold | Up with the body on a ladder (on the ground or in the air), or Down standing on its top. Not mid-dash, mid-swing, swimming or drinking. Taking hold refreshes the double jump and the air dash |
+| Climb speed | 90 px/s up or down (Up, Down); no gravity, so let go of both and you hang |
+| Centering | the body slides onto the middle of the rungs at 240 px/s |
+| Top | climbing past the top steps you onto its plank; Down there climbs back on |
+| Bottom | climbing down onto a floor lets go; climbing off the bottom of a ladder that hangs in the air lets you fall |
+| Jump | leaves with a full ground jump, moving the way you hold (run speed) |
+| Dash | a stride leaves the ladder and dashes as usual |
+| Regrab | after you jump or are knocked off, the same ladder can't be grabbed for 0.25 s |
+| Hits | any damage knocks you off the rungs |
+| Attacks | none while climbing (as in the original): jump off to fight |
+| Feel | the wall pose's reach, cycling only while you climb; a hollow knock and a creak of the rungs (`ladder`) about every 8 px |
+| Look | two wooden rails and two rungs per tile, drawn behind the tiles so the top plank caps them |
+
+The reachability checker treats a spot with the feet on a ladder as a standing spot: it climbs to the ladder cells above and below and over the top onto the plank, and jumps from a ladder as from the floor.
+
 ---
 
 ## 7. Enemies

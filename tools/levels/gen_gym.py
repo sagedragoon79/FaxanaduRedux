@@ -73,6 +73,10 @@ for i in range(4):
     rect(146 - i, 39 - i, 146 - i, 39)
 rect(140, 36, 143, 39)
 label(134, 31, "Slopes: run or stride up and down")
+# Far right: a ladder from the lower floor up through the upper one (bible 6.11)
+for y in range(18, 40):
+    g[y][163] = '"'
+label(157, 26, "Ladder: Up/Down climb, Jump leaves")
 # Lower right: combat arena
 g[39][118] = 'M'
 g[33][132] = 'H'

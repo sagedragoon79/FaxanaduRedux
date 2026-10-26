@@ -870,6 +870,15 @@ def main():
     grit = lowpass(noise(d), 1800) * env(n, 0.01, 2.5) * 0.4
     save("sentinel_slam", mix(thud, crack, grit), 0.65)
 
+    # Ladders (pass 124): a hand or boot on a wooden rung, a hollow knock with a
+    # short dry creak after it.
+    d = 0.16
+    n = int(RATE * d)
+    knock = lowpass(osc(slide(320, 220, 0.05), "sine"), 900)
+    knock = np.pad(knock, (0, n - len(knock))) * env(n, 0.001, 3.0)
+    creak = lowpass(highpass(noise(d), 700), 2200) * (np.sin(2 * np.pi * 45 * t_axis(d)) > 0.5).astype(float) * env(n, 0.02, 2.0) * 0.35
+    save("ladder", mix(knock, creak), 0.5)
+
 
 if __name__ == "__main__":
     main()
