@@ -97,7 +97,7 @@ func _draw() -> void:
 		mask_x += widths[i] + 2.0
 	var bar_w := maxf(mask_x - 2.0, player.max_mp)
 	var row_w := maxf(bar_w, player.flask_max * 9 + 48 + (14 if _glass_shown() else 0))
-	_draw_plate(Rect2(origin - Vector2(5, 5), Vector2(row_w + 10, 43 + (14 if _ointment_shown() else 0))))
+	_draw_plate(Rect2(origin - Vector2(5, 5), Vector2(row_w + 10, 43 + (14 if _ointment_shown() or player.glove_left > 0.0 else 0))))
 	mask_x = 0.0
 	for i in masks:
 		# The last container is narrower when a Life Fruit has added half a mask.
@@ -116,6 +116,7 @@ func _draw() -> void:
 	if _glass_shown():
 		_draw_glass(origin + Vector2(row_w - 8, 27))
 	_draw_ointment(origin + Vector2(0, 42))
+	_draw_glove(origin + Vector2(48, 42))
 	_draw_boss()
 	_draw_trial()
 	_draw_messages()
@@ -355,6 +356,22 @@ func _draw_ointment(at: Vector2) -> void:
 		var bar := Rect2(at + Vector2(0, 11), Vector2(30, 2))
 		draw_rect(bar.grow(1), OUTLINE)
 		draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * left / Player.OINTMENT_TIME), bar.size.y)), OINTMENT)
+
+
+## A War Glove in use (pass 147): a small red fist and the time it has left.
+func _draw_glove(at: Vector2) -> void:
+	var left := player.glove_left
+	if left <= 0.0:
+		return
+	var red := Color("d0503a")
+	draw_rect(Rect2(at + Vector2(0, 1), Vector2(7, 8)), OUTLINE)
+	draw_rect(Rect2(at + Vector2(1, 2), Vector2(5, 4)), red)
+	draw_rect(Rect2(at + Vector2(1, 6), Vector2(5, 2)), Color("f0c02e"))
+	# The last three seconds blink, so the end isn't a surprise.
+	if left > 3.0 or int(left * 6.0) % 2 == 0:
+		var bar := Rect2(at + Vector2(10, 4), Vector2(30, 2))
+		draw_rect(bar.grow(1), OUTLINE)
+		draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * left / player.combat.war_glove_time), bar.size.y)), red)
 
 
 func _boss() -> Node:
