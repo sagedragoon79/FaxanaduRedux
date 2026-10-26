@@ -105,6 +105,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `W` | Mana Dew (+10 max MP) |
 | `F` | Potion Shard (3 = +1 flask charge) |
 | `*` | Mantra Shard (3 = +1 skill point) |
+| `(` | Meteor Shard (Temper Blade II at the Forepaw smith costs one) |
 | `.` | Empty |
 
 ## Rooms and doors

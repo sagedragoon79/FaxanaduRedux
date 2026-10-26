@@ -45,7 +45,7 @@
 		"greeting": "Free hands make good steel. Show me that blade of yours, elf.",
 		"stock": [
 			{"item": "temper_1", "price": 700},
-			{"item": "temper_2", "price": 1600},
+			{"item": "temper_2", "price": 1600, "shards": 1},
 			{"item": "ointment", "price": 280},
 			{"item": "jack_key", "price": 150}
 		]
