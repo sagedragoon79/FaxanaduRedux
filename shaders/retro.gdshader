@@ -26,8 +26,9 @@ const vec3 PALETTE[COLOURS] = vec3[](
 uniform sampler2D screen : hint_screen_texture, filter_nearest;
 // World pixels per NES pixel: 2 gives 240 x 180 in the 4:3 frame.
 uniform float block = 2.0;
-// The world's view height in pixels (the game draws 640 x 360).
-uniform float view_height = 360.0;
+// Render pixels per world pixel: the world view draws at GameCamera.DETAIL
+// (RetroFilter sets it from its viewport), so a block is block * detail.
+uniform float detail = 2.0;
 uniform float frame_aspect = 1.33333;
 
 // The nearest palette colour, by the "redmean" weighting so that greens and
@@ -50,12 +51,17 @@ vec3 nearest(vec3 c) {
 
 void fragment() {
 	vec2 size = 1.0 / SCREEN_PIXEL_SIZE;
-	vec2 pos = SCREEN_UV * size - size * 0.5;
-	if (abs(pos.x) > size.y * frame_aspect * 0.5) {
+	// Blocks are whole render pixels laid from the view's corner, where the
+	// world's pixels start, so each block covers exactly block x block of them.
+	float cell = block * detail;
+	vec2 pos = SCREEN_UV * size;
+	// The 4:3 frame, its edges on the block grid.
+	float mid = floor(size.x * 0.5 / cell + 0.5) * cell;
+	float half_width = floor(size.y * frame_aspect * 0.5 / cell) * cell;
+	if (abs(pos.x - mid) > half_width) {
 		COLOR = vec4(0.0, 0.0, 0.0, 1.0);
 	} else {
-		float cell = block * size.y / view_height;
-		vec2 centre = (floor(pos / cell) + 0.5) * cell + size * 0.5;
+		vec2 centre = (floor(pos / cell) + 0.5) * cell;
 		vec3 c = textureLod(screen, centre * SCREEN_PIXEL_SIZE, 0.0).rgb;
 		COLOR = vec4(nearest(c), 1.0);
 	}
