@@ -558,6 +558,49 @@ func test_eolis_holds_a_festival_for_the_last_spring() -> void:
 	check(after == ["festival_piper", "townsfolk_well_glad"], "after: a piper plays and Wena is glad (%s)" % [after])
 
 
+func test_the_tree_blooms_once_the_evil_one_is_dead() -> void:
+	var w := make_world({}, "eolis/plaza", cell_feet(10, 19))
+	await frames(2)
+	check(w.blossom.zone == "" and w.motes.count() > 0, "before the end: Eolis's dust, and no blossom")
+	var dust := w.motes.count()
+	GameState.set_flag("cleared")
+	w.travel("trunk/entrance", cell_feet(6, 19))
+	await frames(3)
+	check(w.blossom.zone == "trunk" and w.blossom.count() == int(Motes.BLOSSOM[0]), "after it, blossom drifts through the Trunk")
+	check(w.blossom.get("_motes").size() == w.blossom.count(), "a petal for each count (%d)" % w.blossom.count())
+	for z: String in ["eolis", "trunk", "tower", "mist", "branches", "daybreak"]:
+		check(Motes.blossom_table().has(z), "%s is a living zone of the Tree: it blooms" % z)
+	check(not Motes.blossom_table().has("zenis") and not Motes.blossom_table().has("dartmoor"), "the meteor and the drowned city don't")
+	w.travel("zenis/threshold", cell_feet(20, 19))
+	await frames(3)
+	check(w.blossom.get("_motes").is_empty(), "no blossom in the dead meteor")
+	check(w.motes.count() == roundi(int(Motes.ZONES.zenis[0]) * 0.2), "and its spores have settled (%d)" % w.motes.count())
+	check(dust > 0, "Eolis kept its dust (%d)" % dust)
+
+
+func test_the_town_speaks_of_the_blooming_tree() -> void:
+	var npcs: Dictionary = GameData.table("npcs")
+	var talkers := 0
+	for id: String in npcs:
+		if String(npcs[id].get("role", "talk")) in ["talk", "king"]:
+			talkers += 1
+			check(npcs[id].has("lines_cleared") or not _stands_in_a_living_town(id), "%s has something to say once the Tree blooms" % id)
+	check(talkers > 10, "the scan reads the talkers (%d)" % talkers)
+	var king := GameData.npc("king")
+	GameState.new_game()
+	check(Npc.lines(king, "lines_after") == king.lines_after, "before the end the King says his piece")
+	GameState.set_flag("cleared")
+	check(Npc.lines(king, "lines_after") == king.lines_cleared and Npc.lines(king, "lines") == king.lines_cleared,
+		"after it, he speaks of the blooming Tree")
+	GameState.new_game()
+
+
+## People a player meets once the Evil One is dead: everyone but the Trunk's
+## widow and Old Wena before their springs, who are swapped for glad selves.
+func _stands_in_a_living_town(id: String) -> bool:
+	return not id in ["townsfolk_well", "apolune_widow"]
+
+
 func test_the_sky_key_opens_dartmoors_upper_gate() -> void:
 	var w := make_world({}, "daybreak/sky_spring", cell_feet(30, 19))
 	await frames(3)

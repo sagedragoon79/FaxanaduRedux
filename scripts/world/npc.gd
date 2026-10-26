@@ -32,7 +32,7 @@ func interact(p: Player) -> void:
 				Sfx.play("coin", 0.0, 4.0)
 				GameState.say(info.name, info.lines)
 			else:
-				GameState.say(info.name, info.get("lines_after", info.lines))
+				GameState.say(info.name, lines(info, "lines_after" if info.has("lines_after") else "lines"))
 		"shop":
 			Menus.open_shop(get_tree(), info.shop, p)
 		"guru":
@@ -43,7 +43,16 @@ func interact(p: Player) -> void:
 				await _name_title()
 			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)
 		_:
-			GameState.say(info.get("name", ""), info.get("lines", []))
+			GameState.say(info.get("name", ""), lines(info, "lines"))
+
+
+## What a person says from `key` of their data. Once the Evil One is dead and
+## the Tree blooms (`cleared`), "lines_cleared" takes over where it is written
+## (design bible 4.4).
+static func lines(npc: Dictionary, key: String) -> Array:
+	if GameState.flag("cleared") and npc.has("lines_cleared"):
+		return npc.lines_cleared
+	return npc.get(key, [])
 
 
 ## Faxanadu's title ceremony: a rank you earned in the field becomes your

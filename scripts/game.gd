@@ -431,7 +431,7 @@ func _debug_open() -> void:
 		map_screen.toggle()
 	if _args.has("say"):
 		var npc: Dictionary = GameData.npc(_args["say"])
-		GameState.say(npc.get("name", ""), npc.get("lines", [npc.get("greeting", "")]))
+		GameState.say(npc.get("name", ""), Npc.lines(npc, "lines") if npc.has("lines") else [npc.get("greeting", "")])
 	if _args.has("trial"):
 		var spec := String(_args["trial"]).split(",")
 		Trials.begin(spec[0], Trials.TEMPLE, Vector2(22 * Room.TILE, 20 * Room.TILE))

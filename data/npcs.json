@@ -1,6 +1,7 @@
 {
 	"eolis_dyer": {"name": "Ilse the Dyer", "role": "shop", "shop": "eolis_dyes", "look": {"robe": "#8a3a5a", "trim": "#e3a72c", "skin": "#e8c9a0", "hair": "#3f7fc0", "hat": "none"}},
 	"king": {
+		"lines_cleared": ["The Tree is in flower, wanderer. From the roots to the crown, every bough at once. No one alive has seen it.", "Eolis owes you its water and its children. Walk where you like. Every door in my town is yours."],
 		"name": "King of Eolis", "role": "king",
 		"look": {"robe": "#7a2e3a", "trim": "#ffd24a", "skin": "#e8c9a0", "hair": "#d8cfb4", "hat": "crown", "beard": true},
 		"lines": [
@@ -36,6 +37,7 @@
 		]
 	},
 	"townsfolk_well_glad": {
+		"lines_cleared": ["Petals in the fountain! I spent the morning fishing them out, and then I gave up and let them float.", "My grandson says it is the same all the way up. Pink to the crown. He wants to climb it. I said: after supper."],
 		"name": "Old Wena", "role": "talk",
 		"look": {"robe": "#6b6380", "trim": "#c9b98f", "skin": "#e8c9a0", "hair": "#c9c4d6", "hat": "none"},
 		"lines": [
@@ -44,6 +46,7 @@
 		]
 	},
 	"festival_piper": {
+		"lines_cleared": ["Three days of music, the Elder said. Then the Tree flowered and nobody wants to stop.", "I've a new tune for it. No name yet. They keep asking for the one about the elf who climbed the Tree, and I keep playing this one."],
 		"name": "Festival Piper", "role": "talk",
 		"look": {"robe": "#3f7a4a", "trim": "#ffd24a", "skin": "#d9b08c", "hair": "#8a5a34", "hat": "hood"},
 		"lines": [
@@ -52,6 +55,7 @@
 		]
 	},
 	"townsfolk_gate": {
+		"lines_cleared": ["The Hollows are quiet now, near enough. A few monodrons still hop about. Old habits.", "Mind, the beasts down there never were the meteor's. They were the Tree's all along. Watch the eye, same as ever."],
 		"name": "Gate Watch", "role": "talk",
 		"look": {"robe": "#4a4458", "trim": "#8d84a3", "skin": "#d9b08c", "hair": "#2a2538", "hat": "helm"},
 		"lines": [
@@ -77,6 +81,7 @@
 		]
 	},
 	"apolune_widow_glad": {
+		"lines_cleared": ["Blossom down the well-shaft! It comes through every crack in the trunk. Apolune smells of honey.", "Brannoc says he'll sell nothing but garlands now. Tilde says he won't last the week."],
 		"name": "Hesk", "role": "talk",
 		"look": {"robe": "#5d4997", "trim": "#aca1ba", "skin": "#e3cdb5", "hair": "#cec5d3", "hat": "hood"},
 		"lines": [
@@ -85,6 +90,7 @@
 		]
 	},
 	"apolune_miner": {
+		"lines_cleared": ["The light's gone out of the crown. Not the sun: the other one. The meteor's.", "We'll dig the old galleries again. Honest stone, no crystal in it. You'll find us down there."],
 		"name": "Dwarf Orrin", "role": "talk",
 		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#cd8c51", "hair": "#48201e", "hat": "helm", "build": "dwarf"},
 		"lines": [
@@ -93,6 +99,7 @@
 		]
 	},
 	"dartmoor_steward": {
+		"lines_cleared": ["The water has gone, and the light from the crown has gone with it. Dartmoor wakes under an honest sky.", "We buried the king on the dais where he fell. You may visit him. He would have wanted to thank you himself."],
 		"name": "Steward Hrafna", "role": "talk",
 		"look": {"robe": "#2e4f5a", "trim": "#e0b050", "skin": "#cd8c51", "hair": "#b8b8c0", "hat": "none", "build": "dwarf", "beard": true},
 		"lines": [
@@ -102,6 +109,7 @@
 		]
 	},
 	"dartmoor_mason": {
+		"lines_cleared": ["Dry stone! I've not laid a course on dry stone in three years.", "The crystal in the walls has gone grey and soft as chalk. We chip it out by the bucket. The masonry under it is sound."],
 		"name": "Mason Brokk", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#8a96a0", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm", "build": "dwarf"},
 		"lines": [
@@ -114,6 +122,7 @@
 		"look": {"robe": "#3a2a1e", "trim": "#e0703a", "skin": "#cd8c51", "hair": "#2a1a14", "hat": "none", "build": "dwarf"}
 	},
 	"forepaw_elder": {
+		"lines_cleared": ["Grieve is at rest, and the thing he bargained with is dead. Forepaw can mourn him now, as a king.", "The forge burns day and night. Hrothgar says the meteor's shards fold into steel better than anything he's struck. A last gift, he calls it. I call it a warning."],
 		"name": "Elder Basalt", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#e8e2d0", "hat": "helm", "build": "dwarf"},
 		"lines": [
@@ -123,6 +132,7 @@
 		]
 	},
 	"forepaw_miner": {
+		"lines_cleared": ["Three years in the deep galleries, and now I can't stay out of the sun.", "Have you seen the crown from the Lookout? All flowers. The dwarves of Forepaw never thought to look up."],
 		"name": "Dwarf Tamsin", "role": "talk",
 		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#e8c9a0", "hair": "#aa6336", "hat": "helm", "build": "dwarf"},
 		"lines": [
@@ -131,6 +141,7 @@
 		]
 	},
 	"forepaw_digger": {
+		"lines_cleared": ["Hrothgar's still at the anvil. Bring him a Meteor Shard and he'll beat it into your blade. Best steel in the Tree, he says.", "Up the trunk the mist is thin as breath now. I went up and came back dry. First dwarf in three years."],
 		"name": "Dwarf Okko", "role": "talk",
 		"look": {"robe": "#2a5e3e", "trim": "#cec5d3", "skin": "#cd8c51", "hair": "#48201e", "hat": "none", "build": "dwarf"},
 		"lines": [
@@ -147,6 +158,7 @@
 		"look": {"robe": "#5a4a3a", "trim": "#7ee0d6", "skin": "#d6ae84", "hair": "#e0703a", "hat": "helm", "build": "dwarf"}
 	},
 	"conflate_elder": {
+		"lines_cleared": ["The crown-leaf bears flowers again, not one Devouring Bloom. White and pink, as far as the eye goes.", "Our wardens stand at the bridge out of habit. There is nothing left to watch for but the weather. Rest with us, elf."],
 		"name": "Elder Aelwen", "role": "talk",
 		"look": {"robe": "#2f6b4f", "trim": "#e8d9a8", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true},
 		"lines": [
@@ -156,6 +168,7 @@
 		]
 	},
 	"conflate_warden": {
+		"lines_cleared": ["Still here, still watching. Somebody has to. The mantises haven't heard the news.", "The petals fall all day. Hard to see a leaf mantis in a blossom storm. Keep your blade out, same as before."],
 		"name": "Warden Faelan", "role": "talk",
 		"look": {"robe": "#4a5a2a", "trim": "#c9b98f", "skin": "#d9b08c", "hair": "#3a2a1e", "hat": "cap", "ears": true},
 		"lines": [
@@ -164,6 +177,7 @@
 		]
 	},
 	"conflate_weaver": {
+		"lines_cleared": ["Petal-silk! The blossom spins finer than the leaves ever did. Pink, if you like that sort of thing.", "The dwarves climbed up yesterday with iron to trade. Real dwarves, with beards and bad jokes. I'd forgotten how much I missed them."],
 		"name": "Weaver Imra", "role": "talk",
 		"look": {"robe": "#7a4a6a", "trim": "#f0dfa8", "skin": "#efd6b8", "hair": "#aa6336", "hat": "none", "ears": true},
 		"lines": [
@@ -196,6 +210,7 @@
 		"look": {"robe": "#3a4a7a", "trim": "#b8a8ff", "skin": "#d9b08c", "hair": "#c9a27a", "hat": "cap", "ears": true}
 	},
 	"daybreak_mayor": {
+		"lines_cleared": ["The rods sing again and the bells ring on their own. No storm needed: the Tree's light runs down the copper now.", "Daybreak will cast you a bell, hero. Your name on it. It is the least we can do, and the loudest."],
 		"name": "Mayor Halloran", "role": "talk",
 		"look": {"robe": "#2e2350", "trim": "#e8c04a", "skin": "#e3cdb5", "hair": "#e8e2d0", "hat": "crown", "ears": true},
 		"lines": [
@@ -205,6 +220,7 @@
 		]
 	},
 	"daybreak_bellkeeper": {
+		"lines_cleared": ["Forty years I rang the bells by hand. This morning they rang themselves, the whole peal, for an hour.", "I sat on the step and listened. Bramble's still in the old cellar, mind. Some things the flowers don't fix."],
 		"name": "Old Bellkeeper Rusk", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#c9b98f", "skin": "#c9a27a", "hair": "#b0a090", "hat": "none", "beard": true, "ears": true},
 		"lines": [
