@@ -12,6 +12,7 @@ var down := false
 var jump_pressed := false
 var jump_held := false
 var attack_pressed := false
+var attack_held := false
 var dash_pressed := false
 var block_pressed := false
 var block_held := false
@@ -31,6 +32,7 @@ func poll() -> void:
 	jump_pressed = Input.is_action_just_pressed("jump")
 	jump_held = Input.is_action_pressed("jump")
 	attack_pressed = Input.is_action_just_pressed("attack")
+	attack_held = Input.is_action_pressed("attack")
 	dash_pressed = Input.is_action_just_pressed("dash")
 	block_pressed = Input.is_action_just_pressed("block")
 	block_held = Input.is_action_pressed("block")
@@ -60,5 +62,6 @@ func clear() -> void:
 	up = false
 	down = false
 	jump_held = false
+	attack_held = false
 	block_held = false
 	end_frame()

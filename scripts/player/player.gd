@@ -33,6 +33,8 @@ const POISON_DAMAGE := 2
 const SLASH_SIZE := Vector2(36, 26)
 const UP_SLASH_SIZE := Vector2(34, 36)
 const DOWN_STRIKE_SIZE := Vector2(28, 24)
+## How far a Thrust reaches past the body (a cut reaches about 34).
+const THRUST_LENGTH := 52.0
 ## How fast an updraft brings the body to its lift speed (px/s²).
 const UPDRAFT_ACCEL := 1100.0
 ## A landing from at least this far above (px, 7 tiles) thuds: shake and rumble.
@@ -128,6 +130,10 @@ var bonus_air_dashes := 0
 ## Stand cuts damage at low health; Second Wind survives one killing blow per rest.
 var riposte := false
 var bloodletting := false
+## Thrust (skill): hold Attack to charge a lunge, let go to strike.
+var thrust := false
+## Thrusts made (tests read it).
+var thrusts := 0
 var spell_cost_mult := 1.0
 var chain_thunder := false
 var time_thief := false
@@ -258,6 +264,11 @@ var _combo_timer := 0.0
 var _attack_buffer_timer := 0.0
 var _dash_buffer_timer := 0.0
 var _swing_damage := 0
+## Seconds Attack has been held toward a Thrust, and the glint's clock.
+var _thrust_charge := 0.0
+var _thrust_glint := 0.0
+## This thrust began on the floor and is still lunging.
+var _thrust_lunge := false
 var _parry_timer := 0.0
 var _drink_timer := 0.0
 var _cast_cooldown := 0.0
@@ -335,6 +346,7 @@ func _physics_process(delta: float) -> void:
 		# A stride leaves the ladder: the dash below takes it from here.
 		_leave_ladder()
 	if on_ladder or _try_grab_ladder(on_floor):
+		_thrust_charge = 0.0
 		_ladder_step(delta)
 		input.end_frame()
 		return
@@ -347,6 +359,7 @@ func _physics_process(delta: float) -> void:
 	_try_cast()
 	_try_hourglass()
 	_try_attack(on_floor)
+	_try_thrust(on_floor, delta)
 
 	swimming = in_water
 	if swimming:
@@ -357,7 +370,11 @@ func _physics_process(delta: float) -> void:
 		_coyote_timer = tuning.coyote_time
 	if is_dashing:
 		_dash_step(delta)
+	elif _thrust_lunge and is_attacking and on_floor:
+		velocity.x = facing * combat.thrust_speed
 	else:
+		# Off a ledge the lunge ends: a thrust never carries you over a gap.
+		_thrust_lunge = false
 		_horizontal_step(delta, on_floor)
 
 	if swimming:
@@ -935,6 +952,67 @@ func _try_attack(on_floor: bool) -> void:
 	Sfx.play("heavy" if is_heavy_swing else "slash", 0.1)
 
 
+## Thrust (skill, design bible 9): Attack held past combat.thrust_charge
+## glints, and letting go lunges. The press still swings as usual, so the charge
+## builds through the first cut. A blow, a dash, a guard or a drink spends it.
+func _try_thrust(on_floor: bool, delta: float) -> void:
+	if not thrust:
+		return
+	if is_dashing or is_blocking or is_drinking or swimming:
+		_thrust_charge = 0.0
+		return
+	if input.attack_held:
+		var was := _thrust_charge
+		_thrust_charge += delta
+		if was < combat.thrust_charge and thrust_ready():
+			Sfx.play("thrust_ready", 0.05, -2.0)
+			_thrust_glint = 0.0
+		if thrust_ready():
+			_tick_thrust_glint(delta)
+		return
+	var ready := thrust_ready()
+	_thrust_charge = 0.0
+	if ready and not (is_attacking and attack_kind == "thrust"):
+		_thrust(on_floor)
+
+
+## The charge is full: let go of Attack to thrust.
+func thrust_ready() -> bool:
+	return _thrust_charge >= combat.thrust_charge
+
+
+func _tick_thrust_glint(delta: float) -> void:
+	_thrust_glint -= delta
+	if _thrust_glint <= 0.0:
+		# A spark of light runs off the point while the charge is held.
+		_thrust_glint = 0.12
+		_spawn_dust(Vector2(facing * 14, -21), "coin")
+
+
+func _thrust(on_floor: bool) -> void:
+	attack_kind = "thrust"
+	combo_index = 0
+	is_heavy_swing = true
+	_swing_damage = roundi(heavy_damage * combat.thrust_mult * blade_mult())
+	_attack_timer = combat.thrust_time
+	_attack_cooldown = combat.thrust_cooldown
+	_attack_buffer_timer = 0.0
+	_attack_hits.clear()
+	_up_popped = false
+	thrusts += 1
+	swing_count += 1
+	_thrust_lunge = on_floor
+	if on_floor:
+		velocity.x = facing * combat.thrust_speed
+		_spawn_dust(Vector2(-facing * 6, -3), "dash")
+	var fx := SlashFx.new()
+	fx.setup("thrust", facing, 0, true, 1.0 + reach_bonus / SLASH_SIZE.x)
+	add_child(fx)
+	visual.squash(Vector2(1.3, 0.85))
+	Feel.add_trauma(0.08)
+	Sfx.play("thrust", 0.05)
+
+
 func _attack_rect() -> Rect2:
 	var center: Vector2
 	var size: Vector2
@@ -945,6 +1023,10 @@ func _attack_rect() -> Rect2:
 		"up":
 			size = UP_SLASH_SIZE
 			center = Vector2(0, -BODY_SIZE.y - 14)
+		"thrust":
+			# A long, low point: farther than a cut, half its height.
+			size = Vector2(THRUST_LENGTH + reach_bonus, SLASH_SIZE.y * 0.5 + arc_bonus * 0.5)
+			center = Vector2(facing * (BODY_SIZE.x * 0.5 + size.x * 0.5), -BODY_SIZE.y * 0.55)
 		_:
 			size = SLASH_SIZE + Vector2(reach_bonus, arc_bonus)
 			center = Vector2(facing * (BODY_SIZE.x * 0.5 + 16 + reach_bonus * 0.5), -BODY_SIZE.y * 0.55)
@@ -967,7 +1049,7 @@ func _process_attack_hits() -> void:
 			hit_something = true
 			continue
 		if collider.has_method("take_hit"):
-			var dir := Vector2(facing, 0) if attack_kind == "side" else Vector2(0, 1 if attack_kind == "down" else -1)
+			var dir := Vector2(facing, 0) if attack_kind in ["side", "thrust"] else Vector2(0, 1 if attack_kind == "down" else -1)
 			var was_staggered: bool = collider.has_method("is_staggered") and collider.is_staggered()
 			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_foe = true
@@ -994,8 +1076,10 @@ func _process_attack_hits() -> void:
 		Feel.add_trauma(0.3 if is_heavy_swing else 0.15)
 		Feel.rumble(0.3, 0.2 if is_heavy_swing else 0.0, 0.08)
 		Sfx.play("hit", 0.08, 2.0 if is_heavy_swing else 0.0)
-		if attack_kind == "side":
+		if attack_kind in ["side", "thrust"]:
 			velocity.x = -facing * tuning.slash_recoil
+			# A thrust's lunge stops at what it strikes; it doesn't carry you into it.
+			_thrust_lunge = false
 	if attack_kind == "down" and bounced:
 		_attack_timer = 0.0
 
@@ -1378,6 +1462,8 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		_leave_ladder()
 	_drink_timer = 0.0
 	_attack_timer = 0.0
+	_thrust_charge = 0.0
+	_thrust_lunge = false
 	_dash_timer = 0.0
 	Feel.hitstop(0.15)
 	Feel.add_trauma(0.35)
@@ -1516,6 +1602,7 @@ func _respawn() -> void:
 	dead = false
 	_poison_timer = 0.0
 	_glove_timer = 0.0
+	_thrust_charge = 0.0
 	second_wind_used = false
 	hp = max_hp
 	mp = max_mp

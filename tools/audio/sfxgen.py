@@ -960,6 +960,21 @@ def main():
     shake = lowpass(noise(d), 1400) * np.abs(np.sin(2 * np.pi * 9 * t)) * env(n, 0.01, 1.5) * 0.5
     save("cloth", mix(swish, shake), 0.4)
 
+    # Thrust (pass 149): the blade's glint as a held charge comes ready, a bright
+    # steel shing, and the lunge itself, a tearing rush ending on a hard bite.
+    d = 0.26
+    n = int(RATE * d)
+    shing = mix(osc(slide(2400, 2600, d), "sine") * env(n, 0.002, 2.6),
+                osc(slide(3600, 3900, d), "sine") * env(n, 0.002, 3.4) * 0.45)
+    save("thrust_ready", mix(shing, highpass(noise(0.03), 4000) * env(int(RATE * 0.03)) * 0.6), 0.45)
+    d = 0.22
+    n = int(RATE * d)
+    rush = highpass(lowpass(noise(d), slide(1800, 7000, d, 0.6)), 600) * env(n, 0.05, 1.3)
+    bite = lowpass(osc(slide(260, 90, 0.08), "square", 0.4), 1800) * env(int(RATE * 0.08), 0.0005, 1.8)
+    out = rush * 0.8
+    out[-len(bite):] += bite * 0.8
+    save("thrust", out, 0.75)
+
 
 if __name__ == "__main__":
     main()

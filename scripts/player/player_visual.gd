@@ -129,6 +129,9 @@ static func anim_for(p: Player, body_pose: String) -> String:
 			if p.is_heavy_swing:
 				return "slash3"
 			return "slash2" if p.combo_index == 2 else "slash1"
+		"attack_thrust":
+			# The point driven out: the opening cut's reach, held.
+			return "slash1"
 		"attack_up":
 			return "slash_up"
 		"attack_down":
