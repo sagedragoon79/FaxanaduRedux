@@ -1102,3 +1102,23 @@ func test_every_large_zone_hides_a_room() -> void:
 	for zone: String in ["mist", "branches", "daybreak"]:
 		check(rooms.has(zone), "the catalog has %s" % zone)
 	w.free()
+
+
+## Pass 135: the Mattock breaks cracked stone, and every large zone the player
+## walks with it in hand keeps something behind some. Zenis, the last climb,
+## holds no side treasure at all by design.
+func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if zone in ["gym", "test", "trials", "zenis"]:
+			continue
+		var rooms := 0
+		var cracked := 0
+		for f: String in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			rooms += 1
+			var grid := FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]).split("---\n", true, 1)
+			if grid.size() > 1 and grid[1].contains("C"):
+				cracked += 1
+		if rooms >= 5:
+			check(cracked >= 1, "%s (%d rooms) has cracked stone (%d rooms)" % [zone, rooms, cracked])
