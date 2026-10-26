@@ -16,11 +16,13 @@ const KIND_BY_CHAR := {
 	"F": "potion_shard",
 	"*": "mantra_shard",
 	"&": "dragon_slayer",
+	"{": "death",
 }
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
 	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"death": {"title": "Death", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
 	"thunder": {"title": "Thunder", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
 	"hourglass": {"title": "Hour Glass", "text": "Press Hour Glass (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
@@ -36,7 +38,7 @@ const INFO := {
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass"]
+const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -141,6 +143,20 @@ func _draw() -> void:
 			var k := 0.5 + 0.5 * absf(sin(_t * 9.0))
 			for seg: Array in [[2, -8, 3, 5], [-1, -3, 4, 2], [-1, -1, 3, 4], [-4, 3, 3, 5]]:
 				_hp(o, seg[0], seg[1], seg[2], seg[3], Color(Color("e8c04a"), k))
+		"death":
+			# A spell scroll bound in black ribbon, a skull glyph breathing on it.
+			_poly(o, [Vector2(-12, -10), Vector2(12, -10), Vector2(12, 10), Vector2(-12, 10)], Color("120f19"), 2.0)
+			_hp(o, -12, -10, 24, 20, Color("e4dccc"))
+			_hp(o, -12, -10, 24, 2, Color("b8ac90"))
+			_hp(o, -14, -12, 4, 24, Color("2a1838"))
+			_hp(o, 10, -12, 4, 24, Color("2a1838"))
+			var k := 0.55 + 0.45 * sin(_t * 3.0)
+			var g := Color(c.darkened(0.3), k)
+			_hp(o, -5, -7, 10, 8, g)
+			_hp(o, -3, 1, 6, 4, g)
+			_hp(o, -3, -4, 2, 2, Color("e4dccc"))
+			_hp(o, 1, -4, 2, 2, Color("e4dccc"))
+			_hp(o, -1, 2, 2, 2, Color("e4dccc"))
 		"deluge":
 			# A spell scroll bound in blue ribbon, a wave glyph glowing on it.
 			_poly(o, [Vector2(-12, -10), Vector2(12, -10), Vector2(12, 10), Vector2(-12, 10)], Color("120f19"), 2.0)

@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "eolis/west_gate"
-const PICKUPS := "GXOdhnzLWF*$SN&"
+const PICKUPS := "GXOdhnzLWF*$SN&{"
 ## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
