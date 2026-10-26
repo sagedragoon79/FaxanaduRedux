@@ -8,9 +8,10 @@ const DATA := {
 	"thunder": {"name": "Thunder", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
 	"fire": {"name": "Fire", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
 	"tilte": {"name": "Tilte", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
+	"death": {"name": "Death", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
 }
 ## The order the Next Spell button cycles through.
-const ORDER := ["deluge", "thunder", "fire", "tilte"]
+const ORDER := ["deluge", "thunder", "fire", "tilte", "death"]
 ## How far apart (radians) Tilte Swarm fans its three orbs.
 const SWARM_SPREAD := 0.5
 
@@ -74,4 +75,9 @@ static func cast(id: String, caster: Player) -> Node2D:
 			bolt.chain = ThunderBolt.CHAIN_JUMPS if caster.chain_thunder else 0
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			return bolt
+		"death":
+			var wave := DeathWave.new()
+			wave.damage = DATA[id]["damage"]
+			wave.boss_damage = DATA[id]["boss_damage"]
+			return wave
 	return null

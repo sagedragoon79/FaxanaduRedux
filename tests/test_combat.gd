@@ -492,6 +492,57 @@ func test_tilte_swarm_fans_three_orbs() -> void:
 	check(dummy.hp == TrainingDummy.HP - 30, "each strikes for 10 (hp %d)" % dummy.hp)
 
 
+## Death (bible 4.1, pass 132): a ring of black light strikes every foe around
+## you once, through walls; bosses take half.
+func test_death_strikes_every_foe_around_through_walls() -> void:
+	var rows := ARENA.duplicate()
+	for y in range(1, 7):
+		rows[y] = rows[y].substr(0, 9) + "#" + rows[y].substr(10)
+	rows[6] = "#.E......#..E......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(5, 6))
+	await frames(6)
+	var dummies: Array[TrainingDummy] = []
+	for c in room.get_children():
+		if c is TrainingDummy:
+			dummies.append(c)
+	check(dummies.size() == 2, "two dummies, one beyond a wall")
+	if dummies.size() != 2:
+		return
+	var far := dummies[0] if dummies[0].global_position.x > dummies[1].global_position.x else dummies[1]
+	far.add_to_group("boss")
+	p.abilities["death"] = true
+	p.max_mp = 60.0
+	p.mp = 60.0
+	p.equipped_spell = "death"
+	Sfx.recent.clear()
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	check(absf(p.mp - (60.0 - Spells.cost("death"))) < 0.5, "Death costs %.0f MP" % Spells.cost("death"))
+	check(Spells.cost("death") >= 40.0 and Spells.ORDER.has("death"), "the dearest spell, on the Next Spell cycle")
+	check(Sfx.recent.has("death_wave"), "it tolls (%s)" % [Sfx.recent])
+	await frames(int(DeathWave.DURATION * 60.0) + 4)
+	var near := dummies[0] if far == dummies[1] else dummies[1]
+	check(near.hits_taken == 1 and near.hp == TrainingDummy.HP - 36, "the foe beside you takes 36, once (hp %d, hits %d)" % [near.hp, near.hits_taken])
+	check(far.hits_taken == 1 and far.hp == TrainingDummy.HP - 18, "a boss beyond the wall takes half, 18 (hp %d)" % far.hp)
+	await frames(20)
+	check(runner.get_tree().get_nodes_in_group("projectile").is_empty(), "then the ring is gone")
+	p.input.spell_pressed = true
+	await frames(1)
+	check(p.mp < Spells.cost("death") and runner.get_tree().get_nodes_in_group("projectile").is_empty(), "and there is not enough MP left for a second")
+	p.input.spell_pressed = false
+	far.remove_from_group("boss")
+
+
+func test_the_death_scroll_is_a_late_secret() -> void:
+	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Death scroll")
+	var text := FileAccess.get_file_as_string("res://levels/dartmoor/kings_kennels.room")
+	check(text.contains("{"), "it lies in the King's Kennels' loft, up the hidden planks")
+	GameState.new_game()
+	check(GameState.data.abilities.has("death") and not GameState.data.abilities.death, "a new game starts without it")
+
+
 func _until(cond: Callable, max_frames: int) -> bool:
 	for i in max_frames:
 		if cond.call():

@@ -914,6 +914,17 @@ def main():
     tick = np.pad(highpass(noise(0.008), 2500) * env(int(RATE * 0.008), 0.0005, 3.0), (int(RATE * 0.04), 0))
     save("pin_lift", mix(ring, tick), 0.5)
 
+    # Death (pass 132): a deep tolling knell under a rushing dark swell, the
+    # ring of black light rolling out.
+    d = 1.1
+    n = int(RATE * d)
+    t = t_axis(d)
+    toll = sum(osc(np.full(n, f), "sine") * a for f, a in [(55.0, 1.0), (110.5, 0.5), (164.0, 0.3), (231.0, 0.15)])
+    toll = toll * env(n, 0.004, 2.2)
+    swell = lowpass(noise(d), slide(300, 2200, d, 0.6)) * np.sin(np.pi * np.clip(t / 0.6, 0, 1)) * 0.6
+    swell = swell * np.clip(1.2 - t / d, 0, 1)
+    save("death_wave", mix(toll, swell), 0.7)
+
 
 if __name__ == "__main__":
     main()

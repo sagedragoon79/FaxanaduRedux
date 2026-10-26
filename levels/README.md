@@ -86,6 +86,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `a` | Deep water (the Sunken Spring): the player swims while the middle of the body is in it (floats up, sinks holding Down, jump strokes up, and with the head out jumps clear). Not solid. Draw pools as whole blocks; the checker swims through water cells and jumps out from the surface |
 | `l` | Spring Eel (the Sunken Spring), in a cell of water: it never leaves the water; it coils, then darts and bites |
 | `+` | Heart seal (Zenis): living flesh across a passage, a wall to every blade but the Dragon Slayer, which tears it open for good |
+| `{` | The Death scroll (spell pickup, bible 4.1): a late secret |
 | `&` | The Dragon Slayer (bible A10): found, it goes straight into your hand |
 | `z` | Hour Glass (ability pickup) |
 | `e` | Shade Knight (Dartmoor: tower shield turns frontal blows; parry his thrust or cut) |
