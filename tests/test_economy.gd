@@ -1201,6 +1201,38 @@ func test_the_map_marks_key_doors_still_shut() -> void:
 	real.free()
 
 
+func test_wanderers_grace_lengthens_the_dash_and_a_kill_gives_it_back() -> void:
+	var w := make_world(_town({Vector2i(14, 19): "D"}), "test/town", cell_feet(6, 19))
+	var p := w.player
+	p.abilities.stride = true
+	await frames(2)
+	var foe: Enemy = null
+	for c in w.room.get_children():
+		if c is Enemy:
+			foe = c
+	check(foe != null, "a foe to kill")
+	_learn_all(p, WANDERER_TO)
+	check(is_equal_approx(p.dash_invuln(), p.tuning.dash_invuln), "without it, a dash's usual %.2f s" % p.tuning.dash_invuln)
+	p.air_dash_charges = 0
+	check(not p.on_kill(), "without it, a kill gives nothing back")
+	check(Skills.status("wanderers_grace") == "", "Wanderer's Grace opens after Second Wind")
+	check(Skills.learn("wanderers_grace", p) and p.wanderers_grace, "learned Wanderer's Grace")
+	check(is_equal_approx(p.dash_invuln(), p.tuning.dash_invuln + Player.GRACE_INVULN), "a dash lets harm through 0.1 s longer (%.2f)" % p.dash_invuln())
+	p._invuln_timer = 0.0
+	p.input.dash_pressed = true
+	await frames(1)
+	p.input.dash_pressed = false
+	check(p.is_dashing and p._invuln_timer > p.tuning.dash_invuln, "and the dash really does (%.3f s left)" % p._invuln_timer)
+	await frames(20)
+	p.air_dash_charges = 0
+	foe.die()
+	var full := p.tuning.air_dash_charges + p.bonus_air_dashes
+	check(p.air_dash_charges == full, "a kill gives back both air dashes (%d of %d)" % [p.air_dash_charges, full])
+	check(not p.on_kill(), "and does nothing when none were spent")
+	p.gold = 5000
+	check(Skills.respec(p) and not p.wanderers_grace and is_equal_approx(p.dash_invuln(), p.tuning.dash_invuln), "a respec takes it back")
+
+
 func test_last_stand_and_second_wind() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

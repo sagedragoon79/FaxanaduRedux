@@ -758,6 +758,10 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
   - Resilience adds one mask (`GameState.RESILIENCE_HP`).
   - Last Stand: below 20% health, you take 25% less damage.
   - Second Wind: once between rests (a shrine, a Guru or a respawn), a killing blow leaves you at 1 HP.
+- **Wanderer's Grace (pass 142)**, the Wanderer branch's capstone, after Second Wind [3]:
+  - A dash lets harm pass through you for 0.2 s instead of 0.1 s (`Player.GRACE_INVULN`, `Player.dash_invuln`).
+  - Any foe's death gives back the air dashes you have spent (`Enemy.die` calls `Player.on_kill`), with a puff of feathers and a catch of wind. So a kill in midair can be dashed out of, and a run of kills across a gap can carry you over it.
+  - The built tree now costs 44 points (Wanderer 19 over 10 nodes) against the 29 the game gives.
 
 Deviations, and why:
 - The build order skips Thrust, Wildfire and the rest. They are bigger mechanics and still come later in their branches.
