@@ -1855,6 +1855,95 @@ func test_a_respawned_marsh_hag_starts_fresh() -> void:
 	room.free()
 
 
+## Bible 7 (pass 123): the Spire Sentinel is stone while you face it. It
+## never moves and blows clink off; turn your back and it grinds after you, and
+## it stops dead when you turn round.
+func test_spire_sentinel_moves_only_behind_your_back() -> void:
+	var room := _room_with({Vector2i(22, 6): "]"})
+	var p := make_player(room, Vector2i(10, 6))
+	var s: SpireSentinel = _find(room, SpireSentinel)
+	var x0 := s.global_position.x
+	p.facing = 1
+	await frames(40)
+	check(s.state == "stone" and absf(s.global_position.x - x0) < 0.5, "watched, it stands as stone (%s, moved %.1f)" % [s.state, s.global_position.x - x0])
+	var hp0 := s.hp
+	s.take_hit(10, Vector2.RIGHT)
+	check(s.hp == hp0, "a blow clinks off the stone (%d)" % (hp0 - s.hp))
+	p.facing = -1
+	var stalked := 0
+	for i in 40:
+		await frames(1)
+		if s.is_stalking():
+			stalked += 1
+	check(stalked > 20 and s.global_position.x < x0 - 16.0, "back turned, it grinds after you (%d frames, %.0f px)" % [stalked, x0 - s.global_position.x])
+	check("sentinel_grind" in Sfx.recent, "you hear it grind")
+	p.facing = 1
+	await frames(2)
+	var x1 := s.global_position.x
+	check(s.state == "stone", "turn round and it stops dead (%s)" % s.state)
+	await frames(30)
+	check(absf(s.global_position.x - x1) < 0.5, "and stays put while you watch")
+	hp0 = s.hp
+	s.take_hit(10, Vector2.RIGHT)
+	check(s.hp == hp0, "still stone, still no harm done")
+	room.free()
+
+
+## In reach it raises the halberd (the telegraph), slams for 16 and is left
+## with its blade buried: cracked open, every blow lands. A parried slam
+## staggers it, cracked open the same way.
+func test_spire_sentinel_slams_and_cracks_open() -> void:
+	var room := _room_with({Vector2i(22, 6): "]"})
+	var p := make_player(room, Vector2i(10, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	var s: SpireSentinel = _find(room, SpireSentinel)
+	await frames(5)
+	p.global_position = Vector2(s.global_position.x - 30.0, 7 * 16)
+	p.reset_physics_interpolation()
+	p.facing = 1
+	var raise := 0
+	var hp := p.hp
+	for i in 120:
+		await frames(1)
+		if s.state == "raise":
+			raise += 1
+		if s.state == "spent":
+			break
+	check(raise / 60.0 >= Enemy.MIN_TELEGRAPH, "it raises the halberd for at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, raise])
+	check(hp - p.hp == SpireSentinel.SLAM_DAMAGE, "the slam does %d (%d)" % [SpireSentinel.SLAM_DAMAGE, hp - p.hp])
+	check(s.exposed(), "its blade buried, the stone cracks open (%s)" % s.state)
+	var hp0 := s.hp
+	s.take_hit(10, Vector2.RIGHT)
+	check(hp0 - s.hp == 10, "and a blow lands in full (%d)" % (hp0 - s.hp))
+	for i in 120:
+		await frames(1)
+		if s.state == "stone":
+			break
+	check(s.state == "stone" and not s.exposed(), "then it is stone again (%s)" % s.state)
+	# Its next slam, met with a parry. The first knocked you back out of its
+	# reach, and it won't come to you while you face it: step back in.
+	p.has_shield = true
+	p.global_position = Vector2(s.global_position.x - 30.0, 7 * 16)
+	p.reset_physics_interpolation()
+	p.facing = 1
+	for i in 180:
+		await frames(1)
+		if s.state == "raise" and s.state_time >= SpireSentinel.RAISE - 3.0 / 60.0:
+			break
+	hp = p.hp
+	p.input.block_pressed = true
+	p.input.block_held = true
+	await frames(8)
+	p.input.block_pressed = false
+	check(p.hp == hp, "a parried slam does no harm (%d)" % (hp - p.hp))
+	check(s.is_staggered() and s.exposed(), "and staggers it, cracked open")
+	hp0 = s.hp
+	s.take_hit(10, Vector2.RIGHT)
+	check(hp0 - s.hp == 10, "a blow on the staggered stone lands (%d)" % (hp0 - s.hp))
+	room.free()
+
+
 ## Pass 112: the foes built after the pass-102 sound pass have voices of their
 ## own. Each of these sounds exists, its foe plays it, and nothing else does, so
 ## a tell can be told apart by ear.
@@ -1866,6 +1955,7 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"seed_bomber": ["seed_rattle", "seed_drop"],
 		"bomber_seed": ["seed_fuse", "seed_burst"],
 		"marsh_hag": ["hag_hex", "mire_grasp", "hag_fumble"],
+		"spire_sentinel": ["sentinel_grind", "sentinel_raise", "sentinel_slam"],
 	}
 	var played := {}  # sound -> scripts that play it
 	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:
