@@ -17,7 +17,7 @@ secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden roo
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
 corrupted: true    (optional: foes are grown through with meteor crystal; default true in zone zenis)
 chest_gold: 100    (optional: gold in each chest in this room)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible)
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Guru Trial))
 boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)

@@ -9,7 +9,7 @@ const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
 ## What each zone's ground is made of, for footsteps (design bible 11). A room's
 ## `surface:` header overrides it; platforms are planks and sap pools are sap.
-const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone"}
+const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone", "trials": "stone"}
 
 ## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
 var id := ""
@@ -318,6 +318,8 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(WaterClock.new(), pos)
 		"zenis_gate":
 			_spawn(ZenisGate.new(), pos)
+		"trial_goal":
+			_spawn(TrialGoal.new(), pos)
 		"lift":
 			var cage := LiftCage.new()
 			cage.room_id = id

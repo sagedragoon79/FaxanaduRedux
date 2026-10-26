@@ -1141,6 +1141,12 @@ ZONES = {
         "ceiling": [zenis_tendrils, zenis_eyes, zenis_tendrils, zenis_tendrils],
         "wall": [zenis_wall_eye, zenis_wall_growth],
     },
+    # The mantra-space keeps only stone: rubble, a hanging chain, a cold sconce.
+    "trials": {
+        "floor": [eolis_stones, dartmoor_rubble, eolis_stones, dartmoor_rubble, eolis_stones, eolis_stones],
+        "ceiling": [eolis_chain, eolis_chain, sunken_straws, eolis_chain],
+        "wall": [eolis_sconce, sunken_wall_flowstone],
+    },
     "sunken": {
         "floor": [sunken_rimstone, dartmoor_weed, sunken_pearls, sunken_rimstone, dartmoor_weed, sunken_rimstone],
         "ceiling": [sunken_straws, dartmoor_drip, sunken_straws, sunken_straws],

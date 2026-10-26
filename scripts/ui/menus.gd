@@ -63,7 +63,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 		var rank_line := "Rank: %s. XP %d" % [GameState.rank_name(), int(GameState.data.xp)]
 		if GameState.next_rank_xp() > 0:
 			rank_line += " of %d for the next rank." % GameState.next_rank_xp()
-		return [
+		var rows := [
 			{"label": "Rest and save", "detail": "Restore health, magic and potions, and record your journey. " + rank_line},
 			{"label": "Learn skills", "right": "%d pt" % pts, "detail": "Spend skill points. You earn them from ranks, bosses and Mantra Shards."},
 			{"label": "Unlearn skills", "right": "%d g" % Skills.respec_cost(), "detail": "Forget every skill and get the points back, for a price that rises each time.",
@@ -71,7 +71,16 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 			_mantra_row(tree),
 			{"label": "Leave", "detail": "Walk in the light, wanderer."},
 		]
+		if _here(tree) == Trials.TEMPLE:
+			rows.insert(4, _trials_row())
+		return rows
 	var on_select := func(i: int) -> void:
+		if _here(tree) == Trials.TEMPLE and i >= 4:
+			# The Guru Trials row sits before Leave in the temple.
+			if i == 4:
+				open_trials(tree, p)
+				return
+			i -= 1
 		match i:
 			0:
 				menu.close()
@@ -90,6 +99,60 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 				menu.close()
 	menu.open("Guru", greeting, provider, on_select, _gold_footer(p))
 	return true
+
+
+static func _trials_row() -> Dictionary:
+	var row := {"label": "Guru Trials", "detail": "Walk a mantra made of nothing but footholds.",
+		"enabled": Trials.springs_flowing() > 0 and not Trials.built().is_empty()}
+	var done := 0
+	for t: Dictionary in Trials.built():
+		if Trials.cleared(t.id):
+			done += 1
+	row.right = "%d/%d" % [done, Trials.built().size()]
+	if Trials.springs_flowing() == 0:
+		row.detail = "The mantra-space is dry. Restore a spring and the Guru will open it."
+	return row
+
+
+## The Guru Trials (design bible 3.1): pick an open trial and the mantra carries
+## you to its start; you come back here when it ends.
+static func open_trials(tree: SceneTree, p: Player) -> bool:
+	var menu := _menu(tree)
+	var world := tree.get_first_node_in_group("world") as World
+	if menu == null or world == null:
+		return false
+	var list := Trials.built()
+	var provider := func() -> Array:
+		var out := []
+		for t: Dictionary in list:
+			var row := {"label": String(t.name), "detail": String(t.desc), "enabled": Trials.is_open(t)}
+			if not Trials.is_open(t):
+				row.right = "Sealed"
+				row.detail = "Restore %d springs to open it." % int(t.springs)
+			elif Trials.cleared(t.id):
+				row.right = Trials.format_time(Trials.best(t.id))
+				row.detail += "  Best %s." % Trials.format_time(Trials.best(t.id))
+			else:
+				row.right = "Open"
+				row.detail += "  Clear it for a Mantra Shard."
+			out.append(row)
+		return out
+	var on_select := func(i: int) -> void:
+		var t: Dictionary = list[i]
+		if not Trials.is_open(t):
+			return
+		menu.close()
+		start_trial(world, p, t)
+	menu.open("Guru Trials", "The trial begins the moment you arrive. Hazards cost time, not health.", provider, on_select)
+	return true
+
+
+static func start_trial(world: World, p: Player, t: Dictionary) -> void:
+	Trials.begin(t.id, world.room.id, p.global_position)
+	Sfx.play("save", 0.0)
+	GameState.flash.emit(0.2)
+	world.travel(t.room, Trials.start_pos(world.room_text(t.room)))
+	p.velocity = Vector2.ZERO
 
 
 static func _here(tree: SceneTree) -> String:
@@ -202,7 +265,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
-		]
+		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else [])
 	var reopen := func() -> void: open_pause(tree, p, on_quit)
 	var on_select := func(i: int) -> void:
 		match i:
@@ -217,9 +280,23 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 				open_controls(tree, reopen)
 			4:
 				menu.close()
+				Trials.abandon()
 				on_quit.call()
+			5:
+				menu.close()
+				leave_trial(tree)
 	menu.open("Paused", "%s. Rank %s." % [_room_title(tree), GameState.rank_name()], provider, on_select, _gold_footer(p))
 	return true
+
+
+static func leave_trial(tree: SceneTree) -> void:
+	var world := tree.get_first_node_in_group("world") as World
+	if not Trials.active() or world == null:
+		return
+	var back_room: String = Trials.run.back_room
+	var back_pos: Vector2 = Trials.run.back_pos
+	Trials.abandon()
+	world.travel(back_room, back_pos)
 
 
 static func _room_title(tree: SceneTree) -> String:

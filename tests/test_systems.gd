@@ -389,6 +389,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.play_time = 3725.5
 	d.clears = 1
 	d.deaths = 4
+	d.trials = {"walls": 41.27}
 	var unset: Array[String] = []
 	for k: String in fresh:
 		if k != "version" and _same(d[k], fresh[k]):
@@ -632,3 +633,111 @@ func test_the_thanks_card_counts_up_the_completion() -> void:
 	await frames(1)
 	check(e.stats.is_empty(), "with no tally it shows only rank, time and deaths")
 	e.queue_free()
+
+
+# --- Guru Trials (pass 113) -------------------------------------------------------
+
+func _temple() -> Dictionary:
+	var rows := grid_rows(30, 20)
+	return {"test/a": room_text(["name: Temple", "zone: eolis"], rows)}
+
+
+## Bible 3.1: the trials open two by two as springs are restored, and only
+## built ones are offered.
+func test_guru_trials_open_as_the_springs_flow() -> void:
+	GameState.new_game()
+	var ids := Trials.built().map(func(t: Dictionary) -> String: return t.id)
+	check(ids.slice(0, 2) == ["walls", "edges"], "the first two trials are built (%s)" % [ids])
+	for t: Dictionary in Trials.built():
+		check(World.room_exists(t.room), "%s has its room" % t.name)
+	check(not Trials.is_open(Trials.find("walls")), "with no spring flowing, they are sealed")
+	GameState.set_flag("spring:trunk")
+	check(Trials.is_open(Trials.find("walls")) and Trials.is_open(Trials.find("edges")), "the first spring opens the first two")
+	check(not Trials.is_open(Trials.find("thorns")), "the next two want a second spring")
+	GameState.set_flag("spring:mist")
+	check(Trials.is_open(Trials.find("thorns")), "which opens them")
+	check(Trials.format_time(83.47) == "1:23.4" and Trials.format_time(INF) == "--", "times read m:ss.t")
+
+
+## Bible 3.1: the Guru sends you to the trial's start, the clock runs, the bell
+## clears it (a Mantra Shard the first time, the best time kept), and the mantra
+## carries you back to where you stood.
+func test_a_trial_runs_on_a_clock_and_the_bell_clears_it() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	var p := w.player
+	await frames(5)
+	var back := p.global_position
+	Menus.start_trial(w, p, Trials.find("walls"))
+	await frames(5)
+	check(w.room.id == "trials/walls", "the mantra carries you to the trial")
+	var start := Trials.start_pos(w.room_text("trials/walls"))
+	check(p.global_position.distance_to(start) < 4.0, "to its start")
+	check(Trials.active(), "and the trial is under way")
+	await frames(60)
+	check(Trials.run.time > 0.9 and Trials.run.time < 1.2, "the clock runs (%.2f s)" % Trials.run.time)
+	var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
+	check(bell != null, "the room has its bell")
+	var shards := int(GameState.data.mantra_shards)
+	p.teleport(bell.global_position)
+	await frames(3)
+	check(bell.rung, "touching the bell rings it")
+	check(Trials.cleared("walls"), "the trial is cleared")
+	check(int(GameState.data.mantra_shards) == shards + 1, "the first clear gives a Mantra Shard")
+	var first := Trials.best("walls")
+	check(first > 0.9 and first < 1.3, "and keeps the time (%.2f s)" % first)
+	await frames(int(TrialGoal.RING * 60) + 10)
+	check(w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0, "then you are back where you stood")
+	check(not Trials.active(), "with the trial over")
+	# A slower second walk keeps the best and gives no second shard.
+	Menus.start_trial(w, p, Trials.find("walls"))
+	await frames(5)
+	await frames(120)
+	bell = w.room.get_tree().get_first_node_in_group("trial_goal")
+	p.teleport(bell.global_position)
+	await frames(3)
+	check(Trials.best("walls") == first, "a slower clear keeps the best (%.2f)" % Trials.best("walls"))
+	check(int(GameState.data.mantra_shards) == shards + 1, "and gives no second shard")
+	await frames(int(TrialGoal.RING * 60) + 10)
+	w.queue_free()
+	Trials.abandon()
+
+
+## Bible 3.1: in a trial a hazard costs time, never health: it sets you back on
+## your last footing. Leaving from the pause menu returns you to the Guru.
+func test_in_a_trial_hazards_cost_time_not_health() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	var p := w.player
+	await frames(5)
+	var back := p.global_position
+	Menus.start_trial(w, p, Trials.find("walls"))
+	await frames(10)
+	var hp := p.hp
+	var safe := p.safe_position
+	# Step onto the spikes beside the start.
+	p.teleport(cell_feet(8, 27))
+	await frames(3)
+	check(p.hp == hp, "spikes take no health in a trial (%d -> %d)" % [hp, p.hp])
+	check(p.global_position.distance_to(safe) < 4.0, "they set you back on your footing")
+	check(Trials.active(), "and the clock runs on")
+	Menus.leave_trial(w.get_tree())
+	await frames(5)
+	check(w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0, "leaving the trial returns you to the Guru")
+	check(not Trials.active() and not Trials.cleared("walls"), "uncleared")
+	w.queue_free()
+
+
+## Best times are saved, and a bad one in a damaged save is dropped.
+func test_trial_times_are_saved_and_sanitized() -> void:
+	GameState.new_game()
+	GameState.data.trials = {"walls": 12.34}
+	var copy := GameState.sanitize(JSON.parse_string(JSON.stringify(GameState.data)))
+	check(_same(copy.trials, {"walls": 12.34}), "a best time survives a save (%s)" % [copy.trials])
+	var bad: Dictionary = JSON.parse_string(JSON.stringify(GameState.data))
+	bad.trials = {"walls": -3, "edges": "fast", "thorns": 20}
+	copy = GameState.sanitize(bad)
+	check(_same(copy.trials, {"thorns": 20.0}), "negative or non-number times are dropped (%s)" % [copy.trials])
+	bad.trials = [1, 2]
+	check(_same(GameState.sanitize(bad).trials, {}), "a list in their place falls back to none")
+	GameState.new_game()

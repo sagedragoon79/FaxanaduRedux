@@ -1115,6 +1115,13 @@ func _riposte(foe: Node2D) -> void:
 func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if invulnerable or dead:
 		return
+	if from_hazard and Trials.active():
+		# A Guru Trial (bible 3.1): a miss costs time, never health.
+		Sfx.play("hurt", 0.05, -4.0)
+		visual.flash_hurt()
+		_invuln_timer = tuning.hurt_invuln
+		teleport(safe_position)
+		return
 	if defense > 0.0:
 		amount = maxi(1, roundi(amount * (1.0 - defense)))
 	if last_stand and hp < max_hp * LAST_STAND_BELOW:
