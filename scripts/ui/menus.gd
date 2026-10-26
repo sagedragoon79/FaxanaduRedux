@@ -35,6 +35,8 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 				right = "Sold out"
 			elif st == "locked":
 				right = "Needs I"
+			elif st == "shards":
+				right = "Needs shard"
 			elif st == "worn":
 				right = "Worn"
 			elif item.kind == "dye" and GameState.owns_dye(String(entry.item)):
@@ -47,6 +49,8 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 			elif item.kind == "temper":
 				var blade := String(GameState.data.equipment.blade)
 				detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
+				if Shop.shards(entry) > 0:
+					detail += "  Costs a Meteor Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
 			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
 		return out
 	var on_select := func(row: int) -> void:

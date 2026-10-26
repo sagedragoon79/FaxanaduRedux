@@ -1,7 +1,7 @@
 class_name ItemPickup
 extends Node2D
 ## A permanent item lying in the world: an ability, Life Fruit, Mana Dew, a
-## Potion Shard or a Mantra Shard. Touch it to take it; it never comes back.
+## Potion Shard, a Mantra Shard or a Meteor Shard. Touch it to take it; it never comes back.
 
 const KIND_BY_CHAR := {
 	"G": "glove",
@@ -17,6 +17,7 @@ const KIND_BY_CHAR := {
 	"*": "mantra_shard",
 	"&": "dragon_slayer",
 	"{": "death",
+	"(": "meteor_shard",
 }
 
 const INFO := {
@@ -32,6 +33,7 @@ const INFO := {
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
+	"meteor_shard": {"title": "Meteor Shard", "text": "", "color": Color("e04aa8")},
 	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask. It guards and turns shots like the Magic Shield.", "color": Color("d8b060")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
@@ -293,6 +295,26 @@ func _draw() -> void:
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(0, 17), Vector2(-wx, -2)], c)
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(-wx, -2)], light)
 			_hp(o, -2, -9, 2, 5, Color("efe4ff"))
+		"meteor_shard":
+			# A splinter of the meteor: three jagged magenta spurs from a black rock
+			# heel, a cyan light beating in the crack between them like Zenis's heart.
+			var beat := 0.5 + 0.5 * sin(_t * 5.0)
+			var rock := [Vector2(-9, 8), Vector2(-5, 13), Vector2(6, 13), Vector2(10, 7), Vector2(2, 4)]
+			_poly(o, rock, Color("120f19"), 2.0)
+			_poly(o, rock, Color("2a1f33"))
+			var spurs := [
+				[Vector2(-8, 7), Vector2(-11, -6), Vector2(-4, 4)],
+				[Vector2(-4, 6), Vector2(1, -18), Vector2(5, 5)],
+				[Vector2(3, 6), Vector2(10, -8), Vector2(9, 6)],
+			]
+			for s: Array in spurs:
+				_poly(o, s, Color("120f19"), 2.0)
+			for s: Array in spurs:
+				_poly(o, s, c)
+				_poly(o, [s[0], s[1], (s[0] + s[2]) * 0.5], dark)
+			_hp(o, 0, -13, 2, 12, light)
+			_hp(o, -1, 2, 3, 7, Color(Color("8af0e8"), 0.55 + 0.45 * beat))
+			_hp(o, 0, 3, 1, 5, Color("e8fffc"))
 		"battle_helmet":
 			# A gold-bronze war-helm: a domed crown, cheek guards, an eye slit and a crest of wings.
 			var helm := [Vector2(-11, 12), Vector2(-12, -2), Vector2(-8, -11), Vector2(0, -14), Vector2(8, -11), Vector2(12, -2), Vector2(11, 12), Vector2(5, 12), Vector2(4, 4), Vector2(-4, 4), Vector2(-5, 12)]

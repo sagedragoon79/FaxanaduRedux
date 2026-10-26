@@ -688,11 +688,53 @@ func test_the_forepaw_smith_tempers_a_blade_twice() -> void:
 	check(p.slash_damage == roundi(base * 1.15) and p.heavy_damage == roundi(heavy * 1.15),
 		"+15%% damage (%d -> %d)" % [base, p.slash_damage])
 	check(Shop.status("forepaw_smith", 0, p) == "owned", "one first temper per blade")
+	GameState.data.meteor_shards = 1
 	check(Shop.buy("forepaw_smith", 1, p), "bought Temper Blade II")
 	check(p.slash_damage == roundi(base * 1.3), "+30%% in all (%d)" % p.slash_damage)
 	check(Shop.status("forepaw_smith", 1, p) == "owned", "and that is the most a blade takes")
 	check(Shop.buy("eolis_arms", 0, p), "a new blade")
 	check(p.slash_damage == 11 and Shop.status("forepaw_smith", 0, p) == "", "starts untempered")
+
+
+func test_the_second_temper_costs_a_meteor_shard() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.gold = 5000
+	check(Shop.buy("forepaw_smith", 0, p), "Temper Blade I needs gold alone")
+	check(Shop.status("forepaw_smith", 1, p) == "shards", "Temper Blade II waits for a Meteor Shard")
+	check(not Shop.buy("forepaw_smith", 1, p) and p.gold == 4300, "and can't be bought without one")
+	var shard := ItemPickup.new()
+	shard.kind = ItemPickup.KIND_BY_CHAR["("]
+	w.room.add_child(shard)
+	shard.grant(p)
+	check(int(GameState.data.meteor_shards) == 1, "a Meteor Shard picked up is carried")
+	check(Shop.status("forepaw_smith", 1, p) == "", "now the smith can fold it in")
+	check(Shop.buy("forepaw_smith", 1, p), "bought Temper Blade II")
+	check(int(GameState.data.meteor_shards) == 0 and p.gold == 2700, "it spends the shard and the gold")
+	check(GameState.temper_level("hand_dagger") == 2, "the dagger is tempered twice")
+	check(Shop.buy("eolis_arms", 0, p) and Shop.buy("forepaw_smith", 0, p), "a new blade, tempered once")
+	check(Shop.status("forepaw_smith", 1, p) == "shards", "each blade's second temper takes its own shard")
+
+
+func test_the_world_holds_a_meteor_shard_for_every_blade() -> void:
+	var found := 0
+	var zones := {}
+	for zone in DirAccess.get_directories_at("res://levels"):
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var text := FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])
+			var n := text.substr(text.find("\n---\n") + 5).count("(")
+			found += n
+			if n > 0:
+				zones[zone] = true
+	var blades := 0
+	for id: String in GameData.table("items"):
+		if String(GameData.item(id).get("kind", "")) == "blade":
+			blades += 1
+	check(found >= blades, "%d Meteor Shards in the world for %d blades" % [found, blades])
+	check(zones.has("tower"), "one lies in the Tower, near the smith who uses them")
+	check(zones.size() >= 4, "they are spread over %d zones" % zones.size())
 
 
 func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:

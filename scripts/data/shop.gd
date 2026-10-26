@@ -24,7 +24,7 @@ static func shelf(shop_id: String) -> Array[int]:
 
 ## Why an entry can't be bought right now: "" (it can), "hidden" (not on the
 ## shelf yet), "owned", "full", "sold out", "locked" (a second temper before the
-## first) or "gold".
+## first), "shards" (too few Meteor Shards for an entry's "shards") or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
@@ -60,9 +60,16 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 				return "worn"
 			if GameState.owns_dye(String(entry.item)):
 				return ""
+	if int(GameState.data.get("meteor_shards", 0)) < shards(entry):
+		return "shards"
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
+
+
+## Meteor Shards an entry costs besides its gold (design bible 5.2).
+static func shards(entry: Dictionary) -> int:
+	return int(entry.get("shards", 0))
 
 
 static func buy(shop_id: String, index: int, p: Player) -> bool:
@@ -75,6 +82,7 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 		GameState.capture(p)
 		return true
 	p.gold -= int(entry.price)
+	GameState.data.meteor_shards = int(GameState.data.get("meteor_shards", 0)) - shards(entry)
 	match item.kind:
 		"blade", "armor", "shield":
 			GameState.data.equipment[item.kind] = entry.item

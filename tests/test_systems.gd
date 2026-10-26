@@ -375,6 +375,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.rings = ["elf", "ruby"]
 	d.potion_shards = 5
 	d.mantra_shards = 3
+	d.meteor_shards = 2
 	d.elixirs = 1
 	d.ointments = 2
 	d.collected = {"eolis/plaza:12,30": true}

@@ -202,7 +202,13 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
 
-Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered. The Meteor Shard cost joins when shards are placed in the world.)
+Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered.)
+
+**Meteor Shards (built pass 140):**
+- Splinters of the meteor, flung down the Tree when it struck the crown: a black rock heel with three magenta crystal spurs and a cyan light beating in the crack between them. Legend `(`.
+- Temper Blade II costs one besides its gold (`"shards": 1` on the shop entry); Temper I is gold alone. Without one the forge shows "Needs shard", and the temper's line says how many you carry. A shard is spent when the smith folds it in.
+- Five lie in the world, one more than there are blades, so one can go to a blade you later put down: on the Crown Lookout above the potion shard (Tower, near the smith), above the Scorched Hall's platform (the Mist), in the Sunlit Bough's hidden pocket (Branches), in the Broken Shrine's hidden pocket (Daybreak), and at the end of a Meteor Rise shelf (Dartmoor). They count as treasures for completion and Treasure Sense.
+- Carried in `GameState.data.meteor_shards`.
 
 **Giant Blade (built pass 93):**
 - Slash 15, heavy 28, and 16 px more reach than the dagger.
@@ -850,7 +856,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 | Mana Dew | 9 | Mix | +MP |
 | Potion Shards | 9 | Mix | +flask |
 | Mantra Shards | 15 | Mostly hard platforming | Skill points |
-| Meteor Shards | 10 | Elite drops, hard rooms | Smith upgrades |
+| Meteor Shards | 5 (pass 140; was 10) | Hard rooms, hidden pockets | The smith's second temper (5.2). Each blade takes one, so five (one per blade and one spare) replace the planned ten, and none drop from foes: a shard is a find, not a grind |
 | Guru Trials | 6 | Unlock as springs are restored | Cosmetics, a Mantra Shard each |
 | Lore tablets | 12 | Dwarf ruins | Story, map hints |
 

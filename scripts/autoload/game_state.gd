@@ -75,6 +75,8 @@ static func fresh() -> Dictionary:
 		"rings": [],
 		"potion_shards": 0,
 		"mantra_shards": 0,
+		## Meteor Shards carried: the Forepaw smith folds one into each second temper.
+		"meteor_shards": 0,
 		## Elixirs carried (at most Shop.ELIXIR_MAX): one revives the player in place on death.
 		"elixirs": 0,
 		## Ointments carried (at most Shop.OINTMENT_MAX).
@@ -365,7 +367,7 @@ func capture(p: Player) -> void:
 	data.ointments = p.ointments
 
 
-## Applies a permanent stat item (Life Fruit, Mana Dew, Potion Shard) and
+## Applies a permanent stat item (Life Fruit, Mana Dew, a Potion, Mantra or Meteor Shard) and
 ## returns the line to show under its name.
 func grant_stat_item(kind: String, p: Player) -> String:
 	match kind:
@@ -395,6 +397,9 @@ func grant_stat_item(kind: String, p: Player) -> String:
 				data.skill_points = int(data.skill_points) + 1
 				return "The mantra is whole. You gain a skill point."
 			return "%d of 3. Three complete a mantra." % (n % 3)
+		"meteor_shard":
+			data.meteor_shards = int(data.meteor_shards) + 1
+			return "You carry %d. The Forepaw smith folds one into a second temper." % int(data.meteor_shards)
 	return ""
 
 

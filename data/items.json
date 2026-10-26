@@ -20,7 +20,7 @@
 	"ointment": {"name": "Ointment", "kind": "ointment", "desc": "Rub it on from the pause menu: nothing can hurt you for 10 seconds. You can carry three."},
 	"elixir": {"name": "Elixir", "kind": "elixir", "desc": "If you fall, it revives you where you stand. You can carry one."},
 	"temper_1": {"name": "Temper Blade I", "kind": "temper", "level": 1, "desc": "The smith folds your blade in dwarf fire: +15% damage."},
-	"temper_2": {"name": "Temper Blade II", "kind": "temper", "level": 2, "desc": "A second folding, quenched in spring water: another +15%."},
+	"temper_2": {"name": "Temper Blade II", "kind": "temper", "level": 2, "desc": "A second folding, a Meteor Shard beaten into the steel: another +15%."},
 	"chart_eolis": {"name": "Chart of Eolis", "kind": "chart", "zone": "eolis", "desc": "Every street and hall of Eolis, inked on your map, even those you have not walked."},
 	"chart_trunk": {"name": "Chart of the Trunk Hollows", "kind": "chart", "zone": "trunk", "desc": "The tunnels of the Trunk Hollows outlined on your map. Rooms you have not seen show dimmed."},
 	"chart_tower": {"name": "Chart of the Tower", "kind": "chart", "zone": "tower", "desc": "The galleries of the Tower of Trunk outlined on your map. Rooms you have not seen show dimmed."},
