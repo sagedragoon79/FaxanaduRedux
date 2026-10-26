@@ -131,6 +131,11 @@ func test_random_input_soak_in_every_sunken_spring_room() -> void:
 	await _soak_zone("sunken", "Sunken Spring")
 
 
+## The Guru Trials' mantra-space (pass 113), off the map but built like any zone.
+func test_random_input_soak_in_every_trial_room() -> void:
+	await _soak_zone("trials", "Trials")
+
+
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.

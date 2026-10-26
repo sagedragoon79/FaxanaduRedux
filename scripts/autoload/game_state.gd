@@ -461,6 +461,11 @@ static func sanitize(src: Variant) -> Dictionary:
 		return v is Array and v.size() == 3 and v[0] is String and _is_number(v[1]) and _is_number(v[2]))
 	if not _is_point(out.save_pos):
 		out.save_pos = [0, 0]
+	# Keys are counts (the cards) or kept-for-good flags (the Lantern and Sky Keys).
+	for kind: Variant in out.keys.keys():
+		var v: Variant = out.keys[kind]
+		if not (kind is String and (v is bool or (_is_number(v) and float(v) >= 0.0))):
+			out.keys.erase(kind)
 	for id: Variant in out.trials.keys():
 		if not _is_number(out.trials[id]) or float(out.trials[id]) < 0.0:
 			out.trials.erase(id)

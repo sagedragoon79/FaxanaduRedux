@@ -92,6 +92,7 @@ func die() -> void:
 func _respawn() -> void:
 	super()
 	_cool = 0.6
+	_backed = 0.0
 	_fizzle()
 
 

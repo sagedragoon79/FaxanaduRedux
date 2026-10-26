@@ -109,17 +109,19 @@ func _update() -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null:
 		lights.append(Vector3(p.global_position.x, p.global_position.y - 14.0, vision()))
+	# Lights that matter to play first (a boss's lanterns, a hag's wisp and her
+	# mark, spells, abilities): few and often moving, always lit wherever the
+	# camera is. Only then the decor's lanterns, so they can never crowd one out.
+	for n in get_tree().get_nodes_in_group("light"):
+		var n2 := n as Node2D
+		if n2 != null and lights.size() < MAX_LIGHTS:
+			lights.append(Vector3(n2.global_position.x, n2.global_position.y, float(n2.get("light_radius"))))
 	var decor := _room.get_node_or_null("Decor") as Decor
 	var near := view.grow(LANTERN_RADIUS)
 	if decor != null:
 		for g in decor.glows:
 			if lights.size() < MAX_LIGHTS and near.has_point(g):
 				lights.append(Vector3(g.x, g.y, LANTERN_RADIUS))
-	for n in get_tree().get_nodes_in_group("light"):
-		var n2 := n as Node2D
-		# Few, and often moving (a boss's lanterns): always lit, wherever the camera is.
-		if n2 != null and lights.size() < MAX_LIGHTS:
-			lights.append(Vector3(n2.global_position.x, n2.global_position.y, float(n2.get("light_radius"))))
 	var packed := PackedVector3Array(lights)
 	packed.resize(MAX_LIGHTS)
 	_mat.set_shader_parameter("lights", packed)

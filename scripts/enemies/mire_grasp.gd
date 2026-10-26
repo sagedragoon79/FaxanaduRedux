@@ -4,7 +4,8 @@ extends Node2D
 ## floor where you stood, the telegraph, while she raises her staff. Then a hand
 ## of black mud bursts up out of it for DAMAGE (it can't be parried), clutches
 ## for a moment and sinks. If she is struck mid-hex the mark fizzles out. Its
-## glow is a light, so the mark shows through the Mist's fog.
+## glow is a light, so the mark shows through the Mist's fog. The Hour Glass
+## holds it still, mark or hand, like any enemy shot.
 
 const DAMAGE := 12
 ## Half the width of the mark, and of the hand's reach.
@@ -70,6 +71,8 @@ func fizzle() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass, up or not
 	_t += delta
 	match phase:
 		"mark":
