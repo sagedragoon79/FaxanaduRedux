@@ -856,11 +856,21 @@ func test_map_pins_drop_and_lift_where_you_stand() -> void:
 	var map := MapScreen.new()
 	map.world = w
 	arena.add_child(map)
+	Sfx.recent.clear()
 	check(map.pin() == "placed" and GameState.data.pins.size() == 1, "Jump on the map drops a pin where you stand")
 	check(map.pin() == "removed" and GameState.data.pins.is_empty(), "and again lifts it")
+	check(Sfx.recent == ["pin", "pin_lift"], "a pin goes in with a tick and comes out with its own (%s)" % [Sfx.recent])
 	for i in GameState.MAX_PINS:
 		GameState.toggle_pin("eolis/market", Vector2(i * 100, 0))
 	check(GameState.toggle_pin("eolis/market", Vector2(5000, 0)) == "full", "pins are limited to %d" % GameState.MAX_PINS)
+	Sfx.recent.clear()
+	check(map.pin() == "full" and Sfx.recent == ["fizzle"], "a full map fizzles")
+	# The parchment (pass 128): the map unrolls and folds with its own sounds.
+	Sfx.recent.clear()
+	map.toggle()
+	check(map.is_open and Sfx.recent == ["map_open"], "opening the map unrolls it (%s)" % [Sfx.recent])
+	map.toggle()
+	check(not map.is_open and Sfx.recent == ["map_open", "map_close"], "closing folds it (%s)" % [Sfx.recent])
 	map.queue_free()
 
 
