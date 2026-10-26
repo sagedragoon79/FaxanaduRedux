@@ -44,7 +44,7 @@ func ring(p: Player) -> void:
 		return
 	rung = true
 	var result := Trials.finish()
-	Sfx.play("save", 0.0, 2.0)
+	Sfx.play("trial_bell", 0.0)
 	GameState.flash.emit(0.25)
 	Feel.rumble(0.3, 0.0, 0.1)
 	if not result.is_empty():
@@ -56,6 +56,8 @@ func ring(p: Player) -> void:
 		if result.first:
 			line += " A Mantra Shard rings out of the bell."
 		GameState.toast.emit(line)
+		if result.record and not result.first:
+			Sfx.play("trial_record", 0.0)
 	if p != null:
 		p.velocity = Vector2.ZERO
 

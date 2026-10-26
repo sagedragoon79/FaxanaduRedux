@@ -662,6 +662,46 @@ func test_guru_trials_open_as_the_springs_flow() -> void:
 ## Bible 3.1: the Guru sends you to the trial's start, the clock runs, the bell
 ## clears it (a Mantra Shard the first time, the best time kept), and the mantra
 ## carries you back to where you stood.
+## Pass 116: the mantra-space sounds like itself: its own theme and bed, a
+## shimmer as the mantra carries you in, a bronze bell, and a sting for a new best.
+func test_the_guru_trials_have_a_sound_of_their_own() -> void:
+	for name: String in ["trials", "amb_trials"]:
+		var stream := Music.stream_for(name)
+		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
+	for sound: String in ["trial_begin", "trial_bell", "trial_record"]:
+		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	var p := w.player
+	await frames(5)
+	for id: String in ["walls", "edges"]:
+		Sfx.recent.clear()
+		Menus.start_trial(w, p, Trials.find(id))
+		await frames(5)
+		check(Sfx.recent.has("trial_begin"), "%s: the mantra carries you in with a shimmer" % id)
+		check(Music.track == "trials" and Music.ambience_track == "amb_trials",
+			"%s plays the trials theme over the mantra-space (%s, %s)" % [id, Music.track, Music.ambience_track])
+		var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
+		Sfx.recent.clear()
+		p.teleport(bell.global_position)
+		await frames(3)
+		check(Sfx.recent.has("trial_bell") and not Sfx.recent.has("save"), "%s: the bell rings bronze, not the save chime" % id)
+		check(not Sfx.recent.has("trial_record"), "a first clear rings the shard, no record sting")
+		await frames(int(TrialGoal.RING * 60) + 10)
+	# A faster second walk is a new best, and stings.
+	GameState.data.trials["walls"] = 999.0
+	Menus.start_trial(w, p, Trials.find("walls"))
+	await frames(5)
+	var bell2: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
+	Sfx.recent.clear()
+	p.teleport(bell2.global_position)
+	await frames(3)
+	check(Sfx.recent.has("trial_record"), "a new best plays the record sting")
+	await frames(int(TrialGoal.RING * 60) + 10)
+	w.queue_free()
+	Trials.abandon()
+
+
 func test_a_trial_runs_on_a_clock_and_the_bell_clears_it() -> void:
 	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
 	GameState.set_flag("spring:trunk")

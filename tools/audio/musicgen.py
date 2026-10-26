@@ -1349,6 +1349,68 @@ def track_ending():
     return s.render(reverb=0.6)
 
 
+def track_trials():
+    """The Guru Trials, in the mantra-space: D lydian at 92, floating and grey.
+    A low drone that never changes chord, a dry tick on every eighth like the
+    trial's clock, a soft pulse on one and three to run to, and a bell chanting
+    a short mantra high above, the same four bars over and over."""
+    rng = np.random.default_rng(220)
+    s = Song(bpm=92, bars=16)
+    root, scale = 50, SCALES["lydian"]
+    prog = [0, 0, 1, 0, 0, 0, 4, 1] * 2
+    for b, deg in enumerate(prog):
+        for m in (root - 12, root - 5):
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.1), low=700), b * 4, -0.3 if m == root - 12 else 0.3, 0.35)
+        for m in chord_tones(root, scale, deg):
+            s.add(fft_filter(pad(midi_hz(m), s.bar * 1.05), low=1200), b * 4, rng.uniform(-0.5, 0.5), 0.18)
+        s.add(bass(midi_hz(scale_note(root - 24, scale, deg)), s.beat * 1.5), b * 4, 0, 0.35)
+        s.add(bass(midi_hz(scale_note(root - 24, scale, deg)), s.beat * 1.5), b * 4 + 2, 0, 0.25)
+        for k in range(8):
+            # The clock: a dry wooden tick, the off-beats softer.
+            s.add(fft_filter(pluck(midi_hz(root + 36), 0.05, bright=6000), high=2000), b * 4 + k * 0.5,
+                  0.4 if k % 2 else -0.4, 0.14 if k % 2 else 0.22)
+        s.add(kick(0.25), b * 4, 0, 0.35)
+        s.add(kick(0.25), b * 4 + 2, 0, 0.25)
+    mantra = [(0, 1.5, 4), (1.5, 0.5, 3), (2, 2, 1), (4, 1, 4), (5, 1, 6), (6, 2, 4),
+              (8, 1.5, 7), (9.5, 0.5, 6), (10, 2, 4), (12, 3, 1), (15, 1, 0)]
+    for start in range(4, 16, 4):
+        for beat, dur, deg in mantra:
+            s.add(bell(midi_hz(scale_note(root + 12, scale, deg)), dur * s.beat * 1.6), start * 4 + beat, 0.25, 0.5)
+    return s.render(reverb=0.6)
+
+
+def amb_trials():
+    """The mantra-space: a hollow void hum that breathes, a thin air moving
+    across nothing, and far chimes of the mantra rings now and then, left and
+    right, too far off to place."""
+    rng = np.random.default_rng(221)
+    dur = 24.0
+    n = int(dur * RATE)
+    m = n + RATE * 4
+    out = np.zeros((m, 2))
+    t = np.arange(m) / RATE
+    hum = fft_filter(rng.uniform(-1, 1, m), low=160, high=40) * 1.6 * (0.7 + 0.3 * np.sin(2 * np.pi * t / 12.0))
+    out[:, 0] += hum
+    out[:, 1] += np.roll(hum, RATE // 3)
+    air = fft_filter(rng.uniform(-1, 1, m), low=5000, high=1800) * 0.08 * (0.5 + 0.5 * np.sin(2 * np.pi * t / 6.0))
+    out[:, 0] += air
+    out[:, 1] += np.roll(air, RATE)
+    pos = 1.5
+    tones = [62, 66, 69, 73, 74, 78]
+    while pos < dur - 1.0:
+        f = midi_hz(int(rng.choice(tones)) + 12)
+        chime = fft_filter(bell(f, 3.0), low=3000) * rng.uniform(0.25, 0.45)
+        pan = rng.uniform(-0.9, 0.9)
+        i = int(pos * RATE)
+        end = min(i + len(chime), m)
+        out[i:end, 0] += chime[: end - i] * (1 - pan) / 2
+        out[i:end, 1] += chime[: end - i] * (1 + pan) / 2
+        pos += rng.uniform(2.5, 5.0)
+    loop = out[:n].copy()
+    loop[: m - n] += out[n:]
+    return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
+
+
 TRACKS = {
     "title": track_title,
     "eolis": track_eolis,
@@ -1386,6 +1448,8 @@ TRACKS = {
     "sunken": track_sunken,
     "amb_sunken": amb_sunken,
     "warden": track_warden,
+    "trials": track_trials,
+    "amb_trials": amb_trials,
 }
 
 
