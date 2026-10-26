@@ -165,6 +165,45 @@ func test_every_card_door_guards_a_vault() -> void:
 		check(grid[y - 3].substr(1, x).count("#") == x, "%s: a roof over the vault, so the door is the only way in" % room)
 
 
+func test_the_battle_helmet_is_a_secret_worth_a_mask() -> void:
+	# Bible 5.2: the shield slot's fourth tier, found, not bought.
+	var rooms := _town({}, ["prop: 12, 19, battle_helmet"])
+	var w := make_world(rooms, "test/town", cell_feet(5, 19))
+	var p := w.player
+	await frames(3)
+	var hp0 := p.max_hp
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(p)
+	var helm := _find(w.room, ItemPickup) as ItemPickup
+	check(helm != null and helm.kind == "battle_helmet", "the prop lays the Battle Helmet")
+	p.input.move_x = 1
+	await frames(60)
+	check(GameState.data.equipment.shield == "battle_helmet", "touching it puts it on in the shield's place")
+	check(p.max_hp == hp0 + 20 and p.hp == p.max_hp, "one more mask, filled (%d -> %d)" % [hp0, p.max_hp])
+	check(p.has_shield and is_equal_approx(p.guard_reduction, 0.7) and p.reflects, "it guards 70%% and turns shots like the Magic Shield")
+	var magic := -1
+	var stock: Array = GameData.shop("daybreak_armor").stock
+	for i in stock.size():
+		if stock[i].item == "magic_shield":
+			magic = i
+	p.gold = 9999
+	check(Shop.status("daybreak_armor", magic, p) == "owned", "no shield in a shop is worth trading it for")
+	check(not GameData.shop("daybreak_armor").stock.any(func(e: Dictionary) -> bool: return e.item == "battle_helmet"), "and no one sells it")
+	# It survives a save: the mask comes from the gear, not from the base stat.
+	check(int(GameState.data.max_hp) == hp0, "the base health is untouched")
+	w.texts["test/town"] = rooms["test/town"]
+	w._enter("test/town")
+	check(_find(w.room, ItemPickup) == null, "it never comes back")
+	# Where it lies: a hidden pocket at the meteor's threshold, behind fake wall.
+	var t := Room.parse(FileAccess.get_file_as_string("res://levels/zenis/threshold.room"))
+	check("2, 19, battle_helmet" in t.lists.get("prop", []), "it lies in the Threshold")
+	var hidden := false
+	for spec: String in t.lists.get("secret", []):
+		var r := spec.split(",")
+		hidden = hidden or (int(r[0]) <= 2 and int(r[2]) >= 2 and int(r[1]) <= 19 and int(r[3]) >= 19)
+	check(hidden, "behind a secret wall")
+
+
 # --- Skills and ranks --------------------------------------------------------------
 
 func test_skill_rules() -> void:

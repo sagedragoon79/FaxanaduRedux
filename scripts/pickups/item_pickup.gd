@@ -30,6 +30,7 @@ const INFO := {
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
+	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask. It guards and turns shots like the Magic Shield.", "color": Color("d8b060")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
 }
@@ -47,7 +48,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	z_index = 1
-	if kind in ABILITIES or kind == "dragon_slayer":
+	if kind in ABILITIES or kind in ["dragon_slayer", "battle_helmet"]:
 		add_to_group("light")
 
 
@@ -72,6 +73,12 @@ func grant(p: Player) -> void:
 		p.abilities[kind] = true
 		GameState.data.equipment.blade = kind
 		GameState.refresh_stats(p)
+	elif kind == "battle_helmet":
+		# Found, not bought: it goes straight on, in the shield's place (bible 5.2).
+		GameState.data.equipment.shield = kind
+		GameState.refresh_stats(p)
+		p.hp = p.max_hp
+		p.health_changed.emit(p.hp, p.max_hp)
 	elif kind == "joker_key":
 		GameState.add_key("joker")
 	else:
@@ -270,6 +277,19 @@ func _draw() -> void:
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(0, 17), Vector2(-wx, -2)], c)
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(-wx, -2)], light)
 			_hp(o, -2, -9, 2, 5, Color("efe4ff"))
+		"battle_helmet":
+			# A gold-bronze war-helm: a domed crown, cheek guards, an eye slit and a crest of wings.
+			var helm := [Vector2(-11, 12), Vector2(-12, -2), Vector2(-8, -11), Vector2(0, -14), Vector2(8, -11), Vector2(12, -2), Vector2(11, 12), Vector2(5, 12), Vector2(4, 4), Vector2(-4, 4), Vector2(-5, 12)]
+			for side in [-1, 1]:
+				var wing := [Vector2(10 * side, -8), Vector2(20 * side, -18), Vector2(17 * side, -9), Vector2(21 * side, -11), Vector2(12 * side, -1)]
+				_poly(o, wing, Color("120f19"), 1.5)
+				_poly(o, wing, Color("eef4ff"))
+			_poly(o, helm, Color("120f19"), 2.0)
+			_poly(o, helm, dark)
+			_poly(o + Vector2(-1, -1), [Vector2(-10, 2), Vector2(-10, -3), Vector2(-7, -10), Vector2(0, -12), Vector2(7, -10), Vector2(10, -3), Vector2(10, 2)], c)
+			_hp(o, -8, -9, 3, 8, light)
+			_hp(o, -9, -1, 18, 3, Color("120f19"))
+			_hp(o, -1, -13, 2, 12, light)
 		"joker_key":
 			# A violet key: a star in its bow, two teeth on its bit.
 			_hp(o, -2, -4, 4, 18, Color("120f19"))

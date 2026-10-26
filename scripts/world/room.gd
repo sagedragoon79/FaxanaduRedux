@@ -337,12 +337,12 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(ZenisGate.new(), pos)
 		"trial_goal":
 			_spawn(TrialGoal.new(), pos)
-		"joker_key":
-			# The one Joker Key in the world: never sold, only found.
+		"joker_key", "battle_helmet":
+			# Found once, never sold: the one Joker Key and the Battle Helmet.
 			var item_id := _pickup_id(Vector2i(int(pos.x / TILE), int(pos.y / TILE) - 1))
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
-				item.kind = "joker_key"
+				item.kind = kind
 				item.pickup_id = item_id
 				_spawn(item, pos - Vector2(0, TILE * 0.5))
 		"lift":
