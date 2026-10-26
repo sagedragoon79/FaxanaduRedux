@@ -1072,6 +1072,28 @@ func test_thrift_and_time_thief() -> void:
 	TimeStop.reset()
 
 
+## Mantra of Death (pass 134), the Arcana branch's last node: Death costs half.
+func test_mantra_of_death_halves_the_death_spell() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	p.abilities["death"] = true
+	p.abilities["deluge"] = true
+	_learn_all(p, ARCANA_TO.slice(0, 6))
+	check(Skills.status("mantra_of_death") == "locked", "Mantra of Death waits on Time Thief")
+	_learn_all(p, ARCANA_TO + ["mantra_of_death"])
+	check(p.mantra_of_death and int(GameData.skill("mantra_of_death").cost) == 3, "it costs 3 points and switches on")
+	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.MANTRA_OF_DEATH_MULT, 0.01, "Death costs half, after Thrift (%.1f)" % p.spell_cost("death"))
+	check_near(p.spell_cost("deluge"), Spells.cost("deluge") * 0.85, 0.01, "other spells only get Thrift")
+	await frames(3)
+	p.mp = p.max_mp
+	p.equipped_spell = "death"
+	p.input.spell_pressed = true
+	await frames(1)
+	check_near(p.max_mp - p.mp, 17.0, 0.2, "a cast takes 17 MP, not 34 (%.1f)" % (p.max_mp - p.mp))
+	p.gold = 1000
+	check(Skills.respec(p) and is_equal_approx(p.spell_cost("death"), Spells.cost("death")), "a respec puts Death back at 40")
+
+
 func test_chain_thunder_leaps_to_two_more_foes() -> void:
 	var foes := {Vector2i(10, 19): "D", Vector2i(14, 19): "D", Vector2i(18, 19): "D", Vector2i(36, 19): "D"}
 	var w := make_world(_town(foes), "test/town", cell_feet(6, 19))

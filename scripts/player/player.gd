@@ -44,6 +44,8 @@ const BLOODLETTING_HEAL := 2
 const LAST_STAND_BELOW := 0.2
 const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
+## Mantra of Death (pass 134): what share of its MP the Death spell costs.
+const MANTRA_OF_DEATH_MULT := 0.5
 ## Seconds between the feathers a glide sheds.
 const GLIDE_FEATHERS := 0.14
 ## Corner and ledge correction step a hair past each whole pixel, so a clip of
@@ -119,6 +121,7 @@ var bloodletting := false
 var spell_cost_mult := 1.0
 var chain_thunder := false
 var time_thief := false
+var mantra_of_death := false
 var last_stand := false
 var second_wind := false
 ## Feather Fall (skill): glide after the double jump by holding Jump.
@@ -1160,7 +1163,7 @@ func _try_cast() -> void:
 		return
 	if not abilities.get(equipped_spell, false):
 		return
-	var cost := Spells.cost(equipped_spell) * spell_cost_mult
+	var cost := spell_cost(equipped_spell)
 	if mp < cost:
 		Sfx.play("fizzle")
 		return
@@ -1171,6 +1174,15 @@ func _try_cast() -> void:
 		bolt.global_position = global_position + Vector2(facing * 12, -24)
 	visual.squash(Vector2(1.1, 0.95))
 	Sfx.play("cast")
+
+
+## The MP a spell costs you now: Thrift for every spell, and Mantra of Death
+## halves Death on top.
+func spell_cost(id: String) -> float:
+	var cost := Spells.cost(id) * spell_cost_mult
+	if id == "death" and mantra_of_death:
+		cost *= MANTRA_OF_DEATH_MULT
+	return cost
 
 
 # --- Damage ---------------------------------------------------------------------

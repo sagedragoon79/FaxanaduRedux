@@ -313,6 +313,7 @@ func refresh_stats(p: Player) -> void:
 	p.spell_cost_mult = 0.85 if has_skill("thrift") else 1.0
 	p.chain_thunder = has_skill("chain_thunder")
 	p.time_thief = has_skill("time_thief")
+	p.mantra_of_death = has_skill("mantra_of_death")
 	p.last_stand = has_skill("last_stand")
 	p.second_wind = has_skill("second_wind")
 	p.feather_fall = has_skill("feather_fall")
