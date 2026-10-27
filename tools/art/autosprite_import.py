@@ -38,6 +38,8 @@ animations of which sheet they replace:
                "drop": ["blade"],        code-rig metadata keys to leave out (the clip draws the sword)
                "meta": {"art_prop": true},  keys added to every frame's metadata
                "extra_ramps": ["stone"], more palette ramps for this animation (a steel blade)
+               "recolor": {"hue": [150, 215], "shift": -10, "sat": 1.4},  (entry level) hues in
+                                         the range turned and saturated before anything else
                "erase": [170, 250],      hue range (degrees) to cut out first, e.g. a spell glow
                                          the game draws itself
                "erase_white": true,      also cut out the glow's near-white core
@@ -208,6 +210,31 @@ def _erase_hue(src, lo, hi, white=False):
     return out
 
 
+def _recolor(src, spec):
+    """`src` (premultiplied RGBA) with the hues in spec["hue"] (degrees) turned by
+    spec["shift"] degrees and their saturation scaled by spec["sat"]: a set's colors moved to
+    match a layer drawn over it (the Battle Suit's teal onto the Battle Helmet's)."""
+    lo, hi = spec["hue"]
+    a = src[..., 3:4]
+    rgb = np.where(a > 1e-6, src[..., :3] / np.maximum(a, 1e-6), 0)
+    mx, mn = rgb.max(-1), rgb.min(-1)
+    c = mx - mn
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    safe = np.maximum(c, 1e-6)
+    h = np.where(mx == r, ((g - b) / safe) % 6, np.where(mx == g, (b - r) / safe + 2, (r - g) / safe + 4)) * 60
+    sat = c / np.maximum(mx, 1e-6)
+    hit = (h >= lo) & (h <= hi) & (sat > 0.06)
+    h2 = (h + float(spec.get("shift", 0))) % 360
+    s2 = np.clip(sat * float(spec.get("sat", 1.0)), 0, 1)
+    # Back to RGB at the same value (max channel).
+    k = lambda n: (n + h2 / 60) % 6
+    f = lambda n: mx - mx * s2 * np.clip(np.minimum(k(n), 4 - k(n)), 0, 1)
+    new = np.stack([f(5), f(3), f(1)], -1)
+    out = src.copy()
+    out[..., :3] = np.where(hit[..., None], new * a, src[..., :3])
+    return out
+
+
 def _head(src, rows=30):
     """(x middle, top row) of the figure's top `rows` rows."""
     ys, xs = np.nonzero(src[..., 3] > 0.5)
@@ -339,12 +366,12 @@ class Importer:
         self.dir = SOURCES / cfg["dir"]
         self.own = {}
         ref = cfg["animations"][cfg.get("reference", "idle")]
-        frames = source_frames(ref, self.dir)
+        frames = self.recolor(source_frames(ref, self.dir))
         self.set_reference(frames[0], cfg["height"])
         if cfg.get("colors"):
             # Cut from the reference clip plus the first frame of every other animation
             # whose source is here, so a differently colored part keeps its colors.
-            others = [source_frames(dict(spec, pick=spec.get("pick", [0])[:1]), self.dir)[0]
+            others = [self.recolor(source_frames(dict(spec, pick=spec.get("pick", [0])[:1]), self.dir))[0]
                       for spec in cfg["animations"].values()
                       if spec is not ref and (self.dir / spec["file"]).exists()]
             self.own = self.own_palette(frames + others, int(cfg["colors"]))
@@ -360,6 +387,11 @@ class Importer:
                 self.own[f"rim-{len(self.rim)}"] = tuple(int(v) for v in c)
                 self.rim.append(f"rim-{len(self.rim)}")
         self.use_ramps(cfg["ramps"])
+
+    def recolor(self, srcs):
+        """The manifest's "recolor" (see _recolor) applied to source frames."""
+        spec = self.cfg.get("recolor")
+        return [_recolor(src, spec) for src in srcs] if spec else srcs
 
     def set_reference(self, frame, height):
         """Scales so `frame` is `height` world px tall and measures its feet and middle."""
@@ -559,7 +591,7 @@ def imported(name, cell, origin, code_meta):
             print(f"  {name}.{anim}: source {spec['file']} missing, keeping the code-drawn frames")
             continue
         frames = []
-        srcs = source_frames(spec, imp.dir)
+        srcs = imp.recolor(source_frames(spec, imp.dir))
         base = code_meta.get(anim) or [{}]
         imp.use_ramps(cfg["ramps"] + spec.get("extra_ramps", []))
         if "erase" in spec:

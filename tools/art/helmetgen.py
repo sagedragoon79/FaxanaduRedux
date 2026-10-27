@@ -20,8 +20,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "art/battle_helmet/right.png"
 OUT = ROOT / "assets/sprites/battle_helmet.png"
-## Width in sheet pixels (two per world pixel): a little wider than the bare head.
-WIDTH = 19
+## Width in sheet pixels (two per world pixel): about the bare head's width.
+WIDTH = 16
 OUTLINE = (18, 15, 25, 255)
 COLORS = 20
 
