@@ -166,6 +166,24 @@
 		],
 		"lines_cleared": ["My cots are empty for the first time in three years. I have taken up the harp. Badly.", "Still, if the climb opens you up, come here first. Old habits."]
 	},
+	"dartmoor_houndkeeper": {
+		"name": "Houndkeeper Brand", "role": "talk",
+		"look": {"robe": "#4a3a2e", "trim": "#b08a3a", "skin": "#d6ae84", "hair": "#5a4a3a", "hat": "helm", "build": "dwarf", "beard": true},
+		"lines": [
+			"I wound the king's hounds, every morning, for forty years. Brass hearts, iron jaws, a key in each back.",
+			"The first of them, the Alpha, never wound down. It's still in its den under the kennels, guarding the chest the king left it."
+		],
+		"lines_cleared": ["I melted the last of the hound-keys into a bell for the market. It rings on the hour. Nobody needs winding.", "The kennels are a garden now. Brass flowers, the children call them. They're gears. I let them think what they like."]
+	},
+	"dartmoor_houndkeeper_glad": {
+		"name": "Houndkeeper Brand", "role": "talk",
+		"look": {"robe": "#4a3a2e", "trim": "#b08a3a", "skin": "#d6ae84", "hair": "#5a4a3a", "hat": "helm", "build": "dwarf", "beard": true},
+		"lines": [
+			"So the Alpha's spring is spent. Forty years I heard it pacing under the floor. Tonight I'll sleep.",
+			"The king locked a Life Fruit in its chest for his first hound. If it grows in you now, elf, then it went to someone who earned it."
+		],
+		"lines_cleared": ["I melted the last of the hound-keys into a bell for the market. It rings on the hour. Nobody needs winding.", "The kennels are a garden now. Brass flowers, the children call them. They're gears. I let them think what they like."]
+	},
 	"eolis_cartographer": {
 		"name": "Cartographer Pell", "role": "shop", "shop": "eolis_charts",
 		"look": {"robe": "#4a6a8a", "trim": "#e8d9a8", "skin": "#e8c9a0", "hair": "#b0a090", "hat": "cap", "beard": true}
@@ -192,6 +210,24 @@
 			"Hold. You came over the bridge? Past the mantises? Then keep your blade out, elf. You've earned it.",
 			"The north bough climbs to the crown-leaf. Nobody goes up there now. The last warden who tried, the Bloom swallowed whole."
 		]
+	},
+	"conflate_squire": {
+		"name": "Squire Ithil", "role": "talk",
+		"look": {"robe": "#5a6a3a", "trim": "#9a7444", "skin": "#e8c9a0", "hair": "#c9a060", "hat": "none", "ears": true},
+		"lines": [
+			"Past this door is the Thorn Yard. The first knight the Tree ever grew still keeps it, and he keeps it from us.",
+			"We call him the Captain. His bark turns a blade like a shield. My father swore that fire was the only thing it feared."
+		],
+		"lines_cleared": ["The Thorn Yard is all briar-roses now. I go in to sit where the Captain stood. It feels like the right thing.", "Fire was the answer, my father said. He never saw how it ended. I tell him about it anyway."]
+	},
+	"conflate_squire_glad": {
+		"name": "Squire Ithil", "role": "talk",
+		"look": {"robe": "#5a6a3a", "trim": "#9a7444", "skin": "#e8c9a0", "hair": "#c9a060", "hat": "none", "ears": true},
+		"lines": [
+			"The Captain is down? Then the Thorn Yard is ours again, after all these years. I went in. It's quiet. Too quiet.",
+			"He wasn't cruel, you know. He just never stopped guarding. The Tree grew him to keep a door, and he kept it."
+		],
+		"lines_cleared": ["The Thorn Yard is all briar-roses now. I go in to sit where the Captain stood. It feels like the right thing.", "Fire was the answer, my father said. He never saw how it ended. I tell him about it anyway."]
 	},
 	"conflate_weaver": {
 		"lines_cleared": ["Petal-silk! The blossom spins finer than the leaves ever did. Pink, if you like that sort of thing.", "The dwarves climbed up yesterday with iron to trade. Real dwarves, with beards and bad jokes. I'd forgotten how much I missed them."],

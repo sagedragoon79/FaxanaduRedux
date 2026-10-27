@@ -8,6 +8,8 @@ calm: boss:king_grieve
 npc: 24, 16, dartmoor_mason, boss:king_grieve
 npc: 57, 16, guru, boss:king_grieve
 npc: 63, 16, dartmoor_keymaster, boss:king_grieve
+npc: 42, 16, dartmoor_houndkeeper, boss:king_grieve !boss:clockwork_alpha
+npc: 42, 16, dartmoor_houndkeeper_glad, boss:king_grieve boss:clockwork_alpha
 prop: 49, 12, joker_key
 door: 1, dartmoor/waterfall_stair, 2
 door: 2, dartmoor/kings_stair, 1

@@ -821,3 +821,42 @@ func test_the_nes_filter_blocks_on_world_pixels() -> void:
 	check(RetroFilter.detail_for(vp) == float(GameCamera.DETAIL), "the game's world view: %d (%.2f)" % [GameCamera.DETAIL, RetroFilter.detail_for(vp)])
 	vp.queue_free()
 	check(RetroFilter.SHADER.code.contains("block * detail"), "and a block is block x detail render pixels")
+
+
+## Pass 178: the mini-bosses' towns know them. A squire by Conflate's east door
+## points to the Thorn Yard and speaks differently once the Captain falls; in
+## the Drowned Market, woken by King Grieve's fall, the old houndkeeper tells of
+## the Alpha under the kennels and rests once it is wound down. Several room
+## conditions, space-separated, must all hold.
+func test_the_towns_know_their_mini_bosses() -> void:
+	GameState.new_game()
+	var ids := func(path: String) -> Array:
+		var room := Room.from_file(path)
+		arena.add_child(room)
+		var out := room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(c: Npc) -> String: return c.npc_id)
+		room.free()
+		return out
+	const CONFLATE := "res://levels/branches/conflate.room"
+	const MARKET := "res://levels/dartmoor/drowned_market.room"
+	var c: Array = ids.call(CONFLATE)
+	check(c.has("conflate_squire") and not c.has("conflate_squire_glad"), "before the Captain falls, the squire points to the Thorn Yard")
+	var m: Array = ids.call(MARKET)
+	check(not m.has("dartmoor_houndkeeper") and not m.has("dartmoor_houndkeeper_glad"), "the drowned market is empty while Grieve reigns")
+	GameState.set_flag("boss:clockwork_alpha")
+	m = ids.call(MARKET)
+	check(not m.has("dartmoor_houndkeeper_glad"), "an Alpha beaten first changes nothing until the market wakes")
+	GameState.set_flag("boss:clockwork_alpha", false)
+	GameState.set_flag("boss:king_grieve")
+	m = ids.call(MARKET)
+	check(m.has("dartmoor_houndkeeper") and not m.has("dartmoor_houndkeeper_glad"), "with Grieve gone, the houndkeeper tells of the Alpha")
+	GameState.set_flag("boss:clockwork_alpha")
+	GameState.set_flag("boss:bark_captain")
+	m = ids.call(MARKET)
+	c = ids.call(CONFLATE)
+	check(m.has("dartmoor_houndkeeper_glad") and not m.has("dartmoor_houndkeeper"), "and rests once the Alpha is wound down")
+	check(c.has("conflate_squire_glad") and not c.has("conflate_squire"), "the squire speaks of the Captain's fall")
+	var hint: Array = GameData.npc("conflate_squire").lines
+	check(" ".join(hint).contains("Thorn Yard") and " ".join(GameData.npc("dartmoor_houndkeeper").lines).contains("kennels"), "each hint names where the guardian waits")
+	check(Room.flags_hold("boss:king_grieve boss:clockwork_alpha") and not Room.flags_hold("boss:king_grieve !boss:clockwork_alpha") and Room.flags_hold(""),
+		"conditions all have to hold")
+	GameState.new_game()

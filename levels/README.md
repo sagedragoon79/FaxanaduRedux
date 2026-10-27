@@ -11,7 +11,8 @@ door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
 npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19); an optional
-                   fourth field shows them only once a flag is set, or with !flag until then)
+                   fourth field shows them only once a flag is set, or with !flag until then;
+                   several conditions, space-separated, must all hold)
 secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden room's
                         contents can't be seen until the player walks in)
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
