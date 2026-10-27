@@ -173,28 +173,36 @@ func test_every_card_door_guards_a_vault() -> void:
 
 
 func test_the_battle_helmet_is_a_secret_worth_a_mask() -> void:
-	# Bible 5.2: the shield slot's fourth tier, found, not bought.
+	# Bible 5.2: a helmet in its own slot (pass 185), found, not bought.
 	var rooms := _town({}, ["prop: 12, 19, battle_helmet"])
 	var w := make_world(rooms, "test/town", cell_feet(5, 19))
 	var p := w.player
 	await frames(3)
 	var hp0 := p.max_hp
-	GameState.data.equipment.shield = "small_shield"
+	GameState.data.equipment.shield = "magic_shield"
+	GameState.data.equipment.armor = "battle_suit"
 	GameState.refresh_stats(p)
+	var def0 := p.defense
 	var helm := _find(w.room, ItemPickup) as ItemPickup
 	check(helm != null and helm.kind == "battle_helmet", "the prop lays the Battle Helmet")
 	p.input.move_x = 1
 	await frames(60)
-	check(GameState.data.equipment.shield == "battle_helmet", "touching it puts it on in the shield's place")
+	check(GameState.data.equipment.helmet == "battle_helmet", "touching it puts it on, in the helmet's own slot")
+	check(GameState.data.equipment.shield == "magic_shield" and p.has_shield and p.reflects, "and the Magic Shield stays in hand")
 	check(p.max_hp == hp0 + 20 and p.hp == p.max_hp, "one more mask, filled (%d -> %d)" % [hp0, p.max_hp])
-	check(p.has_shield and is_equal_approx(p.guard_reduction, 0.7) and p.reflects, "it guards 70%% and turns shots like the Magic Shield")
-	var magic := -1
+	check(is_equal_approx(def0, 0.6) and is_equal_approx(p.defense, 0.64), "10%% less on top of the Battle Suit's 60%%: 64%% (%.2f)" % p.defense)
+	GameState.data.equipment.armor = ""
+	GameState.refresh_stats(p)
+	check(is_equal_approx(p.defense, 0.1), "10%% on its own (%.2f)" % p.defense)
+	var shields := 0
 	var stock: Array = GameData.shop("daybreak_armor").stock
-	for i in stock.size():
-		if stock[i].item == "magic_shield":
-			magic = i
 	p.gold = 9999
-	check(Shop.status("daybreak_armor", magic, p) == "owned", "no shield in a shop is worth trading it for")
+	GameState.data.equipment.shield = "small_shield"
+	for i in stock.size():
+		if GameData.item(stock[i].item).kind == "shield" and int(GameData.item(stock[i].item).tier) > 1:
+			shields += 1
+			check(Shop.status("daybreak_armor", i, p) != "owned", "%s is still worth buying with the helmet on" % stock[i].item)
+	check(shields > 0, "the armorer sells shields")
 	check(not GameData.shop("daybreak_armor").stock.any(func(e: Dictionary) -> bool: return e.item == "battle_helmet"), "and no one sells it")
 	# It survives a save: the mask comes from the gear, not from the base stat.
 	check(int(GameState.data.max_hp) == hp0, "the base health is untouched")

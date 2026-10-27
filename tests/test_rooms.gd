@@ -135,7 +135,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	GameState.add_key("queen", 2)
 	GameState.add_key("joker")
 	GameState.data.keys["lantern"] = true
-	GameState.data.equipment.shield = "battle_helmet"
+	GameState.data.equipment.helmet = "battle_helmet"
 	GameState.refresh_stats(p)
 	var top := p.max_hp
 	GameState.data.trials["walls"] = 31.5
@@ -146,7 +146,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	check(GameState.key_count("queen") == 2 and GameState.key_count("joker") == 1, "the card keys survive")
 	check(GameState.data.keys.get("lantern") == true, "and the Lantern Key, kept for good")
 	GameState.apply(p)
-	check(GameState.data.equipment.shield == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
+	check(GameState.data.equipment.helmet == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
 	check(p.hp == p.max_hp, "loading fills the new top, not the old one (%d/%d)" % [p.hp, p.max_hp])
 	check(is_equal_approx(float(GameState.data.trials["walls"]), 31.5), "a trial's best survives")
 	check(GameState.is_collected("mist/feather_hollow:4,19"), "an opened card door stays open")

@@ -416,7 +416,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.skill_points = 3
 	d.skills = ["keen_edge", "deluge_pierce", "tilte_swarm"]
 	d.respecs = 2
-	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield"}
+	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield", "helmet": "battle_helmet"}
 	d.tempers = {"giant_blade": 2, "long_sword": 1}
 	d.keys = {"jack": true, "lantern": true}
 	d.rings = ["elf", "ruby"]
@@ -464,7 +464,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	await frames(2)
 	var p := w.player
 	check(p.gold == 4321 and p.elixirs == 1 and p.ointments == 2 and p.equipped_spell == "tilte", "gold, elixirs, ointments and the spell reach the player")
-	check(p.max_hp == 150 and p.flask_max == 4 and p.tilte_swarm and p.spell_pierce and p.reflects, "and the stats, skills and gear behind them")
+	check(p.max_hp == 170 and p.flask_max == 4 and p.tilte_swarm and p.spell_pierce and p.reflects, "and the stats, skills and gear behind them (150 and the helmet's mask)")
 	check(p.abilities.values().all(func(v: bool) -> bool: return v), "and every ability")
 	w.queue_free()
 	await frames(1)
@@ -708,6 +708,21 @@ func test_the_hand_dagger_is_the_short_sword_and_the_rune_dagger_is_found() -> v
 	w.room.add_child(pick)
 	pick.grant(p)
 	check(bool(p.abilities.get("rune_dagger", false)), "picked up, it is yours")
+
+
+## Pass 185: the Battle Helmet left the shield slot for its own. A save that
+## wore it as a shield wears it as a helmet, with the Magic Shield in hand
+## (the guard and parry it had); a save from before helmets gets an empty slot.
+func test_a_save_with_the_helmet_in_the_shield_slot_moves_it_to_the_head() -> void:
+	var src := GameState.fresh()
+	src.equipment = {"blade": "long_sword", "armor": "full_plate", "shield": "battle_helmet"}
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.helmet == "battle_helmet" and got.equipment.shield == "magic_shield", "helmet on the head, Magic Shield in hand (%s)" % [got.equipment])
+	check(got.equipment.blade == "long_sword" and got.equipment.armor == "full_plate", "the rest untouched")
+	src.equipment = {"blade": "short_sword", "armor": "", "shield": "small_shield"}
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.helmet == "" and got.equipment.shield == "small_shield", "an older save gains an empty helmet slot")
+	check(GameData.item("battle_helmet").kind == "helmet" and not GameData.item("battle_helmet").has("guard"), "the helmet neither guards nor parries")
 
 
 func test_a_rest_in_a_missing_room_wakes_at_the_start() -> void:

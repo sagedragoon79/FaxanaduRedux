@@ -249,7 +249,8 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 |------|--------|--------|--------|--------|
 | Blade | Short Sword (start, fast, short; called the Hand Dagger before pass 184) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc; built pass 93: slash 15, heavy 28, reach 16) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
-| Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
+| Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | (none: the Battle Helmet has its own slot since pass 185) |
+| Helmet | Battle Helmet (secret: +1 mask, 10% less damage) | | | |
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered.)
 
@@ -278,11 +279,14 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - **Drawing:** code-drawn, in flight and as a pickup. The hero sheet is drawn empty-handed for a paper-doll setup (Sean, pass 184), so the blade and the dagger are separate layers over the body, never baked into it.
 - Built in `scripts/combat/rune_dagger.gd` (`RuneDagger`) and `Player._try_throw`. Tests: `test_combat.gd` (flight, hit, one at a time, no MP, return, Up, walls and reach) and `test_systems.gd` (the rename, save migration, bindings, the pickup).
 
-**Battle Helmet (built pass 118):**
-- The shield slot's fourth tier, found and never sold. It lies in a hidden pocket at the meteor's Threshold (`zenis/threshold`), behind fake wall west of the shrine (`secret: 1, 17, 6, 19`), so the Black Onyx's seam shows the way in. It is laid by `prop: x, y, battle_helmet`.
-- Touch it and it goes straight on in the shield's place, like the Dragon Slayer in the blade's. Your health fills to the new top.
-- It guards 70% and its parry turns shots back like the Magic Shield, and it is worth one more mask (+20 HP, `hp` in `data/items.json`). The mask comes from the gear, not the base stat, so a save keeps it through `refresh_stats`.
-- Every shield in a shop shows as owned once you wear it.
+**Battle Helmet (built pass 118; its own slot since pass 185):**
+- A helmet, in the equipment's fourth slot (`equipment.helmet`), found and never sold. It lies in a hidden pocket at the meteor's Threshold (`zenis/threshold`), behind fake wall west of the shrine (`secret: 1, 17, 6, 19`), so the Black Onyx's seam shows the way in. It is laid by `prop: x, y, battle_helmet`.
+- Touch it and it goes straight on your head, like the Dragon Slayer into your hand. Your health fills to the new top. Your shield stays in hand.
+- It is worth one more mask (+20 HP, `hp` in `data/items.json`) and takes 10% off every hit (`defense` 0.1). It does not guard or parry. The mask comes from the gear, not the base stat, so a save keeps it through `refresh_stats`.
+- **Stacking with armor:** the helmet and the armor each cut what the other lets through, so the cuts multiply rather than add: damage taken is `(1 - armor) x (1 - helmet)`. Under the Battle Suit (60%) it lets 0.4 x 0.9 = 36% through (64% less damage); under Leather (15%), 76.5%. With no armor it is 10%. Damage taken is still at least 1.
+- **Why its own slot (Sean, pass 185):** in the shield's slot it replaced the shield, so players with the Magic Shield had to choose between the shield's parries and the helmet's mask. As a helmet it adds to every build.
+- **Old saves:** a save that wore it as a shield (`equipment.shield == "battle_helmet"`) wears it as a helmet, and its hand gets the Magic Shield: the helmet had guarded and turned shots exactly like the Magic Shield, and while it was worn every shield showed as owned in the shops, so nothing better could have been bought (`GameState.sanitize`).
+- **Drawing (paper-doll):** the hero's sheet is drawn bare-headed. The helmet is its own code-drawn layer (`PlayerVisual._draw_helmet`, after Sean's reference in `armor/battle-helmet/`: sea-green elven steel, a gold brow band and cheek guard, a swept wing crest with cyan runes), set on the crown of the head. `autosprite_import.head_point` finds the crown in each frame's pixels on import (the cloak masked out, a blade or fist opened away, a crown that jumps over both neighbours dropped back), so every frame of `player.json` carries a `head` point (manifest flag `"head": true`). A drawn helmet sheet from Sean can later replace the code layer on the same point.
 
 **Magic Shield (built pass 91):**
 - It guards 70%, like the Large Shield.

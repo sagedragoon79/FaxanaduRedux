@@ -1,6 +1,7 @@
 {
  "player": {
   "dir": "ranger",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 46,

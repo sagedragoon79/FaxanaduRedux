@@ -70,7 +70,7 @@ static func fresh() -> Dictionary:
 		"skill_points": 0,
 		"skills": [],
 		"respecs": 0,
-		"equipment": {"blade": "short_sword", "armor": "", "shield": ""},
+		"equipment": {"blade": "short_sword", "armor": "", "shield": "", "helmet": ""},
 		## Smith tempers per blade id (0 to 2): each adds TEMPER_BONUS to its damage.
 		"tempers": {},
 		"keys": {},
@@ -335,7 +335,10 @@ func refresh_stats(p: Player) -> void:
 	p.reach_bonus = float(blade.reach)
 	p.arc_bonus = float(blade.get("arc", 0.0))
 	p.swing_mult = float(blade.get("swing", 1.0))
-	p.defense = float(GameData.item(eq.armor).get("defense", 0.0))
+	# Armor and helmet stack by what each lets through (bible 5.2): Battle Suit
+	# (60%) under the Battle Helmet (10%) lets 0.4 x 0.9 = 36% through.
+	var helmet := GameData.item(String(eq.get("helmet", "")))
+	p.defense = 1.0 - (1.0 - float(GameData.item(eq.armor).get("defense", 0.0))) * (1.0 - float(helmet.get("defense", 0.0)))
 	p.has_shield = eq.shield != ""
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
 	p.reflects = bool(GameData.item(eq.shield).get("reflect", false))
@@ -363,7 +366,7 @@ func refresh_stats(p: Player) -> void:
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
 	# The Battle Helmet is worth one mask on top (bible 5.2).
-	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0) + int(GameData.item(eq.shield).get("hp", 0))
+	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0) + int(helmet.get("hp", 0))
 	p.max_mp = float(data.max_mp) + (20.0 if has_skill("clear_mind") else 0.0)
 	p.flask_max = int(data.flask_max) + (1 if has_skill("deep_pockets") else 0)
 	p.hp = mini(p.hp, p.max_hp)
@@ -501,6 +504,12 @@ static func sanitize(src: Variant) -> Dictionary:
 		if out.tempers.has(old):
 			out.tempers[now] = maxi(int(out.tempers.get(now, 0)), int(out.tempers[old]))
 			out.tempers.erase(old)
+	# The Battle Helmet left the shield slot for its own (pass 185). It had
+	# guarded and turned shots like the Magic Shield, and with it on every
+	# shield showed as owned, so the hand it held gets the Magic Shield.
+	if String(out.equipment.get("shield", "")) == "battle_helmet":
+		out.equipment.helmet = "battle_helmet"
+		out.equipment.shield = "magic_shield"
 	# Containers whose entries the game reads by shape.
 	out.skills = _unique_strings(out.skills)
 	out.dyes = _unique_strings(out.dyes)

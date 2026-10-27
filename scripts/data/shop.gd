@@ -33,7 +33,7 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 	if entry.get("once", false) and GameState.is_collected(_once_id(shop_id, index)):
 		return "sold out"
 	match item.kind:
-		"blade", "armor", "shield":
+		"blade", "armor", "shield", "helmet":
 			var current := GameData.item(GameState.data.equipment[item.kind])
 			if not current.is_empty() and int(current.get("tier", 0)) >= int(item.get("tier", 0)):
 				return "owned"
@@ -84,7 +84,7 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 	p.gold -= int(entry.price)
 	GameState.data.meteor_shards = int(GameState.data.get("meteor_shards", 0)) - shards(entry)
 	match item.kind:
-		"blade", "armor", "shield":
+		"blade", "armor", "shield", "helmet":
 			GameState.data.equipment[item.kind] = entry.item
 			GameState.refresh_stats(p)
 		"key":
