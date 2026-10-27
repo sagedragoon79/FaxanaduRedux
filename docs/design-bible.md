@@ -511,7 +511,24 @@ Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose, a fla
 
 ## 8. Bosses
 
-Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "stagger" window, a cinematic kill (slow-mo, white flash, shatter), and a reward. Health bars show phase markers.
+Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "stagger" window, a cinematic kill (slow-mo, white flash, shatter), and a reward. Health bars show phase markers. **The openings, as built (pass 163):** each boss names its stagger window as `punishable()`, which Executioner and Bloodletting read (9). The windows are:
+
+| Boss | Opening |
+| --- | --- |
+| Rokusutahn | his plates cracked by a stagger |
+| Zoradohna | the drill stuck in a wall or the floor |
+| Ripasheiku | fallen from the vault |
+| Zorugeriru | a head lying where it bit |
+| Pakukame | the jaws hanging open |
+| Borabohra | grounded by its own lightning |
+| The Foreman | stunned, or reeling from a parry |
+| King Grieve | reeling from a parry, or fallen |
+| Shadow Eura | reeling from a parry |
+| The Drowned Warden | staggered, or exposed after a slam |
+| The Evil One, phase 1 | reeling from a parry |
+| The Evil One, phase 3 | bound by the root |
+
+The core (phase 2) has none: no blade reaches it, only the veins.
 
 ### 8.1 Rokusutahn, the Root-Gnawer (Trunk Hollows)
 - **Concept:** A colossal armored grub that has been chewing the Tree's taproot dry. Its segments are plated in bark; its face is a wheel of mandibles.
@@ -809,6 +826,9 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
   - On the floor it lunges at 320 px/s for 0.16 s, about 50 px. The lunge stops at the first foe it strikes and recoils like a cut, so it never carries you into a body. Off a ledge it ends, and you step off at no more than a run (pass 153; until then the lunge's full 320 px/s threw you about 67 px out past the lip, four times a run's step). Down a ramp it hugs the floor like a ground dash (10 px snap, 6.5) and rides the slope to the end. In the air the thrust strikes where you are and carries you nowhere, so it never crosses a gap the Elven Stride gates.
   - A blow, a dash, a guard, a drink, a ladder or the water spends the charge. Shadow Eura echoes a thrust as a cut.
   - The built tree now costs 46 points (Blade 13 over 8 nodes) against the 29 the game gives.
+- **Executioner (pass 163)**, the Blade branch's ninth node, after Thrust [3]: melee blows on a boss in its opening land for 35% more (`executioner_mult` 1.35, in `combat_tuning.gd`). A common foe gets nothing more, nor does a boss on its guard.
+  - Each boss names its opening (`Enemy.punishable()`; for a boss of pieces, `BossSegment.punishable()` asks the boss), so the skill has a window in every fight (8). Bloodletting heals on the same openings. Until now it read only a parry stagger, which most bosses never take.
+  - The built tree now costs 49 points (Blade 16 over 9 nodes) against the 29 the game gives.
 
 Deviations, and why:
 - The build order skipped Thrust (built in pass 149), Wildfire and the rest. They are bigger mechanics and still come later in their branches.

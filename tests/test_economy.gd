@@ -1612,3 +1612,51 @@ func test_thrust_lunge_rides_slopes_and_steps_off_ledges() -> void:
 	check(off_speed >= 0.0 and off_speed <= p.tuning.run_speed + 0.5, "the lunge ends at the lip and you step off at no more than a run (%.0f px/s)" % off_speed)
 	var past := p.global_position.x - 15 * Room.TILE
 	check(p.is_on_floor() and past < 32.0, "and lands within two tiles of it (%.0f px out; a full-speed lunge flew 67)" % past)
+
+
+## Executioner (pass 163, bible 9): the Blade branch's ninth node, after Thrust.
+## Melee blows on a boss in its opening (Enemy.punishable: each boss names its
+## own window) land for 35% more; a common foe gets nothing more, and a boss on
+## its guard nothing either. Bloodletting heals on a boss's opening too.
+func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
+	check(String(GameData.skill("executioner").needs) == "thrust" and int(GameData.skill("executioner").cost) == 3, "Executioner costs 3, after Thrust")
+	var w := make_world(_town({Vector2i(8, 19): "D"}), "test/town", cell_feet(6, 19))
+	var p := w.player
+	check_near(p.combat.executioner_mult, 1.35, 0.0001, "for 35% more")
+	_learn_all(p, BLADE_TO + ["thrust", "executioner"])
+	check(p.executioner, "the skill switches on")
+	var dwarf: RotDwarf = _find(w.room, RotDwarf)
+	dwarf.max_hp = 999
+	dwarf.hp = 999
+	await frames(3)
+	dwarf.set_physics_process(false)
+	p.facing = 1
+	var cut := roundi(p.slash_damage * p.blade_mult())
+	var blows := []
+	for step in 2:
+		if step == 1:
+			dwarf.add_to_group("boss")
+		dwarf.stagger()
+		var hp0 := dwarf.hp
+		p.hp = 50
+		p.input.attack_pressed = true
+		await frames(2)
+		blows.append([hp0 - dwarf.hp, p.hp])
+		await frames(40)
+	check(blows[0][0] == cut, "a staggered common foe takes a plain cut (%d, a cut is %d)" % [blows[0][0], cut])
+	check(blows[1][0] == roundi(cut * 1.35), "a boss in its opening takes 35%% more (%d)" % blows[1][0])
+	check(blows[1][1] == 50 + Player.BLOODLETTING_HEAL, "and Bloodletting heals on it (%d)" % blows[1][1])
+	dwarf._stagger = 0.0
+	var hp1 := dwarf.hp
+	p.input.attack_pressed = true
+	await frames(2)
+	check(hp1 - dwarf.hp == cut, "a boss on its guard takes a plain cut (%d)" % (hp1 - dwarf.hp))
+	# Every boss names its opening (bible 8), so the skill has a window in every fight.
+	var dir := "res://scripts/bosses/"
+	for file in DirAccess.get_files_at(dir):
+		if not file.ends_with(".gd"):
+			continue
+		var src := FileAccess.get_file_as_string(dir + file)
+		if not src.contains("add_to_group(\"boss\")") or file in ["shadow_eura.gd", "evil_core.gd"]:
+			continue
+		check(src.contains("func punishable() -> bool") or src.contains("func segment_punishable("), "%s names its opening" % file)

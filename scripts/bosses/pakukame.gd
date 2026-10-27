@@ -158,6 +158,11 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase >= 2 else 1.0))
 
 
+## Its opening (Enemy.punishable): after a bite the jaws hang open.
+func punishable() -> bool:
+	return gaping()
+
+
 func gaping() -> bool:
 	return state == "gape"
 

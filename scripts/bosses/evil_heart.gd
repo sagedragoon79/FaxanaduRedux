@@ -116,6 +116,11 @@ func floor_y() -> float:
 	return arena.end.y
 
 
+## Its opening (Enemy.punishable): bound by the root of the Tree.
+func punishable() -> bool:
+	return bound()
+
+
 func bound() -> bool:
 	return state == "bound"
 

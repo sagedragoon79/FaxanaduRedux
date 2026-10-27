@@ -129,6 +129,11 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * SPEEDS[phase - 1])
 
 
+## Its opening (Enemy.punishable): staggered, or exposed after a slam.
+func punishable() -> bool:
+	return open()
+
+
 func open() -> bool:
 	return state in ["staggered", "exposed"]
 

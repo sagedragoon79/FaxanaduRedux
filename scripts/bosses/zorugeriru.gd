@@ -173,6 +173,12 @@ func hit_segment(seg: BossSegment, damage: int, dir: Vector2) -> void:
 
 
 ## A parried bite: the head lies stunned a while longer.
+## A head is open while it lies where it bit (Enemy.punishable).
+func segment_punishable(seg: BossSegment) -> bool:
+	var h := seg as HydraHead
+	return h != null and h.solid and not h.coiled and h.mode == "down"
+
+
 func stagger_head(h: HydraHead) -> void:
 	if h.mode in ["bite", "down"]:
 		h.set_mode("down")

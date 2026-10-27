@@ -132,6 +132,8 @@ var riposte := false
 var bloodletting := false
 ## Thrust (skill): hold Attack to charge a lunge, let go to strike.
 var thrust := false
+## Executioner (skill): blows on a boss in its opening land harder.
+var executioner := false
 ## Thrusts made (tests read it).
 var thrusts := 0
 var spell_cost_mult := 1.0
@@ -1057,10 +1059,14 @@ func _process_attack_hits() -> void:
 			continue
 		if collider.has_method("take_hit"):
 			var dir := Vector2(facing, 0) if attack_kind in ["side", "thrust"] else Vector2(0, 1 if attack_kind == "down" else -1)
-			var was_staggered: bool = collider.has_method("is_staggered") and collider.is_staggered()
-			collider.take_hit(_swing_damage, dir * (1.8 if is_heavy_swing else 1.0))
+			# A foe in its opening (a parry stagger, or a boss's own window, Enemy.punishable).
+			var open: bool = collider.has_method("punishable") and collider.punishable()
+			var damage := _swing_damage
+			if executioner and open and _is_boss(collider):
+				damage = roundi(damage * combat.executioner_mult)
+			collider.take_hit(damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_foe = true
-			if bloodletting and was_staggered and hp < max_hp:
+			if bloodletting and open and hp < max_hp:
 				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
 				health_changed.emit(hp, max_hp)
 				_spawn_dust(Vector2(0, -20), "heal")
@@ -1389,6 +1395,13 @@ func _on_stilled_water() -> bool:
 		if c != null and c.get_parent() is Waterfall:
 			return true
 	return false
+
+
+## A boss, or a piece of one (BossSegment).
+static func _is_boss(node: Object) -> bool:
+	if node is BossSegment:
+		node = (node as BossSegment).boss
+	return node is Node and (node as Node).is_in_group("boss")
 
 
 func _hazard_near() -> bool:
