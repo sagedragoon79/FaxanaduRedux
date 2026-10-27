@@ -57,6 +57,7 @@ func _physics_process(delta: float) -> void:
 			else:
 				c.take_hit(damage, hit_dir)
 			Feel.hitstop(0.03)
+			Sfx.play("dagger_hit", 0.1)
 			_end("hit")
 			return
 		if c is StaticBody2D:

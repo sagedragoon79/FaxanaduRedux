@@ -412,7 +412,18 @@ static func choose_equipment(id: String, p: Player) -> void:
 	else:
 		GameState.wear(id, p)
 	GameState.capture(p)
-	Sfx.play("cloth", 0.0)
+	Sfx.play(equipment_sound(id), 0.0)
+
+
+## What changing `id` sounds like (pass 190): a blade slides from its sheath,
+## armor, a shield or a helmet buckles on, and a dye is cloth.
+static func equipment_sound(id: String) -> String:
+	match String(GameData.item(id).get("kind", "")):
+		"blade":
+			return "sheathe"
+		"dye":
+			return "cloth"
+	return "gear_on"
 
 
 static func open_equipment(tree: SceneTree, p: Player, back: Callable) -> bool:
