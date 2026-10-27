@@ -18,6 +18,9 @@ var rest := Vector2.ZERO
 var from := Vector2.ZERO
 var to := Vector2.ZERO
 var bit := false
+## Phase 2: the tank under its lane is full, so the head hangs drenched, dim
+## and silent (playtest: each tank shows what it did).
+var doused := false
 
 
 func _ready() -> void:

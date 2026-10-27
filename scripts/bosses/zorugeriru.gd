@@ -10,7 +10,9 @@ extends Enemy
 ## tank walls).
 ## Phase 2 (below 60%): all three turn to mist and keep breathing. A fourth head
 ## hides in the coil, and shows only once all three tanks are full: Deluge each
-## one and its raft floats up, the high ground to reach it from.
+## one and its raft floats up, the high ground to reach it from. The dry tanks
+## shimmer, and each full one douses the head above it: it sags, dims and stops
+## breathing, so the player sees each tank count (playtest).
 ## Phase 3 (below 30%): the coil bursts and the spring floods the arena to the
 ## tanks' rims (HydraFlood). The three heads take turns again, faster (tells a
 ## quarter shorter, never under Enemy.MIN_TELEGRAPH), breathing on the water.
@@ -50,6 +52,11 @@ const BREATH_TELL := 0.7
 const BREATH_TIME := 0.5
 const EMERGE_TIME := 1.0
 const FAST := 0.75
+## Phase 2: a doused head hangs this much lower than a mist head.
+const DOUSED_SAG := 44.0
+## Phase 2: the hint repeats if the tanks are still dry after this long.
+const HINT_EVERY := 14.0
+const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Deluge."
 const INTRO_TIME := 1.6
 const DYING_TIME := 1.6
 
@@ -71,6 +78,7 @@ var solid_index := 0
 
 var _turn := 0.0
 var _breath := 0.0
+var _hint := 0.0
 
 
 func _init() -> void:
@@ -125,13 +133,49 @@ func ground_y() -> float:
 	return flood.surface_y() if is_instance_valid(flood) else arena.end.y
 
 
-## True once every tank in the arena is full (the fourth head shows).
-func tanks_full() -> bool:
+## The arena's tanks.
+func basins() -> Array[DryBasin]:
+	var out: Array[DryBasin] = []
 	for b in get_tree().get_nodes_in_group("dry_basin"):
 		var basin := b as DryBasin
-		if basin.room == get_parent() and (not basin.filled or basin.level < 1.0):
+		if basin.room == get_parent():
+			out.append(basin)
+	return out
+
+
+## True once every tank in the arena is full (the fourth head shows).
+func tanks_full() -> bool:
+	for basin in basins():
+		if not basin.filled or basin.level < 1.0:
 			return false
 	return true
+
+
+## The head whose lane lies over `basin` (the nearest of the three).
+func head_over(basin: DryBasin) -> HydraHead:
+	var cx := (basin.x0 + basin.x1 + 1) * 0.5 * Room.TILE
+	var best: HydraHead = null
+	for i in 3:
+		var lane: float = global_position.x + LANES[i]
+		if best == null or absf(lane - cx) < absf(global_position.x + LANES[best.index] - cx):
+			best = heads[i]
+	return best
+
+
+## Phase 2: each full tank douses the head over it, and the dry ones shimmer.
+func _douse_heads() -> void:
+	for basin in basins():
+		basin.beckon = not basin.filled
+		if not basin.filled or basin.level < 1.0:
+			continue
+		var h := head_over(basin)
+		if h != null and not h.doused:
+			h.doused = true
+			h.flash = 0.2
+			if h.mode != "idle":
+				h.set_mode("rise")
+			Sfx.play("douse", 0.1, 0.0)
+			Feel.add_trauma(0.2)
 
 
 ## Where head `h` rests: its lane, high as mist or low when solid.
@@ -140,7 +184,7 @@ func rest_point(h: HydraHead) -> Vector2:
 		return global_position + HIDDEN_AT if h.coiled else Vector2(global_position.x, EMERGED_Y)
 	var lane: float = global_position.x + LANES[h.index]
 	if not h.solid:
-		return Vector2(lane, MIST_Y)
+		return Vector2(lane, MIST_Y + (DOUSED_SAG if h.doused else 0.0))
 	var p := player()
 	var x := lane
 	if p != null:
@@ -211,9 +255,14 @@ func _enter_phase(n: int) -> void:
 			if heads[i].mode != "idle":
 				heads[i].set_mode("rise")
 		Sfx.play("hydra_roar", 0.0, 2.0)
-		GameState.toast.emit("The heads dissolve into the mist. Something stirs in the coil, waiting for water.")
+		GameState.toast.emit(HINT)
+		_hint = 0.0
 	else:
-		# The coil bursts and the spring floods the arena.
+		# The coil bursts and the spring floods the arena; the heads shake off the water.
+		for i in 3:
+			heads[i].doused = false
+		for basin in basins():
+			basin.beckon = false
 		var h4 := heads[3]
 		h4.coiled = true
 		h4.set_solid(false)
@@ -251,6 +300,16 @@ func _fight(delta: float) -> void:
 	var p := player()
 	var px := p.global_position.x if p != null else global_position.x
 	if phase == 2:
+		_douse_heads()
+		_hint += delta
+		if _hint >= HINT_EVERY:
+			_hint = 0.0
+			var dry := 0
+			for basin in basins():
+				if not basin.filled:
+					dry += 1
+			if dry > 0:
+				GameState.toast.emit("%d dry tank%s still shimmer below. Deluge fills them." % [dry, "" if dry == 1 else "s"])
 		var h4 := heads[3]
 		if h4.coiled and tanks_full():
 			h4.coiled = false
@@ -276,7 +335,7 @@ func _fight(delta: float) -> void:
 		var best: HydraHead = null
 		for i in 3:
 			var h := heads[i]
-			if h.solid or h.mode != "idle":
+			if h.solid or h.doused or h.mode != "idle":
 				continue
 			if best == null or absf(h.global_position.x - px) < absf(best.global_position.x - px):
 				best = h
@@ -469,6 +528,8 @@ func _draw_head(h: HydraHead, t: float, fade: float) -> void:
 			gape = 1.0
 		"down":
 			gape = 0.4
+	if h.doused:
+		gape = 0.5
 	var telling := h.mode in ["rear", "breath_tell"]
 	var white := h.flash > 0.0 or telling and int(h.mode_time * 16.0) % 2 == 0
 	var a := fade
@@ -483,6 +544,13 @@ func _draw_head(h: HydraHead, t: float, fade: float) -> void:
 		light = Color.WHITE
 		dark = MIST.darkened(0.25)
 		line = Color(MIST.darkened(0.4), 0.5)
+		if h.doused:
+			# Soaked through: heavy, grey-blue and still, not wavering.
+			a = fade * 0.55
+			body = Color("6f8a9c")
+			light = Color("9fb8c8")
+			dark = Color("4a5f6e")
+			line = Color(Color("2c3a44"), 0.8)
 	# The head's pixels are whole world pixels (twice the body's): it reads big.
 	draw_set_transform(h.global_position - global_position, 0.0, Vector2(f * 2.0, 2.0))
 	var g := roundi(gape * 8.0)
@@ -504,7 +572,14 @@ func _draw_head(h: HydraHead, t: float, fade: float) -> void:
 	_px(-22, -22, 6, 6, BONE, a)
 	_px(-14, -24, 4, 6, BONE, a)
 	var eye := Color.WHITE if telling else EYE
-	_px(4, -8, 5, 3, eye, maxf(a, 0.6) if h.solid else a)
+	if h.doused:
+		# Drenched: the eye a dark slit, water running off the jaw.
+		_px(4, -7, 5, 1, SCALE_DARK, 0.9 * fade)
+		for i in 3:
+			var drop := fmod(t * 1.6 + i * 0.37 + h.index * 0.2, 1.0)
+			_px(6 + i * 7, 10 + roundi(drop * 26.0), 2, 3, Color("9fd0f0"), (1.0 - drop) * 0.9 * fade)
+	else:
+		_px(4, -8, 5, 3, eye, maxf(a, 0.6) if h.solid else a)
 	if h.mode in ["breath_tell", "breath"]:
 		# Mist welling at the jaws.
 		draw_circle(Vector2(12, 4 + g * 0.5), 5.0 + sin(t * 20.0), Color(MIST, 0.7 * fade))
