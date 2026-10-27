@@ -50,6 +50,14 @@
 			{"item": "jack_key", "price": 150}
 		]
 	},
+	"forepaw_items": {
+		"name": "The Forepaw Larder",
+		"greeting": "Dried meat for the climb and a Queen Key for the vaults. The deep galleries kept everything but our appetite.",
+		"stock": [
+			{"item": "elixir", "price": 1500},
+			{"item": "queen_key", "price": 400}
+		]
+	},
 	"eolis_charts": {
 		"name": "Maps and Charts",
 		"greeting": "Lost already? Every tunnel I have walked is on these, and a few I only heard about.",

@@ -662,7 +662,9 @@ func test_every_npc_and_shop_entry_is_valid() -> void:
 		var npc: Dictionary = GameData.npc(id)
 		if npc.role == "shop" and GameData.shop(npc.shop).is_empty():
 			bad.append("%s sells from missing shop %s" % [id, npc.shop])
-		if npc.role in ["talk", "king"] and npc.get("lines", []).is_empty():
+		if npc.role in ["talk", "king", "physician"] and npc.get("lines", []).is_empty():
+			bad.append("%s has nothing to say" % id)
+		if npc.role == "physician" and npc.get("lines_treated", []).is_empty():
 			bad.append("%s has nothing to say" % id)
 	for shop_id: String in GameData.table("shops"):
 		for entry: Dictionary in GameData.shop(shop_id).stock:
@@ -755,6 +757,40 @@ func test_apolune_folk_return_with_the_spring() -> void:
 
 
 # --- Forepaw freed ---------------------------------------------------------------
+
+## Pass 175: Forepaw keeps the original's hospital and a larder. The physician
+## mends health, magic and poison for nothing, but neither saves nor refills
+## the flask (that is the Guru's rest); with nothing to mend he only talks.
+func test_forepaws_physician_mends_you_and_its_larder_sells() -> void:
+	var w := make_world(_town({}, ["npc: 8, 19, forepaw_physician"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	var said := []
+	var listener := func(who: String, pages: Array) -> void: said.append(pages)
+	GameState.dialog_requested.connect(listener)
+	await frames(3)
+	var gold := p.gold
+	p.input.up_pressed = true
+	await frames(2)
+	check(said.size() == 1 and said[0] == GameData.npc("forepaw_physician").lines, "whole and well, he only talks")
+	p.hp = 10
+	p.mp = 0.0
+	p.poison()
+	p.flask_charges = 0
+	GameState.data.save_room = ""
+	p.input.up_pressed = true
+	await frames(2)
+	GameState.dialog_requested.disconnect(listener)
+	check(p.hp == p.max_hp and is_equal_approx(p.mp, p.max_mp) and p.poison_left <= 0.0, "hurt, drained and poisoned: he mends all three (hp %d)" % p.hp)
+	check(said.size() == 2 and said[1] == GameData.npc("forepaw_physician").lines_treated, "and says what he did")
+	check(p.gold == gold and p.flask_charges == 0 and String(GameState.data.save_room) == "", "for no gold, with no save and no flask refill")
+	var room := Room.from_file("res://levels/tower/forepaw.room")
+	arena.add_child(room)
+	var ids := room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(c: Npc) -> String: return c.npc_id)
+	check(ids.has("forepaw_physician") and ids.has("forepaw_grocer"), "both keep house in Forepaw (%s)" % [ids])
+	room.queue_free()
+	var stock: Array = GameData.shop(GameData.npc("forepaw_grocer").shop).stock
+	check(stock.map(func(e: Dictionary) -> String: return e.item) == ["elixir", "queen_key"], "the Larder sells an Elixir and the Queen Key")
+
 
 func test_the_forepaw_smith_tempers_a_blade_twice() -> void:
 	var w := make_world(_town(), "test/town")

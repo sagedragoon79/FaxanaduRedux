@@ -2,7 +2,8 @@ class_name Npc
 extends Interactable
 ## A townsperson (data/npcs.json). Press Up to talk. Roles: "talk" (dialog),
 ## "king" (dialog, gives the starting gold once), "shop" (opens the shop) and
-## "guru" (rest and save, skills).
+## "guru" (rest and save, skills) and "physician" (Forepaw's hospital: mends
+## you for free, without a save; pass 175).
 
 const KING_GOLD := 1500
 const OUTLINE := Color("1d1a2b")
@@ -35,6 +36,12 @@ func interact(p: Player) -> void:
 				GameState.say(info.name, lines(info, "lines_after" if info.has("lines_after") else "lines"))
 		"shop":
 			Menus.open_shop(get_tree(), info.shop, p)
+		"physician":
+			if treat(p):
+				_mend_fx()
+				GameState.say(info.name, lines(info, "lines_treated"))
+			else:
+				GameState.say(info.name, lines(info, "lines"))
 		"guru":
 			var world := get_tree().get_first_node_in_group("world") as World
 			if world != null and world.room != null:
@@ -44,6 +51,27 @@ func interact(p: Player) -> void:
 			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)
 		_:
 			GameState.say(info.get("name", ""), lines(info, "lines"))
+
+
+## The original's town hospital (Forepaw's, in Faxanadu): health and magic
+## made whole and poison drawn out. Unlike a Guru's rest it neither saves nor
+## refills the flask. Returns false when there was nothing to mend.
+static func treat(p: Player) -> bool:
+	if p.hp >= p.max_hp and p.mp >= p.max_mp and p.poison_left <= 0.0:
+		return false
+	p.cure_poison()
+	p.hp = p.max_hp
+	p.mp = p.max_mp
+	p.health_changed.emit(p.hp, p.max_hp)
+	return true
+
+
+func _mend_fx() -> void:
+	var d := Dust.new()
+	d.setup("heal")
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(0, -20)
+	Sfx.play("heal", 0.0)
 
 
 ## What a person says from `key` of their data. Once the Evil One is dead and

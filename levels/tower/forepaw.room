@@ -4,10 +4,12 @@ map: 20, -4
 music: forepaw
 sign: 4, 19, FOREPAW, city of the dwarves, bolted into the heart of the Tree.|Its forges were cold for years. Listen: the hammers ring again.
 npc: 10, 19, guru
+npc: 15, 19, forepaw_grocer
 prop: 20, 19, house
 npc: 25, 19, forepaw_smith
 prop: 30, 19, forge
 npc: 37, 19, forepaw_elder
+npc: 41, 19, forepaw_physician
 prop: 44, 19, house
 npc: 48, 19, forepaw_miner
 npc: 58, 15, forepaw_digger
