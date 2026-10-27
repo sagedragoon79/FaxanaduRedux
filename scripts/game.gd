@@ -19,7 +19,7 @@ extends Node2D
 ##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
-##   --open=shop:ID|guru|trials|title|skills|pause|options|controls
+##   --open=shop:ID|guru|trials|title|skills|pause|options|controls|journey
 ##                              (title: the nearest Guru names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
@@ -481,6 +481,8 @@ func _debug_open() -> void:
 		Menus.open_options(get_tree(), func() -> void: pass)
 	elif what == "controls":
 		Menus.open_controls(get_tree(), func() -> void: pass)
+	elif what == "journey":
+		Menus.open_journey(get_tree(), func() -> void: pass)
 
 
 func _unhandled_input(event: InputEvent) -> void:

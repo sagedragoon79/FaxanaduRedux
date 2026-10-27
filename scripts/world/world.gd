@@ -180,6 +180,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"secret": not parsed.lists.get("secret", []).is_empty(),
 		## Its key doors, `{cell, kind, id}`; the map marks the ones still shut.
 		"locks": locks,
+		## The guardian whose arena this is (`boss:` header), or "".
+		"boss": String(header.get("boss", "")),
 	}
 
 
