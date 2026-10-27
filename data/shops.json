@@ -152,5 +152,17 @@
 			{"item": "elixir", "price": 1500},
 			{"item": "jack_key", "price": 150}
 		]
+	},
+	"dartmoor_keys": {
+		"name": "Sigrun's Locks",
+		"greeting": "Every door in the king's city had its key, and every key passed through my hands. The water kept them bright.",
+		"stock": [
+			{"item": "jack_key", "price": 150},
+			{"item": "queen_key", "price": 400},
+			{"item": "king_key", "price": 900},
+			{"item": "ace_key", "price": 1800},
+			{"item": "ointment", "price": 300},
+			{"item": "elixir", "price": 1500}
+		]
 	}
 }

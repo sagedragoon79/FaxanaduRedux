@@ -1128,3 +1128,36 @@ func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
 				cracked += 1
 		if rooms >= 5:
 			check(cracked >= 1, "%s (%d rooms) has cracked stone (%d rooms)" % [zone, rooms, cracked])
+
+
+## Pass 159: Dartmoor wakes a town, as the original's last town was. Once King
+## Grieve falls, the Drowned Market's foes are gone (`calm:`), and a Guru and
+## Keymaster Sigrun stand there, the last Guru and key master before Zenis.
+func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
+	GameState.new_game()
+	var w := make_world({}, "dartmoor/drowned_market")
+	await frames(2)
+	var kinds := func() -> Dictionary:
+		var out := {"enemies": 0, "npcs": []}
+		for c in w.room.get_children():
+			if c is Enemy:
+				out.enemies += 1
+			elif c is Npc:
+				out.npcs.append((c as Npc).npc_id)
+		return out
+	var before: Dictionary = kinds.call()
+	check(before.enemies > 0 and before.npcs.is_empty(), "under the flood the market is the slugs' and the crystal dwarf's (%d foes)" % before.enemies)
+	GameState.set_flag("boss:king_grieve")
+	w._enter("dartmoor/drowned_market")
+	await frames(2)
+	var after: Dictionary = kinds.call()
+	check(after.enemies == 0, "with the king at rest, the market is a town again: no foes (%d)" % after.enemies)
+	check(after.npcs.has("guru") and after.npcs.has("dartmoor_keymaster") and after.npcs.has("dartmoor_mason"),
+		"a Guru, Keymaster Sigrun and the mason stand in it (%s)" % [after.npcs])
+	var shop: Dictionary = GameData.shop("dartmoor_keys")
+	var stock: Array = []
+	for s: Dictionary in shop.get("stock", []):
+		stock.append(String(s.item))
+	check(stock.has("jack_key") and stock.has("queen_key") and stock.has("king_key") and stock.has("ace_key") and not stock.has("joker_key"),
+		"Sigrun cuts every key but the Joker (%s)" % [stock])
+	w.queue_free()
