@@ -3333,6 +3333,61 @@ func test_a_blow_mid_hex_breaks_the_spell_and_opens_her() -> void:
 	check(not m.punishable(), "until she finds it again")
 
 
+## Pass 188: the Rune Dagger is a sting, not a blow. It hurts a boss, but the
+## things a blow does to a boss's guard stay the blade's (and fire's) to do.
+func test_a_thrown_dagger_stings_the_captain_but_splits_no_bark() -> void:
+	var r := await _captain_world()
+	var w: World = r[0]
+	var c: BarkCaptain = r[1]
+	var hp0 := c.hp
+	c.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
+	check(c.hp == hp0 - ceili(RuneDagger.DAMAGE * BarkCaptain.GUARD), "a dagger in the Captain's bark lands its quarter (%d)" % (hp0 - c.hp))
+	check(c.bark == BarkCaptain.BARK, "but splits no plate (%d)" % c.bark)
+	check(not c.thrown, "and the sting is over once it lands")
+	c.take_hit(12, Vector2.RIGHT)
+	check(c.bark == BarkCaptain.BARK - 1, "a blow still chips one")
+	# Thrown for real: the flight calls take_throw.
+	var p := w.player
+	p.abilities["rune_dagger"] = true
+	p.teleport(c.global_position + Vector2(-90, 0))
+	p.facing = 1
+	await frames(2)
+	hp0 = c.hp
+	p.input.throw_pressed = true
+	await frames(1)
+	var landed := await _until(func() -> bool: return c.hp < hp0, 40)
+	check(landed and c.bark == BarkCaptain.BARK - 1, "a dagger thrown at him stings and chips nothing (bark %d)" % c.bark)
+
+
+func test_a_thrown_dagger_does_not_break_the_matriarchs_hex() -> void:
+	var r := await _matriarch_world()
+	var w: World = r[0]
+	var m: HagMatriarch = r[1]
+	w.player.teleport(cell_feet(14, 16))
+	await frames(2)
+	m._begin_hex()
+	var hp0 := m.hp
+	m.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
+	check(m.hp == hp0 - ceili(RuneDagger.DAMAGE * HagMatriarch.GUARD), "a dagger mid-hex stings the Matriarch through her shawl (%d)" % (hp0 - m.hp))
+	check(m.is_hexing() and not m.punishable(), "but the spell holds: it takes a blow to break it")
+	m.take_hit(10, Vector2.RIGHT)
+	check(m.state == "fumble", "and a blow still does")
+
+
+func test_a_thrown_dagger_glances_off_the_bound_heart() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	_bind(h)
+	await frames(2)
+	GameState.data.equipment["blade"] = "dragon_slayer"
+	var hp := h.hp
+	w.player._attack_timer = 0.2
+	h.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
+	w.player._attack_timer = 0.0
+	check(h.hp == hp, "a dagger glances off the bound Heart, even with the Dragon Slayer swinging")
+
+
 func test_crowd_the_matriarch_and_she_sinks_away() -> void:
 	var r := await _matriarch_world(Vector2i(20, 16))
 	var w: World = r[0]

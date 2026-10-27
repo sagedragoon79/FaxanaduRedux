@@ -142,7 +142,8 @@ func stagger() -> void:
 func _modify_damage(damage: int, _dir: Vector2) -> int:
 	if state in ["dormant", "intro", "dying", "sunk"]:
 		return 0
-	if is_hexing():
+	# A thrown dagger stings her but takes a blow to break the spell (pass 188).
+	if is_hexing() and not thrown:
 		_break_hex()
 		return damage
 	if punishable():

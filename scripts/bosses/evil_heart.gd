@@ -135,7 +135,8 @@ func lights_freed() -> int:
 
 ## Only the Dragon Slayer's edge, and only while a root holds it down.
 func _modify_damage(damage: int, _dir: Vector2) -> int:
-	if not bound():
+	# Only the Dragon Slayer in hand: a thrown dagger glances off (pass 188).
+	if not bound() or thrown:
 		return 0
 	var p := player()
 	if p == null or not p.is_attacking:

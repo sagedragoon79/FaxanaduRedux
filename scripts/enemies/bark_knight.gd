@@ -85,6 +85,9 @@ func is_rooted() -> bool:
 func _modify_damage(damage: int, _dir: Vector2) -> int:
 	if bark <= 0 or is_rooted():
 		return damage
+	# A thrown dagger's point sticks in the bark and splits nothing (pass 188).
+	if thrown:
+		return ceili(damage * GUARD)
 	bark -= 1
 	var d := Dust.new()
 	d.setup("debris")

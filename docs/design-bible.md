@@ -285,6 +285,7 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - **Flight:** 420 px/s, point first, for 160 px (about ten tiles). It strikes the first foe it meets for 6, scaled by Keen Edge like the blade (`melee_mult`), with a 0.03 s hit-stop. Walls and gates stop it; it passes up through one-way planks. It lights the fog as it flies.
 - **Return:** when its flight ends, on a foe, a wall or at the end of its reach, it breaks into motes of rune light and reforms at your hip 0.4 s later with a soft chime (`dagger_return`). One flies at a time. It costs no MP and is never lost; left in another room, it comes home all the same.
 - **Not while** dashing, drinking, guarding, swinging or reeling from a hit.
+- **A sting, not a blow (pass 188):** it hurts what it hits, but what a blow does to a guard stays the blade's (and fire's). In bark (a Bark Knight, the Captain) it lands the bark's quarter and splits no plate; it stings a hexing Marsh Hag or the Matriarch without breaking the spell; and the bound Heart turns it even with the Dragon Slayer in hand. Elsewhere it is an ordinary hit from where it flew: Shadow Eura's false double still bursts, a Lantern Widow's lantern still breaks, armor still halves a hit on the front. `Enemy.take_throw` sets `Enemy.thrown` while the hit lands, and each guard reads it in `_modify_damage`.
 - **Gates nothing.** Every route it could help with already has another answer, so reachability does not change and it is never required. It is not temperable (it is not in the blade slot), so the five Meteor Shards still cover the four blades.
 - **Drawing:** code-drawn, in flight and as a pickup. The hero sheet is drawn empty-handed for a paper-doll setup (Sean, pass 184), so the blade and the dagger are separate layers over the body, never baked into it.
 - Built in `scripts/combat/rune_dagger.gd` (`RuneDagger`) and `Player._try_throw`. Tests: `test_combat.gd` (flight, hit, one at a time, no MP, return, Up, walls and reach) and `test_systems.gd` (the rename, save migration, bindings, the pickup).
@@ -569,6 +570,8 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 | The Evil One, phase 3 | bound by the root |
 
 The core (phase 2) has none: no blade reaches it, only the veins.
+
+**The Rune Dagger against bosses (pass 188):** it reaches every boss that a blade does, for 6 a throw, and is meant as a way to keep up pressure from a distance, not a way around a fight's lesson. So it splits none of the Bark Knight Captain's plates, breaks none of the Matriarch's hexes and never cuts the Heart (5.2, the Rune Dagger). The two-handed Dwarvish Broad Sword (pass 186) cannot parry, and no boss needs a parry: every opening that a parry gives also comes some other way, or only feeds Executioner and Bloodletting. The Battle Helmet's slot and kept gear change nothing in a fight, apart from letting you swap blades at a pause.
 
 ### 8.1 Rokusutahn, the Root-Gnawer (Trunk Hollows)
 - **Concept:** A colossal armored grub that has been chewing the Tree's taproot dry. Its segments are plated in bark; its face is a wheel of mandibles.
