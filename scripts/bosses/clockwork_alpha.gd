@@ -98,7 +98,7 @@ func _ready() -> void:
 func begin() -> void:
 	face_player()
 	set_state("intro")
-	Sfx.play("ratchet", 0.0, 2.0)
+	Sfx.play("key_wind", 0.0, 2.0)
 	Feel.add_trauma(0.3)
 	GameState.banner.emit(DISPLAY_NAME, EPITHET)
 
@@ -154,7 +154,7 @@ func take_hit(damage: int, dir: Vector2) -> void:
 	_hitstun = 0.0
 	if not dead and phase == 1 and health_fraction() <= PHASES[0]:
 		phase = 2
-		Sfx.play("ratchet", 0.0, 4.0)
+		Sfx.play("key_wind", 0.0, 4.0)
 		Feel.add_trauma(0.3)
 
 
@@ -234,10 +234,10 @@ func _choose(dist: float) -> void:
 	face_player()
 	if phase == 2 and pups.size() < MAX_PUPS and _howls < 3 and _rng.randf() < 0.4:
 		set_state("howl_tell")
-		Sfx.play("ratchet", 0.1, 0.0)
+		Sfx.play("key_wind", 0.1, 0.0)
 	elif dist < POUNCE_RANGE:
 		set_state("pounce_tell")
-		Sfx.play("ratchet", 0.1, -2.0)
+		Sfx.play("key_wind", 0.1, -2.0)
 	else:
 		set_state("charge_tell")
 		Sfx.play("tell_charge", 0.05, 0.0)
@@ -255,7 +255,7 @@ func _pounce() -> void:
 
 func _jam() -> void:
 	set_state("jammed")
-	Sfx.play("break", 0.0, 2.0)
+	Sfx.play("spring_jam", 0.0, 2.0)
 	Feel.hitstop(0.06)
 	Feel.add_trauma(0.5)
 	_dust(Vector2(facing * 22.0, -18.0), "debris")

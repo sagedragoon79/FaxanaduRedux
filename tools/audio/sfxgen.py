@@ -1037,6 +1037,48 @@ def main():
     out[-len(bite):] += bite * 0.8
     save("thrust", out, 0.75)
 
+    # Voices of their own for the mini-bosses (pass 173).
+    # The Clockwork Alpha winding up: a big key turned in four heavy detents,
+    # each a deep clank with a spring groan climbing behind it.
+    d = 0.6
+    n = int(RATE * d)
+    clanks = np.zeros(n)
+    for i, at in enumerate([0.0, 0.14, 0.27, 0.39]):
+        start = int(RATE * at)
+        m = int(RATE * 0.07)
+        part = mix(lowpass(osc(slide(140 + 30 * i, 90 + 20 * i, 0.07), "square", 0.3), 1400),
+                   highpass(noise(0.07), 1800) * 0.5) * env(m, 0.0005, 2.4)
+        clanks[start:start + m] += part[: n - start]
+    groan = lowpass(osc(slide(120, 380, d, 0.7), "saw"), 900) * env(n, 0.2, 0.8) * 0.3
+    save("key_wind", mix(clanks, groan), 0.6)
+
+    # Its spring jamming against a wall: a hard clang, then a mainspring
+    # buzzing loose with gear teeth skittering.
+    d = 0.7
+    n = int(RATE * d)
+    clang = mix(osc(slide(520, 500, 0.4), "sine"), osc(slide(1290, 1250, 0.4), "sine") * 0.5) * env(int(RATE * 0.4), 0.001, 2.0)
+    t = t_axis(d)
+    buzz = lowpass(osc(slide(180, 60, d, 0.5) * (1 + 0.15 * np.sin(2 * np.pi * 31 * t)), "square", 0.3), 1200) * env(n, 0.05, 1.2) * 0.5
+    teeth = highpass(noise(d) * (np.random.default_rng(17).random(n) > 0.96), 2600) * env(n, 0.01, 1.0) * 0.6
+    save("spring_jam", mix(clang, buzz, teeth), 0.6)
+
+    # The Bark Knight Captain's vault: the lance planted and flexed (a deep
+    # woody groan), then the spring of the bough throwing him up (a rush).
+    d = 0.55
+    n = int(RATE * d)
+    t = t_axis(d)
+    flex = lowpass(osc(slide(55, 110, d, 0.9) + 6 * np.sin(2 * np.pi * 7 * t), "saw"), slide(400, 1300, d)) * env(n, 0.25, 0.6)
+    rush = lowpass(highpass(noise(d), 300), slide(600, 3000, d, 1.8)) * np.clip((t - 0.3) / 0.25, 0, 1) * 0.6
+    save("bough_vault", mix(flex, rush), 0.4)
+
+    # His landing, lance-first: a deep wooden boom and roots tearing the floor.
+    d = 0.5
+    n = int(RATE * d)
+    boom = lowpass(osc(slide(110, 45, 0.3, 0.6), "tri"), 700) * env(int(RATE * 0.3), 0.001, 1.6)
+    tear = lowpass(noise(d), slide(900, 150, d)) * env(n, 0.005, 1.5) * 0.7
+    splinters = highpass(noise(d) * (np.random.default_rng(23).random(n) > 0.94), 1800) * env(n, 0.005, 2.0) * 0.4
+    save("lance_plant", mix(boom, tear, splinters), 0.7)
+
 
 if __name__ == "__main__":
     main()

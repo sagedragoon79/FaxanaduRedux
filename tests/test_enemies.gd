@@ -1980,6 +1980,9 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"bomber_seed": ["seed_fuse", "seed_burst"],
 		"marsh_hag": ["hag_hex", "mire_grasp", "hag_fumble"],
 		"spire_sentinel": ["sentinel_grind", "sentinel_raise", "sentinel_slam"],
+		# The mini-bosses (pass 173).
+		"clockwork_alpha": ["key_wind", "spring_jam"],
+		"bark_captain": ["bough_vault", "lance_plant"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
 	var kin := {"bark_knight": ["bark_captain"]}
