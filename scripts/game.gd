@@ -305,6 +305,12 @@ func _process(_delta: float) -> void:
 	if _args.has("conduits") and _frames == int(_args["conduits"]):
 		for c in get_tree().get_nodes_in_group("conductor"):
 			(c as Conduit).power()
+	if _args.has("fill-tanks") and _frames == 2:
+		# Screenshots: fill the room's first N dry tanks, west to east.
+		var tanks := get_tree().get_nodes_in_group("dry_basin")
+		tanks.sort_custom(func(a: DryBasin, b: DryBasin) -> bool: return a.x0 < b.x0)
+		for i in mini(int(_args["fill-tanks"]), tanks.size()):
+			(tanks[i] as DryBasin).douse()
 	if _args.has("boss-hp"):
 		var boss := get_tree().get_first_node_in_group("boss")
 		if boss is Rokusutahn and boss.state == "intro":

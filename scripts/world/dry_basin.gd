@@ -29,6 +29,13 @@ var bed_row := 0
 var filled := false
 ## 0 dry .. 1 full.
 var level := 0.0
+## Set by a boss that needs the tank filled (Zorugeriru's phase 2): the dry
+## tank shimmers, its stain glowing and water beading under it.
+var beckon := false:
+	set(on):
+		if on != beckon:
+			beckon = on
+			queue_redraw()
 
 
 func _ready() -> void:
@@ -91,6 +98,8 @@ func _drown(silent: bool) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if beckon and not filled:
+		queue_redraw()
 	if filled and level < 1.0:
 		level = minf(1.0, level + delta / FILL_TIME)
 		if level >= 1.0:
@@ -110,6 +119,16 @@ func _draw() -> void:
 			var cx := i * Room.TILE + 4 + (i * 7) % 8
 			draw_rect(Rect2(cx, depth - 3, 1, 3), CRACK)
 			draw_rect(Rect2(cx - 2, depth - 2, 3, 0.5), CRACK)
+		if beckon:
+			# A shimmer of the water that should be here: the stain glows and
+			# a faint sheet ripples where the surface was.
+			var t := Time.get_ticks_msec() * 0.001
+			var pulse := 0.5 + 0.5 * sin(t * 4.0)
+			draw_rect(Rect2(-2, 5, w + 4, 3), Color(WATER_TOP, 0.35 + 0.45 * pulse))
+			draw_rect(Rect2(0, 8, w, depth - 11), Color(WATER, 0.08 + 0.1 * pulse))
+			for i in range(0, x1 - x0 + 1, 2):
+				var drop := fmod(t * 0.8 + i * 0.23, 1.0)
+				draw_rect(Rect2(i * Room.TILE + 7, 8 + drop * (depth - 12), 2, 2), Color(WATER_TOP, (1.0 - drop) * 0.7))
 		return
 	# Water up to the current level; the raft rides its surface until it stands.
 	var top := depth - (depth - 8.0) * level

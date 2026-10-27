@@ -59,6 +59,15 @@ func test_wall_slide_caps_fall_speed() -> void:
 	check(p.velocity.y <= p.tuning.wall_slide_speed + 0.01, "slide speed capped at %.0f (got %.1f)" % [p.tuning.wall_slide_speed, p.velocity.y])
 
 
+func test_wall_slide_is_drawn_gripping_the_wall() -> void:
+	var p := await _start_on_right_wall()
+	await frames(20)
+	check(p.is_wall_sliding and p.facing == -1, "sliding on a right wall, facing away for the jump")
+	check(PlayerVisual.look_dir(p) == 1, "but the sprite faces the wall it grips (playtest)")
+	await frames(1)
+	check(p.visual.scale.x > 0.0, "and is drawn unflipped (scale.x %.2f)" % p.visual.scale.x)
+
+
 func test_no_wall_slide_without_glove() -> void:
 	var p := await _start_on_right_wall({"glove": false})
 	await frames(5)

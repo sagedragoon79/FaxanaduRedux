@@ -977,6 +977,65 @@ func test_fourth_head_shows_only_when_the_tanks_are_full() -> void:
 		check(w.room.is_one_way_at(Vector2(b.x0 * Room.TILE + 4, b.water_row * Room.TILE + 4)), "each tank's raft stands")
 
 
+func test_each_full_tank_douses_its_head() -> void:
+	# Playtest: phase 2 gave no sign that the tanks were the way on.
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: Zorugeriru = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z.hp = roundi(z.max_hp * 0.61)
+	z.heads[z.solid_index].take_hit(10, Vector2.RIGHT)
+	await frames(2)
+	var basins := _basins(w)
+	for b: DryBasin in basins:
+		check(b.beckon, "in phase 2 each dry tank shimmers")
+	var heads := {}
+	for b: DryBasin in basins:
+		heads[z.head_over(b)] = true
+	check(heads.size() == 3, "each tank has its own head above it")
+	# A real Deluge bolt from the floor beside the first tank fills it.
+	var p := w.player
+	p.abilities.deluge = true
+	p.equipped_spell = "deluge"
+	p.mp = p.max_mp
+	p.teleport(cell_feet(7, 19))
+	await frames(10)
+	p.facing = 1
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	var first: DryBasin = basins[0]
+	for b: DryBasin in basins:
+		if b.x0 < first.x0:
+			first = b
+	var full := await _until(func() -> bool: return first.filled and first.level >= 1.0, 120)
+	check(full, "a Deluge cast from the floor fills the nearest tank")
+	var h := z.head_over(first)
+	var doused := await _until(func() -> bool: return h.doused, 10)
+	check(doused and not first.beckon, "and douses the head over it, and stops shimmering")
+	check(z.rest_point(h).y > Zorugeriru.MIST_Y + 20.0, "the doused head hangs low")
+	var others := 0
+	for i in 3:
+		if z.heads[i] != h and not z.heads[i].doused:
+			others += 1
+	check(others == 2, "the other two heads are untouched")
+	# A doused head never breathes.
+	for i in 3:
+		if z.heads[i] != h:
+			z.heads[i].set_mode("breath")
+	z._breath = Zorugeriru.BREATH_EVERY
+	await frames(2)
+	check(h.mode != "breath_tell", "a doused head doesn't breathe (%s)" % h.mode)
+	z.hp = roundi(z.max_hp * 0.31)
+	for b: DryBasin in basins:
+		b.douse()
+	await _until(func() -> bool: return not z.heads[3].coiled, 200)
+	z.heads[3].take_hit(10, Vector2.RIGHT)
+	check(z.phase == 3, "phase 3 begins")
+	for i in 3:
+		check(not z.heads[i].doused, "head %d shakes off the water in phase 3" % i)
+
+
 func test_phase_three_floods_the_floor() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
