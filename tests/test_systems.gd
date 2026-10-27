@@ -140,6 +140,10 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	check(not menu.rows[1].enabled, "no Ointment to use yet")
 	menu.cursor = 2
 	menu.confirm()
+	check(menu.title == "Equipment" and menu.rows[0].get("header", false) and menu.rows[1].label == "Short Sword", "Equipment lists your gear by slot")
+	menu.back()
+	menu.cursor = 3
+	menu.confirm()
 	check(menu.title == "Options" and menu.is_open, "Options opens in place")
 	var before := Settings.shake
 	menu.cursor = 0
@@ -147,19 +151,19 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	check(Settings.shake != before, "Left/Right changes the selected option")
 	menu.back()
 	check(menu.title == "Paused", "backing out returns to the pause menu")
-	menu.cursor = 3
+	menu.cursor = 4
 	menu.confirm()
 	check(menu.title == "Controls" and menu.rows.size() == Settings.REBINDABLE.size() + 2, "Controls lists the rebindable actions")
 	menu.cursor = 0
 	menu.confirm()
 	check(menu.capture.is_valid() and menu.rows[0].right == "...", "choosing one waits for a key")
 	menu.back()
-	menu.cursor = 4
+	menu.cursor = 5
 	menu.confirm()
 	check(menu.title == "Journey" and menu.is_open, "Journey opens in place")
 	menu.back()
 	check(menu.title == "Paused", "and backs out to the pause menu")
-	menu.cursor = 5
+	menu.cursor = 6
 	menu.confirm()
 	check(quit[0] and not menu.is_open and not arena.get_tree().paused, "Quit closes the menu and quits")
 	_restore()
@@ -416,8 +420,9 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.skill_points = 3
 	d.skills = ["keen_edge", "deluge_pierce", "tilte_swarm"]
 	d.respecs = 2
-	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield", "helmet": "battle_helmet"}
-	d.tempers = {"giant_blade": 2, "long_sword": 1}
+	d.equipment = {"blade": "dragon_slayer", "armor": "full_plate", "shield": "magic_shield", "helmet": "battle_helmet"}
+	d.gear = ["short_sword", "dwarvish_broad_sword", "dragon_slayer", "full_plate", "magic_shield", "battle_helmet"]
+	d.tempers = {"dwarvish_broad_sword": 2, "long_sword": 1}
 	d.keys = {"jack": true, "lantern": true}
 	d.rings = ["elf", "ruby"]
 	d.potion_shards = 5

@@ -34,8 +34,8 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		return "sold out"
 	match item.kind:
 		"blade", "armor", "shield", "helmet":
-			var current := GameData.item(GameState.data.equipment[item.kind])
-			if not current.is_empty() and int(current.get("tier", 0)) >= int(item.get("tier", 0)):
+			# Gear you have is kept (pass 186): put it on from the Equipment page.
+			if GameState.owns_gear(String(entry.item)):
 				return "owned"
 		"elixir":
 			if p.elixirs >= ELIXIR_MAX:
@@ -85,8 +85,7 @@ static func buy(shop_id: String, index: int, p: Player) -> bool:
 	GameState.data.meteor_shards = int(GameState.data.get("meteor_shards", 0)) - shards(entry)
 	match item.kind:
 		"blade", "armor", "shield", "helmet":
-			GameState.data.equipment[item.kind] = entry.item
-			GameState.refresh_stats(p)
+			GameState.obtain_gear(String(entry.item), p)
 		"key":
 			GameState.add_key(String(entry.item).trim_suffix("_key"))
 		"stat":

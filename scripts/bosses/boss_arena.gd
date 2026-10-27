@@ -310,9 +310,8 @@ func _on_defeated() -> void:
 	elif reward.has("armor"):
 		# Armor the boss wore or kept goes straight on (the Warden's Battle Suit).
 		var p := get_tree().get_first_node_in_group("player") as Player
-		GameState.data.equipment.armor = reward.armor
+		GameState.obtain_gear(String(reward.armor), p)
 		if p != null:
-			GameState.refresh_stats(p)
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("stat_item"):
