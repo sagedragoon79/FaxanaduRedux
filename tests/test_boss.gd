@@ -3110,6 +3110,68 @@ func test_the_captains_thrust_roots_into_a_bough_and_opens_him() -> void:
 	check(c.hp == hp0 - 12 and c.bark == bark, "a blow while he roots lands in full and chips nothing")
 
 
+## Pass 176: the rooted lance is footing (bible 8, the Captain; 6.6 pogo). You
+## land and stand on it, Down + Jump drops through it, the Mattock bounces off
+## it, and when he pulls it free coyote time still lets you jump, and you come
+## down on the floor, never caught inside it.
+func test_the_captains_bough_holds_your_weight_until_he_pulls_free() -> void:
+	var r := await _captain_world(Vector2i(26, 19))
+	var w: World = r[0]
+	var c: BarkCaptain = r[1]
+	var p := w.player
+	p.teleport(cell_feet(4, 19))
+	await frames(2)
+	c.facing = -1
+	c.set_state("rooted")
+	c._set_bough(true)
+	await frames(2)
+	var shape := c._bough_shape.shape as RectangleShape2D
+	var top := c._bough.global_position.y - shape.size.y * 0.5
+	var mid := c._bough.global_position.x
+	var hold := func(n: int) -> void:
+		for i in n:
+			c.state_time = 0.0
+			await frames(1)
+	p.teleport(Vector2(mid, top - 40.0))
+	await hold.call(40)
+	check(p.is_on_floor() and absf(p.global_position.y - top) <= 2.0, "you land on the bough and stand there (feet %.1f, bough %.1f)" % [p.global_position.y, top])
+	p.input.down = true
+	p.input.jump_pressed = true
+	await hold.call(40)
+	p.input.down = false
+	check(p.is_on_floor() and p.global_position.y > top + 20.0, "Down + Jump drops you through it to the floor (feet %.1f)" % p.global_position.y)
+	p.abilities["mattock"] = true
+	p.teleport(Vector2(mid, top - 70.0))
+	var bounced := false
+	for i in 60:
+		c.state_time = 0.0
+		if p.velocity.y > 0.0 and p.global_position.y > top - 30.0 and not p.is_attacking:
+			p.input.down = true
+			p.input.attack_pressed = true
+		await frames(1)
+		if p.velocity.y < -300.0:
+			bounced = true
+			break
+	p.input.down = false
+	check(bounced, "the Mattock pogoes off it")
+	p.teleport(Vector2(mid, top - 20.0))
+	p.velocity = Vector2.ZERO
+	await hold.call(30)
+	check(p.is_on_floor() and absf(p.global_position.y - top) <= 2.0, "back on the bough")
+	var gone := await _until(func() -> bool: return not p.is_on_floor(), 120)
+	check(gone and not c.bough_solid(), "he pulls it free from under you")
+	await frames(3)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	check(p.velocity.y < -300.0, "and a jump 4 frames later still counts, as off a ledge (vy %.0f)" % p.velocity.y)
+	p.input.jump_held = false
+	await frames(90)
+	var floor_y := cell_feet(0, 19).y
+	check(not c.bough_solid() and p.is_on_floor() and absf(p.global_position.y - floor_y) <= 1.0,
+		"he pulls it free and you drop to the floor, not caught in it (feet %.1f, floor %.1f)" % [p.global_position.y, floor_y])
+
+
 func test_a_parried_thrust_staggers_the_captain() -> void:
 	var r := await _captain_world()
 	var c: BarkCaptain = r[1]
