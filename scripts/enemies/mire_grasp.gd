@@ -18,7 +18,8 @@ const BOG_LIGHT := Color("c8ffd0")
 const MUD := Color("1e1a16")
 const MUD_LIGHT := Color("4a3e30")
 
-var hag: MarshHag
+## Whoever cast it (a Marsh Hag, or their Matriarch); the mark fades without them.
+var hag: Enemy
 ## "mark" (bubbling, the telegraph), "grasp" (the hand is up), "sink" or "fizzle".
 var phase := "mark"
 var light_radius := 28.0

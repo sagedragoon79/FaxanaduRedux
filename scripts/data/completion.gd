@@ -42,7 +42,7 @@ static func tally(catalog: Dictionary) -> Dictionary:
 ## Journey page gives it (the mini-bosses among them).
 const GUARDIANS := [
 	["rokusutahn", "Rokusutahn"], ["foreman", "The Foreman"], ["zoradohna", "Zoradohna"],
-	["ripasheiku", "Ripasheiku"], ["zorugeriru", "Zorugeriru"], ["pakukame", "Pakukame"],
+	["ripasheiku", "Ripasheiku"], ["hag_matriarch", "The Marsh Hag Matriarch"], ["zorugeriru", "Zorugeriru"], ["pakukame", "Pakukame"],
 	["bark_captain", "The Bark Knight Captain"], ["borabohra", "Borabohra"], ["king_grieve", "King Grieve"],
 	["clockwork_alpha", "The Clockwork Alpha"], ["shadow_eura", "Shadow Eura"], ["drowned_warden", "The Drowned Warden"],
 	["evil_avatar", "The Evil One, on the throne"], ["evil_veins", "The Evil One, in the veins"],

@@ -229,6 +229,25 @@
 		],
 		"lines_cleared": ["The Thorn Yard is all briar-roses now. I go in to sit where the Captain stood. It feels like the right thing.", "Fire was the answer, my father said. He never saw how it ended. I tell him about it anyway."]
 	},
+	"mascon_reedcutter": {
+		"name": "Reedcutter Siobhe", "role": "talk",
+		"look": {"robe": "#4a5a4a", "trim": "#7a8a4a", "skin": "#d8b890", "hair": "#8a8a8a", "hat": "none"},
+		"lines": [
+			"Don't go through the east door. The Matriarch lives in the mire past it, the mother of every hag in this fog.",
+			"When she raises her staff the bog lights up around your feet. Stand still and the mud takes you. My brother learned that.",
+			"Hit her while she's casting, he said. It breaks the spell and she drops her staff. He was right. It didn't save him."
+		],
+		"lines_cleared": ["The mire is only a mire now. I cut reeds where she stood, and nothing reaches up out of the mud for my ankles.", "Every hag in the fog was her daughter, they say. The fog is thinning. Perhaps they have all gone home to her."]
+	},
+	"mascon_reedcutter_glad": {
+		"name": "Reedcutter Siobhe", "role": "talk",
+		"look": {"robe": "#4a5a4a", "trim": "#7a8a4a", "skin": "#d8b890", "hair": "#8a8a8a", "hat": "none"},
+		"lines": [
+			"The Matriarch is sunk for good? Then I can cut reeds in the east mire again, for the first time since I was a girl.",
+			"My brother would have laughed to hear it. He always said she'd drop that staff for anyone quick enough."
+		],
+		"lines_cleared": ["The mire is only a mire now. I cut reeds where she stood, and nothing reaches up out of the mud for my ankles.", "Every hag in the fog was her daughter, they say. The fog is thinning. Perhaps they have all gone home to her."]
+	},
 	"conflate_weaver": {
 		"lines_cleared": ["Petal-silk! The blossom spins finer than the leaves ever did. Pink, if you like that sort of thing.", "The dwarves climbed up yesterday with iron to trade. Real dwarves, with beards and bad jokes. I'd forgotten how much I missed them."],
 		"name": "Weaver Imra", "role": "talk",

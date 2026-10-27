@@ -2003,9 +2003,10 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		# The mini-bosses (pass 173).
 		"clockwork_alpha": ["key_wind", "spring_jam"],
 		"bark_captain": ["bough_vault", "lance_plant"],
+		"hag_matriarch": ["matriarch_cackle", "bog_sink", "bog_rise"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
-	var kin := {"bark_knight": ["bark_captain"]}
+	var kin := {"bark_knight": ["bark_captain"], "marsh_hag": ["hag_matriarch"]}
 	var played := {}  # sound -> scripts that play it
 	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:
 		for f in DirAccess.get_files_at(dir):

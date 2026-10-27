@@ -1080,5 +1080,40 @@ def main():
     save("lance_plant", mix(boom, tear, splinters), 0.7)
 
 
+    # The Marsh Hag Matriarch (pass 179). Her cackle: the hags' "heh"s, lower
+    # and slower, six of them climbing then breaking, over a wet bog drone.
+    d = 0.9
+    n = int(RATE * d)
+    laugh = np.zeros(n)
+    for k in range(6):
+        st = int(RATE * (0.02 + k * 0.12))
+        ln = int(RATE * 0.1)
+        f0 = 300 + (k * 30 if k < 4 else (6 - k) * 40)
+        v = osc(slide(f0 * 1.2, f0, ln / RATE), "saw", 0.5) * env(ln, 0.005, 1.4)
+        v = lowpass(highpass(v, 400), 2000)
+        laugh[st:st + ln] += v[:max(0, min(ln, n - st))]
+    drone = lowpass(osc(slide(70, 60, d), "saw"), 300) * env(n, 0.1, 0.8) * 0.4
+    save("matriarch_cackle", mix(laugh * 0.8, drone), 0.55)
+
+    # Sinking into the bog: a long glug sliding down and a closing slurp.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    rate = 18 - 12 * (t / d)
+    pops = (np.sin(2 * np.pi * np.cumsum(rate) / RATE) > 0.8).astype(float)
+    glug = lowpass(osc(slide(320, 90, d), "sine") * pops, 900) * env(n, 0.02, 1.0)
+    slurp = lowpass(noise(d), slide(1400, 200, d)) * np.clip((t - 0.3) / 0.2, 0, 1) * env(n, 0.3, 1.5) * 0.5
+    save("bog_sink", mix(glug, slurp), 0.55)
+
+    # Rising out of it: the bog bursting open and water streaming off.
+    d = 0.5
+    n = int(RATE * d)
+    burst = lowpass(osc(slide(80, 220, 0.12), "sine"), 700) * env(int(RATE * 0.12), 0.001, 1.0)
+    stream = lowpass(highpass(noise(d), 500), slide(3000, 900, d)) * env(n, 0.01, 1.4) * 0.6
+    out = stream.copy()
+    out[:len(burst)] += burst
+    save("bog_rise", out, 0.55)
+
+
 if __name__ == "__main__":
     main()

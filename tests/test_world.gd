@@ -838,6 +838,13 @@ func test_the_towns_know_their_mini_bosses() -> void:
 		return out
 	const CONFLATE := "res://levels/branches/conflate.room"
 	const MARKET := "res://levels/dartmoor/drowned_market.room"
+	const MASCON := "res://levels/mist/mascon.room"
+	var r: Array = ids.call(MASCON)
+	check(r.has("mascon_reedcutter") and not r.has("mascon_reedcutter_glad"), "in Mascon, the reedcutter warns of the Matriarch past the east door (pass 179)")
+	check(" ".join(GameData.npc("mascon_reedcutter").lines).contains("east door"), "and names where she waits")
+	GameState.set_flag("boss:hag_matriarch")
+	r = ids.call(MASCON)
+	check(r.has("mascon_reedcutter_glad") and not r.has("mascon_reedcutter"), "and is glad once she sinks for good")
 	var c: Array = ids.call(CONFLATE)
 	check(c.has("conflate_squire") and not c.has("conflate_squire_glad"), "before the Captain falls, the squire points to the Thorn Yard")
 	var m: Array = ids.call(MARKET)

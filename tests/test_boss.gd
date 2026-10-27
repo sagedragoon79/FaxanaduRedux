@@ -3239,3 +3239,155 @@ func test_the_captain_gives_mana_dew() -> void:
 	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "his Mana Dew grows your magic (%.0f -> %.0f)" % [mp0, float(GameState.data.max_mp)])
 	var ranks := int(GameState.data.rank) - rank
 	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)
+
+
+# --- The Marsh Hag Matriarch (pass 179), the Mist's mini-boss ---------------------
+
+const MATRIARCH_ROOM := "mist/hag_mire"
+
+
+## The Matriarch dropped into her mire without the arena, awake.
+func _matriarch_world(cell := Vector2i(30, 16)) -> Array:
+	var w := make_world({}, MATRIARCH_ROOM, cell_feet(20, 16))
+	GameState.set_flag("boss:hag_matriarch")  # keep the arena from starting its own fight
+	var m := HagMatriarch.new()
+	m.arena = Rect2(16, 64, 608, 208)
+	m.position = cell_feet(cell.x, cell.y)
+	w.room.add_child(m)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(2)
+	m.set_state("cast")
+	return [w, m]
+
+
+func test_the_matriarch_keeps_a_mire_east_of_mascon() -> void:
+	var mascon := Room.from_file(World.room_path("mist/mascon"))
+	check(mascon.doors.has(2) and String(mascon.doors[2].target) == MATRIARCH_ROOM, "Mascon's east end opens on her mire")
+	mascon.free()
+	var w := make_world({}, MATRIARCH_ROOM, cell_feet(1, 16))
+	await frames(3)
+	var arena := _arena(w)
+	check(arena != null and arena.boss_id == "hag_matriarch", "the mire is a boss arena")
+	check(BossArena.BOSSES.hag_matriarch.music == "miniboss" and not BossArena.BOSSES.hag_matriarch.has("skill_points"), "a mini-boss: its own theme, and no skill point")
+	w.player.teleport(cell_feet(8, 16))
+	var woke := await _until(func() -> bool: return arena.fighting, 30)
+	var m := get_tree_boss() as HagMatriarch
+	check(woke and m != null, "walking into the mire wakes her")
+	check(m != null and m.global_position.x > w.player.global_position.x + 300.0, "she waits at the far end")
+	check(m != null and m.state == "intro", "with her name card and a cackle")
+	check(Completion.GUARDIANS.any(func(g: Array) -> bool: return g[0] == "hag_matriarch"), "she counts among the guardians")
+
+
+func test_the_matriarchs_tells_are_fair() -> void:
+	var m := HagMatriarch.new()
+	for ph in [1, 2]:
+		m.phase = ph
+		for t: float in [HagMatriarch.HEX_TELL, HagMatriarch.SINK_TELL, HagMatriarch.CALL_TELL]:
+			check(m.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, m.tell(t), Enemy.MIN_TELEGRAPH])
+	m.free()
+
+
+func test_the_matriarchs_hex_marks_the_floor_and_the_mud_bites() -> void:
+	var r := await _matriarch_world()
+	var w: World = r[0]
+	var m: HagMatriarch = r[1]
+	w.player.teleport(cell_feet(14, 16))
+	await frames(2)
+	check(m._begin_hex(), "she raises her staff")
+	check(m.is_hexing() and m.marks().size() == HagMatriarch.MARKS, "three marks of bog light ring you (%d)" % m.marks().size())
+	var xs := m.marks().map(func(k: MireGrasp) -> float: return k.global_position.x)
+	check(xs.any(func(x: float) -> bool: return absf(x - w.player.global_position.x) < 2.0), "one right under your feet")
+	var hp := w.player.hp
+	var bit := await _until(func() -> bool: return w.player.hp < hp, 120)
+	check(bit, "the mud hands burst up and bite a player who stands still")
+	m.phase = 2
+	m.set_state("walk")
+	w.player.teleport(cell_feet(20, 16))
+	await frames(2)
+	m._begin_hex()
+	check(m.marks().size() == HagMatriarch.MARKS_PHASE2, "below half the hex marks five (%d)" % m.marks().size())
+
+
+func test_a_blow_mid_hex_breaks_the_spell_and_opens_her() -> void:
+	var r := await _matriarch_world()
+	var w: World = r[0]
+	var m: HagMatriarch = r[1]
+	var hp0 := m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(m.hp == hp0 - 5 and not m.punishable(), "her reed shawl halves a blow (%d)" % (hp0 - m.hp))
+	w.player.teleport(cell_feet(14, 16))
+	await frames(2)
+	m._begin_hex()
+	var marks := m.marks()
+	hp0 = m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(m.hp == hp0 - 10, "a blow mid-hex lands in full")
+	check(m.state == "fumble" and m.punishable(), "and she gropes for her staff, open")
+	await frames(2)
+	var hp := w.player.hp
+	await frames(int(HagMatriarch.HEX_TELL * 60.0) + 20)
+	check(w.player.hp == hp, "no hand bites (%d -> %d)" % [hp, w.player.hp])
+	check(marks.all(func(k: Variant) -> bool: return not is_instance_valid(k)), "every mark fizzles away")
+	await frames(int(HagMatriarch.FUMBLE * 60.0))
+	check(not m.punishable(), "until she finds it again")
+
+
+func test_crowd_the_matriarch_and_she_sinks_away() -> void:
+	var r := await _matriarch_world(Vector2i(20, 16))
+	var w: World = r[0]
+	var m: HagMatriarch = r[1]
+	w.player.teleport(cell_feet(17, 16))
+	m.set_state("walk")
+	var sank := await _until(func() -> bool: return m.is_sunk(), 120)
+	check(sank, "stand at her elbow and she sinks into the bog")
+	var hp0 := m.hp
+	m.take_hit(10, Vector2.RIGHT)
+	check(m.hp == hp0 and m.collision_layer == 0, "sunk, she is out of reach")
+	var rose := await _until(func() -> bool: return m.state == "rise", 120)
+	check(rose and absf(m.global_position.x - w.player.global_position.x) > 200.0, "she rises at the far end of the mire (%.0f px off)" % absf(m.global_position.x - w.player.global_position.x))
+
+
+func test_the_matriarch_calls_one_daughter_at_a_time() -> void:
+	var r := await _matriarch_world()
+	var w: World = r[0]
+	var m: HagMatriarch = r[1]
+	w.player.teleport(cell_feet(14, 16))
+	m.stagger()
+	m.take_hit(int(HagMatriarch.MAX_HP * 0.6), Vector2.RIGHT)
+	check(m.phase == 2, "below half she turns to her second phase")
+	for i in 3:
+		if m.daughter() == null:
+			m.set_state("call_tell")
+		else:
+			m._choose()
+		await _until(func() -> bool: return m.state == "walk", 180)
+	var hags := w.room.get_children().filter(func(c: Node) -> bool: return c is MarshHag and not c.dead)
+	check(hags.size() == 1 and m.daughter() != null, "she calls a daughter up out of the bog, never more than one (%d)" % hags.size())
+	m.die()
+	await frames(2)
+	hags = w.room.get_children().filter(func(c: Node) -> bool: return c is MarshHag and not c.dead)
+	check(hags.is_empty(), "and her daughter sinks with her")
+
+
+func test_the_matriarch_gives_mana_dew() -> void:
+	var w := make_world({}, MATRIARCH_ROOM, cell_feet(1, 16))
+	var p := w.player
+	await frames(3)
+	var arena := _arena(w)
+	p.teleport(cell_feet(8, 16))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var m := get_tree_boss() as HagMatriarch
+	await _until(func() -> bool: return m.state != "intro", 180)
+	var mp0 := float(GameState.data.max_mp)
+	var points := int(GameState.data.skill_points)
+	var rank := int(GameState.data.rank)
+	m.hp = 1
+	m.stagger()
+	m.take_hit(8, Vector2.RIGHT)
+	check(m.state == "dying", "the last blow sinks her")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:hag_matriarch"), 600)
+	check(gone, "the Matriarch is marked beaten")
+	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "her Mana Dew grows your magic (%.0f -> %.0f)" % [mp0, float(GameState.data.max_mp)])
+	var ranks := int(GameState.data.rank) - rank
+	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)
