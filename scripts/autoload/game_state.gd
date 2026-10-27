@@ -504,6 +504,8 @@ static func sanitize(src: Variant) -> Dictionary:
 		var v: Variant = out.keys[kind]
 		if not (kind is String and (v is bool or (_is_number(v) and float(v) >= 0.0))):
 			out.keys.erase(kind)
+		elif _is_number(v):
+			out.keys[kind] = int(v)  # JSON keeps counts as floats; a save comes back as it went (pass 174)
 	for id: Variant in out.trials.keys():
 		if not _is_number(out.trials[id]) or float(out.trials[id]) < 0.0:
 			out.trials.erase(id)

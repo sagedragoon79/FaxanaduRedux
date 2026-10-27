@@ -1279,11 +1279,19 @@ func _close_menus() -> void:
 ## Every boss fight, mashed for 15 s with the boss knocked down a phase every
 ## 5 s, holds the frame budget (bible 15.3) and loads nothing from disk once it
 ## has begun: the boss's sheet comes with the arena (`BossArena.warm`) and every
-## sound with the game (`Sfx.load_all`).
-const BOSS_ROOMS := ["trunk/root_chamber", "tower/foreman_hall", "tower/forepaw_lift",
-	"mist/sunken_chapel", "mist/spring_of_mist", "branches/crown_leaf", "daybreak/roost",
-	"dartmoor/throne_hall", "dartmoor/zenis_gate", "zenis/throne", "zenis/veins", "zenis/heart",
-	"sunken/wellspring"]
+## sound with the game (`Sfx.load_all`). The arenas are read from the rooms
+## (pass 174): a hand-kept list had missed both mini-bosses of passes 169 and 171.
+func _boss_rooms() -> Dictionary:
+	var w := make_world({}, "eolis/west_gate")
+	var out := {}
+	for id: String in _all_room_ids(w):
+		var boss := String(w.catalog[id].get("boss", ""))
+		if boss != "":
+			out[id] = boss
+	w.queue_free()
+	return out
+
+
 const BOSS_AUDIT_FRAMES := 900
 
 
@@ -1292,7 +1300,9 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 	var problems: Array[String] = []
 	var wavs := Array(DirAccess.get_files_at(Sfx.SFX_DIR)).filter(func(f: String) -> bool: return f.ends_with(".wav"))
 	check(Sfx.loads >= wavs.size() and wavs.size() > 80, "every sound loaded with the game (%d of %d)" % [Sfx.loads, wavs.size()])
-	for id: String in BOSS_ROOMS:
+	var rooms := _boss_rooms()
+	await frames(1)
+	for id: String in rooms:
 		GameState.new_game()
 		Sheet._cache.clear()
 		var w := make_world({}, id)
@@ -1340,8 +1350,84 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 		await frames(2)
 	TimeStop.reset()
 	print("  Boss frames (average/99th): %s" % ", ".join(report))
-	check(report.size() == BOSS_ROOMS.size(), "every boss fight ran (%d)" % report.size())
+	check(report.size() == rooms.size() and rooms.size() == BossArena.BOSSES.size(), "every boss fight ran (%d of %d arenas)" % [report.size(), rooms.size()])
 	check(problems.is_empty(), "every fight holds the budget and loads nothing mid-fight: %s" % [problems])
+
+
+## Pass 174: every guardian, beaten and saved, stays beaten. Each arena's fight
+## is won outright, the game saved and continued into a fresh world in the same
+## room: the doors stand open, no fight starts, and its prize isn't given twice.
+## Every guardian the arena knows has exactly one room, so none is unreachable.
+func test_every_beaten_guardian_stays_beaten_through_a_save() -> void:
+	var rooms := _boss_rooms()
+	await frames(1)
+	var homes := {}
+	for id: String in rooms:
+		homes[rooms[id]] = homes.get(rooms[id], 0) + 1
+	var lost := BossArena.BOSSES.keys().filter(func(b: String) -> bool: return homes.get(b, 0) != 1)
+	var stray := homes.keys().filter(func(b: String) -> bool: return not BossArena.BOSSES.has(b))
+	check(lost.is_empty() and stray.is_empty(), "every guardian has one arena, and every arena a known guardian (lost %s, stray %s)" % [lost, stray])
+	const SLOT := 9
+	var problems: Array[String] = []
+	var won := 0
+	for id: String in rooms:
+		var boss_id: String = rooms[id]
+		if boss_id == "evil_one":
+			continue  # its win starts the ending; the ending's own tests cover it
+		var w := make_world({}, id)
+		GameState.slot = SLOT
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(3)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		if ar == null:
+			problems.append("%s: no arena" % id)
+			w.queue_free()
+			await frames(1)
+			continue
+		ar._start()
+		await frames(2)
+		ar._on_defeated()
+		if is_instance_valid(ar.boss):
+			ar.boss.queue_free()
+		await frames(int(BossArena.OPEN_DELAY * 60) + 10)
+		var prize := _prize(boss_id)
+		if not GameState.flag("boss:" + boss_id) or ar.fighting or not ar.seals.is_empty():
+			problems.append("%s: the win left the arena shut" % id)
+		GameState.save_game()
+		w.queue_free()
+		await frames(1)
+		if not GameState.load_game(SLOT):
+			problems.append("%s: the save did not come back" % id)
+			continue
+		var w2 := World.new()
+		w2.instant = true
+		arena.add_child(w2)
+		w2.start(id)
+		w2.player.input.scripted = true
+		w2.player.input.move_x = 1
+		await frames(90)
+		var ar2 := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		var seals := w2.room.get_children().filter(func(c: Node) -> bool: return c is ArenaSeal)
+		if ar2 == null or ar2.fighting or ar2.boss != null or not seals.is_empty():
+			problems.append("%s: %s rose again after the continue" % [id, boss_id])
+		if _prize(boss_id) != prize:
+			problems.append("%s: the prize changed on the way back (%s -> %s)" % [id, prize, _prize(boss_id)])
+		won += 1
+		w2.queue_free()
+		await frames(1)
+	GameState.delete_save(SLOT)
+	GameState.new_game()
+	check(won == rooms.size() - 1, "won and continued in every arena but the last (%d)" % won)
+	check(problems.is_empty(), "every beaten guardian stays beaten and pays once: %s" % [problems])
+
+
+## What a guardian's win leaves on the save.
+func _prize(boss_id: String) -> Dictionary:
+	var d := GameState.data
+	return {"flag": GameState.flag("boss:" + boss_id), "hp": int(d.max_hp), "mp": float(d.max_mp),
+		"points": int(d.skill_points), "rings": (d.rings as Array).size(), "keys": str(d.keys),
+		"abilities": str(d.abilities), "armor": String(d.equipment.armor)}
 
 
 ## Pass 158: the boss rush moves through thirteen arenas back to back, so each
