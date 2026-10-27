@@ -1161,3 +1161,27 @@ func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
 	check(stock.has("jack_key") and stock.has("queen_key") and stock.has("king_key") and stock.has("ace_key") and not stock.has("joker_key"),
 		"Sigrun cuts every key but the Joker (%s)" % [stock])
 	w.queue_free()
+
+
+## Bible 3.2 and 4.2: Zenis's gauntlet, between the Dragon Slayer and the throne,
+## asks for every ability once more (the checker proves each one is needed, in
+## test_reachability.gd), and a shrine waits at its end.
+func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
+	GameState.new_game()
+	var w := make_world({}, "zenis/heart_gate")
+	await frames(2)
+	check(w.room.doors[2].target == "zenis/proving_scar", "past the flesh, the Heart Gate opens on the Proving Scar")
+	w._enter("zenis/proving_scar")
+	await frames(2)
+	check(w.room.doors[1].target == "zenis/heart_gate" and w.room.doors[2].target == "zenis/throne", "and the Scar leads on to the throne")
+	var kids := w.room.get_children()
+	var count := func(t: Variant) -> int: return kids.filter(func(c: Node) -> bool: return is_instance_of(c, t)).size()
+	check(count.call(FireSeal) > 0 and count.call(ConduitGate) > 0 and count.call(CrackedBlock) > 0 and count.call(Waterfall) > 0,
+		"its gates: a fire seal, a conduit gate, cracked stone and time-locked water")
+	var shrines := kids.filter(func(c: Node) -> bool: return c is SaveShrine)
+	check(shrines.size() == 1 and (shrines[0] as Node2D).position.x > 66 * 16, "a shrine stands in its last hall, before the throne")
+	var foes := kids.filter(func(c: Node) -> bool: return c is Enemy)
+	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "its three foes are the meteor's, corrupted")
+	w._enter("zenis/throne")
+	await frames(2)
+	check(w.room.doors[1].target == "zenis/proving_scar", "the throne's west door leads back into the Scar")
