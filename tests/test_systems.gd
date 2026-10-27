@@ -1303,6 +1303,72 @@ func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 
 
 
+## Pass 168 (bible 3.1): the sixth and last Guru Trial. A descent: ledges
+## falling away over spikes, planks to drop through, and a needle of thorn bulbs
+## to fall straight down. A bot that only steers its falls clears it.
+func test_the_mantra_of_falling_is_steered_all_the_way_down() -> void:
+	var t := Trials.find("falling")
+	check(Trials.built().has(t) and t.desc != "" and not t.has("needs"), "the Mantra of Falling is built, for the Glove alone")
+	check(Trials.built().size() == Trials.LIST.size(), "all six trials are built")
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var reach := Reach.new({t.room: text}, {"glove": true})
+	var nodes := reach.reachable(reach.spot_of(t.room, "P"))
+	check(nodes.has(Reach.key(t.room, 21, 86)), "the checker falls to the bell")
+	check(text.count("o") >= 6 and text.count("-") >= 24, "the needle has its thorns and the well its planks")
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	for s: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + s)
+	GameState.data.abilities["glove"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	check(Trials.ready(t), "three springs open it")
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/falling", "the Guru sends you there")
+	# Waypoints: the column to stand on (or fall toward), and whether to drop
+	# through the plank underfoot once there.
+	var route := [[13, false], [8, false], [13, false], [19, false], [25, false], [34, true], [34, true], [34, true], [34, false], [21, false]]
+	var step := 0
+	# A waypoint counts only once you have been in the air since the last one.
+	var flown := true
+	var set_backs := 0
+	var last := p.global_position
+	var lowest := 0.0
+	var goal: Node = w.room.get_children().filter(func(c: Node) -> bool: return c is TrialGoal)[0]
+	for f in 1200:
+		var target := (float(route[step][0]) + 0.5) * Room.TILE
+		var dx := target - p.global_position.x
+		p.input.move_x = 0 if absf(dx) < 3.0 else int(signf(dx))
+		p.input.down = false
+		p.input.jump_pressed = false
+		p.input.jump_held = false
+		if not p.is_on_floor():
+			flown = true
+		elif flown and absf(dx) < 4.0:
+			flown = false
+			if route[step][1]:
+				p.input.down = true
+				p.input.jump_pressed = true
+				p.input.jump_held = true
+			step = mini(step + 1, route.size() - 1)
+		await frames(1)
+		if p.global_position.y < last.y - 24.0:
+			set_backs += 1
+		last = p.global_position
+		lowest = maxf(lowest, p.global_position.y)
+		if goal.rung:
+			break
+	check(goal.rung, "the bot rings the bell (lowest row %.1f, waypoint %d)" % [lowest / Room.TILE, step])
+	check(set_backs == 0, "without a single set-back (%d)" % set_backs)
+	var best := Trials.best("falling")
+	print("  Mantra of Falling: %.2f s" % best)
+	check(best < float(t.mantra), "a clean run beats the mantra time (%.2f < %d)" % [best, t.mantra])
+	check(best > float(t.mantra) * 0.5, "which still asks for a clean one")
+	w.queue_free()
+	Trials.abandon()
+
+
 ## Pass 164 (bible 10): the cosmetics the Guru Trials promise. Each trial has a
 ## mantra time; ring its bell within it and the trial dyes your cloak a color of
 ## its own, and Ilse keeps it on her shelf to wear again for nothing.
