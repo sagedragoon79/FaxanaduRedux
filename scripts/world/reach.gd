@@ -344,6 +344,9 @@ func wind_dir(room_id: String, x: int, y: int) -> int:
 	if not WIND.contains(c):
 		return 0
 	var d := 1 if c == ">" else -1
+	# The mantra-space's winds never turn (the trials, pass 160).
+	if room_id.begins_with("trials/"):
+		return d
 	return -d if abilities.get("sky_spring", false) else d
 
 

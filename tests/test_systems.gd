@@ -1143,3 +1143,66 @@ func test_the_boss_rush_holds_at_its_edges() -> void:
 	var w2 := make_world(_temple(), "test/a", cell_feet(5, 16))
 	check(not BossRush.active() and not Trials.active(), "a new world starts clean")
 	w2.queue_free()
+
+
+## Pass 160: the Mantra of Winds, the fourth trial, opened with Thorns by the
+## second spring and built for the Glove and the Wing Boots. Ride a current over
+## the spikes, climb a wall into a second, take a double jump to a high plank,
+## and drop out of the last current over the bell (ride it on and it throws you
+## onto spikes). The mantra-space has no weather: its winds never turn.
+func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
+	var t := Trials.find("winds")
+	check(Trials.built().has(t) and t.needs == ["glove", "boots"] and t.desc != "", "the Mantra of Winds is built, for the Glove and the Wing Boots")
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bell := Reach.key(t.room, 86, 11)
+	for kit: Dictionary in [{"glove": true, "boots": true}, {"glove": true, "boots": true, "sky_spring": true}]:
+		var reach := Reach.new({t.room: text}, kit)
+		check(reach.reachable(reach.spot_of(t.room, "P")).has(bell), "the bell is reached with %s" % [kit.keys()])
+	var bare := Reach.new({t.room: text}, {"glove": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(bell), "without the Wing Boots it is not")
+	var calm_text := text.replace(">", ".")
+	var calm := Reach.new({t.room: calm_text}, {"glove": true, "boots": true, "stride": true})
+	check(not calm.reachable(calm.spot_of(t.room, "P")).has(bell), "and with no wind, not even with the Stride")
+	# The Guru keeps it sealed, and says why, until the boots are found.
+	GameState.new_game()
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.data.abilities["glove"] = true
+	check(Trials.is_open(t) and not Trials.ready(t) and Trials.missing(t) == ["Wing Boots"], "two springs open it, but it wants the Wing Boots (%s)" % [Trials.missing(t)])
+	GameState.data.abilities["boots"] = true
+	check(Trials.ready(t), "and with them it is ready")
+	# In the real game: the first current carries you over the spikes to the pillar.
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.set_flag("spring:sky")
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["boots"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/winds", "the Guru sends you there")
+	var winds := w.room.get_children().filter(func(c: Node) -> bool: return c is WindCurrent)
+	check(winds.size() == 3 and winds.all(func(c: WindCurrent) -> bool: return c.dir() == 1), "three currents, all blowing east even with the Spring of Sky restored")
+	var landed := false
+	# Run to the ledge's lip and jump into the current, then let it carry you.
+	var jumped := -1
+	for f in 300:
+		var x := p.global_position.x / Room.TILE
+		if jumped < 0 and x > 7.6:
+			jumped = f
+		p.input.move_x = 1 if jumped < 0 or f < jumped + 12 else 0
+		p.input.jump_pressed = f == jumped
+		p.input.jump_held = jumped >= 0 and f < jumped + 16
+		await frames(1)
+		if jumped >= 0 and f > jumped + 20 and p.is_on_floor():
+			landed = true
+			break
+	var col := int(p.global_position.x / Room.TILE)
+	check(landed and col >= 35 and col <= 39 and absf(p.global_position.y - (16 * Room.TILE)) < 2.0,
+		"jump into the first current and it carries you over the spikes to the pillar (col %d, row %.1f)" % [col, p.global_position.y / Room.TILE])
+	w.queue_free()
+	Trials.abandon()
+

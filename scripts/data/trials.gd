@@ -20,7 +20,8 @@ const LIST := [
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
 	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
 		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
-	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "desc": ""},
+	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
+		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
 	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "desc": ""},
 	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},
 ]
@@ -53,6 +54,22 @@ static func springs_flowing() -> int:
 
 static func is_open(t: Dictionary) -> bool:
 	return springs_flowing() >= int(t.springs)
+
+
+## The names of what the course is built for that you don't yet have (pass 160:
+## the springs can flow before the Wing Boots are found). The Guru keeps such a
+## trial sealed and says what it wants.
+static func missing(t: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	for a: String in t.get("needs", ["glove"]):
+		if not bool(GameState.data.abilities.get(a, false)):
+			out.append(String(ItemPickup.INFO[a].title) if ItemPickup.INFO.has(a) else a.capitalize())
+	return out
+
+
+## Open, and you have all it is built for.
+static func ready(t: Dictionary) -> bool:
+	return is_open(t) and missing(t).is_empty()
 
 
 static func cleared(id: String) -> bool:
