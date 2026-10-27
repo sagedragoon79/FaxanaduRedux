@@ -614,6 +614,15 @@ def imported(name, cell, origin, code_meta):
             prev, here, after = heads[i - 1], heads[i], heads[i + 1]
             if prev and here and after and here[1] < min(prev[1], after[1]) - 2:
                 frames[i][2]["head"] = [here[0], round((prev[1] + after[1]) / 2)]
+        if cfg.get("detect") == "hero" and all(m.get("head") for _, _, m in frames):
+            # A body set's crown wobbles a pixel or two with the hair from frame to frame,
+            # which would shake the helmet: take the median of five (around the loop).
+            heads = [m["head"] for _, _, m in frames]
+            n = len(heads)
+            for i in range(n):
+                near = [heads[(i + k) % n] if spec.get("loop") else heads[min(max(i + k, 0), n - 1)]
+                        for k in range(-2, 3)]
+                frames[i][2]["head"] = [int(np.median([p[0] for p in near])), int(np.median([p[1] for p in near]))]
         if "height" in spec:
             imp.set_reference(source_frames(ref, imp.dir)[0], cfg["height"])
         out[anim] = (frames, spec.get("seq"), spec.get("fps"), spec.get("loop"))

@@ -34,6 +34,11 @@ const POISON := Color("8fd14f")
 ## at the sheets' 2x density with its top-left this far from the frame's crown.
 const HELMET := preload("res://assets/sprites/battle_helmet.png")
 const HELMET_OFFSET := Vector2(-5.5, -3)
+## In a body set's run the head leans into the stride, so the helmet tips
+## forward with it (radians) and sits this far from the crown instead; upright,
+## the leaning hair would show over the visor.
+const HELMET_RUN_TILT := 0.26
+const HELMET_RUN_OFFSET := Vector2(-4, -3.5)
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
@@ -307,7 +312,11 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 ## `crown` (the top of the head, found in the sheet's pixels by
 ## autosprite_import.head_point).
 func _draw_helmet(crown: Vector2, tint: Color) -> void:
-	draw_texture_rect(HELMET, Rect2(crown + HELMET_OFFSET, HELMET.get_size() * 0.5), false, tint)
+	var run := anim == "run" and sheet != SHEET_NAME
+	draw_set_transform(crown, HELMET_RUN_TILT if run else 0.0)
+	var at := HELMET_RUN_OFFSET if run else HELMET_OFFSET
+	draw_texture_rect(HELMET, Rect2(at, HELMET.get_size() * 0.5), false, tint)
+	draw_set_transform(Vector2.ZERO)
 
 
 func _draw_shield(at: Vector2, tint: Color) -> void:
