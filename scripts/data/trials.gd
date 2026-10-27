@@ -26,7 +26,8 @@ const LIST := [
 		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
 	{"id": "stillness", "mantra": 32, "dye": "frost_dye", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
 		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
-	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},
+	{"id": "falling", "mantra": 10, "dye": "plummet_dye", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3,
+		"desc": "Ledges falling away, planks to let go of, and a needle of thorns. Steer every fall."},
 ]
 ## Where the trials are opened from: the Guru's menu offers them only here.
 const TEMPLE := "eolis/guru_temple"

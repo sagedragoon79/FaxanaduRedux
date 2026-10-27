@@ -41,5 +41,6 @@
 	"coral_dye": {"name": "Ledge Coral", "kind": "dye", "color": "e88a72", "desc": "Bright as a last step taken late. Earned within the Mantra of Edges."},
 	"thorn_dye": {"name": "Thorn Rose", "kind": "dye", "color": "c03c6c", "desc": "A deep rose, struck from every bulb. Earned within the Mantra of Thorns."},
 	"jade_dye": {"name": "Wind Jade", "kind": "dye", "color": "3cb8a0", "desc": "Light and quick, like the currents. Earned within the Mantra of Winds."},
-	"frost_dye": {"name": "Still Frost", "kind": "dye", "color": "a8dcf0", "desc": "The pale blue of water held still. Earned within the Mantra of Stillness."}
+	"frost_dye": {"name": "Still Frost", "kind": "dye", "color": "a8dcf0", "desc": "The pale blue of water held still. Earned within the Mantra of Stillness."},
+	"plummet_dye": {"name": "Plummet Umber", "kind": "dye", "color": "a8703a", "desc": "The brown of a long fall's last ledge. Earned within the Mantra of Falling."}
 }
