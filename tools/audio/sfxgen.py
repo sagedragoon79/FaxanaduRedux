@@ -802,6 +802,43 @@ def main():
         out[at:at + m] += lowpass(note, 5000)
     save("trial_record", out, 0.38)
 
+    # The boss rush (pass 157). The bronze bell of the trials, rung for the
+    # rush's turns. A boss down, and the mantra mends you: the bell struck
+    # soft, with a warm swell rising a fourth under it.
+    def bell(f0, d, decays=1.0):
+        n = int(RATE * d)
+        t = t_axis(d)
+        ring = np.zeros(n)
+        for ratio, amp, decay in ((0.5, 0.5, 1.2), (1.0, 1.0, 2.0), (1.19, 0.6, 2.6), (1.5, 0.4, 3.0), (2.0, 0.45, 3.5), (2.74, 0.25, 5.0)):
+            ring += osc(np.full(n, f0 * ratio), "sine") * amp * np.exp(-t * decay * decays)
+        strike = highpass(noise(0.02), 2000) * env(int(RATE * 0.02), 0.0005, 2.0) * 0.5
+        ring[: len(strike)] += strike
+        return ring * env(n, 0.001, 0.2)
+
+    d = 1.2
+    n = int(RATE * d)
+    t = t_axis(d)
+    swell = sum(osc(slide(392, 523, d, 0.5) * k, "sine") * w for k, w in ((1, 0.6), (2, 0.2), (3, 0.08)))
+    swell *= np.sin(np.pi * np.clip(t / d, 0, 1)) ** 1.5
+    save("rush_mend", mix(bell(659.0, d, 1.4) * 0.7, swell * 0.5), 0.45)
+
+    # The rush won: the bell rung three times climbing the chord, the last
+    # left to ring out.
+    d = 2.4
+    out = np.zeros(int(RATE * d))
+    for i, f in enumerate((523.0, 659.0, 784.0)):
+        tone = bell(f, d - 0.22 * i, 1.0 if i == 2 else 1.6)
+        at = int(RATE * 0.22 * i)
+        out[at:at + len(tone)] += tone * (1.0 if i == 2 else 0.75)
+    save("rush_won", out, 0.5)
+
+    # The rush ends: the bell low and muffled, a damped toll that sinks.
+    d = 1.6
+    n = int(RATE * d)
+    toll = lowpass(bell(196.0, d, 1.3), 1800)
+    sink = lowpass(osc(slide(98, 70, d), "saw", 0.5), 400) * env(n, 0.02, 1.6) * 0.35
+    save("rush_fall", mix(toll, sink), 0.55)
+
     # Card doors (pass 122). Locked: the latch rattles in its iron keep and the
     # door knocks twice against the bolt, dull and heavy. Nothing gives.
     d = 0.34

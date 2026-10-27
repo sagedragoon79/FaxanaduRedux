@@ -792,6 +792,8 @@ func test_taproot_is_bitten_until_the_spring_returns() -> void:
 ## and the boss arenas' music.
 func test_every_sound_the_code_plays_exists() -> void:
 	var sfx := RegEx.create_from_string("(?:Sfx\\.play|_sound)\\(\"([a-z0-9_]+)\"")
+	# A choice in the first argument ("a" if x else "b") names both.
+	var choice := RegEx.create_from_string("Sfx\\.play\\(\"[a-z0-9_]+\" if [^,\\n]* else \"([a-z0-9_]+)\"")
 	var music := RegEx.create_from_string("Music\\.play\\(\"([a-z0-9_]+)\"")
 	var missing: Array[String] = []
 	var found := 0
@@ -809,6 +811,10 @@ func test_every_sound_the_code_plays_exists() -> void:
 				found += 1
 				# A name ending in "_" is a prefix completed at runtime ("step_" + surface).
 				if not m.get_string(1).ends_with("_") and not ResourceLoader.exists("res://assets/sfx/%s.wav" % m.get_string(1)):
+					missing.append("%s: sfx %s" % [f, m.get_string(1)])
+			for m in choice.search_all(text):
+				found += 1
+				if not ResourceLoader.exists("res://assets/sfx/%s.wav" % m.get_string(1)):
 					missing.append("%s: sfx %s" % [f, m.get_string(1)])
 			for m in music.search_all(text):
 				found += 1
