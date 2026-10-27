@@ -92,7 +92,7 @@ var equipped_spell := "deluge"
 var slash_damage := 8
 var heavy_damage := 14
 var reach_bonus := 0.0
-## Extra height (px) of a side slash, from the blade (the Giant Blade's huge arc).
+## Extra height (px) of a side slash, from the blade (the Dwarvish Broad Sword's huge arc).
 var arc_bonus := 0.0
 ## Multiplies the wait after each swing: a heavy blade swings slower.
 var swing_mult := 1.0

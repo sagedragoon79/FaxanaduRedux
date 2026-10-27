@@ -253,7 +253,7 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 	var side := dir.orthogonal()
 	var base := hand + dir * 2.0
 	var tip := base + dir * length
-	# A broad blade (the Giant Blade's arc) is drawn two pixels thicker.
+	# A broad blade (the Dwarvish Broad Sword's arc) is drawn two pixels thicker.
 	var broad := 2.0 if player.arc_bonus > 0.0 else 0.0
 	# Outline, steel with a bright edge, then the crossguard and pommel.
 	draw_line(base, tip + dir, OUTLINE, 4.0 + broad)

@@ -17,7 +17,9 @@ signal ending_started
 const SAVE_PATH := "user://save_%d.json"
 const VERSION := 1
 ## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
-const RENAMED_ITEMS := {"hand_dagger": "short_sword"}
+const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_broad_sword"}
+## The equipment slots, in the order the Equipment page lists them.
+const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]
 
 ## The original's 16 ranks. Each rank after Novice gives a skill point.
 const RANKS := ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
@@ -104,6 +106,9 @@ static func fresh() -> Dictionary:
 		"trials": {},
 		## Cloak dyes bought at Ilse's Dyeworks (pass 136), and the one worn ("" is Warden Green).
 		"dyes": [],
+		## Every blade, armor, shield and helmet you have bought or found (pass 186):
+		## the Equipment page swaps between them.
+		"gear": ["short_sword"],
 		"dye": "",
 	}
 
@@ -155,6 +160,43 @@ func earn_dye(id: String) -> void:
 
 ## Whether this save owns a dye. Warden Green is the cloak you start in, and
 ## the Lord's Gold is given, not sold.
+## Gear (pass 186): a blade, armor, shield or helmet you have is kept, and the
+## Equipment page puts any of it on.
+func owns_gear(id: String) -> bool:
+	return Array(data.get("gear", [])).has(id) or GEAR_SLOTS.any(func(s: String) -> bool: return String(data.equipment.get(s, "")) == id)
+
+
+## Takes `id` into your gear and puts it on (a purchase, a find, a reward).
+func obtain_gear(id: String, p: Player = null) -> void:
+	if not Array(data.gear).has(id):
+		data.gear.append(id)
+	var slot := String(GameData.item(id).get("kind", ""))
+	if GEAR_SLOTS.has(slot):
+		data.equipment[slot] = id
+	if p != null:
+		refresh_stats(p)
+
+
+## Puts on gear you have, in its slot. Wearing what is already worn takes it
+## off, except the blade: you always hold one.
+func wear(id: String, p: Player = null) -> void:
+	var slot := String(GameData.item(id).get("kind", ""))
+	if not GEAR_SLOTS.has(slot) or not owns_gear(id):
+		return
+	if String(data.equipment.get(slot, "")) == id and slot != "blade":
+		data.equipment[slot] = ""
+	else:
+		data.equipment[slot] = id
+	if p != null:
+		refresh_stats(p)
+
+
+## True when the blade in hand takes both hands (the Dwarvish Broad Sword):
+## the shield stays on your back, and you can't guard or parry.
+func two_handed() -> bool:
+	return bool(GameData.item(String(data.equipment.blade)).get("two_handed", false))
+
+
 func owns_dye(id: String) -> bool:
 	return id == "warden_dye" or id == "lord_dye" or Array(data.get("dyes", [])).has(id)
 
@@ -339,9 +381,9 @@ func refresh_stats(p: Player) -> void:
 	# (60%) under the Battle Helmet (10%) lets 0.4 x 0.9 = 36% through.
 	var helmet := GameData.item(String(eq.get("helmet", "")))
 	p.defense = 1.0 - (1.0 - float(GameData.item(eq.armor).get("defense", 0.0))) * (1.0 - float(helmet.get("defense", 0.0)))
-	p.has_shield = eq.shield != ""
+	p.has_shield = eq.shield != "" and not bool(blade.get("two_handed", false))
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
-	p.reflects = bool(GameData.item(eq.shield).get("reflect", false))
+	p.reflects = p.has_shield and bool(GameData.item(eq.shield).get("reflect", false))
 	p.melee_mult = 1.0 + (0.1 if has_skill("keen_edge") else 0.0) + (0.1 if has_skill("keener_edge") else 0.0)
 	p.riposte = has_skill("riposte")
 	p.bloodletting = has_skill("bloodletting")
@@ -510,6 +552,17 @@ static func sanitize(src: Variant) -> Dictionary:
 	if String(out.equipment.get("shield", "")) == "battle_helmet":
 		out.equipment.helmet = "battle_helmet"
 		out.equipment.shield = "magic_shield"
+	# Gear kept since pass 186: whatever is worn, and the starting blade.
+	var gear: Array = _unique_strings(out.gear)
+	for i in gear.size():
+		gear[i] = RENAMED_ITEMS.get(gear[i], gear[i])
+	for slot: String in GEAR_SLOTS:
+		var worn := String(out.equipment.get(slot, ""))
+		if worn != "" and not gear.has(worn):
+			gear.append(worn)
+	if not gear.has("short_sword"):
+		gear.push_front("short_sword")
+	out.gear = gear
 	# Containers whose entries the game reads by shape.
 	out.skills = _unique_strings(out.skills)
 	out.dyes = _unique_strings(out.dyes)

@@ -2832,7 +2832,7 @@ func test_the_drowned_warden_gives_up_the_battle_suit() -> void:
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
 	await _until(func() -> bool: return not arena.fighting, 400)
 	check(not arena.fighting, "and the way back opens")
-	check(Shop.status("eolis_arms", 1, w.player) == "owned", "and no armor in the shops is better")
+	check(GameState.data.gear.has("battle_suit"), "and it is kept with your gear (pass 186)")
 
 
 func test_every_boss_marks_its_phases_on_the_health_bar() -> void:

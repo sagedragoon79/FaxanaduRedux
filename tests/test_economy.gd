@@ -702,7 +702,8 @@ func test_large_shield_guards_more() -> void:
 	p.input.block_held = true
 	await frames(3)
 	check(p.receive_attack(20, dummy, false) == "guarded" and p.hp == p.max_hp - 6, "a guarded 20 becomes 6 (hp %d)" % p.hp)
-	check(Shop.status("eolis_arms", 2, p) == "owned", "the Small Shield counts as owned once you have a better one")
+	check(Shop.status("apolune_armor", 1, p) == "owned", "the Large Shield shows as owned")
+	check(Shop.status("eolis_arms", 2, p) != "owned", "a shield you never had stays for sale (pass 186)")
 
 
 func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
@@ -718,7 +719,8 @@ func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
 	check(Shop.buy("daybreak_armor", 1, p), "bought the Magic Shield")
 	check(p.reflects and p.has_shield, "it reflects small shots on a parry")
 	check_near(p.guard_reduction, 0.7, 0.001, "and guards like the Large Shield")
-	check(Shop.status("apolune_armor", 1, p) == "owned", "the Large Shield counts as owned once you have it")
+	check(Shop.status("daybreak_armor", 1, p) == "owned", "it shows as owned")
+	check(Shop.status("apolune_armor", 1, p) != "owned", "a Large Shield you never had stays for sale (pass 186)")
 
 
 func test_elixir_revives_once_and_is_limited_to_one() -> void:
@@ -1172,9 +1174,9 @@ func test_the_final_tier_comes_with_the_spring_of_sky() -> void:
 	var arms: Array = GameData.shop("eolis_arms").stock
 	var blade := -1
 	for i in arms.size():
-		if arms[i].item == "giant_blade":
+		if arms[i].item == "dwarvish_broad_sword":
 			blade = i
-	check(blade >= 0 and int(arms[blade].price) == 2800, "Eolis Arms stocks the Giant Blade at 2,800 g")
+	check(blade >= 0 and int(arms[blade].price) == 2800, "Eolis Arms stocks the Dwarvish Broad Sword at 2,800 g")
 	check(not Shop.shelf("eolis_arms").has(blade), "but not before the Spring of Sky")
 	check(Shop.status("eolis_arms", blade, p) == "hidden" and not Shop.buy("eolis_arms", blade, p), "so it can't be bought")
 	var stores: Array = GameData.shop("daybreak_items").stock
@@ -1183,12 +1185,12 @@ func test_the_final_tier_comes_with_the_spring_of_sky() -> void:
 	check(Shop.status("daybreak_items", fruit, p) == "hidden", "off the shelf while the storm lasts")
 	GameState.set_flag("spring:sky")
 	check(Shop.shelf("eolis_arms").has(blade) and Shop.status("eolis_arms", blade, p) == "", "the sky road opens and the blade comes in")
-	check(Shop.buy("eolis_arms", blade, p) and GameState.data.equipment.blade == "giant_blade", "bought the Giant Blade")
+	check(Shop.buy("eolis_arms", blade, p) and GameState.data.equipment.blade == "dwarvish_broad_sword", "bought the Dwarvish Broad Sword")
 	check(p.gold == 7200 and p.reach_bonus == 16.0 and p.arc_bonus == 20.0, "its reach and arc are yours")
-	check(Shop.status("eolis_arms", 0, p) == "owned", "the Long Sword counts as owned")
+	check(Shop.status("eolis_arms", 0, p) == "", "the Long Sword is still for sale: only what you have counts as owned (pass 186)")
 	check(Shop.buy("daybreak_items", fruit, p) and Shop.status("daybreak_items", fruit, p) == "sold out", "the fruit is sold once")
-	GameState.data.equipment.blade = "dragon_slayer"
-	check(Shop.status("eolis_arms", blade, p) == "owned", "with the Dragon Slayer in hand the Giant Blade counts as owned")
+	GameState.wear("short_sword", p)
+	check(Shop.status("eolis_arms", blade, p) == "owned", "put down, the Broad Sword is still yours")
 
 
 func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
@@ -1706,3 +1708,54 @@ func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
 		if not src.contains("add_to_group(\"boss\")") or file in ["shadow_eura.gd", "evil_core.gd"]:
 			continue
 		check(src.contains("func punishable() -> bool") or src.contains("func segment_punishable("), "%s names its opening" % file)
+
+
+## Pass 186 (Sean): gear you buy or find is kept, and the Equipment page puts
+## any of it on; tempers stay with each blade. The Dwarvish Broad Sword (once
+## the Giant Blade) takes both hands: no guard or parry while you hold it.
+func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	GameState.set_flag("spring:sky")
+	p.gold = 20000
+	check(GameState.data.gear == ["short_sword"], "you start with the Short Sword (%s)" % [GameState.data.gear])
+	var buy := func(shop: String, id: String) -> bool:
+		var stock: Array = GameData.shop(shop).stock
+		for i in stock.size():
+			if stock[i].item == id:
+				return Shop.buy(shop, i, p)
+		return false
+	check(buy.call("eolis_arms", "long_sword") and buy.call("eolis_arms", "dwarvish_broad_sword"), "bought the Long Sword and the Broad Sword")
+	check(buy.call("eolis_arms", "small_shield"), "and a Small Shield")
+	check(GameState.data.gear.has("long_sword") and GameState.data.gear.has("dwarvish_broad_sword"), "both blades are kept (%s)" % [GameState.data.gear])
+	check(GameState.data.equipment.blade == "dwarvish_broad_sword" and GameState.two_handed(), "the new one goes in hand, two-handed")
+	check(not p.has_shield and not p.reflects, "so the shield stays on your back: no guard, no parry")
+	p.input.block_held = true
+	p.input.block_pressed = true
+	await frames(2)
+	check(not p.is_blocking, "Block does nothing while it is held")
+	p.input.block_held = false
+	GameState.data.tempers["long_sword"] = 2
+	GameState.wear("long_sword", p)
+	check(GameState.data.equipment.blade == "long_sword" and p.has_shield, "swapped back to the Long Sword, the shield comes to hand")
+	check(p.slash_damage == roundi(11 * (1.0 + 2 * GameState.TEMPER_BONUS)), "with the Long Sword's own tempers (%d)" % p.slash_damage)
+	GameState.wear("long_sword", p)
+	check(GameState.data.equipment.blade == "long_sword", "a blade can't be taken off")
+	GameState.wear("small_shield", p)
+	check(GameState.data.equipment.shield == "" and not p.has_shield, "the shield can")
+	GameState.wear("magic_shield", p)
+	check(GameState.data.equipment.shield == "", "gear you don't have can't be put on")
+	var rows := Menus.equipment_rows()
+	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
+	check(labels.slice(0, 4) == ["Blades", "Short Sword", "Long Sword", "Dwarvish Broad Sword"], "the Equipment page lists blades by tier (%s)" % [labels])
+	check(labels.has("Shields") and labels.has("Small Shield"), "and the shields you have")
+	check(rows[2].right == "Worn", "marking what you wear")
+	# A save keeps the gear, and an older save gets what it wore, renamed.
+	var src := GameState.fresh()
+	src.equipment = {"blade": "giant_blade", "armor": "leather_armor", "shield": "large_shield"}
+	src.tempers = {"giant_blade": 1}
+	src.erase("gear")
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.blade == "dwarvish_broad_sword" and int(got.tempers.dwarvish_broad_sword) == 1, "the Giant Blade is the Dwarvish Broad Sword, tempers kept")
+	check(got.gear == ["short_sword", "dwarvish_broad_sword", "leather_armor", "large_shield"], "an old save keeps what it wore (%s)" % [got.gear])

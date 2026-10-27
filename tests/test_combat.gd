@@ -356,15 +356,15 @@ func test_thunder_bolt_strikes_a_foe() -> void:
 
 
 
-func test_the_giant_blade_sweeps_wide_but_swings_slow() -> void:
+func test_the_dwarvish_broad_sword_sweeps_wide_but_swings_slow() -> void:
 	var room := _arena_with("E", Vector2i(6, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
 	var dummy: TrainingDummy = _find(room, TrainingDummy)
 	var plain := p._attack_rect().size
-	GameState.data.equipment.blade = "giant_blade"
+	GameState.data.equipment.blade = "dwarvish_broad_sword"
 	GameState.refresh_stats(p)
-	check(p.slash_damage == 15 and p.heavy_damage == 28, "it cuts for 15 and 28 (%d, %d)" % [p.slash_damage, p.heavy_damage])
+	check(p.slash_damage == 17 and p.heavy_damage == 32, "it cuts for 17 and 32 (%d, %d)" % [p.slash_damage, p.heavy_damage])
 	p.input.attack_pressed = true
 	await frames(1)
 	var big := p._attack_rect().size
@@ -372,7 +372,7 @@ func test_the_giant_blade_sweeps_wide_but_swings_slow() -> void:
 	var wait := p.combat.combo_cooldowns[0] * 1.3
 	check_near(p._attack_cooldown, wait - 1.0 / 60.0, 0.02, "and the swing takes 30% longer to recover")
 	await frames(3)
-	check(dummy.hp == TrainingDummy.HP - 15, "it strikes the dummy two tiles away (hp %d)" % dummy.hp)
+	check(dummy.hp == TrainingDummy.HP - 17, "it strikes the dummy two tiles away (hp %d)" % dummy.hp)
 	GameState.data.equipment.blade = "long_sword"
 	GameState.refresh_stats(p)
 	check(p.arc_bonus == 0.0 and p.swing_mult == 1.0, "other blades keep the plain arc and pace")

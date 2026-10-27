@@ -270,10 +270,11 @@ func _process(_delta: float) -> void:
 		for a: String in String(_args["give"]).split(","):
 			player.abilities[a] = true
 	if _args.has("equip") and _frames == 2:
-		# Screenshots: equip gear (e.g. --equip=giant_blade,magic_shield).
+		# Screenshots: equip gear (e.g. --equip=dwarvish_broad_sword,magic_shield).
 		for id: String in String(_args["equip"]).split(","):
-			GameState.data.equipment[String(GameData.item(id).kind)] = id
-		GameState.refresh_stats(player)
+			GameState.obtain_gear(id, player)
+		if menu.is_open:
+			menu.refresh()
 	if _args.has("dye") and _frames == 2:
 		# Screenshots: wear a cloak dye (e.g. --dye=lord_dye).
 		GameState.data.dye = String(_args["dye"])
@@ -486,6 +487,8 @@ func _debug_open() -> void:
 		Menus.open_controls(get_tree(), func() -> void: pass)
 	elif what == "journey":
 		Menus.open_journey(get_tree(), func() -> void: pass)
+	elif what == "equipment":
+		Menus.open_equipment(get_tree(), player, func() -> void: pass)
 
 
 func _unhandled_input(event: InputEvent) -> void:

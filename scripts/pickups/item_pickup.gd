@@ -77,12 +77,10 @@ func grant(p: Player) -> void:
 	elif kind == "dragon_slayer":
 		# Found, not bought: it goes straight into your hand (design bible 5.2, A10).
 		p.abilities[kind] = true
-		GameState.data.equipment.blade = kind
-		GameState.refresh_stats(p)
+		GameState.obtain_gear(kind, p)
 	elif kind == "battle_helmet":
 		# Found, not bought: it goes straight on, in its own slot (bible 5.2).
-		GameState.data.equipment.helmet = kind
-		GameState.refresh_stats(p)
+		GameState.obtain_gear(kind, p)
 		p.hp = p.max_hp
 		p.health_changed.emit(p.hp, p.max_hp)
 	elif kind == "joker_key":

@@ -12,7 +12,7 @@ var _facing := 1
 var _combo := 1
 var _heavy := false
 var _life := LIFE
-## Scales the smear for a bigger blade (the Giant Blade's arc).
+## Scales the smear for a bigger blade (the Dwarvish Broad Sword's arc).
 var _size := 1.0
 
 

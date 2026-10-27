@@ -7,7 +7,7 @@
 			{"item": "long_sword", "price": 400},
 			{"item": "leather_armor", "price": 200},
 			{"item": "small_shield", "price": 150},
-			{"item": "giant_blade", "price": 2800, "requires": "spring:sky"}
+			{"item": "dwarvish_broad_sword", "price": 2800, "requires": "spring:sky"}
 		]
 	},
 	"eolis_items": {

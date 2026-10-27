@@ -305,6 +305,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 		return [
 			{"label": "Resume", "detail": "Back to the Tree."},
 			oint,
+			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have."},
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
@@ -320,17 +321,19 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 				if p.use_ointment():
 					menu.close()
 			2:
-				open_options(tree, reopen)
+				open_equipment(tree, p, reopen)
 			3:
-				open_controls(tree, reopen)
+				open_options(tree, reopen)
 			4:
-				open_journey(tree, reopen)
+				open_controls(tree, reopen)
 			5:
+				open_journey(tree, reopen)
+			6:
 				menu.close()
 				Trials.abandon()
 				BossRush.abandon()
 				on_quit.call()
-			6:
+			7:
 				menu.close()
 				if BossRush.active():
 					var world := tree.get_first_node_in_group("world") as World
@@ -339,6 +342,49 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 				else:
 					leave_trial(tree)
 	menu.open("Paused", "%s. Rank %s." % [_room_title(tree), GameState.rank_name()], provider, on_select, _gold_footer(p))
+	return true
+
+
+## The Equipment page (pause menu, pass 186): every blade, armor, shield and
+## helmet you have, by slot. Choose one to put it on; choose what you wear
+## (not the blade) to take it off. Back returns to the pause menu.
+static func equipment_rows() -> Array:
+	var names := {"blade": "Blades", "armor": "Armor", "shield": "Shields", "helmet": "Helmets"}
+	var out := []
+	for slot: String in GameState.GEAR_SLOTS:
+		var have: Array = Array(GameState.data.gear).filter(func(id: String) -> bool: return String(GameData.item(id).get("kind", "")) == slot)
+		if have.is_empty():
+			continue
+		have.sort_custom(func(a: String, b: String) -> bool: return int(GameData.item(a).get("tier", 0)) < int(GameData.item(b).get("tier", 0)))
+		out.append({"label": names[slot], "header": true})
+		for id: String in have:
+			var item := GameData.item(id)
+			var worn := String(GameState.data.equipment.get(slot, "")) == id
+			var detail := String(item.desc)
+			if slot == "blade" and GameState.temper_level(id) > 0:
+				detail += "  Tempered %d of 2." % GameState.temper_level(id)
+			if slot == "shield" and GameState.two_handed():
+				detail += "  On your back while you hold a two-handed blade."
+			if worn and slot != "blade":
+				detail += "  Choose it again to take it off."
+			out.append({"label": item.name, "right": "Worn" if worn else "", "detail": detail, "enabled": true, "id": id})
+	return out
+
+
+static func open_equipment(tree: SceneTree, p: Player, back: Callable) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	var provider := func() -> Array: return equipment_rows()
+	var on_select := func(i: int) -> void:
+		var row: Dictionary = equipment_rows()[i]
+		if not row.has("id"):
+			return
+		GameState.wear(String(row.id), p)
+		GameState.capture(p)
+		Sfx.play("cloth", 0.0)
+	menu.open("Equipment", "What you wear and hold. Tempers stay with each blade.", provider, on_select)
+	menu.on_back = back
 	return true
 
 
