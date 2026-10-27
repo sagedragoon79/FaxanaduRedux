@@ -8,6 +8,16 @@ extends Node2D
 
 const SHEET_NAME := "player"
 const SHEET := "res://assets/sprites/player.png"
+## The hero's body sets (paper doll, design bible 13.4): one sheet per armor
+## worn, from Sean's Autosprite characters. A clip its set does not have yet
+## plays from SHEET_NAME.
+const ARMOR_SHEETS := {
+	"": "hero_base",
+	"leather_armor": "hero_leather",
+	"studded_mail": "hero_studded",
+	"full_plate": "hero_plate",
+	"battle_suit": "hero_battle",
+}
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -20,13 +30,15 @@ const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
 const OINTMENT := Color("f0c02e")
 const POISON := Color("8fd14f")
-## The Battle Helmet (pass 185, Sean's reference in armor/battle-helmet):
-## sea-green elven steel, gold trim, a swept wing crest with cyan runes.
-const HELM := Color("a8d4cc")
-const HELM_LIGHT := Color("d8f0ea")
-const HELM_DARK := Color("5e8c86")
-const HELM_TRIM := Color("c8a850")
-const HELM_RUNE := Color("7ff0e0")
+## The Battle Helmet layer: Sean's pixel helmet (tools/art/helmetgen.py), drawn
+## at the sheets' 2x density with its top-left this far from the frame's crown.
+const HELMET := preload("res://assets/sprites/battle_helmet.png")
+const HELMET_OFFSET := Vector2(-5.5, -3)
+## In a body set's run the head leans into the stride, so the helmet tips
+## forward with it (radians) and sits this far from the crown instead; upright,
+## the leaning hair would show over the visor.
+const HELMET_RUN_TILT := 0.26
+const HELMET_RUN_OFFSET := Vector2(-4, -3.5)
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
@@ -41,6 +53,8 @@ const DYE_SHADER := preload("res://shaders/cloak_dye.gdshader")
 
 ## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
 static var forced := ""
+## Off, the ranger's sheet plays everything (tests of the cloak it wears).
+static var body_sets := true
 
 var player: Player
 var squash_scale := Vector2.ONE
@@ -49,6 +63,8 @@ var pose := "idle"
 var anim := "idle"
 var anim_time := 0.0
 var frame := 0
+## The sheet `anim` plays from (the worn armor's set, or SHEET_NAME).
+var sheet := SHEET_NAME
 
 var _dye_worn := ""
 var _blink_time := 0.0
@@ -94,10 +110,12 @@ func _physics_process(delta: float) -> void:
 		# The reach cycles only while you climb; holding still, you hang.
 		rate = 1.6 if player.velocity.y != 0.0 else 0.0
 	anim_time += delta * rate
-	frame = frame_at(anim, anim_time)
+	sheet = sheet_for(anim)
+	frame = Sheet.frame_at(sheet, anim, anim_time)
 	if forced != "":
 		var parts := forced.split(":")
 		anim = parts[0]
+		sheet = sheet_for(anim)
 		frame = int(parts[1]) if parts.size() > 1 else 0
 	queue_redraw()
 
@@ -155,8 +173,23 @@ static func anim_for(p: Player, body_pose: String) -> String:
 			return "wall"
 		"walk":
 			# Until the sheet has a walk clip, the run plays slowed to the pace.
-			return "walk" if Sheet.has_anim(SHEET_NAME, "walk") else "run"
+			return "walk" if Sheet.has_anim(sheet_for("walk"), "walk") else "run"
 	return body_pose
+
+
+## The worn armor's body sheet, or "" when there is none for it.
+static func armor_sheet() -> String:
+	if not body_sets:
+		return ""
+	var worn := String(GameState.data.equipment.get("armor", ""))
+	var name: String = ARMOR_SHEETS.get(worn, "")
+	return name if name != "" and Sheet.exists(name) else ""
+
+
+## The sheet that plays `name`: the worn armor's set if it has the clip.
+static func sheet_for(name: String) -> String:
+	var body := armor_sheet()
+	return body if body != "" and Sheet.has_anim(body, name) else SHEET_NAME
 
 
 ## The frame of `name` shown at time `t`.
@@ -165,7 +198,7 @@ static func frame_at(name: String, t: float) -> int:
 
 
 func finished() -> bool:
-	return Sheet.finished(SHEET_NAME, anim, anim_time)
+	return Sheet.finished(sheet, anim, anim_time)
 
 
 ## Which way the sprite is drawn. A wall slide is drawn gripping the wall (the
@@ -178,13 +211,18 @@ static func look_dir(p: Player) -> int:
 ## The current frame's metadata: hand and neck points (relative to the feet,
 ## facing right) and, in a swing, the blade angle.
 func frame_info() -> Dictionary:
-	return Sheet.info(SHEET_NAME, anim, frame)
+	return Sheet.info(sheet, anim, frame)
 
 
 ## The neck in world space, where the scarf hangs from.
 func neck_position() -> Vector2:
 	var n: Array = frame_info().neck
-	return global_position + Vector2(n[0] * look_dir(player) * squash_scale.x, n[1] * squash_scale.y)
+	return point(Vector2(n[0], n[1]))
+
+
+## A frame point (relative to the feet, facing right) in world space.
+func point(p: Vector2) -> Vector2:
+	return global_position + Vector2(p.x * look_dir(player) * squash_scale.x, p.y * squash_scale.y)
 
 
 ## Draws one frame of the sheet (or its flat silhouette, tinted) with the feet at the origin.
@@ -201,12 +239,15 @@ static func dye_look() -> Array:
 	return [Color(String(item.color)), bool(item.get("glow", false))]
 
 
-## Puts the worn dye's shader on the sprite when the dye changes.
+## Puts the worn dye's shader on the sprite when the dye changes. The body
+## sets have no cloak (it will be a layer of its own), and their greens are a
+## tunic and elven steel, so they are drawn undyed.
 func _sync_dye() -> void:
-	if GameState.dye() == _dye_worn:
+	var worn := GameState.dye() if sheet == SHEET_NAME else ""
+	if worn == _dye_worn:
 		return
-	_dye_worn = GameState.dye()
-	var look := dye_look()
+	_dye_worn = worn
+	var look := dye_look() if worn != "" else []
 	if look.is_empty():
 		material = null
 		return
@@ -224,15 +265,17 @@ func _draw() -> void:
 		# Poison: a sickly green cast that throbs with each tick.
 		var t := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
 		tint = Color.WHITE.lerp(POISON, 0.35 + 0.2 * t)
-	draw_frame(self, anim, frame, tint, false)
+	Sheet.draw(self, sheet, anim, frame, tint, false)
 	var oint := player.ointment_left
 	if oint > 0.0:
 		# The Ointment: a gold sheen that pulses, and flickers as it runs out.
 		var a := 0.38 + 0.14 * sin(Time.get_ticks_msec() * 0.008)
 		if oint < 2.0 and int(oint * 8.0) % 2 == 0:
 			a *= 0.3
-		draw_frame(self, anim, frame, Color(OINTMENT, a), true)
+		Sheet.draw(self, sheet, anim, frame, Color(OINTMENT, a), true)
 	var info := frame_info()
+	if sheet != SHEET_NAME and player.cloak:
+		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
 	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet":
 		# Its own layer over the head (paper-doll): the hero's sheet is bare-headed.
@@ -265,41 +308,15 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 	draw_rect(Rect2((hand - dir * 2.0).round() - Vector2(1, 1), Vector2(2, 2)), HILT * tint)
 
 
-## The Battle Helmet, side-on and facing +x, its dome on `crown` (the top of
-## the head, found in the sheet's pixels by autosprite_import.head_point).
+## The Battle Helmet, facing +x (the node's scale mirrors it), its dome on
+## `crown` (the top of the head, found in the sheet's pixels by
+## autosprite_import.head_point).
 func _draw_helmet(crown: Vector2, tint: Color) -> void:
-	# Drawn at 0.85 scale around the crown so it fits the bare head snugly.
-	draw_set_transform(crown + Vector2(-0.5, 7.5), 0.0, Vector2(0.85, 0.85))
-	var o := Vector2.ZERO
-	var crest := PackedVector2Array([o + Vector2(-1, -9), o + Vector2(2, -11), o + Vector2(-3, -10.5), o + Vector2(-8, -7), o + Vector2(-4, -8)])
-	var dome := PackedVector2Array([o + Vector2(-4.5, -1), o + Vector2(-5, -5), o + Vector2(-3, -8.5), o + Vector2(0.5, -9.5), o + Vector2(3.5, -8), o + Vector2(5, -5),
-		o + Vector2(4.5, -4), o + Vector2(2, -4), o + Vector2(2.5, 0.5), o + Vector2(0.5, 0.5), o + Vector2(-0.5, -3), o + Vector2(-2, -3), o + Vector2(-3, 1)])
-	draw_colored_polygon(_grow(dome, 1.0), OUTLINE)
-	draw_colored_polygon(_grow(crest, 1.0), OUTLINE)
-	draw_colored_polygon(dome, HELM * tint)
-	# Shade along the back and the nape guard, light across the brow.
-	draw_colored_polygon(PackedVector2Array([o + Vector2(-4.5, -1), o + Vector2(-5, -5), o + Vector2(-3.5, -5), o + Vector2(-2, -3), o + Vector2(-3, 1)]), HELM_DARK * tint)
-	draw_rect(Rect2(o + Vector2(-1.5, -8.5), Vector2(4, 1)), HELM_LIGHT * tint)
-	# Gold trim: the brow band over the eye and the edge of the cheek guard.
-	draw_line(o + Vector2(-2.5, -4.5), o + Vector2(4.5, -4.5), HELM_TRIM * tint, 1.0)
-	draw_line(o + Vector2(2, -4), o + Vector2(2.5, 0.5), HELM_TRIM * tint, 1.0)
-	draw_colored_polygon(crest, HELM_LIGHT * tint)
-	var k := 0.6 + 0.4 * sin(Time.get_ticks_msec() * 0.004)
-	draw_rect(Rect2(o + Vector2(-4, -8), Vector2(1, 0.5)), Color(HELM_RUNE, k))
-	draw_rect(Rect2(o + Vector2(-2, -9), Vector2(1, 0.5)), Color(HELM_RUNE, k))
+	var run := anim == "run" and sheet != SHEET_NAME
+	draw_set_transform(crown, HELMET_RUN_TILT if run else 0.0)
+	var at := HELMET_RUN_OFFSET if run else HELMET_OFFSET
+	draw_texture_rect(HELMET, Rect2(at, HELMET.get_size() * 0.5), false, tint)
 	draw_set_transform(Vector2.ZERO)
-
-
-## `pts` pushed out from their center by `by` px (an outline behind a shape).
-static func _grow(pts: PackedVector2Array, by: float) -> PackedVector2Array:
-	var c := Vector2.ZERO
-	for q in pts:
-		c += q
-	c /= pts.size()
-	var out := PackedVector2Array()
-	for q in pts:
-		out.append(q + (q - c).normalized() * by)
-	return out
 
 
 func _draw_shield(at: Vector2, tint: Color) -> void:

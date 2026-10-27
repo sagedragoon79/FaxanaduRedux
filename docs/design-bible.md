@@ -296,7 +296,7 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - **Stacking with armor:** the helmet and the armor each cut what the other lets through, so the cuts multiply rather than add: damage taken is `(1 - armor) x (1 - helmet)`. Under the Battle Suit (60%) it lets 0.4 x 0.9 = 36% through (64% less damage); under Leather (15%), 76.5%. With no armor it is 10%. Damage taken is still at least 1.
 - **Why its own slot (Sean, pass 185):** in the shield's slot it replaced the shield, so players with the Magic Shield had to choose between the shield's parries and the helmet's mask. As a helmet it adds to every build.
 - **Old saves:** a save that wore it as a shield (`equipment.shield == "battle_helmet"`) wears it as a helmet, and its hand gets the Magic Shield: the helmet had guarded and turned shots exactly like the Magic Shield, and while it was worn every shield showed as owned in the shops, so nothing better could have been bought (`GameState.sanitize`).
-- **Drawing (paper-doll):** the hero's sheet is drawn bare-headed. The helmet is its own code-drawn layer (`PlayerVisual._draw_helmet`, after Sean's reference in `armor/battle-helmet/`: sea-green elven steel, a gold brow band and cheek guard, a swept wing crest with cyan runes), set on the crown of the head. `autosprite_import.head_point` finds the crown in each frame's pixels on import (the cloak masked out, a blade or fist opened away, a crown that jumps over both neighbours dropped back), so every frame of `player.json` carries a `head` point (manifest flag `"head": true`). A drawn helmet sheet from Sean can later replace the code layer on the same point.
+- **Drawing (paper-doll):** the hero's sheets are drawn bare-headed. The helmet is its own layer: Sean's pixel helmet (his Autosprite pixel conversion of the right-side reference, `armor/battle-helmet/pixel-right.png`, kept at its own pixel grid in `art/battle_helmet/right.png`), shrunk by `tools/art/helmetgen.py` to 19 sheet px wide (a little wider than the bare head at the 2x density), outlined and written to `assets/sprites/battle_helmet.png`. `PlayerVisual._draw_helmet` sets it on the crown of the head, mirrored with the facing. It replaced the pass-185 code-drawn helmet, which Sean found too round and shiny. `autosprite_import.head_point` finds the crown in each frame's pixels on import (the cloak masked out, a blade or fist opened away, a crown that jumps over both neighbours dropped back), so every frame of `player.json` and of the five body sets carries a `head` point (manifest flag `"head": true`).
 
 **Magic Shield (built pass 91):**
 - It guards 70%, like the Large Shield.
@@ -1270,6 +1270,31 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 - **Footsteps:** each step plays the sound of the ground underfoot (`Room.surface_at`): stone in Eolis, moss on the Trunk's living wood, iron on the Tower's plates, hollow planks on every one-way platform, and a squelch in sap. A room can name another surface with `surface:`. A landing layers the surface step under the land thud, louder the harder the fall. Since pass 181 the Mist's marsh is mud (`step_mud`: a wet slap as the boot goes in and a small suction pop as it pulls free), where it had borrowed the Trunk's moss; its towns' boardwalks stay plank, and the four rooms the dwarves built (the Scorched Hall, the Dry Cistern, the Sunken Chapel and the Spring of Mist) are stone. The Matriarch's Mire is mud.
 
 ---
+
+### 13.4 Hero body sets (paper doll)
+
+The new hero is Sean's Autosprite character HeroStranger_Base (purple-haired elf, 2026-10-27), replacing the hooded
+ranger clip by clip. The hero is drawn in layers so gear does not multiply animations:
+
+- **Body + armor:** one full sheet per armor look, five in all: `hero_base` (no armor, green tunic), `hero_leather`,
+  `hero_studded`, `hero_plate`, `hero_battle` (`PlayerVisual.ARMOR_SHEETS` maps the worn armor to its sheet). Each is
+  an Autosprite character of its own run through the same clip list. A clip a set lacks plays from the old `player`
+  sheet until it exists.
+- **Weapon, shield, helmet, cloak:** separate layers drawn from per-frame anchors the importer finds in each frame
+  (`detect: "hero"` in the manifest): `hand` (the leading fist, as the code rig's front hand), `head` (the crown of the
+  head, from `head_point`, for the helmet and the hood), `neck`, and `back` (the nape of the shoulders, where a cloak hangs). Anchors are per set and
+  per frame, so the sets do not need to be frame-synced. Attacks are drawn empty-handed.
+- **Scale:** all five share one scale, base idle = 46 world px (the ranger's height), so armor that stands taller or
+  bulkier (plate, Battle Suit: about 1 px) shows it. Clips are 512 px cells at 14 fps; walk and run play every frame
+  of one cycle, sped up until the planted foot keeps pace with the ground (run about 30 fps, walk up to 40).
+- **Cloak** (`scripts/player/cloak.gd`, code-drawn, no credits): Sean's Elven cloak from his side views
+  (`/mnt/project-files/armor/cloak-hood-up.jpg`, `cloak-hood-down.jpg`): ankle length, flaring behind, gold trim
+  down the front edge and the hem, a brooch at the shoulder. The cape is two verlet chains hung from the frame's
+  `neck` and `back` points, behind the body; the hood is drawn over the head from `head`. **Hood down in a town, up
+  everywhere else** (Sean, 2026-10-27; a town is a room where people stand and no foe or boss spawns,
+  `Room.is_town()`), raised or lowered over 0.35 s when that changes, and always down under a helmet. It takes the
+  worn dye's color (Warden Green is its own), so the 14 dyes need no extra art. The body sets themselves are drawn
+  undyed, and while a clip falls back to the ranger's sheet (which draws its own cloak) the layer hides.
 
 ## 14. Technical Architecture (Godot)
 

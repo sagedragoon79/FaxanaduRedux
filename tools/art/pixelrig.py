@@ -221,6 +221,10 @@ def write_sheet(name, cell, origin, animations, render, density=1):
             r[2] = seq or (r[2] if len(frames) == rig_frames else list(range(len(frames))))
             r[3] = fps or r[3]
             r[4] = r[4] if loop is None else loop
+    # Clips the code rig has no frames for (the hero's walk) come in whole.
+    for anim, (frames, seq, fps, loop) in imports.items():
+        if anim not in [r[0] for r in rendered]:
+            rendered.append([anim, frames, seq or list(range(len(frames))), fps or 12, bool(loop)])
     cols = max(len(frames) for _, frames, _, _, _ in rendered)
     rows = len(rendered)
     sheet = Image.new("RGBA", (cols * cw, rows * ch), (0, 0, 0, 0))

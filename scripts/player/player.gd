@@ -233,6 +233,7 @@ var _ladder_regrab := 0.0
 
 var visual: PlayerVisual
 var scarf: Scarf
+var cloak: Cloak
 
 var _coyote_timer := 0.0
 var _jump_buffer_timer := 0.0
@@ -307,6 +308,10 @@ func _ready() -> void:
 	scarf.player = self
 	scarf.visible = Sheet.flag(PlayerVisual.SHEET_NAME, "scarf", true)
 	add_child(scarf)
+	# The cloak over the body sets: its cape behind the body, its hood drawn by the visual.
+	cloak = Cloak.new()
+	cloak.player = self
+	add_child(cloak)
 	add_child(visual)
 
 	air_dash_charges = tuning.air_dash_charges + bonus_air_dashes
@@ -1760,6 +1765,8 @@ func teleport(pos: Vector2) -> void:
 	reset_physics_interpolation()
 	if scarf:
 		scarf.snap()
+	if cloak:
+		cloak.snap()
 	_refresh_air_moves()
 
 

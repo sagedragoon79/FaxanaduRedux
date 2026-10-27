@@ -5,6 +5,7 @@ extends Node2D
 const LIFE := 0.22
 const TINT := Color("7fe0a0")
 
+var _sheet := PlayerVisual.SHEET_NAME
 var _anim := "dash"
 var _frame := 0
 var _life := LIFE
@@ -13,6 +14,7 @@ var _life := LIFE
 func setup(p: Player) -> void:
 	global_position = p.global_position
 	scale = Vector2(p.facing, 1)
+	_sheet = p.visual.sheet
 	_anim = p.visual.anim
 	_frame = p.visual.frame
 	z_index = -1
@@ -26,4 +28,4 @@ func _physics_process(delta: float) -> void:
 
 
 func _draw() -> void:
-	PlayerVisual.draw_frame(self, _anim, _frame, Color(TINT, 0.55 * _life / LIFE), true)
+	Sheet.draw(self, _sheet, _anim, _frame, Color(TINT, 0.55 * _life / LIFE), true)

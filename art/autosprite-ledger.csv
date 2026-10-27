@@ -80,3 +80,4 @@ date,asset,operation,credits,result,notes
 2026-10-23,hero drink arm gap,re-import (manifest clear: grey background closed in between arm and face in frames 40 and 20),0,ok,Sean spotted it; balance 22
 2026-10-23,Foreman walk face,re-import (manifest face: frame 2's face pasted on every walk frame, aligned on the helmet),0,ok,Sean: mouth moved as if talking; balance 22
 2026-10-23,hero wall slide fleck,re-import (manifest paint: pale blot on the boot in all six frames),0,ok,Sean spotted it; balance 22
+2026-10-27,hero body sets (HeroStranger_Base + Leather/Chain/Plate/ElvenPlate characters by Sean),download idle/walk/run sheets (list_characters/get_spritesheet),0,ok,import check of Sean's 5 armor sets: hero_base/leather/studded/plate/battle in art/autosprite/; custom clips (a second run) left out

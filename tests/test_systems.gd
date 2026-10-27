@@ -1458,8 +1458,10 @@ func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	var quick := Trials.finish()
 	check(quick.dye == String(t.dye) and GameState.owns_dye(quick.dye) and GameState.dye() == quick.dye, "within it the cloak takes the trial's dye (%s)" % quick.dye)
 	check(Shop.shelf(shop).has(index), "and it is on Ilse's shelf")
+	PlayerVisual.body_sets = false  # the ranger's cloak takes dyes; the body sets have none yet
 	await frames(2)
 	check(not PlayerVisual.dye_look().is_empty() and p.visual.material != null, "the cloak is recolored")
+	PlayerVisual.body_sets = true
 	GameState.data.dye = ""
 	check(Shop.status(shop, index, p) == "" and Shop.buy(shop, index, p) and GameState.dye() == String(t.dye), "Ilse puts it back on for nothing")
 	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)

@@ -1564,6 +1564,7 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	var stock: Array = GameData.shop("eolis_dyes").stock
 	var sold := stock.filter(func(e: Dictionary) -> bool: return int(e.price) > 0)
 	check(sold.size() == 6, "she sells six dyes (%d)" % sold.size())
+	PlayerVisual.body_sets = false  # the ranger's cloak takes dyes; the body sets have none yet
 	check(GameState.dye() == "warden_dye" and PlayerVisual.dye_look().is_empty(), "a new game wears Warden Green, the cloak's own")
 	check(p.visual.material == null, "so the sprite is drawn as it is")
 	check(Shop.status("eolis_dyes", 0, p) == "worn", "which shows as worn")
@@ -1583,6 +1584,7 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	check(not Completion.award({"percent": 99}) and not GameState.flag("lord"), "99% of the world is not enough")
 	check(Completion.award({"percent": 100}) and Shop.shelf("eolis_dyes").has(lord), "100% puts it on the shelf")
 	check(Shop.buy("eolis_dyes", lord, p) and PlayerVisual.dye_look()[1], "it is given, and it glows")
+	PlayerVisual.body_sets = true
 
 
 ## A plateau that runs down a six-tile ramp, and one that ends at a lip over a pit.

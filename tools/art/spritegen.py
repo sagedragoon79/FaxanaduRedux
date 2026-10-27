@@ -27,6 +27,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pixelrig  # noqa: E402
 from pixelrig import PAL, Canvas, ik, mat, reach, write_sheet  # noqa: E402
 
 CELL = 64
@@ -258,9 +259,19 @@ ANIMATIONS = [
 ]
 
 
+# The hero's body sets (paper doll, design bible 13.4): one sheet per armor, each holding only
+# the clips imported for it (art/autosprite/manifest.json); the game falls back to "player".
+ARMOR_SHEETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle"]
+
+
 def main():
     anims = [(name, fn(), seq, fps, loop) for name, fn, seq, fps, loop in ANIMATIONS]
     write_sheet("player", (CELL, CELL), ORIGIN, anims, render)
+    manifest = pixelrig.autosprite_import.load_manifest()
+    for sheet in ARMOR_SHEETS:
+        clips = manifest.get(sheet, {}).get("animations", {})
+        if clips:
+            write_sheet(sheet, (CELL, CELL), ORIGIN, [a for a in anims if a[0] in clips], render)
 
 
 if __name__ == "__main__":

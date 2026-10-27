@@ -500,6 +500,37 @@ class Importer:
         return meta
 
 
+    def detect_hero(self, img, meta):
+        """Anchors for the layers drawn over a body set (weapon, shield, helmet, cloak), found
+        in the frame's pixels so every armor set and clip gets its own: "neck", "back" (the
+        nape of the shoulders, where a cloak hangs from) and "hand" (the leading fist: the
+        forward-most point of the arm band, as the code rig's front hand). The "head" (the
+        crown, for the helmet and the hood) comes from head_point: the entry sets "head"."""
+        meta = dict(meta)
+        a = np.asarray(img)
+        solid = a[..., 3] > 0
+        ys, xs = np.nonzero(solid)
+        if len(ys) == 0:
+            return meta
+        top, h = ys.min(), ys.max() - ys.min() + 1
+        row = int(top + 0.16 * h)
+        cols = np.nonzero(solid[row])[0]
+        meta["neck"] = self.to_point((cols.min() + cols.max()) / 2.0, row)
+        row = int(top + 0.21 * h)
+        cols = np.nonzero(solid[row])[0]
+        meta["back"] = self.to_point(cols.min() + 0.03 * h, row)
+        band = solid.copy()
+        band[:int(top + 0.2 * h)] = False
+        band[int(top + 0.56 * h):] = False
+        by, bx = np.nonzero(band)
+        if len(by):
+            front = bx.max()
+            near = bx >= front - 0.02 * h
+            # The fist's middle, half a fist in from its leading edge.
+            meta["hand"] = self.to_point(front - 0.025 * h, by[near].mean())
+        return meta
+
+
 def _eye_center(grid):
     """Center of the largest patch of eye-white (the two lightest stone shades)."""
     white = np.isin(grid, ["stone-6", "stone-7"])
@@ -566,6 +597,8 @@ def imported(name, cell, origin, code_meta):
             meta.update(spec.get("meta", {}))
             if cfg.get("detect") == "elf":
                 meta = imp.detect(grid, meta)
+            elif cfg.get("detect") == "hero":
+                meta = imp.detect_hero(img, meta)
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
             if cfg.get("head"):
@@ -581,6 +614,15 @@ def imported(name, cell, origin, code_meta):
             prev, here, after = heads[i - 1], heads[i], heads[i + 1]
             if prev and here and after and here[1] < min(prev[1], after[1]) - 2:
                 frames[i][2]["head"] = [here[0], round((prev[1] + after[1]) / 2)]
+        if cfg.get("detect") == "hero" and all(m.get("head") for _, _, m in frames):
+            # A body set's crown wobbles a pixel or two with the hair from frame to frame,
+            # which would shake the helmet: take the median of five (around the loop).
+            heads = [m["head"] for _, _, m in frames]
+            n = len(heads)
+            for i in range(n):
+                near = [heads[(i + k) % n] if spec.get("loop") else heads[min(max(i + k, 0), n - 1)]
+                        for k in range(-2, 3)]
+                frames[i][2]["head"] = [int(np.median([p[0] for p in near])), int(np.median([p[1] for p in near]))]
         if "height" in spec:
             imp.set_reference(source_frames(ref, imp.dir)[0], cfg["height"])
         out[anim] = (frames, spec.get("seq"), spec.get("fps"), spec.get("loop"))
