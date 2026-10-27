@@ -199,8 +199,7 @@ func _draw() -> void:
 		for i in 4:
 			var a := TAU * i / 4.0 + 0.4
 			_px(roundi(cos(a) * 15.0), -9 + roundi(sin(a) * 9.0), 1, 1, Color(EYE_HOT, 0.8), 1.0)
-	if flashing():
-		_px(-14, -18, 30, 18, Color(1, 1, 1), 0.55)
+	wash(flashing())
 	draw_set_transform(Vector2.ZERO)
 
 

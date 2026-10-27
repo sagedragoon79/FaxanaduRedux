@@ -136,8 +136,7 @@ func _draw() -> void:
 		_draw_folded(t)
 	else:
 		_draw_open(t)
-	if white:
-		_px(-14, -44, 30, 44, Color(1, 1, 1), 0.55)
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 
 

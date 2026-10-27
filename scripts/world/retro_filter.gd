@@ -7,11 +7,14 @@ extends CanvasLayer
 
 const SHADER := preload("res://shaders/retro.gdshader")
 const LAYER := 4
+## The world's view in world pixels is 360 tall (game.gd's BASE_SIZE).
+const VIEW_HEIGHT := 360.0
 ## The 4:3 frame's shape (the shader's frame_aspect). A retro room is one screen
 ## wide, so the columns outside the frame must be wall: nothing there can be seen.
 const FRAME_ASPECT := 4.0 / 3.0
 
 var _rect: ColorRect
+var _mat: ShaderMaterial
 
 
 func _ready() -> void:
@@ -20,15 +23,26 @@ func _ready() -> void:
 	_rect = ColorRect.new()
 	_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var mat := ShaderMaterial.new()
-	mat.shader = SHADER
-	_rect.material = mat
+	_mat = ShaderMaterial.new()
+	_mat.shader = SHADER
+	_rect.material = _mat
 	add_child(_rect)
 
 
 ## Turns the filter on in a retro room and off everywhere else.
 func set_room(room: Room) -> void:
 	visible = is_retro(room)
+	if visible:
+		_mat.set_shader_parameter("detail", detail_for(get_viewport()))
+
+
+## Render pixels per world pixel in `vp`: the game's world view draws at
+## GameCamera.DETAIL with a margin, a bare window (tests) at 1.
+static func detail_for(vp: Viewport) -> float:
+	if vp == null:
+		return 1.0
+	var h: float = vp.get_visible_rect().size.y
+	return maxf(1.0, floorf(h / VIEW_HEIGHT))
 
 
 static func is_retro(room: Room) -> bool:

@@ -556,8 +556,7 @@ func _draw() -> void:
 		var k := 0.5 + 0.5 * absf(sin(state_time * 14.0))
 		_px(tip.x - 1, tip.y - 6, 3, 13, Color(STEEL_LIGHT, 0.9 * k), 1.0)
 		_px(tip.x - 6, tip.y - 1, 13, 3, Color(STEEL_LIGHT, 0.9 * k), 1.0)
-	if white:
-		_px(-16, -62, 32, 62, Color(1, 1, 1), 0.55)
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 
 

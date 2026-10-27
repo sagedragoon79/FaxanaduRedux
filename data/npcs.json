@@ -273,5 +273,9 @@
 			"Then the king wanted only the black stone, and the barges came back empty but for his men. Quiet men. Wet men.",
 			"The spring's back, so the boardwalks are back. Victim lies west beyond the Lantern Landing, if you are going visiting."
 		]
+	},
+	"dartmoor_keymaster": {
+		"name": "Keymaster Sigrun", "role": "shop", "shop": "dartmoor_keys",
+		"look": {"robe": "#3a4a52", "trim": "#e0b050", "skin": "#cd8c51", "hair": "#8a6a4a", "hat": "cap", "build": "dwarf", "beard": true}
 	}
 }

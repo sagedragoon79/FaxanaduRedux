@@ -925,3 +925,351 @@ func test_damage_numbers_show_what_each_blow_dealt() -> void:
 	check(Settings.damage_numbers, "the choice is saved")
 	_restore()
 	check(not Settings.damage_numbers, "and the suite runs on the default, off")
+
+
+## Pass 155: the third trial, the Mantra of Thorns, is a pogo course: a spike
+## corridor, a pit under a chain of thorn bulbs, and two bulbs up to a hanging
+## slab that nothing else reaches. A simple pogo-playing hand clears it in the
+## real game: it walks right, jumps off edges, steers over the next bulb and
+## strikes down whenever it falls.
+func test_the_mantra_of_thorns_is_cleared_by_pogo() -> void:
+	var t := Trials.find("thorns")
+	check(Trials.built().has(t) and t.needs == ["glove", "mattock"], "the Mantra of Thorns is built, for the Glove and the Mattock")
+	check(t.desc != "", "and the Guru describes it")
+	# Without the Mattock the bell is out of reach (the checker).
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bare := Reach.new({t.room: text}, {"glove": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 90, 7)), "without the Mattock the bell can't be reached")
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["mattock"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/thorns", "the Guru sends you there")
+	var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
+	var bulbs: Array = []
+	for c in w.room.get_children():
+		if c is ThornBulb:
+			bulbs.append(c)
+	bulbs.sort_custom(func(a: Node2D, b: Node2D) -> bool: return a.global_position.x < b.global_position.x)
+	check(bulbs.size() == 7, "seven thorn bulbs hang in the air (%d)" % bulbs.size())
+	var done := {}
+	var pogos := 0
+	var f := 0
+	while f < 60 * 30 and not bell.rung:
+		var on := p.is_on_floor()
+		var target: Node2D = null
+		for b: Node2D in bulbs:
+			if not done.has(b) and b.global_position.x > p.global_position.x - 24.0 and b.global_position.x < p.global_position.x + 140.0:
+				target = b
+				break
+		p.input.move_x = 1
+		if on:
+			done.clear()
+			var off_edge := not w.room.is_solid_at(p.global_position + Vector2(10, 4))
+			p.input.jump_pressed = off_edge
+			p.input.jump_held = off_edge
+		elif target != null and p.velocity.y > -100.0:
+			var dx := target.global_position.x - p.global_position.x
+			p.input.move_x = 0 if absf(dx) < 3.0 else int(signf(dx))
+		var falling := not on and p.velocity.y > 0.0
+		p.input.down = falling
+		p.input.attack_pressed = falling and f % 4 == 0
+		var vy := p.velocity.y
+		await frames(1)
+		f += 1
+		if vy > 0.0 and p.velocity.y < -300.0:
+			pogos += 1
+			if target != null and absf(target.global_position.x - p.global_position.x) < 30.0:
+				done[target] = true
+	check(bell.rung, "the pogo hand rings the bell (%.1f s, %d pogos)" % [f / 60.0, pogos])
+	check(pogos >= 5, "by pogo (%d bounces)" % pogos)
+	await frames(int(TrialGoal.RING * 60) + 10)
+	w.queue_free()
+	Trials.abandon()
+
+
+## Bible 11: the boss rush opens at 100% and runs every guardian again in
+## order, each through the door you first came in by, with a third of your
+## health mended between fights. It wins nothing and plays no ending; the clock
+## and its best time are kept; a killing blow ends it and sends you back whole.
+func test_the_boss_rush_runs_every_guardian_again() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(5)
+	check(not BossRush.unlocked() and not Menus._rush_row().enabled, "the rush is sealed before 100%")
+	GameState.set_flag("lord")
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+		check(w.has_room(String(pair[1])), "%s's arena exists" % pair[0])
+	check(Menus._rush_row().enabled, "and open after")
+	var flags_before: Dictionary = GameState.data.flags.duplicate()
+	var rings_before: Array = GameState.data.rings.duplicate()
+	var gold_before := p.gold
+	var back := p.global_position
+	p.hp = 3
+	BossRush.start(w, p)
+	await frames(5)
+	check(p.hp == p.max_hp, "the rush begins whole")
+	var n := 0
+	for pair: Array in BossRush.ORDER:
+		var boss_id := String(pair[0])
+		check(w.room.id == String(pair[1]), "rush %d is %s's arena (%s)" % [n + 1, boss_id, w.room.id])
+		check(BossRush.current_boss() == boss_id, "on %s" % boss_id)
+		if n < 2:
+			check(Music.track == BossRush.MUSIC, "%s's arena waits under the trials' theme (%s)" % [boss_id, Music.track])
+		var arena: BossArena = w.get_tree().get_first_node_in_group("boss_arena")
+		check(arena != null and arena.boss_id == boss_id, "%s's arena waits" % boss_id)
+		if arena == null:
+			break
+		# Walk in from the door until the fight starts.
+		var center := w.room.size_tiles.x * Room.TILE * 0.5
+		for i in 300:
+			if arena.fighting:
+				break
+			p.input.move_x = int(signf(center - p.global_position.x))
+			p.input.jump_pressed = i % 40 == 0
+			p.input.jump_held = i % 40 < 10
+			await frames(1)
+		p.input.clear()
+		check(arena.fighting and arena.boss != null, "%s fights again" % boss_id)
+		if not arena.fighting:
+			break
+		if n == 0:
+			p.hp = 4
+		if n == 0:
+			check(Music.track != BossRush.MUSIC, "the boss brings its own music (%s)" % Music.track)
+		Sfx.recent.clear()
+		arena.boss.defeated.emit()
+		await frames(5)
+		if n < BossRush.ORDER.size() - 1:
+			check(Sfx.recent.has("rush_mend") and Music.track == BossRush.MUSIC, "%s down: the bell mends you, the theme returns" % boss_id)
+		else:
+			check(Sfx.recent.has("rush_won") and Sfx.recent.has("trial_record"), "the last down: the bell rings the win, and a first rush is a best")
+		if n == 0:
+			check(p.hp == 4 + ceili(p.max_hp / 3.0) and p.mp == p.max_mp, "a third of your health and all your magic mended (%d)" % p.hp)
+		n += 1
+		await frames(int(BossRush.NEXT_DELAY * 60) + 10)
+	check(n == BossRush.ORDER.size(), "all %d guardians fought (%d)" % [BossRush.ORDER.size(), n])
+	check(not BossRush.active() and w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0,
+		"the rush won, the mantra carries you back to the Guru")
+	check(GameState.data.flags == flags_before and GameState.data.rings == rings_before and p.gold == gold_before,
+		"nothing is won again")
+	check(int(GameState.data.get("clears", 0)) == 0, "and the Evil One's fall plays no ending")
+	var best := BossRush.best()
+	check(best > 1.0 and best < INF, "the best time is kept (%.1f s)" % best)
+	check(Menus._rush_row().right == Trials.format_time(best), "and shown by the Guru")
+	# A killing blow ends the rush and returns you whole.
+	BossRush.start(w, p)
+	await frames(5)
+	p.hp = 2
+	p._invuln_timer = 0.0
+	Sfx.recent.clear()
+	p.take_damage(5)
+	check(Sfx.recent.has("rush_fall"), "a fall tolls the bell low")
+	await frames(5)
+	check(not BossRush.active() and not p.dead and p.hp == p.max_hp, "a killing blow ends the rush, and you live")
+	check(w.room.id == "test/a", "back at the Guru")
+	check(BossRush.best() == best, "a fallen rush keeps no time")
+	w.queue_free()
+	BossRush.abandon()
+
+
+## Pass 158: the boss rush's edges. A fall while the mantra is mid-fade waits
+## for the fade and then carries you back, once; the clock stops at the fall;
+## no shrine on the way refills or saves you; no one stands in an arena; a
+## world freed mid-rush leaves no timer behind; and a new game starts clean.
+func test_the_boss_rush_holds_at_its_edges() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(5)
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+	GameState.set_flag("lord")
+	# No one stands in the fight: King Grieve's steward waits only outside a rush.
+	w._enter("dartmoor/throne_hall")
+	check(w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "the steward stands in the throne hall after the king falls")
+	BossRush.begin("test/a", cell_feet(5, 16))
+	BossRush.run.index = 7
+	w.travel_to_door("dartmoor/throne_hall", BossRush.ENTRY_DOOR)
+	await frames(3)
+	check(not w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "but not in the rush's arena")
+	# No rest on the way: the shrine by the Zenis gate neither refills nor saves.
+	BossRush.run.index = 8
+	BossRush.go(w)
+	await frames(3)
+	check(w.room.id == "dartmoor/zenis_gate", "on to the Zenis gate")
+	var shrine: SaveShrine = null
+	for c in w.room.get_children():
+		if c is SaveShrine:
+			shrine = c
+	check(shrine != null, "whose shrine stands by the way in")
+	p.hp = 3
+	var saved_room = GameState.data.get("save_room", "")
+	shrine.interact(p)
+	check(p.hp == 3 and GameState.data.get("save_room", "") == saved_room, "the shrine allows no rest in the rush")
+	# A fall while the world is mid-fade waits for it, and comes once.
+	var banners := [0]
+	var count := func(_a: String, _b: String) -> void: banners[0] += 1
+	GameState.banner.connect(count)
+	w.busy = true
+	p._invuln_timer = 0.0
+	p.take_damage(99)
+	var at_fall := float(BossRush.run.time)
+	p._invuln_timer = 0.0
+	p.take_damage(99)
+	check(not p.dead and BossRush.active(), "mid-fade the fall waits, and you live")
+	await frames(30)
+	check(is_equal_approx(float(BossRush.run.time), at_fall), "the clock stops at the fall")
+	check(w.room.id == "dartmoor/zenis_gate", "nothing moves while the world is busy")
+	w.busy = false
+	await frames(12)
+	check(not BossRush.active() and w.room.id == "test/a" and p.hp == p.max_hp, "once it settles, back to the Guru whole")
+	check(banners[0] == 1, "and the rush ends once (%d banners)" % banners[0])
+	GameState.banner.disconnect(count)
+	# A world freed while the next arena is pending leaves nothing behind.
+	BossRush.begin("test/a", cell_feet(5, 16))
+	BossRush.on_boss_down(w, p)
+	check(BossRush.active() and int(BossRush.run.index) == 1, "a boss down: on to the next")
+	w.queue_free()
+	await frames(int(BossRush.NEXT_DELAY * 60) + 10)
+	check(true, "the pending move finds the world gone and does nothing")
+	# A new game never starts in a rush.
+	var w2 := make_world(_temple(), "test/a", cell_feet(5, 16))
+	check(not BossRush.active() and not Trials.active(), "a new world starts clean")
+	w2.queue_free()
+
+
+## Pass 160: the Mantra of Winds, the fourth trial, opened with Thorns by the
+## second spring and built for the Glove and the Wing Boots. Ride a current over
+## the spikes, climb a wall into a second, take a double jump to a high plank,
+## and drop out of the last current over the bell (ride it on and it throws you
+## onto spikes). The mantra-space has no weather: its winds never turn.
+func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
+	var t := Trials.find("winds")
+	check(Trials.built().has(t) and t.needs == ["glove", "boots"] and t.desc != "", "the Mantra of Winds is built, for the Glove and the Wing Boots")
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bell := Reach.key(t.room, 86, 11)
+	for kit: Dictionary in [{"glove": true, "boots": true}, {"glove": true, "boots": true, "sky_spring": true}]:
+		var reach := Reach.new({t.room: text}, kit)
+		check(reach.reachable(reach.spot_of(t.room, "P")).has(bell), "the bell is reached with %s" % [kit.keys()])
+	var bare := Reach.new({t.room: text}, {"glove": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(bell), "without the Wing Boots it is not")
+	var calm_text := text.replace(">", ".")
+	var calm := Reach.new({t.room: calm_text}, {"glove": true, "boots": true, "stride": true})
+	check(not calm.reachable(calm.spot_of(t.room, "P")).has(bell), "and with no wind, not even with the Stride")
+	# The Guru keeps it sealed, and says why, until the boots are found.
+	GameState.new_game()
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.data.abilities["glove"] = true
+	check(Trials.is_open(t) and not Trials.ready(t) and Trials.missing(t) == ["Wing Boots"], "two springs open it, but it wants the Wing Boots (%s)" % [Trials.missing(t)])
+	GameState.data.abilities["boots"] = true
+	check(Trials.ready(t), "and with them it is ready")
+	# In the real game: the first current carries you over the spikes to the pillar.
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:mist")
+	GameState.set_flag("spring:sky")
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["boots"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/winds", "the Guru sends you there")
+	var winds := w.room.get_children().filter(func(c: Node) -> bool: return c is WindCurrent)
+	check(winds.size() == 3 and winds.all(func(c: WindCurrent) -> bool: return c.dir() == 1), "three currents, all blowing east even with the Spring of Sky restored")
+	var landed := false
+	# Run to the ledge's lip and jump into the current, then let it carry you.
+	var jumped := -1
+	for f in 300:
+		var x := p.global_position.x / Room.TILE
+		if jumped < 0 and x > 7.6:
+			jumped = f
+		p.input.move_x = 1 if jumped < 0 or f < jumped + 12 else 0
+		p.input.jump_pressed = f == jumped
+		p.input.jump_held = jumped >= 0 and f < jumped + 16
+		await frames(1)
+		if jumped >= 0 and f > jumped + 20 and p.is_on_floor():
+			landed = true
+			break
+	var col := int(p.global_position.x / Room.TILE)
+	check(landed and col >= 35 and col <= 39 and absf(p.global_position.y - (16 * Room.TILE)) < 2.0,
+		"jump into the first current and it carries you over the spikes to the pillar (col %d, row %.1f)" % [col, p.global_position.y / Room.TILE])
+	w.queue_free()
+	Trials.abandon()
+
+
+## Pass 162: the Mantra of Stillness, the fifth trial, opened by the third
+## spring and built for the Glove and the Hour Glass. Still a fall and climb its
+## footholds, cross a pit on a curtain of water that hangs from the void, and
+## climb a long fall with a dry niche halfway to wait out the glass.
+func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
+	var t := Trials.find("stillness")
+	check(Trials.built().has(t) and t.needs == ["glove", "hourglass"] and t.desc != "", "the Mantra of Stillness is built, for the Glove and the Hour Glass")
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bell := Reach.key(t.room, 68, 7)
+	var reach := Reach.new({t.room: text}, {"glove": true, "hourglass": true})
+	var nodes := reach.reachable(reach.spot_of(t.room, "P"))
+	check(nodes.has(bell), "the bell is reached with the Glove and the Hour Glass")
+	check(nodes.has(Reach.key(t.room, 50, 19)), "the dry niche halfway up the last fall is a place to wait")
+	var bare := Reach.new({t.room: text}, {"glove": true, "boots": true, "stride": true, "mattock": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 20, 38)), "without the glass not even the first ledge is in reach")
+	GameState.new_game()
+	for s: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + s)
+	GameState.data.abilities["glove"] = true
+	check(Trials.is_open(t) and Trials.missing(t) == ["Hour Glass"], "three springs open it, but it wants the Hour Glass (%s)" % [Trials.missing(t)])
+	# In the real game: still the first fall and climb it to the ledge above.
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	for s: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + s)
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["hourglass"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/stillness", "the Guru sends you there")
+	var falls := w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
+	check(falls.size() == 3, "three falls of time-locked water (%d)" % falls.size())
+	for f in 120:
+		p.input.move_x = 1 if p.global_position.x < 13.5 * Room.TILE else 0
+		await frames(1)
+	p.input.move_x = 0
+	p.input.hourglass_pressed = true
+	await frames(1)
+	p.input.hourglass_pressed = false
+	# A short hop from each foothold to the next, three rows up.
+	var top := INF
+	var hop := -100
+	for f in 140:
+		if p.is_on_floor() and f > hop + 3:
+			hop = f
+		p.input.jump_pressed = f == hop
+		p.input.jump_held = f < hop + 15
+		await frames(1)
+		top = minf(top, p.global_position.y)
+	p.input.jump_held = false
+	check(top <= 40.0 * Room.TILE + 2.0, "jumping up the stilled fall reaches its top foothold (row %.1f)" % (top / Room.TILE))
+	check(p.safe_position.y > 50.0 * Room.TILE, "a foothold of stilled water is never a footing to be set back to (row %.1f)" % (p.safe_position.y / Room.TILE))
+	for f in 40:
+		p.input.move_x = 1
+		p.input.jump_pressed = f == 0
+		p.input.jump_held = f < 10
+		await frames(1)
+	p.input.move_x = 0
+	await frames(30)
+	check(p.global_position.x > 15.0 * Room.TILE and absf(p.global_position.y - 39.0 * Room.TILE) < 2.0,
+		"and steps off onto the ledge before time runs on (col %.1f, row %.1f)" % [p.global_position.x / Room.TILE, p.global_position.y / Room.TILE])
+	w.queue_free()
+	Trials.abandon()
+

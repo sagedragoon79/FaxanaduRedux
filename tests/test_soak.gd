@@ -1324,3 +1324,52 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 	print("  Boss frames (average/99th): %s" % ", ".join(report))
 	check(report.size() == BOSS_ROOMS.size(), "every boss fight ran (%d)" % report.size())
 	check(problems.is_empty(), "every fight holds the budget and loads nothing mid-fight: %s" % [problems])
+
+
+## Pass 158: the boss rush moves through thirteen arenas back to back, so each
+## must load quickly behind its fade; and a flurry of damage numbers frees itself
+## and keeps the frame inside budget.
+func test_the_boss_rush_and_damage_numbers_stay_lean() -> void:
+	var w := make_world({}, "eolis/guru_temple")
+	await frames(5)
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+	BossRush.begin("eolis/guru_temple", w.player.global_position)
+	var worst := 0.0
+	var worst_room := ""
+	var lines: Array[String] = []
+	for i in BossRush.ORDER.size():
+		BossRush.run.index = i
+		var t0 := Time.get_ticks_usec()
+		BossRush.go(w)
+		await frames(1)
+		var ms := (Time.get_ticks_usec() - t0) / 1000.0
+		lines.append("%s %.1f ms" % [BossRush.ORDER[i][1], ms])
+		if ms > worst:
+			worst = ms
+			worst_room = String(BossRush.ORDER[i][1])
+		await frames(4)
+	print("  rush arenas: " + ", ".join(lines))
+	# The load happens behind the fade to black; the first room of a zone pays
+	# for its tileset (about 190 ms here), later ones about 30 ms. CI is slower.
+	check(worst < 500.0, "every rush arena loads behind the fade in under 500 ms (worst %s, %.1f ms)" % [worst_room, worst])
+	BossRush.abandon()
+	# A flurry: ten numbers a frame for two seconds.
+	var was := Settings.damage_numbers
+	Settings.damage_numbers = true
+	var base := w.room.get_child_count()
+	var total := 0
+	for f in 120:
+		var t0 := Time.get_ticks_usec()
+		for k in 10:
+			DamageNumber.spawn(w.room, w.player.global_position + Vector2(k * 6, -40), 3 + k, "heavy" if k == 0 else "hit")
+		await frames(1)
+		total += Time.get_ticks_usec() - t0
+	var peak := w.room.get_child_count() - base
+	check(peak <= 10 * int(ceilf(DamageNumber.LIFE * 60.0)) + 10, "numbers free themselves as they go (%d live)" % peak)
+	await frames(int(DamageNumber.LIFE * 60.0) + 5)
+	check(w.room.get_child_count() == base, "and none are left after (%d)" % (w.room.get_child_count() - base))
+	var avg_ms := total / 120.0 / 1000.0
+	check(avg_ms < 16.6, "a frame of numbers averages under the 60 fps budget (%.2f ms)" % avg_ms)
+	Settings.damage_numbers = was
+	w.queue_free()

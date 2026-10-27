@@ -87,14 +87,22 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 		]
 		if _here(tree) == Trials.TEMPLE:
 			rows.insert(4, _trials_row())
+			rows.insert(5, _rush_row())
 		return rows
 	var on_select := func(i: int) -> void:
 		if _here(tree) == Trials.TEMPLE and i >= 4:
-			# The Guru Trials row sits before Leave in the temple.
+			# The Guru Trials and Boss Rush rows sit before Leave in the temple.
 			if i == 4:
 				open_trials(tree, p)
 				return
-			i -= 1
+			if i == 5:
+				if BossRush.unlocked():
+					menu.close()
+					var world := tree.get_first_node_in_group("world") as World
+					if world != null:
+						BossRush.start(world, p)
+				return
+			i -= 2
 		match i:
 			0:
 				menu.close()
@@ -128,6 +136,18 @@ static func _trials_row() -> Dictionary:
 	return row
 
 
+## The boss rush (design bible 11): open once the Tree is whole at 100%.
+static func _rush_row() -> Dictionary:
+	var row := {"label": "Boss Rush", "enabled": BossRush.unlocked(),
+		"detail": "Every guardian of the Tree again, one after another. A third of your health back between fights; fall and the rush ends."}
+	if not BossRush.unlocked():
+		row.right = "Sealed"
+		row.detail = "Sealed. Walk the whole Tree, every room, secret, treasure and guardian, and the Guru will open it."
+	elif BossRush.best() != INF:
+		row.right = Trials.format_time(BossRush.best())
+	return row
+
+
 ## The Guru Trials (design bible 3.1): pick an open trial and the mantra carries
 ## you to its start; you come back here when it ends.
 static func open_trials(tree: SceneTree, p: Player) -> bool:
@@ -139,10 +159,13 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 	var provider := func() -> Array:
 		var out := []
 		for t: Dictionary in list:
-			var row := {"label": String(t.name), "detail": String(t.desc), "enabled": Trials.is_open(t)}
+			var row := {"label": String(t.name), "detail": String(t.desc), "enabled": Trials.ready(t)}
 			if not Trials.is_open(t):
 				row.right = "Sealed"
 				row.detail = "Restore %d springs to open it." % int(t.springs)
+			elif not Trials.ready(t):
+				row.right = "Sealed"
+				row.detail = "Its footholds want the %s." % " and the ".join(Trials.missing(t))
 			elif Trials.cleared(t.id):
 				row.right = Trials.format_time(Trials.best(t.id))
 				row.detail += "  Best %s." % Trials.format_time(Trials.best(t.id))
@@ -153,7 +176,7 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 		return out
 	var on_select := func(i: int) -> void:
 		var t: Dictionary = list[i]
-		if not Trials.is_open(t):
+		if not Trials.ready(t):
 			return
 		menu.close()
 		start_trial(world, p, t)
@@ -279,7 +302,8 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
-		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else [])
+		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else []) \
+			+ ([{"label": "Leave the rush", "detail": "Stop the clock and return to the Guru."}] if BossRush.active() else [])
 	var reopen := func() -> void: open_pause(tree, p, on_quit)
 	var on_select := func(i: int) -> void:
 		match i:
@@ -295,10 +319,16 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			4:
 				menu.close()
 				Trials.abandon()
+				BossRush.abandon()
 				on_quit.call()
 			5:
 				menu.close()
-				leave_trial(tree)
+				if BossRush.active():
+					var world := tree.get_first_node_in_group("world") as World
+					if world != null:
+						BossRush.back(world, p)
+				else:
+					leave_trial(tree)
 	menu.open("Paused", "%s. Rank %s." % [_room_title(tree), GameState.rank_name()], provider, on_select, _gold_footer(p))
 	return true
 

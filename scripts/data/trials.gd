@@ -10,15 +10,20 @@ extends RefCounted
 ## pause menu at any time; you return a step from the Guru either way.
 
 ## In order. `springs`: how many springs must flow before the trial opens.
-## A trial whose room isn't built yet isn't offered.
+## `needs`: the abilities its course is built for (the Glove if not given);
+## by its springs every one of them is in hand. A trial whose room isn't
+## built yet isn't offered.
 const LIST := [
 	{"id": "walls", "name": "Mantra of Walls", "room": "trials/walls", "springs": 1,
 		"desc": "Three pillars over spikes, thorned on their far sides. Climb each from the ledge at its foot."},
 	{"id": "edges", "name": "Mantra of Edges", "room": "trials/edges", "springs": 1,
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
-	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "desc": ""},
-	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "desc": ""},
-	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "desc": ""},
+	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
+		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
+	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
+		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
+	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
+		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
 	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},
 ]
 ## Where the trials are opened from: the Guru's menu offers them only here.
@@ -50,6 +55,22 @@ static func springs_flowing() -> int:
 
 static func is_open(t: Dictionary) -> bool:
 	return springs_flowing() >= int(t.springs)
+
+
+## The names of what the course is built for that you don't yet have (pass 160:
+## the springs can flow before the Wing Boots are found). The Guru keeps such a
+## trial sealed and says what it wants.
+static func missing(t: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	for a: String in t.get("needs", ["glove"]):
+		if not bool(GameState.data.abilities.get(a, false)):
+			out.append(String(ItemPickup.INFO[a].title) if ItemPickup.INFO.has(a) else a.capitalize())
+	return out
+
+
+## Open, and you have all it is built for.
+static func ready(t: Dictionary) -> bool:
+	return is_open(t) and missing(t).is_empty()
 
 
 static func cleared(id: String) -> bool:

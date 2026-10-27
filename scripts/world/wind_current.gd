@@ -13,6 +13,8 @@ const FLAG := "spring:sky"
 const STREAK := Color("f4fbff")
 const EDGE := Color("4a86b8")
 const LEAF := Color("7cbf52")
+## The mantra-space has no leaves: pale flecks of the void ride its winds.
+const FLECK := Color("c9c6d6")
 
 ## The current's cells (tiles).
 var cells := Rect2i()
@@ -22,8 +24,12 @@ var drawn_dir := 1
 var _t := 0.0
 
 
-## The way it blows now: reversed once the storm over Daybreak breaks.
+## The way it blows now: reversed once the storm over Daybreak breaks. The
+## mantra-space has no weather: a trial's winds blow as drawn (pass 160).
 func dir() -> int:
+	var room := get_parent() as Room
+	if room != null and room.zone == "trials":
+		return drawn_dir
 	return -drawn_dir if GameState.flag(FLAG) else drawn_dir
 
 
@@ -66,6 +72,8 @@ func _draw() -> void:
 		draw_rect(Rect2(x0, y + 1.0, x1 - x0, 1.0), Color(EDGE, 0.35))
 		draw_rect(Rect2(x0, y, x1 - x0, 1.0), Color(STREAK, 0.85))
 	# A few leaves tumbling along with it.
+	var room := get_parent() as Room
+	var leaf := FLECK if room != null and room.zone == "trials" else LEAF
 	for i in 6:
 		var x := fmod(_t * 200.0 + i * w / 6.0, w)
 		if d < 0.0:
@@ -73,5 +81,5 @@ func _draw() -> void:
 		var y := h * (0.15 + 0.14 * i) + sin(_t * 3.0 + i) * 4.0
 		var spin := _t * 8.0 + i
 		var r := Vector2(cos(spin), sin(spin)) * 3.0
-		draw_line(Vector2(x, y) - r, Vector2(x, y) + r, Color(LEAF.darkened(0.5), 0.8), 3.0)
-		draw_line(Vector2(x, y) - r, Vector2(x, y) + r, LEAF, 1.5)
+		draw_line(Vector2(x, y) - r, Vector2(x, y) + r, Color(leaf.darkened(0.5), 0.8), 3.0)
+		draw_line(Vector2(x, y) - r, Vector2(x, y) + r, leaf, 1.5)

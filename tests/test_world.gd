@@ -808,3 +808,16 @@ func test_eolis_of_old_hides_behind_the_temple() -> void:
 	while w.busy:
 		await frames(1)
 	check(w.room.id == "eolis/guru_temple" and not w.retro.visible and Music.track == "eolis", "back in the temple the filter is off and the town theme returns")
+
+
+## Pass 155: the NES filter's blocks are whole world pixels. The world view draws
+## at GameCamera.DETAIL with a pixel of margin (1284 x 724), so the filter takes
+## its detail from the view (2), not from the view's height over 360 (2.01).
+func test_the_nes_filter_blocks_on_world_pixels() -> void:
+	check(RetroFilter.detail_for(null) == 1.0, "no view: one render pixel a world pixel")
+	var vp := SubViewport.new()
+	vp.size = Vector2i(642, 362) * GameCamera.DETAIL
+	arena.add_child(vp)
+	check(RetroFilter.detail_for(vp) == float(GameCamera.DETAIL), "the game's world view: %d (%.2f)" % [GameCamera.DETAIL, RetroFilter.detail_for(vp)])
+	vp.queue_free()
+	check(RetroFilter.SHADER.code.contains("block * detail"), "and a block is block x detail render pixels")
