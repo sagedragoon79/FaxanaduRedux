@@ -4,6 +4,8 @@ extends Node2D
 ## separator, then an ASCII tile grid. See levels/README.md for the legend.
 
 const TILE := TilesetFactory.TILE
+## Props that lay a find, once: the World catalog counts them as treasures (pass 187).
+const FOUND_PROPS := ["joker_key", "battle_helmet"]
 ## One screen in tiles (640x360 px). Map cells and room sizes count in screens.
 const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
@@ -362,7 +364,8 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 		"trial_goal":
 			_spawn(TrialGoal.new(), pos)
 		"joker_key", "battle_helmet":
-			# Found once, never sold: the one Joker Key and the Battle Helmet.
+			# Found once, never sold: the one Joker Key and the Battle Helmet
+			# (FOUND_PROPS: the World catalog counts them as treasures).
 			var item_id := _pickup_id(Vector2i(int(pos.x / TILE), int(pos.y / TILE) - 1))
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()
