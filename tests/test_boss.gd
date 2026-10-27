@@ -3026,3 +3026,134 @@ func test_the_alpha_gives_a_life_fruit() -> void:
 	check(int(GameState.data.max_hp) == hp0 + GameState.LIFE_FRUIT_HP, "its Life Fruit grows your health (%d -> %d)" % [hp0, int(GameState.data.max_hp)])
 	var ranks := int(GameState.data.rank) - rank
 	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)
+
+
+const CAPTAIN_ROOM := "branches/thorn_yard"
+
+
+## The Captain dropped into his yard without the arena, awake.
+func _captain_world(cell := Vector2i(30, 19)) -> Array:
+	var w := make_world({}, CAPTAIN_ROOM, cell_feet(10, 19))
+	GameState.set_flag("boss:bark_captain")  # keep the arena from starting its own fight
+	var c := BarkCaptain.new()
+	c.arena = Rect2(16, 64, 608, 256)
+	c.position = cell_feet(cell.x, cell.y)
+	w.room.add_child(c)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(2)
+	c.set_state("walk")
+	return [w, c]
+
+
+func test_the_captain_keeps_the_thorn_yard_east_of_conflate() -> void:
+	var town := Room.from_file(World.room_path("branches/conflate"))
+	check(town.doors.has(3) and String(town.doors[3].target) == CAPTAIN_ROOM, "Conflate's east gate opens on the Thorn Yard")
+	town.free()
+	var w := make_world({}, CAPTAIN_ROOM, cell_feet(2, 19))
+	await frames(3)
+	var arena := _arena(w)
+	check(arena != null and arena.boss_id == "bark_captain", "the yard is a boss arena")
+	check(BossArena.BOSSES.bark_captain.music == "miniboss" and not BossArena.BOSSES.bark_captain.has("skill_points"), "a mini-boss: its own theme, and no skill point")
+	w.player.teleport(cell_feet(8, 19))
+	var woke := await _until(func() -> bool: return arena.fighting, 30)
+	var c := get_tree_boss() as BarkCaptain
+	check(woke and c != null, "walking into the yard wakes the Captain")
+	check(c != null and c.global_position.x > w.player.global_position.x + 300.0, "he keeps the far end")
+	check(c != null and c.state == "intro", "with his name card")
+
+
+func test_the_captains_tells_are_fair() -> void:
+	var c := BarkCaptain.new()
+	for ph in [1, 2]:
+		c.phase = ph
+		for t: float in [BarkCaptain.THRUST_TELL, BarkCaptain.VAULT_TELL]:
+			check(c.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, c.tell(t), Enemy.MIN_TELEGRAPH])
+	c.free()
+
+
+func test_the_captains_bark_chips_away_and_grows_back() -> void:
+	var r := await _captain_world()
+	var c: BarkCaptain = r[1]
+	var hp0 := c.hp
+	c.take_hit(12, Vector2.RIGHT)
+	check(c.hp == hp0 - 3 and c.bark == BarkCaptain.BARK - 1, "a blow on the bark chips a plate and a quarter lands (%d)" % (hp0 - c.hp))
+	for i in BarkCaptain.BARK - 1:
+		c.take_hit(12, Vector2.RIGHT)
+	check(c.bark == 0, "five blows strip him to the heartwood")
+	hp0 = c.hp
+	c.take_hit(12, Vector2.RIGHT)
+	check(c.hp == hp0 - 12, "bare, he takes blows in full")
+	c.set_state("rooted")
+	await frames(int(BarkCaptain.ROOTED * 60.0) + 5)
+	check(c.bark == 1 and c.state != "rooted", "pulling free of a root grows one plate back")
+
+
+func test_the_captains_thrust_roots_into_a_bough_and_opens_him() -> void:
+	var r := await _captain_world(Vector2i(26, 19))
+	var w: World = r[0]
+	var c: BarkCaptain = r[1]
+	w.player.teleport(cell_feet(21, 19))
+	var hp := w.player.hp
+	var tell_frames := [0]
+	var rooted := await _until(func() -> bool:
+		if c.state == "thrust_tell":
+			tell_frames[0] += 1
+		return c.state == "rooted", 240)
+	check(tell_frames[0] / 60.0 >= Enemy.MIN_TELEGRAPH, "he braces for at least %.2f s first (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames[0]])
+	check(rooted and w.player.hp < hp, "the lance reaches a player five tiles off")
+	await frames(2)
+	check(c.bough_solid() and c.punishable(), "rooted, the lance is a bough and he is open")
+	var hp0 := c.hp
+	var bark := c.bark
+	c.take_hit(12, Vector2.RIGHT)
+	check(c.hp == hp0 - 12 and c.bark == bark, "a blow while he roots lands in full and chips nothing")
+
+
+func test_a_parried_thrust_staggers_the_captain() -> void:
+	var r := await _captain_world()
+	var c: BarkCaptain = r[1]
+	c.set_state("thrust")
+	c.stagger()
+	check(c.is_staggered() and c.punishable() and not c.bough_solid(), "a parry throws him back, open, the lance drawn in")
+
+
+func test_the_captain_vaults_onto_you_in_his_second_phase() -> void:
+	var r := await _captain_world(Vector2i(32, 19))
+	var w: World = r[0]
+	var c: BarkCaptain = r[1]
+	w.player.teleport(cell_feet(18, 19))
+	c.take_hit(int(BarkCaptain.MAX_HP * 0.9), Vector2.RIGHT)
+	check(c.phase == 1, "the bark holds the first phase off")
+	c.set_state("rooted")
+	c.take_hit(int(BarkCaptain.MAX_HP * 0.6), Vector2.RIGHT)
+	check(c.phase == 2, "below half he turns to his second phase")
+	c.set_state("vault_tell")
+	var hp := w.player.hp
+	var planted := await _until(func() -> bool: return c.state == "planted", 240)
+	check(planted and w.player.hp < hp, "he vaults across the yard and comes down lance-first on you")
+	check(absf(c.global_position.x - w.player.global_position.x) < 20.0, "where you stood (%.0f px off)" % absf(c.global_position.x - w.player.global_position.x))
+	check(c.punishable(), "planted, he is open")
+
+
+func test_the_captain_gives_mana_dew() -> void:
+	var w := make_world({}, CAPTAIN_ROOM, cell_feet(2, 19))
+	var p := w.player
+	await frames(3)
+	var arena := _arena(w)
+	p.teleport(cell_feet(8, 19))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var c := get_tree_boss() as BarkCaptain
+	await _until(func() -> bool: return c.state != "intro", 180)
+	var mp0 := float(GameState.data.max_mp)
+	var points := int(GameState.data.skill_points)
+	var rank := int(GameState.data.rank)
+	c.hp = 1
+	c.stagger()
+	c.take_hit(8, Vector2.RIGHT)
+	check(c.state == "dying", "the last blow fells him")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:bark_captain"), 600)
+	check(gone, "the Captain is marked beaten")
+	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "his Mana Dew grows your magic (%.0f -> %.0f)" % [mp0, float(GameState.data.max_mp)])
+	var ranks := int(GameState.data.rank) - rank
+	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)

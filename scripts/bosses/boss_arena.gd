@@ -33,6 +33,8 @@ const BOSSES := {
 		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
 	"clockwork_alpha": {"stat_item": "life_fruit", "title": "Life Fruit", "music": "miniboss",
 		"text": "A Life Fruit was locked in the Alpha's winding-chest, the king's own reward for his first hound."},
+	"bark_captain": {"stat_item": "mana_dew", "title": "Mana Dew", "music": "miniboss",
+		"text": "Dew gathered in the Captain's leaf-crown all the centuries it stood guard. Your magic grows."},
 	"drowned_warden": {"armor": "battle_suit", "title": "Battle Suit", "skill_points": 1, "music": "warden",
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
@@ -244,6 +246,14 @@ func _start() -> void:
 			a.position = Vector2(w - 7 * Room.TILE if px < w * 0.5 else 7 * Room.TILE, a.arena.end.y)
 			boss = a
 			a.defeated.connect(_on_defeated)
+		"bark_captain":
+			# The Captain keeps the far end of his yard from the Conflate door.
+			var c := BarkCaptain.new()
+			var cw := float(room.size_tiles.x * Room.TILE)
+			c.arena = Rect2(Room.TILE, 4 * Room.TILE, cw - 2 * Room.TILE, float(room.size_tiles.y - 7) * Room.TILE)
+			c.position = Vector2(cw - 7 * Room.TILE, c.arena.end.y)
+			boss = c
+			c.defeated.connect(_on_defeated)
 		"drowned_warden":
 			# The Warden rises out of the middle of the Wellspring.
 			var d := DrownedWarden.new()

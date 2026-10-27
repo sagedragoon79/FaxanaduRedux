@@ -1981,6 +1981,8 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"marsh_hag": ["hag_hex", "mire_grasp", "hag_fumble"],
 		"spire_sentinel": ["sentinel_grind", "sentinel_raise", "sentinel_slam"],
 	}
+	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
+	var kin := {"bark_knight": ["bark_captain"]}
 	var played := {}  # sound -> scripts that play it
 	for dir in ["res://scripts/enemies/", "res://scripts/bosses/", "res://scripts/world/", "res://scripts/player/"]:
 		for f in DirAccess.get_files_at(dir):
@@ -1997,7 +1999,8 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 	for foe: String in own:
 		for sound: String in own[foe]:
 			check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
-			check(played.get(sound, []) == [foe], "%s is played by the %s alone (%s)" % [sound, foe, played.get(sound, [])])
+			var who: Array = played.get(sound, []).filter(func(n: String) -> bool: return not kin.get(foe, []).has(n))
+			check(who == [foe], "%s is played by the %s alone, or its kin (%s)" % [sound, foe, played.get(sound, [])])
 
 
 ## Pass 161 (bible 7, "Zenis: remixes of every family"): the meteor holds a
