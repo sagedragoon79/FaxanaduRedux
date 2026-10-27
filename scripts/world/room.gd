@@ -254,7 +254,8 @@ func build(text: String) -> void:
 		_sap_pool()
 		_sap_node.falls = SapPool.find_falls(_sap_cells, func(c: Vector2i) -> bool: return _solid_look.has(c))
 
-	for spec: String in lists.get("npc", []):
+	# A boss rush's arenas hold only their boss: no one stands in the fight.
+	for spec: String in ([] if BossRush.active() else lists.get("npc", [])):
 		var parts := spec.split(",")
 		# An optional fourth field shows the person only once a world flag is set,
 		# or ("!flag") only until it is.

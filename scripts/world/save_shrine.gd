@@ -27,6 +27,11 @@ func _process(delta: float) -> void:
 
 
 func interact(p: Player) -> void:
+	if BossRush.active():
+		# The rush allows no rest: a shrine on the way would refill you and
+		# save in the middle of it.
+		GameState.toast.emit("The mantra allows no rest in the rush.")
+		return
 	p.restore()
 	_glow = 1.0
 	var world := get_tree().get_first_node_in_group("world") as World

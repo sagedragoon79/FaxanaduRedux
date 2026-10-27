@@ -189,6 +189,9 @@ func _catalog_room(room_id: String, text: String) -> void:
 ## otherwise at the room's spawn marker.
 func start(room_id: String, at := Vector2.INF) -> void:
 	start_room = room_id
+	# A trial or rush never carries over into a new or loaded game.
+	Trials.abandon()
+	BossRush.abandon()
 	if player == null:
 		player = Player.new()
 		player.respawn_handler = _on_player_respawn
