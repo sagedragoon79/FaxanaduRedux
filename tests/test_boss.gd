@@ -2871,3 +2871,158 @@ func test_a_phase_break_stings_and_lifts_the_music() -> void:
 	Music.play("title", 0.01)
 	await frames(2)
 	check(Music.intensity == 0 and Music._players[Music._active].pitch_scale == 1.0, "a new track starts as written")
+
+
+# --- The Clockwork Alpha (pass 169), Dartmoor's mini-boss --------------------------
+
+const ALPHA_ROOM := "dartmoor/alpha_den"
+
+
+## The Alpha dropped into its den without the arena, awake.
+func _alpha_world(cell := Vector2i(30, 20)) -> Array:
+	var w := make_world({}, ALPHA_ROOM, cell_feet(20, 20))
+	GameState.set_flag("boss:clockwork_alpha")  # keep the arena from starting its own fight
+	var a := ClockworkAlpha.new()
+	a.arena = Rect2(16, 64, 608, 272)
+	a.position = cell_feet(cell.x, cell.y)
+	w.room.add_child(a)
+	w.player.max_hp = 9999
+	w.player.hp = 9999
+	await frames(2)
+	a.set_state("trot")
+	return [w, a]
+
+
+func test_the_alpha_waits_in_a_den_under_the_kings_kennels() -> void:
+	var kennels := Room.from_file(World.room_path("dartmoor/kings_kennels"))
+	check(kennels.doors.has(3) and String(kennels.doors[3].target) == ALPHA_ROOM, "a shaft in the kennels' floor drops to the den")
+	kennels.free()
+	var w := make_world({}, ALPHA_ROOM, cell_feet(8, 3))
+	await frames(3)
+	var arena := _arena(w)
+	check(arena != null and arena.boss_id == "clockwork_alpha", "the den is a boss arena")
+	check(BossArena.BOSSES.clockwork_alpha.music == "miniboss" and not BossArena.BOSSES.clockwork_alpha.has("skill_points"), "a mini-boss: its own theme, and no skill point")
+	w.player.teleport(cell_feet(8, 20))
+	var woke := await _until(func() -> bool: return arena.fighting, 30)
+	var a := get_tree_boss() as ClockworkAlpha
+	check(woke and a != null, "dropping into the den wakes the Alpha")
+	check(a != null and a.global_position.x > w.player.global_position.x + 300.0, "it waits at the far end of the den")
+	check(a != null and a.state == "intro", "with its name card and a ratchet")
+
+
+func test_the_alphas_tells_are_fair() -> void:
+	var a := ClockworkAlpha.new()
+	for ph in [1, 2]:
+		a.phase = ph
+		for t: float in [ClockworkAlpha.POUNCE_TELL, ClockworkAlpha.CHARGE_TELL, ClockworkAlpha.HOWL_TELL]:
+			check(a.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, a.tell(t), Enemy.MIN_TELEGRAPH])
+	a.free()
+
+
+func test_the_alphas_plating_turns_blows_until_it_opens() -> void:
+	var r := await _alpha_world()
+	var a: ClockworkAlpha = r[1]
+	var hp0 := a.hp
+	a.take_hit(10, Vector2.RIGHT)
+	check(a.hp == hp0 - 5 and not a.punishable(), "its plating halves a blow (%d)" % (hp0 - a.hp))
+	check(a.state == "trot", "blows don't interrupt it")
+	a.stagger()
+	check(a.flipped() and a.punishable(), "a parried bite throws it on its back")
+	hp0 = a.hp
+	a.take_hit(10, Vector2.RIGHT)
+	check(a.hp == hp0 - 10, "on its back a blow lands in full")
+	await frames(int(ClockworkAlpha.FLIPPED * 60.0) + 10)
+	check(not a.flipped() and a.state == "trot", "and it rights itself")
+
+
+func test_the_hour_glass_stops_the_alpha_dead() -> void:
+	var r := await _alpha_world()
+	var w: World = r[0]
+	var a: ClockworkAlpha = r[1]
+	w.player.teleport(cell_feet(24, 20))
+	a.facing = -1
+	a.set_state("charge")
+	await frames(5)
+	var x0 := a.global_position.x
+	TimeStop.start()
+	await frames(20)
+	check(absf(a.global_position.x - x0) < 12.0 and a.stopped(), "mid-charge, the glass stops it where it runs (%.0f px)" % absf(a.global_position.x - x0))
+	check(a.punishable(), "stopped, it is open")
+	var hp0 := a.hp
+	a.take_hit(10, Vector2.RIGHT)
+	check(a.hp == hp0 - 10, "and a blow lands in full")
+	TimeStop.reset()
+	await frames(5)
+	check(not a.stopped() and a.global_position.x < x0 - 4.0, "time runs on and so does it")
+
+
+func test_the_alpha_charges_into_the_wall_and_jams() -> void:
+	var r := await _alpha_world(Vector2i(20, 20))
+	var w: World = r[0]
+	var a: ClockworkAlpha = r[1]
+	w.player.teleport(cell_feet(5, 13))
+	a.facing = 1
+	a.set_state("charge_tell")
+	var tell_frames := [0]
+	var jammed := await _until(func() -> bool:
+		if a.state == "charge_tell":
+			tell_frames[0] += 1
+		return a.jammed(), 240)
+	check(tell_frames[0] / 60.0 >= Enemy.MIN_TELEGRAPH, "its key screams for at least %.2f s first (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames[0]])
+	check(jammed and a.global_position.x > 34 * Room.TILE, "it runs into the far wall and its spring jams (x %.0f)" % a.global_position.x)
+	check(a.punishable(), "jammed, it is open")
+
+
+func test_the_alpha_pounces_on_the_player() -> void:
+	var r := await _alpha_world(Vector2i(26, 20))
+	var w: World = r[0]
+	var a: ClockworkAlpha = r[1]
+	w.player.teleport(cell_feet(20, 20))
+	a.facing = -1
+	a.set_state("pounce_tell")
+	var hp := w.player.hp
+	var bit := await _until(func() -> bool: return w.player.hp < hp, 120)
+	check(bit, "it leaps onto a player standing still and bites")
+
+
+func test_the_alpha_winds_pups_in_its_second_phase() -> void:
+	var r := await _alpha_world()
+	var w: World = r[0]
+	var a: ClockworkAlpha = r[1]
+	w.player.teleport(cell_feet(20, 20))
+	a.stagger()
+	a.take_hit(int(ClockworkAlpha.MAX_HP * 0.6), Vector2.RIGHT)
+	check(a.phase == 2, "below half it turns to its second phase")
+	for i in 3:
+		a.set_state("howl_tell")
+		await _until(func() -> bool: return a.state != "howl_tell", 120)
+		await frames(2)
+	var pups := w.room.get_children().filter(func(c: Node) -> bool: return c is ClockworkHound and not c.dead)
+	check(pups.size() == ClockworkAlpha.MAX_PUPS, "its howls wind brass pups out of the grates, never more than %d (%d)" % [ClockworkAlpha.MAX_PUPS, pups.size()])
+	a.die()
+	await frames(2)
+	pups = w.room.get_children().filter(func(c: Node) -> bool: return c is ClockworkHound and not c.dead)
+	check(pups.is_empty(), "and they run down with it")
+
+
+func test_the_alpha_gives_a_life_fruit() -> void:
+	var w := make_world({}, ALPHA_ROOM, cell_feet(8, 3))
+	var p := w.player
+	await frames(3)
+	var arena := _arena(w)
+	p.teleport(cell_feet(8, 20))
+	await _until(func() -> bool: return arena.fighting, 30)
+	var a := get_tree_boss() as ClockworkAlpha
+	await _until(func() -> bool: return a.state != "intro", 180)
+	var hp0 := int(GameState.data.max_hp)
+	var points := int(GameState.data.skill_points)
+	var rank := int(GameState.data.rank)
+	a.hp = 1
+	a.stagger()
+	a.take_hit(8, Vector2.RIGHT)
+	check(a.state == "dying", "the last blow runs it down")
+	var gone := await _until(func() -> bool: return GameState.flag("boss:clockwork_alpha"), 600)
+	check(gone, "the Alpha is marked beaten")
+	check(int(GameState.data.max_hp) == hp0 + GameState.LIFE_FRUIT_HP, "its Life Fruit grows your health (%d -> %d)" % [hp0, int(GameState.data.max_hp)])
+	var ranks := int(GameState.data.rank) - rank
+	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)

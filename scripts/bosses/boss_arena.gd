@@ -31,6 +31,8 @@ const BOSSES := {
 		"text": "Starved of its light, the core gutters. Above, the heart of the meteor lies open."},
 	"evil_one": {"title": "The Heart of the Meteor Dies", "skill_points": 1, "music": "evil_one",
 		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
+	"clockwork_alpha": {"stat_item": "life_fruit", "title": "Life Fruit", "music": "miniboss",
+		"text": "A Life Fruit was locked in the Alpha's winding-chest, the king's own reward for his first hound."},
 	"drowned_warden": {"armor": "battle_suit", "title": "Battle Suit", "skill_points": 1, "music": "warden",
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
@@ -233,6 +235,15 @@ func _start() -> void:
 			e.position = Vector2(w * 0.5, 8 * Room.TILE)
 			boss = e
 			e.defeated.connect(_on_defeated)
+		"clockwork_alpha":
+			# The Alpha waits at the far end of its den from the shaft you drop in by.
+			var a := ClockworkAlpha.new()
+			var w := float(room.size_tiles.x * Room.TILE)
+			a.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, float(room.size_tiles.y - 6) * Room.TILE)
+			var px := p_x()
+			a.position = Vector2(w - 7 * Room.TILE if px < w * 0.5 else 7 * Room.TILE, a.arena.end.y)
+			boss = a
+			a.defeated.connect(_on_defeated)
 		"drowned_warden":
 			# The Warden rises out of the middle of the Wellspring.
 			var d := DrownedWarden.new()
@@ -282,6 +293,13 @@ func _on_defeated() -> void:
 		GameState.data.equipment.armor = reward.armor
 		if p != null:
 			GameState.refresh_stats(p)
+			GameState.capture(p)
+		GameState.banner.emit(reward.title, reward.text)
+	elif reward.has("stat_item"):
+		# A mini-boss's prize: a stat item it kept (the Clockwork Alpha's Life Fruit).
+		var p := get_tree().get_first_node_in_group("player") as Player
+		if p != null:
+			GameState.grant_stat_item(reward.stat_item, p)
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("ability"):
