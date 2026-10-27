@@ -1206,3 +1206,70 @@ func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
 	w.queue_free()
 	Trials.abandon()
 
+
+## Pass 162: the Mantra of Stillness, the fifth trial, opened by the third
+## spring and built for the Glove and the Hour Glass. Still a fall and climb its
+## footholds, cross a pit on a curtain of water that hangs from the void, and
+## climb a long fall with a dry niche halfway to wait out the glass.
+func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
+	var t := Trials.find("stillness")
+	check(Trials.built().has(t) and t.needs == ["glove", "hourglass"] and t.desc != "", "the Mantra of Stillness is built, for the Glove and the Hour Glass")
+	var text := FileAccess.get_file_as_string(World.room_path(t.room))
+	var bell := Reach.key(t.room, 68, 7)
+	var reach := Reach.new({t.room: text}, {"glove": true, "hourglass": true})
+	var nodes := reach.reachable(reach.spot_of(t.room, "P"))
+	check(nodes.has(bell), "the bell is reached with the Glove and the Hour Glass")
+	check(nodes.has(Reach.key(t.room, 50, 19)), "the dry niche halfway up the last fall is a place to wait")
+	var bare := Reach.new({t.room: text}, {"glove": true, "boots": true, "stride": true, "mattock": true})
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 20, 38)), "without the glass not even the first ledge is in reach")
+	GameState.new_game()
+	for s: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + s)
+	GameState.data.abilities["glove"] = true
+	check(Trials.is_open(t) and Trials.missing(t) == ["Hour Glass"], "three springs open it, but it wants the Hour Glass (%s)" % [Trials.missing(t)])
+	# In the real game: still the first fall and climb it to the ledge above.
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	for s: String in ["trunk", "mist", "sky"]:
+		GameState.set_flag("spring:" + s)
+	GameState.data.abilities["glove"] = true
+	GameState.data.abilities["hourglass"] = true
+	var p := w.player
+	GameState.apply(p)
+	await frames(5)
+	Menus.start_trial(w, p, t)
+	await frames(5)
+	check(w.room.id == "trials/stillness", "the Guru sends you there")
+	var falls := w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
+	check(falls.size() == 3, "three falls of time-locked water (%d)" % falls.size())
+	for f in 120:
+		p.input.move_x = 1 if p.global_position.x < 13.5 * Room.TILE else 0
+		await frames(1)
+	p.input.move_x = 0
+	p.input.hourglass_pressed = true
+	await frames(1)
+	p.input.hourglass_pressed = false
+	# A short hop from each foothold to the next, three rows up.
+	var top := INF
+	var hop := -100
+	for f in 140:
+		if p.is_on_floor() and f > hop + 3:
+			hop = f
+		p.input.jump_pressed = f == hop
+		p.input.jump_held = f < hop + 15
+		await frames(1)
+		top = minf(top, p.global_position.y)
+	p.input.jump_held = false
+	check(top <= 40.0 * Room.TILE + 2.0, "jumping up the stilled fall reaches its top foothold (row %.1f)" % (top / Room.TILE))
+	check(p.safe_position.y > 50.0 * Room.TILE, "a foothold of stilled water is never a footing to be set back to (row %.1f)" % (p.safe_position.y / Room.TILE))
+	for f in 40:
+		p.input.move_x = 1
+		p.input.jump_pressed = f == 0
+		p.input.jump_held = f < 10
+		await frames(1)
+	p.input.move_x = 0
+	await frames(30)
+	check(p.global_position.x > 15.0 * Room.TILE and absf(p.global_position.y - 39.0 * Room.TILE) < 2.0,
+		"and steps off onto the ledge before time runs on (col %.1f, row %.1f)" % [p.global_position.x / Room.TILE, p.global_position.y / Room.TILE])
+	w.queue_free()
+	Trials.abandon()
+

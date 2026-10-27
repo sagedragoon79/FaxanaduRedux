@@ -1235,7 +1235,7 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 	if on_floor and absf(velocity.x) > 40.0 and _step_timer <= 0.0:
 		_step_timer = 0.26
 		_footstep(-10.0)
-	if on_floor and not _hazard_near():
+	if on_floor and not _hazard_near() and not _on_stilled_water():
 		safe_position = global_position
 	_was_on_floor = on_floor
 	visual.position.y = _slope_sink(on_floor)
@@ -1379,6 +1379,16 @@ func _check_hazards() -> void:
 		if c.is_in_group("enemy") and "contact_damage" in c and c.contact_damage > 0 and not c.dead:
 			receive_attack(c.contact_damage, c, false)
 			return
+
+
+## Standing on a foothold of stilled water (Waterfall): it melts when time runs
+## again, so it is never a safe place to be set back to (pass 162).
+func _on_stilled_water() -> bool:
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i).get_collider() as Node
+		if c != null and c.get_parent() is Waterfall:
+			return true
+	return false
 
 
 func _hazard_near() -> bool:

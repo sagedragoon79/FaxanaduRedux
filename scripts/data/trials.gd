@@ -22,7 +22,8 @@ const LIST := [
 		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
 	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
 		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
-	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "desc": ""},
+	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
+		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
 	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},
 ]
 ## Where the trials are opened from: the Guru's menu offers them only here.
