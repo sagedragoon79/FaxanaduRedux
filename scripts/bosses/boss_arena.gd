@@ -35,6 +35,8 @@ const BOSSES := {
 		"text": "A Life Fruit was locked in the Alpha's winding-chest, the king's own reward for his first hound."},
 	"bark_captain": {"stat_item": "mana_dew", "title": "Mana Dew", "music": "miniboss",
 		"text": "Dew gathered in the Captain's leaf-crown all the centuries it stood guard. Your magic grows."},
+	"hag_matriarch": {"stat_item": "mana_dew", "title": "Mana Dew", "music": "miniboss",
+		"text": "The wisp in her staff gutters out into a single drop of bog light. Your magic grows."},
 	"drowned_warden": {"armor": "battle_suit", "title": "Battle Suit", "skill_points": 1, "music": "warden",
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
@@ -254,6 +256,14 @@ func _start() -> void:
 			c.position = Vector2(cw - 7 * Room.TILE, c.arena.end.y)
 			boss = c
 			c.defeated.connect(_on_defeated)
+		"hag_matriarch":
+			# The Matriarch waits at the far end of her mire from the Mascon door.
+			var m := HagMatriarch.new()
+			var mw := float(room.size_tiles.x * Room.TILE)
+			m.arena = Rect2(Room.TILE, 4 * Room.TILE, mw - 2 * Room.TILE, float(room.size_tiles.y - 10) * Room.TILE)
+			m.position = Vector2(mw - 7 * Room.TILE, m.arena.end.y)
+			boss = m
+			m.defeated.connect(_on_defeated)
 		"drowned_warden":
 			# The Warden rises out of the middle of the Wellspring.
 			var d := DrownedWarden.new()
