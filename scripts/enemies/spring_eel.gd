@@ -182,8 +182,7 @@ func _draw() -> void:
 	_dot(head + Vector2(0.2, -2.6), 0.5, OUTLINE)
 	_dot(lp, 1.2, Color(LAMP, lamp))
 	_dot(lp, 0.55, Color(LAMP_CORE, lamp))
-	if flashing():
-		draw_circle(Vector2.ZERO, 14.0, Color(1, 1, 1, 0.5))
+	wash(flashing())
 	draw_set_transform(Vector2.ZERO)
 
 

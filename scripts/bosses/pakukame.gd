@@ -550,8 +550,7 @@ func _draw_head(t: float, white: bool) -> void:
 	# An eye-spot on the shell, toward the front.
 	draw_circle(up + Vector2(10 * f, -5), 2.0, OUTLINE)
 	draw_circle(up + Vector2(10 * f, -5), 1.2, Color("f0d040"))
-	if white:
-		draw_circle(c, 20.0, Color(1, 1, 1, 0.5))
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 
 

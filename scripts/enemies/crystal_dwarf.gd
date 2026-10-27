@@ -193,8 +193,7 @@ func _draw() -> void:
 	draw_colored_polygon(PackedVector2Array(Array(gem).map(func(v: Vector2) -> Vector2: return fist + (v - fist) * 1.25)), OUTLINE)
 	draw_colored_polygon(gem, CRYSTAL_LIGHT if glow else CRYSTAL)
 	draw_line(fist + Vector2(-2, -r), fist + Vector2(2, r - 2), CRYSTAL_LIGHT if not glow else Color.WHITE, 1.0)
-	if white:
-		draw_rect(Rect2(-10, -34, 26, 34), Color(1, 1, 1, 0.6))
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 	if state == "windup":
 		draw_circle(Vector2(6 * facing, -36), 8.0 + 3.0 * sin(state_time * 30.0), Color(CRYSTAL_LIGHT, 0.25))

@@ -1998,3 +1998,70 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		for sound: String in own[foe]:
 			check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
 			check(played.get(sound, []) == [foe], "%s is played by the %s alone (%s)" % [sound, foe, played.get(sound, [])])
+
+
+## Pass 161 (bible 7, "Zenis: remixes of every family"): the meteor holds a
+## corrupted remix of foes from every zone of the climb, not only Dartmoor's.
+## Each Zenis room is loaded for real: every foe in it is corrupted, and the
+## families found cover the Trunk, the Tower, the Mist, the Branches, Daybreak
+## and Dartmoor.
+func test_zenis_holds_a_remix_of_every_zones_foes() -> void:
+	var homes := {
+		"trunk": ["RotDwarf", "Monodron", "GrubLump", "SapSpitter"],
+		"tower": ["IronDwarf", "GearBat", "MinecartRider"],
+		"mist": ["LanternGhost", "BogMyconid", "DrownedDwarf", "MarshHag"],
+		"branches": ["LeafMantis", "BarkKnight", "SeedBomber"],
+		"daybreak": ["StormHarpy", "ThunderBeetle", "SpireSentinel"],
+		"dartmoor": ["CrystalDwarf", "ClockworkHound", "ShadeKnight", "MeteorSlug"],
+	}
+	var found := {}
+	var total := 0
+	for id: String in ["zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate"]:
+		GameState.new_game()
+		var room := Room.from_text(FileAccess.get_file_as_string(World.room_path(id)), id)
+		arena.add_child(room)
+		for c in room.get_children():
+			if c is Enemy and not c is MeteorSeed:
+				total += 1
+				check((c as Enemy).corrupted, "%s: the %s is corrupted" % [id, c.get_script().get_global_name()])
+				found[String(c.get_script().get_global_name())] = true
+		room.queue_free()
+	await frames(1)
+	for zone: String in homes:
+		var hit: Array = homes[zone].filter(func(n: String) -> bool: return found.has(n))
+		check(not hit.is_empty(), "Zenis remixes the %s's foes (%s)" % [zone, hit])
+	check(found.size() >= 12, "a dozen families or more in the meteor (%d: %s)" % [found.size(), found.keys()])
+
+
+## The hurt flash and the tells wash a code-drawn foe's own silhouette white
+## (bible 7), never a white box around it, and the wash leaves the dissolve alone.
+func test_a_flash_whitens_the_foe_not_a_box() -> void:
+	var rows := TALL.duplicate()
+	rows[9] = "#....................y.......#"
+	var room := make_room(rows)
+	make_player(room, Vector2i(8, 12))
+	var h: StormHarpy = _find(room, StormHarpy)
+	await frames(2)
+	check(not h.washed(), "a harpy at rest is drawn in her own colours")
+	h.take_hit(1, Vector2(1, 0))
+	await frames(1)
+	check(h.washed(), "a hit washes her white")
+	await frames(10)
+	check(not h.washed(), "and the wash fades with the flash")
+	h.set_state("windup")
+	var pulsed := false
+	for i in 12:
+		await frames(1)
+		pulsed = pulsed or h.washed()
+	check(pulsed, "her screech tell pulses white")
+	h.take_hit(999, Vector2(1, 0))
+	await frames(2)
+	check(not h.washed() and h.material != null, "a death keeps its dissolve")
+	# No code-drawn foe or boss lays a white box or disc over itself any more.
+	var box := RegEx.create_from_string("\\n\\tif (white|flashing\\(\\))[^\\n]*:\\n\\t\\t(_px|_rect|draw_rect|draw_circle)\\([^\\n]*Color\\(1, 1, 1")
+	for dir: String in ["res://scripts/enemies/", "res://scripts/bosses/"]:
+		for file in DirAccess.get_files_at(dir):
+			if file.ends_with(".gd"):
+				var src := FileAccess.get_file_as_string(dir + file)
+				var m := box.search(src)
+				check(m == null, "%s washes its silhouette (%s)" % [file, "" if m == null else m.get_string().strip_edges()])

@@ -437,6 +437,7 @@ func _draw() -> void:
 		draw_set_transform(Vector2.ZERO)
 		_draw_lanterns(t)
 		_draw_web()
+		wash(false)
 		return
 	var rear := state == "pounce_tell" or state == "sweep_tell"
 	var walk := t * (9.0 if absf(_player_dx()) > 20.0 and state in ["stalk", "hang"] else 2.0)
@@ -483,9 +484,7 @@ func _draw() -> void:
 	_px(13, -22, 3, 2, eye, eye_a)
 	_px(19, -22, 3, 2, eye, eye_a)
 	_px(16, -17, 3, 1, OUTLINE, a)
-	if white:
-		draw_circle(ab, 12.0, Color(1, 1, 1, 0.5 * maxf(a, 0.5)))
-		draw_circle(hd, 8.0, Color(1, 1, 1, 0.5 * maxf(a, 0.5)))
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 	_draw_lanterns(t)
 	_draw_web()

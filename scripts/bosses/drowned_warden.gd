@@ -404,6 +404,7 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var t := Time.get_ticks_msec() * 0.001
 	if submerged():
+		wash(false)
 		_draw_lurking(t)
 		return
 	var white := flashing() or (state.ends_with("_tell") and telegraph_pulse())
@@ -493,8 +494,7 @@ func _draw() -> void:
 			var x := -22.0 + i * 9.0
 			var k := fmod(t * 2.0 + i * 0.3, 1.0)
 			draw_rect(Rect2(x, -100 + k * 90.0, 2, 6), Color(LAMP_CORE, 0.6 * (1.0 - k)))
-	if white:
-		_rect(-26, -116 + bob, 52, 116, Color(1, 1, 1, 0.45))
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 
 

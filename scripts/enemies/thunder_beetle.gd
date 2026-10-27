@@ -177,8 +177,7 @@ func _draw() -> void:
 			var sx := -10 + int(fposmod(t * 37.0 + k * 7.3, 20.0))
 			var sy := -20 - int(fposmod(t * 23.0 + k * 3.1, 4.0)) - lift
 			_px(sx, sy, 1, 2, SPARK if bright else ARC)
-	if flashing() or (state == "charge" and telegraph_pulse()):
-		_px(-13, -19 - lift, 29, 19 + lift, Color(1, 1, 1), 0.55)
+	wash(flashing() or (state == "charge" and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 	if state == "discharge":
 		_draw_ring(t)
