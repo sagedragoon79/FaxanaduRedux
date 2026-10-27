@@ -69,6 +69,52 @@ func test_run_speed_and_acceleration() -> void:
 	check(stop_frames <= 5, "stops within 5 frames (got %d)" % stop_frames)
 
 
+## Pass 183 (Sean): a stick walks into a run the farther it leans. A light tilt
+## walks at 40% of a run, the pace climbs with the tilt, and a full lean (or a
+## key, or the d-pad) is the same run as ever, so jumps and dashes don't change.
+func test_the_stick_walks_into_a_run_the_farther_it_leans() -> void:
+	var t := MovementTuning.new()
+	check(t.walk_fraction == 0.4 and t.walk_tilt == 0.45 and t.run_tilt == 0.9, "the bible's walk numbers (6.1)")
+	check(t.speed_fraction(0.2) == 0.4 and t.speed_fraction(0.45) == 0.4, "a light tilt walks")
+	check_near(t.speed_fraction(0.675), 0.7, 0.001, "halfway up the band, halfway to a run")
+	check(t.speed_fraction(0.9) == 1.0 and t.speed_fraction(1.0) == 1.0, "near full tilt, a full run")
+	var last := 0.0
+	var climbs := true
+	for i in 21:
+		var f := t.speed_fraction(i / 20.0)
+		climbs = climbs and f >= last
+		last = f
+	check(climbs, "the pace never drops as the stick leans further")
+	# The real input: keys are full tilt; a stick's lean comes through.
+	var input := PlayerInput.new()
+	Input.action_press("move_right")
+	input.poll()
+	check(input.move_x == 1 and input.tilt == 1.0, "a key runs (tilt %.2f)" % input.tilt)
+	Input.action_release("move_right")
+	Input.action_press("move_left", 0.3)
+	input.poll()
+	check(input.move_x == -1 and is_equal_approx(input.tilt, 0.3), "a stick leaned 0.3 left walks (tilt %.2f)" % input.tilt)
+	Input.action_release("move_left")
+	input.poll()
+	check(input.move_x == 0 and input.tilt == 1.0, "let go, nothing")
+	# On the floor.
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(3, 11))
+	await _settle(p)
+	p.input.move_x = 1
+	p.input.tilt = 0.3
+	await frames(20)
+	check_near(p.velocity.x, t.run_speed * t.walk_fraction, 0.5, "a light lean walks at %.0f px/s" % (t.run_speed * t.walk_fraction))
+	check(PlayerVisual.current_pose(p) == "walk", "and looks it")
+	var anim := PlayerVisual.anim_for(p, "walk")
+	check(anim == ("walk" if Sheet.has_anim(PlayerVisual.SHEET_NAME, "walk") else "run"), "the walk clip, or the run slowed until it exists (%s)" % anim)
+	p.input.tilt = 1.0
+	await frames(20)
+	check_near(p.velocity.x, t.run_speed, 0.01, "lean all the way and it is the same run as a key")
+	check(PlayerVisual.current_pose(p) == "run", "and looks it")
+	p.input.move_x = 0
+
+
 func test_full_jump_height_and_apex_time() -> void:
 	var room := make_room(FLAT)
 	var p := make_player(room, Vector2i(10, 11))

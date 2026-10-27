@@ -6,6 +6,9 @@ extends RefCounted
 var scripted := false
 
 var move_x := 0
+## How far the stick leans that way, 0 to 1 past its deadzone (pass 183): a
+## light tilt walks, a full one runs. Keys and the d-pad are always 1.
+var tilt := 1.0
 var up := false
 var up_pressed := false
 var down := false
@@ -25,7 +28,9 @@ var hourglass_pressed := false
 func poll() -> void:
 	if scripted:
 		return
-	move_x = int(signf(Input.get_axis("move_left", "move_right")))
+	var axis := Input.get_axis("move_left", "move_right")
+	move_x = int(signf(axis))
+	tilt = absf(axis) if move_x != 0 else 1.0
 	up = Input.is_action_pressed("move_up")
 	up_pressed = Input.is_action_just_pressed("move_up")
 	down = Input.is_action_pressed("move_down")
@@ -59,6 +64,7 @@ func end_frame() -> void:
 ## Clears everything (used when control is taken away, e.g. on death).
 func clear() -> void:
 	move_x = 0
+	tilt = 1.0
 	up = false
 	down = false
 	jump_held = false
