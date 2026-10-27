@@ -578,7 +578,7 @@ func _apply_wall_slide() -> void:
 # --- Horizontal -----------------------------------------------------------------
 
 func _horizontal_step(delta: float, on_floor: bool) -> void:
-	var target := input.move_x * tuning.run_speed
+	var target := input.move_x * tuning.run_speed * tuning.speed_fraction(input.tilt)
 	if is_drinking:
 		target = 0.0
 	elif is_blocking:
@@ -1240,7 +1240,8 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 		_peak_fall_speed = 0.0
 		_air_top_y = INF
 	if on_floor and absf(velocity.x) > 40.0 and _step_timer <= 0.0:
-		_step_timer = 0.26
+		# A walk steps slower than a run (pass 183).
+		_step_timer = 0.26 * clampf(tuning.run_speed / absf(velocity.x), 1.0, 1.6)
 		_footstep(-10.0)
 	if on_floor and not _hazard_near() and not _on_stilled_water():
 		safe_position = global_position

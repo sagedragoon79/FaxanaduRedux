@@ -8,6 +8,12 @@ extends Resource
 @export var ground_accel := 1800.0
 @export var ground_decel := 2600.0
 @export var turn_multiplier := 1.6
+## Analog walk into run (pass 183, bible 6.1): a stick tilted up to walk_tilt
+## walks at walk_fraction of run_speed, the speed climbs with the tilt from
+## there, and from run_tilt on it is a full run. Keys and the d-pad always run.
+@export var walk_fraction := 0.4
+@export var walk_tilt := 0.45
+@export var run_tilt := 0.9
 
 @export_group("Jump")
 @export var jump_height := 72.0
@@ -110,3 +116,12 @@ var jump_velocity: float:
 
 var double_jump_velocity: float:
 	get: return sqrt(2.0 * gravity * double_jump_height)
+
+
+## The share of run_speed a stick tilted this far (0 to 1) asks for.
+func speed_fraction(tilt: float) -> float:
+	if tilt >= run_tilt:
+		return 1.0
+	if tilt <= walk_tilt:
+		return walk_fraction
+	return lerpf(walk_fraction, 1.0, (tilt - walk_tilt) / (run_tilt - walk_tilt))

@@ -26,7 +26,9 @@ const BLADE_LENGTH := 11.0
 ## ends (the recovery frames of a swing).
 const FINISH := ["slash1", "slash2", "slash3", "slash_up", "cast"]
 ## Poses an unfinished swing may play over.
-const OVERRIDABLE := ["idle", "run", "rise", "apex", "fall"]
+## The speed share (MovementTuning.speed_fraction) at or under which moving is a walk.
+const WALK_POSE := 0.7
+const OVERRIDABLE := ["idle", "walk", "run", "rise", "apex", "fall"]
 
 const DYE_SHADER := preload("res://shaders/cloak_dye.gdshader")
 
@@ -79,6 +81,8 @@ func _physics_process(delta: float) -> void:
 	var rate := 1.0
 	if anim == "run":
 		rate = clampf(absf(player.velocity.x) / player.tuning.run_speed, 0.4, 1.3)
+	elif anim == "walk":
+		rate = clampf(absf(player.velocity.x) / (player.tuning.run_speed * player.tuning.walk_fraction), 0.6, 1.6)
 	elif pose == "climb":
 		# The reach cycles only while you climb; holding still, you hang.
 		rate = 1.6 if player.velocity.y != 0.0 else 0.0
@@ -118,6 +122,9 @@ static func current_pose(p: Player) -> String:
 			return "apex"
 		return "rise" if p.velocity.y < 0.0 else "fall"
 	if absf(p.velocity.x) > 10.0:
+		# A light lean on the stick walks (pass 183).
+		if p.input.move_x != 0 and p.tuning.speed_fraction(p.input.tilt) <= WALK_POSE:
+			return "walk"
 		return "run"
 	return "idle"
 
@@ -139,6 +146,9 @@ static func anim_for(p: Player, body_pose: String) -> String:
 		"climb":
 			# Reaching up a ladder: the wall pose's reach, turned to the rungs.
 			return "wall"
+		"walk":
+			# Until the sheet has a walk clip, the run plays slowed to the pace.
+			return "walk" if Sheet.has_anim(SHEET_NAME, "walk") else "run"
 	return body_pose
 
 
