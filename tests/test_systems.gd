@@ -1332,3 +1332,24 @@ func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	arena.get_tree().paused = false
 	w.queue_free()
 	Trials.abandon()
+
+
+## Pass 165 (bible 13): a mantra dye won rings out with its own sound over the
+## trial bell; a clear that earns none rings the bell alone.
+func test_a_won_dye_sounds_over_the_bell() -> void:
+	GameState.new_game()
+	var heard := []
+	for k in 2:
+		Trials.begin("edges", Trials.TEMPLE, Vector2.ZERO)
+		Trials.run.time = 1.0
+		var goal := TrialGoal.new()
+		arena.add_child(goal)
+		Sfx.recent.clear()
+		goal.ring(null)
+		heard.append(Sfx.recent.duplicate())
+		goal.queue_free()
+	Trials.abandon()
+	await frames(1)
+	check(GameState.owns_dye("coral_dye"), "the quick clear won the dye")
+	check(heard[0].has("trial_bell") and heard[0].has("dye_won"), "the first rings the bell and the dye (%s)" % [heard[0]])
+	check(heard[1].has("trial_bell") and not heard[1].has("dye_won"), "a second rings the bell alone (%s)" % [heard[1]])

@@ -57,6 +57,7 @@ func ring(p: Player) -> void:
 			line += " A Mantra Shard rings out of the bell."
 		if result.dye != "":
 			line += " Within the mantra: your cloak takes %s." % GameData.item(result.dye).name
+			Sfx.play("dye_won", 0.0)
 		GameState.toast.emit(line)
 		if result.record and not result.first:
 			Sfx.play("trial_record", 0.0)

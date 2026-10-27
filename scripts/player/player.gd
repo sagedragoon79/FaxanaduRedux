@@ -1064,6 +1064,7 @@ func _process_attack_hits() -> void:
 			var damage := _swing_damage
 			if executioner and open and _is_boss(collider):
 				damage = roundi(damage * combat.executioner_mult)
+				Sfx.play("execute", 0.05, -3.0)
 			collider.take_hit(damage, dir * (1.8 if is_heavy_swing else 1.0))
 			hit_foe = true
 			if bloodletting and open and hp < max_hp:
