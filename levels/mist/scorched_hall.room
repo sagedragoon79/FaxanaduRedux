@@ -1,5 +1,6 @@
 name: Scorched Hall
 zone: mist
+surface: stone
 map: 33, -7
 chest_gold: 240
 sign: 5, 19, The Mascon road runs on east under black water.|When the spring flows, the marsh will give it back.

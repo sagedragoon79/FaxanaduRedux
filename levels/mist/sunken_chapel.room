@@ -1,5 +1,6 @@
 name: Sunken Chapel
 zone: mist
+surface: stone
 map: 30, -7
 boss: ripasheiku
 fog: 0.92
