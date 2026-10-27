@@ -10,19 +10,21 @@ extends RefCounted
 ## pause menu at any time; you return a step from the Guru either way.
 
 ## In order. `springs`: how many springs must flow before the trial opens.
+## `mantra`: the mantra time (seconds); ring the bell within it and the trial
+## dyes your cloak (`dye`, pass 164), worn again for nothing at Ilse's.
 ## `needs`: the abilities its course is built for (the Glove if not given);
 ## by its springs every one of them is in hand. A trial whose room isn't
 ## built yet isn't offered.
 const LIST := [
-	{"id": "walls", "name": "Mantra of Walls", "room": "trials/walls", "springs": 1,
+	{"id": "walls", "mantra": 12, "dye": "slate_dye", "name": "Mantra of Walls", "room": "trials/walls", "springs": 1,
 		"desc": "Three pillars over spikes, thorned on their far sides. Climb each from the ledge at its foot."},
-	{"id": "edges", "name": "Mantra of Edges", "room": "trials/edges", "springs": 1,
+	{"id": "edges", "mantra": 14, "dye": "coral_dye", "name": "Mantra of Edges", "room": "trials/edges", "springs": 1,
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
-	{"id": "thorns", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
+	{"id": "thorns", "mantra": 15, "dye": "thorn_dye", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
 		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
-	{"id": "winds", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
+	{"id": "winds", "mantra": 14, "dye": "jade_dye", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
 		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
-	{"id": "stillness", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
+	{"id": "stillness", "mantra": 32, "dye": "frost_dye", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
 		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
 	{"id": "falling", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3, "desc": ""},
 ]
@@ -95,7 +97,8 @@ static func tick(delta: float) -> void:
 		run.time = float(run.time) + delta
 
 
-## Ends the run at the bell. Returns {"time", "best", "first", "record"}.
+## Ends the run at the bell. Returns {"time", "best", "first", "record", "dye"}
+## ("dye": the cloak dye this run earned, "" if none).
 static func finish() -> Dictionary:
 	if not active():
 		return {}
@@ -108,7 +111,12 @@ static func finish() -> Dictionary:
 		GameState.data.trials[id] = snappedf(t, 0.01)
 	if first:
 		GameState.grant_stat_item("mantra_shard", null)
-	return {"time": t, "best": minf(t, old), "first": first, "record": record}
+	var dye := ""
+	var trial := find(id)
+	if not trial.is_empty() and trial.has("mantra") and t <= float(trial.mantra) and not GameState.owns_dye(String(trial.dye)):
+		dye = String(trial.dye)
+		GameState.earn_dye(dye)
+	return {"time": t, "best": minf(t, old), "first": first, "record": record, "dye": dye}
 
 
 static func abandon() -> void:

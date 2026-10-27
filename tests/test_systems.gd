@@ -1273,3 +1273,62 @@ func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 	w.queue_free()
 	Trials.abandon()
 
+
+
+## Pass 164 (bible 10): the cosmetics the Guru Trials promise. Each trial has a
+## mantra time; ring its bell within it and the trial dyes your cloak a color of
+## its own, and Ilse keeps it on her shelf to wear again for nothing.
+func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
+	var dyes := {}
+	for t: Dictionary in Trials.built():
+		check(float(t.get("mantra", 0)) > 0.0, "%s has a mantra time" % t.name)
+		var item := GameData.item(String(t.get("dye", "")))
+		check(String(item.get("kind", "")) == "dye" and String(item.get("color", "")) != "", "and a dye of its own (%s)" % t.get("dye", ""))
+		dyes[String(t.dye)] = true
+	check(dyes.size() == Trials.built().size(), "no two trials share a dye")
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(2)
+	var t := Trials.find("walls")
+	var shop := "eolis_dyes"
+	var index := -1
+	var stock: Array = GameData.shop(shop).stock
+	for i in stock.size():
+		if String(stock[i].item) == String(t.dye):
+			index = i
+	check(index >= 0 and not Shop.shelf(shop).has(index), "Ilse keeps a place for it, off the shelf until it is earned")
+	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)
+	Trials.run.time = float(t.mantra) + 0.5
+	var slow := Trials.finish()
+	check(slow.dye == "" and not GameState.owns_dye(String(t.dye)), "a clear outside the mantra earns no dye")
+	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)
+	Trials.run.time = float(t.mantra) - 0.5
+	var quick := Trials.finish()
+	check(quick.dye == String(t.dye) and GameState.owns_dye(quick.dye) and GameState.dye() == quick.dye, "within it the cloak takes the trial's dye (%s)" % quick.dye)
+	check(Shop.shelf(shop).has(index), "and it is on Ilse's shelf")
+	await frames(2)
+	check(not PlayerVisual.dye_look().is_empty() and p.visual.material != null, "the cloak is recolored")
+	GameState.data.dye = ""
+	check(Shop.status(shop, index, p) == "" and Shop.buy(shop, index, p) and GameState.dye() == String(t.dye), "Ilse puts it back on for nothing")
+	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)
+	Trials.run.time = 1.0
+	check(Trials.finish().dye == "", "a second quick clear does not give it twice")
+	var saved := GameState.sanitize(JSON.parse_string(JSON.stringify(GameState.data)))
+	check(Array(saved.dyes).has(String(t.dye)), "the save keeps it")
+	# The Guru's list names each mantra time and keeps the sealed ones sealed.
+	GameState.set_flag("spring:trunk")
+	p.abilities["glove"] = true
+	GameState.data.abilities["glove"] = true
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	check(Menus.open_trials(arena.get_tree(), p), "the trials list opens")
+	var rows := {}
+	for r: Dictionary in menu.rows:
+		rows[String(r.label)] = r
+	check(String(rows["Mantra of Walls"].detail).contains("Mantra Slate is yours"), "Walls says its dye is yours (%s)" % rows["Mantra of Walls"].detail)
+	check(String(rows["Mantra of Edges"].detail).contains("Ring it within 0:14.0 for Ledge Coral"), "Edges names its mantra time and dye (%s)" % rows["Mantra of Edges"].detail)
+	check(rows["Mantra of Stillness"].right == "Sealed" and not String(rows["Mantra of Stillness"].detail).contains("Ring it"), "a trial still sealed stays sealed, with no mantra yet")
+	menu.queue_free()
+	arena.get_tree().paused = false
+	w.queue_free()
+	Trials.abandon()

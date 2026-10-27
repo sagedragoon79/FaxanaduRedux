@@ -140,6 +140,17 @@ func dye() -> String:
 	return id if id != "" else "warden_dye"
 
 
+## Gives a dye won rather than bought (a Guru Trial's mantra time, pass 164):
+## it goes on the cloak, and its flag puts it on Ilse's shelf to wear again.
+func earn_dye(id: String) -> void:
+	var owned: Array = data.get("dyes", [])
+	if not owned.has(id):
+		owned.append(id)
+	data.dyes = owned
+	data.dye = id
+	set_flag("dye:" + id)
+
+
 ## Whether this save owns a dye. Warden Green is the cloak you start in, and
 ## the Lord's Gold is given, not sold.
 func owns_dye(id: String) -> bool:

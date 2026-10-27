@@ -55,6 +55,8 @@ func ring(p: Player) -> void:
 			line += ". Best %s." % Trials.format_time(result.best)
 		if result.first:
 			line += " A Mantra Shard rings out of the bell."
+		if result.dye != "":
+			line += " Within the mantra: your cloak takes %s." % GameData.item(result.dye).name
 		GameState.toast.emit(line)
 		if result.record and not result.first:
 			Sfx.play("trial_record", 0.0)
