@@ -35,7 +35,7 @@ const INFO := {
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
 	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
 	"meteor_shard": {"title": "Meteor Shard", "text": "", "color": Color("e04aa8")},
-	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask. It guards and turns shots like the Magic Shield.", "color": Color("d8b060")},
+	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
 	"rune_dagger": {"title": "Rune Dagger", "text": "Press Throw (B) to throw it; Up throws it high. Its rune calls it back to your side.", "color": Color("7ff0e0")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
@@ -80,8 +80,8 @@ func grant(p: Player) -> void:
 		GameState.data.equipment.blade = kind
 		GameState.refresh_stats(p)
 	elif kind == "battle_helmet":
-		# Found, not bought: it goes straight on, in the shield's place (bible 5.2).
-		GameState.data.equipment.shield = kind
+		# Found, not bought: it goes straight on, in its own slot (bible 5.2).
+		GameState.data.equipment.helmet = kind
 		GameState.refresh_stats(p)
 		p.hp = p.max_hp
 		p.health_changed.emit(p.hp, p.max_hp)
@@ -318,18 +318,25 @@ func _draw() -> void:
 			_hp(o, -1, 2, 3, 7, Color(Color("8af0e8"), 0.55 + 0.45 * beat))
 			_hp(o, 0, 3, 1, 5, Color("e8fffc"))
 		"battle_helmet":
-			# A gold-bronze war-helm: a domed crown, cheek guards, an eye slit and a crest of wings.
+			# The elf kings' war-helm (Sean's reference): sea-green steel, a domed crown,
+			# cheek guards, an eye slit under a gold brow band, swept wings and cyan runes.
 			var helm := [Vector2(-11, 12), Vector2(-12, -2), Vector2(-8, -11), Vector2(0, -14), Vector2(8, -11), Vector2(12, -2), Vector2(11, 12), Vector2(5, 12), Vector2(4, 4), Vector2(-4, 4), Vector2(-5, 12)]
 			for side in [-1, 1]:
 				var wing := [Vector2(10 * side, -8), Vector2(20 * side, -18), Vector2(17 * side, -9), Vector2(21 * side, -11), Vector2(12 * side, -1)]
 				_poly(o, wing, Color("120f19"), 1.5)
-				_poly(o, wing, Color("eef4ff"))
+				_poly(o, wing, Color("d8f0ea"))
 			_poly(o, helm, Color("120f19"), 2.0)
 			_poly(o, helm, dark)
 			_poly(o + Vector2(-1, -1), [Vector2(-10, 2), Vector2(-10, -3), Vector2(-7, -10), Vector2(0, -12), Vector2(7, -10), Vector2(10, -3), Vector2(10, 2)], c)
 			_hp(o, -8, -9, 3, 8, light)
 			_hp(o, -9, -1, 18, 3, Color("120f19"))
-			_hp(o, -1, -13, 2, 12, light)
+			_hp(o, -10, -4, 20, 2, Color("c8a850"))
+			_hp(o, -5, 4, 1, 8, Color("c8a850"))
+			_hp(o, 4, 4, 1, 8, Color("c8a850"))
+			_hp(o, -1, -13, 2, 9, light)
+			var glint := Color(Color("7ff0e0"), 0.6 + 0.4 * sin(_t * 4.0))
+			_hp(o, -7, -8, 2, 1, glint)
+			_hp(o, 5, -8, 2, 1, glint)
 		"rune_dagger":
 			# A slim elven throwing dagger, point down, a cyan rune pulsing on the
 			# blade; a short crossguard and a wrapped grip with a ring pommel.
