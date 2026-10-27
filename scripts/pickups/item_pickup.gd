@@ -18,6 +18,7 @@ const KIND_BY_CHAR := {
 	"&": "dragon_slayer",
 	"{": "death",
 	"(": "meteor_shard",
+	"}": "rune_dagger",
 }
 
 const INFO := {
@@ -36,11 +37,12 @@ const INFO := {
 	"meteor_shard": {"title": "Meteor Shard", "text": "", "color": Color("e04aa8")},
 	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask. It guards and turns shots like the Magic Shield.", "color": Color("d8b060")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
+	"rune_dagger": {"title": "Rune Dagger", "text": "Press Throw (B) to throw it; Up throws it high. Its rune calls it back to your side.", "color": Color("7ff0e0")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death"]
+const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death", "rune_dagger"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -328,6 +330,24 @@ func _draw() -> void:
 			_hp(o, -8, -9, 3, 8, light)
 			_hp(o, -9, -1, 18, 3, Color("120f19"))
 			_hp(o, -1, -13, 2, 12, light)
+		"rune_dagger":
+			# A slim elven throwing dagger, point down, a cyan rune pulsing on the
+			# blade; a short crossguard and a wrapped grip with a ring pommel.
+			var k := 0.55 + 0.45 * sin(_t * 5.0)
+			_poly(o, [Vector2(-3, -2), Vector2(3, -2), Vector2(3, 12), Vector2(0, 18), Vector2(-3, 12)], Color("120f19"), 2.0)
+			_poly(o, [Vector2(-2, -2), Vector2(2, -2), Vector2(2, 12), Vector2(0, 17), Vector2(-2, 12)], Color("dfe6ee"))
+			_hp(o, -2, -2, 1, 15, Color("ffffff"))
+			_hp(o, 1, -1, 1, 14, Color("8a94a8"))
+			_hp(o, -1, 2, 2, 2, Color(c, k))
+			_hp(o, -1, 7, 2, 2, Color(c, k))
+			_hp(o, -8, -6, 16, 4, Color("120f19"))
+			_hp(o, -7, -5, 14, 2, Color("b8c4d0"))
+			_hp(o, -2, -15, 4, 10, Color("120f19"))
+			_hp(o, -1, -14, 2, 8, Color("5a4028"))
+			_hp(o, -1, -12, 2, 1, Color("8a6a40"))
+			_hp(o, -1, -9, 2, 1, Color("8a6a40"))
+			draw_circle(o + Vector2(0, -9), 2.5, Color("120f19"))
+			draw_circle(o + Vector2(0, -9), 1.5, Color(c, k))
 		"joker_key":
 			# A violet key: a star in its bow, two teeth on its bit.
 			_hp(o, -2, -4, 4, 18, Color("120f19"))

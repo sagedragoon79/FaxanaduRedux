@@ -523,7 +523,7 @@ func test_rare_drops_a_war_glove_and_an_ointment() -> void:
 	await frames(2)
 	p.input.attack_pressed = true
 	await frames(8)
-	check(999 - mono.hp == roundi(p.slash_damage * plain * 1.5), "a slash deals %d with it (the dagger's %d)" % [999 - mono.hp, p.slash_damage])
+	check(999 - mono.hp == roundi(p.slash_damage * plain * 1.5), "a slash deals %d with it (the short sword's %d)" % [999 - mono.hp, p.slash_damage])
 	await frames(roundi(15.0 * 60.0) + 2)
 	check(p.glove_left == 0.0 and is_equal_approx(p.blade_mult(), plain), "after 15 s it wears off")
 	# Dying takes a glove off.
@@ -826,7 +826,7 @@ func test_the_second_temper_costs_a_meteor_shard() -> void:
 	check(Shop.status("forepaw_smith", 1, p) == "", "now the smith can fold it in")
 	check(Shop.buy("forepaw_smith", 1, p), "bought Temper Blade II")
 	check(int(GameState.data.meteor_shards) == 0 and p.gold == 2700, "it spends the shard and the gold")
-	check(GameState.temper_level("hand_dagger") == 2, "the dagger is tempered twice")
+	check(GameState.temper_level("short_sword") == 2, "the short sword is tempered twice")
 	check(Shop.buy("eolis_arms", 0, p) and Shop.buy("forepaw_smith", 0, p), "a new blade, tempered once")
 	check(Shop.status("forepaw_smith", 1, p) == "shards", "each blade's second temper takes its own shard")
 

@@ -1127,6 +1127,27 @@ def main():
     out[int(RATE * 0.07):int(RATE * 0.07) + pn] += pop
     save("step_mud", out, 0.45)
 
+    # The Rune Dagger (pass 184). Thrown: a tight whip of air with the blade's
+    # thin ring in it, rising.
+    d = 0.18
+    n = int(RATE * d)
+    whip = lowpass(highpass(noise(d), 900), slide(5200, 1800, d)) * env(n, 0.004, 2.0)
+    ring = osc(slide(1900, 2300, d), "sine") * env(n, 0.002, 2.6) * 0.35
+    save("dagger_throw", mix(whip, ring), 0.5)
+
+    # Reforming at your side: motes of light falling together, a rising
+    # shimmer, then a soft bright chime as the blade is whole again.
+    d = 0.42
+    n = int(RATE * d)
+    shimmer = osc(slide(900, 2400, 0.28, 0.6), "sine") * env(int(RATE * 0.28), 0.2, 0.6) * 0.3
+    sparkle = highpass(noise(0.28), 3500) * env(int(RATE * 0.28), 0.25, 0.5) * 0.25
+    cn = int(RATE * 0.16)
+    chime = mix(osc(np.full(cn, 1760.0), "sine"), osc(np.full(cn, 2640.0), "sine") * 0.5) * env(cn, 0.002, 2.2)
+    out = np.zeros(n)
+    out[:len(shimmer)] += shimmer + sparkle
+    out[int(RATE * 0.25):int(RATE * 0.25) + cn] += chime
+    save("dagger_return", out, 0.45)
+
 
 if __name__ == "__main__":
     main()

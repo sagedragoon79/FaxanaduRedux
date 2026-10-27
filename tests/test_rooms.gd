@@ -106,7 +106,7 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	GameState.set_flag("boss:zoradohna")
 	GameState.meet_guru("trunk/apolune", Vector2(200, 320))
 	GameState.meet_guru("tower/forepaw", Vector2(168, 320))
-	GameState.data.tempers["hand_dagger"] = 2
+	GameState.data.tempers["short_sword"] = 2
 	GameState.data.named_rank = 3
 	GameState.data.mantra_shards = 2
 	GameState.data.abilities["mattock"] = true
@@ -118,7 +118,7 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Mantra Path stops survive")
 	var at: Array = GameState.data.gurus["tower/forepaw"]
 	check(is_equal_approx(float(at[0]), 168.0), "with their positions")
-	check(GameState.temper_level("hand_dagger") == 2, "the blade's temper survives")
+	check(GameState.temper_level("short_sword") == 2, "the blade's temper survives")
 	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
 	check(GameState.has_ability("mattock"), "the Mattock survives")
 	GameState.delete_save(SAVE_SLOT)
