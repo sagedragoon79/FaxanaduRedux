@@ -150,6 +150,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 			doors[n] = {"rect": found[n].rect, "edge": found[n].edge, "target": parts[1].strip_edges(), "target_door": int(parts[2])}
 	var shrines: Array[Vector2i] = []
 	var treasures: Array[String] = []
+	var fruits := 0
+	var dews := 0
 	var kinds := {}
 	for spec: String in parsed.lists.get("lock", []):
 		var l := spec.split(",")
@@ -162,6 +164,10 @@ func _catalog_room(room_id: String, text: String) -> void:
 				shrines.append(Vector2i(x, y))
 			elif TREASURE_CHARS.contains(grid[y][x]):
 				treasures.append("%s:%d,%d" % [room_id, x, y])
+				if grid[y][x] == "L":
+					fruits += 1
+				elif grid[y][x] == "W":
+					dews += 1
 			elif grid[y][x] in ["J", "g"]:
 				var cell := Vector2i(x, y)
 				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "jack")
@@ -176,6 +182,9 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"shrines": shrines,
 		## Pickup ids of the room's items and chests (Treasure Sense, design bible 9).
 		"treasures": treasures,
+		## How many of those are Life Fruits and Mana Dews (the Journey page counts them).
+		"fruits": fruits,
+		"dews": dews,
 		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
 		"secret": not parsed.lists.get("secret", []).is_empty(),
 		## Its key doors, `{cell, kind, id}`; the map marks the ones still shut.
