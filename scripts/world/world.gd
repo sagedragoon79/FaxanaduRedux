@@ -158,6 +158,12 @@ func _catalog_room(room_id: String, text: String) -> void:
 		if l.size() == 3:
 			kinds[Vector2i(int(l[0]), int(l[1]))] = l[2].strip_edges()
 	var locks: Array[Dictionary] = []
+	# Finds laid by a `prop:` line count too (pass 187): the Battle Helmet and the
+	# Joker Key, under the id Room gives them (the prop's own cell).
+	for spec: String in parsed.lists.get("prop", []):
+		var pr := spec.split(",")
+		if pr.size() == 3 and pr[2].strip_edges() in Room.FOUND_PROPS:
+			treasures.append("%s:%d,%d" % [room_id, int(pr[0]), int(pr[1])])
 	for y in grid.size():
 		for x in grid[y].length():
 			if grid[y][x] == "S":

@@ -771,6 +771,28 @@ func test_the_whole_world_is_counted() -> void:
 	w.free()
 
 
+## Pass 187: the finds a `prop:` line lays (the Battle Helmet, the Joker Key)
+## are treasures like the ones drawn in the grid: the percent, the Journey and
+## Treasure Sense count them, under the same id the room gives the pickup.
+func test_finds_laid_by_props_count_as_treasures() -> void:
+	var w := make_world({}, "zenis/threshold")
+	await frames(2)
+	var helm_id := "zenis/threshold:2,19"
+	check(w.catalog["zenis/threshold"].treasures.has(helm_id), "the Battle Helmet is a Threshold treasure (%s)" % [w.catalog["zenis/threshold"].treasures])
+	check(w.catalog["dartmoor/drowned_market"].treasures.has("dartmoor/drowned_market:49,12"), "and the Joker Key a Drowned Market one")
+	var helm: ItemPickup = null
+	for c in w.room.get_children():
+		if c is ItemPickup and (c as ItemPickup).kind == "battle_helmet":
+			helm = c
+	check(helm != null and helm.pickup_id == helm_id, "the pickup carries the same id (%s)" % [helm.pickup_id if helm else "none"])
+	var before := int(Completion.tally(w.catalog).treasures)
+	var left := MapScreen.unfound(w.catalog["zenis/threshold"])
+	GameState.collect(helm_id)
+	check(int(Completion.tally(w.catalog).treasures) == before + 1, "taking it counts toward the percent")
+	check(MapScreen.unfound(w.catalog["zenis/threshold"]) == left - 1, "and Treasure Sense stops sensing it")
+	GameState.new_game()
+
+
 func test_the_thanks_card_counts_up_the_completion() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
