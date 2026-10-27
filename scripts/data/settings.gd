@@ -13,7 +13,7 @@ const FLASH_NAMES := ["Full", "Reduced", "Off"]
 const SPEED_STEPS := [1.0, 0.9, 0.8, 0.7]
 const VOLUME_MAX := 10
 ## Keyboard actions the player may rebind (the pad keeps its layout).
-const REBINDABLE := ["move_left", "move_right", "move_up", "move_down", "jump", "attack", "dash", "block", "spell", "heal", "map"]
+const REBINDABLE := ["move_left", "move_right", "move_up", "move_down", "jump", "attack", "dash", "block", "spell", "heal", "throw", "map"]
 const BUSES := ["Music", "Sfx"]
 
 static var shake := 0          # index into SHAKE_STEPS

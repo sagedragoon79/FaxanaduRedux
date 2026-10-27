@@ -67,17 +67,17 @@ func test_rebinding_swaps_and_resets() -> void:
 	Settings.path = TEMP_SETTINGS
 	var jump := Controls.primary_key("jump")
 	var attack := Controls.primary_key("attack")
-	Settings.bind_key("jump", KEY_B)
-	check(Controls.primary_key("jump") == KEY_B, "jump is on B")
+	Settings.bind_key("jump", KEY_N)
+	check(Controls.primary_key("jump") == KEY_N, "jump is on N")
 	check(_has_key("jump", KEY_Z), "jump keeps its other keys")
-	Settings.bind_key("attack", KEY_B)
-	check(Controls.primary_key("attack") == KEY_B and Controls.primary_key("jump") == attack, "taking another action's key swaps them")
-	check(not _has_key("jump", KEY_B), "B now does only one thing")
+	Settings.bind_key("attack", KEY_N)
+	check(Controls.primary_key("attack") == KEY_N and Controls.primary_key("jump") == attack, "taking another action's key swaps them")
+	check(not _has_key("jump", KEY_N), "N now does only one thing")
 	Settings.bind_key("dash", KEY_K)
 	check(not _has_key("jump", KEY_K) and _has_key("dash", KEY_K), "a key taken from another action's spares leaves it")
 	Settings.load_settings()
 	Settings.apply()
-	check(Controls.primary_key("attack") == KEY_B, "bindings survive a save and load")
+	check(Controls.primary_key("attack") == KEY_N, "bindings survive a save and load")
 	Settings.reset_keys()
 	check(Controls.primary_key("jump") == jump and Controls.primary_key("attack") == attack, "reset puts the defaults back")
 	_restore()
@@ -416,7 +416,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.skill_points = 3
 	d.skills = ["keen_edge", "deluge_pierce", "tilte_swarm"]
 	d.respecs = 2
-	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield"}
+	d.equipment = {"blade": "giant_blade", "armor": "full_plate", "shield": "magic_shield", "helmet": "battle_helmet"}
 	d.tempers = {"giant_blade": 2, "long_sword": 1}
 	d.keys = {"jack": true, "lantern": true}
 	d.rings = ["elf", "ruby"]
@@ -464,7 +464,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	await frames(2)
 	var p := w.player
 	check(p.gold == 4321 and p.elixirs == 1 and p.ointments == 2 and p.equipped_spell == "tilte", "gold, elixirs, ointments and the spell reach the player")
-	check(p.max_hp == 150 and p.flask_max == 4 and p.tilte_swarm and p.spell_pierce and p.reflects, "and the stats, skills and gear behind them")
+	check(p.max_hp == 170 and p.flask_max == 4 and p.tilte_swarm and p.spell_pierce and p.reflects, "and the stats, skills and gear behind them (150 and the helmet's mask)")
 	check(p.abilities.values().all(func(v: bool) -> bool: return v), "and every ability")
 	w.queue_free()
 	await frames(1)
@@ -661,7 +661,7 @@ func test_a_save_naming_things_this_build_lacks_plays_on() -> void:
 	check(GameState.data.skills == ["keen_edge", "ghost_skill"], "skills are kept once each, strings only (%s)" % [GameState.data.skills])
 	check(GameState.data.dyes == ["ghost_dye", "tide_dye"], "and so are dyes (%s)" % [GameState.data.dyes])
 	GameState.refresh_stats(p)
-	check(p.slash_damage == int(GameData.item("hand_dagger").slash), "an unknown blade falls back to the Hand Dagger (%d)" % p.slash_damage)
+	check(p.slash_damage == int(GameData.item("short_sword").slash), "an unknown blade falls back to the Short Sword (%d)" % p.slash_damage)
 	check(PlayerVisual.dye_look().is_empty(), "an unknown dye leaves the cloak as it is")
 	for n: Dictionary in Skills.nodes():
 		Skills.status(n.id)
@@ -675,6 +675,54 @@ func test_a_save_naming_things_this_build_lacks_plays_on() -> void:
 	check(int(GameState.data.skill_points) == int(GameData.skill("keen_edge").cost), "Keen Edge comes back once; the unknown node refunds nothing (%d)" % int(GameState.data.skill_points))
 	var caught := errors.stop()
 	check(caught.is_empty(), "and nothing logs an engine error (%s)" % [caught])
+
+
+## Pass 184: the Hand Dagger is now the Short Sword. A save from before
+## keeps it in hand and keeps its tempers; the Throw button is bound; and the
+## Rune Dagger in the Hornet Gallery grants the throw.
+func test_the_hand_dagger_is_the_short_sword_and_the_rune_dagger_is_found() -> void:
+	var src := GameState.fresh()
+	src.equipment = {"blade": "hand_dagger", "armor": "", "shield": ""}
+	src.tempers = {"hand_dagger": 2, "long_sword": 1}
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.blade == "short_sword", "an old save's Hand Dagger is the Short Sword (%s)" % got.equipment.blade)
+	check(got.tempers.size() == 2 and int(got.tempers.short_sword) == 2 and int(got.tempers.long_sword) == 1, "with its tempers (%s)" % [got.tempers])
+	check(GameData.item("short_sword").name == "Short Sword" and GameData.item("hand_dagger").is_empty(), "the item is the Short Sword")
+	check(GameState.fresh().equipment.blade == "short_sword", "a new game starts with it")
+	check(not bool(GameState.fresh().abilities.rune_dagger), "and without the Rune Dagger")
+	check(InputMap.has_action("throw") and Controls.primary_key("throw") == KEY_B, "Throw is on B")
+	var pad := false
+	for ev in InputMap.action_get_events("throw"):
+		pad = pad or (ev is InputEventJoypadButton and (ev as InputEventJoypadButton).button_index == JOY_BUTTON_RIGHT_SHOULDER)
+	check(pad, "and on the right bumper")
+	var found := []
+	for f in DirAccess.get_files_at("res://levels/trunk"):
+		if f.ends_with(".room") and FileAccess.get_file_as_string("res://levels/trunk/" + f).contains("}"):
+			found.append(f)
+	check(found == ["hornet_gallery.room"], "the Rune Dagger lies in the Hornet Gallery (%s)" % [found])
+	var w := make_world({}, "eolis/market")
+	await frames(3)
+	var p := w.player
+	var pick := ItemPickup.new()
+	pick.kind = ItemPickup.KIND_BY_CHAR["}"]
+	w.room.add_child(pick)
+	pick.grant(p)
+	check(bool(p.abilities.get("rune_dagger", false)), "picked up, it is yours")
+
+
+## Pass 185: the Battle Helmet left the shield slot for its own. A save that
+## wore it as a shield wears it as a helmet, with the Magic Shield in hand
+## (the guard and parry it had); a save from before helmets gets an empty slot.
+func test_a_save_with_the_helmet_in_the_shield_slot_moves_it_to_the_head() -> void:
+	var src := GameState.fresh()
+	src.equipment = {"blade": "long_sword", "armor": "full_plate", "shield": "battle_helmet"}
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.helmet == "battle_helmet" and got.equipment.shield == "magic_shield", "helmet on the head, Magic Shield in hand (%s)" % [got.equipment])
+	check(got.equipment.blade == "long_sword" and got.equipment.armor == "full_plate", "the rest untouched")
+	src.equipment = {"blade": "short_sword", "armor": "", "shield": "small_shield"}
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.helmet == "" and got.equipment.shield == "small_shield", "an older save gains an empty helmet slot")
+	check(GameData.item("battle_helmet").kind == "helmet" and not GameData.item("battle_helmet").has("guard"), "the helmet neither guards nor parries")
 
 
 func test_a_rest_in_a_missing_room_wakes_at_the_start() -> void:

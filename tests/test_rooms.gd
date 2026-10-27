@@ -106,7 +106,7 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	GameState.set_flag("boss:zoradohna")
 	GameState.meet_guru("trunk/apolune", Vector2(200, 320))
 	GameState.meet_guru("tower/forepaw", Vector2(168, 320))
-	GameState.data.tempers["hand_dagger"] = 2
+	GameState.data.tempers["short_sword"] = 2
 	GameState.data.named_rank = 3
 	GameState.data.mantra_shards = 2
 	GameState.data.abilities["mattock"] = true
@@ -118,7 +118,7 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Mantra Path stops survive")
 	var at: Array = GameState.data.gurus["tower/forepaw"]
 	check(is_equal_approx(float(at[0]), 168.0), "with their positions")
-	check(GameState.temper_level("hand_dagger") == 2, "the blade's temper survives")
+	check(GameState.temper_level("short_sword") == 2, "the blade's temper survives")
 	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
 	check(GameState.has_ability("mattock"), "the Mattock survives")
 	GameState.delete_save(SAVE_SLOT)
@@ -135,7 +135,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	GameState.add_key("queen", 2)
 	GameState.add_key("joker")
 	GameState.data.keys["lantern"] = true
-	GameState.data.equipment.shield = "battle_helmet"
+	GameState.data.equipment.helmet = "battle_helmet"
 	GameState.refresh_stats(p)
 	var top := p.max_hp
 	GameState.data.trials["walls"] = 31.5
@@ -146,7 +146,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	check(GameState.key_count("queen") == 2 and GameState.key_count("joker") == 1, "the card keys survive")
 	check(GameState.data.keys.get("lantern") == true, "and the Lantern Key, kept for good")
 	GameState.apply(p)
-	check(GameState.data.equipment.shield == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
+	check(GameState.data.equipment.helmet == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
 	check(p.hp == p.max_hp, "loading fills the new top, not the old one (%d/%d)" % [p.hp, p.max_hp])
 	check(is_equal_approx(float(GameState.data.trials["walls"]), 31.5), "a trial's best survives")
 	check(GameState.is_collected("mist/feather_hollow:4,19"), "an opened card door stays open")

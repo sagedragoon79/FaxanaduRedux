@@ -410,6 +410,9 @@ func _take_shot() -> void:
 		# Screenshots: a Thrust from the floor on this frame (to catch the lunge).
 		player.thrust = true
 		player._thrust(player.is_on_floor())
+	if _args.has("shot-throw") and _frames == int(_args["shot-throw"]):
+		# Screenshots: throw the Rune Dagger on this frame (to catch it in flight).
+		player.throw_dagger()
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])

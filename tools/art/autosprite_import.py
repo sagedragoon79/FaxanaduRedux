@@ -154,6 +154,41 @@ def _n4(mask):
     return _shifted(mask, 1, 0) | _shifted(mask, -1, 0) | _shifted(mask, 0, 1) | _shifted(mask, 0, -1)
 
 
+def _morph(mask, r, grow):
+    """`mask` eroded (grow False) or dilated (grow True) by a (2r+1)-square."""
+    out = np.zeros_like(mask) if grow else np.ones_like(mask)
+    for dy in range(-r, r + 1):
+        for dx in range(-r, r + 1):
+            s = _shifted(mask, dx, dy)
+            out = (out | s) if grow else (out & s)
+    return out
+
+
+def head_point(img, r=4):
+    """The crown of the figure's head in sheet pixels (x, y), or None: the top of what is
+    left once the cloak (green) is masked out and anything thinner than the head (a blade, a
+    fist, a strand of hair) is opened away. A raised fist can still read a few pixels high."""
+    px = np.asarray(img).astype(int)
+    green = (px[..., 1] > px[..., 0] + 8) & (px[..., 1] > px[..., 2])
+    body = (px[..., 3] > 0) & ~green
+    # The figure's top, a blade or a stray pixel aside.
+    raw = np.nonzero(_morph(_morph(body, 2, False), 2, True).any(1))[0]
+    if len(raw) == 0:
+        return None
+    # A head half hidden by the cloak is narrower: open less until the crown lands
+    # near the top of the figure.
+    for k in range(r, 2, -1):
+        solid = _morph(_morph(body, k, False), k, True)
+        rows = np.nonzero(solid.any(1))[0]
+        if len(rows) and rows.min() - raw.min() <= 12:
+            break
+    else:
+        solid = _morph(_morph(body, 2, False), 2, True)
+    top = np.nonzero(solid.any(1))[0].min()
+    xs = np.nonzero(solid[top:top + 6])[1]
+    return round(xs.mean()), top
+
+
 def _erase_hue(src, lo, hi, white=False):
     """Clears saturated pixels whose hue lies in [lo, hi] degrees (premultiplied RGBA), and
     with `white` the near-white core of a glow too."""
@@ -573,7 +608,19 @@ def imported(name, cell, origin, code_meta):
                 meta = imp.detect_hero(img, meta)
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
+            if cfg.get("head"):
+                # Where a helmet layer sits (pass 185): the sheet is drawn bare-headed.
+                h = head_point(img)
+                if h:
+                    meta["head"] = imp.to_point(*h)
             frames.append((img, mask, meta))
+        heads = [m.get("head") for _, _, m in frames]
+        for i in range(1, len(frames) - 1):
+            # A fist raised over the head reads as the crown: a crown that jumps more
+            # than 2 px above both neighbours' drops to the height between theirs.
+            prev, here, after = heads[i - 1], heads[i], heads[i + 1]
+            if prev and here and after and here[1] < min(prev[1], after[1]) - 2:
+                frames[i][2]["head"] = [here[0], round((prev[1] + after[1]) / 2)]
         if "height" in spec:
             imp.set_reference(source_frames(ref, imp.dir)[0], cfg["height"])
         out[anim] = (frames, spec.get("seq"), spec.get("fps"), spec.get("loop"))

@@ -758,3 +758,68 @@ func test_a_midair_up_slash_that_lands_holds_you_up() -> void:
 	await frames(2)
 	check(p.velocity.y > 0.0, "once per swing (%.0f)" % p.velocity.y)
 	p.input.up = false
+
+
+## The Rune Dagger (pass 184, bible 5.2): thrown, it strikes the first foe in
+## its path, breaks into rune light, and reforms at your hip RETURN later; only
+## one flies at a time, it costs no magic, and Up throws it straight up.
+func test_the_rune_dagger_flies_strikes_and_reforms_at_your_hip() -> void:
+	var room := _arena_with("E", Vector2i(10, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var dummy: TrainingDummy = _find(room, TrainingDummy)
+	p.input.throw_pressed = true
+	await frames(1)
+	check(p.rune_dagger == null, "no throw without the Rune Dagger")
+	p.rune_dagger = null
+	for d in runner.get_tree().get_nodes_in_group("projectile"):
+		d.free()
+	p.abilities["rune_dagger"] = true
+	await frames(1)
+	var mp0 := p.mp
+	p.input.throw_pressed = true
+	await frames(1)
+	var dagger := p.rune_dagger
+	check(dagger != null and dagger.dir == Vector2.RIGHT, "the Throw button hurls it the way you face")
+	check(not p.dagger_ready(), "one dagger at a time")
+	p.input.throw_pressed = true
+	await frames(1)
+	check(runner.get_tree().get_nodes_in_group("projectile").size() == 1, "a second press while it flies does nothing")
+	await frames(20)
+	check(dummy.hits_taken == 1, "it strikes the dummy (%d hits)" % dummy.hits_taken)
+	check(dummy.hp == TrainingDummy.HP - RuneDagger.DAMAGE, "for %d damage (dummy hp %d)" % [RuneDagger.DAMAGE, dummy.hp])
+	check(not is_instance_valid(dagger), "it breaks on the blow")
+	check(is_equal_approx(p.mp, mp0), "it costs no magic")
+	check(not p.dagger_ready(), "it is not back at once")
+	await frames(int(RuneDagger.RETURN * 60.0) + 2)
+	check(p.dagger_ready(), "it reforms at your hip after %.1f s" % RuneDagger.RETURN)
+	p.input.up = true
+	p.input.throw_pressed = true
+	await frames(1)
+	check(p.rune_dagger != null and p.rune_dagger.dir == Vector2.UP, "Up throws it straight up")
+	p.input.up = false
+
+
+func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})
+	await frames(6)
+	var x0 := p.global_position.x
+	p.input.throw_pressed = true
+	await frames(1)
+	var dagger := p.rune_dagger
+	var far := 0.0
+	while is_instance_valid(dagger):
+		far = dagger.global_position.x - x0
+		await frames(1)
+	check(far <= RuneDagger.RANGE + 20.0 and far >= RuneDagger.RANGE - 20.0, "it flies about %d px and no farther (%.0f)" % [RuneDagger.RANGE, far])
+	await frames(int(RuneDagger.RETURN * 60.0) + 2)
+	p.facing = -1
+	p.input.throw_pressed = true
+	await frames(1)
+	dagger = p.rune_dagger
+	await frames(12)
+	check(not is_instance_valid(dagger), "it breaks on the wall behind you")
+	check(not p.dagger_ready(), "and comes home from there too")
+	await frames(int(RuneDagger.RETURN * 60.0) + 2)
+	check(p.dagger_ready(), "ready again")

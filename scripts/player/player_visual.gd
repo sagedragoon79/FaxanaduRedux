@@ -30,6 +30,13 @@ const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
 const OINTMENT := Color("f0c02e")
 const POISON := Color("8fd14f")
+## The Battle Helmet (pass 185, Sean's reference in armor/battle-helmet):
+## sea-green elven steel, gold trim, a swept wing crest with cyan runes.
+const HELM := Color("a8d4cc")
+const HELM_LIGHT := Color("d8f0ea")
+const HELM_DARK := Color("5e8c86")
+const HELM_TRIM := Color("c8a850")
+const HELM_RUNE := Color("7ff0e0")
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
@@ -268,6 +275,10 @@ func _draw() -> void:
 	if sheet != SHEET_NAME and player.cloak:
 		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
+	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet":
+		# Its own layer over the head (paper-doll): the hero's sheet is bare-headed.
+		var crown: Array = info.get("head", [info.neck[0], info.neck[1] - 16])
+		_draw_helmet(Vector2(crown[0], crown[1]), tint)
 	if info.has("blade"):
 		_draw_blade(hand, deg_to_rad(float(info.blade)), BLADE_LENGTH + player.reach_bonus * 0.75, tint)
 	if anim == "block":
@@ -293,6 +304,43 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 	draw_line(base - side * (3.0 + broad), base + side * (3.0 + broad), OUTLINE, 3.0)
 	draw_line(base - side * 2.0, base + side * 2.0, HILT * tint, 1.0)
 	draw_rect(Rect2((hand - dir * 2.0).round() - Vector2(1, 1), Vector2(2, 2)), HILT * tint)
+
+
+## The Battle Helmet, side-on and facing +x, its dome on `crown` (the top of
+## the head, found in the sheet's pixels by autosprite_import.head_point).
+func _draw_helmet(crown: Vector2, tint: Color) -> void:
+	# Drawn at 0.85 scale around the crown so it fits the bare head snugly.
+	draw_set_transform(crown + Vector2(-0.5, 7.5), 0.0, Vector2(0.85, 0.85))
+	var o := Vector2.ZERO
+	var crest := PackedVector2Array([o + Vector2(-1, -9), o + Vector2(2, -11), o + Vector2(-3, -10.5), o + Vector2(-8, -7), o + Vector2(-4, -8)])
+	var dome := PackedVector2Array([o + Vector2(-4.5, -1), o + Vector2(-5, -5), o + Vector2(-3, -8.5), o + Vector2(0.5, -9.5), o + Vector2(3.5, -8), o + Vector2(5, -5),
+		o + Vector2(4.5, -4), o + Vector2(2, -4), o + Vector2(2.5, 0.5), o + Vector2(0.5, 0.5), o + Vector2(-0.5, -3), o + Vector2(-2, -3), o + Vector2(-3, 1)])
+	draw_colored_polygon(_grow(dome, 1.0), OUTLINE)
+	draw_colored_polygon(_grow(crest, 1.0), OUTLINE)
+	draw_colored_polygon(dome, HELM * tint)
+	# Shade along the back and the nape guard, light across the brow.
+	draw_colored_polygon(PackedVector2Array([o + Vector2(-4.5, -1), o + Vector2(-5, -5), o + Vector2(-3.5, -5), o + Vector2(-2, -3), o + Vector2(-3, 1)]), HELM_DARK * tint)
+	draw_rect(Rect2(o + Vector2(-1.5, -8.5), Vector2(4, 1)), HELM_LIGHT * tint)
+	# Gold trim: the brow band over the eye and the edge of the cheek guard.
+	draw_line(o + Vector2(-2.5, -4.5), o + Vector2(4.5, -4.5), HELM_TRIM * tint, 1.0)
+	draw_line(o + Vector2(2, -4), o + Vector2(2.5, 0.5), HELM_TRIM * tint, 1.0)
+	draw_colored_polygon(crest, HELM_LIGHT * tint)
+	var k := 0.6 + 0.4 * sin(Time.get_ticks_msec() * 0.004)
+	draw_rect(Rect2(o + Vector2(-4, -8), Vector2(1, 0.5)), Color(HELM_RUNE, k))
+	draw_rect(Rect2(o + Vector2(-2, -9), Vector2(1, 0.5)), Color(HELM_RUNE, k))
+	draw_set_transform(Vector2.ZERO)
+
+
+## `pts` pushed out from their center by `by` px (an outline behind a shape).
+static func _grow(pts: PackedVector2Array, by: float) -> PackedVector2Array:
+	var c := Vector2.ZERO
+	for q in pts:
+		c += q
+	c /= pts.size()
+	var out := PackedVector2Array()
+	for q in pts:
+		out.append(q + (q - c).normalized() * by)
+	return out
 
 
 func _draw_shield(at: Vector2, tint: Color) -> void:

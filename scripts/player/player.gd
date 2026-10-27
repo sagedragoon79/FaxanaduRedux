@@ -88,7 +88,7 @@ var flask_charges := 2
 var equipped_spell := "deluge"
 
 # Derived from gear and skills by GameState.refresh_stats. Defaults are the
-# Hand Dagger with a shield and no skills, which is what the gym uses.
+# Short Sword with a shield and no skills, which is what the gym uses.
 var slash_damage := 8
 var heavy_damage := 14
 var reach_bonus := 0.0
@@ -182,6 +182,9 @@ var poison_left: float:
 	get: return maxf(_poison_timer, 0.0)
 ## Counts swings, so the visual can restart an attack animation on each press.
 var swing_count := 0
+## The Rune Dagger in flight, if any (pass 184).
+var rune_dagger: RuneDagger
+var _dagger_back := 0.0
 var is_casting: bool:
 	get: return _cast_cooldown > combat.cast_cooldown - 0.2
 var is_hurt: bool:
@@ -365,6 +368,7 @@ func _physics_process(delta: float) -> void:
 	_try_cycle_spell()
 	_try_cast()
 	_try_hourglass()
+	_try_throw(delta)
 	_try_attack(on_floor)
 	_try_thrust(on_floor, delta)
 
@@ -1332,6 +1336,46 @@ func _try_hourglass() -> void:
 	Sfx.play("hourglass")
 	Feel.add_trauma(0.1)
 	_spawn_dust(Vector2(0, -24), "parry")
+
+
+## The Rune Dagger (pass 184, bible 5.2): one in flight at a time. When its
+## flight ends it breaks into rune light and reforms at your hip RuneDagger.RETURN
+## later, so it never costs magic and is never lost.
+func dagger_ready() -> bool:
+	return not is_instance_valid(rune_dagger) and _dagger_back <= 0.0
+
+
+func dagger_spent() -> void:
+	rune_dagger = null
+	_dagger_back = RuneDagger.RETURN
+
+
+func _try_throw(delta: float) -> void:
+	if rune_dagger != null and not is_instance_valid(rune_dagger):
+		# Left behind in another room: it comes home all the same.
+		dagger_spent()
+	if _dagger_back > 0.0:
+		_dagger_back -= delta
+		if _dagger_back <= 0.0:
+			Sfx.play("dagger_return", 0.1, -4.0)
+			_spawn_dust(Vector2(facing * -4, -16), "parry")
+	if not input.throw_pressed or not abilities.get("rune_dagger", false):
+		return
+	if is_dashing or is_drinking or is_blocking or is_attacking or is_hurt or not dagger_ready():
+		return
+	throw_dagger()
+
+
+func throw_dagger() -> void:
+	var d := RuneDagger.new()
+	d.thrower = self
+	d.damage = roundi(RuneDagger.DAMAGE * melee_mult)
+	d.dir = Vector2.UP if input.up else Vector2(facing, 0)
+	get_parent().add_child(d)
+	d.global_position = global_position + Vector2(facing * 10, -22)
+	rune_dagger = d
+	visual.squash(Vector2(1.06, 0.97))
+	Sfx.play("dagger_throw")
 
 
 func _try_cast() -> void:

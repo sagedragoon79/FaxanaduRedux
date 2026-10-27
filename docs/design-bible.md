@@ -247,9 +247,10 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 | Slot | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
 |------|--------|--------|--------|--------|
-| Blade | Hand Dagger (start, fast, short) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc; built pass 93: slash 15, heavy 28, reach 16) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
+| Blade | Short Sword (start, fast, short; called the Hand Dagger before pass 184) | Long Sword (400 g) | Giant Blade (2,800 g, slow, huge arc; built pass 93: slash 15, heavy 28, reach 16) | Dragon Slayer (found in Zenis; built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
-| Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | Battle Helmet (secret, +1 mask) |
+| Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | (none: the Battle Helmet has its own slot since pass 185) |
+| Helmet | Battle Helmet (secret: +1 mask, 10% less damage) | | | |
 
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered.)
 
@@ -260,17 +261,32 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - Carried in `GameState.data.meteor_shards`.
 
 **Giant Blade (built pass 93):**
-- Slash 15, heavy 28, and 16 px more reach than the dagger.
+- Slash 15, heavy 28, and 16 px more reach than the Short Sword.
 - Its side slash sweeps 20 px taller, so it covers you from head to heel and catches fliers and crawlers a plainer blade misses (`arc` in `data/items.json`).
 - Every swing takes 30% longer to recover (`swing` 1.3), so its pace is about the Long Sword's damage per second, traded for reach and coverage. Commit to a cut and space your foes.
 - It is drawn two pixels broader, with a larger smear.
 - Eolis Arms sells it for 2,800 g once the Spring of Sky is restored (10.2). With the Dragon Slayer in hand it shows as owned.
 
-**Battle Helmet (built pass 118):**
-- The shield slot's fourth tier, found and never sold. It lies in a hidden pocket at the meteor's Threshold (`zenis/threshold`), behind fake wall west of the shrine (`secret: 1, 17, 6, 19`), so the Black Onyx's seam shows the way in. It is laid by `prop: x, y, battle_helmet`.
-- Touch it and it goes straight on in the shield's place, like the Dragon Slayer in the blade's. Your health fills to the new top.
-- It guards 70% and its parry turns shots back like the Magic Shield, and it is worth one more mask (+20 HP, `hp` in `data/items.json`). The mask comes from the gear, not the base stat, so a save keeps it through `refresh_stats`.
-- Every shield in a shop shows as owned once you wear it.
+**Short Sword (renamed pass 184):** the starting blade was called the Hand Dagger, but every swing of it is a slash, so Sean renamed it. Its id is `short_sword`; a save that still names `hand_dagger` (equipped, or in its tempers) is carried over by `GameState.sanitize` through `RENAMED_ITEMS`, tempers and all.
+
+**Rune Dagger (built pass 184):** an elven throwing dagger bound by a rune, a tool beside the blade rather than a blade (Sean's idea, pass 184). It answers the one gap in the kit before the spells: a way to reach a hornet or a turret without spending magic.
+- **Where:** on the floor of the Trunk's Hornet Gallery, by the entrance sign (legend `}`, `levels/trunk/hornet_gallery.room` at 8,21). The room teaches it: three hornets overhead and a Sap Spitter across the thorns.
+- **Button:** Throw, on B or ; on the keyboard and the right bumper (RB) on a pad. Dash keeps the B button and the right trigger; the bumper it gave up was its third binding. Hold Up to throw it straight up.
+- **Flight:** 420 px/s, point first, for 160 px (about ten tiles). It strikes the first foe it meets for 6, scaled by Keen Edge like the blade (`melee_mult`), with a 0.03 s hit-stop. Walls and gates stop it; it passes up through one-way planks. It lights the fog as it flies.
+- **Return:** when its flight ends, on a foe, a wall or at the end of its reach, it breaks into motes of rune light and reforms at your hip 0.4 s later with a soft chime (`dagger_return`). One flies at a time. It costs no MP and is never lost; left in another room, it comes home all the same.
+- **Not while** dashing, drinking, guarding, swinging or reeling from a hit.
+- **Gates nothing.** Every route it could help with already has another answer, so reachability does not change and it is never required. It is not temperable (it is not in the blade slot), so the five Meteor Shards still cover the four blades.
+- **Drawing:** code-drawn, in flight and as a pickup. The hero sheet is drawn empty-handed for a paper-doll setup (Sean, pass 184), so the blade and the dagger are separate layers over the body, never baked into it.
+- Built in `scripts/combat/rune_dagger.gd` (`RuneDagger`) and `Player._try_throw`. Tests: `test_combat.gd` (flight, hit, one at a time, no MP, return, Up, walls and reach) and `test_systems.gd` (the rename, save migration, bindings, the pickup).
+
+**Battle Helmet (built pass 118; its own slot since pass 185):**
+- A helmet, in the equipment's fourth slot (`equipment.helmet`), found and never sold. It lies in a hidden pocket at the meteor's Threshold (`zenis/threshold`), behind fake wall west of the shrine (`secret: 1, 17, 6, 19`), so the Black Onyx's seam shows the way in. It is laid by `prop: x, y, battle_helmet`.
+- Touch it and it goes straight on your head, like the Dragon Slayer into your hand. Your health fills to the new top. Your shield stays in hand.
+- It is worth one more mask (+20 HP, `hp` in `data/items.json`) and takes 10% off every hit (`defense` 0.1). It does not guard or parry. The mask comes from the gear, not the base stat, so a save keeps it through `refresh_stats`.
+- **Stacking with armor:** the helmet and the armor each cut what the other lets through, so the cuts multiply rather than add: damage taken is `(1 - armor) x (1 - helmet)`. Under the Battle Suit (60%) it lets 0.4 x 0.9 = 36% through (64% less damage); under Leather (15%), 76.5%. With no armor it is 10%. Damage taken is still at least 1.
+- **Why its own slot (Sean, pass 185):** in the shield's slot it replaced the shield, so players with the Magic Shield had to choose between the shield's parries and the helmet's mask. As a helmet it adds to every build.
+- **Old saves:** a save that wore it as a shield (`equipment.shield == "battle_helmet"`) wears it as a helmet, and its hand gets the Magic Shield: the helmet had guarded and turned shots exactly like the Magic Shield, and while it was worn every shield showed as owned in the shops, so nothing better could have been bought (`GameState.sanitize`).
+- **Drawing (paper-doll):** the hero's sheet is drawn bare-headed. The helmet is its own code-drawn layer (`PlayerVisual._draw_helmet`, after Sean's reference in `armor/battle-helmet/`: sea-green elven steel, a gold brow band and cheek guard, a swept wing crest with cyan runes), set on the crown of the head. `autosprite_import.head_point` finds the crown in each frame's pixels on import (the cloak masked out, a blade or fist opened away, a crown that jumps over both neighbours dropped back), so every frame of `player.json` carries a `head` point (manifest flag `"head": true`). A drawn helmet sheet from Sean can later replace the code layer on the same point.
 
 **Magic Shield (built pass 91):**
 - It guards 70%, like the Large Shield.
@@ -283,7 +299,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 | Item | Values |
 |------|--------|
-| Hand Dagger | 8 light / 14 heavy |
+| Short Sword | 8 light / 14 heavy |
 | Long Sword | 11 light / 19 heavy, +8 px reach |
 | Leather Armor | 15% less damage taken (minimum 1) |
 | Small Shield | Guard halves damage (5.3) |
@@ -298,7 +314,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Down-strike (Mattock):** see pogo in 6.6.
 - **Thrust (Blade skill, pass 149):** hold Attack past 0.4 s and let go for a charged lunge (see 9).
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
-- **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Dash and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
+- **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Throw and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98).
 - **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
 
@@ -306,7 +322,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 | Value | Setting |
 |-------|---------|
-| Light hit / heavy third hit | 8 / 14 damage (Hand Dagger) |
+| Light hit / heavy third hit | 8 / 14 damage (Short Sword) |
 | Combo window, cooldowns | 0.40 s to chain; 0.20 s, 0.20 s, 0.38 s after hits 1 to 3 |
 | Attack buffer | 0.15 s |
 | Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
@@ -1358,7 +1374,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 - **Missing rooms.** A rest in a room this build lacks wakes you at the new-game spot.
 - **Settings.** Each option must be the right type and in range, or it takes its default; only a real keycode is bound.
 - **Older files (pass 129).** A settings file from an earlier build has no line for the actions added since. It loads with those actions on their default keys and logs nothing. It had logged an engine error for each missing action.
-- **Saves naming what a build lacks (pass 138).** A save can name a skill node, blade, ring or dye that this build doesn't have (renamed, or from a newer build). Unlearning skills used to stop at such a node with a script error, after taking the gold and before refunding any points. Now an unknown node refunds nothing and the respec goes through. The save keeps each skill and dye once, as strings, so a skill listed twice can't be refunded twice. An unknown blade falls back to the Hand Dagger untempered: it had taken the missing blade's temper. An unknown dye leaves the cloak as it is. `test_a_save_naming_things_this_build_lacks_plays_on` runs such a save through loading, dressing, the skill list, the dyer and a respec with `ErrorCatcher` listening.
+- **Saves naming what a build lacks (pass 138).** A save can name a skill node, blade, ring or dye that this build doesn't have (renamed, or from a newer build). Unlearning skills used to stop at such a node with a script error, after taking the gold and before refunding any points. Now an unknown node refunds nothing and the respec goes through. The save keeps each skill and dye once, as strings, so a skill listed twice can't be refunded twice. An unknown blade falls back to the Short Sword untempered: it had taken the missing blade's temper. An unknown dye leaves the cloak as it is. `test_a_save_naming_things_this_build_lacks_plays_on` runs such a save through loading, dressing, the skill list, the dyer and a respec with `ErrorCatcher` listening.
 - **Tests.** `test_systems.gd` covers each case. `ErrorCatcher` (in `tests/`) lets a test check that a moment logs no engine errors at all.
 
 **Exit rule:** weighted score of at least 95, no category below 85, zero open blocker bugs, and a full bot playthrough from new game to credits succeeds.

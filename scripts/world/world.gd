@@ -11,7 +11,7 @@ extends Node2D
 signal room_changed(room: Room)
 
 ## Legend characters that are something to find: items and chests (Treasure Sense).
-const TREASURE_CHARS := "GXOdhnzLWF*&${("
+const TREASURE_CHARS := "GXOdhnzLWF*&${(}"
 const FADE_OUT := 0.12
 const FADE_IN := 0.18
 ## Side and shaft doors between rooms of one zone scroll the view instead of

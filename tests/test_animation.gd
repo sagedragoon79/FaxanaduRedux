@@ -47,6 +47,40 @@ func test_sheet_covers_every_pose() -> void:
 		"the sheet is big enough for every row")
 
 
+## Pass 185: the hero's sheet is bare-headed and the Battle Helmet is its own
+## layer, so every frame marks the crown of the head (found in the pixels on
+## import), and the sheet's pixels really are there.
+func test_every_hero_frame_marks_the_crown_for_the_helmet() -> void:
+	var d := PlayerVisual.data()
+	var sheet := (load(PlayerVisual.SHEET) as Texture2D).get_image()
+	var cell: Vector2 = d.cell
+	var origin: Vector2 = d.origin
+	var den := float(d.get("density", 1))
+	var bad: Array[String] = []
+	for n: String in d.animations:
+		var a: Dictionary = d.animations[n]
+		for i in a.frames.size():
+			var f: Dictionary = a.frames[i]
+			if not f.has("head"):
+				bad.append("%s:%d none" % [n, i])
+				continue
+			var at := Vector2(i * cell.x, int(a.row) * cell.y) + origin + Vector2(f.head[0], f.head[1]) * den
+			# The crown is the top of something solid: the sheet is opaque just under it.
+			var solid := false
+			for dy in range(0, 6):
+				solid = solid or sheet.get_pixelv(at + Vector2(0, dy)).a > 0.5
+			if not solid or (n != "death" and float(f.head[1]) > -30.0):
+				bad.append("%s:%d %s" % [n, i, f.head])
+	check(bad.is_empty(), "every frame marks a crown on the head (bad %s)" % [bad])
+	GameState.new_game()
+	GameState.data.equipment.helmet = "battle_helmet"
+	var room := make_room(["#####", "#...#", "#####"])
+	var p := make_player(room, Vector2i(2, 1))
+	await frames(2)
+	check(p.visual.frame_info().has("head"), "the drawn frame carries its crown")
+	GameState.new_game()
+
+
 func test_sheets_use_the_master_palette() -> void:
 	var allowed := {}
 	for line in FileAccess.get_file_as_string("res://art/palette/master.gpl").split("\n"):
