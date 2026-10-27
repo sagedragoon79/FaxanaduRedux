@@ -482,6 +482,7 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	if state == "dormant":
+		wash(false)
 		return
 	var t := Time.get_ticks_msec() * 0.001
 	var white := flashing() or (state.ends_with("_tell") and telegraph_pulse())
@@ -505,8 +506,7 @@ func _draw() -> void:
 	_draw_wing(-1, flap - 0.12, t)
 	_draw_body(t)
 	_draw_wing(1, flap, t)
-	if white:
-		draw_circle(Vector2(0, -2), 22.0, Color(1, 1, 1, 0.45))
+	wash(white)
 	draw_set_transform(Vector2.ZERO)
 	if state == "grounded" or state.ends_with("_tell"):
 		_draw_sparks(t)

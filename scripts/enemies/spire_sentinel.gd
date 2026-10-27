@@ -224,8 +224,7 @@ func _draw() -> void:
 	if hot and state == "raise":
 		var r := 3.0 + sin(t * 30.0)
 		draw_circle(Vector2(1, -25), r * 2.0, Color(GLYPH, 0.25))
-	if flashing() or (state == "raise" and telegraph_pulse()):
-		_px(-10, -41, 20, 41, Color(1, 1, 1), 0.55)
+	wash(flashing() or (state == "raise" and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 	# Grit kicked up while it grinds along.
 	if state == "stalk":

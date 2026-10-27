@@ -142,8 +142,7 @@ func _draw() -> void:
 	_px(6, -9, 1, 1, OUTLINE)
 	# The near wing, in front.
 	_wing(1, flap, WING)
-	if flashing() or (state == "windup" and telegraph_pulse()):
-		_px(-16, -22, 32, 36, Color(1, 1, 1), 0.55)
+	wash(flashing() or (state == "windup" and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 
 

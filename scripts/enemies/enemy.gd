@@ -13,6 +13,7 @@ const MIN_TELEGRAPH := 0.35
 ## How long a body takes to break up after its death.
 const DISSOLVE := 0.45
 const DISSOLVE_SHADER := preload("res://shaders/dissolve.gdshader")
+const WASH_SHADER := preload("res://shaders/wash.gdshader")
 
 @export var max_hp := 24
 @export var contact_damage := 20
@@ -58,6 +59,7 @@ var _hitstun := 0.0
 var _stagger := 0.0
 var _respawn_timer := 0.0
 var _dissolver: Tween
+static var _wash_material: ShaderMaterial
 
 
 func _ready() -> void:
@@ -307,6 +309,24 @@ func player_offset() -> Vector2:
 ## True while the enemy should be drawn white (hit flash or telegraph pulse).
 func flashing() -> bool:
 	return _flash > 0.0
+
+
+## Washes everything this foe draws white while `on` (call it from `_draw`): a
+## code-drawn foe's flash follows its own silhouette, never a box around it.
+## Leaves the death's dissolve alone.
+func wash(on: bool) -> void:
+	if _wash_material == null:
+		_wash_material = ShaderMaterial.new()
+		_wash_material.shader = WASH_SHADER
+	if on and not dead:
+		material = _wash_material
+	elif material == _wash_material:
+		material = null
+
+
+## True while this foe's drawing is washed white.
+func washed() -> bool:
+	return _wash_material != null and material == _wash_material
 
 
 func telegraph_pulse() -> bool:
