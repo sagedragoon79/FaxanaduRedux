@@ -23,6 +23,7 @@ extends Node2D
 ##                              (title: the nearest Guru names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
+##   --cursor=N                 with --open: put the menu's cursor on row N
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
 ##   --armor=ID                 wear an armor (data/items.json, kind "armor"), and its body set
@@ -494,6 +495,9 @@ func _debug_open() -> void:
 		Menus.open_journey(get_tree(), func() -> void: pass)
 	elif what == "equipment":
 		Menus.open_equipment(get_tree(), player, func() -> void: pass)
+	var menu := get_tree().get_first_node_in_group("list_menu") as ListMenu
+	if _args.has("cursor") and menu != null:
+		menu.cursor = int(_args["cursor"])
 
 
 func _unhandled_input(event: InputEvent) -> void:

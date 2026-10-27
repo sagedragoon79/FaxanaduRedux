@@ -18,6 +18,16 @@ static func item(id: String) -> Dictionary:
 	return table("items").get(id, {})
 
 
+## Every item id of one kind ("dye", "blade"...), in the table's order.
+static func items_of_kind(kind: String) -> Array[String]:
+	var out: Array[String] = []
+	var items := table("items")
+	for id: String in items:
+		if String(items[id].get("kind", "")) == kind:
+			out.append(id)
+	return out
+
+
 static func shop(id: String) -> Dictionary:
 	return table("shops").get(id, {})
 
