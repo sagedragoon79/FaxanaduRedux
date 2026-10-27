@@ -4,7 +4,10 @@ map: 53, -10
 chest_gold: 820
 sign: 4, 13, THE DROWNED MARKET. The lower city sold its ore here, before the water came.
 sign: 75, 16, THE KING'S STAIR. The dwarves sealed it with their last stone. The stone has cracked.
+calm: boss:king_grieve
 npc: 24, 16, dartmoor_mason, boss:king_grieve
+npc: 57, 16, guru, boss:king_grieve
+npc: 63, 16, dartmoor_keymaster, boss:king_grieve
 prop: 49, 12, joker_key
 door: 1, dartmoor/waterfall_stair, 2
 door: 2, dartmoor/kings_stair, 1

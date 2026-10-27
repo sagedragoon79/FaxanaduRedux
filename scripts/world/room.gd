@@ -690,6 +690,11 @@ func _spawn(node: Node2D, pos: Vector2) -> void:
 
 
 func _spawn_enemy(enemy: Enemy, pos: Vector2) -> void:
+	# `calm: flag`: once the flag is set the room is a town again, and its foes
+	# are gone (the Drowned Market after King Grieve falls, pass 159).
+	if header.has("calm") and GameState.flag(String(header.calm)):
+		enemy.free()
+		return
 	enemy.respawn_time = float(header.get("enemy_respawn", "0"))
 	# Everything that lives in the meteor is grown through with its crystal.
 	enemy.corrupted = str(header.get("corrupted", "true" if zone == "zenis" else "false")) == "true"
