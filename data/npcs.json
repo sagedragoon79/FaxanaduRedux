@@ -149,6 +149,23 @@
 			"Up the trunk the mist begins. Nobody who went into it came back dry."
 		]
 	},
+	"forepaw_grocer": {
+		"name": "Provisioner Dagny", "role": "shop", "shop": "forepaw_items",
+		"look": {"robe": "#6a4a2a", "trim": "#d8b46a", "skin": "#d6ae84", "hair": "#8a3a22", "hat": "none", "build": "dwarf"}
+	},
+	"forepaw_physician": {
+		"name": "Physician Halvar", "role": "physician",
+		"look": {"robe": "#e8e2d0", "trim": "#b03a3a", "skin": "#cd8c51", "hair": "#9a9aa0", "hat": "cap", "build": "dwarf", "beard": true},
+		"lines": [
+			"Nothing ails you that I can see. Good. My cots have held enough of the drill's work.",
+			"Come back bleeding, elf, or green with a bog's poison. You will not pay a coin in Forepaw."
+		],
+		"lines_treated": [
+			"Hold still. Moss for the cuts, ash-salt for the poison, and a dwarf's own tonic for the rest.",
+			"There. Whole again, and not a coin. Forepaw does not charge the one who silenced the drill."
+		],
+		"lines_cleared": ["My cots are empty for the first time in three years. I have taken up the harp. Badly.", "Still, if the climb opens you up, come here first. Old habits."]
+	},
 	"eolis_cartographer": {
 		"name": "Cartographer Pell", "role": "shop", "shop": "eolis_charts",
 		"look": {"robe": "#4a6a8a", "trim": "#e8d9a8", "skin": "#e8c9a0", "hair": "#b0a090", "hat": "cap", "beard": true}
