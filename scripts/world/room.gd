@@ -119,6 +119,15 @@ static func parse(text: String) -> Dictionary:
 	return {"header": header, "lists": lists, "grid": grid}
 
 
+## True when every space-separated condition in `conds` holds: "flag" is set,
+## "!flag" is not.
+static func flags_hold(conds: String) -> bool:
+	for cond: String in conds.strip_edges().split(" ", false):
+		if GameState.flag(cond.trim_prefix("!")) == cond.begins_with("!"):
+			return false
+	return true
+
+
 ## Finds door cells in a grid: door number -> {rect: Rect2i (tiles), edge}.
 static func scan_doors(grid: Array[String]) -> Dictionary:
 	var found := {}
@@ -258,10 +267,10 @@ func build(text: String) -> void:
 	for spec: String in ([] if BossRush.active() else lists.get("npc", [])):
 		var parts := spec.split(",")
 		# An optional fourth field shows the person only once a world flag is set,
-		# or ("!flag") only until it is.
+		# or ("!flag") only until it is. Several, space-separated, must all hold
+		# (pass 178: "boss:king_grieve !boss:clockwork_alpha").
 		if parts.size() == 4:
-			var cond := parts[3].strip_edges()
-			if GameState.flag(cond.trim_prefix("!")) == cond.begins_with("!"):
+			if not flags_hold(parts[3]):
 				continue
 			parts.resize(3)
 		if parts.size() == 3:
