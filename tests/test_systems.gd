@@ -229,7 +229,7 @@ func test_the_ending_tells_climbs_and_thanks() -> void:
 	e.advance()
 	e.tick(0.01)
 	check(e.card == 2, "and a press turns one sooner")
-	e.tick(EndingScreen.CARD_TIME * 2.0)
+	e.tick(EndingScreen.CARD_TIME * (e.cards().size() - 2))
 	check(e.phase == "credits", "then the climb up the Tree begins")
 	e.tick(10.0)
 	check(e.climb > 0.0 and e.climb < EndingScreen.CLIMB, "climbing at its own pace (%.0f px)" % e.climb)
@@ -250,6 +250,31 @@ func test_the_ending_tells_climbs_and_thanks() -> void:
 	e.queue_free()
 
 
+## Faxanadu's ending (pass 167): the town would thank you, and the wanderer
+## walks on. The last two cards say so while the hero walks off east.
+func test_the_ending_closes_on_the_wanderer_walking_on() -> void:
+	var e := EndingScreen.new()
+	arena.add_child(e)
+	for secret: bool in [false, true]:
+		e.start("Hero", 0.0, secret, 0)
+		var n := e.cards().size()
+		check(e.cards().slice(n - 2) == EndingScreen.FAREWELL, "the farewell closes the epilogue (secret %s)" % secret)
+		check(String(EndingScreen.FAREWELL[0]).contains("King") and String(EndingScreen.FAREWELL[1]).contains("walking on"), "the King's thanks, then the road")
+		e.tick(e.farewell_start() - 0.5)
+		check(e.wanderer_x() < 0.0, "no one walks before the farewell")
+		e.tick(0.6)
+		var x0 := e.wanderer_x()
+		check(x0 >= 320.0 and x0 < 350.0, "the wanderer sets out from the foot of the Tree (%.0f)" % x0)
+		e.tick(EndingScreen.CARD_TIME * 2.0 - 0.2)
+		check(e.phase == "epilogue" and e.wanderer_x() > 640.0, "and is off the east edge before the climb (%.0f)" % e.wanderer_x())
+		e.tick(0.2)
+		check(e.phase == "credits", "then the credits climb")
+	check(Sheet.has_anim(PlayerVisual.SHEET_NAME, "run"), "the walk is the hero's own")
+	for line: String in EndingScreen.FAREWELL:
+		check(PixelFont.width(line, 12) < 600.0, "the card fits the screen: %s" % line)
+	e.queue_free()
+
+
 func test_pause_skips_the_ending_to_the_thanks_card() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
@@ -258,7 +283,8 @@ func test_pause_skips_the_ending_to_the_thanks_card() -> void:
 	e.skip()
 	check(e.phase == "thanks", "from the epilogue")
 	e.start("Hero", 0.0)
-	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 1.0)
+	e.tick(e.cards().size() * EndingScreen.CARD_TIME + 1.0)
+	check(e.phase == "credits", "the climb has begun")
 	e.skip()
 	check(e.phase == "thanks", "and from the climb")
 	e.queue_free()
@@ -328,13 +354,15 @@ func test_the_secret_ending_adds_the_sources_cards() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
 	e.start("Lord", 0.0, false, 3)
-	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 0.1)
-	check(e.phase == "credits", "the plain ending climbs after its four cards")
+	e.tick((EndingScreen.EPILOGUE.size() + EndingScreen.FAREWELL.size()) * EndingScreen.CARD_TIME + 0.1)
+	check(e.phase == "credits", "the plain ending climbs after its four cards and the farewell")
 	e.start("Lord", 0.0, true, 0)
-	check(e.cards().size() == EndingScreen.EPILOGUE.size() + EndingScreen.SECRET_EPILOGUE.size(), "the secret ending has more cards")
+	check(e.cards().size() == EndingScreen.EPILOGUE.size() + EndingScreen.SECRET_EPILOGUE.size() + EndingScreen.FAREWELL.size(), "the secret ending has more cards")
 	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 0.1)
 	check(e.phase == "epilogue" and e.cards()[e.card] == EndingScreen.SECRET_EPILOGUE[0], "after the four, the Sunken Spring wakes")
 	e.tick(EndingScreen.SECRET_EPILOGUE.size() * EndingScreen.CARD_TIME)
+	check(e.phase == "epilogue" and e.cards()[e.card] == EndingScreen.FAREWELL[0], "the farewell still comes last")
+	e.tick(EndingScreen.FAREWELL.size() * EndingScreen.CARD_TIME)
 	check(e.phase == "credits", "then the climb")
 	e.queue_free()
 
