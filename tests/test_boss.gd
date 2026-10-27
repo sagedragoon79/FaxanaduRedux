@@ -3172,6 +3172,26 @@ func test_the_captains_bough_holds_your_weight_until_he_pulls_free() -> void:
 		"he pulls it free and you drop to the floor, not caught in it (feet %.1f, floor %.1f)" % [p.global_position.y, floor_y])
 
 
+## Pass 177: Fire burns the Captain's bark off whole, as it does his knights';
+## a plate still grows back when he pulls his lance free.
+func test_fire_burns_the_captains_bark_off_at_once() -> void:
+	var r := await _captain_world()
+	var w: World = r[0]
+	var c: BarkCaptain = r[1]
+	check(c.bark == BarkCaptain.BARK, "he stands in full bark")
+	var hp0 := c.hp
+	var f := Fireball.new()
+	w.room.add_child(f)
+	f.global_position = c.global_position + Vector2(0, -30)
+	f.burst()
+	check(c.bark == 0 and hp0 - c.hp == f.damage, "one fireball burns all %d plates off and lands in full (%d)" % [BarkCaptain.BARK, hp0 - c.hp])
+	await _until(func() -> bool: return not is_instance_valid(f), 10)
+	c.set_state("rooted")
+	c.state_time = BarkCaptain.ROOTED
+	await _until(func() -> bool: return c.state != "rooted", 60)
+	check(c.bark == 1, "pulling free, he grows a plate back (%d)" % c.bark)
+
+
 func test_a_parried_thrust_staggers_the_captain() -> void:
 	var r := await _captain_world()
 	var c: BarkCaptain = r[1]
