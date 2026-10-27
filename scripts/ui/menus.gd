@@ -172,6 +172,12 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 			else:
 				row.right = "Open"
 				row.detail += "  Clear it for a Mantra Shard."
+			# Its mantra time and the dye it gives (pass 164).
+			if t.has("mantra") and Trials.ready(t):
+				if GameState.owns_dye(String(t.dye)):
+					row.detail += "  Within the mantra: %s is yours." % GameData.item(t.dye).name
+				else:
+					row.detail += "  Ring it within %s for %s." % [Trials.format_time(float(t.mantra)), GameData.item(t.dye).name]
 			out.append(row)
 		return out
 	var on_select := func(i: int) -> void:

@@ -36,5 +36,10 @@
 	"ash_dye": {"name": "Ash Grey", "kind": "dye", "color": "c9c4d6", "desc": "Bleached pale, like the dwarves' old banners."},
 	"saffron_dye": {"name": "Saffron", "kind": "dye", "color": "eaa830", "desc": "Daybreak's bell-ringers wear it on festival mornings."},
 	"night_dye": {"name": "Night", "kind": "dye", "color": "5a5078", "desc": "Nearly black, with a violet sheen under the moon."},
-	"lord_dye": {"name": "Lord's Gold", "kind": "dye", "color": "f6d870", "glow": true, "desc": "Woven with light. Only for one who has seen the whole of the World Tree."}
+	"lord_dye": {"name": "Lord's Gold", "kind": "dye", "color": "f6d870", "glow": true, "desc": "Woven with light. Only for one who has seen the whole of the World Tree."},
+	"slate_dye": {"name": "Mantra Slate", "kind": "dye", "color": "7a8aa0", "desc": "The grey of the trial pillars. Earned within the Mantra of Walls."},
+	"coral_dye": {"name": "Ledge Coral", "kind": "dye", "color": "e88a72", "desc": "Bright as a last step taken late. Earned within the Mantra of Edges."},
+	"thorn_dye": {"name": "Thorn Rose", "kind": "dye", "color": "c03c6c", "desc": "A deep rose, struck from every bulb. Earned within the Mantra of Thorns."},
+	"jade_dye": {"name": "Wind Jade", "kind": "dye", "color": "3cb8a0", "desc": "Light and quick, like the currents. Earned within the Mantra of Winds."},
+	"frost_dye": {"name": "Still Frost", "kind": "dye", "color": "a8dcf0", "desc": "The pale blue of water held still. Earned within the Mantra of Stillness."}
 }
