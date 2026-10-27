@@ -91,6 +91,8 @@ func _embedded(room: Room, p: Player) -> bool:
 const TOWER_FRAMES := 420
 ## Long enough for the Hour Glass to be turned twice in each room.
 const GLASS_FRAMES := 660
+## Frames timed in each room once it has loaded (the room-load sweep, pass 166).
+const SETTLE_FRAMES := 12
 
 
 ## Every Tower room, live (enemies, doors, gates), with every ability and a
@@ -138,8 +140,12 @@ func test_random_input_soak_in_every_sunken_spring_room() -> void:
 
 
 ## The Guru Trials' mantra-space (pass 113), off the map but built like any zone.
+## Each room is soaked as a live run with the Hour Glass turned whenever it is
+## ready (pass 166): hazards set you back instead of hurting, Stillness's water
+## freezes and runs on, and a rung bell carries you back to the temple.
 func test_random_input_soak_in_every_trial_room() -> void:
-	await _soak_zone("trials", "Trials")
+	await _soak_zone("trials", "Trials", true)
+	check(not Trials.active(), "no trial run is left open after the soak")
 
 
 ## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
@@ -338,6 +344,9 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 		ids = ids.filter(func(i: String) -> bool: return i in OS.get_environment("SOAK_ONLY").split(","))
 	for id in ids:
 		var w := make_world({}, id)
+		var trial := _trial_for(id)
+		if not trial.is_empty():
+			Trials.begin(trial.id, Trials.TEMPLE, Vector2.ZERO)
 		for k: String in GameState.data.abilities:
 			GameState.data.abilities[k] = true
 			w.player.abilities[k] = true
@@ -380,6 +389,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 		if peak > start_nodes + 400:
 			problems.append("%s: nodes grew from %d to %d" % [id, start_nodes, peak])
 		thrusts += w.player.thrusts
+		Trials.abandon()
 		w.queue_free()
 		await frames(2)
 	check(problems.is_empty(), "%d %s rooms soaked with no problems: %s" % [ids.size(), label, problems])
@@ -393,6 +403,14 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	if glass:
 		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
 		TimeStop.reset()
+
+
+## The Guru Trial built in room `id`, or {} if none is.
+func _trial_for(id: String) -> Dictionary:
+	for t: Dictionary in Trials.LIST:
+		if String(t.get("room", "")) == id:
+			return t
+	return {}
 
 
 ## The Foreman fight at full tilt: a mashing player who can't die, 30 seconds.
@@ -1373,3 +1391,42 @@ func test_the_boss_rush_and_damage_numbers_stay_lean() -> void:
 	check(avg_ms < 16.6, "a frame of numbers averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	Settings.damage_numbers = was
 	w.queue_free()
+
+
+## Every room in the game, entered one after another in a single world (pass
+## 166): each loads behind the fade in under half a second (the first room of a
+## zone pays for its tileset), and once loaded its frames, foes and all, stay
+## well inside the 60 fps budget while the player stands in it.
+func test_every_room_loads_and_settles_inside_the_budget() -> void:
+	var w := make_world({}, Trials.TEMPLE)
+	await frames(3)
+	var ids: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for file: String in DirAccess.get_files_at("res://levels/" + zone):
+			if file.ends_with(".room"):
+				ids.append(zone + "/" + file.trim_suffix(".room"))
+	ids.sort()
+	var lines: Array[String] = []
+	var slow: Array[String] = []
+	var heavy: Array[String] = []
+	for id in ids:
+		var t0 := Time.get_ticks_usec()
+		w.start(id)
+		await frames(1)
+		var load_ms := (Time.get_ticks_usec() - t0) / 1000.0
+		await frames(2)
+		var t1 := Time.get_ticks_usec()
+		await frames(SETTLE_FRAMES)
+		var frame_ms := (Time.get_ticks_usec() - t1) / 1000.0 / SETTLE_FRAMES
+		lines.append("%-28s load %6.1f ms   frame %5.2f ms" % [id, load_ms, frame_ms])
+		if load_ms > 500.0:
+			slow.append("%s %.0f ms" % [id, load_ms])
+		if frame_ms > 8.0:
+			heavy.append("%s %.2f ms" % [id, frame_ms])
+	if OS.get_environment("ROOM_REPORT") != "":
+		var f := FileAccess.open(OS.get_environment("ROOM_REPORT"), FileAccess.WRITE)
+		if f != null:
+			f.store_string("\n".join(lines) + "\n")
+	check(ids.size() >= 120, "every room was entered (%d)" % ids.size())
+	check(slow.is_empty(), "every room loads behind the fade in under 500 ms: %s" % [slow])
+	check(heavy.is_empty(), "every settled room averages under 8 ms a frame: %s" % [heavy])
