@@ -1417,6 +1417,26 @@ func test_bark_knight_bark_guards_until_stripped_and_regrows_as_he_uproots() -> 
 	check(k.bark == BarkKnight.BARK, "a plate grows back as he pulls free (%d)" % k.bark)
 
 
+## Pass 177: Fire catches living bark. A fireball's burst burns the whole coat
+## off at once and lands in full on the heartwood beneath.
+func test_fire_burns_a_bark_knights_bark_off_at_once() -> void:
+	var room := _room_with({Vector2i(22, 6): "!"})
+	make_player(room, Vector2i(3, 6))
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	check(k.bark == BarkKnight.BARK, "he starts in full bark")
+	var before := k.hp
+	var f := Fireball.new()
+	room.add_child(f)
+	f.global_position = k.center()
+	f.burst()
+	check(k.bark == 0, "the burst burns every plate off (%d left)" % k.bark)
+	check(before - k.hp == f.damage, "and the flame lands in full, %d (%d)" % [f.damage, before - k.hp])
+	before = k.hp
+	k.take_hit(10, Vector2.RIGHT)
+	check(before - k.hp == 10, "bare, the next blow lands in full too")
+
+
 ## Bible 7: rooted, his lance is a bough you can stand on; it goes when he moves.
 func test_bark_knight_rooted_lance_is_a_ledge() -> void:
 	var room := _room_with({Vector2i(14, 6): "!"})

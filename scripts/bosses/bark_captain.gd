@@ -162,6 +162,16 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return ceili(damage * GUARD)
 
 
+## Fire burns his whole bark coat off at once (pass 177), as it does his
+## knights'; a plate still regrows each time he pulls free.
+func burn_bark() -> void:
+	if bark <= 0 or dead or state in ["dormant", "intro", "dying"]:
+		return
+	bark = 0
+	_dust(Vector2(0, -30), "embers")
+	Sfx.play("bark_chip", 0.1, 4.0)
+
+
 func take_hit(damage: int, dir: Vector2) -> void:
 	super.take_hit(damage, dir)
 	# A boss shrugs off hitstun: blows never interrupt its attacks.

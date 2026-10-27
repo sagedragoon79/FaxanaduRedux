@@ -3,6 +3,7 @@ extends Node2D
 ## The Fire spell (design bible 4.1, a supporting spell): a ball of flame thrown in an arc. It bursts
 ## on whatever it meets, a wall, a floor or a foe, scorching every foe in the
 ## burst and setting anything in the "fire_target" group alight (bramble walls).
+## A foe in living bark (Bark Knight, Bark Knight Captain) loses all its bark to it.
 ## It lights the fog as it flies (group "light").
 
 const SIZE := Vector2(8, 8)
@@ -60,6 +61,10 @@ func burst() -> void:
 		if c.is_in_group("fire_target") and c.has_method("burn"):
 			c.burn()
 		elif c.is_in_group("enemy") and c.has_method("take_hit"):
+			if c.has_method("burn_bark"):
+				# Living bark catches (pass 177): the whole coat burns off, and
+				# the flame lands on bare heartwood.
+				c.burn_bark()
 			var dir := Vector2(signf((c as Node2D).global_position.x - global_position.x), 0)
 			if dir.x == 0.0:
 				dir.x = signf(velocity.x)

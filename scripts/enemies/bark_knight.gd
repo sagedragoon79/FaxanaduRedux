@@ -94,6 +94,19 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return ceili(damage * GUARD)
 
 
+## Fire burns the whole bark coat off at once (pass 177): what's left is bare
+## heartwood until he roots and regrows a plate.
+func burn_bark() -> void:
+	if bark <= 0 or dead:
+		return
+	bark = 0
+	var d := Dust.new()
+	d.setup("embers")
+	get_parent().add_child(d)
+	d.global_position = center()
+	Sfx.play("bark_chip", 0.1, 3.0)
+
+
 func _respawn() -> void:
 	super()
 	bark = BARK
