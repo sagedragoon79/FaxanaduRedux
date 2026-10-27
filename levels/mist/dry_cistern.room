@@ -1,5 +1,6 @@
 name: Dry Cistern
 zone: mist
+surface: stone
 map: 34, -7
 sign: 2, 19, THE CISTERN. Dry since the spring failed. The dwarves floated their stores out on a raft.|Water it, and the raft will rise.
 door: 1, mist/scorched_hall, 2

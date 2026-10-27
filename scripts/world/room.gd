@@ -9,7 +9,7 @@ const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
 ## What each zone's ground is made of, for footsteps (design bible 11). A room's
 ## `surface:` header overrides it; platforms are planks and sap pools are sap.
-const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "moss", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone", "trials": "stone"}
+const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "mud", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone", "trials": "stone"}
 
 ## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
 var id := ""
@@ -827,7 +827,7 @@ func is_one_way_at(world_pos: Vector2) -> bool:
 
 
 ## The ground under `world_pos` (a point just below the feet) for footsteps:
-## "stone", "moss", "plank", "iron" or "sap", or "" in mid-air.
+## "stone", "moss", "mud", "plank", "iron" or "sap", or "" in mid-air.
 func surface_at(world_pos: Vector2) -> String:
 	if is_sap_at(world_pos + Vector2(0, -TILE * 0.5)):
 		return "sap"

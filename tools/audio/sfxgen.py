@@ -1114,6 +1114,19 @@ def main():
     out[:len(burst)] += burst
     save("bog_rise", out, 0.55)
 
+    # A step in marsh mud (pass 181): a wet slap as the boot goes in, then a
+    # small suction pop as it pulls free.
+    d = 0.16
+    n = int(RATE * d)
+    sn = int(RATE * 0.05)
+    slap = lowpass(highpass(noise(0.05), 180), 1600) * env(sn, 0.001, 2.2)
+    pn = int(RATE * 0.05)
+    pop = lowpass(osc(slide(260, 720, 0.05, 0.6), "sine"), 1400) * env(pn, 0.004, 1.6) * 0.55
+    out = np.zeros(n)
+    out[:sn] += slap
+    out[int(RATE * 0.07):int(RATE * 0.07) + pn] += pop
+    save("step_mud", out, 0.45)
+
 
 if __name__ == "__main__":
     main()

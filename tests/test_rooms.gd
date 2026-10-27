@@ -615,7 +615,7 @@ func test_footsteps_follow_the_surface_underfoot() -> void:
 	check(room.surface_at(below.call(22, 14)) == "plank", "platforms are planks")
 	check(room.surface_at(below.call(31, 19)) == "sap", "a sap pool squelches")
 	check(room.surface_at(below.call(10, 10)) == "", "nothing underfoot in mid-air")
-	for s: String in ["stone", "moss", "plank", "iron", "sap"]:
+	for s: String in ["stone", "moss", "mud", "plank", "iron", "sap"]:
 		check(ResourceLoader.exists("res://assets/sfx/step_%s.wav" % s), "a step sound for %s" % s)
 	var heard: Array[String] = []
 	var p := make_player(room, Vector2i(3, 19))
@@ -635,6 +635,18 @@ func test_footsteps_follow_the_surface_underfoot() -> void:
 	check(paved.surface_at(below.call(5, 19)) == "stone", "a room's surface header overrides its zone")
 	trunk.queue_free()
 	paved.queue_free()
+	# Pass 181: the Mist's marsh squelches as mud, and its dwarf-built halls stay stone.
+	var marsh := Room.from_text(room_text(["name: T", "zone: mist"], grid_rows(10, 23)), "t/mud")
+	arena.add_child(marsh)
+	check(marsh.surface_at(below.call(5, 19)) == "mud", "the Mist's marsh is mud (%s)" % marsh.surface_at(below.call(5, 19)))
+	marsh.queue_free()
+	for id: String in ["mist/scorched_hall", "mist/dry_cistern", "mist/sunken_chapel", "mist/spring_of_mist"]:
+		var r := Room.from_file(World.room_path(id))
+		check(String(r.header.get("surface", "")) == "stone", "%s, built by dwarves, rings as stone" % id)
+		r.free()
+	var mire := Room.from_file(World.room_path("mist/hag_mire"))
+	check(not mire.header.has("surface"), "the Matriarch's mire is marsh mud underfoot")
+	mire.free()
 
 
 func test_every_zone_has_a_tileset() -> void:

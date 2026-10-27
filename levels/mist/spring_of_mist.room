@@ -1,5 +1,6 @@
 name: Spring of Mist
 zone: mist
+surface: stone
 map: 35, -7
 boss: zorugeriru
 fog: 0.6
