@@ -1487,3 +1487,33 @@ func test_the_journey_page_counts_the_world_and_the_guardians_found() -> void:
 		check(PixelFont.width(String(r.label), 9) < menu.panel.size.x * 0.7, "%s fits the panel" % r.label)
 	menu.close()
 	menu.queue_free()
+
+
+## Pass 180: every Life Fruit and Mana Dew is counted, wherever it waits (the
+## rooms, the four grocers, the guardians), and the totals are design bible 5.1's:
+## 18 fruits (5 masks to 14) and 16 dews (60 MP to 220). The Journey page shows
+## how many a save has taken, read from its health and magic, outside the percent.
+func test_the_journey_counts_every_life_fruit_and_mana_dew() -> void:
+	var w := make_world({}, "trunk/root_chamber")
+	await frames(2)
+	var s := Completion.stat_items(w.catalog)
+	check(int(s.fruits_total) == 18 and int(s.dews_total) == 16, "18 Life Fruits and 16 Mana Dews in all, as the bible counts them (%d, %d)" % [s.fruits_total, s.dews_total])
+	var in_rooms := [0, 0]
+	for id: String in w.catalog:
+		in_rooms[0] += int(w.catalog[id].fruits)
+		in_rooms[1] += int(w.catalog[id].dews)
+	check(in_rooms[0] == 13 and in_rooms[1] == 9, "13 fruits and 9 dews lie in the rooms (%d, %d)" % in_rooms)
+	check(GameState.fresh().max_hp + 18 * GameState.LIFE_FRUIT_HP == 280 and GameState.fresh().max_mp + 16 * GameState.MANA_DEW_MP == 220.0,
+		"all of them make 14 masks and 220 MP")
+	check(int(s.fruits) == 0 and int(s.dews) == 0, "a new save has taken none")
+	var before := Completion.tally(w.catalog)
+	GameState.grant_stat_item("life_fruit", w.player)
+	GameState.grant_stat_item("life_fruit", w.player)
+	GameState.grant_stat_item("mana_dew", w.player)
+	var after := Completion.tally(w.catalog)
+	check(int(after.fruits) == 2 and int(after.dews) == 1, "two fruits and a dew are counted (%d, %d)" % [after.fruits, after.dews])
+	check(int(after.percent) == int(before.percent), "and they stand outside the percent")
+	var rows := Completion.journey_rows(after, [])
+	check(rows[5].label == "Life Fruits" and rows[5].right == "2 / 18" and rows[6].label == "Mana Dew" and rows[6].right == "1 / 16",
+		"the Journey page shows them (%s, %s)" % [rows[5].right, rows[6].right])
+	GameState.new_game()

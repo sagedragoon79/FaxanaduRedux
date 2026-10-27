@@ -35,7 +35,40 @@ static func tally(catalog: Dictionary) -> Dictionary:
 		"bosses": bosses, "bosses_total": BossArena.BOSSES.size(),
 	}
 	out.percent = percent(out)
+	out.merge(stat_items(catalog))
 	return out
+
+
+## The Life Fruits and Mana Dews a save has taken against every one the game
+## holds (pass 180): those lying in the rooms, the one each town's grocer keeps,
+## and the ones guardians give. A save's count is read from its health and
+## magic, which nothing else raises. Not part of the percent.
+static func stat_items(catalog: Dictionary) -> Dictionary:
+	var fruits_total := 0
+	var dews_total := 0
+	for room_id: String in catalog:
+		fruits_total += int(catalog[room_id].get("fruits", 0))
+		dews_total += int(catalog[room_id].get("dews", 0))
+	var shops := GameData.table("shops")
+	for id: String in shops:
+		for entry: Dictionary in shops[id].get("stock", []):
+			if entry.get("item", "") == "life_fruit":
+				fruits_total += 1
+			elif entry.get("item", "") == "mana_dew":
+				dews_total += 1
+	for id: String in BossArena.BOSSES:
+		var reward: Dictionary = BossArena.BOSSES[id]
+		if reward.get("stat_item", "") == "life_fruit":
+			fruits_total += 1
+		if reward.get("stat_item", "") == "mana_dew" or reward.get("mana_dew", false):
+			dews_total += 1
+	var start: Dictionary = GameState.fresh()
+	return {
+		"fruits": maxi(0, (int(GameState.data.max_hp) - int(start.max_hp)) / GameState.LIFE_FRUIT_HP),
+		"fruits_total": fruits_total,
+		"dews": maxi(0, roundi((float(GameState.data.max_mp) - float(start.max_mp)) / GameState.MANA_DEW_MP)),
+		"dews_total": dews_total,
+	}
 
 
 ## Every guardian in the order the climb meets them, with the name the
@@ -81,6 +114,8 @@ static func journey_rows(stats: Dictionary, found: Array) -> Array:
 		share.call("Hidden rooms", "secrets", "Rooms behind false walls. The Black Onyx shows their seams."),
 		share.call("Treasures", "treasures", "Chests and finds that lie in the rooms. Treasure Sense marks the map."),
 		share.call("Guardians beaten", "bosses", "The great foes and their lesser kin, each in an arena of its own."),
+		share.call("Life Fruits", "fruits", "In the rooms, on each grocer's shelf, and in a guardian's keeping. Two grow a mask."),
+		share.call("Mana Dew", "dews", "In the rooms, on each grocer's shelf, and in the guardians' keeping."),
 	]
 	if not found.is_empty():
 		out.append({"label": "Guardians found", "header": true})
