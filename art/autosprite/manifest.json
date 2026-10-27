@@ -168,6 +168,7 @@
  },
  "hero_base": {
   "dir": "hero_base",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 46.0,
@@ -184,6 +185,7 @@
  },
  "hero_leather": {
   "dir": "hero_leather",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 46.1,
@@ -200,6 +202,7 @@
  },
  "hero_studded": {
   "dir": "hero_studded",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 46.31,
@@ -216,6 +219,7 @@
  },
  "hero_plate": {
   "dir": "hero_plate",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 47.25,
@@ -232,6 +236,7 @@
  },
  "hero_battle": {
   "dir": "hero_battle",
+  "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
   "height": 47.14,

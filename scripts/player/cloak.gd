@@ -32,9 +32,9 @@ const OUTLINE := Color("120f19")
 ## right: the outer edge from the front lip over the crown to the nape, then
 ## the face opening back up. Down, the same points bunch into a cowl on the
 ## shoulders, around the frame's back point.
-const HOOD_UP: Array[Vector2] = [Vector2(3, -1), Vector2(1.5, -4.5), Vector2(-1.5, -5.5), Vector2(-5.5, -5),
-	Vector2(-6, -0.5), Vector2(-6, 3.5), Vector2(-4.5, 6.5), Vector2(-1, 8), Vector2(0.5, 7),
-	Vector2(-0.5, 4), Vector2(-1, 1), Vector2(0.5, -1.5), Vector2(2, -2)]
+const HOOD_UP: Array[Vector2] = [Vector2(4, 1.5), Vector2(2.5, -2), Vector2(-0.5, -3), Vector2(-4.5, -2.5),
+	Vector2(-5, 2), Vector2(-5, 6), Vector2(-3.5, 9), Vector2(0, 10.5), Vector2(1.5, 9.5),
+	Vector2(0.5, 6.5), Vector2(0, 3.5), Vector2(1.5, 1), Vector2(3, 0.5)]
 const HOOD_DOWN: Array[Vector2] = [Vector2(2.5, -1), Vector2(1.5, -2), Vector2(0, -2.5), Vector2(-1.5, -2.5),
 	Vector2(-2.5, -1.5), Vector2(-3, 0), Vector2(-2.5, 1.5), Vector2(-1, 2.5), Vector2(0.5, 2),
 	Vector2(0.5, 1), Vector2(1, 0), Vector2(1.5, -0.5), Vector2(2, -0.5)]

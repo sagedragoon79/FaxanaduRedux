@@ -226,15 +226,32 @@ func test_armor_picks_its_body_set() -> void:
 		if not Sheet.exists(sheet):
 			bad.append(sheet + " missing")
 			continue
+		var d := Sheet.get_sheet(sheet)
+		var img := (load(Sheet.DIR + sheet + ".png") as Texture2D).get_image()
+		var den := float(d.get("density", 1))
 		for anim: String in ["idle", "walk", "run"]:
 			if not Sheet.has_anim(sheet, anim):
 				bad.append(sheet + ":" + anim)
 				continue
-			for f: Dictionary in Sheet.get_sheet(sheet).animations[anim].frames:
+			var a: Dictionary = d.animations[anim]
+			for i in a.frames.size():
+				var f: Dictionary = a.frames[i]
 				for key: String in ["hand", "neck", "head", "back"]:
 					if not f.has(key):
 						bad.append("%s:%s no %s" % [sheet, anim, key])
-	check(bad.is_empty(), "every armor has idle, walk and run with hand, neck, head and back points (%s)" % [bad])
+				if not f.has("head"):
+					continue
+				# The head point is the crown the helmet sits on: the sheet is solid just under it.
+				var at := Vector2(i * d.cell[0], int(a.row) * d.cell[1]) + Vector2(d.origin[0], d.origin[1]) + Vector2(f.head[0], f.head[1]) * den
+				var solid := false
+				for dy in range(0, 6):
+					solid = solid or img.get_pixelv(at + Vector2(0, dy)).a > 0.5
+				if not solid:
+					bad.append("%s:%s:%d crown %s" % [sheet, anim, i, f.head])
+	check(bad.is_empty(), "every armor has idle, walk and run with hand, neck, head (on the crown) and back points (%s)" % [bad])
+	# The Battle Helmet is Sean's pixel helmet, a little wider than the head at the 2x density.
+	var helm := PlayerVisual.HELMET.get_size()
+	check(helm.x >= 16 and helm.x <= 26 and helm.y > helm.x, "the helmet layer is a head-sized sprite (%s)" % helm)
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)

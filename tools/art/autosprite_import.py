@@ -502,10 +502,10 @@ class Importer:
 
     def detect_hero(self, img, meta):
         """Anchors for the layers drawn over a body set (weapon, shield, helmet, cloak), found
-        in the frame's pixels so every armor set and clip gets its own: "head" (the middle of the
-        skull, under the purple hair's crown), "neck", "back" (the nape of the shoulders, where a
-        cloak hangs from) and "hand" (the leading fist: the forward-most point of the arm band,
-        as the code rig's front hand)."""
+        in the frame's pixels so every armor set and clip gets its own: "neck", "back" (the
+        nape of the shoulders, where a cloak hangs from) and "hand" (the leading fist: the
+        forward-most point of the arm band, as the code rig's front hand). The "head" (the
+        crown, for the helmet and the hood) comes from head_point: the entry sets "head"."""
         meta = dict(meta)
         a = np.asarray(img)
         solid = a[..., 3] > 0
@@ -513,13 +513,6 @@ class Importer:
         if len(ys) == 0:
             return meta
         top, h = ys.min(), ys.max() - ys.min() + 1
-        r, g, b = (a[..., c].astype(int) for c in range(3))
-        hair = solid & (b > g + 30) & (r > g + 20)
-        hy, hx = np.nonzero(hair)
-        if len(hy):
-            hx0, hx1 = hx.min(), hx.max()
-            # The hair hangs behind: the skull is its front part.
-            meta["head"] = self.to_point((hx0 + 2 * hx1) / 3.0, top + 0.07 * h)
         row = int(top + 0.16 * h)
         cols = np.nonzero(solid[row])[0]
         meta["neck"] = self.to_point((cols.min() + cols.max()) / 2.0, row)
