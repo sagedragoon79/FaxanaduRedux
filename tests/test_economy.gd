@@ -1639,13 +1639,15 @@ func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
 		dwarf.stagger()
 		var hp0 := dwarf.hp
 		p.hp = 50
+		Sfx.recent.clear()
 		p.input.attack_pressed = true
 		await frames(2)
-		blows.append([hp0 - dwarf.hp, p.hp])
+		blows.append([hp0 - dwarf.hp, p.hp, Sfx.recent.has("execute")])
 		await frames(40)
 	check(blows[0][0] == cut, "a staggered common foe takes a plain cut (%d, a cut is %d)" % [blows[0][0], cut])
 	check(blows[1][0] == roundi(cut * 1.35), "a boss in its opening takes 35%% more (%d)" % blows[1][0])
 	check(blows[1][1] == 50 + Player.BLOODLETTING_HEAL, "and Bloodletting heals on it (%d)" % blows[1][1])
+	check(blows[1][2] and not blows[0][2], "the blow into the opening cleaves with its own sound, a plain one does not (pass 165)")
 	dwarf._stagger = 0.0
 	var hp1 := dwarf.hp
 	p.input.attack_pressed = true

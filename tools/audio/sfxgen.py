@@ -839,6 +839,31 @@ def main():
     sink = lowpass(osc(slide(98, 70, d), "saw", 0.5), 400) * env(n, 0.02, 1.6) * 0.35
     save("rush_fall", mix(toll, sink), 0.55)
 
+    # A mantra dye won (pass 164): the cloak takes the trial's color. Cloth
+    # swept open (a breathy swish rising), and over it the trial bell struck
+    # high and light, three quick notes falling into a held chord like dye
+    # running through the weave.
+    d = 1.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    swish = lowpass(highpass(noise(d), 600), 3200) * np.exp(-((t - 0.18) ** 2) / 0.012) * 0.5
+    out = np.zeros(n)
+    for i, f in enumerate((1568.0, 1319.0, 1047.0)):
+        tone = bell(f, d - 0.11 * i, 2.4 if i < 2 else 1.6)
+        at = int(RATE * (0.12 + 0.11 * i))
+        out[at:at + len(tone)] += tone[: n - at] * (0.55 if i < 2 else 0.8)
+    save("dye_won", mix(out, swish), 0.42)
+
+    # Executioner (pass 163): a blow into a boss's opening. Under the cut, a
+    # heavy cleave: a low body thud, a crack, and a short hard ring of the
+    # blade biting deep.
+    d = 0.32
+    n = int(RATE * d)
+    thud = lowpass(osc(slide(150, 55, d, 0.4), "sine"), 400) * env(n, 0.001, 2.4)
+    crack = highpass(noise(d), 1500) * env(n, 0.0005, 7.0) * 0.6
+    ring = (osc(np.full(n, 1180.0), "sine") * 0.4 + osc(np.full(n, 1770.0), "sine") * 0.2) * env(n, 0.001, 4.0)
+    save("execute", mix(thud, crack, ring), 0.6)
+
     # Card doors (pass 122). Locked: the latch rattles in its iron keep and the
     # door knocks twice against the bolt, dull and heavy. Nothing gives.
     d = 0.34
