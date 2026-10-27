@@ -107,7 +107,7 @@ func test_the_stick_walks_into_a_run_the_farther_it_leans() -> void:
 	check_near(p.velocity.x, t.run_speed * t.walk_fraction, 0.5, "a light lean walks at %.0f px/s" % (t.run_speed * t.walk_fraction))
 	check(PlayerVisual.current_pose(p) == "walk", "and looks it")
 	var anim := PlayerVisual.anim_for(p, "walk")
-	check(anim == ("walk" if Sheet.has_anim(PlayerVisual.SHEET_NAME, "walk") else "run"), "the walk clip, or the run slowed until it exists (%s)" % anim)
+	check(anim == ("walk" if Sheet.has_anim(PlayerVisual.sheet_for("walk"), "walk") else "run"), "the walk clip, or the run slowed until it exists (%s)" % anim)
 	p.input.tilt = 1.0
 	await frames(20)
 	check_near(p.velocity.x, t.run_speed, 0.01, "lean all the way and it is the same run as a key")

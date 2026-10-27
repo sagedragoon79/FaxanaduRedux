@@ -1245,6 +1245,24 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 
 ---
 
+### 13.4 Hero body sets (paper doll)
+
+The new hero is Sean's Autosprite character HeroStranger_Base (purple-haired elf, 2026-10-27), replacing the hooded
+ranger clip by clip. The hero is drawn in layers so gear does not multiply animations:
+
+- **Body + armor:** one full sheet per armor look, five in all: `hero_base` (no armor, green tunic), `hero_leather`,
+  `hero_studded`, `hero_plate`, `hero_battle` (`PlayerVisual.ARMOR_SHEETS` maps the worn armor to its sheet). Each is
+  an Autosprite character of its own run through the same clip list. A clip a set lacks plays from the old `player`
+  sheet until it exists.
+- **Weapon, shield, helmet, cloak:** separate layers drawn from per-frame anchors the importer finds in each frame
+  (`detect: "hero"` in the manifest): `hand` (the leading fist, as the code rig's front hand), `head` (the crown of the
+  skull, for the helmet), `neck`, and `back` (the nape of the shoulders, where a cloak hangs). Anchors are per set and
+  per frame, so the sets do not need to be frame-synced. Attacks are drawn empty-handed.
+- **Scale:** all five share one scale, base idle = 46 world px (the ranger's height), so armor that stands taller or
+  bulkier (plate, Battle Suit: about 1 px) shows it. Clips are 512 px cells at 14 fps; walk and run play every frame
+  of one cycle, sped up until the planted foot keeps pace with the ground (run about 30 fps, walk up to 40).
+- **Cloak dyes** (10) recolor only the ranger's sheet; a body set is drawn undyed until the cloak is its own layer.
+
 ## 14. Technical Architecture (Godot)
 
 - **Engine:** Godot 4.7.2 stable (pinned in CI and `tools/godot-version.txt`). GDScript with static typing.

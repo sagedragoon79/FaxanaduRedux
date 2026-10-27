@@ -181,3 +181,43 @@ func test_dense_sheets_keep_world_size() -> void:
 	check(two == Rect2(-32, -61, 64, 64), "a density-2 cell covers half its pixels in the world (%s)" % two)
 	var d := PlayerVisual.data()
 	check(one.size == (d.cell as Vector2) / float(d.density), "the player sheet keeps its world size at its density (%s)" % one)
+
+
+func test_armor_picks_its_body_set() -> void:
+	# Paper doll (design bible 13.4): each armor has a body sheet of its own,
+	# with the same clips, and anchors for the layers drawn over it.
+	var bad: Array[String] = []
+	for armor: String in PlayerVisual.ARMOR_SHEETS:
+		var sheet: String = PlayerVisual.ARMOR_SHEETS[armor]
+		if not Sheet.exists(sheet):
+			bad.append(sheet + " missing")
+			continue
+		for anim: String in ["idle", "walk", "run"]:
+			if not Sheet.has_anim(sheet, anim):
+				bad.append(sheet + ":" + anim)
+				continue
+			for f: Dictionary in Sheet.get_sheet(sheet).animations[anim].frames:
+				for key: String in ["hand", "neck", "head", "back"]:
+					if not f.has(key):
+						bad.append("%s:%s no %s" % [sheet, anim, key])
+	check(bad.is_empty(), "every armor has idle, walk and run with hand, neck, head and back points (%s)" % [bad])
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	check(p.visual.sheet == "hero_base" and p.visual.anim == "idle", "no armor: the base body (%s)" % p.visual.sheet)
+	var info := p.visual.frame_info()
+	var head: Array = info.head
+	var hand: Array = info.hand
+	check(head[1] < -38 and head[1] > -50 and hand[1] < -14 and hand[1] > -32, "the head is up top and the hand at the hip (%s, %s)" % [head, hand])
+	GameState.data.equipment.armor = "full_plate"
+	await frames(2)
+	check(p.visual.sheet == "hero_plate", "Full Plate swaps the body (%s)" % p.visual.sheet)
+	p.input.move_x = 1
+	await frames(12)
+	check(p.visual.anim == "run" and p.visual.sheet == "hero_plate", "and runs in it (%s %s)" % [p.visual.anim, p.visual.sheet])
+	p.input.move_x = 0
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(4)
+	check(p.visual.anim == "rise" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
+	GameState.data.equipment.armor = ""

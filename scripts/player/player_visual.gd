@@ -8,6 +8,16 @@ extends Node2D
 
 const SHEET_NAME := "player"
 const SHEET := "res://assets/sprites/player.png"
+## The hero's body sets (paper doll, design bible 13.4): one sheet per armor
+## worn, from Sean's Autosprite characters. A clip its set does not have yet
+## plays from SHEET_NAME.
+const ARMOR_SHEETS := {
+	"": "hero_base",
+	"leather_armor": "hero_leather",
+	"studded_mail": "hero_studded",
+	"full_plate": "hero_plate",
+	"battle_suit": "hero_battle",
+}
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -34,6 +44,8 @@ const DYE_SHADER := preload("res://shaders/cloak_dye.gdshader")
 
 ## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
 static var forced := ""
+## Off, the ranger's sheet plays everything (tests of the cloak it wears).
+static var body_sets := true
 
 var player: Player
 var squash_scale := Vector2.ONE
@@ -42,6 +54,8 @@ var pose := "idle"
 var anim := "idle"
 var anim_time := 0.0
 var frame := 0
+## The sheet `anim` plays from (the worn armor's set, or SHEET_NAME).
+var sheet := SHEET_NAME
 
 var _dye_worn := ""
 var _blink_time := 0.0
@@ -87,10 +101,12 @@ func _physics_process(delta: float) -> void:
 		# The reach cycles only while you climb; holding still, you hang.
 		rate = 1.6 if player.velocity.y != 0.0 else 0.0
 	anim_time += delta * rate
-	frame = frame_at(anim, anim_time)
+	sheet = sheet_for(anim)
+	frame = Sheet.frame_at(sheet, anim, anim_time)
 	if forced != "":
 		var parts := forced.split(":")
 		anim = parts[0]
+		sheet = sheet_for(anim)
 		frame = int(parts[1]) if parts.size() > 1 else 0
 	queue_redraw()
 
@@ -148,8 +164,23 @@ static func anim_for(p: Player, body_pose: String) -> String:
 			return "wall"
 		"walk":
 			# Until the sheet has a walk clip, the run plays slowed to the pace.
-			return "walk" if Sheet.has_anim(SHEET_NAME, "walk") else "run"
+			return "walk" if Sheet.has_anim(sheet_for("walk"), "walk") else "run"
 	return body_pose
+
+
+## The worn armor's body sheet, or "" when there is none for it.
+static func armor_sheet() -> String:
+	if not body_sets:
+		return ""
+	var worn := String(GameState.data.equipment.get("armor", ""))
+	var name: String = ARMOR_SHEETS.get(worn, "")
+	return name if name != "" and Sheet.exists(name) else ""
+
+
+## The sheet that plays `name`: the worn armor's set if it has the clip.
+static func sheet_for(name: String) -> String:
+	var body := armor_sheet()
+	return body if body != "" and Sheet.has_anim(body, name) else SHEET_NAME
 
 
 ## The frame of `name` shown at time `t`.
@@ -158,7 +189,7 @@ static func frame_at(name: String, t: float) -> int:
 
 
 func finished() -> bool:
-	return Sheet.finished(SHEET_NAME, anim, anim_time)
+	return Sheet.finished(sheet, anim, anim_time)
 
 
 ## Which way the sprite is drawn. A wall slide is drawn gripping the wall (the
@@ -171,7 +202,7 @@ static func look_dir(p: Player) -> int:
 ## The current frame's metadata: hand and neck points (relative to the feet,
 ## facing right) and, in a swing, the blade angle.
 func frame_info() -> Dictionary:
-	return Sheet.info(SHEET_NAME, anim, frame)
+	return Sheet.info(sheet, anim, frame)
 
 
 ## The neck in world space, where the scarf hangs from.
@@ -194,12 +225,15 @@ static func dye_look() -> Array:
 	return [Color(String(item.color)), bool(item.get("glow", false))]
 
 
-## Puts the worn dye's shader on the sprite when the dye changes.
+## Puts the worn dye's shader on the sprite when the dye changes. The body
+## sets have no cloak (it will be a layer of its own), and their greens are a
+## tunic and elven steel, so they are drawn undyed.
 func _sync_dye() -> void:
-	if GameState.dye() == _dye_worn:
+	var worn := GameState.dye() if sheet == SHEET_NAME else ""
+	if worn == _dye_worn:
 		return
-	_dye_worn = GameState.dye()
-	var look := dye_look()
+	_dye_worn = worn
+	var look := dye_look() if worn != "" else []
 	if look.is_empty():
 		material = null
 		return
@@ -217,14 +251,14 @@ func _draw() -> void:
 		# Poison: a sickly green cast that throbs with each tick.
 		var t := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
 		tint = Color.WHITE.lerp(POISON, 0.35 + 0.2 * t)
-	draw_frame(self, anim, frame, tint, false)
+	Sheet.draw(self, sheet, anim, frame, tint, false)
 	var oint := player.ointment_left
 	if oint > 0.0:
 		# The Ointment: a gold sheen that pulses, and flickers as it runs out.
 		var a := 0.38 + 0.14 * sin(Time.get_ticks_msec() * 0.008)
 		if oint < 2.0 and int(oint * 8.0) % 2 == 0:
 			a *= 0.3
-		draw_frame(self, anim, frame, Color(OINTMENT, a), true)
+		Sheet.draw(self, sheet, anim, frame, Color(OINTMENT, a), true)
 	var info := frame_info()
 	var hand := Vector2(info.hand[0], info.hand[1])
 	if info.has("blade"):

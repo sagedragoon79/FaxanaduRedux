@@ -465,6 +465,44 @@ class Importer:
         return meta
 
 
+    def detect_hero(self, img, meta):
+        """Anchors for the layers drawn over a body set (weapon, shield, helmet, cloak), found
+        in the frame's pixels so every armor set and clip gets its own: "head" (the middle of the
+        skull, under the purple hair's crown), "neck", "back" (the nape of the shoulders, where a
+        cloak hangs from) and "hand" (the leading fist: the forward-most point of the arm band,
+        as the code rig's front hand)."""
+        meta = dict(meta)
+        a = np.asarray(img)
+        solid = a[..., 3] > 0
+        ys, xs = np.nonzero(solid)
+        if len(ys) == 0:
+            return meta
+        top, h = ys.min(), ys.max() - ys.min() + 1
+        r, g, b = (a[..., c].astype(int) for c in range(3))
+        hair = solid & (b > g + 30) & (r > g + 20)
+        hy, hx = np.nonzero(hair)
+        if len(hy):
+            hx0, hx1 = hx.min(), hx.max()
+            # The hair hangs behind: the skull is its front part.
+            meta["head"] = self.to_point((hx0 + 2 * hx1) / 3.0, top + 0.07 * h)
+        row = int(top + 0.16 * h)
+        cols = np.nonzero(solid[row])[0]
+        meta["neck"] = self.to_point((cols.min() + cols.max()) / 2.0, row)
+        row = int(top + 0.21 * h)
+        cols = np.nonzero(solid[row])[0]
+        meta["back"] = self.to_point(cols.min() + 0.03 * h, row)
+        band = solid.copy()
+        band[:int(top + 0.2 * h)] = False
+        band[int(top + 0.56 * h):] = False
+        by, bx = np.nonzero(band)
+        if len(by):
+            front = bx.max()
+            near = bx >= front - 0.02 * h
+            # The fist's middle, half a fist in from its leading edge.
+            meta["hand"] = self.to_point(front - 0.025 * h, by[near].mean())
+        return meta
+
+
 def _eye_center(grid):
     """Center of the largest patch of eye-white (the two lightest stone shades)."""
     white = np.isin(grid, ["stone-6", "stone-7"])
@@ -531,6 +569,8 @@ def imported(name, cell, origin, code_meta):
             meta.update(spec.get("meta", {}))
             if cfg.get("detect") == "elf":
                 meta = imp.detect(grid, meta)
+            elif cfg.get("detect") == "hero":
+                meta = imp.detect_hero(img, meta)
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
             frames.append((img, mask, meta))
