@@ -42,10 +42,14 @@ const UNLOCK_FLAG := "lord"
 const MEND := 1.0 / 3.0
 ## Seconds from a boss's fall to the next arena (its banner shows first).
 const NEXT_DELAY := 2.5
+## While the world is mid-fade, a move waits and tries again this often.
+const RETRY := 0.1
 ## Between fights: the trials' theme, the mantra-space.
 const MUSIC := "trials"
 
 ## The rush under way: {"index", "time", "back_room", "back_pos"}, or empty.
+## "over" is set once it is won or lost, while the mantra carries you back:
+## the clock stops and a second fall does nothing.
 static var run := {}
 
 
@@ -73,7 +77,7 @@ static func begin(back_room: String, back_pos: Vector2) -> void:
 
 
 static func tick(delta: float) -> void:
-	if active():
+	if active() and not run.get("over", false):
 		run.time = float(run.time) + delta
 
 
@@ -120,9 +124,21 @@ static func start(world: World, p: Player) -> void:
 
 ## Carries the player to the current boss's arena.
 static func go(world: World) -> void:
-	if not active() or current_boss() == "":
+	if not active() or current_boss() == "" or not is_instance_valid(world):
+		return
+	if world.busy:
+		_later(world, RETRY, func() -> void: go(world))
 		return
 	world.travel_to_door(String(ORDER[int(run.index)][1]), ENTRY_DOOR)
+
+
+## Runs `then` after `seconds` of play (the timer stops with the pause menu),
+## so long as the world is still there: quitting mid-rush frees it.
+static func _later(world: World, seconds: float, then: Callable) -> void:
+	var ref: WeakRef = weakref(world)
+	world.get_tree().create_timer(seconds, false).timeout.connect(func() -> void:
+		if ref.get_ref() != null:
+			then.call())
 
 
 ## A boss of the rush has fallen: on to the next, or the rush is won.
@@ -135,18 +151,20 @@ static func on_boss_down(world: World, p: Player) -> void:
 		Sfx.play("rush_won", 0.0)
 		if result.record:
 			Sfx.play("trial_record", 0.0, -3.0)
-		world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: back(world, p))
+		run.over = true
+		_later(world, NEXT_DELAY, func() -> void: back(world, p))
 		return
 	mend(p)
 	Sfx.play("rush_mend", 0.0)
 	GameState.toast.emit("%d of %d. The mantra mends you." % [int(run.index), ORDER.size()])
-	world.get_tree().create_timer(NEXT_DELAY, true, false, true).timeout.connect(func() -> void: go(world))
+	_later(world, NEXT_DELAY, func() -> void: go(world))
 
 
 ## A blow that would have killed you: the rush ends and you go back whole.
 static func fall(world: World, p: Player) -> void:
-	if not active():
+	if not active() or run.get("over", false):
 		return
+	run.over = true
 	GameState.banner.emit("The Rush Ends", "Fallen at %d of %d." % [int(run.index) + 1, ORDER.size()])
 	Sfx.play("rush_fall", 0.0)
 	Music.play("", 0.6)
@@ -155,7 +173,11 @@ static func fall(world: World, p: Player) -> void:
 
 ## Returns the player to where the rush began and ends it.
 static func back(world: World, p: Player) -> void:
-	if not active():
+	if not active() or not is_instance_valid(world):
+		return
+	if world.busy:
+		# Mid-fade (a fall as the mantra carries you on): go once it settles.
+		_later(world, RETRY, func() -> void: back(world, p))
 		return
 	var room_id: String = run.back_room
 	var pos: Vector2 = run.back_pos

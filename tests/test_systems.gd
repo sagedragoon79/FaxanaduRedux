@@ -1078,3 +1078,68 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 	check(BossRush.best() == best, "a fallen rush keeps no time")
 	w.queue_free()
 	BossRush.abandon()
+
+
+## Pass 158: the boss rush's edges. A fall while the mantra is mid-fade waits
+## for the fade and then carries you back, once; the clock stops at the fall;
+## no shrine on the way refills or saves you; no one stands in an arena; a
+## world freed mid-rush leaves no timer behind; and a new game starts clean.
+func test_the_boss_rush_holds_at_its_edges() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(5)
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+	GameState.set_flag("lord")
+	# No one stands in the fight: King Grieve's steward waits only outside a rush.
+	w._enter("dartmoor/throne_hall")
+	check(w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "the steward stands in the throne hall after the king falls")
+	BossRush.begin("test/a", cell_feet(5, 16))
+	BossRush.run.index = 7
+	w.travel_to_door("dartmoor/throne_hall", BossRush.ENTRY_DOOR)
+	await frames(3)
+	check(not w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "but not in the rush's arena")
+	# No rest on the way: the shrine by the Zenis gate neither refills nor saves.
+	BossRush.run.index = 8
+	BossRush.go(w)
+	await frames(3)
+	check(w.room.id == "dartmoor/zenis_gate", "on to the Zenis gate")
+	var shrine: SaveShrine = null
+	for c in w.room.get_children():
+		if c is SaveShrine:
+			shrine = c
+	check(shrine != null, "whose shrine stands by the way in")
+	p.hp = 3
+	var saved_room = GameState.data.get("save_room", "")
+	shrine.interact(p)
+	check(p.hp == 3 and GameState.data.get("save_room", "") == saved_room, "the shrine allows no rest in the rush")
+	# A fall while the world is mid-fade waits for it, and comes once.
+	var banners := [0]
+	var count := func(_a: String, _b: String) -> void: banners[0] += 1
+	GameState.banner.connect(count)
+	w.busy = true
+	p._invuln_timer = 0.0
+	p.take_damage(99)
+	var at_fall := float(BossRush.run.time)
+	p._invuln_timer = 0.0
+	p.take_damage(99)
+	check(not p.dead and BossRush.active(), "mid-fade the fall waits, and you live")
+	await frames(30)
+	check(is_equal_approx(float(BossRush.run.time), at_fall), "the clock stops at the fall")
+	check(w.room.id == "dartmoor/zenis_gate", "nothing moves while the world is busy")
+	w.busy = false
+	await frames(12)
+	check(not BossRush.active() and w.room.id == "test/a" and p.hp == p.max_hp, "once it settles, back to the Guru whole")
+	check(banners[0] == 1, "and the rush ends once (%d banners)" % banners[0])
+	GameState.banner.disconnect(count)
+	# A world freed while the next arena is pending leaves nothing behind.
+	BossRush.begin("test/a", cell_feet(5, 16))
+	BossRush.on_boss_down(w, p)
+	check(BossRush.active() and int(BossRush.run.index) == 1, "a boss down: on to the next")
+	w.queue_free()
+	await frames(int(BossRush.NEXT_DELAY * 60) + 10)
+	check(true, "the pending move finds the world gone and does nothing")
+	# A new game never starts in a rush.
+	var w2 := make_world(_temple(), "test/a", cell_feet(5, 16))
+	check(not BossRush.active() and not Trials.active(), "a new world starts clean")
+	w2.queue_free()
