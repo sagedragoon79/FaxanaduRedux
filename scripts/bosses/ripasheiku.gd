@@ -211,6 +211,11 @@ func _on_blocked(_dir: Vector2) -> void:
 	pass
 
 
+## Its opening (Enemy.punishable): fallen from the vault, she lies on the floor.
+func punishable() -> bool:
+	return state == "dropped"
+
+
 func stagger() -> void:
 	pass
 

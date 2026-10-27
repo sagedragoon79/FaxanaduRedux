@@ -210,6 +210,11 @@ func _hide_body() -> void:
 
 
 ## True once every segment is back inside a wall or the ceiling.
+## His opening (Enemy.punishable): the plates cracked by a stagger.
+func punishable() -> bool:
+	return stagger_left > 0.0
+
+
 func _all_hidden() -> bool:
 	for s in segments:
 		if ARENA.grow(s.radius).has_point(s.position):

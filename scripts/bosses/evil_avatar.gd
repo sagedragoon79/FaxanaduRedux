@@ -121,6 +121,11 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase == 2 else 1.0))
 
 
+## Its opening (Enemy.punishable): reeling from a parry.
+func punishable() -> bool:
+	return open()
+
+
 func open() -> bool:
 	return state == "staggered"
 

@@ -137,6 +137,11 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base)
 
 
+## Its opening (Enemy.punishable): struck down by its own lightning, it lies stunned.
+func punishable() -> bool:
+	return grounded()
+
+
 func grounded() -> bool:
 	return state == "grounded"
 

@@ -159,6 +159,11 @@ func warded() -> bool:
 
 
 ## Open to every blow: reeling from a parry, or thrown from the throne.
+## Its opening (Enemy.punishable): reeling from a parry, or fallen.
+func punishable() -> bool:
+	return open()
+
+
 func open() -> bool:
 	return is_staggered() or state == "fallen"
 

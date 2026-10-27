@@ -330,6 +330,7 @@ func refresh_stats(p: Player) -> void:
 	p.riposte = has_skill("riposte")
 	p.bloodletting = has_skill("bloodletting")
 	p.thrust = has_skill("thrust")
+	p.executioner = has_skill("executioner")
 	p.spell_cost_mult = 0.85 if has_skill("thrift") else 1.0
 	p.chain_thunder = has_skill("chain_thunder")
 	p.time_thief = has_skill("time_thief")

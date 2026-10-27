@@ -104,6 +104,11 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase >= 2 else 1.0))
 
 
+## Its opening (Enemy.punishable): rammed into a wall or the floor, the drill is stuck.
+func punishable() -> bool:
+	return stuck()
+
+
 func stuck() -> bool:
 	return state == "stuck"
 

@@ -1099,12 +1099,14 @@ func test_pakukame_shell_turns_blows_until_the_jaws_hang_open() -> void:
 	var hp0 := k.hp
 	k.head.take_hit(10, Vector2.RIGHT)
 	check(hp0 - k.hp == 3, "the shut shell turns most of a blow (%d)" % (hp0 - k.hp))
+	check(not k.head.punishable(), "shut, the head is no opening (Executioner)")
 	var hp := w.player.hp
 	var tell_frames := await _provoke(w, k, 60.0, "bite")
 	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "the head rears for at least %.2f s before it bites (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
 	var gaped := await _until(func() -> bool: return k.state == "gape", 30)
 	check(gaped and w.player.hp < hp, "the bite lands on a player standing still, and the jaws hang open")
 	check(absf(k.head.global_position.y - k.floor_y()) < 30.0, "the head lies low on the leaf")
+	check(k.head.punishable(), "the open jaws are its opening, through the head's hitbox")
 	hp0 = k.hp
 	k.head.take_hit(10, Vector2.RIGHT)
 	check(hp0 - k.hp == 10, "open, every blow lands in full (%d)" % (hp0 - k.hp))

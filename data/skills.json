@@ -9,6 +9,7 @@
 		{"id": "keener_edge", "branch": "Blade", "name": "Keener Edge", "cost": 2, "needs": "riposte", "desc": "Another +10% melee damage."},
 		{"id": "bloodletting", "branch": "Blade", "name": "Bloodletting", "cost": 2, "needs": "keener_edge", "desc": "Each hit on a staggered foe heals you 2 HP."},
 		{"id": "thrust", "branch": "Blade", "name": "Thrust", "cost": 2, "needs": "bloodletting", "desc": "Hold Attack, then let go: a charged lunge for half again a heavy hit."},
+		{"id": "executioner", "branch": "Blade", "name": "Executioner", "cost": 3, "needs": "thrust", "desc": "Blows on a boss in its opening land for 35% more."},
 		{"id": "clear_mind", "branch": "Arcana", "name": "Clear Mind", "cost": 1, "needs": "", "desc": "+20 max MP."},
 		{"id": "siphon", "branch": "Arcana", "name": "Siphon", "cost": 1, "needs": "clear_mind", "desc": "Melee hits restore 50% more MP."},
 		{"id": "deluge_pierce", "branch": "Arcana", "name": "Deluge Pierce", "cost": 1, "needs": "siphon", "desc": "Water bolts pass through foes and strike every one in line."},

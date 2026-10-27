@@ -56,6 +56,11 @@ extends Resource
 @export var thrust_time := 0.16
 @export var thrust_cooldown := 0.35
 
+@export_group("Executioner")
+## Executioner (Blade skill, pass 163; design bible 9): melee blows on a boss
+## in its opening (Enemy.punishable) land for this much more.
+@export var executioner_mult := 1.35
+
 @export_group("War Glove")
 ## The original's Glove, a rare drop (design bible 7, pass 147): for this long
 ## every blade hit deals this much more.

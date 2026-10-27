@@ -205,6 +205,13 @@ func is_staggered() -> bool:
 	return _stagger > 0.0
 
 
+## The foe's opening: while it is true, its guard is down and blows land in full
+## (design bible 8: every boss has a stagger window). Bloodletting and
+## Executioner read it. A parry stagger by default; each boss names its own window.
+func punishable() -> bool:
+	return is_staggered()
+
+
 func die() -> void:
 	dead = true
 	collision_layer = 0

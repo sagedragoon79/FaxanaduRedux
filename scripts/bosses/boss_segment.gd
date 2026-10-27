@@ -49,3 +49,12 @@ func take_hit(damage: int, dir: Vector2) -> void:
 
 func stagger() -> void:
 	pass
+
+
+## Whether the boss is open through this piece (Enemy.punishable).
+func punishable() -> bool:
+	if boss == null or not active or dead:
+		return false
+	if boss.has_method("segment_punishable"):
+		return boss.segment_punishable(self)
+	return boss.has_method("punishable") and boss.punishable()
