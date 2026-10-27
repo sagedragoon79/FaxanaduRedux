@@ -221,3 +221,34 @@ func test_armor_picks_its_body_set() -> void:
 	await frames(4)
 	check(p.visual.anim == "rise" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
 	GameState.data.equipment.armor = ""
+
+
+
+func test_the_hood_is_down_in_town_and_up_outside() -> void:
+	# The cloak layer over the body sets (design bible 13.4): its hood is up
+	# out in the world, down in a town, and down under a helmet.
+	var wild := make_room(ARENA)
+	var p := make_player(wild, Vector2i(3, 6))
+	await frames(10)
+	check(not wild.is_town() and p.cloak.hood == 1.0 and p.cloak.shown(), "out in the world the hood is up, over the body set")
+	var town := make_room(ARENA)
+	town.position = Vector2(0, 400)
+	town._people = 1
+	p.reparent(town)
+	await frames(6)
+	check(town.is_town() and p.cloak.hood > 0.0 and p.cloak.hood < 1.0, "in a town it comes down, not at once (%.2f)" % p.cloak.hood)
+	await frames(int(Cloak.HOOD_TIME * 60.0) + 2)
+	check(p.cloak.hood == 0.0, "and stays down")
+	p.reparent(wild)
+	GameState.data.equipment["helmet"] = "battle_helmet"
+	await frames(int(Cloak.HOOD_TIME * 60.0) + 2)
+	check(p.cloak.hood == 0.0, "under a helmet it stays down outside too")
+	GameState.data.equipment["helmet"] = ""
+	await frames(int(Cloak.HOOD_TIME * 60.0) + 2)
+	check(p.cloak.hood == 1.0, "and goes up again without it")
+	var hem: Vector2 = p.cloak._inner[Cloak.SEGMENTS]
+	check(hem.y > p.global_position.y - 12.0 and hem.y <= p.global_position.y, "the cape hangs to the ankles (%s, feet %s)" % [hem, p.global_position])
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(4)
+	check(not p.cloak.shown(), "a clip from the ranger's sheet draws its own cloak, so the layer hides")

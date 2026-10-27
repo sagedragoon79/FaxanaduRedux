@@ -54,6 +54,9 @@ var _locks := {}
 ## Chests worth more than the room's `chest_gold`: cell -> gold (header `chest: x, y, gold`).
 var _chest_gold := {}
 var _secret_revealed := false
+## People standing here and foes spawned here, for is_town().
+var _people := 0
+var _foes := 0
 var _roots_open := false
 
 
@@ -276,6 +279,7 @@ func build(text: String) -> void:
 		if parts.size() == 3:
 			var npc := Npc.new()
 			npc.npc_id = parts[2].strip_edges()
+			_people += 1
 			_spawn(npc, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
 
 	for spec: String in lists.get("prop", []):
@@ -704,10 +708,17 @@ func _spawn_enemy(enemy: Enemy, pos: Vector2) -> void:
 	if header.has("calm") and GameState.flag(String(header.calm)):
 		enemy.free()
 		return
+	_foes += 1
 	enemy.respawn_time = float(header.get("enemy_respawn", "0"))
 	# Everything that lives in the meteor is grown through with its crystal.
 	enemy.corrupted = str(header.get("corrupted", "true" if zone == "zenis" else "false")) == "true"
 	_spawn(enemy, pos)
+
+
+## A town: people live here and no foe or boss does (a calm room counts once
+## its flag is set). The hero's hood is down in one.
+func is_town() -> bool:
+	return _people > 0 and _foes == 0 and not header.has("boss")
 
 
 ## Puts back the gold purse dropped in this room on the last death.

@@ -208,7 +208,12 @@ func frame_info() -> Dictionary:
 ## The neck in world space, where the scarf hangs from.
 func neck_position() -> Vector2:
 	var n: Array = frame_info().neck
-	return global_position + Vector2(n[0] * look_dir(player) * squash_scale.x, n[1] * squash_scale.y)
+	return point(Vector2(n[0], n[1]))
+
+
+## A frame point (relative to the feet, facing right) in world space.
+func point(p: Vector2) -> Vector2:
+	return global_position + Vector2(p.x * look_dir(player) * squash_scale.x, p.y * squash_scale.y)
 
 
 ## Draws one frame of the sheet (or its flat silhouette, tinted) with the feet at the origin.
@@ -260,6 +265,8 @@ func _draw() -> void:
 			a *= 0.3
 		Sheet.draw(self, sheet, anim, frame, Color(OINTMENT, a), true)
 	var info := frame_info()
+	if sheet != SHEET_NAME and player.cloak:
+		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
 	if info.has("blade"):
 		_draw_blade(hand, deg_to_rad(float(info.blade)), BLADE_LENGTH + player.reach_bonus * 0.75, tint)

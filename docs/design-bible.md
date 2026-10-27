@@ -1261,7 +1261,14 @@ ranger clip by clip. The hero is drawn in layers so gear does not multiply anima
 - **Scale:** all five share one scale, base idle = 46 world px (the ranger's height), so armor that stands taller or
   bulkier (plate, Battle Suit: about 1 px) shows it. Clips are 512 px cells at 14 fps; walk and run play every frame
   of one cycle, sped up until the planted foot keeps pace with the ground (run about 30 fps, walk up to 40).
-- **Cloak dyes** (10) recolor only the ranger's sheet; a body set is drawn undyed until the cloak is its own layer.
+- **Cloak** (`scripts/player/cloak.gd`, code-drawn, no credits): Sean's Elven cloak from his side views
+  (`/mnt/project-files/armor/cloak-hood-up.jpg`, `cloak-hood-down.jpg`): ankle length, flaring behind, gold trim
+  down the front edge and the hem, a brooch at the shoulder. The cape is two verlet chains hung from the frame's
+  `neck` and `back` points, behind the body; the hood is drawn over the head from `head`. **Hood down in a town, up
+  everywhere else** (Sean, 2026-10-27; a town is a room where people stand and no foe or boss spawns,
+  `Room.is_town()`), raised or lowered over 0.35 s when that changes, and always down under a helmet. It takes the
+  worn dye's color (Warden Green is its own), so the 14 dyes need no extra art. The body sets themselves are drawn
+  undyed, and while a clip falls back to the ranger's sheet (which draws its own cloak) the layer hides.
 
 ## 14. Technical Architecture (Godot)
 
