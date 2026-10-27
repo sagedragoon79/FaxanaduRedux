@@ -156,6 +156,11 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	menu.back()
 	menu.cursor = 4
 	menu.confirm()
+	check(menu.title == "Journey" and menu.is_open, "Journey opens in place")
+	menu.back()
+	check(menu.title == "Paused", "and backs out to the pause menu")
+	menu.cursor = 5
+	menu.confirm()
 	check(quit[0] and not menu.is_open and not arena.get_tree().paused, "Quit closes the menu and quits")
 	_restore()
 
@@ -1447,3 +1452,38 @@ func test_a_won_dye_sounds_over_the_bell() -> void:
 	check(GameState.owns_dye("coral_dye"), "the quick clear won the dye")
 	check(heard[0].has("trial_bell") and heard[0].has("dye_won"), "the first rings the bell and the dye (%s)" % [heard[0]])
 	check(heard[1].has("trial_bell") and not heard[1].has("dye_won"), "a second rings the bell alone (%s)" % [heard[1]])
+
+
+## Pass 172: the Journey page shows Completion's shares mid-game (the 100% goal
+## gates the Lord's Gold and the Guru's rush) and the guardians found so far,
+## never one whose arena you have not entered.
+func test_the_journey_page_counts_the_world_and_the_guardians_found() -> void:
+	var ids := Completion.GUARDIANS.map(func(g: Array) -> String: return g[0])
+	check(ids.size() == BossArena.BOSSES.size() and BossArena.BOSSES.keys().all(func(k: String) -> bool: return ids.has(k)),
+		"the Journey names every guardian the arena knows, once (%d of %d)" % [ids.size(), BossArena.BOSSES.size()])
+	var w := make_world({}, "trunk/root_chamber")
+	await frames(2)
+	check(String(w.catalog["dartmoor/alpha_den"].boss) == "clockwork_alpha" and String(w.catalog["eolis/plaza"].get("boss", "")) == "",
+		"the catalog knows which rooms are arenas")
+	var found := Completion.guardians_found(w.catalog)
+	check(found.size() == 1 and found[0].id == "rokusutahn" and not found[0].beaten, "standing in the Root Chamber, only Rokusutahn is found, still waiting")
+	GameState.set_flag("boss:rokusutahn")
+	w._enter("branches/thorn_yard")
+	await frames(2)
+	found = Completion.guardians_found(w.catalog)
+	check(found.size() == 2 and found[0].beaten and found[1].id == "bark_captain", "a beaten guardian, then the Captain once his yard is entered, in climb order")
+	var stats := Completion.tally(w.catalog)
+	var rows := Completion.journey_rows(stats, found)
+	check(rows[0].right == "%d%%" % int(stats.percent), "the page opens on the percent of the world")
+	check(rows[4].label == "Guardians beaten" and rows[4].right == "1 / %d" % BossArena.BOSSES.size(), "and counts the guardians beaten (%s)" % rows[4].right)
+	var names := rows.map(func(r: Dictionary) -> String: return r.label)
+	check(names.has("Rokusutahn") and names.has("The Bark Knight Captain") and not names.has("Pakukame"), "it names the guardians found, and no other")
+	check(rows[-1].label == "%d not yet found" % (BossArena.BOSSES.size() - 2), "and says how many are still to find (%s)" % rows[-1].label)
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	check(Menus.open_journey(arena.get_tree(), func() -> void: pass), "the pause menu's Journey opens")
+	check(menu.title == "Journey" and menu.rows.size() == rows.size(), "with those rows")
+	for r: Dictionary in menu.rows:
+		check(PixelFont.width(String(r.label), 9) < menu.panel.size.x * 0.7, "%s fits the panel" % r.label)
+	menu.close()
+	menu.queue_free()

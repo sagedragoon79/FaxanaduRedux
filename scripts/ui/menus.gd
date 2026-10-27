@@ -307,6 +307,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			oint,
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
+			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
 		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else []) \
 			+ ([{"label": "Leave the rush", "detail": "Stop the clock and return to the Guru."}] if BossRush.active() else [])
@@ -323,11 +324,13 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			3:
 				open_controls(tree, reopen)
 			4:
+				open_journey(tree, reopen)
+			5:
 				menu.close()
 				Trials.abandon()
 				BossRush.abandon()
 				on_quit.call()
-			5:
+			6:
 				menu.close()
 				if BossRush.active():
 					var world := tree.get_first_node_in_group("world") as World
@@ -336,6 +339,21 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 				else:
 					leave_trial(tree)
 	menu.open("Paused", "%s. Rank %s." % [_room_title(tree), GameState.rank_name()], provider, on_select, _gold_footer(p))
+	return true
+
+
+## The Journey page (pause menu): Completion's shares as you stand, and the
+## guardians found so far. Read only; Back returns to the pause menu.
+static func open_journey(tree: SceneTree, back: Callable) -> bool:
+	var menu := _menu(tree)
+	var world := tree.get_first_node_in_group("world") as World
+	if menu == null or world == null:
+		return false
+	var provider := func() -> Array:
+		return Completion.journey_rows(Completion.tally(world.catalog), Completion.guardians_found(world.catalog))
+	menu.open("Journey", "Rank %s. %d deaths." % [GameState.rank_name(), int(GameState.data.get("deaths", 0))], provider,
+		func(_i: int) -> void: pass)
+	menu.on_back = back
 	return true
 
 
