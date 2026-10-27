@@ -223,7 +223,7 @@ func _think(delta: float) -> void:
 			if state_time > 0.15 and is_on_floor():
 				velocity.x = 0.0
 				set_state("planted")
-				Sfx.play("root_grip", 0.05, 4.0)
+				Sfx.play("lance_plant", 0.05, 2.0)
 				Feel.add_trauma(0.4)
 				_dust(Vector2.ZERO, "land")
 		"planted":
@@ -247,7 +247,7 @@ func _choose(dx: float) -> void:
 		Sfx.play("bark_creak", 0.06, 0.0)
 	elif phase == 2 and (absf(dx) > REACH * 1.5 or not level) and _rng.randf() < 0.6:
 		set_state("vault_tell")
-		Sfx.play("tell_charge", 0.05, 0.0)
+		Sfx.play("bough_vault", 0.05, 0.0)
 
 
 ## Pulls the lance free and draws one plate of bark back up through the roots.
