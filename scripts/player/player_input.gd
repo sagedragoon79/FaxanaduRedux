@@ -23,6 +23,7 @@ var spell_pressed := false
 var spell_next_pressed := false
 var heal_pressed := false
 var hourglass_pressed := false
+var throw_pressed := false
 
 
 func poll() -> void:
@@ -45,6 +46,7 @@ func poll() -> void:
 	spell_next_pressed = Input.is_action_just_pressed("spell_next")
 	heal_pressed = Input.is_action_just_pressed("heal")
 	hourglass_pressed = Input.is_action_just_pressed("hourglass")
+	throw_pressed = Input.is_action_just_pressed("throw")
 
 
 ## Called by the player after it has consumed this frame. Scripted presses last one frame.
@@ -59,6 +61,7 @@ func end_frame() -> void:
 		spell_next_pressed = false
 		heal_pressed = false
 		hourglass_pressed = false
+		throw_pressed = false
 
 
 ## Clears everything (used when control is taken away, e.g. on death).

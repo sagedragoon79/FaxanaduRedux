@@ -16,6 +16,8 @@ signal ending_started
 
 const SAVE_PATH := "user://save_%d.json"
 const VERSION := 1
+## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
+const RENAMED_ITEMS := {"hand_dagger": "short_sword"}
 
 ## The original's 16 ranks. Each rank after Novice gives a skill point.
 const RANKS := ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
@@ -54,7 +56,7 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false, "death": false},
+		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false, "death": false, "rune_dagger": false},
 		## The spell on the Spell button (an id in `Spells.ORDER`).
 		"spell": "deluge",
 		"max_hp": 100,
@@ -68,7 +70,7 @@ static func fresh() -> Dictionary:
 		"skill_points": 0,
 		"skills": [],
 		"respecs": 0,
-		"equipment": {"blade": "hand_dagger", "armor": "", "shield": ""},
+		"equipment": {"blade": "short_sword", "armor": "", "shield": ""},
 		## Smith tempers per blade id (0 to 2): each adds TEMPER_BONUS to its damage.
 		"tempers": {},
 		"keys": {},
@@ -324,8 +326,8 @@ func refresh_stats(p: Player) -> void:
 	var eq: Dictionary = data.equipment
 	var blade_id := String(eq.blade)
 	if GameData.item(blade_id).is_empty():
-		# A blade this build lacks (pass 138): the Hand Dagger, untempered.
-		blade_id = "hand_dagger"
+		# A blade this build lacks (pass 138): the Short Sword, untempered.
+		blade_id = "short_sword"
 	var blade := GameData.item(blade_id)
 	var temper := 1.0 + TEMPER_BONUS * temper_level(blade_id)
 	p.slash_damage = roundi(int(blade.slash) * temper)
@@ -491,6 +493,14 @@ static func sanitize(src: Variant) -> Dictionary:
 		if k is String:
 			out[k] = _coerce(out[k], src[k]) if out.has(k) else src[k]
 	out.version = VERSION
+	# Items renamed since a save was written keep their place and temper (pass 184).
+	for old: String in RENAMED_ITEMS:
+		var now: String = RENAMED_ITEMS[old]
+		if String(out.equipment.get("blade", "")) == old:
+			out.equipment.blade = now
+		if out.tempers.has(old):
+			out.tempers[now] = maxi(int(out.tempers.get(now, 0)), int(out.tempers[old]))
+			out.tempers.erase(old)
 	# Containers whose entries the game reads by shape.
 	out.skills = _unique_strings(out.skills)
 	out.dyes = _unique_strings(out.dyes)
