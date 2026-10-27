@@ -35,6 +35,16 @@ const SECRET_EPILOGUE := [
 	"Its water climbs the whole Tree, root to crown.",
 	"No one saw you fall. The Tree remembers that.",
 ]
+## The last cards, after any others: as in Faxanadu's ending, the town would
+## thank you, and the wanderer walks on (pass 167).
+const FAREWELL := [
+	"In Eolis, the King waits by the full fountain to thank you.",
+	"But the wanderer is already on the east road, walking on.",
+]
+## How fast the wanderer walks off under the farewell (px/s), and how fast the
+## run cycle plays to make a walk of it.
+const WALK_SPEED := 46.0
+const WALK_RATE := 0.6
 ## Seconds each epilogue card shows (fading in and out).
 const CARD_TIME := 4.0
 const CREDITS := [
@@ -130,9 +140,25 @@ func start(rank_name: String, play_seconds: float, secret_ending := false, death
 	visible = true
 
 
-## The epilogue's cards: the secret ending's follow the others.
+## The epilogue's cards: the secret ending's follow the others, and the
+## farewell comes last.
 func cards() -> Array:
-	return EPILOGUE + SECRET_EPILOGUE if secret else EPILOGUE
+	return (EPILOGUE + SECRET_EPILOGUE if secret else EPILOGUE) + FAREWELL
+
+
+## Seconds into the epilogue when the farewell begins.
+func farewell_start() -> float:
+	return (cards().size() - FAREWELL.size()) * CARD_TIME
+
+
+## Where the wanderer is `t` seconds into the epilogue (x on the 640-wide
+## card), or -1.0 before the farewell: from the foot of the Tree east, off the
+## edge of the screen.
+func wanderer_x() -> float:
+	var into := t - farewell_start()
+	if into < 0.0:
+		return -1.0
+	return 332.0 + into * WALK_SPEED
 
 
 ## Height of the credits block (it rises from below the screen to above it).
@@ -248,11 +274,26 @@ func _draw_epilogue() -> void:
 			draw_rect(Rect2(at.x - 1, at.y, 2, (360.0 - at.y) * lit), Color(WATER, 0.5 * lit))
 	if secret:
 		_draw_source()
+	_draw_wanderer()
 	# The card, fading in and out.
 	if card < cards().size():
 		var into := t - card * CARD_TIME
 		var a := clampf(minf(into / 0.6, (CARD_TIME - into) / 0.6), 0.0, 1.0)
 		_centered(300.0, cards()[card], 12, Color(TEXT, a))
+
+
+## The farewell: the hero, a dark shape against the dawn, walks off east from
+## the foot of the Tree with the cloak's own walk.
+func _draw_wanderer() -> void:
+	var x := wanderer_x()
+	if x < 0.0 or x > 700.0:
+		return
+	var into := t - farewell_start()
+	var f := Sheet.frame_at(PlayerVisual.SHEET_NAME, "run", into * WALK_RATE)
+	var a := clampf(into / 0.8, 0.0, 1.0)
+	draw_set_transform(Vector2(roundf(x), 358.0))
+	PlayerVisual.draw_frame(self, "run", f, Color(BARK_DARK.darkened(0.4), a), true)
+	draw_set_transform(Vector2.ZERO)
 
 
 ## The secret ending: the Source wakes under the roots, its water climbs the

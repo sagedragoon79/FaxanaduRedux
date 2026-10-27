@@ -771,6 +771,12 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     saw you fall. The Tree remembers that." (the crown flowers in gold and white). Every thanks card now shows
     your deaths; the secret one adds "The Source runs again." and "A flawless climb, in the Warden's Battle
     Suit." Shoot it with `--ending=SECONDS[,PART] --secret`.
+  - **The farewell (pass 167):** Faxanadu ends with the hero thanked by Eolis and leaving it, a wanderer
+    again. The remake's epilogue had stopped at the fountain. Two last cards now close every ending, after the
+    secret one's too: "In Eolis, the King waits by the full fountain to thank you." and "But the wanderer is
+    already on the east road, walking on." While they show, the hero (the player sheet's own run cycle, drawn as
+    a dark shape against the dawn, `EndingScreen.FAREWELL`, `wanderer_x`) walks out of the foot of the Tree and
+    off the east edge before the climb begins. The plain epilogue is now six cards (24 s), the secret one nine.
 
 ### 8.10 Optional boss
 - **The Drowned Warden (Sunken Spring):** an ancient guardian of the spring source; the hardest fight in the game; drops the Battle Suit.
