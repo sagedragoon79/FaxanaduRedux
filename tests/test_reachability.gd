@@ -30,12 +30,12 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/veiled_rise", "mist/victim_causeway", "mist/feather_hollow", "mist/victim", "mist/mascon", "mist/marsh_road", "mist/scorched_hall", "mist/dry_cistern",
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
-	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
+	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
 ## Sky Steps, bible 3.2). The Stride test checks them.
 const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
-const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
+const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 
 
 func _texts() -> Dictionary:
@@ -385,7 +385,7 @@ func test_the_turned_wind_reaches_the_thicket_niche() -> void:
 	# Bible 6.9: the Spring of Sky turns the Branches' wind, and the Thicket
 	# Road's current then carries you west into the elves' wind-niche.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
-		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true, "dragon_slayer": true}
 	var before := Reach.new(_texts(), set, true)
 	var nodes := before.reachable(before.spot_of(START_ROOM, "P"))
 	for s: Array in WIND_SECRETS:
@@ -535,7 +535,7 @@ func test_fire_and_thunder_open_the_daybreak_gates() -> void:
 	# Bible 4.5: bramble holds until Fire, conduit gates until Thunder. The
 	# without-spell side is checked in the Stride test's flood.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
-		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "dragon_slayer": true}
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "dragon_slayer": true, "boots": true}
 	var reach := Reach.new(_texts(), set, true)
 	var lit := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	for s: Array in FIRE_SECRETS:
@@ -561,7 +561,7 @@ func test_dartmoors_upper_gate_needs_the_sky_key() -> void:
 
 func test_the_throne_lies_behind_the_flesh_only_the_dragon_slayer_cuts() -> void:
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
-		"fire": true, "thunder": true, "sky_key": true, "hourglass": true}
+		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
 	var reach := Reach.new(_texts(), set, true)
 	var rooms := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
 	check(rooms.has("zenis/heart_gate") and not rooms.has("zenis/throne"), "without the Dragon Slayer the flesh holds the throne shut")
@@ -699,3 +699,23 @@ func test_ladders_never_open_a_gated_room() -> void:
 		var extra := a.keys().filter(func(id: String) -> bool: return not b.has(id))
 		check(extra.is_empty(), "with %s, ladders open no room the rooms without them keep shut: %s" % [abilities.keys(), extra])
 
+
+
+const SCAR := "zenis/proving_scar"
+const SCAR_KIT := {"glove": true, "boots": true, "stride": true, "mattock": true, "thunder": true, "deluge": true, "hourglass": true}
+
+
+## Whether the checker crosses the Proving Scar alone, from its west door to its shrine.
+func _scar_crossed(kit: Dictionary) -> bool:
+	var texts := {SCAR: FileAccess.get_file_as_string(World.room_path(SCAR))}
+	var reach := Reach.new(texts, kit)
+	var nodes := reach.reachable(Reach.key(SCAR, 3, 42))
+	return reach.touchable(nodes, SCAR, 72, 42)
+
+
+func test_the_proving_scar_asks_for_every_ability() -> void:
+	check(_scar_crossed(SCAR_KIT), "with every ability the checker crosses the Scar to its shrine")
+	for ability: String in SCAR_KIT:
+		var kit := SCAR_KIT.duplicate()
+		kit.erase(ability)
+		check(not _scar_crossed(kit), "without %s it can't" % ability)

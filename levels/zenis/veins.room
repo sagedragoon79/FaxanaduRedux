@@ -1,6 +1,6 @@
 name: The Veins
 zone: zenis
-map: 69, -13
+map: 71, -13
 boss: evil_veins
 sign: 3, 65, The light that fled the throne runs up these veins to the core. Cut them, and it starves.
 door: 1, zenis/throne, 2

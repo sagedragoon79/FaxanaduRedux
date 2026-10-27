@@ -708,8 +708,28 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     closed by a **heart seal** (legend `+`, `HeartSeal`): a wall of living flesh with a seam of cyan light and a
     watching eye. Every other blade glances off it, and one cut with the Dragon Slayer tears it open for good.
     Beyond it, the heart (the Evil One's arenas) is next.
-  - **Phase 1, as built (pass 81):** the Heart Gate's door 2, past the flesh, opens on the **Throne of Zenis**
-    (`zenis/throne`, 67,-11, 60x23, `boss: evil_avatar`), a long hall with two hanging planks and the throne's
+  - **The Proving Scar, as built (pass 170):** the zone table promised Zenis a "gauntlet using every ability",
+    and 4.2 puts it between the Dragon Slayer and the Evil One, but until pass 170 the Heart Gate opened straight
+    onto the throne, and the climb to it asked for nothing past the Glove, the Hour Glass and the drift. Now the
+    Heart Gate's door 2 opens on **The Proving Scar** (`zenis/proving_scar`, 67,-12, 80x45), a scar through the
+    meteor that walks every earlier road once more, one gate after another:
+    1. A **fire seal** that only Deluge puts out.
+    2. A **chimney** 23 tiles tall with no ledge in it, climbed only with the Climbing Glove.
+    3. Two **steps** six tiles high whose faces are lined with thorn bulbs, so no glove can climb them. Only the
+       Wing Boots' second jump reaches the top.
+    4. A **gap** nine tiles wide over a pit, crossed only with the Elven Stride's dash. A Storm Harpy hangs in the
+       pit, and thorns line the far wall so you can't climb out of the pit onto the far side.
+    5. A **conduit gate** that only Thunder wakes, guarded by a Shade Knight.
+    6. A **plug of cracked stone** that only the Mattock breaks, over a shaft down to a hound.
+    7. A shaft of **time-locked water**, climbed only while the Hour Glass holds it.
+    8. An **illusory wall** at the top, which the Black Onyx shows.
+
+    Past these, the last hall holds a shrine before the throne's door. Its foes are corrupted like every Zenis
+    foe. The checker crosses the Scar with every ability and fails without any one of them
+    (`test_the_proving_scar_asks_for_every_ability`). The throne and the arenas past it moved two screens east
+    on the map (throne 69,-11, veins 71,-13, heart 72,-13), and Zenis now has 8 of its 14 rooms.
+  - **Phase 1, as built (pass 81):** the Heart Gate's door 2, past the flesh (and since pass 170 the Proving Scar), opens on the **Throne of Zenis**
+    (`zenis/throne`, 69,-11 since pass 170, 60x23, `boss: evil_avatar`), a long hall with two hanging planks and the throne's
     dais at the east end. The **Avatar on the Throne** (`EvilAvatar`, 360 HP, code-drawn at 1.3x) is a knight of
     black meteor crystal with a horned crown, a slit of light for eyes and a crystal greatsword. It stalks you
     and chooses from four attacks:
@@ -725,7 +745,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     Shatters", 1 skill point) and the light flees up the veins. Phase 2 (The Veins) is next. Theme: `evil_one`
     (B locrian at 120, a quickened double-kick heartbeat, a bass that drops a tritone, a cold lead).
   - **Phase 2, as built (pass 82):** the throne's door 2, high on its east wall, opens on **The Veins**
-    (`zenis/veins`, 69,-13, 40x68, `boss: evil_veins`), a tall shaft of meteor flesh climbed on zigzag one-way
+    (`zenis/veins`, 71,-13 since pass 170, 40x68, `boss: evil_veins`), a tall shaft of meteor flesh climbed on zigzag one-way
     ledges three rows apart. At its vault hangs the **core** (`EvilCore`), a crystal eye-flower that watches you.
     No blade reaches it. It feeds through six **light veins** (legend `x`, `LightVein`) grown above the ledges up
     the shaft; one cut (or a pogo, which also bounces you) severs a vein, and its health bar is the veins still
@@ -737,7 +757,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     the bible asked for wall jump and dash here too; the as-built shaft is a ledge climb so the beams are the
     pressure, and wall jumps are allowed but not required. Phase 3 (The Core) is next.
   - **Phase 3, as built (pass 83):** a door high on the Veins' east wall, reached from a ledge under the vault,
-    opens on **The Heart of the Meteor** (`zenis/heart`, 70,-13, 60x23, `boss: evil_one`), a long chamber with two
+    opens on **The Heart of the Meteor** (`zenis/heart`, 72,-13 since pass 170, 60x23, `boss: evil_one`), a long chamber with two
     low ledges. The **heart** (`EvilHeart`, 300 HP, `PHASES [0.66, 0.33]`) hangs far above the floor, a crystal
     eye-flower with petals all around it, out of any blade's reach. It drifts after you and attacks every
     2.0 / 1.7 / 1.4 s (by phase):

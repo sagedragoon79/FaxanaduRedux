@@ -1,9 +1,9 @@
 name: Throne of Zenis
 zone: zenis
-map: 67, -11
+map: 69, -11
 boss: evil_avatar
 sign: 3, 19, THE THRONE. Something sits here that is not a king, in a body that is not its own.
-door: 1, zenis/heart_gate, 2
+door: 1, zenis/proving_scar, 2
 door: 2, zenis/veins, 1
 ---
 ############################################################
