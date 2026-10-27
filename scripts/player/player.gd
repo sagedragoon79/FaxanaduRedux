@@ -967,7 +967,13 @@ func _try_attack(on_floor: bool) -> void:
 	if is_heavy_swing:
 		visual.squash(Vector2(1.2, 0.9))
 		velocity.x += facing * 60.0
-	Sfx.play("heavy" if is_heavy_swing else "slash", 0.1)
+	Sfx.play(swing_sound(), 0.1)
+
+
+## The swing's sound: a two-handed blade has a heavier voice of its own (pass 190).
+func swing_sound() -> String:
+	var sound := "heavy" if is_heavy_swing else "slash"
+	return "broad_" + sound if GameState.two_handed() else sound
 
 
 ## Thrust (skill, design bible 9): Attack held past combat.thrust_charge

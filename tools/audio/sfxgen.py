@@ -1148,6 +1148,55 @@ def main():
     out[int(RATE * 0.25):int(RATE * 0.25) + cn] += chime
     save("dagger_return", out, 0.45)
 
+    # A dagger's strike (pass 190): it had none, so a throw that landed was
+    # silent. A short thin bite: a high tick of the point going in and a small
+    # dry knock under it, lighter than a blade's hit.
+    d = 0.08
+    n = int(RATE * d)
+    tick = highpass(noise(0.02), 2500) * env(int(RATE * 0.02), 0.001, 2.0)
+    knock = lowpass(osc(slide(420, 260, d), "tri"), 2200) * env(n, 0.001, 2.4) * 0.7
+    out = np.zeros(n)
+    out[:len(tick)] += tick
+    out += knock
+    save("dagger_hit", out, 0.5)
+
+    # The Dwarvish Broad Sword (pass 190), two-handed and 30% slower: its cuts
+    # are a longer, lower rush of air with a weight under it, so the blade in
+    # hand is heard. The heavy cut adds a deeper body.
+    d = 0.17
+    n = int(RATE * d)
+    rush = highpass(lowpass(noise(d), slide(3800, 700, d, 0.7)), 250) * env(n, 0.02, 1.3)
+    weight = lowpass(osc(slide(110, 60, d), "square", 0.45), 900) * env(n, 0.03, 1.4) * 0.35
+    save("broad_slash", mix(rush, weight), 0.65)
+    d = 0.22
+    n = int(RATE * d)
+    rush = highpass(lowpass(noise(d), slide(3200, 500, d, 0.7)), 200) * env(n, 0.025, 1.2)
+    body = lowpass(osc(slide(95, 42, d), "square", 0.45), 1200) * env(n, 0.002, 1.0) * 0.8
+    save("broad_heavy", mix(rush, body), 0.75)
+
+    # The Equipment page (pass 190): changing gear had the cloth swish of a dye.
+    # A blade taken in hand slides from its sheath and seats with a click; armor,
+    # a shield or a helmet goes on with a buckle's clink over leather.
+    d = 0.3
+    n = int(RATE * d)
+    scrape = highpass(lowpass(noise(0.22), slide(4500, 7000, 0.22)), 1800) * env(int(RATE * 0.22), 0.05, 1.0) * 0.6
+    cn = int(RATE * 0.06)
+    click = mix(highpass(noise(0.06), 2000) * env(cn, 0.001, 3.0), osc(np.full(cn, 2900.0), "sine") * env(cn, 0.001, 2.5) * 0.4)
+    out = np.zeros(n)
+    out[:len(scrape)] += scrape
+    out[int(RATE * 0.22):int(RATE * 0.22) + cn] += click
+    save("sheathe", out, 0.45)
+    d = 0.3
+    n = int(RATE * d)
+    leather = lowpass(highpass(noise(0.16), 300), 1800) * env(int(RATE * 0.16), 0.01, 1.6) * 0.6
+    kn = int(RATE * 0.12)
+    clink = mix(osc(np.full(kn, 1480.0), "sine"), osc(np.full(kn, 2210.0), "sine") * 0.6) * env(kn, 0.001, 2.4) * 0.5
+    out = np.zeros(n)
+    out[:len(leather)] += leather
+    out[int(RATE * 0.12):int(RATE * 0.12) + kn] += clink
+    out[int(RATE * 0.18):int(RATE * 0.18) + kn] += clink * 0.6
+    save("gear_on", out, 0.45)
+
 
 if __name__ == "__main__":
     main()

@@ -800,6 +800,42 @@ func test_the_rune_dagger_flies_strikes_and_reforms_at_your_hip() -> void:
 	p.input.up = false
 
 
+## Pass 190: gear is heard. A dagger that lands bites, the two-handed Broad
+## Sword swings with a heavier voice, and the Equipment page sheathes a blade,
+## buckles on gear and swishes a dye.
+func test_the_dagger_the_broad_sword_and_the_equipment_page_have_voices() -> void:
+	var room := _arena_with("E", Vector2i(10, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.abilities["rune_dagger"] = true
+	Sfx.recent.clear()
+	p.input.throw_pressed = true
+	await frames(20)
+	check(Sfx.recent.has("dagger_throw") and Sfx.recent.has("dagger_hit"), "a dagger that lands bites (%s)" % [Sfx.recent])
+	await frames(int(RuneDagger.RETURN * 60.0) + 4)
+	Sfx.recent.clear()
+	p.input.attack_pressed = true
+	await frames(2)
+	check(Sfx.recent.has("slash") and not Sfx.recent.has("broad_slash"), "the Short Sword cuts with the plain slash (%s)" % [Sfx.recent])
+	GameState.obtain_gear("dwarvish_broad_sword", p)
+	await frames(40)
+	Sfx.recent.clear()
+	p.input.attack_pressed = true
+	await frames(2)
+	check(Sfx.recent.has("broad_slash") and not Sfx.recent.has("slash"), "the Broad Sword's cut is its own (%s)" % [Sfx.recent])
+	p.is_heavy_swing = true
+	check(p.swing_sound() == "broad_heavy", "and so is its heavy cut")
+	for sound: String in ["dagger_hit", "broad_slash", "broad_heavy", "sheathe", "gear_on"]:
+		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
+	check(Menus.equipment_sound("long_sword") == "sheathe", "a blade taken in hand slides from its sheath")
+	for id: String in ["leather_armor", "small_shield", "battle_helmet"]:
+		check(Menus.equipment_sound(id) == "gear_on", "%s buckles on" % id)
+	check(Menus.equipment_sound("tide_dye") == "cloth", "and a dye is cloth")
+	Sfx.recent.clear()
+	Menus.choose_equipment("short_sword", p)
+	check(Sfx.recent == ["sheathe"] and GameState.data.equipment.blade == "short_sword", "choosing a blade plays it (%s)" % [Sfx.recent])
+
+
 func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})
