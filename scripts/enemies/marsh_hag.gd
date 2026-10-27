@@ -78,7 +78,8 @@ func mark() -> MireGrasp:
 
 
 func _modify_damage(damage: int, _dir: Vector2) -> int:
-	if is_hexing():
+	# A thrown dagger stings her but takes a blow to break the spell (pass 188).
+	if is_hexing() and not thrown:
 		_break_hex()
 		return ceili(damage * SOFT)
 	return ceili(damage * SOFT) if is_fumbling() else damage

@@ -1419,6 +1419,31 @@ func test_bark_knight_bark_guards_until_stripped_and_regrows_as_he_uproots() -> 
 
 ## Pass 177: Fire catches living bark. A fireball's burst burns the whole coat
 ## off at once and lands in full on the heartwood beneath.
+func test_a_thrown_dagger_splits_no_bark_and_breaks_no_hex() -> void:
+	var room := _room_with({Vector2i(22, 6): "!"})
+	make_player(room, Vector2i(3, 6))
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	var before := k.hp
+	k.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
+	check(before - k.hp == ceili(RuneDagger.DAMAGE * BarkKnight.GUARD) and k.bark == BarkKnight.BARK, "a dagger in a Bark Knight's bark lands its quarter and splits no plate")
+	room.free()
+	room = _hag_room({Vector2i(30, 8): "?"})
+	var p := make_player(room, Vector2i(20, 8))
+	p.max_hp = 9999
+	p.hp = 9999
+	var h: MarshHag = _find(room, MarshHag)
+	for i in 240:
+		await frames(1)
+		if h.is_hexing() and h.state_time > 0.2:
+			break
+	check(h.is_hexing(), "she is hexing")
+	before = h.hp
+	h.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
+	check(before - h.hp == RuneDagger.DAMAGE and h.is_hexing(), "a dagger stings a Marsh Hag mid-hex but the spell holds")
+	room.free()
+
+
 func test_fire_burns_a_bark_knights_bark_off_at_once() -> void:
 	var room := _room_with({Vector2i(22, 6): "!"})
 	make_player(room, Vector2i(3, 6))

@@ -51,7 +51,11 @@ func _physics_process(delta: float) -> void:
 	var area := Rect2(global_position - size * 0.5, size)
 	for c: Variant in Query.rect(get_world_2d(), area, Player.LAYER_WORLD | Player.LAYER_ENEMY):
 		if c.is_in_group("enemy") and c.has_method("take_hit"):
-			c.take_hit(damage, dir if dir.x != 0.0 else Vector2(signf(float(thrower.facing) if thrower else 1.0), 0))
+			var hit_dir := dir if dir.x != 0.0 else Vector2(signf(float(thrower.facing) if thrower else 1.0), 0)
+			if c.has_method("take_throw"):
+				c.take_throw(damage, hit_dir)
+			else:
+				c.take_hit(damage, hit_dir)
 			Feel.hitstop(0.03)
 			_end("hit")
 			return

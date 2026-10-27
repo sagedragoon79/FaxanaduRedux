@@ -53,6 +53,9 @@ const LAUNCH_MAX_HP := 40
 var launchable := true
 var knockback := 140.0
 var hits_taken := 0
+## True while a thrown blade's hit lands (`take_throw`, pass 188): a sting, not
+## a blow, so it chips no bark, breaks no hex and never reaches the Heart.
+var thrown := false
 
 var _flash := 0.0
 var _hitstun := 0.0
@@ -141,6 +144,13 @@ func _think(_delta: float) -> void:
 ## Override: return the damage actually taken (e.g. 0 when a shield blocks it).
 func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return damage
+
+
+## A hit from a thrown blade (the Rune Dagger). `_modify_damage` reads `thrown`.
+func take_throw(damage: int, dir: Vector2) -> void:
+	thrown = true
+	take_hit(damage, dir)
+	thrown = false
 
 
 func take_hit(damage: int, dir: Vector2) -> void:

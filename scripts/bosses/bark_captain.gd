@@ -156,6 +156,9 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 		return 0
 	if punishable() or bark <= 0:
 		return damage
+	# A thrown dagger's point sticks in the bark and splits nothing (pass 188).
+	if thrown:
+		return ceili(damage * GUARD)
 	bark -= 1
 	_dust(Vector2(0, -30), "debris")
 	Sfx.play("bark_chip", 0.1, -2.0 if bark > 0 else 2.0)
