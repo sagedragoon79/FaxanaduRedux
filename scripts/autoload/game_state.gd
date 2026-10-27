@@ -140,7 +140,6 @@ func set_flag(id: String, value := true) -> void:
 	data.flags[id] = value
 
 
-## The Evil One is dead: mark the save cleared and start the ending.
 ## The cloak dye worn: an item id from data/items.json (kind "dye").
 func dye() -> String:
 	var id := String(data.get("dye", ""))
@@ -158,8 +157,6 @@ func earn_dye(id: String) -> void:
 	set_flag("dye:" + id)
 
 
-## Whether this save owns a dye. Warden Green is the cloak you start in, and
-## the Lord's Gold is given, not sold.
 ## Gear (pass 186): a blade, armor, shield or helmet you have is kept, and the
 ## Equipment page puts any of it on.
 func owns_gear(id: String) -> bool:
@@ -197,10 +194,13 @@ func two_handed() -> bool:
 	return bool(GameData.item(String(data.equipment.blade)).get("two_handed", false))
 
 
+## Whether this save owns a dye. Warden Green is the cloak you start in, and
+## the Lord's Gold is given, not sold.
 func owns_dye(id: String) -> bool:
 	return id == "warden_dye" or id == "lord_dye" or Array(data.get("dyes", [])).has(id)
 
 
+## The Evil One is dead: mark the save cleared and start the ending.
 func begin_ending() -> void:
 	set_flag("cleared")
 	if secret_ending():

@@ -51,6 +51,8 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 				detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
 				if Shop.shards(entry) > 0:
 					detail += "  Costs a Meteor Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
+			elif item.kind == "blade":
+				detail += "  " + blade_numbers(String(entry.item))
 			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
 		return out
 	var on_select := func(row: int) -> void:
@@ -345,9 +347,34 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 	return true
 
 
+## A blade's numbers as you would swing it, tempers included (pass 189), so
+## the shop and the Equipment page show what "slow" and "hits harder" mean.
+static func blade_numbers(id: String) -> String:
+	var blade := GameData.item(id)
+	var temper := 1.0 + GameState.TEMPER_BONUS * GameState.temper_level(id)
+	var out := "Cuts %d, heavy %d" % [roundi(int(blade.get("slash", 0)) * temper), roundi(int(blade.get("heavy", 0)) * temper)]
+	if float(blade.get("reach", 0)) > 0.0:
+		out += ", reach +%d" % int(blade.reach)
+	var swing := float(blade.get("swing", 1.0))
+	if swing > 1.0:
+		out += ", %d%% slower" % roundi((swing - 1.0) * 100.0)
+	return out + "."
+
+
+## The cloak dyes you can put on from the Equipment page (pass 189): Warden
+## Green, each one bought or won, and the Lord's Gold once it is yours.
+static func cloak_dyes() -> Array:
+	var out := []
+	for id: String in GameData.items_of_kind("dye"):
+		if id == "warden_dye" or Array(GameState.data.get("dyes", [])).has(id) or (id == "lord_dye" and GameState.flag("lord")):
+			out.append(id)
+	return out
+
+
 ## The Equipment page (pause menu, pass 186): every blade, armor, shield and
-## helmet you have, by slot. Choose one to put it on; choose what you wear
-## (not the blade) to take it off. Back returns to the pause menu.
+## helmet you have, by slot, and your cloak's dyes (pass 189). Choose one to
+## put it on; choose what you wear (not the blade or the cloak) to take it off.
+## Back returns to the pause menu.
 static func equipment_rows() -> Array:
 	var names := {"blade": "Blades", "armor": "Armor", "shield": "Shields", "helmet": "Helmets"}
 	var out := []
@@ -361,14 +388,31 @@ static func equipment_rows() -> Array:
 			var item := GameData.item(id)
 			var worn := String(GameState.data.equipment.get(slot, "")) == id
 			var detail := String(item.desc)
+			if slot == "blade":
+				detail += "  " + blade_numbers(id)
 			if slot == "blade" and GameState.temper_level(id) > 0:
 				detail += "  Tempered %d of 2." % GameState.temper_level(id)
 			if slot == "shield" and GameState.two_handed():
-				detail += "  On your back while you hold a two-handed blade."
+				detail += "  On your back while you hold a two-hander."
 			if worn and slot != "blade":
 				detail += "  Choose it again to take it off."
 			out.append({"label": item.name, "right": "Worn" if worn else "", "detail": detail, "enabled": true, "id": id})
+	out.append({"label": "Cloak", "header": true})
+	for id: String in cloak_dyes():
+		var item := GameData.item(id)
+		out.append({"label": item.name, "right": "Worn" if GameState.dye() == id else "", "detail": String(item.desc), "enabled": true, "id": id})
 	return out
+
+
+## A row chosen on the Equipment page: gear goes on (or off), a dye on the cloak.
+static func choose_equipment(id: String, p: Player) -> void:
+	if GameData.item(id).get("kind", "") == "dye":
+		if cloak_dyes().has(id):
+			GameState.data.dye = id
+	else:
+		GameState.wear(id, p)
+	GameState.capture(p)
+	Sfx.play("cloth", 0.0)
 
 
 static func open_equipment(tree: SceneTree, p: Player, back: Callable) -> bool:
@@ -380,9 +424,7 @@ static func open_equipment(tree: SceneTree, p: Player, back: Callable) -> bool:
 		var row: Dictionary = equipment_rows()[i]
 		if not row.has("id"):
 			return
-		GameState.wear(String(row.id), p)
-		GameState.capture(p)
-		Sfx.play("cloth", 0.0)
+		choose_equipment(String(row.id), p)
 	menu.open("Equipment", "What you wear and hold. Tempers stay with each blade.", provider, on_select)
 	menu.on_back = back
 	return true

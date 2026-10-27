@@ -1,7 +1,7 @@
 {
 	"short_sword": {"name": "Short Sword", "kind": "blade", "tier": 1, "slash": 8, "heavy": 14, "reach": 0, "desc": "Your starting blade. Quick, but short."},
 	"long_sword": {"name": "Long Sword", "kind": "blade", "tier": 2, "slash": 11, "heavy": 19, "reach": 8, "desc": "Reaches further and hits harder than the short sword."},
-	"dwarvish_broad_sword": {"name": "Dwarvish Broad Sword", "kind": "blade", "tier": 3, "slash": 17, "heavy": 32, "reach": 16, "arc": 20, "swing": 1.3, "two_handed": true, "desc": "Storm-iron forged by the dwarves of Forepaw, as long as you are tall. Two-handed: slow, but every cut sweeps a huge arc, high and low, and hits hard. No shield while you hold it."},
+	"dwarvish_broad_sword": {"name": "Dwarvish Broad Sword", "kind": "blade", "tier": 3, "slash": 17, "heavy": 32, "reach": 16, "arc": 20, "swing": 1.3, "two_handed": true, "desc": "Dwarven storm-iron, as long as you are tall. Two-handed: no shield, and slow, but it sweeps a huge arc."},
 	"dragon_slayer": {"name": "Dragon Slayer", "kind": "blade", "tier": 4, "slash": 18, "heavy": 30, "reach": 12, "desc": "The only blade that can wound the Evil One. It hums near meteor flesh."},
 	"leather_armor": {"name": "Leather Armor", "kind": "armor", "tier": 1, "defense": 0.15, "desc": "Take 15% less damage."},
 	"studded_mail": {"name": "Studded Mail", "kind": "armor", "tier": 2, "defense": 0.3, "desc": "Take 30% less damage."},
@@ -9,7 +9,7 @@
 	"battle_suit": {"name": "Battle Suit", "kind": "armor", "tier": 4, "defense": 0.6, "desc": "The Drowned Warden's harness of bronze and spring-stone: take 60% less damage."},
 	"full_plate": {"name": "Full Plate", "kind": "armor", "tier": 3, "defense": 0.45, "desc": "Elf-forged plate, light as leaf-silk: take 45% less damage."},
 	"large_shield": {"name": "Large Shield", "kind": "shield", "tier": 2, "guard": 0.7, "desc": "Guarding blocks 70% of a hit. Parries work as before."},
-	"magic_shield": {"name": "Magic Shield", "kind": "shield", "tier": 3, "guard": 0.7, "reflect": true, "desc": "Guards 70%. A parry catches small shots, even sap and molten rock, and flings them back at your foes."},
+	"magic_shield": {"name": "Magic Shield", "kind": "shield", "tier": 3, "guard": 0.7, "reflect": true, "desc": "Guards 70%. A parry flings small shots back at your foes, even sap and molten rock."},
 	"battle_helmet": {"name": "Battle Helmet", "kind": "helmet", "tier": 1, "hp": 20, "defense": 0.1, "desc": "The elf kings' war-helm, hidden at the meteor's threshold: one more mask of health, and 10% less damage on top of your armor."},
 	"jack_key": {"name": "Jack Key", "kind": "key", "desc": "Opens one Jack door. Jack doors guard treasure."},
 	"queen_key": {"name": "Queen Key", "kind": "key", "desc": "Opens one Queen door, the red-lacquered vaults past the Trunk."},

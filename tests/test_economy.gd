@@ -1715,6 +1715,55 @@ func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
 ## Pass 186 (Sean): gear you buy or find is kept, and the Equipment page puts
 ## any of it on; tempers stay with each blade. The Dwarvish Broad Sword (once
 ## the Giant Blade) takes both hands: no guard or parry while you hold it.
+## Pass 189: the shop and the Equipment page give each blade's numbers, and
+## the Equipment page changes the cloak's dye anywhere, not only at Ilse's.
+func test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak() -> void:
+	GameState.new_game()
+	check(Menus.blade_numbers("short_sword") == "Cuts 8, heavy 14.", "the Short Sword's numbers (%s)" % Menus.blade_numbers("short_sword"))
+	check(Menus.blade_numbers("dwarvish_broad_sword") == "Cuts 17, heavy 32, reach +16, 30% slower.",
+		"the Broad Sword says how slow it is (%s)" % Menus.blade_numbers("dwarvish_broad_sword"))
+	GameState.data.tempers = {"long_sword": 2}
+	var t := 1.0 + GameState.TEMPER_BONUS * 2
+	check(Menus.blade_numbers("long_sword").begins_with("Cuts %d, heavy %d, reach +8." % [roundi(11 * t), roundi(19 * t)]), "with its tempers in (%s)" % Menus.blade_numbers("long_sword"))
+	var dyer: Array = GameData.shop("eolis_dyes").stock
+	check(GameData.items_of_kind("dye").size() == dyer.size(), "every dye is on Ilse's shelf (%d of %d)" % [GameData.items_of_kind("dye").size(), dyer.size()])
+	check(Menus.cloak_dyes() == ["warden_dye"], "a new cloak has only Warden Green (%s)" % [Menus.cloak_dyes()])
+	GameState.data.dyes = ["tide_dye"]
+	GameState.earn_dye("slate_dye")
+	check(Menus.cloak_dyes() == ["warden_dye", "tide_dye", "slate_dye"], "then each dye bought or won (%s)" % [Menus.cloak_dyes()])
+	GameState.set_flag("lord")
+	check(Menus.cloak_dyes().has("lord_dye"), "and the Lord's Gold once it is yours")
+	var rows := Menus.equipment_rows()
+	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
+	var at := labels.find("Cloak")
+	check(at > 0 and rows[at].get("header", false) and labels.slice(at + 1) == ["Warden Green", "Tide Blue", "Lord's Gold", "Mantra Slate"],
+		"the page ends with the Cloak and its dyes (%s)" % [labels])
+	check(rows[labels.find("Mantra Slate")].right == "Worn", "marking the one on")
+	check(String(rows[1].detail).contains("Cuts 8, heavy 14."), "a blade's row gives its numbers")
+	# Every row's detail fits the menu's box (three lines), the longest gear
+	# worn: the Broad Sword held, so a shield's row adds why it is on your back.
+	GameState.data.gear = ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer", "leather_armor", "studded_mail",
+		"full_plate", "battle_suit", "small_shield", "large_shield", "magic_shield", "battle_helmet"]
+	GameState.data.equipment = {"blade": "dwarvish_broad_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}
+	GameState.data.tempers = {"dwarvish_broad_sword": 2}
+	var width := ListMenu.PANEL.size.x - 28
+	var long := []
+	for row: Dictionary in Menus.equipment_rows():
+		var n := PixelFont.wrap_lines(String(row.get("detail", "")), width, 9).size()
+		if n > 3:
+			long.append("%s: %d lines" % [row.label, n])
+	check(long.is_empty(), "every detail fits in three lines: %s" % [long])
+	var w := make_world(_town(), "test/town")
+	await frames(3)
+	GameState.data.dyes = ["tide_dye"]
+	Menus.choose_equipment("tide_dye", w.player)
+	check(GameState.dye() == "tide_dye", "choosing a dye puts it on, away from the Dyeworks")
+	Menus.choose_equipment("night_dye", w.player)
+	check(GameState.dye() == "tide_dye", "but not one you don't have")
+	Menus.choose_equipment("tide_dye", w.player)
+	check(GameState.dye() == "tide_dye", "and choosing the worn one again keeps the cloak dyed")
+
+
 func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
