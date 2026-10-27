@@ -159,10 +159,13 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 	var provider := func() -> Array:
 		var out := []
 		for t: Dictionary in list:
-			var row := {"label": String(t.name), "detail": String(t.desc), "enabled": Trials.is_open(t)}
+			var row := {"label": String(t.name), "detail": String(t.desc), "enabled": Trials.ready(t)}
 			if not Trials.is_open(t):
 				row.right = "Sealed"
 				row.detail = "Restore %d springs to open it." % int(t.springs)
+			elif not Trials.ready(t):
+				row.right = "Sealed"
+				row.detail = "Its footholds want the %s." % " and the ".join(Trials.missing(t))
 			elif Trials.cleared(t.id):
 				row.right = Trials.format_time(Trials.best(t.id))
 				row.detail += "  Best %s." % Trials.format_time(Trials.best(t.id))
@@ -173,7 +176,7 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 		return out
 	var on_select := func(i: int) -> void:
 		var t: Dictionary = list[i]
-		if not Trials.is_open(t):
+		if not Trials.ready(t):
 			return
 		menu.close()
 		start_trial(world, p, t)
