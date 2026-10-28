@@ -12,9 +12,12 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 ## shows you one from the first step, and only the Mattock opens it.
 const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
 ## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
-const BOOT_SECRETS := [["mist/feather_hollow", 18, 7]]
-## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5).
-const STRIDE_SECRETS := [["branches/north_bough", 8, 7], ["daybreak/sky_steps", 6, 20]]
+## The Sky Steps' purse sits on the climb's first island, a boots leap up from the
+## one below (pass 211: it had been listed as the Stride's).
+const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6, 20]]
+## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5),
+## even with the Wing Boots, which always come first (pass 211).
+const STRIDE_SECRETS := [["branches/north_bough", 9, 6]]
 ## Pickups only the Branches' wind reaches once the Spring of Sky turns it
 ## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
 const WIND_SECRETS := [["branches/thicket_road", 38, 8]]
@@ -521,12 +524,14 @@ func test_every_room_boots_and_the_player_lands() -> void:
 func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	# Bible 4.1 (A5): the Elven Stride waits in the Windloft, reachable without
 	# it; the cache across the north bough's gap needs an air dash.
-	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
+	# The Wing Boots always come before it (the Mist before the Branches), so a
+	# Stride secret must hold against a double jump too (pass 211).
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
 	check(bare.touchable(nodes, "branches/windloft", 30, 14), "the Elven Stride can be reached without it")
 	for s: Array in STRIDE_SECRETS:
-		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride" % [s])
+		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride, even with the Wing Boots" % [s])
 	set["stride"] = true
 	var reach := Reach.new(_texts(), set, true)
 	var strided := reach.reachable(reach.spot_of(START_ROOM, "P"))
