@@ -341,14 +341,26 @@ func _on_defeated() -> void:
 			p.abilities[reward.ability] = true
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
+	elif reward.has("text"):
+		# A guardian that leaves only its story (Shadow Eura, the Evil One's three).
+		GameState.banner.emit(reward.title, reward.text)
 	else:
-		GameState.banner.emit(reward.get("ring_name", reward.get("title", "Victory")), "+%d skill point" % points if points == 1 else "+%d skill points" % points)
+		GameState.banner.emit(reward.get("ring_name", reward.get("title", "Victory")), point_line(points))
+	# The banner tells the story; the skill point, when it doesn't, is a toast
+	# (pass 220: until then a boss with a line of its own never said it gave one).
+	if points > 0 and reward.has("text"):
+		GameState.toast.emit(point_line(points))
 	_open_timer = OPEN_DELAY
 	Music.play("", 2.5)
 	won.emit()
 	if boss_id == "evil_one":
 		# The last fight: the ending follows once the banner has had its moment.
 		get_tree().create_timer(ENDING_DELAY, true, false, true).timeout.connect(GameState.begin_ending)
+
+
+## "+1 skill point", "+2 skill points".
+static func point_line(points: int) -> String:
+	return "+%d skill point" % points if points == 1 else "+%d skill points" % points
 
 
 func _open_doors() -> void:

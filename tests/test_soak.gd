@@ -1562,3 +1562,52 @@ func test_every_room_loads_and_settles_inside_the_budget() -> void:
 	check(ids.size() >= 120, "every room was entered (%d)" % ids.size())
 	check(slow.is_empty(), "every room loads behind the fade in under 500 ms: %s" % [slow])
 	check(heavy.is_empty(), "every settled room averages under 8 ms a frame: %s" % [heavy])
+
+
+## Pass 220: every guardian's win says what it gave. A boss with a line of its
+## own (Shadow Eura, the Evil One's avatar and veins) shows that line, which until
+## pass 220 was written but never shown, and a skill point it gives is always
+## told: in the banner, or in a toast when the banner tells the story. Every
+## line fits the screen, the Evil One's last one too.
+func test_every_guardians_win_says_what_it_gave() -> void:
+	for boss_id: String in BossArena.BOSSES:
+		var reward: Dictionary = BossArena.BOSSES[boss_id]
+		if reward.has("text"):
+			check(PixelFont.width(String(reward.text), 10) <= 620.0, "%s's line fits the banner (%d px)" % [boss_id, PixelFont.width(String(reward.text), 10)])
+	var rooms := _boss_rooms()
+	await frames(1)
+	var untold: Array[String] = []
+	var told := 0
+	for id: String in rooms:
+		var boss_id: String = rooms[id]
+		if boss_id == "evil_one":
+			continue  # its win starts the ending; its line is held by the width check above
+		var reward: Dictionary = BossArena.BOSSES[boss_id]
+		var w := make_world({}, id)
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(3)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		var said: Array[String] = []
+		var on_banner := func(title: String, sub: String) -> void: said.append(title + "|" + sub)
+		var on_toast := func(text: String) -> void: said.append("|" + text)
+		ar._start()
+		await frames(2)
+		GameState.banner.connect(on_banner)
+		GameState.toast.connect(on_toast)
+		ar._on_defeated()
+		GameState.banner.disconnect(on_banner)
+		GameState.toast.disconnect(on_toast)
+		if is_instance_valid(ar.boss):
+			ar.boss.queue_free()
+		var all := "\n".join(said)
+		if reward.has("text") and not all.contains("|" + String(reward.text)):
+			untold.append("%s: its line (%s)" % [boss_id, all])
+		var points := int(reward.get("skill_points", 0))
+		if points > 0 and not all.contains("|" + BossArena.point_line(points)):
+			untold.append("%s: its skill point (%s)" % [boss_id, all])
+		told += 1
+		w.queue_free()
+		await frames(1)
+	check(told >= 14, "every arena's win was heard (%d)" % told)
+	check(untold.is_empty(), "every win says what it gave: %s" % [untold])
