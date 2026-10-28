@@ -174,6 +174,83 @@ func test_dash_needs_elven_stride() -> void:
 	check(not p.is_dashing, "no dash without Elven Stride")
 
 
+## Pass 216 (bible 4.1 A5): an elven veil is a wall to the player, but a dash
+## (ground or air) passes through it, and a dash that ends inside lets you out.
+const VEIL_ROOM := [
+	"################",
+	"#..............#",
+	"#..............#",
+	"#.......|......#",
+	"#.......|......#",
+	"#.......|......#",
+	"################",
+]
+
+
+func test_an_elven_veil_lets_only_a_dash_through() -> void:
+	var room := make_room(VEIL_ROOM)
+	var veil_x := 8 * Room.TILE
+	var p := make_player(room, Vector2i(4, 5), {"stride": false})
+	await frames(4)
+	p.input.move_x = 1
+	await frames(60)
+	check(p.global_position.x < veil_x, "walking, the veil stops you like a wall (x %.0f, veil at %d)" % [p.global_position.x, veil_x])
+	p.input.dash_pressed = true
+	await frames(20)
+	check(p.global_position.x < veil_x, "and without the Stride nothing gets through (x %.0f)" % p.global_position.x)
+	p.abilities["stride"] = true
+	p.input.move_x = 0
+	await frames(20)
+	p.input.dash_pressed = true
+	await frames(25)
+	check(p.global_position.x > veil_x + Room.TILE, "a ground stride carries you through it (x %.0f)" % p.global_position.x)
+	p.input.move_x = -1
+	await frames(40)
+	check(p.global_position.x > veil_x + Room.TILE, "walking back, it stops you again (x %.0f)" % p.global_position.x)
+	p.input.move_x = 0
+	await frames(10)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(12)
+	p.input.move_x = -1
+	p.input.dash_pressed = true
+	await frames(25)
+	check(p.global_position.x < veil_x, "an air dash passes it too (x %.0f)" % p.global_position.x)
+	# A dash that ends inside the veil doesn't trap you in it.
+	p.input.move_x = 0
+	await frames(30)
+	p.teleport(Vector2(veil_x + 8, 5 * Room.TILE + Room.TILE))
+	await frames(2)
+	check(p.passes_veils(), "inside the veil, it lets you out")
+	p.input.move_x = 1
+	await frames(30)
+	check(p.global_position.x > veil_x + Room.TILE and not p.passes_veils(), "and once clear of it, it is a wall again (x %.0f)" % p.global_position.x)
+	var probe := StrideVeil.new()
+	check(probe is StaticBody2D, "the veil is a body on its own layer")
+	probe.free()
+
+
+## The North Bough's warden cache sits behind a veil: from the porch, walking
+## and jumping get nowhere, and a stride takes you in to the Life Fruit.
+func test_the_warden_cache_needs_the_stride() -> void:
+	var fruit := "branches/north_bough:2,6"
+	for stride: bool in [false, true]:
+		var w := make_world({}, "branches/north_bough", cell_feet(6, 6))
+		var p := w.player
+		p.abilities["stride"] = stride
+		await frames(4)
+		p.input.move_x = -1
+		await frames(30)
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(10)
+		p.input.dash_pressed = true
+		await frames(40)
+		check(GameState.is_collected(fruit) == stride, "with the Stride %s, the Life Fruit is %s" % [stride, "taken" if GameState.is_collected(fruit) else "out of reach"])
+		w.queue_free()
+		await frames(1)
+
+
 func _drop_onto_spikes(abilities := {}) -> Player:
 	var room := make_room(SPIKE_FLOOR)
 	var p := make_player(room, Vector2i(9, 3), abilities)

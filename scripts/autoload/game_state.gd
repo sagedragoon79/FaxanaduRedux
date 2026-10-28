@@ -22,7 +22,8 @@ const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_b
 ## cell, so a save that took it at the old cell would find it again (pass 213).
 const MOVED_PICKUPS := {
 	"dartmoor/drowned_nave:31,5": "dartmoor/drowned_nave:31,6",  # pass 67
-	"branches/north_bough:8,7": "branches/north_bough:9,6",  # pass 211
+	"branches/north_bough:8,7": "branches/north_bough:2,6",  # pass 211, then 216
+	"branches/north_bough:9,6": "branches/north_bough:2,6",  # pass 216
 }
 ## The equipment slots, in the order the Equipment page lists them.
 const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]

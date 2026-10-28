@@ -16,8 +16,9 @@ const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
 ## one below (pass 211: it had been listed as the Stride's).
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6, 20]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5),
-## even with the Wing Boots, which always come first (pass 211).
-const STRIDE_SECRETS := [["branches/north_bough", 9, 6]]
+## even with the Wing Boots, which always come first: behind an elven veil (pass 216;
+## the gap of pass 211 was crossed by a real jump).
+const STRIDE_SECRETS := [["branches/north_bough", 2, 6]]
 ## Pickups only the Branches' wind reaches once the Spring of Sky turns it
 ## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
 const WIND_SECRETS := [["branches/thicket_road", 38, 8]]

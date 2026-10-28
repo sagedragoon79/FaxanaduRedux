@@ -390,6 +390,14 @@ def main():
     shimmer = mix(osc(slide(660, 990, d, 0.5), "sine"), osc(slide(990, 1485, d, 0.5), "sine") * 0.5) * 0.25
     save("curtain", mix(breath, shimmer) * env(n, 0.25, 1.4), 0.5)
 
+    # Striding through an elven veil: a quick airy rush through silk, with a
+    # pair of high glassy notes a fifth apart that ring as you pass.
+    d = 0.4
+    n = int(RATE * d)
+    rush = lowpass(highpass(noise(d), 900), slide(5200, 1800, d, 0.5)) * env(n, 0.01, 2.2) * 0.55
+    ring = mix(osc(np.full(n, 1760.0), "sine"), osc(np.full(n, 2640.0), "sine") * 0.6) * env(n, 0.004, 2.0) * 0.22
+    save("veil", mix(rush, ring), 0.5)
+
 
     # A Bog Myconid swelling: a wet, rising creak, like a bladder filling.
     d = 0.55
