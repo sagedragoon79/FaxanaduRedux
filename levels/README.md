@@ -155,3 +155,8 @@ A slope (`/`, `\`) starts on open floor at its low side and meets ground at its 
 stack them diagonally for a taller ramp, with ground under each. Walkers turn at a ramp.
 - Moving a pickup (any item, chest or shard) changes its id, which is its room and cell. Add
   the move to `GameState.MOVED_PICKUPS` so a save that took it doesn't find it again (pass 213).
+- A find meant to be out of reach until an ability (the `*_SECRETS` lists) needs a real gate.
+  The checker's jumps are short of real ones, so it can never prove "out of reach". Use a
+  gate tile (veil, bramble, cracked stone, amber), or for the Wing Boots a rise of 5 rows or
+  more over every footing within reach, with no wall to climb (a single jump tops out at 4.5),
+  and prove it with a real jump in `tests/` (pass 219).
