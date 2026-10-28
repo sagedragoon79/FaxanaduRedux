@@ -16,6 +16,8 @@ extends Resource
 @export var throw_buffer := 0.15
 @export var heavy_hitstop := 0.09
 @export var hit_hitstop := 0.05
+## A foe's last blow holds the world this long (bible 6.7, pass 210).
+@export var kill_hitstop := 0.08
 ## An up-slash that connects in midair holds you up: a fall is turned into
 ## this much rise (px/s), about 7 px. Once per swing; it never adds to a jump.
 @export var up_slash_pop := 150.0
@@ -32,6 +34,9 @@ extends Resource
 @export var hurt_knockback := Vector2(160, 220)
 @export var hurt_control_lock := 0.18
 @export var hazard_damage := 20
+## Being hit holds the world this long, and your own fall longer (bible 5.3, 6.7).
+@export var hurt_hitstop := 0.15
+@export var death_hitstop := 0.35
 ## At or below this much health (one mask) the heart beats and the screen's edge pulses red.
 @export var low_health := 20
 @export var heartbeat_interval := 0.85

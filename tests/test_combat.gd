@@ -697,6 +697,23 @@ func test_the_parry_window_is_0_12_s_and_pays_6_mp() -> void:
 	check(p2.hp < p2.max_hp and not dwarf2.is_staggered(), "outside the window it doesn't (hp %d)" % p2.hp)
 
 
+## Pass 210: a foe's fall and your own hold the world for the bible's times
+## (6.7), read from CombatTuning; until then both were bare numbers in code.
+func test_a_kill_and_a_fall_hold_their_hit_stops() -> void:
+	var a := _dwarf_arena()
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	await frames(2)
+	Feel.last_hitstop = 0.0
+	dwarf.die()
+	check_near(Feel.last_hitstop, p.combat.kill_hitstop, 0.0001, "a kill holds %d ms" % roundi(p.combat.kill_hitstop * 1000.0))
+	await frames(2)
+	Feel.last_hitstop = 0.0
+	p.take_damage(p.hp + 50)
+	check(p.dead, "a blow past your health fells you")
+	check_near(Feel.last_hitstop, p.combat.death_hitstop, 0.0001, "and your fall holds %d ms" % roundi(p.combat.death_hitstop * 1000.0))
+
+
 func test_being_hit_matches_the_bible() -> void:
 	var a := _dwarf_arena()
 	var p: Player = a[1]
@@ -709,7 +726,7 @@ func test_being_hit_matches_the_bible() -> void:
 			hit_at = i
 			break
 	check(hit_at >= 0, "the swing lands")
-	check(Feel.last_hitstop == 0.15, "being hit holds 150 ms (%.2f)" % Feel.last_hitstop)
+	check(Feel.last_hitstop == p.combat.hurt_hitstop, "being hit holds 150 ms (%.2f)" % Feel.last_hitstop)
 	check(p.velocity.x < 0.0 and absf(p.velocity.x) <= p.combat.hurt_knockback.x + 0.1, "knocked back at up to 160 px/s (%.0f)" % p.velocity.x)
 	check(p._control_lock_timer > 0.0 and p._control_lock_timer <= p.combat.hurt_control_lock, "control locked for 0.18 s")
 	check(p.invulnerable, "and invulnerable")
@@ -734,6 +751,9 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check_near(c.throw_buffer, 0.15, 0.0001, "throw buffer 0.15 s")
 	check_near(c.hit_hitstop, 0.05, 0.0001, "50 ms on a hit (6.7)")
 	check_near(c.heavy_hitstop, 0.09, 0.0001, "90 ms on a heavy hit (6.7)")
+	check_near(c.kill_hitstop, 0.08, 0.0001, "80 ms on a kill (6.7, pass 210)")
+	check_near(c.hurt_hitstop, 0.15, 0.0001, "150 ms when you are hit (5.3)")
+	check_near(c.death_hitstop, 0.35, 0.0001, "350 ms when you fall (6.7, pass 210)")
 	check_near(c.parry_window, 0.12, 0.0001, "parry window 0.12 s")
 	check_near(c.parry_hitstop, 0.14, 0.0001, "parry hit-stop 140 ms")
 	check_near(c.parry_mp_gain, 6.0, 0.0001, "a parry gives 6 MP")

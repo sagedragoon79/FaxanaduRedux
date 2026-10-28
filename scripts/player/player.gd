@@ -1582,7 +1582,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	_thrust_charge = 0.0
 	_thrust_lunge = false
 	_dash_timer = 0.0
-	Feel.hitstop(0.15)
+	Feel.hitstop(combat.hurt_hitstop)
 	Feel.add_trauma(0.35)
 	Feel.rumble(0.5, 0.6, 0.2)
 	Sfx.play("hurt")
@@ -1714,7 +1714,7 @@ func _die(where: Vector2) -> void:
 	d.setup("debris")
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
-	Feel.hitstop(0.35)
+	Feel.hitstop(combat.death_hitstop)
 	Feel.add_trauma(0.5)
 	Sfx.play("death")
 	died.emit()
