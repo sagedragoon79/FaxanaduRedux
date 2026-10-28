@@ -1586,6 +1586,10 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	Feel.add_trauma(0.35)
 	Feel.rumble(0.5, 0.6, 0.2)
 	Sfx.play("hurt")
+	if amount >= GameHud.MASK_HP:
+		# A blow that costs a whole mask (design bible 5.3, pass 198): a body
+		# thud under the yelp, so the deep zones' heavy hits read by ear.
+		Sfx.play("hurt_heavy", 0.04)
 	visual.flash_hurt()
 	if hp <= 0 and elixirs > 0:
 		_drink_elixir()
