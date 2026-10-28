@@ -22,7 +22,9 @@ const BOSSES := {
 	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
 		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
-	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve"},
+	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve",
+		"blade": "dragon_slayer", "title": "Dragon Slayer",
+		"text": "He swallowed it to keep it from the meteor, and gives it up at rest. With it, the Demon Ring."},
 	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1, "music": "eura",
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
 	"evil_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "evil_one",
@@ -312,6 +314,16 @@ func _on_defeated() -> void:
 		var p := get_tree().get_first_node_in_group("player") as Player
 		GameState.obtain_gear(String(reward.armor), p)
 		if p != null:
+			GameState.capture(p)
+		GameState.banner.emit(reward.title, reward.text)
+	elif reward.has("blade"):
+		# The blade the boss kept goes straight into your hand: King Grieve
+		# swallowed the Dragon Slayer, as in the original (pass 217).
+		var p := get_tree().get_first_node_in_group("player") as Player
+		GameState.data.abilities[reward.blade] = true
+		GameState.obtain_gear(String(reward.blade), p)
+		if p != null:
+			p.abilities[reward.blade] = true
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("stat_item"):

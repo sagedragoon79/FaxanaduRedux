@@ -91,7 +91,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `l` | Spring Eel (the Sunken Spring), in a cell of water: it never leaves the water; it coils, then darts and bites |
 | `+` | Heart seal (Zenis): living flesh across a passage, a wall to every blade but the Dragon Slayer, which tears it open for good |
 | `{` | The Death scroll (spell pickup, bible 4.1): a late secret |
-| `&` | The Dragon Slayer (bible A10): found, it goes straight into your hand |
+| `&` | The Dragon Slayer (bible A10): found, it goes straight into your hand. Unused since pass 217: King Grieve gives it up |
 | `}` | The Rune Dagger (bible 5.2): the Throw button hurls it; it reforms at your hip. In the Trunk's Hornet Gallery |
 | `z` | Hour Glass (ability pickup) |
 | `e` | Shade Knight (Dartmoor: tower shield turns frontal blows; parry his thrust or cut) |

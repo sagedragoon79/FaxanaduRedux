@@ -1804,11 +1804,17 @@ func test_king_grieves_shards_are_a_stair_while_time_stands_still() -> void:
 	check(not is_instance_valid(s) or s.is_queued_for_deletion(), "when time runs again it cracks and falls to pieces")
 
 
-func test_king_grieve_defeat_gives_the_demon_ring() -> void:
+## Pass 217: as in the original, the Dragon Slayer is the sword King Grieve
+## swallowed, so beating him gives it up, straight into your hand.
+func test_king_grieve_defeat_gives_the_demon_ring_and_the_dragon_slayer() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: KingGrieve = setup[2]
 	var points := int(GameState.data.skill_points)
+	var banners: Array = []
+	var on_banner := func(title: String, _text: String) -> void: banners.append(title)
+	GameState.banner.connect(on_banner)
+	check(not w.player.abilities.get("dragon_slayer", false), "no one holds the Dragon Slayer before him")
 	b.hp = 1
 	b.take_hit(5, Vector2.RIGHT)
 	check(b.state == "dying", "the last blow ends it")
@@ -1816,6 +1822,11 @@ func test_king_grieve_defeat_gives_the_demon_ring() -> void:
 	check(gone, "King Grieve is marked beaten")
 	check(GameState.data.rings.has("demon"), "he leaves the Demon Ring")
 	check(int(GameState.data.skill_points) >= points + 1, "and a skill point")
+	GameState.banner.disconnect(on_banner)
+	check(w.player.abilities.get("dragon_slayer", false) and GameState.has_ability("dragon_slayer"), "he gives up the Dragon Slayer")
+	check(GameState.data.equipment.blade == "dragon_slayer" and Array(GameState.data.gear).has("dragon_slayer"), "and it goes straight into your hand")
+	check(w.player.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts as the Dragon Slayer (%d)" % w.player.slash_damage)
+	check(banners.has("Dragon Slayer"), "and the banner names it (%s)" % [banners])
 	await frames(90)
 	w._enter("dartmoor/throne_hall")
 	await frames(10)

@@ -561,6 +561,12 @@ static func sanitize(src: Variant) -> Dictionary:
 		if out.collected.has(old):
 			out.collected[MOVED_PICKUPS[old]] = true
 			out.collected.erase(old)
+	# King Grieve has given up the Dragon Slayer since pass 217; before, it lay
+	# on the Heart Gate's altar, which is now bare. A save past him that never
+	# took it from the altar gets it in hand, so the heart can still be cut.
+	if bool(out.flags.get("boss:king_grieve", false)) and not bool(out.abilities.get("dragon_slayer", false)):
+		out.abilities.dragon_slayer = true
+		out.equipment.blade = "dragon_slayer"
 	# The Battle Helmet left the shield slot for its own (pass 185). It had
 	# guarded and turned shots like the Magic Shield, and with it on every
 	# shield showed as owned, so the hand it held gets the Magic Shield.

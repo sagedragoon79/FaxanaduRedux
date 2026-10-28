@@ -1036,7 +1036,8 @@ func test_the_drift_well_lifts_you_up_its_ledges() -> void:
 
 
 ## Bible 8.9, A10: past the Drift Well the heart's flesh turns every blade but
-## the Dragon Slayer, which lies on an altar a drift pocket lifts you to.
+## the Dragon Slayer. Since pass 217 King Grieve gives it up, and the altar a
+## drift pocket lifts you to is bare.
 func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	GameState.new_game()
 	var w := make_world({}, "zenis/drift_well")
@@ -1063,12 +1064,10 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	p.input.attack_pressed = true
 	await frames(30)
 	check(not seal.is_open(), "a long sword glances off it")
-	# The Dragon Slayer on its altar goes straight into your hand.
-	var sword: ItemPickup = w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup and c.kind == "dragon_slayer")[0]
-	p.teleport(sword.global_position + Vector2(0, 20))
-	await frames(10)
-	check(not is_instance_valid(sword) or sword.is_queued_for_deletion(), "the sword is taken")
-	check(GameState.data.equipment.blade == "dragon_slayer" and p.abilities.get("dragon_slayer", false), "and goes straight into your hand")
+	check(w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup).is_empty(), "the altar is bare: King Grieve had the sword")
+	# The Dragon Slayer, as King Grieve gives it up (test_boss.gd).
+	p.abilities["dragon_slayer"] = true
+	GameState.obtain_gear("dragon_slayer", p)
 	check(p.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts harder than any bought blade (%d)" % p.slash_damage)
 	p.teleport(cell_feet(48, 20))
 	await frames(10)
