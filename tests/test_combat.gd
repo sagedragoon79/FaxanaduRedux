@@ -1119,6 +1119,42 @@ func test_the_guardians_hit_as_hard_as_their_zone() -> void:
 		check(by_zone[zone] >= 15, "%s's guardians strike for at least 0.75 masks (%d)" % [zone, by_zone[zone]])
 
 
+## Pass 204: the rubric's "balanced HP" (15.3) had no sheet. Each guardian's
+## health in slashes of its zone's par blade (5.5): every one 15 to 40, a
+## mini-boss never outlasting its zone's guardians, and the Evil One (avatar
+## and heart) the longest fight of the critical path. Rokusutahn's 600 is
+## spread over a plated body and a soft tail, and the Evil One's veins are a
+## climb, not a health bar, so they stay off the sheet.
+const MINI_BOSSES := ["Foreman", "HagMatriarch", "BarkCaptain", "ClockworkAlpha"]
+const OPTIONAL_BOSSES := ["DrownedWarden"]
+
+func test_the_guardians_last_as_long_as_their_place() -> void:
+	var slashes := {}
+	var zone_of := {}
+	for row: Array in sheet_bosses:
+		var script: Script = row[0]
+		var name := script.get_global_name()
+		if name in ["Rokusutahn", "EvilCore"]:
+			continue
+		var kit: Array = PAR_KIT[row[1]]
+		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
+		var boss: Enemy = script.new()
+		slashes[name] = ceili(float(boss.max_hp) / cut)
+		zone_of[name] = row[1]
+		boss.free()
+		check(slashes[name] >= 15 and slashes[name] <= 40, "%s falls in 15 to 40 par slashes (%d)" % [name, slashes[name]])
+	for mini: String in MINI_BOSSES:
+		var longest := 0
+		for name: String in slashes:
+			if zone_of[name] == zone_of[mini] and not name in MINI_BOSSES:
+				longest = maxi(longest, slashes[name])
+		check(slashes[mini] <= 25 and slashes[mini] <= longest, "%s (a mini-boss, %d) is no longer than %s's guardians (%d)" % [mini, slashes[mini], zone_of[mini], longest])
+	var finale: int = slashes["EvilAvatar"] + slashes["EvilHeart"]
+	for name: String in slashes:
+		if not name in ["EvilAvatar", "EvilHeart"] and not name in OPTIONAL_BOSSES:
+			check(finale >= slashes[name], "the Evil One (%d) lasts longer than %s (%d)" % [finale, name, slashes[name]])
+
+
 ## Design bible 5.3 (pass 198): a blow that costs a whole mask lands with a body
 ## thud under the yelp; a lighter one does not.
 func test_a_blow_that_costs_a_mask_sounds_heavier() -> void:
