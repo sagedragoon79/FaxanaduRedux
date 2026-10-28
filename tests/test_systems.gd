@@ -144,6 +144,10 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	menu.back()
 	menu.cursor = 3
 	menu.confirm()
+	check(menu.title == "Inventory" and menu.rows[0].label == "Nothing yet", "Inventory opens, empty at the start")
+	menu.back()
+	menu.cursor = 4
+	menu.confirm()
 	check(menu.title == "Options" and menu.is_open, "Options opens in place")
 	var before := Settings.shake
 	menu.cursor = 0
@@ -151,23 +155,78 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	check(Settings.shake != before, "Left/Right changes the selected option")
 	menu.back()
 	check(menu.title == "Paused", "backing out returns to the pause menu")
-	menu.cursor = 4
+	menu.cursor = 5
 	menu.confirm()
 	check(menu.title == "Controls" and menu.rows.size() == Settings.REBINDABLE.size() + 2, "Controls lists the rebindable actions")
 	menu.cursor = 0
 	menu.confirm()
 	check(menu.capture.is_valid() and menu.rows[0].right == "...", "choosing one waits for a key")
 	menu.back()
-	menu.cursor = 5
+	menu.cursor = 6
 	menu.confirm()
 	check(menu.title == "Journey" and menu.is_open, "Journey opens in place")
 	menu.back()
 	check(menu.title == "Paused", "and backs out to the pause menu")
-	menu.cursor = 6
+	menu.cursor = 7
 	menu.confirm()
 	check(quit[0] and not menu.is_open and not arena.get_tree().paused, "Quit closes the menu and quits")
 	_restore()
 
+
+
+## The Inventory page (pass 205, bible 10.3): every found ability, spell,
+## relic, ring, key and shard is listed with what it does, under its group,
+## in a fixed order; nothing you lack is shown.
+func test_the_inventory_page_lists_what_you_have_found() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(2)
+	var labels := func() -> Array: return Menus.inventory_rows(p).map(func(r: Dictionary) -> String: return r.label)
+	check(labels.call() == ["Nothing yet"], "a new game has nothing to list (%s)" % [labels.call()])
+	p.abilities.glove = true
+	p.abilities.mattock = true
+	p.abilities.deluge = true
+	p.abilities.fire = true
+	p.equipped_spell = "fire"
+	p.abilities.pendant = true
+	GameState.data.rings = ["dworf", "elf"]
+	GameState.add_key("jack", 2)
+	GameState.add_key("lantern")
+	GameState.data.potion_shards = 4
+	GameState.data.meteor_shards = 1
+	var rows := Menus.inventory_rows(p)
+	check(labels.call() == ["Abilities", "Climbing Glove", "Mattock", "Spells", "Deluge", "Fire", "Relics", "Pendant",
+		"Rings, 2 of 4", "Elf Ring", "Dworf Ring", "Keys", "Jack Key", "Lantern Key", "Shards", "Potion Shards", "Meteor Shards"],
+		"each find under its group, in order (%s)" % [labels.call()])
+	var by := {}
+	for r: Dictionary in rows:
+		by[r.label] = r
+	check(by["Fire"].right == "Ready" and by["Deluge"].right == "", "the readied spell is marked")
+	check(String(by["Fire"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Fire"].detail)
+	check(by["Jack Key"].right == "x2" and by["Lantern Key"].right == "x1", "keys show how many you carry")
+	check(by["Potion Shards"].right == "1 of 3", "shards count toward their next whole")
+	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")
+	check(blank.is_empty(), "every find says what it does (%s)" % [blank])
+	for id: String in ItemPickup.ABILITIES + ["mattock", "fire", "tilte"]:
+		var listed := Menus.INVENTORY_GROUPS.any(func(g: Array) -> bool: return Array(g[1]).has(id))
+		check(listed and Menus.ability_info(id)[1] != "", "%s has a place and a line on the page" % id)
+	# With everything found, every line still fits the menu's three-line box.
+	for g: Array in Menus.INVENTORY_GROUPS:
+		for id: String in g[1]:
+			p.abilities[id] = true
+	GameState.data.rings = Array(ZenisGate.RINGS)
+	for k: String in Menus.KEY_ORDER:
+		GameState.add_key(k)
+	GameState.data.mantra_shards = 2
+	var width := ListMenu.PANEL.size.x - 28
+	var long := []
+	for row: Dictionary in Menus.inventory_rows(p):
+		var n := PixelFont.wrap_lines(String(row.get("detail", "")), width, 9).size()
+		if n > 3:
+			long.append("%s: %d lines" % [row.label, n])
+	check(long.is_empty(), "every line fits in three lines: %s" % [long])
+	check(Menus.inventory_rows(p).size() == 7 + 5 + 2 + 4 + 7 + 3 + 6, "and all of it is listed")
+	_restore()
 
 ## The pixel font (bible 12): every printable ASCII character has a glyph, and
 ## text only ever scales by whole numbers, so it stays on the pixel grid.
