@@ -332,6 +332,58 @@ func _try_the_wind_niche(spring: bool, k1: int, k2: int) -> bool:
 	return inside
 
 
+## Pass 227: the Sky Steps are the Stride's gate on the critical path (STRIDE_ROOMS
+## in test_reachability.gd), but the last leap, from the top island to the exit
+## ledge, was crossed by a plain running jump: the checker's envelopes fall short
+## of real ones, so the gate had never held. An elven veil now stands before the
+## ledge. From the top island, with the Wing Boots, no jump and second jump gets
+## onto it; with the Stride, a jump and a dash do.
+func test_the_sky_steps_exit_needs_the_stride() -> void:
+	var tries := 0
+	var reached := 0
+	for jx: float in [26.0, 27.0, 27.8]:
+		for k1: int in range(4, 40, 4):
+			tries += 1
+			if await _try_the_sky_steps_ledge(false, jx, k1, -1):
+				reached += 1
+	check(tries >= 25 and reached == 0, "with the boots and no Stride, no jump reaches the exit ledge (%d of %d)" % [reached, tries])
+	check(await _try_the_sky_steps_ledge(true, 27.8, -1, 20), "with the Stride, a jump and a dash through the veil do")
+
+
+## From the Sky Steps' top island: run east, jump at tile x `jx`, jump again
+## `k1` frames later and dash `k2` frames later (none if negative). True if you
+## come to stand on the exit ledge.
+func _try_the_sky_steps_ledge(stride: bool, jx: float, k1: int, k2: int) -> bool:
+	var w := make_world({}, "daybreak/sky_steps", cell_feet(24, 12))
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var p := w.player
+	p.abilities["boots"] = true
+	p.abilities["stride"] = stride
+	await frames(3)
+	p.input.move_x = 1
+	var jumped := -1
+	var got := false
+	for i in 120:
+		p.input.jump_pressed = false
+		p.input.dash_pressed = false
+		if jumped < 0 and p.is_on_floor() and p.global_position.x >= jx * Room.TILE:
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+			jumped = i
+		elif jumped >= 0 and i == jumped + k1:
+			p.input.jump_pressed = true
+		elif jumped >= 0 and i == jumped + k2:
+			p.input.dash_pressed = true
+		await frames(1)
+		if p.is_on_floor() and p.global_position.y <= 10 * Room.TILE + 1 and p.global_position.x >= 34 * Room.TILE:
+			got = true
+	w.queue_free()
+	await frames(1)
+	return got
+
+
 func _drop_onto_spikes(abilities := {}) -> Player:
 	var room := make_room(SPIKE_FLOOR)
 	var p := make_player(room, Vector2i(9, 3), abilities)
