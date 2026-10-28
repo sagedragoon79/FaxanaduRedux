@@ -24,8 +24,8 @@ const DAMPING := 0.86
 ## whipping it.
 const MAX_SWING := 2.0
 const HOOD_TIME := 0.35
-const GREEN := Color("2f5a3a")
-const TRIM := Color("a8862e")
+const GREEN := Color("3f6a3f")
+const TRIM := Color("cba040")
 const OUTLINE := Color("120f19")
 
 ## The hood, relative to the frame's head point (crown of the skull), facing

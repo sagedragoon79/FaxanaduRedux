@@ -1297,7 +1297,7 @@ ranger clip by clip. The hero is drawn in layers so gear does not multiply anima
   bulkier (plate, Battle Suit: about 1 px) shows it. Clips are 512 px cells at 14 fps; walk and run play every frame
   of one cycle, sped up until the planted foot keeps pace with the ground (run about 30 fps, walk up to 40).
 - **Cloak** (`scripts/player/cloak.gd`, code-drawn, no credits): Sean's Elven cloak from his side views
-  (`/mnt/project-files/armor/cloak-hood-up.jpg`, `cloak-hood-down.jpg`): ankle length, flaring behind, gold trim
+  (`/mnt/project-files/armor/cloak-hood-up.jpg`, `cloak-hood-down.jpg`; its green #3f6a3f and gold #cba040 from his pixel cloak, `cloak-pixel-right.png`, which as a shrunk sprite hid the face at game scale): ankle length, flaring behind, gold trim
   down the front edge and the hem, a brooch at the shoulder. The cape is two verlet chains hung from the frame's
   `neck` and `back` points, behind the body; the hood is drawn over the head from `head`. **Hood down in a town, up
   everywhere else** (Sean, 2026-10-27; a town is a room where people stand and no foe or boss spawns,
