@@ -979,21 +979,22 @@ func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 
 
 ## The damage balance sheet (design bible 5.5, pass 194): the kit the critical
-## path has put in your hands by each zone, as [blade, tempers, armor].
+## path has put in your hands by each zone, as [blade, tempers, armor, shield].
+## The shield joined in pass 226: since pass 225 it wards a foe's sorcery.
 const PAR_KIT := {
-	"trunk": ["long_sword", 0, "leather_armor"],
-	"tower": ["long_sword", 0, "leather_armor"],
-	"mist": ["long_sword", 1, "studded_mail"],
-	"branches": ["long_sword", 1, "studded_mail"],
-	"daybreak": ["long_sword", 2, "studded_mail"],
-	"dartmoor": ["long_sword", 2, "full_plate"],
-	"sunken": ["dragon_slayer", 0, "full_plate"],
-	"zenis": ["dragon_slayer", 0, "full_plate"],
+	"trunk": ["long_sword", 0, "leather_armor", "small_shield"],
+	"tower": ["long_sword", 0, "leather_armor", "small_shield"],
+	"mist": ["long_sword", 1, "studded_mail", "large_shield"],
+	"branches": ["long_sword", 1, "studded_mail", "large_shield"],
+	"daybreak": ["long_sword", 2, "studded_mail", "large_shield"],
+	"dartmoor": ["long_sword", 2, "full_plate", "magic_shield"],
+	"sunken": ["dragon_slayer", 0, "full_plate", "magic_shield"],
+	"zenis": ["dragon_slayer", 0, "full_plate", "magic_shield"],
 }
 ## Pass 218: King Grieve gives up the Dragon Slayer (pass 217), so everything
 ## past his throne is fought with it: the Meteor Rise, the Zenis Gate and its
 ## mirror, and the Sunken Spring below the Rise.
-const PAST_GRIEVE_KIT := ["dragon_slayer", 0, "full_plate"]
+const PAST_GRIEVE_KIT := ["dragon_slayer", 0, "full_plate", "magic_shield"]
 const PAST_GRIEVE_ROOMS := ["dartmoor/meteor_rise", "dartmoor/zenis_gate"]
 const PAST_GRIEVE_BOSSES := ["ShadowEura"]
 ## Each room legend's foe, and the shot it fires (null for none).
@@ -1018,6 +1019,22 @@ func _blows(script: Script) -> Array[int]:
 		if ("DAMAGE" in k or "CONTACT" in k) and not "REFLECT" in k and not "RETURN" in k and consts[k] is int:
 			out.append(int(consts[k]))
 	return out
+
+
+## A blow of `b` as it lands through a zone's par kit, the way
+## Player.receive_attack takes it: the zone's threat, the shield's ward if the
+## blow is sorcery (pass 225), then the armor.
+func _through_par(b: int, zone: String, script: Script) -> int:
+	var kit: Array = PAR_KIT[zone]
+	var d := roundi(b * float(CombatTuning.ZONE_THREAT[zone]))
+	if _is_sorcery(script):
+		d = maxi(roundi(d * (1.0 - float(GameData.item(kit[3]).get("ward", 0.0)))), 1)
+	return maxi(1, roundi(d * (1.0 - float(GameData.item(kit[2]).defense))))
+
+
+## A script whose nodes join Player.MAGIC: a hex, a bolt, a shard, a beam.
+func _is_sorcery(script: Script) -> bool:
+	return script != null and script.source_code.contains("add_to_group(Player.MAGIC)")
 
 
 ## Every foe placed in a zone, by legend character.
@@ -1061,13 +1078,14 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 			var blows := _blows(foe.get_script())
 			if foe.contact_damage > 0:
 				blows.append(foe.contact_damage)
-			if pair[1] != null:
-				blows.append_array(_blows(pair[1]))
 			var name := (foe.get_script() as Script).get_global_name()
-			foe.free()
 			var hardest := 0
 			for b in blows:
-				hardest = maxi(hardest, maxi(1, roundi(roundi(b * threat) * (1.0 - armor))))
+				hardest = maxi(hardest, _through_par(b, zone, foe.get_script()))
+			foe.free()
+			if pair[1] != null:
+				for b in _blows(pair[1]):
+					hardest = maxi(hardest, _through_par(b, zone, pair[1]))
 			var slashes := ceili(float(hp) / cut)
 			check(slashes >= 2 and slashes <= 7, "%s in %s falls in 2 to 7 slashes of the par blade (%d)" % [name, zone, slashes])
 			check(hardest <= 28, "%s in %s hits for at most 1.4 masks through par armor (%d)" % [name, zone, hardest])
@@ -1160,12 +1178,12 @@ func test_the_guardians_hit_as_hard_as_their_zone() -> void:
 		var kit: Array = PAR_KIT[zone]
 		var armor := float(GameData.item(kit[2]).defense)
 		var threat := float(CombatTuning.ZONE_THREAT[zone])
-		var blows := _blows(script)
-		for shot: Script in row[2]:
-			blows.append_array(_blows(shot))
 		var hardest := 0
-		for b in blows:
-			hardest = maxi(hardest, maxi(1, roundi(roundi(b * threat) * (1.0 - armor))))
+		for b in _blows(script):
+			hardest = maxi(hardest, _through_par(b, zone, script))
+		for shot: Script in row[2]:
+			for b in _blows(shot):
+				hardest = maxi(hardest, _through_par(b, zone, shot))
 		var name := script.get_global_name()
 		check(hardest >= 10 and hardest <= 30, "%s's hardest blow costs 0.5 to 1.5 masks through %s's par armor (%d)" % [name, zone, hardest])
 		by_zone[zone] = maxi(int(by_zone.get(zone, 0)), hardest)
