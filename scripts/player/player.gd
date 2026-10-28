@@ -11,6 +11,9 @@ signal footstep(surface: String)
 signal died
 signal respawned
 
+## The group of a foe's sorcery, which a shield wards (pass 225): a hex, a shadow
+## bolt, a shard called up out of the floor, the core's beam.
+const MAGIC := "magic"
 const BODY_SIZE := Vector2(12, 40)
 
 # Collision layers (see docs/architecture.md).
@@ -105,6 +108,9 @@ var guard_reduction := 0.5
 ## The Magic Shield: a parry also catches small shots that can't otherwise be
 ## parried (group "small_projectile") and flings them back (ReflectedShot).
 var reflects := false
+## What a worn shield (and the Battle Helmet) turns of a foe's sorcery, guarding
+## or not (pass 225): the original's shields resisted enemy magic, 50 to 90%.
+var magic_ward := 0.0
 ## Elixirs carried: dying with one revives you where you fell.
 var elixirs := 0
 ## Ointments carried: each makes you immune to harm for OINTMENT_TIME.
@@ -1533,6 +1539,8 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		return "parried"
 	if invulnerable:
 		return "ignored"
+	if magic_ward > 0.0 and source.is_in_group(MAGIC):
+		damage = maxi(roundi(damage * (1.0 - magic_ward)), 1)
 	var knock := -src_dir if src_dir != 0 else -facing
 	if is_blocking and from_front and mp >= combat.guard_mp_cost:
 		mp -= combat.guard_mp_cost

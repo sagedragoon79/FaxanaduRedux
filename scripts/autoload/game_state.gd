@@ -14,6 +14,8 @@ signal dialog_requested(speaker: String, pages: Array)
 ## The Evil One is dead: the game shows the ending (EndingScreen).
 signal ending_started
 
+## The most of a foe's sorcery a shield and helmet together turn (pass 225).
+const MAX_WARD := 0.6
 const SAVE_PATH := "user://save_%d.json"
 const VERSION := 1
 ## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
@@ -392,6 +394,9 @@ func refresh_stats(p: Player) -> void:
 	p.has_shield = eq.shield != "" and not bool(blade.get("two_handed", false))
 	p.guard_reduction = float(GameData.item(eq.shield).get("guard", p.combat.guard_reduction))
 	p.reflects = p.has_shield and bool(GameData.item(eq.shield).get("reflect", false))
+	# A shield on the back of a two-hander wards nothing; the helmet always does.
+	var ward := float(GameData.item(eq.shield).get("ward", 0.0)) if p.has_shield else 0.0
+	p.magic_ward = minf(ward + float(helmet.get("ward", 0.0)), MAX_WARD)
 	p.melee_mult = 1.0 + (0.1 if has_skill("keen_edge") else 0.0) + (0.1 if has_skill("keener_edge") else 0.0)
 	p.riposte = has_skill("riposte")
 	p.bloodletting = has_skill("bloodletting")

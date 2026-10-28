@@ -32,6 +32,7 @@ var _shape: CollisionShape2D
 func _ready() -> void:
 	z_index = 2
 	add_to_group("enemy_projectile")
+	add_to_group(Player.MAGIC)
 	_body = StaticBody2D.new()
 	_body.collision_layer = Player.LAYER_WORLD
 	_body.collision_mask = 0

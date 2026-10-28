@@ -251,8 +251,8 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 |------|--------|--------|--------|--------|
 | Blade | Short Sword (start, fast, short; called the Hand Dagger before pass 184) | Long Sword (400 g) | Dwarvish Broad Sword (2,800 g, two-handed, slow, huge arc; built pass 93 as the Giant Blade, renamed pass 186: slash 17, heavy 32, reach 16) | Dragon Slayer (King Grieve's, given up when he falls, as in the original (pass 217); built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
-| Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | (none: the Battle Helmet has its own slot since pass 185) |
-| Helmet | Battle Helmet (secret: +1 mask, 10% less damage) | | | |
+| Shield | Small Shield (150 g; wards 20% of sorcery, pass 225) | Large Shield (900 g; wards 30%) | Magic Shield (3,600 g, reflects small projectiles on parry; wards 40%) | (none: the Battle Helmet has its own slot since pass 185) |
+| Helmet | Battle Helmet (secret: +1 mask, 10% less damage, wards 20% more sorcery) | | | |
 
 **The original's gear, and what changed (pass 193).** The original sold twelve pieces of gear: four weapons, four armors and four shields. All twelve are in the remake. Where one changed, this table says how and why. `test_the_originals_twelve_pieces_of_gear_are_all_here` keeps it true: each original name must be an item, or a row here naming the item that took its place, and each id in `GameState.RENAMED_ITEMS` must have a row.
 
@@ -262,6 +262,8 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 | Giant Blade | Dwarvish Broad Sword (`dwarvish_broad_sword`, from `giant_blade`), two-handed | pass 186 | Sean: a name with a maker, and two hands with no shield, so its weight is a real trade. |
 | Battle Helmet | Battle Helmet, in its own Helmet slot | pass 185 | Sean: worn as a shield, it cost you the Magic Shield's parry. Now it adds a mask and 10% less damage on top of any shield. |
 | (none) | Rune Dagger, a thrown tool beside the blade | pass 184 | Sean's idea: a ranged answer before the spells. It is not a weapon tier and takes no temper. |
+
+**Shields ward sorcery (pass 225).** The original's manual gives a shield one job: it resists enemy magic (Small 50%, Large 75%, Magic 90%, and the Battle Helmet "intercepts almost all"). The remake's shields guarded and parried but did nothing against a hex you didn't block. Now a worn shield also wards a foe's sorcery, guarding or not: Small 20%, Large 30%, Magic 40%, and the Battle Helmet adds 20%, to at most 60% (`ward` in `data/items.json`, `Player.magic_ward`, `GameState.MAX_WARD`). The shares are kept under the original's so that guarding, a parry and the damage sheet (5.5) still matter. Sorcery is the group `Player.MAGIC`: the Marsh Hags' and the Matriarch's hex (`MireGrasp`), Shadow Eura's bolts, King Grieve's crystal shards and the meteor core's beam. Blows, bites, breath, storm and thrown things are not sorcery. A shield on the back of a two-hander wards nothing; the helmet still does. Test: `test_a_shield_wards_a_foes_sorcery`.
 
 The other nine (Long Sword, Dragon Slayer, Leather Armor, Studded Mail, Full Plate, Battle Suit, Small Shield, Large Shield, Magic Shield) keep their names and their place. The original replaced gear as you bought it; the remake keeps it (pass 186, above).
 
@@ -1464,7 +1466,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 | Systems | 10 | Save/load round-trip, shop, skill tree, map, fast travel, settings all tested |
 | Audio | 5 | Every action has SFX, every zone has music and ambience, mix levels in range |
 | Stability and performance | 5 | 60 fps budget, no crashes in a 2-hour soak bot run, load times |
-| Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One, spells and relics, and the Dragon Slayer as King Grieve's swallowed sword (pass 217). Held as a whole by `test_the_faithfulness_checklist_is_all_here` since pass 201, and the towns' tool and key shops by `test_every_town_keeps_the_originals_shops` since pass 209 |
+| Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One, spells and relics, the Dragon Slayer as King Grieve's swallowed sword (pass 217), and shields that ward a foe's sorcery (pass 225). Held as a whole by `test_the_faithfulness_checklist_is_all_here` since pass 201, and the towns' tool and key shops by `test_every_town_keeps_the_originals_shops` since pass 209 |
 
 **Stability measures (pass 99):** the journey soak (`test_soak.gd`) walks the world twice, door to door with mashing play between. It rests and Continues into a fresh world every 20 rooms and opens the pause and skills screens on the way. The second lap must leave no live objects, orphan nodes or tree nodes behind. No frame of play (room loads aside) may pass 50 ms, save one lone frame a lap under 100 ms (pass 182, below). Anything a room will need mid-play is loaded while the room loads: a boss arena loads its boss's sprite sheet and music (`BossArena.warm`), because a fight starts mid-play. Every sound effect loads with the game (`Sfx.load_all`, about 20 ms once, 2.2 MB), so no first slash or phase break waits on the disk (pass 103). Every boss fight is timed for 15 s of mashing with a phase knocked off every 5 s (`test_every_boss_fight_holds_the_frame_budget`): the average frame must stay under 8 ms and the 99th percentile under 16.6 ms, and nothing may load from disk once the fight has begun.
 
