@@ -1013,11 +1013,49 @@ func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 	room.add_child(seal)
 	p.receive_attack(10, seal, false)
 	check(p.max_hp - p.hp == 10, "a fire seal burns for 10 anywhere (took %d)" % (p.max_hp - p.hp))
-	# A boss's arena is tuned on its own.
+	# A boss's arena is as deep as its zone (pass 196).
 	room.header["boss"] = "test"
-	check(room.threat() == 1.0, "an arena's threat is 1")
+	check(room.threat() == 2.0, "a Dartmoor arena's threat is its zone's")
 	room.header.erase("boss")
 	room.zone = "trunk"
 	check(room.threat() == 1.0, "the Trunk hits as written")
 	room.zone = "eolis"
 	check(room.threat() == 1.0, "a zone off the sheet hits as written")
+
+
+## The guardians' sheet (design bible 5.5, pass 196): each boss, its zone, and
+## the shots it fires.
+var sheet_bosses := [
+	[Rokusutahn, "trunk", [SapClump]], [Zoradohna, "tower", [Rubble]],
+	[Foreman, "tower", [Rubble]], [Ripasheiku, "mist", []],
+	[HagMatriarch, "mist", [MireGrasp]], [Zorugeriru, "mist", [MistBreath]],
+	[Pakukame, "branches", [SeedShot]], [BarkCaptain, "branches", []],
+	[Borabohra, "daybreak", [StormStrike, HarpyFeather]],
+	[KingGrieve, "dartmoor", [CrystalShard, Shockwave, CrystalSpike]],
+	[ClockworkAlpha, "dartmoor", []], [ShadowEura, "dartmoor", [ShadowBolt]],
+	[DrownedWarden, "sunken", [TidalWave]], [EvilAvatar, "zenis", [CrystalSpike]],
+	[EvilCore, "zenis", [CoreBeam]], [EvilHeart, "zenis", [CoreBeam, CrystalSpike, MeteorSeed]],
+]
+
+
+func test_the_guardians_hit_as_hard_as_their_zone() -> void:
+	var by_zone := {}
+	for row: Array in sheet_bosses:
+		var script: Script = row[0]
+		var zone: String = row[1]
+		var kit: Array = PAR_KIT[zone]
+		var armor := float(GameData.item(kit[2]).defense)
+		var threat := float(CombatTuning.ZONE_THREAT[zone])
+		var blows := _blows(script)
+		for shot: Script in row[2]:
+			blows.append_array(_blows(shot))
+		var hardest := 0
+		for b in blows:
+			hardest = maxi(hardest, maxi(1, roundi(roundi(b * threat) * (1.0 - armor))))
+		var name := script.get_global_name()
+		check(hardest >= 10 and hardest <= 30, "%s's hardest blow costs 0.5 to 1.5 masks through %s's par armor (%d)" % [name, zone, hardest])
+		by_zone[zone] = maxi(int(by_zone.get(zone, 0)), hardest)
+	# Each zone's guardians hit at least as hard as its foes' sheet floor (15),
+	# so no boss is softer than the corridor that leads to it.
+	for zone: String in by_zone:
+		check(by_zone[zone] >= 15, "%s's guardians strike for at least 0.75 masks (%d)" % [zone, by_zone[zone]])

@@ -35,10 +35,10 @@ extends Resource
 ## At or below this much health (one mask) the heart beats and the screen's edge pulses red.
 @export var low_health := 20
 @export var heartbeat_interval := 0.85
-## Threat (design bible 5.5, pass 194): every blow a foe or a foe's shot lands
-## is multiplied by its zone's threat, so the deep zones hit as hard against the
-## armor you will have by then as the Trunk does against Leather. Boss arenas
-## and zones not listed (Eolis, the gym, the trials) stay at 1.
+## Threat (design bible 5.5, pass 194): every blow a foe, a boss (pass 196) or
+## their shots land is multiplied by its zone's threat, so the deep zones hit as
+## hard against the armor you will have by then as the Trunk does against
+## Leather. Zones not listed (Eolis, the gym, the trials) stay at 1.
 const ZONE_THREAT := {
 	"trunk": 1.0, "tower": 1.0, "mist": 1.4, "branches": 1.5,
 	"daybreak": 1.6, "dartmoor": 2.0, "sunken": 2.0, "zenis": 2.0,
