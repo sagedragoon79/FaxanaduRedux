@@ -71,6 +71,8 @@ extends Resource
 @export_group("Pogo and attacks")
 @export var pogo_bounce := 380.0
 @export var pogo_bounce_held := 420.0
+## The hit-stop a pogo lands with (bible 6.6), so each bounce reads as a strike.
+@export var pogo_hitstop := 0.045
 ## A bounce-pod's launch (Branches): about 9 tiles of rise.
 @export var pod_bounce := 600.0
 @export var slash_active := 0.10
