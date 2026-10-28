@@ -836,6 +836,45 @@ func test_the_dagger_the_broad_sword_and_the_equipment_page_have_voices() -> voi
 	check(Sfx.recent == ["sheathe"] and GameState.data.equipment.blade == "short_sword", "choosing a blade plays it (%s)" % [Sfx.recent])
 
 
+## Pass 192: Throw is buffered like Attack. A press in the last moments of a
+## swing, a dash or the dagger's return goes the first frame it can; one
+## pressed long before is dropped.
+func test_a_throw_pressed_a_moment_early_still_goes() -> void:
+	var room := _arena_with("E", Vector2i(30, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.abilities["rune_dagger"] = true
+	check(is_equal_approx(p.combat.throw_buffer, 0.15) and is_equal_approx(p.combat.throw_buffer, p.combat.attack_buffer), "Throw is buffered 0.15 s, as Attack is")
+	p.input.attack_pressed = true
+	await frames(1)
+	check(p.is_attacking, "mid-swing")
+	p.input.throw_pressed = true
+	await frames(1)
+	check(p.rune_dagger == null, "no throw while the swing is out")
+	var waited := 0
+	while p.is_attacking and waited < 30:
+		await frames(1)
+		waited += 1
+	await frames(1)
+	check(waited <= 9 and p.rune_dagger != null, "the press goes as the swing ends (%d frames later)" % waited)
+	# Pressed while it reforms, a moment before it is whole.
+	while is_instance_valid(p.rune_dagger):
+		await frames(1)
+	await frames(int((RuneDagger.RETURN - 0.1) * 60.0))
+	p.input.throw_pressed = true
+	await frames(1)
+	check(not is_instance_valid(p.rune_dagger), "not while it reforms")
+	await frames(8)
+	check(is_instance_valid(p.rune_dagger), "but the press goes the frame it is whole")
+	# Pressed too early, it is dropped.
+	while is_instance_valid(p.rune_dagger):
+		await frames(1)
+	p.input.throw_pressed = true
+	await frames(1)
+	await frames(int(RuneDagger.RETURN * 60.0) + 4)
+	check(not is_instance_valid(p.rune_dagger), "a press long before it is whole is dropped")
+
+
 func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})

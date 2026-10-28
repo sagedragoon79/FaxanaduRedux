@@ -12,6 +12,8 @@ extends Resource
 @export var ground_combo_length := 3
 @export var air_combo_length := 2
 @export var attack_buffer := 0.15
+## The Rune Dagger's Throw is buffered like Attack (pass 192).
+@export var throw_buffer := 0.15
 @export var heavy_hitstop := 0.09
 @export var hit_hitstop := 0.05
 ## An up-slash that connects in midair holds you up: a fall is turned into

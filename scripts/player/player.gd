@@ -271,6 +271,7 @@ var _step_timer := 0.0
 var _combo_timer := 0.0
 var _attack_buffer_timer := 0.0
 var _dash_buffer_timer := 0.0
+var _throw_buffer_timer := 0.0
 var _swing_damage := 0
 ## Seconds Attack has been held toward a Thrust, and the glint's clock.
 var _thrust_charge := 0.0
@@ -350,6 +351,8 @@ func _physics_process(delta: float) -> void:
 		_attack_buffer_timer = combat.attack_buffer
 	if input.dash_pressed and abilities.stride:
 		_dash_buffer_timer = tuning.dash_buffer_time
+	if input.throw_pressed:
+		_throw_buffer_timer = combat.throw_buffer
 
 	if _try_interact(on_floor):
 		input.end_frame()
@@ -479,6 +482,7 @@ func _tick_timers(delta: float) -> void:
 	_combo_timer -= delta
 	_attack_buffer_timer -= delta
 	_dash_buffer_timer -= delta
+	_throw_buffer_timer -= delta
 	_parry_timer -= delta
 	_cast_cooldown -= delta
 	_ladder_regrab -= delta
@@ -1367,10 +1371,14 @@ func _try_throw(delta: float) -> void:
 		if _dagger_back <= 0.0:
 			Sfx.play("dagger_return", 0.1, -4.0)
 			_spawn_dust(Vector2(facing * -4, -16), "parry")
-	if not input.throw_pressed or not abilities.get("rune_dagger", false):
+	# Buffered like a swing (pass 192): a press while you can't throw yet (the
+	# end of a swing or a dash, the dagger still reforming) goes the first frame
+	# you can.
+	if _throw_buffer_timer <= 0.0 or not abilities.get("rune_dagger", false):
 		return
 	if is_dashing or is_drinking or is_blocking or is_attacking or is_hurt or not dagger_ready():
 		return
+	_throw_buffer_timer = 0.0
 	throw_dagger()
 
 
