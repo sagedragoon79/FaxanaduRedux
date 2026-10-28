@@ -395,7 +395,8 @@ The rubric (15.3) asks for a damage balance sheet within targets. Until pass 194
 | Mist | 1.4 | Long Sword +1 temper, Studded Mail | 13 | 18 (Drowned Dwarf slam, Lantern Ghost lunge) | 2 to 4 |
 | Branches | 1.5 | Long Sword +1, Studded Mail | 13 | 21 (a Hornet's touch) | 2 to 5 |
 | Daybreak | 1.6 | Long Sword +2, Studded Mail | 14 | 22 (a Hornet's touch) | 2 to 4 |
-| Dartmoor, Sunken Spring | 2.0 | Long Sword +2, Full Plate | 14 | 20 (Shade Knight thrust) | 3 to 4 |
+| Dartmoor | 2.0 | Long Sword +2, Full Plate (the Dragon Slayer past King Grieve, since pass 218) | 14 (18) | 20 (Shade Knight thrust) | 3 to 4 |
+| Sunken Spring | 2.0 | Dragon Slayer, Full Plate (it lies past King Grieve; pass 218) | 18 | 20 | 2 to 4 |
 | Zenis | 2.0 | Dragon Slayer, Full Plate (foes corrupted, 1.5x health) | 18 | 26 (Iron Dwarf slam) | 2 to 6 |
 
 **Targets**, held by `test_the_damage_balance_sheet_stays_within_its_targets`, which reads every room's foes, their `*DAMAGE` and `*CONTACT` constants and their shots:
@@ -428,11 +429,13 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 | Mist | Zorugeriru 24, Ripasheiku 20, the Marsh Hag Matriarch 18 |
 | Branches | Pakukame 20, the Bark Knight Captain 19 |
 | Daybreak | Borabohra 23 |
-| Dartmoor | King Grieve 23, the Clockwork Alpha 19, Shadow Eura 18 |
-| Sunken Spring | the Drowned Warden 38 (optional, the hardest fight) |
+| Dartmoor | King Grieve 23, the Clockwork Alpha 19, Shadow Eura 18 (Dragon Slayer slashes; 320 HP since pass 218, was 240) |
+| Sunken Spring | the Drowned Warden 38 (Dragon Slayer slashes; 680 HP since pass 218, was 520; optional, the hardest fight) |
 | Zenis | the Evil One: its avatar 20, then its heart 17 (37 in all) |
 
 `test_the_guardians_last_as_long_as_their_place` holds every guardian to 15 to 40 par slashes. A mini-boss (the Foreman, the Matriarch, the Bark Captain, the Clockwork Alpha) is no longer than 25 and never outlasts its zone's own guardian. The Evil One, avatar and heart together, is the longest fight on the critical path; only the optional Warden runs longer. No guardian outlasts the longest guardian of every later zone by more than two slashes (pass 212), so the fights grow, or at least hold, as the game goes on. Zoradohna had 360 HP, 33 par slashes: the second guardian ran longer than any required fight before the finale, and since her hull lets only a quarter of a side blow through, her real fight ran longer still. She has 260 now (24), level with Zorugeriru, the longest later guardian, and still above the Tower's Foreman. Her phases are fractions of her health, so they come at the same points in the fight. Rokusutahn's 600 is spread over a plated body (a quarter damage) and a soft tail, and the Evil One's veins are a climb, not a health bar, so neither is on the sheet. Heavy finishers, spells, the Pendant and skills only shorten a fight. Slashes are a proxy for the rubric's 2.5 to 5 minutes: most of a fight is spent reading tells and waiting for openings, not swinging.
+
+**Past King Grieve (pass 218).** Since pass 217 King Grieve gives up the Dragon Slayer, so everything past his throne is fought with it (slash 18, against the Long Sword +2's 14): the Meteor Rise, the Zenis Gate and its mirror, and the Sunken Spring below the Rise. The sheet still assumed the Long Sword there. Shadow Eura fell in 14 Dragon Slayer slashes, under the sheet's floor of 15, and the optional Warden in 29, no longer the hardest fight. Each gets back its slash count: Shadow Eura 240 to 320 HP (18) and the Drowned Warden 520 to 680 (38). Their phases are fractions of their health, so they come at the same points. The sheet's par for the Sunken Spring is the Dragon Slayer, and Shadow Eura is measured against it (`PAST_GRIEVE_KIT`, `PAST_GRIEVE_BOSSES` in `test_combat.gd`). The Rise's foes still take 2 to 7 of its slashes. `test_the_sheet_past_king_grieve_holds_the_dragon_slayer` holds the kit to the game: Grieve's reward is that blade, and the Rise, the Zenis Gate and the Sunken Spring lie past his throne.
 
 ---
 
@@ -771,7 +774,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
   or parry it: a parried echo leaves it reeling and out of the mirror for 1.2 s. If you hold still for 2.2 s it sinks
   into the floor and rises right behind you, blade raised for 0.45 s, then cuts. Until phases 2 and 3 are built it has
   150 HP, and beating it gives a skill point. The gate does not open yet, because Zenis beyond it is not built.
-- **As built (phase 2, pass 75):** HP is now 240, and below half the glass bursts. The shadow is untouchable for 1 s,
+- **As built (phase 2, pass 75):** HP is now 240 (320 since pass 218, 5.5), and below half the glass bursts. The shadow is untouchable for 1 s,
   then steps out with real physics and fights with the skill tree branch you have the most nodes in (Blade on a tie or
   an empty tree):
   - **Blade:** two cuts and a lunging heavy blow (tells 0.4/0.4/0.5 s).

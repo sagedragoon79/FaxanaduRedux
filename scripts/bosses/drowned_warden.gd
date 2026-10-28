@@ -29,7 +29,7 @@ signal defeated
 
 const DISPLAY_NAME := "The Drowned Warden"
 const EPITHET := "Keeper of the Source"
-const MAX_HP := 520
+const MAX_HP := 680
 const PHASES := [0.66, 0.33]
 const WADE_SPEED := 46.0
 const WADE_TIME := [1.1, 0.9, 0.7]
