@@ -1798,6 +1798,11 @@ TRACKS = {
 def main():
     names = sys.argv[1:] or list(TRACKS)
     for name in names:
+        # A supplied .mp3 or .wav plays in place of the placeholder (Music.EXTENSIONS).
+        supplied = [OUT / f"{name}.{ext}" for ext in ("mp3", "wav") if (OUT / f"{name}.{ext}").exists()]
+        if supplied:
+            print("kept", supplied[0].name, "(supplied)")
+            continue
         write_ogg(name, TRACKS[name]())
         print("wrote", name)
 

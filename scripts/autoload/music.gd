@@ -9,7 +9,10 @@ extends Node
 ## title screen. Ambience is "amb_<zone>" if it exists.
 
 const DIR := "res://assets/music/"
-const EXTENSIONS := ["ogg", "mp3", "wav"]
+## The order a track's file is looked for in. The generated placeholders are
+## .ogg, so a supplied .mp3 or .wav of the same name comes first (pass 214: with
+## .ogg first, the placeholder had kept playing over a supplied file).
+const EXTENSIONS := ["mp3", "wav", "ogg"]
 const FADE := 1.2
 const MUSIC_DB := -8.3
 const AMBIENCE_DB := -18.0
@@ -162,17 +165,23 @@ static func restored(track: String) -> String:
 
 
 ## The loaded, looping stream for a track name, or null if there is no file.
+## The file track `name` plays from ("" for none). `exists` stands in for
+## ResourceLoader.exists in tests.
+static func path_for(name: String, exists := Callable()) -> String:
+	for ext: String in EXTENSIONS:
+		var path := DIR + name + "." + ext
+		if exists.call(path) if exists.is_valid() else ResourceLoader.exists(path):
+			return path
+	return ""
+
+
 func stream_for(name: String) -> AudioStream:
 	if name == "":
 		return null
 	if _streams.has(name):
 		return _streams[name]
-	var stream: AudioStream = null
-	for ext: String in EXTENSIONS:
-		var path := DIR + name + "." + ext
-		if ResourceLoader.exists(path):
-			stream = load(path)
-			break
+	var path := path_for(name)
+	var stream: AudioStream = load(path) if path != "" else null
 	if stream is AudioStreamOggVorbis:
 		(stream as AudioStreamOggVorbis).loop = true
 	elif stream is AudioStreamMP3:

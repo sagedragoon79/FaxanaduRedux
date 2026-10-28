@@ -291,6 +291,20 @@ func test_after_the_end_eolis_feasts_and_the_meteor_goes_still() -> void:
 ## Bible 13.3 (pass 150): each spring's zone plays a restored variant of its
 ## music once the spring flows, and the storm's bed over Daybreak becomes a
 ## drizzle. Restoring a spring turns the music then and there.
+## Pass 214: a track Sean supplies as .mp3 or .wav plays in place of the
+## generated .ogg placeholder of the same name, and a supplied .ogg (which
+## replaces the placeholder's file) still plays.
+func test_a_supplied_track_replaces_its_placeholder() -> void:
+	var dir := Music.DIR
+	var files := {dir + "mist.ogg": true, dir + "mist.mp3": true, dir + "tower.ogg": true, dir + "eolis.wav": true, dir + "eolis.ogg": true}
+	var has := func(path: String) -> bool: return files.has(path)
+	check(Music.path_for("mist", has) == dir + "mist.mp3", "a supplied .mp3 plays over the placeholder (%s)" % Music.path_for("mist", has))
+	check(Music.path_for("eolis", has) == dir + "eolis.wav", "and so does a supplied .wav (%s)" % Music.path_for("eolis", has))
+	check(Music.path_for("tower", has) == dir + "tower.ogg", "an .ogg alone plays (%s)" % Music.path_for("tower", has))
+	check(Music.path_for("nowhere", has) == "", "a track with no file plays nothing")
+	check(Music.path_for("mist") == dir + "mist.ogg" and Music.stream_for("mist") != null, "the real placeholder is found")
+
+
 func test_restored_springs_change_their_zones_music() -> void:
 	for name: String in ["trunk_restored", "mist_restored", "daybreak_restored", "amb_daybreak_restored"]:
 		var stream := Music.stream_for(name)

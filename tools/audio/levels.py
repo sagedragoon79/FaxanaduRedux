@@ -5,8 +5,9 @@
     python3 tools/audio/levels.py --check    # exit 1 if anything clips or strays
 
 Loudness is the RMS of the audible part (samples above -50 dBFS), so a short
-hit with a long quiet tail is not judged by its silence. Music (.ogg) is
-decoded with ffmpeg. A sound is an outlier when its loudness is more than
+hit with a long quiet tail is not judged by its silence. Music is measured
+from the file the game plays (a supplied .mp3 or .wav before the .ogg
+placeholder), decoded with ffmpeg. A sound is an outlier when its loudness is more than
 SPREAD dB from the median of its group, or its peak is at or over CLIP.
 """
 import subprocess
@@ -31,6 +32,17 @@ def read_wav(path):
     with wave.open(str(path)) as w:
         data = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
         return data.astype(np.float64).reshape(-1, w.getnchannels()).mean(axis=1) / 32768.0
+
+
+def played(paths):
+    """The file each track plays from: a supplied .mp3 or .wav before the .ogg
+    placeholder of the same name (Music.EXTENSIONS)."""
+    order = {".mp3": 0, ".wav": 1, ".ogg": 2}
+    best = {}
+    for p in paths:
+        if p.suffix in order and (p.stem not in best or order[p.suffix] < order[best[p.stem].suffix]):
+            best[p.stem] = p
+    return list(best.values())
 
 
 def read_ogg(path):
@@ -64,8 +76,9 @@ def outliers(levels):
 
 def main():
     sfx = group(SFX.glob("*.wav"), read_wav)
-    music = group([p for p in MUSIC.glob("*.ogg") if not p.stem.startswith("amb_")], read_ogg)
-    amb = group(MUSIC.glob("amb_*.ogg"), read_ogg)
+    tracks = played(MUSIC.iterdir())
+    music = group([p for p in tracks if not p.stem.startswith("amb_")], read_ogg)
+    amb = group([p for p in tracks if p.stem.startswith("amb_")], read_ogg)
     problems = []
     for title, levels in (("Sound effects", sfx), ("Music", music), ("Ambience", amb)):
         med, bad = outliers(levels)
