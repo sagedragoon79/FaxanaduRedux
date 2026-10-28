@@ -51,7 +51,11 @@ func _ready() -> void:
 			suite.arena = arena
 			suite.current_test = name
 			var before := _failed
+			Sfx.missing.clear()
 			await Callable(suite, name).call()
+			# A sound played by a name with no file is silence, not an error (pass 207).
+			if not Sfx.missing.is_empty():
+				record(name, false, "played sounds that do not exist: %s" % [Sfx.missing])
 			print("%s %s" % ["PASS" if _failed == before else "FAIL", name])
 			arena.queue_free()
 			await get_tree().physics_frame
