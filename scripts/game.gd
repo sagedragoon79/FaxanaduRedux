@@ -19,11 +19,12 @@ extends Node2D
 ##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
-##   --open=shop:ID|guru|trials|title|skills|pause|options|controls|journey
+##   --open=shop:ID|guru|trials|title|skills|pause|options|controls|journey|equipment|inventory
 ##                              (title: the nearest Guru names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --cursor=N                 with --open: put the menu's cursor on row N
+##   --carry=A,B                carry rings (elf), keys (jack_key) and shards (potion_shard), for screenshots
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
 ##   --armor=ID                 wear an armor (data/items.json, kind "armor"), and its body set
@@ -248,8 +249,6 @@ func _process(_delta: float) -> void:
 		return
 	# Shift the upscaled world by the camera's fractional position.
 	display.position = (-Vector2(MARGIN, MARGIN) - camera.subpixel)
-	if _frames == 2:
-		_debug_open()
 	if _args.has("ending") and _frames == 2:
 		var parts: PackedStringArray = String(_args["ending"]).split(",")
 		if _args.has("secret"):
@@ -272,6 +271,15 @@ func _process(_delta: float) -> void:
 		# Screenshots: hand the player abilities (e.g. --give=onyx,glove).
 		for a: String in String(_args["give"]).split(","):
 			player.abilities[a] = true
+	if _args.has("carry") and _frames == 2:
+		# Screenshots: rings, keys and shards (e.g. --carry=elf,ruby,jack_key,jack_key,potion_shard).
+		for c: String in String(_args["carry"]).split(","):
+			if c.ends_with("_key"):
+				GameState.add_key(c.trim_suffix("_key"))
+			elif c.ends_with("_shard"):
+				GameState.data[c + "s"] = int(GameState.data[c + "s"]) + 1
+			elif not Array(GameState.data.rings).has(c):
+				GameState.data.rings.append(c)
 	if _args.has("equip") and _frames == 2:
 		# Screenshots: equip gear (e.g. --equip=dwarvish_broad_sword,magic_shield).
 		for id: String in String(_args["equip"]).split(","):
@@ -290,6 +298,8 @@ func _process(_delta: float) -> void:
 		for id: String in String(_args["skills"]).split(","):
 			GameState.data.skills.append(id)
 		GameState.refresh_stats(player)
+	if _frames == 2:
+		_debug_open()  # after the gear, finds and skills above, so a menu shows them
 	if _args.has("glide") and _frames >= int(_args["glide"]):
 		# Screenshots: glide from this frame on (Feather Fall, double jump spent).
 		player.feather_fall = true
@@ -503,6 +513,8 @@ func _debug_open() -> void:
 		Menus.open_journey(get_tree(), func() -> void: pass)
 	elif what == "equipment":
 		Menus.open_equipment(get_tree(), player, func() -> void: pass)
+	elif what == "inventory":
+		Menus.open_inventory(get_tree(), player, func() -> void: pass)
 	var menu := get_tree().get_first_node_in_group("list_menu") as ListMenu
 	if _args.has("cursor") and menu != null:
 		menu.cursor = int(_args["cursor"])

@@ -308,6 +308,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Resume", "detail": "Back to the Tree."},
 			oint,
 			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have, and dye your cloak."},
+			{"label": "Inventory", "detail": "Your abilities, spells, relics, rings, keys and shards, and what each does."},
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
@@ -325,17 +326,19 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			2:
 				open_equipment(tree, p, reopen)
 			3:
-				open_options(tree, reopen)
+				open_inventory(tree, p, reopen)
 			4:
-				open_controls(tree, reopen)
+				open_options(tree, reopen)
 			5:
-				open_journey(tree, reopen)
+				open_controls(tree, reopen)
 			6:
+				open_journey(tree, reopen)
+			7:
 				menu.close()
 				Trials.abandon()
 				BossRush.abandon()
 				on_quit.call()
-			7:
+			8:
 				menu.close()
 				if BossRush.active():
 					var world := tree.get_first_node_in_group("world") as World
@@ -455,6 +458,93 @@ static func open_journey(tree: SceneTree, back: Callable) -> bool:
 	menu.on_back = back
 	return true
 
+
+## The Inventory page (pause menu, pass 205): what you have found and carry,
+## that the Equipment page does not show. Abilities, spells, relics, the rings
+## for the gate of Zenis, keys and shards, each with what it does, so a found
+## thing is never known only by its banner. Read only; Back returns.
+const INVENTORY_GROUPS := [
+	["Abilities", ["glove", "mattock", "boots", "stride", "onyx", "hourglass", "rune_dagger"]],
+	["Spells", ["deluge", "fire", "tilte", "thunder", "death"]],
+	["Relics", ["pendant", "magical_rod"]],
+]
+const RING_NAMES := {"elf": "Elf Ring", "ruby": "Ruby Ring", "dworf": "Dworf Ring", "demon": "Demon Ring"}
+const KEY_ORDER := ["jack", "queen", "king", "ace", "joker", "lantern", "sky"]
+
+
+## The name and the line of a found ability, spell or relic.
+static func ability_info(id: String) -> Array:
+	if ItemPickup.INFO.has(id):
+		return [String(ItemPickup.INFO[id].title), String(ItemPickup.INFO[id].text)]
+	if id == "mattock":
+		return [String(BossArena.BOSSES.foreman.title), String(BossArena.BOSSES.foreman.text)]
+	var scroll := GameData.item(id + "_scroll")
+	var name := String(Spells.DATA[id].name)
+	var desc := String(scroll.get("desc", "")).trim_prefix("Teaches %s: " % name)
+	return [name, desc.left(1).to_upper() + desc.substr(1)]
+
+
+## The name and the line of a key.
+static func key_info(kind: String) -> Array:
+	if kind == "joker":
+		return [String(ItemPickup.INFO.joker_key.title), String(ItemPickup.INFO.joker_key.text)]
+	if kind == "lantern":
+		return [String(BossArena.BOSSES.ripasheiku.title), "Ripasheiku's light. It opens the way to the Spring of Mist."]
+	if kind == "sky":
+		return [String(BossArena.BOSSES.borabohra.title), "Borabohra's key. It opens Dartmoor's upper gate."]
+	var item := GameData.item(kind + "_key")
+	return [String(item.get("name", kind.capitalize() + " Key")), String(item.get("desc", ""))]
+
+
+static func inventory_rows(p: Player) -> Array:
+	var out := []
+	for group: Array in INVENTORY_GROUPS:
+		var have: Array = Array(group[1]).filter(func(id: String) -> bool: return bool(p.abilities.get(id, false)))
+		if have.is_empty():
+			continue
+		out.append({"label": group[0], "header": true})
+		for id: String in have:
+			var info := ability_info(id)
+			var ready: bool = group[0] == "Spells" and p.equipped_spell == id
+			out.append({"label": info[0], "right": "Ready" if ready else "", "detail": info[1]})
+	var rings: Array = GameState.data.get("rings", [])
+	if not rings.is_empty():
+		out.append({"label": "Rings, %d of 4" % rings.size(), "header": true})
+		for r: String in ZenisGate.RINGS:
+			if rings.has(r):
+				out.append({"label": RING_NAMES[r], "detail": "One of the four rings that open the gate of Zenis."})
+	var keys := KEY_ORDER.filter(func(k: String) -> bool: return GameState.key_count(k) > 0)
+	if not keys.is_empty():
+		out.append({"label": "Keys", "header": true})
+		for k: String in keys:
+			var info := key_info(k)
+			out.append({"label": info[0], "right": "x%d" % GameState.key_count(k), "detail": info[1]})
+	var shards := []
+	var potion := int(GameState.data.get("potion_shards", 0)) % 3
+	var mantra := int(GameState.data.get("mantra_shards", 0)) % 3
+	var meteor := int(GameState.data.get("meteor_shards", 0))
+	if potion > 0:
+		shards.append({"label": "Potion Shards", "right": "%d of 3" % potion, "detail": "Three fuse into a new Red Potion charge."})
+	if mantra > 0:
+		shards.append({"label": "Mantra Shards", "right": "%d of 3" % mantra, "detail": "Three complete a mantra and give a skill point."})
+	if meteor > 0:
+		shards.append({"label": "Meteor Shards", "right": "x%d" % meteor, "detail": "The Forepaw smith folds one into a blade's second temper."})
+	if not shards.is_empty():
+		out.append({"label": "Shards", "header": true})
+		out.append_array(shards)
+	if out.is_empty():
+		out.append({"label": "Nothing yet", "detail": "What you find on the Tree is kept here."})
+	return out
+
+
+static func open_inventory(tree: SceneTree, p: Player, back: Callable) -> bool:
+	var menu := _menu(tree)
+	if menu == null:
+		return false
+	menu.open("Inventory", "What you have found, and what it does.", func() -> Array: return inventory_rows(p),
+		func(_i: int) -> void: pass)
+	menu.on_back = back
+	return true
 
 static func leave_trial(tree: SceneTree) -> void:
 	var world := tree.get_first_node_in_group("world") as World
