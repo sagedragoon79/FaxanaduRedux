@@ -371,7 +371,7 @@ On death you return to the last Guru or shrine. You drop **60% of carried gold**
 
 The rubric (15.3) asks for a damage balance sheet within targets. Until pass 194 there was none, and drawing it up showed the curve upside down: a Rot Dwarf in the Trunk swung for 20, a Shade Knight in Dartmoor thrust for 18, and by then Full Plate took 45% off. Against the kit you carry there, the deep zones' worst blows cost half a mask where the Trunk's cost nearly one, while your health had doubled.
 
-**Threat.** Every blow a foe or a foe's shot lands is multiplied by its zone's threat (`CombatTuning.ZONE_THREAT`, applied in `Player.receive_attack` through `Room.threat`). A boss's arena stays at 1, since each boss is tuned on its own (15.3, Bosses), and so does a world hazard such as a fire seal. Eolis, the gym and the Guru Trials are off the sheet and stay at 1.
+**Threat.** Every blow a foe or a foe's shot lands is multiplied by its zone's threat (`CombatTuning.ZONE_THREAT`, applied in `Player.receive_attack` through `Room.threat`). Since pass 196 a boss's arena takes its zone's threat too (below). A world hazard such as a fire seal stays at 1. Eolis, the gym and the Guru Trials are off the sheet and stay at 1.
 
 | Zone | Threat | Par kit (the critical path's shops and finds by then) | Par slash | Hardest blow through par armor | Slashes to fell its foes |
 |------|--------|------|-----------|------|------|
@@ -389,6 +389,21 @@ The rubric (15.3) asks for a damage balance sheet within targets. Until pass 194
 - Threat never falls along the critical path.
 
 So a hit costs about a mask from the first root to the meteor, and what grows is your health (5 masks to 14): you get sturdier as you go, but no zone's foes go soft. Players ahead of par (the Broad Sword in Dartmoor, the Battle Suit and Helmet) feel it as power, and players behind it (Leather in Dartmoor: 31) feel the push to visit the smith and the armorer.
+
+**The guardians (pass 196).** Pass 194 left the arenas at 1, meaning to tune each boss on its own. Drawing up their sheet showed that this made the deep guardians softer than the corridors leading to them. Through Full Plate, King Grieve's worst blow cost 12 and the Evil One's cleave 11, while a Shade Knight in Dartmoor's halls landed 20. Pass 196 lets each arena take its zone's threat (`Room.threat` has no boss exception, and `Player.receive_attack` scales a boss's blows and shots like any foe's). Hardest blow through the zone's par armor, after threat:
+
+| Zone | Guardians (hardest blow) |
+|------|--------------------------|
+| Trunk | Rokusutahn 17 |
+| Tower | Zoradohna 20, the Foreman 19 |
+| Mist | Ripasheiku 20, Zorugeriru 15, the Marsh Hag Matriarch 12 |
+| Branches | Pakukame 25, the Bark Knight Captain 21 |
+| Daybreak | Borabohra 25 |
+| Dartmoor | King Grieve 24, the Clockwork Alpha 22, Shadow Eura 22 |
+| Sunken Spring | the Drowned Warden 24 |
+| Zenis | the Evil One's avatar 22, its veins and heart 18 |
+
+`test_the_guardians_hit_as_hard_as_their_zone` holds every guardian's hardest blow to 0.5 to 1.5 masks through par armor, and each zone's guardians to at least 0.75 masks. That way no boss is softer than the foes that lead to it. The Matriarch is the lowest: her threat is the hex, not her blows. Zorugeriru's rising flood (`HydraFlood`, 8) wears you down as a hazard does and is not scaled. A boss rush runs in the same arenas, so it takes the same threat, against the endgame kit a 100% save carries.
 
 ---
 

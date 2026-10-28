@@ -1521,10 +1521,10 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 	return "hit"
 
 
-## A foe's blow, scaled by the room's threat (design bible 5.5, pass 194). A
-## boss, and a world hazard such as a fire seal, strikes as written.
+## A foe's or a boss's blow, scaled by the room's threat (design bible 5.5,
+## passes 194 and 196). A world hazard such as a fire seal strikes as written.
 func _threatened(damage: int, source: Node2D) -> int:
-	if source.is_in_group("boss") or source.is_in_group("fire_seal"):
+	if source.is_in_group("fire_seal"):
 		return damage
 	var room := get_tree().get_first_node_in_group("room") as Room
 	return damage if room == null else roundi(damage * room.threat())
