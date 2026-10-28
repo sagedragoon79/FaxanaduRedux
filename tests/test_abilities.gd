@@ -251,6 +251,41 @@ func test_the_warden_cache_needs_the_stride() -> void:
 		await frames(1)
 
 
+## Pass 219: the checker's jumps fall short of real ones, so it can show a
+## secret is reached but never that it is out of reach. The Sky Steps' purse
+## island stood four rows over the one below, and a plain running jump off
+## that island's edge landed on it. Raised to five rows (80 px, past the 72 px
+## apex), it takes the Wing Boots, as BOOT_SECRETS says.
+func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
+	for boots: bool in [false, true]:
+		var w := make_world({}, "daybreak/sky_steps", cell_feet(18, 24))
+		for e in w.room.get_children():
+			if e is Enemy:
+				e.queue_free()
+		var p := w.player
+		p.abilities["boots"] = boots
+		await frames(4)
+		p.input.move_x = -1
+		var jumped := 0
+		var landed := false
+		for i in 120:
+			if jumped == 0 and p.is_on_floor() and p.global_position.x <= 14 * Room.TILE + 2:
+				p.input.jump_pressed = true
+				p.input.jump_held = true
+				jumped = i
+			elif jumped > 0 and i == jumped + 22:
+				p.input.jump_pressed = true
+			await frames(1)
+			p.input.jump_pressed = false
+			var x := p.global_position.x / Room.TILE
+			# Standing anywhere over the purse's island columns, above the start.
+			if p.is_on_floor() and p.global_position.y < 25 * Room.TILE - 8 and x >= 4.0 and x < 10.0:
+				landed = true
+		check(landed == boots, "with the Wing Boots %s, the purse's island is %s" % [boots, "reached" if landed else "out of reach"])
+		w.queue_free()
+		await frames(1)
+
+
 func _drop_onto_spikes(abilities := {}) -> Player:
 	var room := make_room(SPIKE_FLOOR)
 	var p := make_player(room, Vector2i(9, 3), abilities)

@@ -13,8 +13,9 @@ const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
 const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
 ## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
 ## The Sky Steps' purse sits on the climb's first island, a boots leap up from the
-## one below (pass 211: it had been listed as the Stride's).
-const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6, 20]]
+## one below (pass 211: it had been listed as the Stride's). Pass 219 raised the
+## island a row: at four rows a plain jump landed on it (test_abilities.gd).
+const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6, 19]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5),
 ## even with the Wing Boots, which always come first: behind an elven veil (pass 216;
 ## the gap of pass 211 was crossed by a real jump).
