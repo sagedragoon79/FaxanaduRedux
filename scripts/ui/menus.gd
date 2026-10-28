@@ -307,7 +307,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 		return [
 			{"label": "Resume", "detail": "Back to the Tree."},
 			oint,
-			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have."},
+			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have, and dye your cloak."},
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},

@@ -252,6 +252,17 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 | Shield | Small Shield (150 g) | Large Shield (900 g) | Magic Shield (3,600 g, reflects small projectiles on parry) | (none: the Battle Helmet has its own slot since pass 185) |
 | Helmet | Battle Helmet (secret: +1 mask, 10% less damage) | | | |
 
+**The original's gear, and what changed (pass 193).** The original sold twelve pieces of gear: four weapons, four armors and four shields. All twelve are in the remake. Where one changed, this table says how and why. `test_the_originals_twelve_pieces_of_gear_are_all_here` keeps it true: each original name must be an item, or a row here naming the item that took its place, and each id in `GameState.RENAMED_ITEMS` must have a row.
+
+| Original | In the remake | Changed in | Why |
+|----------|---------------|------------|-----|
+| Hand Dagger | Short Sword (`short_sword`, from `hand_dagger`) | pass 184 | Sean: every swing of it is a slash, so it reads as a short sword. The dagger idea became the thrown Rune Dagger. |
+| Giant Blade | Dwarvish Broad Sword (`dwarvish_broad_sword`, from `giant_blade`), two-handed | pass 186 | Sean: a name with a maker, and two hands with no shield, so its weight is a real trade. |
+| Battle Helmet | Battle Helmet, in its own Helmet slot | pass 185 | Sean: worn as a shield, it cost you the Magic Shield's parry. Now it adds a mask and 10% less damage on top of any shield. |
+| (none) | Rune Dagger, a thrown tool beside the blade | pass 184 | Sean's idea: a ranged answer before the spells. It is not a weapon tier and takes no temper. |
+
+The other nine (Long Sword, Dragon Slayer, Leather Armor, Studded Mail, Full Plate, Battle Suit, Small Shield, Large Shield, Magic Shield) keep their names and their place. The original replaced gear as you bought it; the remake keeps it (pass 186, above).
+
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered.)
 
 **Meteor Shards (built pass 140):**
