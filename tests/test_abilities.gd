@@ -526,6 +526,37 @@ func test_hour_glass_stops_time_then_runs_back() -> void:
 	check(not TimeStop.active(), "without the glass nothing happens")
 
 
+
+## Pass 230: the glass runs out by ear. Its last three quarter-seconds tick,
+## and time running again rushes, so you know when held shots fly on.
+func test_the_hour_glass_ticks_before_time_runs_again() -> void:
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18), {"hourglass": true})
+	await frames(5)
+	p.input.hourglass_pressed = true
+	await frames(1)
+	check(TimeStop.active(), "the glass is turned")
+	var ticks: Array[float] = []
+	var ended := -1.0
+	Sfx.recent.clear()
+	for i in int(TimeStop.DURATION * 60) + 10:
+		await frames(1)
+		for s: String in Sfx.recent:
+			if s == Player.GLASS_TICK_SOUND:
+				ticks.append(TimeStop.left)
+			elif s == Player.GLASS_END_SOUND and ended < 0.0:
+				ended = TimeStop.left
+		Sfx.recent.clear()
+	check(ticks.size() == Player.GLASS_TICKS, "%d ticks as it runs out (%s)" % [Player.GLASS_TICKS, ticks])
+	var on_time := ticks.size() == Player.GLASS_TICKS
+	for k in ticks.size():
+		on_time = on_time and absf(ticks[k] - (Player.GLASS_TICKS - k) * Player.GLASS_TICK) < 0.03
+	check(on_time, "a quarter-second apart, the last a quarter-second before the end")
+	check(ended == 0.0 and not TimeStop.active(), "and a rush as time runs again")
+	Sfx.recent.clear()
+	await frames(30)
+	check(not Sfx.recent.has(Player.GLASS_TICK_SOUND) and not Sfx.recent.has(Player.GLASS_END_SOUND), "then nothing while it runs back")
+
 func test_stopped_time_holds_projectiles_in_the_air() -> void:
 	var room := make_room(SHAFT)
 	make_player(room, Vector2i(2, 18), {"hourglass": true})

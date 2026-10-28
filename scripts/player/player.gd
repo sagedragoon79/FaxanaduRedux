@@ -14,6 +14,8 @@ signal respawned
 ## The group of a foe's sorcery, which a shield wards (pass 225): a hex, a shadow
 ## bolt, a shard called up out of the floor, the core's beam.
 const MAGIC := "magic"
+## A ward turning part of a hex rings under the hurt (pass 230).
+const WARD_SOUND := "ward"
 const BODY_SIZE := Vector2(12, 40)
 
 # Collision layers (see docs/architecture.md).
@@ -51,6 +53,12 @@ const BLOODLETTING_HEAL := 2
 const LAST_STAND_BELOW := 0.2
 const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
+## The glass running out (pass 230): GLASS_TICKS ticks, GLASS_TICK apart, end
+## stopped time, then GLASS_END_SOUND as it runs again.
+const GLASS_TICKS := 3
+const GLASS_TICK := 0.25
+const GLASS_TICK_SOUND := "glass_tick"
+const GLASS_END_SOUND := "glass_end"
 ## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
@@ -464,7 +472,9 @@ func _physics_process(delta: float) -> void:
 # --- Timers and refresh -------------------------------------------------------
 
 func _tick_timers(delta: float) -> void:
+	var glass_was := TimeStop.left
 	TimeStop.tick(delta)
+	_glass_cues(glass_was, TimeStop.left)
 	_coyote_timer -= delta
 	_jump_buffer_timer -= delta
 	_wall_coyote_timer -= delta
@@ -1379,6 +1389,21 @@ func _try_hourglass() -> void:
 	_spawn_dust(Vector2(0, -24), "parry")
 
 
+## The glass running out (pass 230): a tick at each of its last quarter-seconds
+## and a rush as time runs again, so the ear knows when frozen footholds melt
+## and held shots fly on. `was` and `left` are TimeStop.left before and after
+## this frame's tick.
+func _glass_cues(was: float, left: float) -> void:
+	if was <= 0.0:
+		return
+	if left <= 0.0:
+		Sfx.play(GLASS_END_SOUND, 0.0)
+		return
+	for k in range(1, GLASS_TICKS + 1):
+		if was > k * GLASS_TICK and left <= k * GLASS_TICK:
+			Sfx.play(GLASS_TICK_SOUND, 0.0)
+
+
 ## The Rune Dagger (pass 184, bible 5.2): one in flight at a time. When its
 ## flight ends it breaks into rune light and reforms at your hip RuneDagger.RETURN
 ## later, so it never costs magic and is never lost.
@@ -1541,6 +1566,7 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		return "ignored"
 	if magic_ward > 0.0 and source.is_in_group(MAGIC):
 		damage = maxi(roundi(damage * (1.0 - magic_ward)), 1)
+		Sfx.play(WARD_SOUND, 0.05)
 	var knock := -src_dir if src_dir != 0 else -facing
 	if is_blocking and from_front and mp >= combat.guard_mp_cost:
 		mp -= combat.guard_mp_cost
