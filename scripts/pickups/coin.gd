@@ -13,6 +13,10 @@ const GOLD_DARK := Color("c08a1e")
 const SHINE := Color("fff6c4")
 const OUTLINE := Color("120f19")
 
+## Coin sizes, largest first (pass 199). Before, the largest was 5, and a
+## 5,000 g chest threw a thousand coins at once (a 27 ms frame).
+const DENOMINATIONS: Array[int] = [100, 25, 5]
+
 var value := 1
 
 var _age := 0.0
@@ -75,8 +79,8 @@ func _draw() -> void:
 	if _age > LIFETIME - 2.0 and int(_age * 10.0) % 2 == 0:
 		return
 	var spin := absf(sin(_age * 8.0))
-	var big := value >= 5
-	var r := 3.0 if big else 2.5
+	# Bigger coins for bigger values: 1, 5, 25 and 100 gold.
+	var r := 2.5 if value < 5 else (3.0 if value < 25 else (3.5 if value < 100 else 4.5))
 	var w := maxf(0.5, roundf(r * 2.0 * spin * 2.0) * 0.5)
 	var c := Vector2(0, -r - 0.5)
 	draw_rect(Rect2(c.x - w * 0.5 - 0.5, c.y - r - 0.5, w + 1.0, r * 2.0 + 1.0), OUTLINE)
@@ -88,12 +92,18 @@ func _draw() -> void:
 			draw_rect(Rect2(c.x - 0.5, c.y - r * 0.5, 1.0, r), GOLD_DARK)
 
 
-## Spawns `total` gold as a spray of coins (5-gold coins first, then singles).
+## Spawns `total` gold as a spray of coins, the largest that leave at least
+## as much again for smaller ones first, then singles (so 9 gold is nine
+## coins, and a 5,000 g chest is about fifty, not a thousand: pass 199).
 static func spray(parent: Node, at: Vector2, total: int) -> void:
 	var remaining := total
 	while remaining > 0:
 		var c := Coin.new()
-		c.value = 5 if remaining >= 10 else 1
+		c.value = 1
+		for d: int in DENOMINATIONS:
+			if remaining >= d * 2:
+				c.value = d
+				break
 		remaining -= c.value
 		parent.add_child(c)
 		c.global_position = at

@@ -1197,3 +1197,27 @@ func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
 	w._enter("zenis/throne")
 	await frames(2)
 	check(w.room.doors[1].target == "zenis/proving_scar", "the throne's west door leads back into the Scar")
+
+
+## Pass 199: a fat purse sprays a few big coins, not a thousand small ones
+## (the Dartmoor vault's 5,000 g chest threw 1,004 coins and a 27 ms frame).
+func test_a_big_purse_sprays_few_coins() -> void:
+	var w := make_world(_rooms({}), "test/a", cell_feet(4, 19))
+	await frames(5)
+	for total: int in [3, 9, 10, 137, 1000, 5000]:
+		for c in w.room.get_children():
+			if c is Coin:
+				c.free()
+		Coin.spray(w.room, cell_feet(6, 19), total)
+		var count := 0
+		var sum := 0
+		for c in w.room.get_children():
+			if c is Coin:
+				count += 1
+				sum += (c as Coin).value
+		check(sum == total, "%d g sprays as %d g" % [total, sum])
+		check(count <= 64, "%d g is %d coins, at most 64" % [total, count])
+		if total < 10:
+			check(count == total, "%d g is still that many single coins" % total)
+	await frames(90)
+	check(w.player.gold > 0, "the big coins fly to you like the small ones (%d g)" % w.player.gold)
