@@ -720,6 +720,64 @@ func test_being_hit_matches_the_bible() -> void:
 	check(p._invuln_timer <= 0.0, "and open again by 0.85 s (0.8 s of i-frames)")
 
 
+## Pass 202: bible 5.3's "Starting combat values" table says tests assert it,
+## but a third of its rows were only read back from the tuning by the play
+## tests (or by none), so a changed number moved its test with it. This holds
+## every row to the bible's text; the test after it plays the two rows no test did.
+func test_the_starting_combat_values_match_bible_5_3() -> void:
+	var c := CombatTuning.new()
+	check(c.slash_damage == 8 and c.heavy_damage == 14, "light 8, heavy third hit 14")
+	check_near(c.combo_window, 0.40, 0.0001, "0.40 s to chain")
+	check(c.combo_cooldowns == [0.20, 0.20, 0.38], "cooldowns 0.20, 0.20, 0.38 after hits 1 to 3")
+	check(c.ground_combo_length == 3 and c.air_combo_length == 2, "3-hit ground combo, 2-hit air combo")
+	check_near(c.attack_buffer, 0.15, 0.0001, "attack buffer 0.15 s")
+	check_near(c.throw_buffer, 0.15, 0.0001, "throw buffer 0.15 s")
+	check_near(c.hit_hitstop, 0.05, 0.0001, "50 ms on a hit (6.7)")
+	check_near(c.heavy_hitstop, 0.09, 0.0001, "90 ms on a heavy hit (6.7)")
+	check_near(c.parry_window, 0.12, 0.0001, "parry window 0.12 s")
+	check_near(c.parry_hitstop, 0.14, 0.0001, "parry hit-stop 140 ms")
+	check_near(c.parry_mp_gain, 6.0, 0.0001, "a parry gives 6 MP")
+	check_near(c.guard_reduction, 0.5, 0.0001, "the Small Shield's guard halves damage")
+	check_near(c.guard_mp_cost, 8.0, 0.0001, "8 MP per blocked hit")
+	check_near(c.guard_move_multiplier, 0.4, 0.0001, "40% walk speed on guard")
+	check(c.hurt_knockback == Vector2(160, 220), "knocked 160 px/s back, 220 px/s up")
+	check_near(c.hurt_control_lock, 0.18, 0.0001, "0.18 s control lock")
+	check(c.low_health == 20 and c.low_health == GameHud.MASK_HP, "low health is one mask, 20 HP")
+	check_near(c.heartbeat_interval, 0.85, 0.0001, "a heartbeat every 0.85 s")
+	check_near(c.max_mp, 60.0, 0.0001, "60 MP")
+	check_near(c.mp_regen_per_second, 2.0, 0.0001, "+2 MP a second")
+	check_near(c.mp_per_melee_hit, 4.0, 0.0001, "+4 MP per melee hit")
+	check(c.flask_charges == 2 and c.flask_heal == 40, "Red Potion: 2 charges of 40")
+	check_near(c.drink_time, 0.7, 0.0001, "0.7 s to drink")
+	var deluge: Dictionary = Spells.DATA.deluge
+	check(deluge.cost == 15.0 and deluge.damage == 12 and deluge.speed == 300.0, "Deluge: 15 MP, 12 damage, 300 px/s")
+	check(c.war_glove_mult == 1.5 and c.war_glove_time == 15.0, "War Glove: x1.5 for 15 s")
+	check_near(c.thrust_charge, 0.4, 0.0001, "Thrust: hold 0.4 s")
+	check_near(c.thrust_mult, 1.5, 0.0001, "Thrust: heavy hit x1.5")
+	check(c.thrust_speed == 320.0 and c.thrust_time == 0.16 and c.thrust_cooldown == 0.35, "Thrust: 320 px/s for 0.16 s, 0.35 s cooldown")
+	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Pendant x1.1, the Magical Rod's Deluge x1.5")
+	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
+	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
+
+
+## Bible 5.3: guarding you walk at 40% of a run; MP comes back at 2 a second.
+func test_a_guard_walks_slow_and_mp_comes_back_slowly() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(4)
+	p.input.block_held = true
+	p.input.move_x = 1
+	await frames(20)
+	check(p.is_blocking, "holding Block guards")
+	check_near(p.velocity.x, p.tuning.run_speed * 0.4, 0.5, "guarding, you walk at 40%% of a run (%.1f)" % p.velocity.x)
+	p.input.block_held = false
+	p.input.move_x = 0
+	p.mp = 0.0
+	await frames(60)
+	check_near(p.mp, 2.0, 0.1, "a second later 2 MP has come back (%.2f)" % p.mp)
+	room.free()
+
+
 func test_the_heavy_finisher_drives_a_foe_back_and_holds_it_longer() -> void:
 	var room := _arena_with("D", Vector2i(10, 6))
 	var dwarf: RotDwarf = _find(room, RotDwarf)

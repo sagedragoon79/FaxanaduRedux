@@ -353,7 +353,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98). Every hit yelps (`hurt`). A blow that costs a whole mask (20 HP) or more after armor adds a low body thud and a crunch of grit under it (`hurt_heavy`, pass 198). Since passes 194 and 196 the deep zones' foes and guardians land such blows through par armor while the Trunk's do not, so you hear the difference a zone makes, and whether your armor keeps up.
 - **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
 
-**Starting combat values** (in `scripts/player/combat_tuning.gd`, asserted by tests):
+**Starting combat values** (in `scripts/player/combat_tuning.gd`). Every row is held to this table by `test_the_starting_combat_values_match_bible_5_3` (pass 202; until then about a third of the rows were only read back from the tuning by the tests that played them), and each has a play test:
 
 | Value | Setting |
 |-------|---------|
@@ -371,6 +371,8 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | War Glove (rare drop, 7) | blade hits x1.5 for 15 s |
 | Thrust (skill, 9) | hold Attack 0.4 s, let go: heavy hit x1.5, a 320 px/s lunge for 0.16 s on the floor, 0.35 s cooldown |
 | Gold coins | Magnet after 0.4 s within 100 px |
+| Relics (pass 201, 5.2) | the Pendant: blade hits x1.1; the Magical Rod: Deluge x1.5 |
+| Death (5.4) | 60% of the purse dropped where you fell |
 
 ### 5.4 Death and recovery
 
