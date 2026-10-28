@@ -665,6 +665,8 @@ func test_a_failed_write_keeps_the_last_good_save() -> void:
 
 
 func test_damaged_settings_fall_back_to_defaults_or_their_backup() -> void:
+	# Godot's ConfigFile logs its own parse error for the damaged file.
+	expect_engine_errors()
 	Settings.path = TEMP_SETTINGS
 	_write_raw(TEMP_SETTINGS, "[feel\nshake = ]]]")
 	Settings.shake = 2
@@ -689,6 +691,8 @@ func test_damaged_settings_fall_back_to_defaults_or_their_backup() -> void:
 
 ## A settings file from an older build has no line for the actions added since.
 func test_older_settings_load_without_errors() -> void:
+	# Only the probe at the end, which proves the catcher hears errors.
+	expect_engine_errors()
 	Settings.path = TEMP_SETTINGS
 	_write_raw(TEMP_SETTINGS, "[feel]\nshake=1\n[keys]\njump=4194326\n")
 	var errors := ErrorCatcher.start()

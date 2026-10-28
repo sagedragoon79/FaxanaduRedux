@@ -52,7 +52,13 @@ func _ready() -> void:
 			suite.current_test = name
 			var before := _failed
 			Sfx.missing.clear()
+			suite.allows_engine_errors = false
+			var errors := ErrorCatcher.start(false)
 			await Callable(suite, name).call()
+			# An engine error the game carries on past is still a bug (pass 215).
+			var logged := errors.stop()
+			if not logged.is_empty() and not suite.allows_engine_errors:
+				record(name, false, "logged engine errors: %s" % [logged.slice(0, 4)])
 			# A sound played by a name with no file is silence, not an error (pass 207).
 			if not Sfx.missing.is_empty():
 				record(name, false, "played sounds that do not exist: %s" % [Sfx.missing])

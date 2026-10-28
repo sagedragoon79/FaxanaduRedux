@@ -2068,7 +2068,8 @@ func test_shadow_eura_casts_your_arcana_back_at_you() -> void:
 	await _until(func() -> bool: return absf(bolt.global_position.x - p.global_position.x) < 40.0, 120)
 	p.input.block_pressed = true
 	p.input.block_held = true
-	var turned := await _until(func() -> bool: return not is_instance_valid(bolt) or bolt.reflected, 20)
+	var held: WeakRef = weakref(bolt)
+	var turned := await _until(func() -> bool: return held.get_ref() == null or (held.get_ref() as ShadowBolt).reflected, 20)
 	p.input.block_pressed = false
 	p.input.block_held = false
 	check(turned and is_instance_valid(bolt) and bolt.reflected, "a parry turns the bolt")
@@ -3199,7 +3200,9 @@ func test_fire_burns_the_captains_bark_off_at_once() -> void:
 	f.global_position = c.global_position + Vector2(0, -30)
 	f.burst()
 	check(c.bark == 0 and hp0 - c.hp == f.damage, "one fireball burns all %d plates off and lands in full (%d)" % [BarkCaptain.BARK, hp0 - c.hp])
-	await _until(func() -> bool: return not is_instance_valid(f), 10)
+	# A weak reference: a lambda that captures the freed fireball logs an engine error.
+	var gone: WeakRef = weakref(f)
+	await _until(func() -> bool: return gone.get_ref() == null, 10)
 	c.set_state("rooted")
 	c.state_time = BarkCaptain.ROOTED
 	await _until(func() -> bool: return c.state != "rooted", 60)
