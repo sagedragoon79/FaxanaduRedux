@@ -77,6 +77,12 @@ const ZONE_THREAT := {
 @export var war_glove_mult := 1.5
 @export var war_glove_time := 15.0
 
+@export_group("Relics")
+## The original's Pendant and Magical Rod (design bible 5.2, pass 201), found
+## once and kept: every blade hit, and every Deluge bolt, lands this much more.
+@export var pendant_mult := 1.1
+@export var rod_deluge_mult := 1.5
+
 @export_group("Death")
 @export var death_gold_fraction := 0.6
 @export var respawn_delay := 1.2

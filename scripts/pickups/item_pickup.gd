@@ -38,11 +38,13 @@ const INFO := {
 	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
 	"rune_dagger": {"title": "Rune Dagger", "text": "Press Throw (B) to throw it; Up throws it high. Its rune calls it back to your side.", "color": Color("7ff0e0")},
+	"pendant": {"title": "Pendant", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
+	"magical_rod": {"title": "Magical Rod", "text": "Deluge's bolts strike half again as hard.", "color": Color("6ac8f0")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death", "rune_dagger"]
+const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death", "rune_dagger", "pendant", "magical_rod"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -370,6 +372,34 @@ func _draw() -> void:
 				star.append(Vector2.from_angle(-PI / 2.0 + i * PI / 5.0) * r)
 			_poly(o + Vector2(0, -9), star, Color("ffe08a"))
 			_hp(o, -4, -14, 2, 2, light)
+		"pendant":
+			# A gold locket on a fine chain, a green leaf-stone set in it that
+			# catches the light now and then.
+			for i in 7:
+				var a := PI * (0.15 + 0.7 * i / 6.0)
+				_hp(o, cos(a) * 9.0 - 1, -sin(a) * 9.0 - 9, 2, 2, Color("8a6a3a"))
+			var drop := [Vector2(0, -8), Vector2(7, -2), Vector2(6, 6), Vector2(0, 11), Vector2(-6, 6), Vector2(-7, -2)]
+			_poly(o, drop, Color("120f19"), 2.0)
+			_poly(o, drop, c)
+			_poly(o, [Vector2(0, -8), Vector2(7, -2), Vector2(0, 1), Vector2(-7, -2)], light)
+			var glint := Color("e8ffd8") if fmod(_t, 2.2) < 0.1 else Color("4fae6a")
+			draw_circle(o + Vector2(0, 0.75), 1.6, Color("1e4a2a"))
+			draw_circle(o + Vector2(0, 0.5), 1.1, glint)
+			_hp(o, -4, -3, 2, 2, Color("fff4c0"))
+		"magical_rod":
+			# A slim wand of pale Tree-wood with a water-blue orb at its head and a
+			# drop of light rising off it.
+			var rod := [Vector2(-1, -6), Vector2(2, -6), Vector2(3, 18), Vector2(0, 20)]
+			_poly(o, rod, Color("120f19"), 2.0)
+			_poly(o, rod, Color("c8a878"))
+			_hp(o, 2, -4, 1, 22, Color("8a6a4a"))
+			_hp(o, -2, 2, 6, 2, Color("e8c06a"))
+			draw_circle(o + Vector2(0.25, -5.5), 4.0, Color("120f19"))
+			draw_circle(o + Vector2(0.25, -5.5), 3.2, dark)
+			draw_circle(o + Vector2(0, -5.75), 2.5, c)
+			_hp(o, -3, -14, 2, 2, Color("e8f8ff"))
+			var rise := fmod(_t * 0.8, 1.0)
+			draw_circle(o + Vector2(0.25, -10 - rise * 5.0), 0.8, Color(light, 1.0 - rise))
 
 
 func _hp(at: Vector2, x: float, y: float, w: float, h: float, col: Color) -> void:

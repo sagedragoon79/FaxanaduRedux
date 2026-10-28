@@ -263,6 +263,15 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 The other nine (Long Sword, Dragon Slayer, Leather Armor, Studded Mail, Full Plate, Battle Suit, Small Shield, Large Shield, Magic Shield) keep their names and their place. The original replaced gear as you bought it; the remake keeps it (pass 186, above).
 
+**The original's relics, the Pendant and the Magical Rod (pass 201).** The original hid two more finds that sold nowhere, and until pass 201 the remake had neither. Both are now found once and kept, laid by `prop:` lines and counted as treasures (`Room.FOUND_PROPS`); their numbers live in `combat_tuning.gd` (Relics).
+
+| Relic | Where (original) | Where (remake) | Effect |
+|-------|------------------|----------------|--------|
+| Pendant | the end of the Tower of Suffer, in a corner of its guardian's room, easy to miss | the far corner of the Matriarch's Mire (`mist/hag_mire`, 37,16), the Mist's optional guardian's room | every blade hit lands a tenth harder (`pendant_mult` 1.1, through `Player.blade_mult`) |
+| Magical Rod | Conflate, up a ladder on the right of the town | Conflate's high plank (73,7), up a new ladder at the town's east end | Deluge bolts strike half again as hard (`rod_deluge_mult` 1.5: 12 to 18, as the original's 6 to 9) |
+
+Deviation: the original's Pendant was meant to raise attack, but a slip in its code made it lower it, so players learned to leave it behind. The remake gives it the effect it was meant to have, kept small (10%) so the damage sheet (5.5) still holds without it. The Rune Dagger's sting is not a blade hit and takes no Pendant. Held by `test_the_pendant_and_the_magical_rod` and `test_the_pendant_and_the_rod_can_be_reached`.
+
 Each blade has its own swing speed and reach, so a weapon change is a play-style change, not just a number. The dwarf smith in Forepaw upgrades each blade twice (+15% each) for gold plus Meteor Shards. (Built: Hrothgar's Forepaw Forge sells Temper Blade I for 700 g and II for 1,600 g, per blade, so a new blade starts untempered.)
 
 **Meteor Shards (built pass 140):**
@@ -1424,7 +1433,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 | Systems | 10 | Save/load round-trip, shop, skill tree, map, fast travel, settings all tested |
 | Audio | 5 | Every action has SFX, every zone has music and ambience, mix levels in range |
 | Stability and performance | 5 | 60 fps budget, no crashes in a 2-hour soak bot run, load times |
-| Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One |
+| Faithfulness to Faxanadu | 5 | Checklist: towns, Gurus, ranks, rings, keys, springs, all original bosses, Evil One, spells and relics. Held as a whole by `test_the_faithfulness_checklist_is_all_here` since pass 201 |
 
 **Stability measures (pass 99):** the journey soak (`test_soak.gd`) walks the world twice, door to door with mashing play between. It rests and Continues into a fresh world every 20 rooms and opens the pause and skills screens on the way. The second lap must leave no live objects, orphan nodes or tree nodes behind. No frame of play (room loads aside) may pass 50 ms, save one lone frame a lap under 100 ms (pass 182, below). Anything a room will need mid-play is loaded while the room loads: a boss arena loads its boss's sprite sheet and music (`BossArena.warm`), because a fight starts mid-play. Every sound effect loads with the game (`Sfx.load_all`, about 20 ms once, 2.2 MB), so no first slash or phase break waits on the disk (pass 103). Every boss fight is timed for 15 s of mashing with a phase knocked off every 5 s (`test_every_boss_fight_holds_the_frame_budget`): the average frame must stay under 8 ms and the 99th percentile under 16.6 ms, and nothing may load from disk once the fight has begun.
 

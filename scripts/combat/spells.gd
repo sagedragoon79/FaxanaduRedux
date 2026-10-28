@@ -55,6 +55,9 @@ static func cast(id: String, caster: Player) -> Node2D:
 		"deluge":
 			var bolt := DelugeBolt.new()
 			bolt.damage = DATA[id]["damage"]
+			if caster.abilities.get("magical_rod", false):
+				# The original's Magical Rod (pass 201): Deluge half again as hard.
+				bolt.damage = roundi(bolt.damage * caster.combat.rod_deluge_mult)
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			bolt.pierce = caster.spell_pierce
 			return bolt

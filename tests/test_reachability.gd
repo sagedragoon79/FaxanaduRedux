@@ -225,6 +225,20 @@ func test_mascon_lies_across_the_black_water() -> void:
 	check(people >= 4, "Mascon has its people (%d)" % people)
 
 
+func test_the_pendant_and_the_rod_can_be_reached() -> void:
+	# Pass 201: the original's two relics, laid by `prop:` lines (which the
+	# pickup sweep doesn't read): the Pendant on the Matriarch's floor, the Rod
+	# on Conflate's high plank by the ladder. The Mist's set reaches both.
+	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
+	var reach := Reach.new(_texts(), set, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	for room_id: String in _texts():
+		for line: String in _texts()[room_id].split("\n"):
+			if line.begins_with("prop:") and (line.ends_with("pendant") or line.ends_with("magical_rod")):
+				var parts := line.substr(5).split(",")
+				check(reach.touchable(nodes, room_id, int(parts[0]), int(parts[1])), "%s in %s can be reached" % [parts[2].strip_edges(), room_id])
+
+
 func test_everyone_in_victim_can_be_reached() -> void:
 	# Pass 145: Victim, the Mist's lamp town, is reached by the Feather Hollow's
 	# west shelf with no more than the Lantern Key, and every person in it can be

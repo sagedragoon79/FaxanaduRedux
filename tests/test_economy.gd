@@ -1751,6 +1751,114 @@ func test_the_originals_twelve_pieces_of_gear_are_all_here() -> void:
 	check(names.has("Battle Helmet") and String(items[names["Battle Helmet"]].kind) == "helmet", "the Battle Helmet keeps its name in its own slot")
 
 
+## Every room file, as id -> Room.parse (the gym and the trials included).
+func _all_rooms() -> Dictionary:
+	var out := {}
+	for zone in DirAccess.get_directories_at("res://levels"):
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if f.ends_with(".room"):
+				out[zone + "/" + f.get_basename()] = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+	return out
+
+
+## The rooms whose `prop:` lines lay `kind`.
+func _rooms_with_prop(rooms: Dictionary, kind: String) -> Array:
+	var out := []
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("prop", []):
+			if spec.get_slice(",", 2).strip_edges() == kind:
+				out.append(id)
+	return out
+
+
+## Pass 201: the rubric's faithfulness checklist (bible 15.3), held as a whole:
+## the original's eight towns each with a Guru, its sixteen ranks, four rings,
+## five keys, three springs, its guardians and the Evil One, its five spells
+## and its relics.
+func test_the_faithfulness_checklist_is_all_here() -> void:
+	var rooms := _all_rooms()
+	const TOWNS := {"Eolis": "eolis/guru_temple", "Apolune": "trunk/apolune", "Forepaw": "tower/forepaw",
+		"Mascon": "mist/mascon", "Victim": "mist/victim", "Conflate": "branches/conflate",
+		"Daybreak": "daybreak/daybreak", "Dartmoor": "dartmoor/drowned_market"}
+	var no_guru := []
+	for town: String in TOWNS:
+		var has := false
+		for spec: String in rooms.get(TOWNS[town], {"lists": {}}).lists.get("npc", []):
+			has = has or spec.get_slice(",", 2).strip_edges() == "guru"
+		if not has:
+			no_guru.append(town)
+	check(no_guru.is_empty(), "each of the original's eight towns has a Guru (missing: %s)" % [no_guru])
+	check(GameState.RANKS == ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
+		"Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"], "the original's sixteen ranks, in order")
+	var rings := []
+	for id: String in BossArena.BOSSES:
+		if BossArena.BOSSES[id].has("ring"):
+			rings.append(BossArena.BOSSES[id].ring)
+	rings.sort()
+	check(rings == ["demon", "dworf", "elf", "ruby"] and ZenisGate.RINGS.size() == 4, "the four rings, each a guardian's, open Zenis (%s)" % [rings])
+	var items := GameData.table("items")
+	var locks := {}
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("lock", []):
+			locks[spec.get_slice(",", 2).strip_edges()] = true
+	for card: String in ["jack", "queen", "king", "ace"]:
+		check(items.has(card + "_key"), "the %s Key is an item" % card.capitalize())
+	check(locks.has("queen") and locks.has("king") and locks.has("ace") and locks.has("joker"), "and each card but the Jack (the default) has a door (%s)" % [locks.keys()])
+	check(_rooms_with_prop(rooms, "joker_key").size() == 1, "the one Joker Key lies in one room")
+	check(Fountain.SPRINGS == ["trunk", "mist", "sky"], "the three springs fill Eolis's fountain")
+	for spring: String in Fountain.SPRINGS:
+		check(_rooms_with_prop(rooms, "spring_" + spring).size() == 1, "the Spring of %s has its room" % spring.capitalize())
+	var arenas := {}
+	for id: String in rooms:
+		var b := String(rooms[id].header.get("boss", ""))
+		if b != "":
+			arenas[b] = int(arenas.get(b, 0)) + 1
+	for boss: String in ["rokusutahn", "zoradohna", "ripasheiku", "zorugeriru", "pakukame", "borabohra", "king_grieve", "shadow_eura", "evil_one"]:
+		check(BossArena.BOSSES.has(boss) and arenas.get(boss, 0) == 1, "%s has one arena" % boss)
+	check(Spells.ORDER == ["deluge", "thunder", "fire", "tilte", "death"], "the original's five spells")
+	var abilities: Dictionary = GameState.fresh().abilities
+	check(BossArena.BOSSES.foreman.get("ability", "") == "mattock", "the Mattock is the Foreman's")
+	for relic: String in ["boots", "onyx", "hourglass", "pendant", "magical_rod"]:
+		check(ItemPickup.INFO.has(relic) and relic in ItemPickup.ABILITIES, "the %s can be found" % relic)
+	for relic: String in ["pendant", "magical_rod"]:
+		check(_rooms_with_prop(rooms, relic).size() == 1 and relic in Room.FOUND_PROPS, "the %s lies in one room and counts as a treasure" % relic)
+	check(abilities.has("pendant") and abilities.has("magical_rod"), "a save carries the relics")
+
+
+## Pass 201: the original's Pendant (the end of the Tower of Suffer, in the
+## corner of its guardian's room) and Magical Rod (Conflate, up a ladder to the
+## right). The Pendant was meant to raise the blade's power (a slip in the
+## original's code lowered it instead); the Rod raised Deluge from 6 to 9.
+func test_the_pendant_and_the_magical_rod() -> void:
+	GameState.new_game()
+	check(_rooms_with_prop(_all_rooms(), "pendant") == ["mist/hag_mire"], "the Pendant lies in the Matriarch's Mire")
+	check(_rooms_with_prop(_all_rooms(), "magical_rod") == ["branches/conflate"], "the Magical Rod lies in Conflate")
+	var room := make_room(_GOLD_ROOM)
+	var p := make_player(room, Vector2i(2, 3))
+	p.abilities["pendant"] = false
+	p.abilities["magical_rod"] = false
+	await frames(2)
+	var plain := p.blade_mult()
+	var bolt := Spells.cast("deluge", p) as DelugeBolt
+	check(bolt.damage == Spells.DATA.deluge.damage, "without the Rod, Deluge hits for %d" % bolt.damage)
+	bolt.free()
+	for kind: String in ["pendant", "magical_rod"]:
+		var item := ItemPickup.new()
+		item.kind = kind
+		item.pickup_id = "test:" + kind
+		room.add_child(item)
+		item.global_position = p.global_position + Vector2(0, -12)
+		await frames(2)
+		check(p.abilities.get(kind, false) and GameState.is_collected("test:" + kind) and bool(GameState.data.abilities.get(kind, false)),
+			"touching the %s takes it, for good" % kind)
+	check_near(p.blade_mult(), plain * p.combat.pendant_mult, 0.0001, "the Pendant: every blade hit a tenth harder")
+	bolt = Spells.cast("deluge", p) as DelugeBolt
+	check(bolt.damage == roundi(Spells.DATA.deluge.damage * 1.5), "the Rod: Deluge half again as hard (%d)" % bolt.damage)
+	bolt.free()
+	room.free()
+	GameState.new_game()
+
+
 ## Pass 189: the shop and the Equipment page give each blade's numbers, and
 ## the Equipment page changes the cloak's dye anywhere, not only at Ilse's.
 func test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak() -> void:
