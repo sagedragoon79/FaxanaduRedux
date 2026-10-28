@@ -3,6 +3,11 @@ extends RefCounted
 ## Base for test suites. Each `test_*` method runs in a fresh arena node and
 ## may await physics frames. Inputs set right after an await apply to that frame.
 
+## Where Settings points while tests run (pass 231), so no test can ever load
+## or overwrite the player's own user://settings.cfg. The runner sets it
+## before every test.
+const SETTINGS_PATH := "user://test_runner_settings.cfg"
+
 var runner: Node
 var arena: Node2D
 var current_test := ""

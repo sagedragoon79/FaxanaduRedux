@@ -38,7 +38,7 @@ bible changes substantially (link in the project memory).
   section 6. Change both together and keep `tests/` asserting them.
 - The player reads intent from `PlayerInput`, never from `Input` directly, so tests can script it.
 - Player options live in `Settings` (`scripts/data/settings.gd`, saved to user://settings.cfg). The game
-  loads them at start; tests never do, and tests that change them must point `Settings.path` elsewhere.
+  loads them at start; tests never do. The test runner points `Settings.path` at a test file and resets every option before each test, and it fails a test that leaves an option (or other global state) changed, so put back what you change.
 - Collision layers: see `docs/architecture.md`.
 - Every new mechanic gets a test in `tests/`.
 - PixelLab (second art generator): `python3 tools/art/pixellab.py` (balance, post, job, get). The token is a cloud network secret for api.pixellab.ai (the proxy adds the header;

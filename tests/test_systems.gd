@@ -14,11 +14,25 @@ func _town() -> Dictionary:
 func _restore() -> void:
 	Settings.reset()
 	Settings.apply()
-	Settings.path = Settings.PATH
+	Settings.path = SETTINGS_PATH
 	Feel.rumble_enabled = false
 	for suffix: String in ["", ".bak", ".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEMP_SETTINGS + suffix))
 
+
+
+## Pass 231: every test starts from the same clean slate, whatever the one
+## before it did, and the options point at a file of their own, never the
+## player's user://settings.cfg.
+func test_every_test_starts_from_a_clean_slate() -> void:
+	check(Settings.path == SETTINGS_PATH and Settings.path != Settings.PATH, "the options file is the tests' own (%s)" % Settings.path)
+	check((runner.call("_leaks") as Array).is_empty(), "nothing the last test changed is left (%s)" % [runner.call("_leaks")])
+	Settings.damage_numbers = true
+	TimeStop.start()
+	var leaks: Array = runner.call("_leaks")
+	check(leaks.has("settings changed") and leaks.has("time stopped"), "a changed option and stopped time count as leaks (%s)" % [leaks])
+	runner.call("_clean_slate")
+	check((runner.call("_leaks") as Array).is_empty(), "and the slate wipes them")
 
 func test_settings_save_load_and_apply() -> void:
 	Settings.path = TEMP_SETTINGS
@@ -456,6 +470,7 @@ func test_the_game_plays_the_secret_ending_for_a_flawless_run() -> void:
 	await frames(3)
 	g.menu.close()
 	GameState.new_game()
+	_restore()  # the game loaded and applied the options (pass 231)
 
 
 ## Every field of the save, set away from its new-game value, must come back

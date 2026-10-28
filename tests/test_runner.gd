@@ -25,15 +25,7 @@ var _filter := ""
 
 
 func _ready() -> void:
-	Feel.hitstop_enabled = false
-	Feel.rumble_enabled = false
-	Sfx.volume_db = -80.0
-	# Random bread and mana drops would make kills nondeterministic; tests that
-	# check drops turn them on and back off.
-	Drop.bread_chance = 0.0
-	Drop.mana_chance = 0.0
-	Drop.poison_chance = 0.0
-	Drop.rare_chance = 0.0
+	_clean_slate()
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--filter="):
 			_filter = arg.trim_prefix("--filter=")
@@ -45,7 +37,6 @@ func _ready() -> void:
 			var name: String = m["name"]
 			if not name.begins_with("test_") or (_filter != "" and not name.contains(_filter)):
 				continue
-			Feel.reset()
 			var arena := Node2D.new()
 			add_child(arena)
 			suite.arena = arena
@@ -62,13 +53,69 @@ func _ready() -> void:
 			# A sound played by a name with no file is silence, not an error (pass 207).
 			if not Sfx.missing.is_empty():
 				record(name, false, "played sounds that do not exist: %s" % [Sfx.missing])
+			# Statics outlive the test that set them (pass 231): a test must put
+			# back what it changed, and the slate is wiped clean either way.
+			var leaks := _leaks()
+			if not leaks.is_empty():
+				record(name, false, "left global state changed: %s" % [leaks])
 			print("%s %s" % ["PASS" if _failed == before else "FAIL", name])
 			arena.queue_free()
 			await get_tree().physics_frame
+			_clean_slate()
+	for suffix: String in ["", ".bak", ".tmp"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(TestSuite.SETTINGS_PATH + suffix))
 	print("\n%d checks passed, %d failed" % [_passed, _failed])
 	for f in _failures:
 		print("  - " + f)
 	get_tree().quit(1 if _failed > 0 else 0)
+
+
+## The state every test starts from: default options (their file kept apart
+## from the player's), no hitstop, rumble or sound, no random drops (they would
+## make kills nondeterministic; tests that check drops turn them on and back
+## off), and no stopped time, trial, rush or forced pose.
+func _clean_slate() -> void:
+	Settings.reset()
+	Settings.keys = {}
+	Settings.path = TestSuite.SETTINGS_PATH
+	Settings.apply()
+	Feel.hitstop_enabled = false
+	Feel.rumble_enabled = false
+	Feel.reset()
+	Sfx.volume_db = -80.0
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
+	Drop.poison_chance = 0.0
+	Drop.rare_chance = 0.0
+	TimeStop.reset()
+	Trials.run = {}
+	BossRush.run = {}
+	PlayerVisual.forced = ""
+	PlayerVisual.body_sets = true
+
+
+## Global state a test left changed (pass 231). Statics outlive the test that
+## set them, so a leak changes what every later test sees.
+func _leaks() -> Array[String]:
+	var out: Array[String] = []
+	if TimeStop.active():
+		out.append("time stopped")
+	if Trials.active():
+		out.append("a trial running")
+	if BossRush.active():
+		out.append("a boss rush running")
+	if PlayerVisual.forced != "":
+		out.append("a forced pose (%s)" % PlayerVisual.forced)
+	if not PlayerVisual.body_sets:
+		out.append("body sets off")
+	if Settings.path != TestSuite.SETTINGS_PATH or Settings.shake != 0 or Settings.flashes != 0 or not Settings.rumble or Settings.damage_numbers \
+			or Settings.music_volume != 8 or Settings.sound_volume != 8 or Settings.speed != 0 or not Settings.keys.is_empty():
+		out.append("settings changed")
+	if Drop.bread_chance != 0.0 or Drop.mana_chance != 0.0 or Drop.poison_chance != 0.0 or Drop.rare_chance != 0.0:
+		out.append("drop chances on")
+	if Feel.hitstop_enabled or Feel.rumble_enabled or Feel.game_speed != 1.0 or Feel.shake_scale != 1.0 or Sfx.volume_db != -80.0:
+		out.append("feel or volume changed")
+	return out
 
 
 func record(test: String, ok: bool, msg: String) -> void:
