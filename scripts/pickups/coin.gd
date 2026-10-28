@@ -70,8 +70,14 @@ func _collect(p: Player) -> void:
 	d.setup("coin")
 	get_parent().add_child(d)
 	d.global_position = global_position
-	Sfx.play("coin", 0.15, -4.0)
+	Sfx.play(sound(value), 0.15, -4.0)
 	queue_free()
+
+
+## What a coin sounds like as you take it (pass 206): the 25 and 100 g coins
+## ring lower and longer than the small ones, so a big purse sounds big.
+static func sound(coin_value: int) -> String:
+	return "coin_big" if coin_value >= 25 else "coin"
 
 
 ## Drawn at 2x render density: a spinning coin seen edge-on to face-on.
