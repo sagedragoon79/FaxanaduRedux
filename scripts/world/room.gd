@@ -801,6 +801,14 @@ func float_raft(x0: int, x1: int, row: int) -> void:
 		_one_way[cell] = true
 
 
+## How hard this room's foes hit (CombatTuning.ZONE_THREAT, design bible 5.5).
+## A boss's arena is 1: each boss is tuned on its own.
+func threat() -> float:
+	if header.has("boss"):
+		return 1.0
+	return float(CombatTuning.ZONE_THREAT.get(zone, 1.0))
+
+
 ## True if the tile under `world_pos` is solid ground (not a one-way platform).
 func is_solid_at(world_pos: Vector2) -> bool:
 	var cell := cell_at(world_pos)
