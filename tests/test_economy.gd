@@ -1825,6 +1825,48 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	check(abilities.has("pendant") and abilities.has("magical_rod"), "a save carries the relics")
 
 
+
+## Pass 209: the original's towns each kept a tool shop and sold keys. Every
+## one of the eight has a keeper standing in it who sells goods (an Ointment or
+## an Elixir) and one who sells Jack Keys; the four card keys are each sold a
+## zone before their doors, and the Joker is never sold. Bible 10.2's item-shop
+## row is held to the shelves: no shop sells anything the items table lacks.
+func test_every_town_keeps_the_originals_shops() -> void:
+	var rooms := _all_rooms()
+	var npcs := GameData.table("npcs")
+	var shops := GameData.table("shops")
+	var items := GameData.table("items")
+	var standing := {}
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("npc", []):
+			standing[spec.get_slice(",", 2).strip_edges()] = true
+	var sells := {}
+	for npc: String in npcs:
+		if npcs[npc].get("role", "") != "shop" or not standing.has(npc):
+			continue
+		var shop: String = npcs[npc].shop
+		var town := shop.get_slice("_", 0)
+		for entry: Dictionary in shops[shop].stock:
+			sells[town + ":" + String(entry.item)] = true
+	var no_goods := []
+	var no_keys := []
+	for town: String in ["eolis", "apolune", "forepaw", "mascon", "victim", "conflate", "daybreak", "dartmoor"]:
+		if not (sells.has(town + ":ointment") or sells.has(town + ":elixir")):
+			no_goods.append(town)
+		if not sells.has(town + ":jack_key"):
+			no_keys.append(town)
+	check(no_goods.is_empty(), "every town sells goods, an Ointment or an Elixir (missing: %s)" % [no_goods])
+	check(no_keys.is_empty(), "every town sells Jack Keys (missing: %s)" % [no_keys])
+	for card: String in ["queen", "king", "ace"]:
+		check(sells.keys().any(func(k: String) -> bool: return k.ends_with(":" + card + "_key")), "the %s Key is sold" % card.capitalize())
+	check(not sells.keys().any(func(k: String) -> bool: return k.ends_with(":joker_key")), "the Joker Key is only found")
+	var unknown := []
+	for shop: String in shops:
+		for entry: Dictionary in shops[shop].stock:
+			if not items.has(String(entry.item)):
+				unknown.append("%s: %s" % [shop, entry.item])
+	check(unknown.is_empty(), "every shelf sells a real item (%s)" % [unknown])
+
 ## Pass 201: the original's Pendant (the end of the Tower of Suffer, in the
 ## corner of its guardian's room) and Magical Rod (Conflate, up a ladder to the
 ## right). The Pendant was meant to raise the blade's power (a slip in the
