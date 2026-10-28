@@ -31,6 +31,7 @@ extends Node2D
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
 ##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Ointment ahead of the player
+##   --coins                    lay a 1, 5, 25 and 100 gold coin ahead of the player (pass 199)
 ##   --glove                    wear a War Glove (a rare drop) from the start
 ##   --shot-thrust=N            thrust (the Blade skill) on frame N
 ##   --damage-numbers           show damage numbers (the option) for this run
@@ -439,6 +440,13 @@ func _debug_open() -> void:
 			d.velocity = Vector2(0, 1)
 			world.room.add_child(d)
 			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
+	if _args.has("coins"):
+		for i in 4:
+			var c := Coin.new()
+			c.value = [1, 5, 25, 100][i]
+			c.velocity = Vector2(0, 1)
+			world.room.add_child(c)
+			c.global_position = player.global_position + Vector2(140 + i * 16, -8)
 	if _args.has("glove"):
 		player.put_on_glove()
 	if _args.has("reflect"):
