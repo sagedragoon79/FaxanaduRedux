@@ -41,6 +41,9 @@ bible changes substantially (link in the project memory).
   loads them at start; tests never do, and tests that change them must point `Settings.path` elsewhere.
 - Collision layers: see `docs/architecture.md`.
 - Every new mechanic gets a test in `tests/`.
+- PixelLab (second art generator): `python3 tools/art/pixellab.py` (balance, post, job, get). The token is a cloud network secret for api.pixellab.ai (the proxy adds the header;
+  off the cloud set `PIXELLAB_API_KEY`); never commit it. It also feeds the PixelLab MCP server in `.mcp.json`. Every call is logged in
+  `art/pixellab-ledger.csv`; outputs land in `art/pixellab/`. No production art until Sean picks the art direction.
 - Autosprite credits are limited: log every call in `art/autosprite-ledger.csv` and spend them
   only on character animation (design bible section 13.2).
 

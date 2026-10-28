@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pixellab": {
+      "type": "http",
+      "url": "https://api.pixellab.ai/mcp"
+    }
+  }
+}
