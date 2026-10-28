@@ -867,3 +867,58 @@ func test_the_towns_know_their_mini_bosses() -> void:
 	check(Room.flags_hold("boss:king_grieve boss:clockwork_alpha") and not Room.flags_hold("boss:king_grieve !boss:clockwork_alpha") and Room.flags_hold(""),
 		"conditions all have to hold")
 	GameState.new_game()
+
+
+## Design bible 3 (pass 195): no room is more than SAVE_REACH rooms (doors
+## walked) from a Meditation Shrine or a Guru, and where foes hit at double
+## (CombatTuning.ZONE_THREAT, 5.5) no more than DEEP_SAVE_REACH.
+const SAVE_REACH := 4
+const DEEP_SAVE_REACH := 3
+
+
+func test_no_room_is_far_from_a_rest() -> void:
+	var npcs: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/npcs.json"))
+	var links := {}
+	var zones := {}
+	var rests: Array[String] = []
+	for zone in DirAccess.get_directories_at("res://levels"):
+		if zone == "gym" or zone == "trials":
+			continue
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var id := zone + "/" + f.get_basename()
+			var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+			zones[id] = zone
+			if not links.has(id):
+				links[id] = {}
+			for spec: String in parsed.lists.get("door", []):
+				var to := spec.split(",")[1].strip_edges()
+				links[id][to] = true
+				if not links.has(to):
+					links[to] = {}
+				links[to][id] = true
+			var rest := false
+			for row: String in parsed.grid:
+				rest = rest or row.contains("S")
+			for spec: String in parsed.lists.get("npc", []):
+				var who := spec.split(",")[2].strip_edges()
+				rest = rest or str(npcs.get(who, {}).get("role", "")) == "guru"
+			if rest:
+				rests.append(id)
+	check(rests.size() >= 25, "the world has its shrines and Gurus (%d)" % rests.size())
+	var dist := {}
+	var queue: Array[String] = []
+	for id in rests:
+		dist[id] = 0
+		queue.append(id)
+	while not queue.is_empty():
+		var at: String = queue.pop_front()
+		for to: String in links.get(at, {}):
+			if not dist.has(to):
+				dist[to] = dist[at] + 1
+				queue.append(to)
+	for id: String in zones:
+		var deep := float(CombatTuning.ZONE_THREAT.get(zones[id], 1.0)) >= 2.0
+		var reach := DEEP_SAVE_REACH if deep else SAVE_REACH
+		check(dist.has(id) and int(dist[id]) <= reach, "%s is within %d rooms of a rest (%s)" % [id, reach, dist.get(id, "none")])
