@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Calls the PixelLab API (https://api.pixellab.ai/v2) and saves the images it returns.
 
-The token comes from the PIXELLAB_API_KEY environment variable (set in the cloud environment's
-settings, never committed). Every POST is logged in art/pixellab-ledger.csv with what it cost, as
+The token is never committed. In the cloud environment it is a network secret for api.pixellab.ai
+(Bearer, header Authorization) that the proxy adds to every request, so no header is sent here.
+Elsewhere, set PIXELLAB_API_KEY and it is sent as the Bearer token. Every POST is logged in art/pixellab-ledger.csv with what it cost, as
 Autosprite calls are in art/autosprite-ledger.csv. Endpoints, parameters and enum values are in
 https://api.pixellab.ai/v2/llms.txt and the OpenAPI spec it links.
 
@@ -41,19 +42,22 @@ POLL_LIMIT = 600
 
 
 def request(method, path, body=None):
-    key = os.environ.get("PIXELLAB_API_KEY", "")
-    if not key:
-        sys.exit("PIXELLAB_API_KEY is not set (add it in the cloud environment's settings).")
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    if os.environ.get("PIXELLAB_API_KEY"):
+        headers["Authorization"] = f"Bearer {os.environ['PIXELLAB_API_KEY']}"
     req = urllib.request.Request(
         f"{BASE}/{path.lstrip('/')}",
         method=method,
         data=None if body is None else json.dumps(body).encode(),
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "Accept": "application/json"},
+        headers=headers,
     )
     try:
         with urllib.request.urlopen(req, timeout=300) as r:
             return json.loads(r.read() or b"{}")
     except urllib.error.HTTPError as e:
+        if e.code == 401:
+            sys.exit(f"{method} /{path}: HTTP 401: no PixelLab token (add the api.pixellab.ai network secret, "
+                     "or set PIXELLAB_API_KEY)")
         sys.exit(f"{method} /{path}: HTTP {e.code}: {e.read().decode(errors='replace')[:2000]}")
 
 
