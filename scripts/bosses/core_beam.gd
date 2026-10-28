@@ -24,6 +24,7 @@ var _hit := false
 func _ready() -> void:
 	z_index = 3
 	add_to_group("enemy_projectile")
+	add_to_group(Player.MAGIC)
 
 
 func firing() -> bool:

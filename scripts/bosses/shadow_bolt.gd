@@ -26,6 +26,7 @@ var _t := 0.0
 func _ready() -> void:
 	z_index = 2
 	add_to_group("enemy_projectile")
+	add_to_group(Player.MAGIC)
 
 
 func hit_rect() -> Rect2:

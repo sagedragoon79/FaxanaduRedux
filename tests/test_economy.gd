@@ -706,6 +706,48 @@ func test_large_shield_guards_more() -> void:
 	check(Shop.status("eolis_arms", 2, p) != "owned", "a shield you never had stays for sale (pass 186)")
 
 
+## Pass 225: in the original a shield did one thing, it resisted enemy magic
+## (the manual: Small 50%, Large 75%, Magic 90%, and the Battle Helmet nearly
+## all). The remake's shields guard and parry; now they ward a foe's sorcery
+## too, guarding or not, at less than the original so the guard still matters.
+func test_a_shield_wards_a_foes_sorcery() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	var wards := {"": 0.0, "small_shield": 0.2, "large_shield": 0.3, "magic_shield": 0.4}
+	for shield: String in wards:
+		GameState.data.equipment.shield = shield
+		GameState.refresh_stats(p)
+		check_near(p.magic_ward, wards[shield], 0.001, "%s wards %d%% of sorcery" % [shield if shield != "" else "no shield", roundi(wards[shield] * 100)])
+	GameState.data.equipment.helmet = "battle_helmet"
+	GameState.refresh_stats(p)
+	check_near(p.magic_ward, GameState.MAX_WARD, 0.001, "the Battle Helmet adds 20%%, to the most there is (%.2f)" % p.magic_ward)
+	GameState.data.equipment.blade = "dwarvish_broad_sword"
+	GameState.refresh_stats(p)
+	check_near(p.magic_ward, 0.2, 0.001, "a shield on the back of a two-hander wards nothing; the helmet still does")
+	GameState.data.equipment.blade = "short_sword"
+	GameState.data.equipment.helmet = ""
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(p)
+	var blow := Node2D.new()
+	var hex := Node2D.new()
+	hex.add_to_group(Player.MAGIC)
+	for n: Node2D in [blow, hex]:
+		w.room.add_child(n)
+		n.global_position = p.global_position + Vector2(p.facing * 30, 0)
+	p.hp = p.max_hp
+	check(p.receive_attack(20, blow, false) == "hit" and p.hp == p.max_hp - 20, "a blow lands whole on an unguarded hero (hp %d)" % p.hp)
+	p.hp = p.max_hp
+	p._invuln_timer = 0.0
+	check(p.receive_attack(20, hex, false) == "hit" and p.hp == p.max_hp - 16, "a hex of 20 lands as 16 through the Small Shield, unguarded (hp %d)" % p.hp)
+	var casters := ["res://scripts/enemies/mire_grasp.gd", "res://scripts/bosses/shadow_bolt.gd", "res://scripts/bosses/crystal_shard.gd", "res://scripts/bosses/core_beam.gd"]
+	var plain := []
+	for path: String in casters:
+		if not FileAccess.get_file_as_string(path).contains("add_to_group(Player.MAGIC)"):
+			plain.append(path.get_file())
+	check(plain.is_empty(), "the hags' hex, Eura's bolts, Grieve's shards and the core's beam are sorcery (not: %s)" % [plain])
+
+
 func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player

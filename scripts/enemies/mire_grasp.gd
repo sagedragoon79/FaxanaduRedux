@@ -31,6 +31,7 @@ func _ready() -> void:
 	z_index = 2
 	add_to_group("light")
 	add_to_group("enemy_projectile")
+	add_to_group(Player.MAGIC)
 
 
 ## The floor point under `from` (the top of the first solid tile or plank below
