@@ -124,7 +124,7 @@ def cost(result):
 def log(endpoint, out_dir, spent, outcome, note):
     new = not LEDGER.exists()
     with LEDGER.open("a", newline="") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")
         if new:
             w.writerow(["date", "endpoint", "out_dir", "cost", "result", "notes"])
         w.writerow([datetime.date.today().isoformat(), endpoint, out_dir, spent, outcome, note])
