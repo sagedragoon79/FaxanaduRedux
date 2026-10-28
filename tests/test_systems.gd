@@ -781,6 +781,35 @@ func test_a_save_with_gear_in_the_wrong_slots_plays_on() -> void:
 	check(caught.is_empty(), "and nothing logs an engine error (%s)" % [caught])
 
 
+## Pass 213: a pickup's id is its room and cell, so a moved pickup would come
+## back in a save that had taken it. Each move is listed, and the list is true.
+func test_a_moved_pickup_stays_taken() -> void:
+	for old: String in GameState.MOVED_PICKUPS:
+		var now: String = GameState.MOVED_PICKUPS[old]
+		var src := GameState.fresh()
+		src.collected = {old: true, "mist/feather_hollow:4,19": true}
+		var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+		check(got.collected.has(now) and not got.collected.has(old) and got.collected.has("mist/feather_hollow:4,19"),
+				"a save that took %s has taken %s (%s)" % [old, now, got.collected])
+		check(_pickup_char(old) == "" and _pickup_char(now) != "", "%s is empty now and %s holds a pickup" % [old, now])
+	var src := GameState.fresh()
+	src.collected = {}
+	check(GameState.sanitize(JSON.parse_string(JSON.stringify(src))).collected.is_empty(), "a save that took none takes none")
+
+
+## The pickup legend at a pickup id's cell ("" for none).
+func _pickup_char(pickup_id: String) -> String:
+	var room := pickup_id.get_slice(":", 0)
+	var cell := pickup_id.get_slice(":", 1)
+	var grid: Array = Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % room)).grid
+	var y := int(cell.get_slice(",", 1))
+	var x := int(cell.get_slice(",", 0))
+	if y >= grid.size() or x >= String(grid[y]).length():
+		return ""
+	var c := String(grid[y])[x]
+	return c if "GXOdhnzLWF*&{(}$".contains(c) else ""
+
+
 ## Pass 184: the Hand Dagger is now the Short Sword. A save from before
 ## keeps it in hand and keeps its tempers; the Throw button is bound; and the
 ## Rune Dagger in the Hornet Gallery grants the throw.

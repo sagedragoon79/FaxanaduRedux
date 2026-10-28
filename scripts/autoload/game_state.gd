@@ -18,6 +18,12 @@ const SAVE_PATH := "user://save_%d.json"
 const VERSION := 1
 ## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
 const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_broad_sword"}
+## Pickups a newer build moved: old id -> new id. A pickup's id is its room and
+## cell, so a save that took it at the old cell would find it again (pass 213).
+const MOVED_PICKUPS := {
+	"dartmoor/drowned_nave:31,5": "dartmoor/drowned_nave:31,6",  # pass 67
+	"branches/north_bough:8,7": "branches/north_bough:9,6",  # pass 211
+}
 ## The equipment slots, in the order the Equipment page lists them.
 const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]
 
@@ -546,6 +552,11 @@ static func sanitize(src: Variant) -> Dictionary:
 		if out.tempers.has(old):
 			out.tempers[now] = maxi(int(out.tempers.get(now, 0)), int(out.tempers[old]))
 			out.tempers.erase(old)
+	# Pickups moved since a save was written stay taken (pass 213).
+	for old: String in MOVED_PICKUPS:
+		if out.collected.has(old):
+			out.collected[MOVED_PICKUPS[old]] = true
+			out.collected.erase(old)
 	# The Battle Helmet left the shield slot for its own (pass 185). It had
 	# guarded and turned shots like the Magic Shield, and with it on every
 	# shield showed as owned, so the hand it held gets the Magic Shield.
