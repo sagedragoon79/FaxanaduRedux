@@ -1846,3 +1846,100 @@ func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> voi
 	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
 	check(got.equipment.blade == "dwarvish_broad_sword" and int(got.tempers.dwarvish_broad_sword) == 1, "the Giant Blade is the Dwarvish Broad Sword, tempers kept")
 	check(got.gear == ["short_sword", "dwarvish_broad_sword", "leather_armor", "large_shield"], "an old save keeps what it wore (%s)" % [got.gear])
+
+
+## The gold sheet (design bible 10.1, pass 197): along the critical path, a
+## player who opens half the chests and fells each foe once can buy the par kit
+## of the damage sheet (5.5) where its shops stand, with no grinding.
+## Each step: the zone just walked, then what the par player buys before the next.
+const GOLD_PATH := [
+	["eolis", [["eolis_arms", "long_sword"], ["eolis_arms", "leather_armor"]]],
+	["trunk", [["apolune_armor", "studded_mail"]]],
+	["tower", [["forepaw_smith", "temper_1"]]],
+	["mist", []],
+	["branches", []],
+	["daybreak", [["forepaw_smith", "temper_2"], ["daybreak_armor", "full_plate"]]],
+	["dartmoor", []],
+	["zenis", []],
+]
+const _GOLD_ROOM := [
+	"############",
+	"#..........#",
+	"#..........#",
+	"#..........#",
+	"############",
+]
+const GOLD_FOES := {
+	"M": "monodron", "H": "hornet", "D": "rot_dwarf", "T": "sap_spitter", "U": "grub_lump",
+	"I": "iron_dwarf", "B": "gear_bat", "K": "minecart_rider", "A": "lantern_ghost",
+	"V": "bog_myconid", "p": "drowned_dwarf", "m": "leaf_mantis", "!": "bark_knight",
+	";": "seed_bomber", "?": "marsh_hag", "t": "thunder_beetle", "y": "storm_harpy",
+	"]": "spire_sentinel", "q": "crystal_dwarf", "e": "shade_knight", "j": "clockwork_hound",
+	"s": "meteor_slug", "l": "spring_eel",
+}
+
+
+## [chest gold, one pass of foes' gold] in a zone's rooms. Foes pay their
+## zone's threat over (Enemy.die, pass 197).
+func _zone_gold(zone: String) -> Array[int]:
+	var chests := 0
+	var foes := 0.0
+	var mean := {}
+	for f in DirAccess.get_files_at("res://levels/" + zone):
+		if not f.ends_with(".room"):
+			continue
+		var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+		var each := int(parsed.header.get("chest_gold", "100"))
+		var over := {}
+		for spec: String in parsed.lists.get("chest", []):
+			var c := spec.split(",")
+			over[Vector2i(int(c[0]), int(c[1]))] = int(c[2])
+		var grid: Array = parsed.grid
+		for y in grid.size():
+			var row: String = grid[y]
+			for x in row.length():
+				var ch := row[x]
+				if ch == "$":
+					chests += int(over.get(Vector2i(x, y), each))
+				elif GOLD_FOES.has(ch):
+					if not mean.has(ch):
+						var foe: Enemy = load("res://scripts/enemies/%s.gd" % GOLD_FOES[ch]).new()
+						mean[ch] = (foe.gold_min + foe.gold_max) * 0.5
+						foe.free()
+					foes += mean[ch] * (Enemy.CORRUPT_GOLD if zone == "zenis" else 1) * float(CombatTuning.ZONE_THREAT.get(zone, 1.0))
+	return [chests, roundi(foes)]
+
+
+func test_the_par_kit_is_affordable_without_grinding() -> void:
+	var shops: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/shops.json"))
+	var purse := Npc.KING_GOLD
+	for step: Array in GOLD_PATH:
+		var zone: String = step[0]
+		var gold := _zone_gold(zone)
+		purse += gold[0] / 2 + gold[1]
+		for buy: Array in step[1]:
+			var price := -1
+			for entry: Dictionary in shops[buy[0]].stock:
+				if entry.item == buy[1]:
+					price = int(entry.price)
+			check(price > 0, "%s sells %s" % [buy[0], buy[1]])
+			purse -= price
+			check(purse >= 0, "after %s, half the chests and one pass of foes buy %s (%d g left)" % [zone, buy[1], purse])
+
+
+func test_a_deep_zones_foes_pay_as_they_hit() -> void:
+	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(_GOLD_ROOM)))
+	arena.add_child(room)
+	var foe := Monodron.new()
+	foe.gold_min = 10
+	foe.gold_max = 10
+	foe.position = cell_feet(6, 3)
+	room.add_child(foe)
+	await frames(2)
+	foe.die()
+	await frames(2)
+	var coins := 0
+	for c in room.get_children():
+		if c is Coin:
+			coins += (c as Coin).value
+	check(coins == 20, "a Dartmoor foe's 10 gold comes out as 20 (%d)" % coins)

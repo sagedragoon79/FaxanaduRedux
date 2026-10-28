@@ -1032,13 +1032,21 @@ Deviations, and why:
 
 **Gold** only. Enemies drop gold scaled by zone; chests and secrets give lumps.
 
-| Zone | Typical enemy drop | Chest | Time to afford the next zone's best item by normal play |
-|------|--------------------|-------|---------------------------------------------------------|
-| Trunk Hollows | 2 to 6 g | 50 to 150 g | about 20 min |
-| Tower of Trunk | 5 to 12 g | 150 to 300 g | about 25 min |
-| The Mist | 10 to 25 g | 300 to 600 g | about 30 min |
-| Branches | 20 to 40 g | 500 to 900 g | about 30 min |
-| Dartmoor and Zenis | 35 to 70 g | 800 to 1,500 g | n/a |
+**As built (the gold sheet, pass 197).** Until pass 197 a table here promised drops of 35 to 70 g a foe in Dartmoor. In the code no foe paid more than 16 anywhere, so "scaled by zone" was not true: the chests carry the economy. Pass 197 makes it true by the same measure as the damage. A foe's gold is multiplied by its zone's threat (5.5, `Enemy.die` through `Room.threat`), so a Dartmoor foe pays double for hitting double. A Zenis foe pays double again for its corruption. A boss's purse (60 to 500 g) takes its arena's threat as well, as its blows do (pass 196). The numbers, from the rooms:
+
+| Zone | Foe drop (after threat) | Chests (count, range) | Chest gold | One pass of foes |
+|------|------|------|------|------|
+| Eolis | none | 3: 60 to 1,987 | 2,167 g | none |
+| Trunk Hollows | 2 to 9 g | 9: 90 to 150 | 1,080 g | about 240 g |
+| Tower of Trunk | 2 to 14 g | 13: 160 to 300 | 2,980 g | about 420 g |
+| The Mist | 4 to 17 g | 8: 180 to 900 | 2,780 g | about 260 g |
+| Branches | 3 to 18 g | 7: 260 to 1,800 | 4,040 g | about 160 g |
+| Daybreak | 3 to 26 g | 5: 380 to 3,200 | 5,220 g | about 190 g |
+| Dartmoor | 16 to 32 g | 6: 520 to 5,000 | 8,640 g | about 540 g |
+| Sunken Spring | 12 to 32 g | 2: 120 and 160 | 280 g | about 120 g |
+| Zenis | 8 to 64 g (corrupted, x2) | none | none | about 1,080 g |
+
+**Par without grinding**, held by `test_the_par_kit_is_affordable_without_grinding`. Start with the King's 1,500 g, open half the chests and fell each foe once. That is enough to buy the damage sheet's par kit (5.5) at the shops where it stands: the Long Sword and Leather in Eolis, Studded Mail in Apolune after the Trunk, Temper I in Forepaw after the Tower, and Temper II and Full Plate after Daybreak. About 3,700 g is left after Full Plate. Potions are a flask refilled at every rest, not bought, so the deeper damage costs no gold. Ointments (300 g) and the Elixir (1,500 g) keep their prices.
 
 The goal: buy one key upgrade per zone without grinding, and buy everything only if you explore.
 
