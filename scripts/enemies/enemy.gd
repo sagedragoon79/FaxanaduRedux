@@ -235,7 +235,10 @@ func die() -> void:
 	d.setup("debris")
 	get_parent().add_child(d)
 	d.global_position = center()
-	Coin.spray(get_parent(), center(), randi_range(gold_min, gold_max))
+	# Risk pays (design bible 10.1, pass 197): a deep zone's foes hit harder
+	# (Room.threat, 5.5) and drop that much more gold.
+	var room := get_parent() as Room
+	Coin.spray(get_parent(), center(), roundi(randi_range(gold_min, gold_max) * (room.threat() if room != null else 1.0)))
 	Drop.roll(get_parent(), center(), poison_drops)
 	GameState.add_xp(xp)
 	var p := get_tree().get_first_node_in_group("player") as Player
