@@ -574,6 +574,34 @@ def main():
     out += chime
     save("hourglass", out, 0.5)
 
+    # The glass running out (pass 230): a dry clock tick for each of its last
+    # quarter-seconds, so you hear when stopped time is about to end.
+    d = 0.08
+    n = int(RATE * d)
+    tick = highpass(noise(d), 2400) * env(n, 0.0005, 3.0) * 1.1
+    tock = osc(np.full(n, 1760.0), "sine") * env(n, 0.001, 4.0) * 0.35
+    save("glass_tick", tick + tock, 0.45)
+
+    # Time running again (pass 230): the turned glass's shimmer let go forward,
+    # a rush of air and a low clock thunk as the world starts up.
+    d = 0.6
+    n = int(RATE * d)
+    rush = highpass(lowpass(noise(d), slide(1500, 6000, d, 0.6)), 600) * env(n, 0.02, 1.4) * 0.6
+    thunk = lowpass(osc(slide(180, 90, 0.2, 0.8), "sine"), 400) * env(int(RATE * 0.2), 0.001, 2.5)
+    out = rush.copy()
+    out[: len(thunk)] += thunk
+    save("glass_end", out, 0.5)
+
+    # A ward turning sorcery (pass 230, bible 5.2): a bright glassy ring under
+    # the hurt, so you hear your shield and helmet take part of a hex.
+    d = 0.4
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    ring = (osc(np.full(n, 2093.0), "sine") + 0.6 * osc(np.full(n, 3136.0), "sine") + 0.4 * osc(np.full(n, 1046.5), "sine")) * np.exp(-t * 9.0) * 0.35
+    sparkle = highpass(noise(0.05), 5000) * env(int(RATE * 0.05), 0.001, 2.0) * 0.5
+    ring[: len(sparkle)] += sparkle
+    save("ward", ring, 0.45)
+
     # A Clockwork Hound winding up: a ratchet clicking faster and faster under
     # a tightening spring whine.
     d = 0.5

@@ -763,10 +763,13 @@ func test_a_shield_wards_a_foes_sorcery() -> void:
 		w.room.add_child(n)
 		n.global_position = p.global_position + Vector2(p.facing * 30, 0)
 	p.hp = p.max_hp
+	Sfx.recent.clear()
 	check(p.receive_attack(20, blow, false) == "hit" and p.hp == p.max_hp - 20, "a blow lands whole on an unguarded hero (hp %d)" % p.hp)
+	check(not Sfx.recent.has(Player.WARD_SOUND), "and rings no ward")
 	p.hp = p.max_hp
 	p._invuln_timer = 0.0
 	check(p.receive_attack(20, hex, false) == "hit" and p.hp == p.max_hp - 16, "a hex of 20 lands as 16 through the Small Shield, unguarded (hp %d)" % p.hp)
+	check(Sfx.recent.has(Player.WARD_SOUND), "and the ward rings as it turns the rest (pass 230)")
 	var casters := ["res://scripts/enemies/mire_grasp.gd", "res://scripts/bosses/shadow_bolt.gd", "res://scripts/bosses/crystal_shard.gd", "res://scripts/bosses/core_beam.gd"]
 	var plain := []
 	for path: String in casters:
