@@ -7,7 +7,7 @@ extends Node2D
 ## glow is a light, so the mark shows through the Mist's fog. The Hour Glass
 ## holds it still, mark or hand, like any enemy shot.
 
-const DAMAGE := 12
+const DAMAGE := 16
 ## Half the width of the mark, and of the hand's reach.
 const HALF_WIDTH := 12.0
 const REACH := 30.0

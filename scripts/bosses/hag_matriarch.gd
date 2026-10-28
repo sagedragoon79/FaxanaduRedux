@@ -8,7 +8,7 @@ extends Enemy
 ## great marsh-wisp in her staff to show where she is:
 ## - Hex (her staple): she raises the staff and marks the floor under you and to
 ##   either side with rings of bog light (three marks; five below half), the
-##   telegraph. Then mud hands burst out of every mark (`MireGrasp`, 12,
+##   telegraph. Then mud hands burst out of every mark (`MireGrasp`, 16,
 ##   unparryable): step between them. Strike her mid-hex and the whole spell
 ##   breaks: every mark fizzles and she gropes for her staff, open.
 ## - Sink: crowd her and she sinks into the bog (bubbles at her feet, the tell),
