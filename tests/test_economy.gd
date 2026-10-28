@@ -1823,6 +1823,15 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	for relic: String in ["pendant", "magical_rod"]:
 		check(_rooms_with_prop(rooms, relic).size() == 1 and relic in Room.FOUND_PROPS, "the %s lies in one room and counts as a treasure" % relic)
 	check(abilities.has("pendant") and abilities.has("magical_rod"), "a save carries the relics")
+	# Pass 217: in the original only the sword King Grieve swallowed can destroy
+	# the Evil One, and beating him gives it up. No room lays it (legend &).
+	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == "dragon_slayer", "King Grieve gives up the Dragon Slayer")
+	var laid := []
+	for id: String in rooms:
+		for row: String in rooms[id].grid:
+			if row.contains("&"):
+				laid.append(id)
+	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
 
 
 

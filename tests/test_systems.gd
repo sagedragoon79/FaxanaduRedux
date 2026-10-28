@@ -801,6 +801,28 @@ func test_a_moved_pickup_stays_taken() -> void:
 	check(GameState.sanitize(JSON.parse_string(JSON.stringify(src))).collected.is_empty(), "a save that took none takes none")
 
 
+## Pass 217: King Grieve gives up the Dragon Slayer, and the Heart Gate's
+## altar is bare. A save past him that never took the sword from the altar
+## gets it in hand; one that took it keeps the blade it holds; one before him
+## has no sword yet.
+func test_a_save_past_king_grieve_holds_the_dragon_slayer() -> void:
+	check(_pickup_char("zenis/heart_gate:40,10") == "", "the Heart Gate's altar is bare")
+	var src := GameState.fresh()
+	src.flags = {"boss:king_grieve": true}
+	src.equipment.blade = "long_sword"
+	src.gear = ["short_sword", "long_sword"]
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(bool(got.abilities.get("dragon_slayer", false)) and got.equipment.blade == "dragon_slayer" and Array(got.gear).has("dragon_slayer"),
+			"a save past him without the sword has it in hand (%s, %s)" % [got.equipment, got.gear])
+	src.abilities["dragon_slayer"] = true
+	src.gear = ["short_sword", "long_sword", "dragon_slayer"]
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.equipment.blade == "long_sword", "one that took it keeps the blade it holds (%s)" % got.equipment.blade)
+	src = GameState.fresh()
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(not bool(got.abilities.get("dragon_slayer", false)) and got.equipment.blade == "short_sword", "a save before him has no sword yet")
+
+
 ## The pickup legend at a pickup id's cell ("" for none).
 func _pickup_char(pickup_id: String) -> String:
 	var room := pickup_id.get_slice(":", 0)
