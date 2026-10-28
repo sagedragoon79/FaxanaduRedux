@@ -412,7 +412,7 @@ func _physics_process(delta: float) -> void:
 			_swim_drift(delta)
 		elif updraft > 0.0 and not input.down:
 			_ride_updraft(delta)
-		elif wind != 0.0 and velocity.y >= 0.0:
+		elif wind != 0.0 and velocity.y >= 0.0 and not _pinned_by_wind():
 			# The current bears you level once you stop rising.
 			velocity.y = move_toward(velocity.y, 0.0, tuning.wind_drag * delta)
 		elif not _glide(delta, on_floor, was_gliding):
@@ -1178,6 +1178,13 @@ func body_rect() -> Rect2:
 
 
 # --- Collision helpers ----------------------------------------------------------
+
+## A current pressing you into a wall stops bearing you up (pass 224): you slide
+## down the face. It had held you there, hanging still against a doorway's
+## lintel with the opening a few px below, until you thought to hold Down.
+func _pinned_by_wind() -> bool:
+	return test_move(global_transform, Vector2(signf(wind), 0))
+
 
 func _apply_corner_correction(delta: float) -> void:
 	if velocity.y >= 0.0:
