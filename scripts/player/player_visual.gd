@@ -18,6 +18,10 @@ const ARMOR_SHEETS := {
 	"full_plate": "hero_plate",
 	"battle_suit": "hero_battle",
 }
+## Armor and helmet worn together that have a body set of their own, drawn with
+## the helmet on (Sean's Battle Suit + Battle Helmet character): the helmet
+## layer is not drawn over it.
+const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -183,6 +187,9 @@ static func armor_sheet() -> String:
 		return ""
 	var worn := String(GameState.data.equipment.get("armor", ""))
 	var name: String = ARMOR_SHEETS.get(worn, "")
+	var helmed: String = HELMED_SHEETS.get(worn, "")
+	if helmed != "" and String(GameState.data.equipment.get("helmet", "")) == "battle_helmet" and Sheet.exists(helmed):
+		return helmed
 	return name if name != "" and Sheet.exists(name) else ""
 
 
@@ -277,7 +284,7 @@ func _draw() -> void:
 	if sheet != SHEET_NAME and player.cloak:
 		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
-	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet":
+	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet" and not sheet in HELMED_SHEETS.values():
 		# Its own layer over the head (paper-doll): the hero's sheet is bare-headed.
 		var crown: Array = info.get("head", [info.neck[0], info.neck[1] - 16])
 		_draw_helmet(Vector2(crown[0], crown[1]), tint)

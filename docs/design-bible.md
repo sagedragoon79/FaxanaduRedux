@@ -1292,7 +1292,7 @@ ranger clip by clip. The hero is drawn in layers so gear does not multiply anima
   (`detect: "hero"` in the manifest): `hand` (the leading fist, as the code rig's front hand), `head` (the crown of the
   head, from `head_point`, for the helmet and the hood), `neck`, and `back` (the nape of the shoulders, where a cloak hangs). Anchors are per set and
   per frame, so the sets do not need to be frame-synced. Attacks are drawn empty-handed.
-- **Battle Suit color:** its teal is turned to the Battle Helmet's (manifest `recolor` on `hero_battle`: hues 150-215 turned -10 degrees and saturated x1.6, rim light tinted teal), so suit and helmet read as one set (Sean, 2026-10-27).
+- **Battle Suit + Battle Helmet:** worn together they swap to a body of their own, `hero_battle_helm` (Sean's HeroStranger_ElvenPlateArmor_ElvenBattleHelm, drawn with the helmet on; `PlayerVisual.HELMED_SHEETS`), and the helmet layer is not drawn over it. Its crown is the top of the figure (manifest `"head": "top"`). The bare-headed Battle Suit keeps its own Autosprite colors, which match this set; the pass-212 teal recolor toward the pixel helmet is dropped, since the pixel helmet now only goes over the other armors and the old clips. Its sources came as 128 px cells of 16 frames (walk 14 and run 15 in a cycle, at 18 and 49 fps by the planted-foot measure).
 - **Scale:** all five share one scale, base idle = 46 world px (the ranger's height), so armor that stands taller or
   bulkier (plate, Battle Suit: about 1 px) shows it. Clips are 512 px cells at 14 fps; walk and run play every frame
   of one cycle, sped up until the planted foot keeps pace with the ground (run about 30 fps, walk up to 40).

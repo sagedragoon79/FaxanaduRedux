@@ -221,8 +221,8 @@ func test_armor_picks_its_body_set() -> void:
 	# Paper doll (design bible 13.4): each armor has a body sheet of its own,
 	# with the same clips, and anchors for the layers drawn over it.
 	var bad: Array[String] = []
-	for armor: String in PlayerVisual.ARMOR_SHEETS:
-		var sheet: String = PlayerVisual.ARMOR_SHEETS[armor]
+	var sheets: Array = PlayerVisual.ARMOR_SHEETS.values() + PlayerVisual.HELMED_SHEETS.values()
+	for sheet: String in sheets:
 		if not Sheet.exists(sheet):
 			bad.append(sheet + " missing")
 			continue
@@ -271,6 +271,16 @@ func test_armor_picks_its_body_set() -> void:
 	p.input.jump_held = true
 	await frames(4)
 	check(p.visual.anim == "rise" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
+	# The Battle Suit worn with the Battle Helmet has a body of its own, drawn helmed.
+	GameState.data.equipment.armor = "battle_suit"
+	GameState.data.equipment.helmet = "battle_helmet"
+	p.input.jump_pressed = false
+	p.input.jump_held = false
+	await frames(90)
+	check(p.visual.sheet == "hero_battle_helm", "Battle Suit and Battle Helmet: the helmed body (%s %s)" % [p.visual.anim, p.visual.sheet])
+	GameState.data.equipment.helmet = ""
+	await frames(2)
+	check(p.visual.sheet == "hero_battle", "the helmet off: the bare-headed Battle Suit (%s)" % p.visual.sheet)
 	GameState.data.equipment.armor = ""
 
 
