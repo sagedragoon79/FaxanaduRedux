@@ -549,6 +549,102 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check(Player.DOWN_STRIKE_SIZE == Vector2(28, 24), "down-strike hitbox 28x24")
 
 
+## Pass 200: 6.1 and the core of 6.2 were only read back from the tuning by the
+## behaviour tests, so a changed number moved the test with it. These hold the
+## numbers to the bible, and the tests after them hold what each one does.
+func test_movement_numbers_match_bible_6_1_and_6_2() -> void:
+	var t := MovementTuning.new()
+	# 6.1
+	check_near(t.run_speed, 165.0, 0.0001, "max run speed")
+	check_near(t.ground_accel, 1800.0, 0.0001, "ground acceleration")
+	check_near(t.ground_decel, 2600.0, 0.0001, "ground deceleration")
+	check_near(t.turn_multiplier, 1.6, 0.0001, "turnaround boost")
+	# 6.2
+	check_near(t.jump_height, 72.0, 0.0001, "full jump height")
+	check_near(t.jump_time_to_apex, 0.36, 0.0001, "time to apex")
+	check_near(t.gravity, 1111.0, 1.0, "rising gravity, derived 2h/t^2")
+	check_near(t.jump_velocity, 400.0, 0.5, "jump velocity, derived 2h/t")
+	check_near(t.fall_gravity_multiplier, 1.6, 0.0001, "falling gravity x 1.6")
+	check_near(t.jump_cut_multiplier, 0.45, 0.0001, "jump cut x 0.45")
+	check_near(t.apex_threshold, 40.0, 0.0001, "apex hang below 40 px/s")
+	check_near(t.apex_gravity_multiplier, 0.5, 0.0001, "apex hang x 0.5")
+	check_near(t.max_fall_speed, 520.0, 0.0001, "max fall speed")
+	check_near(t.max_fast_fall_speed, 620.0, 0.0001, "max fall speed holding Down")
+	check_near(t.air_accel, 1400.0, 0.0001, "air acceleration")
+	check_near(t.air_decel, 900.0, 0.0001, "air deceleration")
+	# 5.3, Damage taken
+	check_near(t.hurt_invuln, 0.8, 0.0001, "0.8 s invulnerability after a hit")
+
+
+## Bible 6.1: pushing against your own run brakes at deceleration x 1.6, harder
+## than letting go, so a turn comes round in a few frames.
+func test_a_turn_brakes_harder_than_letting_go() -> void:
+	var drops: Array[float] = []
+	for reverse in [false, true]:
+		var room := make_room(FLAT)
+		var p := make_player(room, Vector2i(3, 11))
+		await _settle(p)
+		p.input.move_x = 1
+		await frames(12)
+		var before := p.velocity.x
+		p.input.move_x = -1 if reverse else 0
+		await frames(1)
+		drops.append(before - p.velocity.x)
+		var turned := -1
+		for i in 20:
+			if p.velocity.x <= -p.tuning.run_speed + 0.01:
+				turned = i + 1
+				break
+			await frames(1)
+		if reverse:
+			check(turned > 0 and turned <= 9, "a turn is at full speed the other way within 9 frames (got %d)" % turned)
+		room.free()
+	var t := MovementTuning.new()
+	check_near(drops[0], t.ground_decel / 60.0, 0.5, "letting go brakes at the deceleration")
+	check_near(drops[1], t.ground_decel * t.turn_multiplier / 60.0, 0.5, "a turn brakes at 1.6x it")
+
+
+## Bible 6.2: letting go of Jump on the way up keeps 0.45 of the rise.
+func test_letting_go_of_jump_cuts_the_rise() -> void:
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 11))
+	await _settle(p)
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(4)
+	var before := p.velocity.y
+	p.input.jump_held = false
+	await frames(1)
+	var g := p.tuning.gravity / 60.0
+	check(before < -250.0, "still rising fast before the release (%.0f)" % before)
+	check_near(p.velocity.y, before * p.tuning.jump_cut_multiplier + g, 0.5, "the release keeps 0.45 of the rise")
+	room.free()
+
+
+## Bible 6.2: a fall pulls 1.6x as hard as the rise, tops out at 520 px/s, and
+## at 620 px/s while Down is held.
+func test_a_fall_pulls_harder_and_down_falls_faster() -> void:
+	var fastest: Array[float] = []
+	var pull := 0.0
+	for down in [false, true]:
+		var room := make_room(LEDGE)
+		var p := make_player(room, Vector2i(10, 1), {"glove": false})
+		var top := 0.0
+		for i in 40:
+			var before := p.velocity.y
+			p.input.down = down
+			await frames(1)
+			if not down and pull == 0.0 and before > 100.0 and p.velocity.y < p.tuning.max_fall_speed:
+				pull = p.velocity.y - before
+			top = maxf(top, p.velocity.y)
+		fastest.append(top)
+		room.free()
+	var t := MovementTuning.new()
+	check_near(pull, t.gravity * t.fall_gravity_multiplier / 60.0, 0.5, "a fall pulls at 1.6x the rising gravity")
+	check_near(fastest[0], t.max_fall_speed, 0.01, "a fall tops out at 520 px/s")
+	check_near(fastest[1], t.max_fast_fall_speed, 0.01, "holding Down it tops out at 620 px/s")
+
+
 ## Frames off a ledge before Jump is pressed -> whether it jumped.
 func _jump_after_ledge(k: int) -> bool:
 	var room := make_room(LEDGE)

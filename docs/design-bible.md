@@ -411,6 +411,8 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 
 All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16 px. Player collision box = 12x40 px (sprite about 48x56). These are starting values for the movement prototype, tuned there and then frozen.
 
+Every number in 6.1 to 6.6 and 6.11 is held to this text by a test that reads it from `MovementTuning` (`test_movement.gd`), and each one also has a test of what it does in play. Until pass 200 the run, the brakes, the turn, the jump cut and the fall limits were only read back from the tuning by their play tests, so a changed number would have moved its test along with it.
+
 ### 6.1 Ground movement
 
 | Parameter | Value |
