@@ -1173,6 +1173,19 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 	for name: String in slashes:
 		if not name in ["EvilAvatar", "EvilHeart"] and not name in OPTIONAL_BOSSES:
 			check(finale >= slashes[name], "the Evil One (%d) lasts longer than %s (%d)" % [finale, name, slashes[name]])
+	# Pass 212: no guardian outlasts every later zone's longest by more than two
+	# slashes, so the fights grow (or hold) as the game goes on.
+	var zones := PAR_KIT.keys()
+	for name: String in slashes:
+		if name in MINI_BOSSES or name in OPTIONAL_BOSSES or zone_of[name] == "zenis":
+			continue
+		var later := 0
+		for other: String in slashes:
+			var z: String = zone_of[other]
+			if zones.find(z) > zones.find(zone_of[name]) and z != "zenis" and not other in MINI_BOSSES and not other in OPTIONAL_BOSSES:
+				later = maxi(later, slashes[other])
+		if later > 0:
+			check(slashes[name] <= later + 2, "%s (%d) is no longer than a later zone's longest guardian (%d) by more than two" % [name, slashes[name], later])
 
 
 ## Design bible 5.3 (pass 198): a blow that costs a whole mask lands with a body

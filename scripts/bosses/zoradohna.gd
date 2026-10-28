@@ -21,7 +21,7 @@ signal defeated
 const DISPLAY_NAME := "Zoradohna"
 const EPITHET := "Hammer of Forepaw"
 const SHEET := "zoradohna"
-const MAX_HP := 360
+const MAX_HP := 260
 const PHASES := [0.65, 0.3]
 const WALK_SPEED := 55.0
 const WALK_TIME := 0.8
