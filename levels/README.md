@@ -152,3 +152,5 @@ up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles
 for the body. Platforms that should be reachable from the floor go 4 rows above it.
 A slope (`/`, `\`) starts on open floor at its low side and meets ground at its high side;
 stack them diagonally for a taller ramp, with ground under each. Walkers turn at a ramp.
+- Moving a pickup (any item, chest or shard) changes its id, which is its room and cell. Add
+  the move to `GameState.MOVED_PICKUPS` so a save that took it doesn't find it again (pass 213).
