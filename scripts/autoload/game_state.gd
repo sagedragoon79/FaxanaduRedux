@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false, "death": false, "rune_dagger": false, "pendant": false, "magical_rod": false},
+		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false, "death": false, "rune_dagger": false, "pendant": false, "magical_rod": false, "dragon_slayer": false},
 		## The spell on the Spell button (an id in `Spells.ORDER`).
 		"spell": "deluge",
 		"max_hp": 100,
@@ -592,6 +592,12 @@ static func sanitize(src: Variant) -> Dictionary:
 	if not gear.has("short_sword"):
 		gear.push_front("short_sword")
 	out.gear = gear
+	# The Dragon Slayer is both an ability (the reach checker's gate) and gear;
+	# a save holds both or neither (pass 221).
+	if gear.has("dragon_slayer") or bool(out.abilities.get("dragon_slayer", false)):
+		out.abilities.dragon_slayer = true
+		if not gear.has("dragon_slayer"):
+			gear.append("dragon_slayer")
 	# Containers whose entries the game reads by shape.
 	out.skills = _unique_strings(out.skills)
 	out.dyes = _unique_strings(out.dyes)
