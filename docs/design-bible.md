@@ -659,6 +659,8 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 
 The core (phase 2) has none: no blade reaches it, only the veins.
 
+**What a win says (pass 220).** A guardian's win shows a banner: the prize's name and a line about it. Shadow Eura and the Evil One's avatar, veins and heart each had a line of their own written in `BossArena.BOSSES`, but no prize, so the banner took the plain branch and showed only "+1 skill point": the mirror's and the meteor's story lines were never seen. The reverse held for the five bosses whose banner tells their prize (the Lantern and Sky Keys, the Battle Suit, the Dragon Slayer): each gives a skill point and never said so. Now a boss with a line shows it, and a skill point is always told, in the banner for a boss with no line or in a toast under it for one with. Every line fits the banner's width. `test_every_guardians_win_says_what_it_gave` wins every arena (all but the Evil One's last, whose win starts the ending) and listens.
+
 **The Rune Dagger against bosses (pass 188):** it reaches every boss that a blade does, for 6 a throw, and is meant as a way to keep up pressure from a distance, not a way around a fight's lesson. So it splits none of the Bark Knight Captain's plates, breaks none of the Matriarch's hexes and never cuts the Heart (5.2, the Rune Dagger). The two-handed Dwarvish Broad Sword (pass 186) cannot parry, and no boss needs a parry: every opening that a parry gives also comes some other way, or only feeds Executioner and Bloodletting. The Battle Helmet's slot and kept gear change nothing in a fight, apart from letting you swap blades at a pause.
 
 ### 8.1 Rokusutahn, the Root-Gnawer (Trunk Hollows)
