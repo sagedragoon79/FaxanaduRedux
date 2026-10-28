@@ -1221,3 +1221,25 @@ func test_a_big_purse_sprays_few_coins() -> void:
 			check(count == total, "%d g is still that many single coins" % total)
 	await frames(90)
 	check(w.player.gold > 0, "the big coins fly to you like the small ones (%d g)" % w.player.gold)
+
+
+## A big coin sounds big (pass 206, bible 13): the 25 and 100 g coins ring
+## `coin_big`, lower and longer than the small coins' `coin`, and taking one
+## plays it.
+func test_a_big_coin_rings_lower_and_longer() -> void:
+	check([1, 5].all(func(v: int) -> bool: return Coin.sound(v) == "coin"), "1 and 5 g coins chime as before")
+	check([25, 100].all(func(v: int) -> bool: return Coin.sound(v) == "coin_big"), "25 and 100 g coins ring the big coin")
+	var small: AudioStreamWAV = load("res://assets/sfx/coin.wav")
+	var big: AudioStreamWAV = load("res://assets/sfx/coin_big.wav")
+	check(big != null and big.get_length() > small.get_length() * 2.0,
+		"and ring longer (%.2f s against %.2f s)" % [big.get_length() if big else 0.0, small.get_length()])
+	var w := make_world(_rooms({}), "test/a", cell_feet(4, 19))
+	await frames(5)
+	Sfx.recent.clear()
+	var coin := Coin.new()
+	coin.value = 100
+	w.room.add_child(coin)
+	coin.global_position = w.player.global_position + Vector2(0, -20)
+	coin._age = 1.0
+	await frames(3)
+	check(not is_instance_valid(coin) and Sfx.recent.has("coin_big"), "taking a 100 g coin plays it (%s)" % [Sfx.recent])

@@ -142,6 +142,14 @@ def main():
     d = 0.12
     save("coin", mix(osc(np.where(t_axis(d) < 0.04, 1320.0, 1760.0), "square", 0.5) * env(int(RATE * d), 0.001, 1.5)), 0.4)
 
+    # A 25 or 100 g coin (pass 206): the same two notes a fourth lower, a third
+    # note above, and a bell tail, so a big coin sounds weightier than a small one.
+    d = 0.3
+    ta = t_axis(d)
+    notes = np.where(ta < 0.04, 990.0, np.where(ta < 0.08, 1320.0, 1980.0))
+    bell = osc(np.full_like(ta, 1980.0), "sine") * env(int(RATE * d), 0.001, 2.5) * np.where(ta < 0.08, 0.0, 0.6)
+    save("coin_big", mix(osc(notes, "square", 0.5) * env(int(RATE * d), 0.001, 2.2), bell), 0.5)
+
     d = 0.25
     bubble = osc(slide(300, 900, d, 0.4) + 80 * np.sin(2 * np.pi * 30 * t_axis(d)), "sine") * env(int(RATE * d), 0.01, 1.2)
     save("cast", mix(bubble, lowpass(noise(d), 1800) * env(int(RATE * d), 0.02, 1.0) * 0.4), 0.6)
