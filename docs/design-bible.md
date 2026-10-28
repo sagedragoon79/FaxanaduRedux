@@ -560,6 +560,7 @@ Bands of wind blow across the open sky between Conflate's boughs (legend `>` blo
 | Bear up | falling, your fall eases to level at 2,400 px/s², so you sail the band; a jump rises through it as normal |
 | Ground | none: standing on a floor or platform inside a band, you aren't moved |
 | Drop out | hold Down to fall out of it |
+| Against a wall | a current pressing you into a wall stops bearing you up, and you slide down the face (pass 224). It had held you hanging still: once the Spring of Sky turned the Thicket Road's band, a jump into it rode to the wind-niche with the head 16 px up against the lintel and stopped there, the opening just below, until you thought to hold Down. `test_the_wind_niche_needs_the_spring_of_sky` plays the real controller: 42 jump, second-jump and air-dash timings with the Wing Boots and the Stride never get in against the wind, and one jump with it turned does |
 | Reversal | once the Spring of Sky is restored (`spring:sky`), every current in the Branches blows the other way (pass 92). The Guru Trials' currents never turn (pass 160) |
 | Look | a faint wash of the sky, streaks racing downwind and torn leaves tumbling with them |
 

@@ -286,6 +286,52 @@ func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
 		await frames(1)
 
 
+## Pass 224: the wind-niche over the Thicket Road (WIND_SECRETS) sits at the
+## far end of an east-blowing band, open only on its windward side. The checker
+## can't prove "out of reach", so the real controller tries it: from the shelf
+## under the band, with the Wing Boots and the Stride, a jump, a second jump and
+## an air dash west at every timing in 0.1 s steps. The wind gives no headway
+## until the Spring of Sky turns it; then any jump into the band carries you in.
+func test_the_wind_niche_needs_the_spring_of_sky() -> void:
+	var tries := 0
+	var reached := 0
+	for k1: int in range(4, 40, 6):
+		for k2: int in range(k1 + 1, k1 + 40, 6):
+			tries += 1
+			if await _try_the_wind_niche(false, k1, k2):
+				reached += 1
+	check(tries >= 40 and reached == 0, "against the wind, no jump, second jump or dash gets in (%d of %d)" % [reached, tries])
+	check(await _try_the_wind_niche(true, 22, -1), "with the Spring of Sky, a jump and a second jump into the band carry you in")
+
+
+## From the shelf under the band: jump west, jump again at frame k1, air dash
+## west at k2 (none if negative). True if you come to stand in the niche.
+func _try_the_wind_niche(spring: bool, k1: int, k2: int) -> bool:
+	var w := make_world({}, "branches/thicket_road", cell_feet(55, 12))
+	GameState.set_flag(WindCurrent.FLAG, spring)
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var p := w.player
+	p.abilities["boots"] = true
+	p.abilities["stride"] = true
+	await frames(3)
+	p.input.move_x = -1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	var inside := false
+	for i in 150:
+		p.input.jump_pressed = i == 0 or i == k1
+		p.input.dash_pressed = i == k2
+		await frames(1)
+		# Standing on the niche's floor, west of the band's end.
+		if p.is_on_floor() and p.global_position.x < 43 * Room.TILE and p.global_position.y <= 9 * Room.TILE + 1:
+			inside = true
+	w.queue_free()
+	await frames(1)
+	return inside
+
+
 func _drop_onto_spikes(abilities := {}) -> Player:
 	var room := make_room(SPIKE_FLOOR)
 	var p := make_player(room, Vector2i(9, 3), abilities)
