@@ -1,1 +1,3 @@
 date,endpoint,out_dir,cost,result,notes
+2026-10-28,create-image-pixflux,test/apple,0,error: HTTP 502 upstream request failed,connection test via the script; not charged
+2026-10-28,create-image-pixflux,test/apple,1.0 generations,"ok, 1 image(s)","connection test, retried with curl and saved with pixellab.save; balance 4992 -> 4991 generations"

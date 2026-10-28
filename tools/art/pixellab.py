@@ -39,6 +39,7 @@ LEDGER = ROOT / "art" / "pixellab-ledger.csv"
 BASE = "https://api.pixellab.ai/v2"
 POLL_SECONDS = 5
 POLL_LIMIT = 600
+RETRIES = 2
 
 
 def request(method, path, body=None):
@@ -51,14 +52,24 @@ def request(method, path, body=None):
         data=None if body is None else json.dumps(body).encode(),
         headers=headers,
     )
-    try:
-        with urllib.request.urlopen(req, timeout=300) as r:
-            return json.loads(r.read() or b"{}")
-    except urllib.error.HTTPError as e:
-        if e.code == 401:
-            sys.exit(f"{method} /{path}: HTTP 401: no PixelLab token (add the api.pixellab.ai network secret, "
-                     "or set PIXELLAB_API_KEY)")
-        sys.exit(f"{method} /{path}: HTTP {e.code}: {e.read().decode(errors='replace')[:2000]}")
+    for attempt in range(RETRIES + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                return json.loads(r.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            # A 502 from the gateway (seen 2026-10-28) was not charged and the same call then worked.
+            if e.code in (502, 503, 529) and attempt < RETRIES:
+                print(f"{method} /{path}: HTTP {e.code}, retrying", file=sys.stderr)
+                time.sleep(POLL_SECONDS * (attempt + 1))
+                continue
+            fail(method, path, e)
+
+
+def fail(method, path, e):
+    if e.code == 401:
+        sys.exit(f"{method} /{path}: HTTP 401: no PixelLab token (add the api.pixellab.ai network secret, "
+                 "or set PIXELLAB_API_KEY)")
+    sys.exit(f"{method} /{path}: HTTP {e.code}: {e.read().decode(errors='replace')[:2000]}")
 
 
 def job_ids_of(result):
