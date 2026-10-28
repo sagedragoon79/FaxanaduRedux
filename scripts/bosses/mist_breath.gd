@@ -31,6 +31,8 @@ func rect() -> Rect2:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_time += delta
 	global_position.x += dir * SPEED * delta
 	global_position.y = ground_y

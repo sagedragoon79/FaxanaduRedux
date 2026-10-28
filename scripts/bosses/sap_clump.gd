@@ -26,6 +26,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass, dripping or falling
 	_t += delta
 	if not _falling:
 		if _t >= TELL:
