@@ -47,6 +47,10 @@ const BOSSES := {
 const PHASE_HITSTOP := 0.2
 const START_DISTANCE := 64.0
 const OPEN_DELAY := 1.2
+## A guardian's fall rings a fanfare of its own (pass 222; it had been `item`,
+## the chime of any find), and the boss theme drops away fast enough for it.
+const WIN_SOUND := "boss_won"
+const WIN_FADE := 0.4
 ## Seconds from the Evil One's death to the ending (the banner shows first).
 const ENDING_DELAY := 4.0
 
@@ -286,7 +290,7 @@ func _start() -> void:
 func _on_defeated() -> void:
 	if BossRush.active():
 		# The rush wins nothing again and opens no doors: on to the next arena.
-		Sfx.play("item", 0.0)
+		Sfx.play(WIN_SOUND, 0.0)
 		Music.play(BossRush.MUSIC, 2.0)
 		won.emit()
 		var world := get_tree().get_first_node_in_group("world") as World
@@ -301,7 +305,7 @@ func _on_defeated() -> void:
 		rings.append(reward.ring)
 	var points := int(reward.get("skill_points", 0))
 	GameState.data.skill_points = int(GameState.data.skill_points) + points
-	Sfx.play("item", 0.0)
+	Sfx.play(WIN_SOUND, 0.0)
 	if reward.has("key"):
 		# A key and, for the Lantern Widow, the Mana Dew she guarded.
 		var p := get_tree().get_first_node_in_group("player") as Player
@@ -351,7 +355,7 @@ func _on_defeated() -> void:
 	if points > 0 and reward.has("text"):
 		GameState.toast.emit(point_line(points))
 	_open_timer = OPEN_DELAY
-	Music.play("", 2.5)
+	Music.play("", WIN_FADE)
 	won.emit()
 	if boss_id == "evil_one":
 		# The last fight: the ending follows once the banner has had its moment.

@@ -1833,6 +1833,25 @@ func test_king_grieve_defeat_gives_the_demon_ring_and_the_dragon_slayer() -> voi
 	check(get_tree_boss() == null, "and he never returns")
 
 
+func test_a_guardians_fall_rings_a_fanfare_of_its_own() -> void:
+	var item: AudioStreamWAV = load("res://assets/sfx/item.wav")
+	var won: AudioStreamWAV = load("res://assets/sfx/" + BossArena.WIN_SOUND + ".wav")
+	check(won != null, "the fanfare is on disk")
+	if won == null:
+		return
+	check(won.get_length() >= 2.0 and won.get_length() > item.get_length() * 2.0,
+		"and rings out long past a find's chime (%.2f s against %.2f s)" % [won.get_length(), item.get_length()])
+	check(BossArena.WIN_FADE <= 0.5, "the boss theme drops away under it (%.1f s)" % BossArena.WIN_FADE)
+	var setup := await _king_world()
+	var b: KingGrieve = setup[2]
+	b.hp = 1
+	Sfx.recent.clear()
+	b.take_hit(5, Vector2.RIGHT)
+	await _until(func() -> bool: return GameState.flag("boss:king_grieve"), 600)
+	check(Sfx.recent.has(BossArena.WIN_SOUND), "King Grieve's fall rings it (%s)" % [Sfx.recent])
+	check(Music.track == "", "and the fight's music stops for it (%s)" % Music.track)
+
+
 func test_the_meteor_takes_king_grieve_below_a_fifth() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]

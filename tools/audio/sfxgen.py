@@ -1220,6 +1220,36 @@ def main():
     out[int(RATE * 0.18):int(RATE * 0.18) + kn] += clink * 0.6
     save("gear_on", out, 0.45)
 
+    # A guardian falls (pass 222). The win had played `item`, the same chime as
+    # a loaf of bread off the floor. Now it has a fanfare of its own, the old
+    # 8-bit victory call: three quick brassy G's, then a held C major chord
+    # over a timpani roll and a low root, ringing out as the boss theme stops.
+    d = 2.4
+    n = int(RATE * d)
+    out = np.zeros(n)
+    def brass(f, dur, decay):
+        m = int(RATE * dur)
+        tone = osc(np.full(m, f), "saw", 0.5) * 0.5 + osc(np.full(m, f), "square", 0.3) * 0.35
+        vib = 1.0 + 0.04 * np.sin(2 * np.pi * 5.5 * t_axis(dur)) * np.clip(t_axis(dur) / 0.3, 0, 1)
+        return lowpass(tone * vib, 2600) * env(m, 0.01, decay)
+    for i in range(3):
+        note = brass(392.0, 0.11, 0.8)
+        at = int(RATE * 0.12 * i)
+        out[at:at + len(note)] += note * 0.8
+    hold = 0.36
+    for f, amp in ((523.0, 1.0), (659.0, 0.6), (784.0, 0.6), (1047.0, 0.35)):
+        note = brass(f, d - hold, 1.4)
+        out[int(RATE * hold):int(RATE * hold) + len(note)] += note * amp
+    root = lowpass(osc(np.full(n - int(RATE * hold), 131.0), "tri", 0.5), 500) * env(n - int(RATE * hold), 0.01, 1.6)
+    out[int(RATE * hold):] += root * 0.7
+    for k, at in enumerate((0.0, 0.12, 0.24, 0.36)):
+        tn = int(RATE * 0.5)
+        timp = lowpass(osc(slide(98 if k == 3 else 82, 60, 0.5, 0.7), "sine"), 300) * env(tn, 0.002, 2.0)
+        timp += lowpass(noise(0.5), 800) * env(tn, 0.001, 6.0) * 0.3
+        s0 = int(RATE * at)
+        out[s0:s0 + tn] += timp * (1.0 if k == 3 else 0.5)
+    save("boss_won", out, 0.6)
+
 
 if __name__ == "__main__":
     main()
