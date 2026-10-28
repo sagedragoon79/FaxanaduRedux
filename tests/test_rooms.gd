@@ -840,6 +840,41 @@ func test_every_sound_the_code_plays_exists() -> void:
 	check(missing.is_empty(), "every sound and track exists: %s" % [missing])
 
 
+
+## Sounds named at runtime (pass 207): the scan above reads only literal names,
+## so a helper that picks a sound, or a name built from parts, could play
+## silence unnoticed. `Sfx.missing` keeps every name asked for that has no
+## file, and the runner fails any test that adds to it. Here: it notices one,
+## and every choice the sound-picking helpers can make exists.
+func test_a_sound_with_no_file_is_caught_at_runtime() -> void:
+	Sfx.missing.clear()
+	Sfx.play("no_such_sound")
+	check(Sfx.missing == ["no_such_sound"], "a missing sound is kept (%s)" % [Sfx.missing])
+	Sfx.missing.clear()
+	var names: Array[String] = []
+	for v: int in [1] + Array(Coin.DENOMINATIONS):
+		names.append(Coin.sound(v))
+	for id: String in GameData.items_of_kind("blade") + GameData.items_of_kind("armor") + GameData.items_of_kind("shield") \
+			+ GameData.items_of_kind("helmet") + GameData.items_of_kind("dye"):
+		names.append(Menus.equipment_sound(id))
+	# Footsteps: each zone's ground, and every room's own `surface:` line.
+	var surfaces: Array = Room.ZONE_SURFACES.values() + ["sap", "plank"]  # surface_at's own two
+	var dirs: Array[String] = ["res://levels"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f in DirAccess.get_files_at(d):
+			if f.ends_with(".room"):
+				for line in FileAccess.get_file_as_string(d + "/" + f).split("\n"):
+					if line.begins_with("surface:"):
+						surfaces.append(line.trim_prefix("surface:").strip_edges())
+	for surface: String in surfaces:
+		if not names.has("step_" + surface):
+			names.append("step_" + surface)
+	var lost := names.filter(func(n: String) -> bool: return not ResourceLoader.exists("res://assets/sfx/%s.wav" % n))
+	check(names.size() > 10 and lost.is_empty(), "every sound the helpers can pick exists (%d names; missing %s)" % [names.size(), lost])
+
 func test_the_hour_glass_waits_by_the_stopped_water_clock() -> void:
 	GameState.new_game()
 	var w := make_world({}, "dartmoor/drowned_nave")
