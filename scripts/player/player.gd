@@ -1620,10 +1620,11 @@ func use_ointment() -> bool:
 	return true
 
 
-## What a blade hit is multiplied by: the skill tree's melee_mult, and the War
-## Glove's while it lasts.
+## What a blade hit is multiplied by: the skill tree's melee_mult, the War
+## Glove's while it lasts, and the Pendant's once found (pass 201).
 func blade_mult() -> float:
-	return melee_mult * (combat.war_glove_mult if _glove_timer > 0.0 else 1.0)
+	var pendant := combat.pendant_mult if abilities.get("pendant", false) else 1.0
+	return melee_mult * pendant * (combat.war_glove_mult if _glove_timer > 0.0 else 1.0)
 
 
 ## Pulls on a War Glove (a rare drop, design bible 7): combat.war_glove_time
