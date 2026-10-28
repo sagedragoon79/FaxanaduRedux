@@ -68,6 +68,8 @@ func _mash(p: Player, rng: RandomNumberGenerator, hold: Dictionary) -> void:
 		hold.block = rng.randi_range(5, 40)
 	# Attack is held for spans too (pass 151), most of them long enough to
 	# charge a Thrust; letting go then thrusts if the skill is learned.
+	if not hold.has("throw"):
+		hold["throw"] = 0
 	var was_held := p.input.attack_held
 	if int(hold.get("attack", 0)) <= 0:
 		p.input.attack_held = rng.randf() < 0.3
@@ -78,6 +80,10 @@ func _mash(p: Player, rng: RandomNumberGenerator, hold: Dictionary) -> void:
 	p.input.dash_pressed = rng.randf() < 0.03
 	p.input.spell_pressed = rng.randf() < 0.01
 	p.input.heal_pressed = rng.randf() < 0.005
+	# The Rune Dagger (pass 191): thrown into walls, doors, water and foes,
+	# every 25 frames. It draws nothing from `rng`, so each soak's mashing
+	# stays the run it was before the dagger.
+	p.input.throw_pressed = int(hold.throw) % 25 == 0
 
 
 func _embedded(room: Room, p: Player) -> bool:
@@ -334,6 +340,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var total_usec := 0
 	var counted := 0
 	var thrusts := 0
+	var throws := 0
 	var dir := DirAccess.open("res://levels/" + zone)
 	var ids: Array[String] = []
 	for f in dir.get_files():
@@ -389,6 +396,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 		if peak > start_nodes + 400:
 			problems.append("%s: nodes grew from %d to %d" % [id, start_nodes, peak])
 		thrusts += w.player.thrusts
+		throws += w.player.throws
 		Trials.abandon()
 		w.queue_free()
 		await frames(2)
@@ -396,10 +404,11 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var avg_ms := total_usec / 1000.0 / maxi(counted, 1)
 	print("  %s soak: %.2f ms a frame on average" % [label, avg_ms])
 	check(avg_ms < 16.6, "a %s frame averages under the 60 fps budget (%.2f ms)" % [label, avg_ms])
-	print("  %s soak: %d thrusts" % [label, thrusts])
+	print("  %s soak: %d thrusts, %d daggers thrown" % [label, thrusts, throws])
 	if zone != "sunken":
 		# (Underwater a charge is spent: the Sunken Spring is all swimming.)
 		check(thrusts > 0, "the mashing player thrust %d times across %d %s rooms" % [thrusts, ids.size(), label])
+	check(throws >= ids.size(), "the mashing player threw the Rune Dagger %d times across %d %s rooms" % [throws, ids.size(), label])
 	if glass:
 		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
 		TimeStop.reset()

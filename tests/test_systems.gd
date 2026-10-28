@@ -682,6 +682,46 @@ func test_a_save_naming_things_this_build_lacks_plays_on() -> void:
 	check(caught.is_empty(), "and nothing logs an engine error (%s)" % [caught])
 
 
+## Pass 191: a save naming gear in the wrong slots, unknown gear and dyes, and
+## gear of the wrong shape plays on through the Equipment page (gear and the
+## Cloak), the shops and a dagger throw, with no engine error.
+func test_a_save_with_gear_in_the_wrong_slots_plays_on() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(3)
+	var p := w.player
+	var src := GameState.fresh()
+	src.save_room = "eolis/market"
+	src.equipment = {"blade": "full_plate", "armor": "battle_helmet", "shield": "tide_dye", "helmet": "long_sword"}
+	src.gear = ["ghost_blade", 3, "long_sword", "long_sword", "magic_shield", ["x"], "lord_dye"]
+	src.dyes = ["ghost_dye", "slate_dye"]
+	src.dye = "ghost_dye"
+	src.abilities = {"rune_dagger": true}
+	var errors := ErrorCatcher.start()
+	GameState.data = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	var eq: Dictionary = GameState.data.equipment
+	check(eq.blade == "short_sword" and eq.armor == "" and eq.shield == "" and eq.helmet == "",
+		"gear worn in the wrong slot comes off, and the hand holds the Short Sword (%s)" % [eq])
+	check(GameState.data.gear == ["ghost_blade", "long_sword", "magic_shield", "lord_dye", "short_sword"],
+		"the kept gear is strings, once each, with the Short Sword (%s)" % [GameState.data.gear])
+	GameState.refresh_stats(p)
+	check(p.max_hp > 0 and p.defense == 0.0 and not p.has_shield, "and plays as nothing worn (defense %.2f)" % p.defense)
+	var rows := Menus.equipment_rows()
+	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
+	check(not labels.has("Lord's Gold") and labels.has("Mantra Slate"), "the Cloak lists the dyes the save owns, not gear-list strays (%s)" % [labels])
+	for row: Dictionary in rows:
+		if row.has("id"):
+			Menus.choose_equipment(String(row.id), p)
+	check(GameState.data.equipment.shield == "magic_shield" and GameState.dye() == "slate_dye", "every row can be chosen (%s, %s)" % [GameState.data.equipment, GameState.dye()])
+	for shop_id: String in ["eolis_arms", "eolis_dyes"]:
+		for i in GameData.shop(shop_id).get("stock", []).size():
+			Shop.status(shop_id, i, p)
+	p.abilities["rune_dagger"] = true
+	p.throw_dagger()
+	await frames(30)
+	var caught := errors.stop()
+	check(caught.is_empty(), "and nothing logs an engine error (%s)" % [caught])
+
+
 ## Pass 184: the Hand Dagger is now the Short Sword. A save from before
 ## keeps it in hand and keeps its tempers; the Throw button is bound; and the
 ## Rune Dagger in the Hornet Gallery grants the throw.

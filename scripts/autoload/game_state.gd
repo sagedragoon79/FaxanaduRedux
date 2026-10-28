@@ -552,6 +552,13 @@ static func sanitize(src: Variant) -> Dictionary:
 	if String(out.equipment.get("shield", "")) == "battle_helmet":
 		out.equipment.helmet = "battle_helmet"
 		out.equipment.shield = "magic_shield"
+	# A slot holds its own kind (pass 191): a known item worn in the wrong
+	# slot (a sword as a helmet) comes off, and a blade falls back to the
+	# Short Sword. An unknown id stays, as pass 138 keeps it, and plays as none.
+	for slot: String in GEAR_SLOTS:
+		var kind := String(GameData.item(String(out.equipment.get(slot, ""))).get("kind", ""))
+		if kind != "" and kind != slot:
+			out.equipment[slot] = "short_sword" if slot == "blade" else ""
 	# Gear kept since pass 186: whatever is worn, and the starting blade.
 	var gear: Array = _unique_strings(out.gear)
 	for i in gear.size():
