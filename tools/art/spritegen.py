@@ -261,7 +261,7 @@ ANIMATIONS = [
 
 # The hero's body sets (paper doll, design bible 13.4): one sheet per armor, each holding only
 # the clips imported for it (art/autosprite/manifest.json); the game falls back to "player".
-ARMOR_SHEETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle"]
+ARMOR_SHEETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]
 
 
 def main():

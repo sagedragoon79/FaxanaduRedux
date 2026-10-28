@@ -633,7 +633,13 @@ def imported(name, cell, origin, code_meta):
                 meta = imp.detect_hero(img, meta)
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
-            if cfg.get("head"):
+            if cfg.get("head") == "top":
+                # A set drawn helmed (the Battle Suit with its helmet): the crown is
+                # simply the top of the figure, the crest included.
+                ys, xs = np.nonzero(np.asarray(img)[..., 3] > 0)
+                if len(ys):
+                    meta["head"] = imp.to_point(round(xs[ys < ys.min() + 6].mean()), ys.min())
+            elif cfg.get("head"):
                 # Where a helmet layer sits (pass 185): the sheet is drawn bare-headed.
                 h = head_point(img)
                 if h:
@@ -646,7 +652,7 @@ def imported(name, cell, origin, code_meta):
             prev, here, after = heads[i - 1], heads[i], heads[i + 1]
             if prev and here and after and here[1] < min(prev[1], after[1]) - 2:
                 frames[i][2]["head"] = [here[0], round((prev[1] + after[1]) / 2)]
-        if cfg.get("detect") == "hero" and all(m.get("head") for _, _, m in frames):
+        if cfg.get("detect") == "hero" and cfg.get("head") is True and all(m.get("head") for _, _, m in frames):
             # A body set's crown wobbles a pixel or two with the hair from frame to frame,
             # which would shake the helmet: take the median of five (around the loop).
             heads = [m["head"] for _, _, m in frames]
