@@ -823,6 +823,27 @@ func test_a_save_past_king_grieve_holds_the_dragon_slayer() -> void:
 	check(not bool(got.abilities.get("dragon_slayer", false)) and got.equipment.blade == "short_sword", "a save before him has no sword yet")
 
 
+## Pass 221: the Dragon Slayer is an ability (the reach checker's gate, and the
+## sign a save took it) and gear (the Equipment page, the heart's seal). It was
+## the one ability missing from a new game's list, so the round trip never
+## carried it and a save could hold one half: now it is listed, and a save
+## holds both or neither.
+func test_the_dragon_slayer_is_held_as_ability_and_gear_together() -> void:
+	check(GameState.fresh().abilities.has("dragon_slayer") and not bool(GameState.fresh().abilities.dragon_slayer), "a new game lists the Dragon Slayer, unheld")
+	var src := GameState.fresh()
+	src.gear = ["short_sword", "dragon_slayer"]
+	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.abilities.dragon_slayer is bool and got.abilities.dragon_slayer, "a save with the sword in its gear holds the ability (%s)" % [got.abilities.dragon_slayer])
+	src = GameState.fresh()
+	src.abilities.dragon_slayer = true
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(Array(got.gear).has("dragon_slayer") and got.equipment.blade == "short_sword", "one with the ability has the sword in its gear, without taking it in hand (%s)" % [got.gear])
+	src = GameState.fresh()
+	src.abilities.dragon_slayer = "yes"
+	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+	check(got.abilities.dragon_slayer is bool and not got.abilities.dragon_slayer and not Array(got.gear).has("dragon_slayer"), "a damaged flag holds neither")
+
+
 ## The pickup legend at a pickup id's cell ("" for none).
 func _pickup_char(pickup_id: String) -> String:
 	var room := pickup_id.get_slice(":", 0)
