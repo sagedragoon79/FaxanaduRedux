@@ -1715,6 +1715,42 @@ func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
 ## Pass 186 (Sean): gear you buy or find is kept, and the Equipment page puts
 ## any of it on; tempers stay with each blade. The Dwarvish Broad Sword (once
 ## the Giant Blade) takes both hands: no guard or parry while you hold it.
+## Pass 193: the original sold twelve pieces of gear. Each is an item under
+## its own name, or bible 5.2's table of what changed names the item that
+## took its place; and every id the save renames has a row there.
+func test_the_originals_twelve_pieces_of_gear_are_all_here() -> void:
+	const ORIGINAL := ["Hand Dagger", "Long Sword", "Giant Blade", "Dragon Slayer",
+		"Leather Armor", "Studded Mail", "Full Plate", "Battle Suit",
+		"Small Shield", "Large Shield", "Magic Shield", "Battle Helmet"]
+	var names := {}
+	var items := GameData.table("items")
+	for id: String in items:
+		names[String(items[id].get("name", ""))] = id
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var at := bible.find("**The original's gear, and what changed")
+	check(at >= 0, "bible 5.2 has the table of what changed")
+	var table := {}
+	for line: String in bible.substr(at, 3000).split("\n"):
+		var cells := line.split("|")
+		if cells.size() >= 5 and line.begins_with("| ") and not line.begins_with("| Original") and not line.begins_with("|--"):
+			table[cells[1].strip_edges()] = cells[2].strip_edges()
+	var missing := []
+	for name: String in ORIGINAL:
+		if names.has(name):
+			continue
+		var row := String(table.get(name, ""))
+		var now := row.get_slice(" (", 0)
+		if row == "" or not names.has(now):
+			missing.append(name)
+	check(missing.is_empty(), "every original piece of gear is an item or has a row naming its heir: %s" % [missing])
+	var unrecorded := []
+	for old: String in GameState.RENAMED_ITEMS:
+		if not bible.substr(at, 3000).contains("from `%s`" % old):
+			unrecorded.append(old)
+	check(unrecorded.is_empty(), "every renamed id has a row: %s" % [unrecorded])
+	check(names.has("Battle Helmet") and String(items[names["Battle Helmet"]].kind) == "helmet", "the Battle Helmet keeps its name in its own slot")
+
+
 ## Pass 189: the shop and the Equipment page give each blade's numbers, and
 ## the Equipment page changes the cloak's dye anywhere, not only at Ilse's.
 func test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak() -> void:
