@@ -6,6 +6,13 @@ extends RefCounted
 var runner: Node
 var arena: Node2D
 var current_test := ""
+## Set by a test that means to provoke engine errors (a damaged save, a bad
+## settings file); the runner otherwise fails any test that logs one (pass 215).
+var allows_engine_errors := false
+
+
+func expect_engine_errors() -> void:
+	allows_engine_errors = true
 
 
 func frames(n: int) -> void:

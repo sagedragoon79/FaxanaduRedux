@@ -8,11 +8,14 @@ extends Logger
 ##   check(errors.stop().is_empty(), "...")
 
 var caught: Array[String] = []
+## Whether warnings count too (the runner's guard counts only errors).
+var warnings := true
 var _mutex := Mutex.new()
 
 
-static func start() -> ErrorCatcher:
+static func start(with_warnings := true) -> ErrorCatcher:
 	var c := ErrorCatcher.new()
+	c.warnings = with_warnings
 	OS.add_logger(c)
 	return c
 
@@ -26,7 +29,9 @@ func stop() -> Array[String]:
 	return out
 
 
-func _log_error(function: String, _file: String, _line: int, code: String, rationale: String, _editor_notify: bool, _error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+func _log_error(function: String, _file: String, _line: int, code: String, rationale: String, _editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+	if error_type == ERROR_TYPE_WARNING and not warnings:
+		return
 	_mutex.lock()
 	caught.append("%s: %s" % [function, rationale if rationale != "" else code])
 	_mutex.unlock()

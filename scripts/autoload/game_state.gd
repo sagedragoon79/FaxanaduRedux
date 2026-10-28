@@ -517,7 +517,10 @@ func load_game(from_slot: int) -> bool:
 	for p: String in [path, path + ".bak"]:
 		if not FileAccess.file_exists(p):
 			continue
-		loaded = sanitize(JSON.parse_string(FileAccess.get_file_as_string(p)))
+		# JSON.parse_string logs an engine error for a damaged file; the warning
+		# below says it plainly instead (pass 215).
+		var json := JSON.new()
+		loaded = sanitize(json.data if json.parse(FileAccess.get_file_as_string(p)) == OK else null)
 		if not loaded.is_empty():
 			if p != path:
 				push_warning("Save slot %d was damaged; loaded its backup" % from_slot)
