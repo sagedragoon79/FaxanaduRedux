@@ -710,6 +710,33 @@ func test_large_shield_guards_more() -> void:
 ## (the manual: Small 50%, Large 75%, Magic 90%, and the Battle Helmet nearly
 ## all). The remake's shields guard and parry; now they ward a foe's sorcery
 ## too, guarding or not, at less than the original so the guard still matters.
+## Pass 229: the Equipment page's footer adds up what you wear, since armor
+## and helmet stack by what each lets through and the ward is capped and lost
+## to a two-hander. None of that showed anywhere before.
+func test_the_equipment_page_adds_up_what_you_wear() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	GameState.data.gear = ["short_sword", "dwarvish_broad_sword", "leather_armor", "battle_suit", "magic_shield", "battle_helmet"]
+	var cases := [
+		[{"blade": "short_sword", "armor": "", "shield": "", "helmet": ""}, "Armor 0%   Ward 0%", "nothing worn"],
+		[{"blade": "short_sword", "armor": "leather_armor", "shield": "", "helmet": ""}, "Armor 15%   Ward 0%", "Leather Armor"],
+		[{"blade": "short_sword", "armor": "battle_suit", "shield": "", "helmet": "battle_helmet"}, "Armor 64%   Ward 20%", "the Battle Suit under the helmet stops 64%, not 70%"],
+		[{"blade": "short_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}, "Armor 64%   Ward 60%", "the Magic Shield and the helmet ward the most there is"],
+		[{"blade": "dwarvish_broad_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}, "Armor 64%   Ward 20%", "a two-hander leaves only the helmet's ward"],
+	]
+	var hint := "Jump: choose   Dash: leave"
+	for c: Array in cases:
+		GameState.data.equipment = c[0]
+		GameState.refresh_stats(p)
+		var foot := Menus.worn_totals(p)
+		check(foot == c[1], "%s: %s" % [c[2], foot])
+		check(PixelFont.width(foot, 9) + 16.0 + PixelFont.width(hint, 8) <= ListMenu.PANEL.size.x - 28, "and it fits beside the hint")
+	GameState.data.equipment = cases[4][0]
+	var shield: Dictionary = Menus.equipment_rows().filter(func(r: Dictionary) -> bool: return r.get("id", "") == "magic_shield")[0]
+	check(String(shield.detail).contains("no guard or ward"), "a slung shield's row says it neither guards nor wards")
+
+
 func test_a_shield_wards_a_foes_sorcery() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
