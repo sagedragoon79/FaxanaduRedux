@@ -65,7 +65,9 @@ func _ready() -> void:
 
 ## Shown while a body set plays (its frames carry the back point).
 func shown() -> bool:
-	return player.visual.visible and player.visual.sheet != PlayerVisual.SHEET_NAME
+	var sheet := player.visual.sheet
+	# A body set drawn with its cloak on (manifest flag "cloak") needs no layer.
+	return player.visual.visible and sheet != PlayerVisual.SHEET_NAME and not Sheet.flag(sheet, "cloak", false)
 
 
 ## Up outside a town, down in one or under a helmet.

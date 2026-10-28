@@ -281,7 +281,7 @@ func _draw() -> void:
 			a *= 0.3
 		Sheet.draw(self, sheet, anim, frame, Color(OINTMENT, a), true)
 	var info := frame_info()
-	if sheet != SHEET_NAME and player.cloak:
+	if player.cloak and player.cloak.shown():
 		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
 	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet" and not sheet in HELMED_SHEETS.values():
