@@ -1059,3 +1059,23 @@ func test_the_guardians_hit_as_hard_as_their_zone() -> void:
 	# so no boss is softer than the corridor that leads to it.
 	for zone: String in by_zone:
 		check(by_zone[zone] >= 15, "%s's guardians strike for at least 0.75 masks (%d)" % [zone, by_zone[zone]])
+
+
+## Design bible 5.3 (pass 198): a blow that costs a whole mask lands with a body
+## thud under the yelp; a lighter one does not.
+func test_a_blow_that_costs_a_mask_sounds_heavier() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	var foe := Monodron.new()
+	foe.position = cell_feet(12, 6)
+	room.add_child(foe)
+	await frames(3)
+	p.defense = 0.0
+	Sfx.recent.clear()
+	p.receive_attack(GameHud.MASK_HP - 1, foe, false)
+	check(Sfx.recent.has("hurt") and not Sfx.recent.has("hurt_heavy"), "a blow under a mask only yelps (%s)" % [Sfx.recent])
+	p._invuln_timer = 0.0
+	Sfx.recent.clear()
+	p.receive_attack(GameHud.MASK_HP, foe, false)
+	check(Sfx.recent.has("hurt") and Sfx.recent.has("hurt_heavy"), "a blow of a whole mask thuds too (%s)" % [Sfx.recent])
+	check(FileAccess.file_exists("res://assets/sfx/hurt_heavy.wav"), "hurt_heavy.wav exists")

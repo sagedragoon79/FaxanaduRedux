@@ -341,7 +341,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Thrust (Blade skill, pass 149):** hold Attack past 0.4 s and let go for a charged lunge (see 9).
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
 - **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Throw and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
-- **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98).
+- **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98). Every hit yelps (`hurt`). A blow that costs a whole mask (20 HP) or more after armor adds a low body thud and a crunch of grit under it (`hurt_heavy`, pass 198). Since passes 194 and 196 the deep zones' foes and guardians land such blows through par armor while the Trunk's do not, so you hear the difference a zone makes, and whether your armor keeps up.
 - **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
 
 **Starting combat values** (in `scripts/player/combat_tuning.gd`, asserted by tests):

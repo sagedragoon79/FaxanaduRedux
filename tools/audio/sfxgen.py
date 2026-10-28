@@ -176,6 +176,13 @@ def main():
 
     d = 0.25
     save("hurt", lowpass(osc(slide(420, 140, d, 0.7), "square", 0.5), 3000) * env(int(RATE * d), 0.002, 1.0), 0.6)
+    # A blow that costs a whole mask or more (pass 198): a low body thud and a
+    # crunch of grit under the hurt yelp, so a deep zone's heavy hit reads by ear.
+    d = 0.32
+    save("hurt_heavy", mix(
+        lowpass(osc(slide(110, 45, d, 0.6), "sine"), 400) * env(int(RATE * d), 0.002, 1.2),
+        lowpass(noise(d), 1400) * env(int(RATE * d), 0.001, 3.0) * 0.6,
+    ), 0.7)
 
 
     # --- World and UI (M3) ---
