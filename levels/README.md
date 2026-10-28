@@ -78,6 +78,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `>` `<` | Wind current (Branches): a band of wind blowing east (`>`) or west (`<`) that carries an airborne player and bears up a fall; holding Down drops out. Once the Spring of Sky is restored every current blows the other way. Draw them as whole rectangles over open sky
 | `Q` | Flue damper tile (iron louvers, solid until Zoradohna falls and the winch turns; a row of three is usual) |
 | `N` | Root Heart: strike it and every root-gate in the room opens for good |
+| `\|` | Elven veil (pass 216): a wall to the player, but a dash passes it (the Elven Stride). A column of three seals an alcove; only the player is stopped, so keep foes out of veiled spaces |
 | `Y` | Bound fog (the Mist): solid until the player brings the Lantern Key near, then every curtain in the room parts for good (a row of three is usual) |
 | `P` | Player spawn (feet at the bottom of the tile) |
 | `1`-`9` | Door cells (see below) |

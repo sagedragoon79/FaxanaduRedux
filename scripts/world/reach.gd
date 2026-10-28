@@ -183,6 +183,9 @@ func _solid_char(room_id: String, c: String) -> bool:
 	if c == "Q":
 		# The flue damper stands open once Zoradohna falls and the winch turns.
 		return not abilities.get("winch", false)
+	if c == "|":
+		# An elven veil lets only a dash through (the Elven Stride).
+		return not abilities.get("stride", false)
 	if c == "Y":
 		# Bound fog parts for the Lantern Key (Ripasheiku's reward).
 		return not abilities.get("lantern", false)

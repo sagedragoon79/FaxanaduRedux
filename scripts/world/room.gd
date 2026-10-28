@@ -556,6 +556,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				gate.retract(true)
 		"Q":
 			_spawn(FlueDamper.new(), center)
+		"|":
+			_spawn(StrideVeil.new(), center)
 		"Y":
 			var curtain := MistCurtain.new()
 			curtain.flag_id = "curtain:" + id

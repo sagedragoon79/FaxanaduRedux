@@ -18,6 +18,8 @@ const LAYER_WORLD := 1
 const LAYER_PLAYER := 2
 const LAYER_HAZARD := 4
 const LAYER_ENEMY := 8
+## Elven veils (StrideVeil, bible 4.1 A5): a wall to the player except mid-dash.
+const LAYER_VEIL := 16
 
 ## Sap pools (Trunk Hollows) halve run speed and weaken jumps.
 const SAP_SPEED := 0.5
@@ -287,7 +289,7 @@ var _gold_frac := 0.0
 
 func _ready() -> void:
 	collision_layer = LAYER_PLAYER
-	collision_mask = LAYER_WORLD
+	collision_mask = LAYER_WORLD | LAYER_VEIL
 	floor_snap_length = FLOOR_SNAP
 	floor_max_angle = deg_to_rad(46.0)
 	floor_constant_speed = true
@@ -443,6 +445,7 @@ func _physics_process(delta: float) -> void:
 	var hugging := (is_dashing and _ground_dash) or (_thrust_lunge and is_attacking) \
 		or (on_floor and absf(velocity.x) > tuning.run_speed)
 	floor_snap_length = tuning.ground_dash_snap if hugging else FLOOR_SNAP
+	collision_mask = LAYER_WORLD if passes_veils() else LAYER_WORLD | LAYER_VEIL
 	move_and_slide()
 	if pull != Vector2.ZERO and not is_dashing:
 		move_and_collide(pull * delta)
@@ -919,6 +922,19 @@ func _dash_step(delta: float) -> void:
 	_dash_timer -= delta
 	if _dash_timer <= 0.0:
 		_finish_dash()
+
+
+## Whether elven veils let the player through this frame: while dashing, and
+## until a dash that ended inside one has carried the player clear of it.
+func passes_veils() -> bool:
+	var body := Rect2(global_position + Vector2(-5, -38), Vector2(10, 36))
+	var inside := false
+	for v in get_tree().get_nodes_in_group("stride_veil"):
+		if (v as StrideVeil).rect().intersects(body):
+			inside = true
+			if is_dashing:
+				(v as StrideVeil).flare()
+	return is_dashing or inside
 
 
 func _finish_dash() -> void:
