@@ -288,7 +288,7 @@ Each blade has its own swing speed and reach, so a weapon change is a play-style
 - **Button:** Throw, on B or ; on the keyboard and the right bumper (RB) on a pad. Dash keeps the B button and the right trigger; the bumper it gave up was its third binding. Hold Up to throw it straight up.
 - **Flight:** 420 px/s, point first, for 160 px (about ten tiles). It strikes the first foe it meets for 6, scaled by Keen Edge like the blade (`melee_mult`), with a 0.03 s hit-stop. Walls and gates stop it; it passes up through one-way planks. It lights the fog as it flies.
 - **Return:** when its flight ends, on a foe, a wall or at the end of its reach, it breaks into motes of rune light and reforms at your hip 0.4 s later with a soft chime (`dagger_return`). One flies at a time. It costs no MP and is never lost; left in another room, it comes home all the same.
-- **Not while** dashing, drinking, guarding, swinging or reeling from a hit.
+- **Not while** dashing, drinking, guarding, swinging, reeling from a hit or on a ladder. A press in the last 0.15 s before you can throw is held and goes the first frame you can, as Attack is (pass 192, `CombatTuning.throw_buffer`).
 - **A sting, not a blow (pass 188):** it hurts what it hits, but what a blow does to a guard stays the blade's (and fire's). In bark (a Bark Knight, the Captain) it lands the bark's quarter and splits no plate; it stings a hexing Marsh Hag or the Matriarch without breaking the spell; and the bound Heart turns it even with the Dragon Slayer in hand. Elsewhere it is an ordinary hit from where it flew: Shadow Eura's false double still bursts, a Lantern Widow's lantern still breaks, armor still halves a hit on the front. `Enemy.take_throw` sets `Enemy.thrown` while the hit lands, and each guard reads it in `_modify_damage`.
 - **Gates nothing.** Every route it could help with already has another answer, so reachability does not change and it is never required. It is not temperable (it is not in the blade slot), so the five Meteor Shards still cover the four blades.
 - **Drawing:** code-drawn, in flight and as a pickup. The hero sheet is drawn empty-handed for a paper-doll setup (Sean, pass 184), so the blade and the dagger are separate layers over the body, never baked into it.
@@ -340,6 +340,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Light hit / heavy third hit | 8 / 14 damage (Short Sword) |
 | Combo window, cooldowns | 0.40 s to chain; 0.20 s, 0.20 s, 0.38 s after hits 1 to 3 |
 | Attack buffer | 0.15 s |
+| Throw buffer (pass 192) | 0.15 s: a Throw pressed while you can't throw yet (a swing or a dash still out, a drink, the Rune Dagger still reforming) goes the first frame you can |
 | Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
 | Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed |
 | Knockback when hit | 160 px/s back, 220 px/s up, 0.18 s control lock |
