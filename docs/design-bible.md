@@ -416,6 +416,20 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 
 `test_the_guardians_hit_as_hard_as_their_zone` holds every guardian's hardest blow to 0.5 to 1.5 masks through par armor, and each zone's guardians to at least 0.75 masks. That way no boss is softer than the foes that lead to it. The Matriarch is the lowest: her threat is the hex, not her blows. Zorugeriru's rising flood (`HydraFlood`, 8) wears you down as a hazard does and is not scaled. A boss rush runs in the same arenas, so it takes the same threat, against the endgame kit a 100% save carries.
 
+**The guardians' health (pass 204).** The rubric asks for balanced boss health (15.3), but nothing measured it. In slashes of the zone's par blade (5.5):
+
+| Zone | Guardians (par slashes) |
+|------|--------------------------|
+| Tower | Zoradohna 33, the Foreman 20 |
+| Mist | Zorugeriru 24, Ripasheiku 20, the Marsh Hag Matriarch 18 |
+| Branches | Pakukame 20, the Bark Knight Captain 19 |
+| Daybreak | Borabohra 23 |
+| Dartmoor | King Grieve 23, the Clockwork Alpha 19, Shadow Eura 18 |
+| Sunken Spring | the Drowned Warden 38 (optional, the hardest fight) |
+| Zenis | the Evil One: its avatar 20, then its heart 17 (37 in all) |
+
+`test_the_guardians_last_as_long_as_their_place` holds every guardian to 15 to 40 par slashes. A mini-boss (the Foreman, the Matriarch, the Bark Captain, the Clockwork Alpha) is no longer than 25 and never outlasts its zone's own guardian. The Evil One, avatar and heart together, is the longest fight on the critical path; only the optional Warden runs longer. Rokusutahn's 600 is spread over a plated body (a quarter damage) and a soft tail, and the Evil One's veins are a climb, not a health bar, so neither is on the sheet. Heavy finishers, spells, the Pendant and skills only shorten a fight. Slashes are a proxy for the rubric's 2.5 to 5 minutes: most of a fight is spent reading tells and waiting for openings, not swinging.
+
 ---
 
 ## 6. Movement and Game-Feel Spec
@@ -1431,7 +1445,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 | Combat and enemies | 15 | Telegraph times, hit-stop, every enemy has full animation set, damage balance sheet within targets |
 | World and level design | 15 | Room count, landmarks, save spacing, reachability proof, sequence breaks safe, secrets per zone |
 | Art cohesion | 15 | Palette compliance 100%, contrast check pass, no missing animations, parallax per zone, screenshots reviewed |
-| Bosses | 10 | Each has 2 to 3 phases, tests its ability, cinematic kill, balanced HP (target fight time 2.5 to 5 min) |
+| Bosses | 10 | Each has 2 to 3 phases, tests its ability, cinematic kill, balanced HP (target fight time 2.5 to 5 min; the health sheet in 5.5, held by `test_the_guardians_last_as_long_as_their_place` since pass 204) |
 | Systems | 10 | Save/load round-trip, shop, skill tree, map, fast travel, settings all tested |
 | Audio | 5 | Every action has SFX, every zone has music and ambience, mix levels in range |
 | Stability and performance | 5 | 60 fps budget, no crashes in a 2-hour soak bot run, load times |
