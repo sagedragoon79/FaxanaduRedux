@@ -1485,6 +1485,7 @@ func _hazard_near() -> bool:
 func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 	if dead:
 		return "ignored"
+	damage = _threatened(damage, source)
 	var src_dir := int(signf(source.global_position.x - global_position.x))
 	var from_front := src_dir == 0 or src_dir == facing
 	var catches := reflects and source.is_in_group("small_projectile")
@@ -1518,6 +1519,15 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		return "guarded"
 	take_damage(damage, false, knock)
 	return "hit"
+
+
+## A foe's blow, scaled by the room's threat (design bible 5.5, pass 194). A
+## boss, and a world hazard such as a fire seal, strikes as written.
+func _threatened(damage: int, source: Node2D) -> int:
+	if source.is_in_group("boss") or source.is_in_group("fire_seal"):
+		return damage
+	var room := get_tree().get_first_node_in_group("room") as Room
+	return damage if room == null else roundi(damage * room.threat())
 
 
 ## Riposte (skill): the parry's answer, a heavy cut at the foe that swung.

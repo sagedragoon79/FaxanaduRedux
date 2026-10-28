@@ -367,6 +367,29 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses.
 
+### 5.5 Damage balance sheet (pass 194)
+
+The rubric (15.3) asks for a damage balance sheet within targets. Until pass 194 there was none, and drawing it up showed the curve upside down: a Rot Dwarf in the Trunk swung for 20, a Shade Knight in Dartmoor thrust for 18, and by then Full Plate took 45% off. Against the kit you carry there, the deep zones' worst blows cost half a mask where the Trunk's cost nearly one, while your health had doubled.
+
+**Threat.** Every blow a foe or a foe's shot lands is multiplied by its zone's threat (`CombatTuning.ZONE_THREAT`, applied in `Player.receive_attack` through `Room.threat`). A boss's arena stays at 1, since each boss is tuned on its own (15.3, Bosses), and so does a world hazard such as a fire seal. Eolis, the gym and the Guru Trials are off the sheet and stay at 1.
+
+| Zone | Threat | Par kit (the critical path's shops and finds by then) | Par slash | Hardest blow through par armor | Slashes to fell its foes |
+|------|--------|------|-----------|------|------|
+| Trunk | 1.0 | Long Sword, Leather | 11 | 17 (Rot Dwarf swing, a Hornet's touch) | 2 to 4 |
+| Tower | 1.0 | Long Sword, Leather | 11 | 20 (Iron Dwarf slam) | 2 to 6 |
+| Mist | 1.4 | Long Sword +1 temper, Studded Mail | 13 | 18 (Drowned Dwarf slam, Lantern Ghost lunge) | 2 to 4 |
+| Branches | 1.5 | Long Sword +1, Studded Mail | 13 | 21 (a Hornet's touch) | 2 to 5 |
+| Daybreak | 1.6 | Long Sword +2, Studded Mail | 14 | 22 (a Hornet's touch) | 2 to 4 |
+| Dartmoor, Sunken Spring | 2.0 | Long Sword +2, Full Plate | 14 | 20 (Shade Knight thrust) | 3 to 4 |
+| Zenis | 2.0 | Dragon Slayer, Full Plate (foes corrupted, 1.5x health) | 18 | 26 (Iron Dwarf slam) | 2 to 6 |
+
+**Targets**, held by `test_the_damage_balance_sheet_stays_within_its_targets`, which reads every room's foes, their `*DAMAGE` and `*CONTACT` constants and their shots:
+- Each zone's hardest ordinary blow costs 0.75 to 1.4 masks (15 to 28 HP) through its par armor, and no foe anywhere hits harder than that.
+- Every foe falls in 2 to 7 slashes of the par blade (heavy finishers, spells and skills only shorten it).
+- Threat never falls along the critical path.
+
+So a hit costs about a mask from the first root to the meteor, and what grows is your health (5 masks to 14): you get sturdier as you go, but no zone's foes go soft. Players ahead of par (the Broad Sword in Dartmoor, the Battle Suit and Helmet) feel it as power, and players behind it (Leather in Dartmoor: 31) feel the push to visit the smith and the armorer.
+
 ---
 
 ## 6. Movement and Game-Feel Spec

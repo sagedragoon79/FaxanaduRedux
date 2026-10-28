@@ -898,3 +898,126 @@ func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 	check(not p.dagger_ready(), "and comes home from there too")
 	await frames(int(RuneDagger.RETURN * 60.0) + 2)
 	check(p.dagger_ready(), "ready again")
+
+
+## The damage balance sheet (design bible 5.5, pass 194): the kit the critical
+## path has put in your hands by each zone, as [blade, tempers, armor].
+const PAR_KIT := {
+	"trunk": ["long_sword", 0, "leather_armor"],
+	"tower": ["long_sword", 0, "leather_armor"],
+	"mist": ["long_sword", 1, "studded_mail"],
+	"branches": ["long_sword", 1, "studded_mail"],
+	"daybreak": ["long_sword", 2, "studded_mail"],
+	"dartmoor": ["long_sword", 2, "full_plate"],
+	"sunken": ["long_sword", 2, "full_plate"],
+	"zenis": ["dragon_slayer", 0, "full_plate"],
+}
+## Each room legend's foe, and the shot it fires (null for none).
+var sheet_foes := {
+	"M": [Monodron, null], "H": [Hornet, null], "D": [RotDwarf, null],
+	"T": [SapSpitter, SapGlob], "U": [GrubLump, null], "I": [IronDwarf, Shockwave],
+	"B": [GearBat, GearBlade], "K": [MinecartRider, null], "A": [LanternGhost, null],
+	"V": [BogMyconid, SporeCloud], "p": [DrownedDwarf, null], "m": [LeafMantis, null],
+	"!": [BarkKnight, null], ";": [SeedBomber, BomberSeed], "?": [MarshHag, MireGrasp],
+	"t": [ThunderBeetle, null], "y": [StormHarpy, HarpyFeather], "]": [SpireSentinel, null],
+	"q": [CrystalDwarf, CrystalSpike], "e": [ShadeKnight, null], "j": [ClockworkHound, null],
+	"s": [MeteorSlug, MeteorGlob], "l": [SpringEel, null],
+}
+
+
+## A script's blows on the player: its *DAMAGE and *CONTACT constants, leaving
+## out the damage a returned shot does to its thrower.
+func _blows(script: Script) -> Array[int]:
+	var out: Array[int] = []
+	var consts := script.get_script_constant_map()
+	for k: String in consts:
+		if ("DAMAGE" in k or "CONTACT" in k) and not "REFLECT" in k and not "RETURN" in k and consts[k] is int:
+			out.append(int(consts[k]))
+	return out
+
+
+## Every foe placed in a zone, by legend character.
+func _zone_foes(zone: String) -> Dictionary:
+	var found := {}
+	var dir := DirAccess.open("res://levels/" + zone)
+	for f in dir.get_files():
+		if not f.ends_with(".room"):
+			continue
+		var grid: Array = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])).grid
+		for row: String in grid:
+			for ch in row:
+				if sheet_foes.has(ch):
+					found[ch] = true
+	return found
+
+
+func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
+	var order := ["trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]
+	var last := 0.0
+	for zone: String in order:
+		var t := float(CombatTuning.ZONE_THREAT[zone])
+		check(t >= last, "%s is no softer than the zone before it (%.1f)" % [zone, t])
+		last = t
+	check(CombatTuning.ZONE_THREAT.trunk == 1.0 and CombatTuning.ZONE_THREAT.tower == 1.0, "the first two zones hit as written")
+	var checked := 0
+	for zone: String in PAR_KIT:
+		var kit: Array = PAR_KIT[zone]
+		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
+		var armor := float(GameData.item(kit[2]).defense)
+		var threat := float(CombatTuning.ZONE_THREAT[zone])
+		var foes := _zone_foes(zone)
+		check(not foes.is_empty(), "%s has foes" % zone)
+		var zone_hardest := 0
+		for ch: String in foes:
+			var pair: Array = sheet_foes[ch]
+			var foe: Enemy = pair[0].new()
+			var hp := foe.max_hp
+			if zone == "zenis":
+				hp = ceili(hp * Enemy.CORRUPT_HP)
+			var blows := _blows(foe.get_script())
+			if foe.contact_damage > 0:
+				blows.append(foe.contact_damage)
+			if pair[1] != null:
+				blows.append_array(_blows(pair[1]))
+			var name := (foe.get_script() as Script).get_global_name()
+			foe.free()
+			var hardest := 0
+			for b in blows:
+				hardest = maxi(hardest, maxi(1, roundi(roundi(b * threat) * (1.0 - armor))))
+			var slashes := ceili(float(hp) / cut)
+			check(slashes >= 2 and slashes <= 7, "%s in %s falls in 2 to 7 slashes of the par blade (%d)" % [name, zone, slashes])
+			check(hardest <= 28, "%s in %s hits for at most 1.4 masks through par armor (%d)" % [name, zone, hardest])
+			zone_hardest = maxi(zone_hardest, hardest)
+			checked += 1
+		check(zone_hardest >= 15 and zone_hardest <= 28, "%s's hardest blow costs 0.75 to 1.4 masks through par armor (%d)" % [zone, zone_hardest])
+	check(checked >= 40, "the sheet covers every zone's foes (%d rows)" % checked)
+
+
+func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
+	var rows := ARENA.duplicate()
+	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(rows)))
+	arena.add_child(room)
+	var p := make_player(room, Vector2i(3, 6))
+	var foe := Monodron.new()
+	foe.position = cell_feet(8, 6)
+	room.add_child(foe)
+	await frames(2)
+	p.defense = 0.0
+	var before := p.hp
+	p.receive_attack(10, foe, false)
+	check(before - p.hp == 20, "a Dartmoor foe's 10 lands for 20 (took %d)" % (before - p.hp))
+	# A fire seal is the world, not a foe: it burns as written.
+	p.hp = p.max_hp
+	p._invuln_timer = 0.0
+	var seal := FireSeal.new()
+	room.add_child(seal)
+	p.receive_attack(10, seal, false)
+	check(p.max_hp - p.hp == 10, "a fire seal burns for 10 anywhere (took %d)" % (p.max_hp - p.hp))
+	# A boss's arena is tuned on its own.
+	room.header["boss"] = "test"
+	check(room.threat() == 1.0, "an arena's threat is 1")
+	room.header.erase("boss")
+	room.zone = "trunk"
+	check(room.threat() == 1.0, "the Trunk hits as written")
+	room.zone = "eolis"
+	check(room.threat() == 1.0, "a zone off the sheet hits as written")
