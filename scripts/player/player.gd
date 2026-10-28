@@ -1132,7 +1132,7 @@ func _pogo_bounce() -> void:
 	_coyote_timer = 0.0
 	visual.squash(Vector2(0.8, 1.2))
 	_spawn_dust(Vector2(0, 8), "pogo")
-	Feel.hitstop(0.045)
+	Feel.hitstop(tuning.pogo_hitstop)
 	Feel.add_trauma(0.12)
 	Feel.rumble(0.4, 0.1, 0.08)
 	Sfx.play("pogo")

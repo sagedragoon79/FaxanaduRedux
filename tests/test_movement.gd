@@ -547,6 +547,15 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check_near(t.pogo_bounce_held, 420.0, 0.0001, "pogo bounce, jump held")
 	check_near(t.down_strike_active, 0.14, 0.0001, "down-strike active")
 	check(Player.DOWN_STRIKE_SIZE == Vector2(28, 24), "down-strike hitbox 28x24")
+	# Pass 208: the rest of 6.6 and 6.10, until now only read back from the
+	# tuning by their play tests, and the pogo's hit-stop, a literal in the player.
+	check_near(t.pogo_hitstop, 0.045, 0.0001, "pogo hit-stop 45 ms")
+	check_near(t.pod_bounce, 600.0, 0.0001, "bounce-pod launch")
+	# 6.10
+	check_near(t.glide_fall_speed, 60.0, 0.0001, "glide fall speed")
+	check_near(t.glide_brake, 1500.0, 0.0001, "glide brake")
+	# 5.3, the slash's push back
+	check_near(t.slash_recoil, 120.0, 0.0001, "slash recoil")
 
 
 ## Pass 200: 6.1 and the core of 6.2 were only read back from the tuning by the
