@@ -1595,7 +1595,10 @@ func test_every_guardians_win_says_what_it_gave() -> void:
 		await frames(2)
 		GameState.banner.connect(on_banner)
 		GameState.toast.connect(on_toast)
+		Sfx.recent.clear()
 		ar._on_defeated()
+		if not Sfx.recent.has(BossArena.WIN_SOUND):
+			untold.append("%s: its fanfare (%s)" % [boss_id, Sfx.recent])
 		GameState.banner.disconnect(on_banner)
 		GameState.toast.disconnect(on_toast)
 		if is_instance_valid(ar.boss):
@@ -1610,4 +1613,4 @@ func test_every_guardians_win_says_what_it_gave() -> void:
 		w.queue_free()
 		await frames(1)
 	check(told >= 14, "every arena's win was heard (%d)" % told)
-	check(untold.is_empty(), "every win says what it gave: %s" % [untold])
+	check(untold.is_empty(), "every win says what it gave, to a fanfare: %s" % [untold])
