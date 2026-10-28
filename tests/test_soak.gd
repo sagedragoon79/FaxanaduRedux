@@ -48,6 +48,15 @@ func test_random_input_soak_in_gym() -> void:
 
 
 ## One frame of button-mashing: inputs persist for random spans, like a player.
+## Drops a soaked boss's health onto a phase mark and lets it turn. Rounded
+## down: 99,999 x 0.3 rounds to 30,000, a hair above the mark, and the Hydra
+## soak reached its flood only if a mashed blow happened to land after the push
+## (pass 223: 13 of 30 seeds never did).
+func _push_to_mark(boss: Enemy, mark: float) -> void:
+	boss.hp = floori(boss.max_hp * mark)
+	boss.call("_check_phase")
+
+
 func _mash(p: Player, rng: RandomNumberGenerator, hold: Dictionary) -> void:
 	if hold.move <= 0:
 		p.input.move_x = rng.randi_range(-1, 1)
@@ -258,8 +267,7 @@ func test_widow_fight_soak_stays_lean() -> void:
 		_mash(w.player, rng, hold)
 		# Force phase 2 halfway through, so the vault, webs and drops are soaked too.
 		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
-			boss.hp = roundi(boss.max_hp * 0.6)
-			boss._check_phase()
+			_push_to_mark(boss, 0.6)
 		var t0 := Time.get_ticks_usec()
 		await frames(1)
 		var dt := Time.get_ticks_usec() - t0
@@ -308,14 +316,13 @@ func test_hydra_fight_soak_stays_lean() -> void:
 		_mash(w.player, rng, hold)
 		# Phase 2 a third of the way in (the tanks filled), phase 3 at two thirds.
 		if f == FIGHT_FRAMES / 3 and boss.phase == 1:
-			boss.hp = roundi(boss.max_hp * 0.6)
-			boss._check_phase()
+			_push_to_mark(boss, Zorugeriru.PHASES[0])
 			for c in w.room.get_children():
 				if c is DryBasin:
 					c.douse()
 		if f == FIGHT_FRAMES * 2 / 3 and boss.phase == 2:
-			boss.hp = roundi(boss.max_hp * 0.3)
-			boss._check_phase()
+			_push_to_mark(boss, Zorugeriru.PHASES[1])
+			check(boss.phase == 3, "the push at two thirds floods the arena (hp %d of %d)" % [boss.hp, boss.max_hp])
 		var t0 := Time.get_ticks_usec()
 		await frames(1)
 		var dt := Time.get_ticks_usec() - t0
