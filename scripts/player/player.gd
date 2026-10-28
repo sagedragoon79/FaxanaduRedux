@@ -136,6 +136,8 @@ var thrust := false
 var executioner := false
 ## Thrusts made (tests read it).
 var thrusts := 0
+## Rune Daggers thrown (the soaks count them, pass 191).
+var throws := 0
 var spell_cost_mult := 1.0
 var chain_thunder := false
 var time_thief := false
@@ -1380,6 +1382,7 @@ func throw_dagger() -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(facing * 10, -22)
 	rune_dagger = d
+	throws += 1
 	visual.squash(Vector2(1.06, 0.97))
 	Sfx.play("dagger_throw")
 
