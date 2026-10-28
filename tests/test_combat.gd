@@ -987,9 +987,15 @@ const PAR_KIT := {
 	"branches": ["long_sword", 1, "studded_mail"],
 	"daybreak": ["long_sword", 2, "studded_mail"],
 	"dartmoor": ["long_sword", 2, "full_plate"],
-	"sunken": ["long_sword", 2, "full_plate"],
+	"sunken": ["dragon_slayer", 0, "full_plate"],
 	"zenis": ["dragon_slayer", 0, "full_plate"],
 }
+## Pass 218: King Grieve gives up the Dragon Slayer (pass 217), so everything
+## past his throne is fought with it: the Meteor Rise, the Zenis Gate and its
+## mirror, and the Sunken Spring below the Rise.
+const PAST_GRIEVE_KIT := ["dragon_slayer", 0, "full_plate"]
+const PAST_GRIEVE_ROOMS := ["dartmoor/meteor_rise", "dartmoor/zenis_gate"]
+const PAST_GRIEVE_BOSSES := ["ShadowEura"]
 ## Each room legend's foe, and the shot it fires (null for none).
 var sheet_foes := {
 	"M": [Monodron, null], "H": [Hornet, null], "D": [RotDwarf, null],
@@ -1069,6 +1075,36 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 			checked += 1
 		check(zone_hardest >= 15 and zone_hardest <= 28, "%s's hardest blow costs 0.75 to 1.4 masks through par armor (%d)" % [zone, zone_hardest])
 	check(checked >= 40, "the sheet covers every zone's foes (%d rows)" % checked)
+	# Past King Grieve the Dragon Slayer is in hand: the Rise's foes still take
+	# two slashes or more (pass 218).
+	var slayer := int(GameData.item(PAST_GRIEVE_KIT[0]).slash)
+	for id: String in PAST_GRIEVE_ROOMS:
+		for row: String in Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % id)).grid:
+			for ch in row:
+				if sheet_foes.has(ch):
+					var foe: Enemy = sheet_foes[ch][0].new()
+					var slashes := ceili(float(foe.max_hp) / slayer)
+					check(slashes >= 2 and slashes <= 7, "%s past King Grieve falls in 2 to 7 Dragon Slayer slashes (%d)" % [(foe.get_script() as Script).get_global_name(), slashes])
+					foe.free()
+
+
+## Pass 218: the sheet's kit past King Grieve is the one the game gives there.
+func test_the_sheet_past_king_grieve_holds_the_dragon_slayer() -> void:
+	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == PAST_GRIEVE_KIT[0], "King Grieve gives the blade the sheet expects past him")
+	check(PAR_KIT.sunken == PAST_GRIEVE_KIT and PAR_KIT.zenis == PAST_GRIEVE_KIT, "the Sunken Spring and Zenis are fought with it")
+	var rise: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/dartmoor/throne_hall.room"))
+	var past := []
+	for spec: String in rise.lists.get("door", []):
+		past.append(spec.get_slice(",", 1).strip_edges())
+	check(past.has("dartmoor/meteor_rise"), "the Meteor Rise lies behind his throne (%s)" % [past])
+	var rooms := {}
+	for id: String in PAST_GRIEVE_ROOMS:
+		rooms[id] = Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % id))
+	check(String(rooms["dartmoor/zenis_gate"].header.get("boss", "")) == "shadow_eura", "and Shadow Eura waits past it, at the Zenis Gate")
+	var down := []
+	for spec: String in rooms["dartmoor/meteor_rise"].lists.get("door", []):
+		down.append(spec.get_slice(",", 1).strip_edges())
+	check(down.has("sunken/spring_gate") and down.has("dartmoor/zenis_gate"), "the Rise leads on to the Zenis Gate and down to the Sunken Spring (%s)" % [down])
 
 
 func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
@@ -1156,7 +1192,7 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 		var name := script.get_global_name()
 		if name in ["Rokusutahn", "EvilCore"]:
 			continue
-		var kit: Array = PAR_KIT[row[1]]
+		var kit: Array = PAST_GRIEVE_KIT if name in PAST_GRIEVE_BOSSES else PAR_KIT[row[1]]
 		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
 		var boss: Enemy = script.new()
 		slashes[name] = ceili(float(boss.max_hp) / cut)

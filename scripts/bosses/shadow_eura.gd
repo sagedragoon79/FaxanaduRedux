@@ -35,7 +35,7 @@ signal defeated
 
 const DISPLAY_NAME := "Shadow Eura"
 const EPITHET := "the Mirror"
-const MAX_HP := 240
+const MAX_HP := 320
 ## Health fractions where later phases begin: below half it breaks the mirror.
 const PHASES := [0.5, 0.2]
 ## How far behind you the reflection runs (s).
