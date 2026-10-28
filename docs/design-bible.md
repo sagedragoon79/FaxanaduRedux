@@ -424,7 +424,7 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 
 | Zone | Guardians (par slashes) |
 |------|--------------------------|
-| Tower | Zoradohna 33, the Foreman 20 |
+| Tower | Zoradohna 24 (33 until pass 212), the Foreman 20 |
 | Mist | Zorugeriru 24, Ripasheiku 20, the Marsh Hag Matriarch 18 |
 | Branches | Pakukame 20, the Bark Knight Captain 19 |
 | Daybreak | Borabohra 23 |
@@ -432,7 +432,7 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 | Sunken Spring | the Drowned Warden 38 (optional, the hardest fight) |
 | Zenis | the Evil One: its avatar 20, then its heart 17 (37 in all) |
 
-`test_the_guardians_last_as_long_as_their_place` holds every guardian to 15 to 40 par slashes. A mini-boss (the Foreman, the Matriarch, the Bark Captain, the Clockwork Alpha) is no longer than 25 and never outlasts its zone's own guardian. The Evil One, avatar and heart together, is the longest fight on the critical path; only the optional Warden runs longer. Rokusutahn's 600 is spread over a plated body (a quarter damage) and a soft tail, and the Evil One's veins are a climb, not a health bar, so neither is on the sheet. Heavy finishers, spells, the Pendant and skills only shorten a fight. Slashes are a proxy for the rubric's 2.5 to 5 minutes: most of a fight is spent reading tells and waiting for openings, not swinging.
+`test_the_guardians_last_as_long_as_their_place` holds every guardian to 15 to 40 par slashes. A mini-boss (the Foreman, the Matriarch, the Bark Captain, the Clockwork Alpha) is no longer than 25 and never outlasts its zone's own guardian. The Evil One, avatar and heart together, is the longest fight on the critical path; only the optional Warden runs longer. No guardian outlasts the longest guardian of every later zone by more than two slashes (pass 212), so the fights grow, or at least hold, as the game goes on. Zoradohna had 360 HP, 33 par slashes: the second guardian ran longer than any required fight before the finale, and since her hull lets only a quarter of a side blow through, her real fight ran longer still. She has 260 now (24), level with Zorugeriru, the longest later guardian, and still above the Tower's Foreman. Her phases are fractions of her health, so they come at the same points in the fight. Rokusutahn's 600 is spread over a plated body (a quarter damage) and a soft tail, and the Evil One's veins are a climb, not a health bar, so neither is on the sheet. Heavy finishers, spells, the Pendant and skills only shorten a fight. Slashes are a proxy for the rubric's 2.5 to 5 minutes: most of a fight is spent reading tells and waiting for openings, not swinging.
 
 ---
 
