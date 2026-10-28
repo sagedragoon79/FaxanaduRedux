@@ -28,6 +28,7 @@ extends Node2D
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
 ##   --armor=ID                 wear an armor (data/items.json, kind "armor"), and its body set
+##   --wear=A,B                 own and wear gear (blades, armor, shields, helmets), e.g. for --open=equipment
 ##   --hp=N                     start with N health (for screenshots)
 ##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
 ##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
@@ -293,6 +294,10 @@ func _process(_delta: float) -> void:
 		# Screenshots: wear an armor (e.g. --armor=full_plate).
 		GameState.data.equipment.armor = String(_args["armor"])
 		GameState.refresh_stats(world.player)
+	if _args.has("wear") and _frames == 2:
+		# Screenshots: own and wear gear (e.g. --wear=battle_suit,magic_shield,battle_helmet).
+		for id: String in String(_args["wear"]).split(","):
+			GameState.obtain_gear(id, world.player)
 	if _args.has("skills") and _frames == 2:
 		# Screenshots: learn skills (e.g. --skills=tilte_swarm).
 		for id: String in String(_args["skills"]).split(","):

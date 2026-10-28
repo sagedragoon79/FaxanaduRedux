@@ -396,7 +396,7 @@ static func equipment_rows() -> Array:
 			if slot == "blade" and GameState.temper_level(id) > 0:
 				detail += "  Tempered %d of 2." % GameState.temper_level(id)
 			if slot == "shield" and GameState.two_handed():
-				detail += "  On your back while you hold a two-hander."
+				detail += "  Slung with a two-hander: no guard or ward."
 			if worn and slot != "blade":
 				detail += "  Choose it again to take it off."
 			out.append({"label": item.name, "right": "Worn" if worn else "", "detail": detail, "enabled": true, "id": id})
@@ -405,6 +405,15 @@ static func equipment_rows() -> Array:
 		var item := GameData.item(id)
 		out.append({"label": item.name, "right": "Worn" if GameState.dye() == id else "", "detail": String(item.desc), "enabled": true, "id": id})
 	return out
+
+
+## The Equipment page's footer (pass 229): what all you wear adds up to, as
+## refresh_stats works it out. Armor and helmet stack by what each lets
+## through, so the Battle Suit under the Battle Helmet stops 64%, not 70%; the
+## ward is the shield's and the helmet's, capped at GameState.MAX_WARD, and a
+## shield on a two-hander's back gives none.
+static func worn_totals(p: Player) -> String:
+	return "Armor %d%%   Ward %d%%" % [roundi(p.defense * 100.0), roundi(p.magic_ward * 100.0)]
 
 
 ## A row chosen on the Equipment page: gear goes on (or off), a dye on the cloak.
@@ -439,7 +448,8 @@ static func open_equipment(tree: SceneTree, p: Player, back: Callable) -> bool:
 		if not row.has("id"):
 			return
 		choose_equipment(String(row.id), p)
-	menu.open("Equipment", "What you wear and hold. Tempers stay with each blade.", provider, on_select)
+	var footer := func() -> String: return worn_totals(p)
+	menu.open("Equipment", "What you wear and hold. Armor stops blows; a ward turns sorcery. Tempers stay with each blade.", provider, on_select, footer)
 	menu.on_back = back
 	return true
 
