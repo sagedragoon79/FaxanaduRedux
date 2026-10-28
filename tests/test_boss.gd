@@ -186,6 +186,49 @@ func test_sap_clump_hurts() -> void:
 	check(p.hp == p.max_hp - SapClump.DAMAGE, "a falling clump hurts (hp %d)" % p.hp)
 
 
+## Pass 228: the Hour Glass holds every hazard a foe looses, not only the ones
+## that fly. Rokusutahn's sap and Zorugeriru's mist breath (and a Myconid's
+## spores) went on falling, rolling and stinging in stopped time.
+func test_the_hour_glass_holds_every_loosed_hazard() -> void:
+	var setup := _boss_world()
+	var w: World = setup[0]
+	var p := w.player
+	p.teleport(cell_feet(20, 19))
+	await frames(3)
+	TimeStop.start()
+	var clump := SapClump.new()
+	clump.room = w.room
+	clump.position = Vector2(p.global_position.x, 34)
+	w.room.add_child(clump)
+	var breath := MistBreath.new()
+	breath.ground_y = p.global_position.y
+	breath.left = 0.0
+	breath.right = 2000.0
+	w.room.add_child(breath)
+	breath.global_position = Vector2(p.global_position.x - 30.0, p.global_position.y)
+	var cloud := SporeCloud.new()
+	w.room.add_child(cloud)
+	cloud.global_position = p.body_rect().get_center()
+	var at := [clump.position, breath.global_position, cloud.global_position]
+	await frames(90)
+	check(p.hp == p.max_hp, "in stopped time nothing loosed hurts (hp %d)" % p.hp)
+	check(clump.position == at[0], "the sap drip hangs on the ceiling")
+	check(breath.global_position == at[1], "the mist breath stands still")
+	check(cloud.global_position == at[2], "the spores hang in the air")
+	TimeStop.reset()
+	var hurt := await _until(func() -> bool: return p.hp < p.max_hp, 120)
+	check(hurt, "when time runs again they do")
+	# Every hazard a foe looses (anything outside the foes themselves that
+	# strikes the player) must ask the glass.
+	for dir in ["res://scripts/bosses/", "res://scripts/enemies/"]:
+		for f in DirAccess.get_files_at(dir):
+			if not f.ends_with(".gd"):
+				continue
+			var src := FileAccess.get_file_as_string(dir + f)
+			if src.contains("receive_attack(") and not src.contains("extends Enemy") and not src.contains("class_name Enemy\n") and not src.contains("TimeStop.active()"):
+				check(false, "%s strikes the player but ignores the Hour Glass" % f)
+
+
 func test_defeat_gives_the_reward_once() -> void:
 	var w := make_world({}, ARENA_ROOM)
 	var p := w.player

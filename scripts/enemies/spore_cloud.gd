@@ -41,6 +41,8 @@ func stinging() -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	if TimeStop.active():
+		return  # held still by the Hour Glass
 	_t += delta
 	_tick -= delta
 	global_position.y -= RISE * delta
