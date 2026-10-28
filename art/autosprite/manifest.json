@@ -256,16 +256,16 @@
   "head": "top",
   "colors": 56,
   "ramps": ["night", "stone"],
-  "height": 48,
+  "height": 45.5,
   "density": 2,
   "reference": "idle",
   "detect": "hero",
-  "flags": {"scarf": false},
+  "flags": {"scarf": false, "cloak": true},
   "rim": {"color": [176, 204, 232], "mix": 0.4},
   "animations": {
-   "idle": {"file": "idle.png", "frame_size": 128, "columns": 4, "count": 16, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "fps": 5, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49 (HeroStranger_ElvenPlateArmor_ElvenBattleHelm, made by Sean), idle sheet cmvrcxywn008ekl0q0pz75xza (128 px cells)"},
-   "walk": {"file": "walk.png", "frame_size": 128, "columns": 4, "count": 16, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], "fps": 18, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49, walk sheet cmvrd0lgb00oo3fr7f7dm2uep (128 px cells)"},
-   "run": {"file": "run.png", "frame_size": 128, "columns": 4, "count": 16, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "fps": 49, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49, run sheet cmvrd0wwp00ph3fr72wy2rk3i (128 px cells)"}
+   "idle": {"file": "idle.png", "frame_size": 512, "columns": 8, "count": 56, "pick": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50], "fps": 7, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49 (HeroStranger_ElvenPlateArmor_ElvenBattleHelm, made by Sean: Battle Suit, helmet and cloak), idle sheet cmvrg2amy000wcjzu71l9mv9u"},
+   "walk": {"file": "walk.png", "frame_size": 512, "columns": 8, "count": 56, "pick": [28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53], "fps": 34, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49, walk sheet cmvrgb24n00v84v8di08px8s9"},
+   "run": {"file": "run.png", "frame_size": 512, "columns": 8, "count": 56, "pick": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], "fps": 40, "loop": true, "autosprite": "character cmvrcqqmk018wpq1j7t5lrf49, run sheet cmvrgbnes008u1296173pei4r"}
   }
  }
 }
