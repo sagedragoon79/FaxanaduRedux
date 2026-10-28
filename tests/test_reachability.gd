@@ -66,6 +66,9 @@ func _pickups(reach: Reach) -> Array:
 			for x in g[y].length():
 				if PICKUPS.contains(g[y][x]):
 					out.append([id, g[y][x], x, y])
+		# Pass 203: the finds a `prop:` line lays are pickups too.
+		for f: Array in reach.rooms[id].finds:
+			out.append([id, f[0], f[1], f[2]])
 	return out
 
 
@@ -226,9 +229,9 @@ func test_mascon_lies_across_the_black_water() -> void:
 
 
 func test_the_pendant_and_the_rod_can_be_reached() -> void:
-	# Pass 201: the original's two relics, laid by `prop:` lines (which the
-	# pickup sweep doesn't read): the Pendant on the Matriarch's floor, the Rod
-	# on Conflate's high plank by the ladder. The Mist's set reaches both.
+	# Pass 201: the original's two relics, laid by `prop:` lines: the Pendant
+	# on the Matriarch's floor, the Rod on Conflate's high plank by the ladder.
+	# The Mist's set reaches both (the sweeps check them too since pass 203).
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
 	var reach := Reach.new(_texts(), set, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))

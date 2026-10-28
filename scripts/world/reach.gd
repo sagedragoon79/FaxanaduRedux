@@ -95,7 +95,14 @@ func _init(room_texts: Dictionary, ability_set: Dictionary, can_use_keys := fals
 			var n := int(parts[0])
 			if found.has(n):
 				doors[n] = {"rect": found[n].rect, "edge": found[n].edge, "target": parts[1].strip_edges(), "target_door": int(parts[2])}
-		rooms[id] = {"grid": grid, "size": Vector2i(width, grid.size()), "doors": doors}
+		# Finds laid by `prop:` lines (Room.FOUND_PROPS: the Joker Key, the
+		# Battle Helmet, the Pendant, the Magical Rod), as [kind, x, y] (pass 203).
+		var finds := []
+		for spec: String in parsed.lists.get("prop", []):
+			var pr := spec.split(",")
+			if pr.size() == 3 and pr[2].strip_edges() in Room.FOUND_PROPS:
+				finds.append([pr[2].strip_edges(), int(pr[0]), int(pr[1])])
+		rooms[id] = {"grid": grid, "size": Vector2i(width, grid.size()), "doors": doors, "finds": finds}
 
 
 static func key(room_id: String, x: int, y: int) -> String:

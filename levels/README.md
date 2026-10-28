@@ -138,6 +138,9 @@ every room: from the new game spawn, with no abilities, the Climbing Glove must 
 and the boss must not be; with the glove (and keys) every room, pickup, chest and shrine must
 be reachable; and no reachable spot may be a soft-lock (unable to get back to a save, or on
 to the glove). It also boots every room and checks the player lands safely.
+"Pickup" includes the finds a `prop:` line lays (`Room.FOUND_PROPS`: the Joker Key, the
+Battle Helmet, the Pendant and the Magical Rod; pass 203). Until then the sweeps read only
+grid cells, so a find moved somewhere out of reach would have passed.
 
 A pickup meant to open only after the Spring of Trunk (sap hardens into amber) goes in
 `AMBER_SECRETS` in `tests/test_reachability.gd`; the test then proves it is gated.
