@@ -2491,6 +2491,31 @@ func test_the_cores_beams_are_telegraphed_and_burn_the_line() -> void:
 	check(p.hp < hp, "then burns whoever stands in it (%d)" % (hp - p.hp))
 
 
+## Pass 244: the beam's strike is heard. The core's `zap` marks the line as it
+## is drawn; the lance itself sears (`core_beam`) the moment it fires, and not
+## before, so the dodge has a beat to the ear as well as the eye.
+func test_a_cores_beam_sears_as_it_fires() -> void:
+	var setup := await _veins_world()
+	var w: World = setup[0]
+	var c: EvilCore = setup[2]
+	c._volley = 99.0
+	for b in w.room.get_children():
+		if b is CoreBeam:
+			b.queue_free()
+	await frames(30)
+	c._fire()
+	check("zap" in Sfx.recent, "the line is marked with the core's zap")
+	Sfx.recent.clear()
+	var beam: CoreBeam = w.room.get_children().filter(func(n: Node) -> bool: return n is CoreBeam and not n.is_queued_for_deletion())[0]
+	var early := false
+	while is_instance_valid(beam) and not beam.firing():
+		early = early or CoreBeam.FIRE_SOUND in Sfx.recent
+		await frames(1)
+	check(not early, "the line flickers in silence after the zap")
+	await frames(1)
+	check(CoreBeam.FIRE_SOUND in Sfx.recent, "and the lance sears as it fires (%s)" % [Sfx.recent])
+
+
 func test_the_hour_glass_holds_the_cores_beams() -> void:
 	var setup := await _veins_world()
 	var w: World = setup[0]
