@@ -124,14 +124,13 @@ func _dialog_box() -> DialogBox:
 func rest(p: Player) -> void:
 	p.restore()
 	var world := get_tree().get_first_node_in_group("world") as World
-	if world != null:
-		world.save_at(global_position)
+	var saved := world == null or world.save_at(global_position)
 	var d := Dust.new()
 	d.setup("heal")
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
 	Sfx.play("save", 0.0)
-	GameState.toast.emit("Rested. Your mantra is: " + GameState.mantra())
+	GameState.toast.emit("Rested. Your mantra is: " + GameState.mantra() if saved else SaveShrine.NOT_SAVED)
 
 
 func _face(p: Player) -> void:

@@ -3,6 +3,9 @@ extends Interactable
 ## Meditation Shrine: press Up to rest. Restores health, magic and potions,
 ## saves the game and becomes the respawn point.
 
+## What a rest says when the save file could not be written (pass 255).
+const NOT_SAVED := "Rested, but the journey could not be saved."
+
 const STONE := Color("6b6380")
 const STONE_DARK := Color("4a4458")
 const STONE_LIGHT := Color("8d84a3")
@@ -35,8 +38,9 @@ func interact(p: Player) -> void:
 	p.restore()
 	_glow = 1.0
 	var world := get_tree().get_first_node_in_group("world") as World
+	var saved := true
 	if world != null:
-		world.save_at(global_position)
+		saved = world.save_at(global_position)
 	else:
 		p.spawn_point = global_position
 	var d := Dust.new()
@@ -44,7 +48,7 @@ func interact(p: Player) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -16)
 	Sfx.play("save", 0.0)
-	GameState.toast.emit("Rested. Progress saved.")
+	GameState.toast.emit("Rested. Progress saved." if saved else NOT_SAVED)
 
 
 func _draw() -> void:
