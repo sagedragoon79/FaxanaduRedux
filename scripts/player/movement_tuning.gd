@@ -98,6 +98,14 @@ extends Resource
 @export var wind_speed := 200.0
 @export var wind_drag := 2400.0
 
+@export_group("Sap")
+## Amber sap (bible 6.12, the Trunk Hollows' pools and a Sap Spitter's puddles):
+## standing in it, the run is held to sap_speed of its pace and a ground jump
+## leaves at sap_jump of its speed (about half the height). Nothing else is
+## slowed: the double jump, wall jump and dash are the way out.
+@export var sap_speed := 0.5
+@export var sap_jump := 0.72
+
 @export_group("Ladders")
 ## Ladders (bible 6.11, the original's own way up): Up grabs one, Up and Down
 ## climb at ladder_speed with no gravity, Jump leaves with a full jump, and a

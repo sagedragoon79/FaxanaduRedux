@@ -28,9 +28,6 @@ const LAYER_ENEMY := 8
 ## Elven veils (StrideVeil, bible 4.1 A5): a wall to the player except mid-dash.
 const LAYER_VEIL := 16
 
-## Sap pools (Trunk Hollows) halve run speed and weaken jumps.
-const SAP_SPEED := 0.5
-const SAP_JUMP := 0.72
 ## How long an Ointment protects you (design bible 10.2).
 const OINTMENT_TIME := 10.0
 ## Poison (a Faxanadu drop): seconds it lasts, and health lost each POISON_TICK.
@@ -634,7 +631,7 @@ func _horizontal_step(delta: float, on_floor: bool) -> void:
 	elif is_blocking:
 		target *= combat.guard_move_multiplier
 	if in_sap:
-		target *= SAP_SPEED
+		target *= tuning.sap_speed
 	if swimming:
 		target *= tuning.swim_speed_multiplier
 	target += wind
@@ -674,7 +671,7 @@ func _try_jump() -> void:
 
 
 func _do_jump() -> void:
-	velocity.y = -tuning.jump_velocity * (SAP_JUMP if in_sap else 1.0)
+	velocity.y = -tuning.jump_velocity * (tuning.sap_jump if in_sap else 1.0)
 	_end_dash_into_jump()
 	_consume_jump()
 	_jump_cut_available = true

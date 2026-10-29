@@ -483,6 +483,15 @@ func test_wind_numbers_match_the_bible() -> void:
 	check(t.wind_speed > t.run_speed, "faster than a run, so there is no headway against it")
 
 
+func test_sap_numbers_match_bible_6_12() -> void:
+	var t := MovementTuning.new()
+	check(t.sap_speed == 0.5 and t.sap_jump == 0.72, "sap holds the run to half and a jump to 72% (6.12)")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("### 6.12 Sap") and bible.contains("| Run | 50% of the pace"), "the bible has the sap section and its numbers")
+	# A jump at 72% of its speed rises about half as high: (0.72)^2 of 72 px.
+	check(absf(t.jump_height * t.sap_jump * t.sap_jump - 37.3) < 0.5, "about 37 px, a little over two tiles")
+
+
 func test_swim_numbers_match_the_bible() -> void:
 	var t := MovementTuning.new()
 	check(t.swim_speed_multiplier == 0.7 and t.swim_float == 50.0 and t.swim_sink == 120.0, "swim speed, float and sink are the bible's (6.8)")
