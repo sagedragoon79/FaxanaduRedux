@@ -243,7 +243,7 @@ Every gate has a consistent, readable look so players remember it:
 |------|-------|-----|-----------|
 | Health (HP) | 5 masks of 20 HP (100) | 14 masks (280) | Life Fruit: 2 fruits = +1 mask (18 fruits: 13 in the rooms, one at each of the 4 grocers, 1 from the Clockwork Alpha) |
 | Magic (MP) | 60 | 220 | Mana Dew: each +10 (16 dews: 9 in the rooms, one at each of the 4 grocers, 3 from Ripasheiku, the Bark Knight Captain and the Marsh Hag Matriarch) |
-| Red Potion flask | 2 charges, heals 40 HP | 5 charges, heals 70 HP | Potion Shards (3 shards = +1 charge; 9 shards) and skill tree |
+| Red Potion flask | 2 charges, heals 40 HP | 5 charges, heals 70 HP | Potion Shards (3 shards = +1 charge; 9 shards) and skill tree. Pass 243: the Trunk and the Tower had grown 18 shards, enough for 8 charges; nine (three in the Trunk, six in the Tower) became chests of gold at the same cells, so a save that took one finds the chest already open |
 | Attack | Weapon base | | Weapons, smith upgrades, skill tree |
 | Defense | Armor base | | Armor, shields |
 
@@ -987,7 +987,7 @@ It is open when a parry flips it (1.5 s on its back), when it is jammed in a wal
 The **Guru** in each town teaches skills. Points come from:
 - **Ranks:** XP from kills raises your title, using the original's 16 ranks (Novice, Aspirant, Battler, Fighter, Adept, Chevalier, Veteran, Warrior, Swordman, Hero, Soldier, Myrmidon, Champion, Superhero, Paladin, Lord). Each rank after Novice = 1 point (15 total).
 - **Bosses:** 1 point each from the 9 main bosses (9 total).
-- **Mantra Shards:** hidden secrets; 3 shards = 1 point (15 shards, 5 points).
+- **Mantra Shards:** hidden secrets; 3 shards = 1 point (15 shards, 5 points, plus one from each of the six Guru Trials: 7 points in all). Pass 243 turned the two spare shards the rooms had grown (17, so two never made a mantra) into chests, in the Slag Heap and on the Marsh Road.
 
 That is **29 points** available against a tree that costs **54** in total, so players must choose. Respec at any Guru for gold (200 g, then 400 g, 600 g and so on, capped at 2,000 g).
 
@@ -1139,7 +1139,7 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 | Key doors | 12 | Visible, need a card key | Equipment, spells, shortcuts |
 | Life Fruit | 18 (13 in the rooms) | Mix, plus grocers and a mini-boss | +HP |
 | Mana Dew | 16 (9 in the rooms) | Mix, plus grocers and three guardians | +MP |
-| Potion Shards | 9 | Mix | +flask |
+| Potion Shards | 9 | Mix | +flask. Held with the rooms' Life Fruit (13), Mana Dew (9), Mantra Shards (15) and Meteor Shards (5) by `test_the_rooms_hold_the_finds_the_bible_counts` since pass 243 |
 | Mantra Shards | 15 | Mostly hard platforming | Skill points |
 | Meteor Shards | 5 (pass 140; was 10) | Hard rooms, hidden pockets | The smith's second temper (5.2). Each blade takes one, so five (one per blade and one spare) replace the planned ten, and none drop from foes: a shard is a find, not a grind |
 | Guru Trials | 6 | Unlock as springs are restored | Cosmetics, a Mantra Shard each |
