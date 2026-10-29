@@ -2280,3 +2280,23 @@ func test_a_deep_zones_foes_pay_as_they_hit() -> void:
 		if c is Coin:
 			coins += (c as Coin).value
 	check(coins == 20, "a Dartmoor foe's 10 gold comes out as 20 (%d)" % coins)
+
+
+## Pass 243: the rooms hold what bible 5.1 and 11 count. The Tower and the
+## Trunk had grown 18 Potion Shards against the planned 9, so the flask could
+## reach 8 charges where 5 is the most (2 + 9 / 3), and 17 Mantra Shards against
+## 15, two of them spare forever (15 and the trials' six make seven points).
+func test_the_rooms_hold_the_finds_the_bible_counts() -> void:
+	var rooms := _all_rooms()
+	const COUNTS := {"L": 13, "W": 9, "F": 9, "*": 15, "(": 5}
+	var found := {}
+	for id: String in rooms:
+		if id.begins_with("gym/"):
+			continue
+		for row: String in rooms[id].grid:
+			for ch: String in COUNTS:
+				found[ch] = int(found.get(ch, 0)) + row.count(ch)
+	for ch: String in COUNTS:
+		check(int(found.get(ch, 0)) == COUNTS[ch], "the rooms hold %d of '%s' (%d)" % [COUNTS[ch], ch, int(found.get(ch, 0))])
+	check(int(GameState.fresh().flask_max) + COUNTS["F"] / 3 == 5, "every shard fused, the flask holds 5 charges, as 5.1 says")
+	check((COUNTS["*"] + 6) % 3 == 0, "the rooms' Mantra Shards and the six trials' make whole mantras, none spare")
