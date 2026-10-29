@@ -112,7 +112,9 @@ def main():
     d = 0.09
     body = osc(slide(180, 70, d), "square", 0.4) * env(int(RATE * d), 0.001, 1.2)
     crunch = lowpass(noise(d), 3000) * env(int(RATE * d), 0.001, 3.0)
-    save("hit", mix(lowpass(body, 2500), crunch * 0.8), 0.8)
+    # The two loudest cues sit a few dB under their old file level so the mix
+    # check keeps headroom (pass 270); Sfx.LIFT plays them back as loud as before.
+    save("hit", mix(lowpass(body, 2500), crunch * 0.8), 0.62)
 
     d = 0.12
     save("pogo", mix(osc(slide(620, 940, d, 0.3), "tri") * env(int(RATE * d), 0.001, 2.0),
@@ -193,7 +195,7 @@ def main():
     save("hop", lowpass(osc(slide(180, 320, d), "square", 0.4), 2000) * env(int(RATE * d)), 0.45)
 
     d = 0.25
-    save("hurt", lowpass(osc(slide(420, 140, d, 0.7), "square", 0.5), 3000) * env(int(RATE * d), 0.002, 1.0), 0.6)
+    save("hurt", lowpass(osc(slide(420, 140, d, 0.7), "square", 0.5), 3000) * env(int(RATE * d), 0.002, 1.0), 0.42)
     # A blow that costs a whole mask or more (pass 198): a low body thud and a
     # crunch of grit under the hurt yelp, so a deep zone's heavy hit reads by ear.
     d = 0.32
