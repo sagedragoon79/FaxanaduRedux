@@ -1927,3 +1927,35 @@ func test_the_journey_counts_every_skill_point_the_game_gives() -> void:
 	var rows := Completion.journey_rows(Completion.tally(w.catalog), [])
 	check(rows[7].label == "Skill points" and rows[7].right == "3 / 34", "the Journey page shows them (%s %s)" % [rows[7].label, rows[7].right])
 	GameState.new_game()
+
+
+## Pass 269 (bible 10.3): the Inventory page lists what you carry to use and
+## the charts you hold. An Elixir showed nowhere once bought, and the charts
+## only on the map, so nothing said which zones were still uncharted.
+func test_the_inventory_lists_supplies_and_charts() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(2)
+	var labels := func() -> Array: return Menus.inventory_rows(p).map(func(r: Dictionary) -> String: return r.label)
+	check(not labels.call().has("Supplies") and not labels.call().any(func(l: String) -> bool: return l.begins_with("Charts")), "nothing carried, no supplies or charts listed")
+	p.ointments = 2
+	p.elixirs = 1
+	GameState.data.charts["eolis"] = true
+	GameState.data.charts["dartmoor"] = true
+	var rows := Menus.inventory_rows(p)
+	var by := {}
+	for r: Dictionary in rows:
+		by[r.label] = r
+	var total := GameData.table("items").values().filter(func(i: Dictionary) -> bool: return i.get("kind", "") == "chart").size()
+	check(by.has("Supplies") and by["Ointment"].right == "x2" and by["Elixir"].right == "x1", "Ointments and the Elixir show how many you carry")
+	check(by.has("Charts, 2 of %d" % total) and by.has("Chart of Eolis") and by.has("Chart of Dartmoor"), "each chart held, counted against every chart sold (%s)" % [labels.call()])
+	check(by.has("%d not yet charted" % (total - 2)) and by["%d not yet charted" % (total - 2)].get("enabled", true) == false, "and how many are still to buy")
+	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")
+	check(blank.is_empty(), "every line says what it does (%s)" % [blank])
+	for zone: String in ["eolis", "trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "sunken"]:
+		GameState.data.charts[zone] = true
+	labels = func() -> Array: return Menus.inventory_rows(p).map(func(r: Dictionary) -> String: return r.label)
+	check(labels.call().has("Charts, %d of %d" % [total, total]) and not labels.call().any(func(l: String) -> bool: return l.ends_with("not yet charted")), "every chart held: nothing left to buy")
+	GameState.data.charts = {}
+	p.ointments = 0
+	p.elixirs = 0

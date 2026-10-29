@@ -550,6 +550,21 @@ static func inventory_rows(p: Player) -> Array:
 		for k: String in keys:
 			var info := key_info(k)
 			out.append({"label": info[0], "right": "x%d" % GameState.key_count(k), "detail": info[1]})
+	# What you carry to use (pass 269): the HUD shows an Ointment only once one
+	# is bought, and the Elixir nowhere, so a player could not see it was there.
+	var supplies := []
+	if p.ointments > 0:
+		supplies.append({"label": "Ointment", "right": "x%d" % p.ointments, "detail": "Rub one on from the pause menu: nothing can hurt you for 10 seconds."})
+	if p.elixirs > 0:
+		supplies.append({"label": "Elixir", "right": "x%d" % p.elixirs, "detail": "Used by itself when a blow would fell you: it brings you back at full health."})
+	if not supplies.is_empty():
+		out.append({"label": "Supplies", "header": true})
+		out.append_array(supplies)
+	# The charts you hold (pass 269): until now only the map showed them, so
+	# nothing said which zones were still uncharted.
+	var charts := chart_rows()
+	if not charts.is_empty():
+		out.append_array(charts)
 	var shards := []
 	var potion := int(GameState.data.get("potion_shards", 0)) % 3
 	var mantra := int(GameState.data.get("mantra_shards", 0)) % 3
@@ -565,6 +580,25 @@ static func inventory_rows(p: Player) -> Array:
 		out.append_array(shards)
 	if out.is_empty():
 		out.append({"label": "Nothing yet", "detail": "What you find on the Tree is kept here."})
+	return out
+
+
+## The Charts group: a header counting the zones charted against every chart
+## sold, each chart held, and a line on where the rest are bought.
+static func chart_rows() -> Array:
+	var items := GameData.table("items")
+	var all := []
+	for id: String in items:
+		if items[id].get("kind", "") == "chart":
+			all.append(id)
+	var held := all.filter(func(id: String) -> bool: return GameState.has_chart(String(items[id].zone)))
+	if held.is_empty():
+		return []
+	var out := [{"label": "Charts, %d of %d" % [held.size(), all.size()], "header": true}]
+	for id: String in held:
+		out.append({"label": String(items[id].name), "detail": "Its rooms are drawn on your map, dimmed until you walk them."})
+	if held.size() < all.size():
+		out.append({"label": "%d not yet charted" % (all.size() - held.size()), "detail": "The towns' cartographers sell the rest.", "enabled": false})
 	return out
 
 
