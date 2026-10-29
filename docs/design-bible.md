@@ -1534,6 +1534,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 
 **Saves and settings (pass 109):** no file the game reads can crash it or leave it half-loaded.
 - **Writing.** Saves and `settings.cfg` are written to a `.tmp` file, read back whole, and only then swapped in, with the previous file kept as `.bak` (`GameState.write_safely`). A write that fails leaves the last good file untouched.
+  - **A rest that can't save says so (pass 255).** `write_safely` reported a failed write, but nothing listened: `World.save_at` dropped the result, and the shrine always said "Rested. Progress saved." On a full or read-only disk a player could quit trusting a save that never happened. Now `save_at` returns whether the file was written. A shrine or a Guru that couldn't write still rests you and sets your respawn point, but says "Rested, but the journey could not be saved." (`SaveShrine.NOT_SAVED`), and the Guru names no mantra. Test: `test_a_rest_that_cannot_save_says_so`.
 - **Loading.** A damaged file (empty, cut off, not JSON, not a save) falls back to its `.bak`. If neither reads, the load is refused and the game in play is left as it was. The title's Continue then starts a new journey with a note, rather than failing.
 - **Sanitizing.** Whatever loads is rebuilt on a new game's data (`GameState.sanitize`):
   - every key is present and has its own type, and a wrong type falls back to the default;

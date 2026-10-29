@@ -513,15 +513,17 @@ func _fade(to: float, time: float) -> void:
 
 # --- Saving and death --------------------------------------------------------------
 
-## Called by a save shrine at `pos` in the current room.
-func save_at(pos: Vector2) -> void:
+## Called by a save shrine at `pos` in the current room. False when the save
+## file could not be written (a full or read-only disk), so the rest never
+## claims a save it didn't make (pass 255).
+func save_at(pos: Vector2) -> bool:
 	player.spawn_point = pos
 	if not use_game_state:
-		return
+		return true
 	GameState.capture(player)
 	GameState.data.save_room = room.id
 	GameState.data.save_pos = [pos.x, pos.y]
-	GameState.save_game()
+	return GameState.save_game()
 
 
 func _on_player_died() -> void:

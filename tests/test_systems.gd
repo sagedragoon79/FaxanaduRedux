@@ -679,6 +679,44 @@ func test_a_failed_write_keeps_the_last_good_save() -> void:
 	GameState.new_game()
 
 
+## Pass 255: a rest that can't write its save (a full or read-only disk)
+## said "Progress saved." all the same, so a player could quit trusting a save
+## that never happened. A shrine and a Guru now say so when the write fails.
+func test_a_rest_that_cannot_save_says_so() -> void:
+	GameState.delete_save(BAD_SLOT)
+	var w := make_world({}, "eolis/guru_temple")
+	await frames(2)
+	var old_slot := GameState.slot
+	GameState.slot = BAD_SLOT
+	var shrine := SaveShrine.new()
+	w.room.add_child(shrine)
+	shrine.global_position = w.player.global_position
+	var toasts: Array[String] = []
+	var listen := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(listen)
+	shrine.interact(w.player)
+	check(toasts == ["Rested. Progress saved."] and GameState.has_save(BAD_SLOT), "a rest that writes says it saved (%s)" % [toasts])
+	var tmp := ProjectSettings.globalize_path(GameState.SAVE_PATH % BAD_SLOT + ".tmp")
+	DirAccess.make_dir_absolute(tmp)
+	toasts.clear()
+	shrine.interact(w.player)
+	check(toasts == [SaveShrine.NOT_SAVED], "one that can't write says the journey could not be saved (%s)" % [toasts])
+	var guru := Npc.new()
+	guru.npc_id = "guru"
+	w.room.add_child(guru)
+	toasts.clear()
+	guru.rest(w.player)
+	check(toasts == [SaveShrine.NOT_SAVED], "and so does a Guru's rest (%s)" % [toasts])
+	DirAccess.remove_absolute(tmp)
+	toasts.clear()
+	guru.rest(w.player)
+	check(toasts.size() == 1 and toasts[0].begins_with("Rested. Your mantra is: "), "once the disk takes it again, the Guru names your mantra (%s)" % [toasts])
+	GameState.toast.disconnect(listen)
+	GameState.slot = old_slot
+	GameState.delete_save(BAD_SLOT)
+	GameState.new_game()
+
+
 func test_damaged_settings_fall_back_to_defaults_or_their_backup() -> void:
 	# Godot's ConfigFile logs its own parse error for the damaged file.
 	expect_engine_errors()
