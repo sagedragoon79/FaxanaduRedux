@@ -2343,3 +2343,55 @@ func test_the_rooms_hold_the_finds_the_bible_counts() -> void:
 		check(int(found.get(ch, 0)) == COUNTS[ch], "the rooms hold %d of '%s' (%d)" % [COUNTS[ch], ch, int(found.get(ch, 0))])
 	check(int(GameState.fresh().flask_max) + COUNTS["F"] / 3 == 5, "every shard fused, the flask holds 5 charges, as 5.1 says")
 	check((COUNTS["*"] + 6) % 3 == 0, "the rooms' Mantra Shards and the six trials' make whole mantras, none spare")
+
+
+## Pass 261 (bible 3.3, 10.2): "the Cartographer in each town sells the zone
+## outline", and every zone the map draws had one but Dartmoor and the Sunken
+## Spring under it, the two zones with the most hidden rooms. Sounder Hulda
+## stands in the Drowned Market once King Grieve is at rest and the water is
+## down, and charts both. Every zone on the map (all but Zenis, the meteor no
+## one has drawn) now has a chart sold by a keeper who stands in a room.
+func test_every_zone_on_the_map_has_a_chart_for_sale() -> void:
+	var rooms := _all_rooms()
+	var items := GameData.table("items")
+	var npcs := GameData.table("npcs")
+	var shops := GameData.table("shops")
+	var standing := {}
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("npc", []):
+			standing[spec.get_slice(",", 2).strip_edges()] = true
+	var sold := {}
+	for npc_id: String in npcs:
+		var shop := String(npcs[npc_id].get("shop", ""))
+		if shop == "" or not standing.has(npc_id):
+			continue
+		for row: Dictionary in shops[shop].stock:
+			var item: Dictionary = items.get(String(row.item), {})
+			if String(item.get("kind", "")) == "chart":
+				sold[String(item.zone)] = true
+	var zones := {}
+	for id: String in rooms:
+		var zone := String(rooms[id].header.get("zone", ""))
+		if not id.begins_with("trials/") and not id.begins_with("gym/") and zone != "" and zone != "zenis":
+			zones[zone] = true
+	for zone: String in zones:
+		check(sold.has(zone), "the %s has a chart for sale" % zone)
+	# The sounder herself, once the water is down.
+	var w := make_world({}, "dartmoor/drowned_market")
+	await frames(2)
+	var here := func() -> bool:
+		for c in w.room.get_children():
+			if c is Npc and (c as Npc).npc_id == "dartmoor_cartographer":
+				return true
+		return false
+	check(not here.call(), "no one sounds the halls while they are drowned")
+	GameState.set_flag("boss:king_grieve")
+	w._enter("dartmoor/drowned_market")
+	await frames(2)
+	check(here.call() and Sheet.exists("npc_dartmoor_cartographer"), "once King Grieve is at rest, Sounder Hulda stands in the market")
+	var p := w.player
+	p.gold = 1550
+	check(Shop.buy("dartmoor_charts", 0, p) and GameState.has_chart("dartmoor"), "she sells the Dartmoor chart")
+	check(Shop.buy("dartmoor_charts", 1, p) and GameState.has_chart("sunken"), "and the Sunken Spring's")
+	check(p.gold == 0, "for 1,550 gold (%d left)" % p.gold)
+	check(MapScreen.shown("sunken/spring_gate", w.catalog["sunken/spring_gate"], w.room.id) == "charted", "and the deeps show on the map, dimmed")

@@ -128,6 +128,14 @@
 			{"item": "chart_daybreak", "price": 700}
 		]
 	},
+	"dartmoor_charts": {
+		"name": "Sounding-Line Charts",
+		"greeting": "Forty years I swam these halls by memory. Now the water's down, I can draw them dry.",
+		"stock": [
+			{"item": "chart_dartmoor", "price": 750},
+			{"item": "chart_sunken", "price": 800}
+		]
+	},
 	"victim_keys": {
 		"name": "Odo's Keys and Sundries",
 		"greeting": "Every lock in the Mist, I have cut a key for. Most of them still turn.",
