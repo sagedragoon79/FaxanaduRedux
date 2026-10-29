@@ -53,6 +53,8 @@ const LAUNCH_MAX_HP := 40
 var launchable := true
 var knockback := 140.0
 var hits_taken := 0
+## True once it has gone down with its master (`perish`), not to a blow.
+var perished := false
 ## True while a thrown blade's hit lands (`take_throw`, pass 188): a sting, not
 ## a blow, so it chips no bark, breaks no hex and never reaches the Heart.
 var thrown := false
@@ -222,6 +224,18 @@ func punishable() -> bool:
 	return is_staggered()
 
 
+## Goes down with its master (design bible 5.5, pass 266): a guardian's brood
+## dies with the guardian. It dissolves like any foe, but no blow felled it, so
+## it pays no gold, drop or experience, counts as no kill (Wanderer's Grace),
+## and adds no kill hitstop or shake to the guardian's own death.
+func perish() -> void:
+	if dead:
+		return
+	perished = true
+	hp = 0
+	die()
+
+
 func die() -> void:
 	dead = true
 	collision_layer = 0
@@ -239,16 +253,17 @@ func die() -> void:
 	# (Room.threat, 5.5) and drop that much more gold.
 	# A boss rush wins nothing again (bible 11, pass 260): no gold, drops or
 	# experience from a guardian or anything it calls in.
-	if not BossRush.active():
+	if not BossRush.active() and not perished:
 		var room := get_parent() as Room
 		Coin.spray(get_parent(), center(), roundi(randi_range(gold_min, gold_max) * (room.threat() if room != null else 1.0)))
 		Drop.roll(get_parent(), center(), poison_drops)
 		GameState.add_xp(xp)
 	var p := get_tree().get_first_node_in_group("player") as Player
-	if p != null:
-		p.on_kill()
-	Feel.hitstop(p.combat.kill_hitstop if p != null else CombatTuning.new().kill_hitstop)
-	Feel.add_trauma(0.25)
+	if not perished:
+		if p != null:
+			p.on_kill()
+		Feel.hitstop(p.combat.kill_hitstop if p != null else CombatTuning.new().kill_hitstop)
+		Feel.add_trauma(0.25)
 	Sfx.play("enemy_die")
 	if corrupted:
 		var seed := MeteorSeed.new()
@@ -295,6 +310,7 @@ func _respawn() -> void:
 		_dissolver = null
 	material = null
 	dead = false
+	perished = false
 	hp = max_hp
 	visible = true
 	collision_layer = Player.LAYER_ENEMY
