@@ -3757,3 +3757,46 @@ func test_a_guardians_win_cant_be_lost_while_it_falls() -> void:
 	check(GameState.flag("boss:king_grieve"), "the win is kept")
 	check("dragon_slayer" in GameState.data.gear, "and so is the Dragon Slayer")
 	check(not arena.falling(), "once the doors open nothing is shielded any more")
+
+
+## Pass 268 (bible 8.7): from the throne King Grieve calls his household guard,
+## as the bible always said he would. The first wave of shards from the throne
+## calls a Shade Knight up out of the flood at the end of the hall farther from
+## you; never a second while one stands, the next two waves after it falls, and
+## no more than two in a fight. The guard will not serve the meteor: it goes
+## down when the meteor takes him, and it pays nothing.
+func test_king_grieve_calls_his_household_guard_from_the_throne() -> void:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: KingGrieve = setup[2]
+	w.player.teleport(cell_feet(8, 19))
+	b.hp = roundi(b.max_hp * 0.5) + 2
+	b.take_hit(10, Vector2.RIGHT)
+	await _until(func() -> bool: return b.state == "ward", 90)
+	check(_count(w, ShadeKnight) == 0, "no guard before the throne's first wave")
+	var called := await _until(func() -> bool: return _count(w, ShadeKnight) == 1, int((KingGrieve.WAVE_GAP + KingGrieve.SUMMON_TELL) * 60) + 30)
+	check(called and b.guards_called == 1, "the first wave from the throne calls a Shade Knight of his guard")
+	var g := b.guard
+	check(g != null and absf(g.global_position.x - w.player.global_position.x) >= 96.0 and absf(g.global_position.y - b.floor_y()) < 4.0, "on the hall floor, at the end away from you (%s vs %s)" % [g.global_position if g else Vector2.ZERO, w.player.global_position])
+	for i in 2:
+		b._summon()
+	check(_count(w, ShadeKnight) == 1, "never a second while one stands")
+	# Struck down from above, over his shield.
+	g.take_hit(g.hp, Vector2(0, 1))
+	await frames(2)
+	check(g.dead, "his guard can be struck down")
+	b._summon()
+	check(_count(w, ShadeKnight) <= 1 and b.guards_called == 1, "struck down, the next does not come with the next wave")
+	b._summon()
+	check(b.guards_called == 2 and b.guard_stands(), "but with the one after")
+	for c in w.room.get_children():
+		if c is Coin or c is Drop:
+			c.free()
+	var xp: int = GameState.data.xp
+	b.hp = roundi(b.max_hp * KingGrieve.PHASES[1]) + 2
+	b.take_hit(10, Vector2(0, 1))
+	check(b.phase == 3 and not b.guard_stands() and b.guard.perished, "when the meteor takes him, his guard goes down")
+	await frames(2)
+	check(GameState.data.xp == xp and w.room.get_children().filter(func(n: Node) -> bool: return n is Coin or n is Drop).is_empty(), "and pays nothing")
+	b._summon()
+	check(b.guards_called == 2, "and no more than %d come in a fight" % KingGrieve.GUARDS)

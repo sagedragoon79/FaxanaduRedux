@@ -17,7 +17,10 @@ extends Enemy
 ## the dais first. Each glows before it bursts out and shoots up to the vault.
 ## Hold them in the air with the Hour Glass and they are a stair up to his
 ## crown: strike down on it and he is thrown from the dais, open, to duel again
-## until he climbs back.
+## until he climbs back. From the throne he also calls his household guard: a
+## Shade Knight rises out of the flood at the far end of the hall (twice in a
+## fight at most, and never while one stands). His guard will not serve the
+## meteor, and goes down with him.
 ##
 ## Phase 3 (below a fifth), the meteor takes him: his body cracks open, the
 ## crystal blazing through, and he comes down off the throne for good. Frantic
@@ -69,6 +72,14 @@ const SHARDS := 4
 ## 35 up while they rise together.
 const SHARD_STEP := 48.0
 const SHARD_STAGGER := 0.25
+## His household guard (bible 8.7, pass 268): Shade Knights called from the
+## throne, at most this many in a fight, one standing at a time, the next no
+## sooner than this many waves of shards after the last falls.
+const GUARDS := 2
+const GUARD_EVERY := 2
+## A guard rises at whichever end of the hall floor is farther from you, this
+## far in from the west wall or out from the shards' reach.
+const GUARD_INSET := 40.0
 const ARMOR := 0.5
 const INTRO_TIME := 1.4
 const DYING_TIME := 1.6
@@ -103,6 +114,11 @@ var _next := ""
 var _wave := 0.0
 var _duel := 0.0
 
+
+## The Shade Knight of his guard now in the hall, if any, and how many he has called.
+var guard: ShadeKnight
+var guards_called := 0
+var _since_guard := GUARD_EVERY
 
 func _init() -> void:
 	max_hp = MAX_HP
@@ -360,6 +376,7 @@ func _to_throne() -> void:
 ## to the hall floor, never to go back to the throne.
 func _possess() -> void:
 	phase = 3
+	_dismiss_guard()
 	_stagger = 0.0
 	set_state("possessed")
 	Sfx.play("roar", 0.0, 2.0)
@@ -409,6 +426,42 @@ func _summon() -> void:
 		s.ceiling_y = arena.position.y
 		room.add_child(s)
 		s.global_position = Vector2(dais.position.x - 24.0 - SHARD_STEP * k, floor_y() - CrystalShard.SIZE.y * 0.5)
+	if guard_stands():
+		return
+	_since_guard += 1
+	if guards_called < GUARDS and _since_guard >= GUARD_EVERY:
+		_call_guard()
+
+
+## True while a knight of his guard is in the hall.
+func guard_stands() -> bool:
+	return guard != null and is_instance_valid(guard) and not guard.dead
+
+
+## A Shade Knight of his household rises out of the flood at the end of the
+## hall floor farther from you: the west wall, or past the shards' reach.
+func _call_guard() -> void:
+	var west := arena.position.x + GUARD_INSET
+	var east := dais.position.x - 24.0 - SHARD_STEP * SHARDS - GUARD_INSET
+	var x := west if absf(_player_x() - west) >= absf(_player_x() - east) else east
+	guard = ShadeKnight.new()
+	get_parent().add_child(guard)
+	guard.global_position = Vector2(x, floor_y())
+	guard.home = guard.global_position
+	guards_called += 1
+	_since_guard = 0
+	var d := Dust.new()
+	d.setup("splash")
+	get_parent().add_child(d)
+	d.global_position = Vector2(x, floor_y() - 8.0)
+	Sfx.play("splash", 0.05, -2.0)
+
+
+## His guard will not serve the meteor, nor outlive him: it goes down with
+## him, paying nothing (pass 266).
+func _dismiss_guard() -> void:
+	if guard_stands():
+		guard.perish()
 
 
 func _player_x() -> float:
@@ -435,6 +488,7 @@ func die() -> void:
 	dead = true
 	collision_layer = 0
 	velocity = Vector2.ZERO
+	_dismiss_guard()
 	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.8)
 	Sfx.play("roar", 0.0, 0.0)
