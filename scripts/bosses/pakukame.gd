@@ -15,6 +15,9 @@ extends Enemy
 ## Phase 2 (below half): tells a fifth shorter (never under Enemy.MIN_TELEGRAPH),
 ## and every other bite tears a chunk out of the leaf where it lands, leaving a
 ## thorny gap to stride or bounce over.
+## - Brood (from phase 2, far, with none of its brood left): the petals flare
+##   wide (tell) and loose three Liliths, as the original's Pakukame did. It
+##   broods again only once all three are struck down, and they die with it.
 ## Phase 3 (below a quarter): it tears its root out of the leaf (tell), and the
 ## crown-leaf, cut loose, falls through the sky (LeafFall: wind rushing up, and
 ## you weigh a little less). The Bloom scuttles after you on its roots, and its
@@ -51,6 +54,11 @@ const WHIP_TIME := 0.35
 const WHIP_REACH := 170.0
 const SPIT_TELL := 0.5
 const SPIT_FLIGHT := 0.8
+const BROOD_TELL := 0.7
+## Liliths loosed at a time.
+const BROOD := 3
+## Moves between broods, once the last brood is gone.
+const BROOD_EVERY := 3
 const FAST := 0.8
 const BITE_DAMAGE := 24
 const WHIP_DAMAGE := 16
@@ -99,6 +107,10 @@ var _root_to := 0.0
 ## Phase 3: torn out of the leaf and chasing.
 var uprooted := false
 var leaf_fall: LeafFall
+## The Liliths it has loosed.
+var brood: Array[Lilith] = []
+## Moves since the last brood (the first far move of phase 2 broods at once).
+var _since_brood := BROOD_EVERY
 
 
 func _init() -> void:
@@ -295,6 +307,12 @@ func _think(delta: float) -> void:
 			if state_time >= tell(SPIT_TELL):
 				_spit()
 				set_state("idle")
+		"brood_tell":
+			open = clampf(state_time / tell(BROOD_TELL), 0.0, 1.0) * 0.4
+			head.global_position = rest_point() + Vector2(sin(state_time * 40.0) * 2.0, -6.0 * clampf(state_time / tell(BROOD_TELL), 0.0, 1.0))
+			if state_time >= tell(BROOD_TELL):
+				_loose_brood()
+				set_state("idle")
 		_:
 			set_state("idle")
 
@@ -334,6 +352,11 @@ func _choose() -> void:
 	if pick == "bite" and _last == "bite" and absf(dx) > 48.0:
 		# Don't bite twice running unless the player is right at the root.
 		pick = "whip"
+	_since_brood += 1
+	if pick != "bite" and phase >= 2 and brood_alive() == 0 and _since_brood >= BROOD_EVERY:
+		pick = "brood"
+		_since_brood = 0
+		Sfx.play("buzz", 0.05, 0.0)
 	_last = pick
 	face_player()
 	_whip_dir = int(signf(dx)) if dx != 0.0 else facing
@@ -406,12 +429,45 @@ func _spit() -> void:
 	Sfx.play("web_shoot", 0.1, -2.0)
 
 
+## The Liliths of its brood still flying.
+func brood_alive() -> int:
+	var n := 0
+	for l in brood:
+		if is_instance_valid(l) and not l.dead:
+			n += 1
+	return n
+
+
+## Looses three Liliths out of the petals, fanning up and out.
+func _loose_brood() -> void:
+	var room := get_parent()
+	if room == null:
+		return
+	brood.clear()
+	var p := player()
+	var px := p.global_position.x if p != null else global_position.x
+	for i in BROOD:
+		var l := Lilith.new()
+		l.slot = i
+		l.side = 1 if (i % 2 == 0) == (px < global_position.x) else -1
+		l.velocity = Vector2((i - 1) * 90.0, -140.0)
+		room.add_child(l)
+		l.global_position = head.global_position + Vector2((i - 1) * 10.0, -8.0)
+		l.home = l.global_position
+		brood.append(l)
+	Sfx.play("whoosh", 0.1, 0.0)
+	Feel.add_trauma(0.2)
+
+
 func die() -> void:
 	if state == "dying":
 		return
 	set_state("dying")
 	dead = true
 	head.set_active(false)
+	for l in brood:
+		if is_instance_valid(l) and not l.dead:
+			l.take_hit(l.hp, Vector2.UP)
 	if is_instance_valid(leaf_fall):
 		leaf_fall.settle()
 	Feel.boss_kill(1.0)
@@ -512,9 +568,10 @@ func _draw_head(t: float, white: bool) -> void:
 	var f := float(facing)
 	var gap := open * 12.0
 	# Petals, fanning out behind the head and pulsing slowly.
+	var flare := clampf(state_time / tell(BROOD_TELL), 0.0, 1.0) if state == "brood_tell" else 0.0
 	for i in 6:
-		var a := TAU * i / 6.0 + t * 0.3
-		var r := 22.0 + sin(t * 2.0 + i) * 1.5
+		var a := TAU * i / 6.0 + t * (0.3 + flare * 3.0)
+		var r := 22.0 + sin(t * 2.0 + i) * 1.5 + flare * 8.0
 		var tip := c + Vector2(cos(a), sin(a)) * r
 		var side := Vector2(-sin(a), cos(a)) * 6.0
 		var petal := PackedVector2Array([c + side, tip, c - side])

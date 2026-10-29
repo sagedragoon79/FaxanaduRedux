@@ -1258,7 +1258,7 @@ func test_pakukame_telegraphs_are_fair() -> void:
 	var k := Pakukame.new()
 	for ph in [1, 2, 3]:
 		k.phase = ph
-		for t: float in [Pakukame.BITE_TELL, Pakukame.WHIP_TELL, Pakukame.SPIT_TELL]:
+		for t: float in [Pakukame.BITE_TELL, Pakukame.WHIP_TELL, Pakukame.SPIT_TELL, Pakukame.BROOD_TELL]:
 			check(k.tell(t) >= Enemy.MIN_TELEGRAPH, "phase %d tell %.2f s is at least %.2f s" % [ph, k.tell(t), Enemy.MIN_TELEGRAPH])
 	k.free()
 
@@ -1340,6 +1340,83 @@ func test_pakukame_spits_seeds_in_arcs() -> void:
 		if seeds > 0:
 			break
 	check(seeds == 3, "it spits three seeds (%d)" % seeds)
+
+
+## Pass 257 (bible 8.5): as in the original, the Bloom looses Liliths three at
+## a time, and only once those are struck down does it loose more. From phase
+## 2, far off, the petals flare (a fair tell) and three fly out; while any of
+## them flies it whips and spits instead; each Lilith screeches before it dives;
+## and the brood dies with the Bloom.
+func _watch_bloom(k: Pakukame, frames_max: int) -> Array:
+	var seen := {}
+	var tell_frames := 0
+	for i in frames_max:
+		await frames(1)
+		seen[k.state] = true
+		if k.state == "brood_tell":
+			tell_frames += 1
+		elif tell_frames > 0:
+			break
+	return [seen, tell_frames]
+
+
+func test_the_bloom_looses_its_liliths_three_at_a_time() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	# In phase 1 it never broods, however long you stand off.
+	k._since_brood = 99
+	w.player.teleport(Vector2(k.global_position.x + 180.0, k.floor_y()))
+	k.set_state("idle")
+	var calm: Array = await _watch_bloom(k, 300)
+	check(not calm[0].has("brood_tell") and _count(w, Lilith) == 0, "a whole bloom keeps its brood (%s)" % [calm[0].keys()])
+	# Below half, the first move from afar is a brood.
+	k.phase = 2
+	k.hp = roundi(k.max_hp * 0.45)
+	k._since_brood = Pakukame.BROOD_EVERY
+	w.player.teleport(Vector2(k.global_position.x + 180.0, k.floor_y()))
+	k.set_state("idle")
+	var first: Array = await _watch_bloom(k, 240)
+	check(first[1] / 60.0 >= Enemy.MIN_TELEGRAPH, "the petals flare for a fair tell first (%.2f s)" % (first[1] / 60.0))
+	await frames(2)
+	check(_count(w, Lilith) == Pakukame.BROOD and k.brood_alive() == Pakukame.BROOD, "and three Liliths fly out (%d)" % _count(w, Lilith))
+	# While any of them flies, no more come, however many moves go by.
+	k._since_brood = 99
+	k.set_state("idle")
+	var held: Array = await _watch_bloom(k, 360)
+	check(not held[0].has("brood_tell") and _count(w, Lilith) == Pakukame.BROOD, "no more while the brood flies (%d)" % _count(w, Lilith))
+	# A Lilith screeches before it dives.
+	var l: Lilith = k.brood[0]
+	var windup := 0
+	var dove := false
+	for i in 300:
+		await frames(1)
+		if not is_instance_valid(l):
+			break
+		if l.state == "windup":
+			windup += 1
+		elif l.state == "dive" and windup > 0:
+			dove = true
+			break
+	check(dove and windup / 60.0 >= Enemy.MIN_TELEGRAPH, "a Lilith screeches %.2f s before it dives" % (windup / 60.0))
+	# Strike them all down and it broods again.
+	for b in k.brood:
+		b.take_hit(b.hp, Vector2.RIGHT)
+	await frames(30)
+	check(k.brood_alive() == 0, "the brood is struck down")
+	k._since_brood = Pakukame.BROOD_EVERY
+	w.player.teleport(Vector2(k.global_position.x + 180.0, k.floor_y()))
+	k.set_state("idle")
+	var again: Array = await _watch_bloom(k, 240)
+	await frames(2)
+	check(again[1] > 0 and k.brood_alive() == Pakukame.BROOD, "then it looses three more (%d)" % k.brood_alive())
+	# The brood dies with the Bloom.
+	var last := k.brood.duplicate()
+	k.hp = 1
+	k.set_state("gape")
+	k.head.take_hit(5, Vector2.RIGHT)
+	await frames(2)
+	check(last.all(func(b: Lilith) -> bool: return not is_instance_valid(b) or b.dead), "and the brood dies with it")
 
 
 func test_phase_two_bites_tear_the_leaf() -> void:
