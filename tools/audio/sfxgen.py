@@ -139,6 +139,16 @@ def main():
     save("guard", mix(lowpass(osc(slide(420, 380, d), "square", 0.3), 2500) * env(int(RATE * d), 0.001, 2.0),
                       lowpass(noise(d), 2500) * env(int(RATE * d), 0.001, 3.0) * 0.6), 0.6)
 
+    # A guard that can't be paid for breaks (pass 242): the guard's knock cut
+    # short by a dry crack of splitting wood and a dull drop under it, so a
+    # failed block never sounds like a held one.
+    d = 0.28
+    crack = highpass(noise(0.05), 1800) * env(int(RATE * 0.05), 0.0005, 1.0)
+    crack = np.concatenate([crack, np.zeros(int(RATE * d) - len(crack))])
+    knock = lowpass(osc(slide(330, 150, d), "square", 0.3), 1800) * env(int(RATE * d), 0.001, 2.4)
+    splinter = lowpass(highpass(noise(d), 700), 3200) * env(int(RATE * d), 0.002, 3.2) * 0.5
+    save("guard_break", mix(crack, knock * 0.8, splinter), 0.6)
+
     d = 0.12
     save("coin", mix(osc(np.where(t_axis(d) < 0.04, 1320.0, 1760.0), "square", 0.5) * env(int(RATE * d), 0.001, 1.5)), 0.4)
 

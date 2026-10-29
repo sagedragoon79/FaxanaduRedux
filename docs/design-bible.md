@@ -360,6 +360,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Down-strike (Mattock):** see pogo in 6.6.
 - **Thrust (Blade skill, pass 149):** hold Attack past 0.4 s and let go for a charged lunge (see 9).
 - **Parry (shield):** tap Block within 0.12 s of a hit: no damage, 140 ms hit-stop, enemy staggered. Holding Block reduces damage by the shield's percent but drains MP.
+- **Guard break (pass 242):** a guard held with less MP than a blow costs used to fail in silence: the shield stayed up in the guard pose, at guard speed, and the blow landed whole with only the hurt yelp, so it read as a guard that did nothing. Now it breaks: a dry crack of splitting wood over a dropping knock (`guard_break`, never the held guard's `guard`), a burst of guard dust and a shake. The blow still lands whole, and the shield stays down until Block is let go and raised again (`Player.guard_broken`), so you never hold up a guard you can't pay for. `test_a_guard_with_no_mp_breaks_and_drops`.
 - **Spells:** one equipped spell on the Spell button, cycled with the Next Spell button (the shoulders are taken by Throw and Block, so it is the right stick click on a pad; changed in pass 57). MP regenerates slowly and on melee hits.
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98). Every hit yelps (`hurt`). A blow that costs a whole mask (20 HP) or more after armor adds a low body thud and a crunch of grit under it (`hurt_heavy`, pass 198). Since passes 194 and 196 the deep zones' foes and guardians land such blows through par armor while the Trunk's do not, so you hear the difference a zone makes, and whether your armor keeps up.
 - **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
@@ -373,7 +374,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Attack buffer | 0.15 s |
 | Throw buffer (pass 192) | 0.15 s: a Throw pressed while you can't throw yet (a swing or a dash still out, a drink, the Rune Dagger still reforming) goes the first frame you can |
 | Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
-| Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed |
+| Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed; with less than 8 MP the guard breaks (pass 242) |
 | Knockback when hit | 160 px/s back, 220 px/s up, 0.18 s control lock |
 | Low health | 20 HP or less: heartbeat every 0.85 s, red edge pulse |
 | MP | 60 max, +2/s, +4 per melee hit on an enemy |
