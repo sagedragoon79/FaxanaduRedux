@@ -115,8 +115,8 @@ func _physics_process(delta: float) -> void:
 		_start()
 
 
-## Watches the boss's health against its PHASES marks. Crossing one is a phase
-## break (design bible 13.3, Audio): a stinger, the music ducks under it and then
+## Watches the boss's health against its PHASES marks, and its own phase.
+## Crossing one is a phase break (design bible 13.3, Audio): a stinger, the music ducks under it and then
 ## rises a semitone, and the screen shakes.
 func _track_phases() -> void:
 	if not fighting or boss == null or not is_instance_valid(boss) or boss.get("state") == "dead":
@@ -127,6 +127,12 @@ func _track_phases() -> void:
 	for m: float in marks:
 		if frac <= m:
 			crossed += 1
+	# A boss may reach a phase another way (the Lantern Widow comes down for good
+	# once every lantern is broken): its own phase counts too, so the break rings
+	# when the fight changes, and not again when its health catches up (pass 252).
+	var own = boss.get("phase")
+	if own is int:
+		crossed = clampi(maxi(crossed, own - 1), 0, marks.size())
 	if crossed > phases_passed:
 		phases_passed = crossed
 		Sfx.play("phase_break", 0.0, 3.0)

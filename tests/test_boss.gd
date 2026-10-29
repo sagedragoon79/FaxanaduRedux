@@ -811,6 +811,30 @@ func test_breaking_her_lanterns_shows_more_of_her() -> void:
 	check(r.phase == 3 and r.seen == 1.0, "with every lantern broken she is in plain sight, and desperate")
 
 
+## Pass 252: her last lantern ends the fight's middle as surely as her health
+## does. The break used to watch health alone, so going down for good that way
+## rang nothing, lifted no music and drew no stagger; later her health crossed
+## the marks she had already passed and rang for nothing.
+func test_her_last_lantern_breaks_the_phase_as_her_health_would() -> void:
+	var setup := await _widow_world()
+	var arena: BossArena = setup[1]
+	var r: Ripasheiku = setup[2]
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	var breaks: Array[int] = []
+	arena.phase_broken.connect(func(level: int) -> void: breaks.append(level))
+	for l in r.lanterns:
+		l.take_hit(10, Vector2.RIGHT)
+	await frames(2)
+	check(r.health_fraction() > Ripasheiku.PHASES[0], "four lanterns leave her above the first mark (%.2f)" % r.health_fraction())
+	check(r.phase == 3 and breaks == [2] and arena.phases_passed == 2, "her last lantern is one phase break, to the third phase (%s)" % [breaks])
+	check(Music.intensity == 2, "and the music rises to match (%d)" % Music.intensity)
+	r.hp = roundi(r.max_hp * 0.5)
+	await frames(2)
+	r.hp = roundi(r.max_hp * 0.2)
+	await frames(2)
+	check(breaks == [2], "her health crossing the marks after it rings nothing more (%s)" % [breaks])
+
+
 func test_ripasheiku_climbs_and_reels_you_in_on_a_web() -> void:
 	var setup := await _widow_world()
 	var w: World = setup[0]
