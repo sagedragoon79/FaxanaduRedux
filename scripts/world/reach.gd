@@ -17,8 +17,10 @@ extends RefCounted
 ## Safe jump envelope in tiles: rise -> max horizontal distance.
 const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
 ## With the Wing Boots: a second jump at the top adds three tiles of rise
-## (double_jump_height 48) and keeps the player in the air longer.
-const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
+## (double_jump_height 48) and keeps the player in the air longer. In play the
+## feet rise 124 px; seven rows (112 px) keeps the plain jump's 12 px margin
+## (pass 235: the Feather Hollow's perch, proven in test_abilities.gd).
+const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3, 7: 2}
 ## How many rows over the cell you stand in a pickup can be and still be
 ## touched with a jump. In play the head (40 px tall, a pickup's touch reaching
 ## 4 px past it) rises 116 px over the feet with a plain jump and 164 px with the

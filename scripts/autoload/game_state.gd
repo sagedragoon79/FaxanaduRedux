@@ -27,6 +27,7 @@ const MOVED_PICKUPS := {
 	"branches/north_bough:8,7": "branches/north_bough:2,6",  # pass 211, then 216
 	"branches/north_bough:9,6": "branches/north_bough:2,6",  # pass 216
 	"daybreak/sky_steps:6,20": "daybreak/sky_steps:6,19",  # pass 219
+	"mist/feather_hollow:18,7": "mist/feather_hollow:18,6",  # pass 235
 }
 ## The equipment slots, in the order the Equipment page lists them.
 const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]

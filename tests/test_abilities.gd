@@ -304,6 +304,64 @@ func _try_the_windloft_stride(boots: bool, mode: String, k: int) -> bool:
 	await frames(1)
 	return got
 
+## Pass 235: the Feather Hollow's Life Fruit, a Boots secret since the room was
+## built, was never tried with the real controller. Running off the lower plank's
+## end, a plain jump lifted the head into the fruit (six of thirteen timings).
+## The perch is now a row higher: its fruit's cell starts 128 px over that
+## plank, past the plain jump's reach, and the Boots' second jump still lands on
+## it. Leaping off the west wall with the Glove falls ten tiles short.
+func test_the_feather_hollow_perch_needs_the_wing_boots() -> void:
+	for boots: bool in [false, true]:
+		var reached := 0
+		for k in range(0, 40, 3):
+			if await _try_the_feather_perch(boots, "plank", k):
+				reached += 1
+		if boots:
+			check(reached >= 8, "with the Boots, a jump and a second jump off the plank take it (%d of 14)" % reached)
+		else:
+			check(reached == 0, "without them, a running jump off the plank never does (%d of 14)" % reached)
+	for mode: String in ["under", "wall"]:
+		var reached := 0
+		for k in range(0, 40, 6):
+			if await _try_the_feather_perch(false, mode, k):
+				reached += 1
+		check(reached == 0, "nor a jump %s (%d of 7)" % ["from the floor under it" if mode == "under" else "off the west wall with the Glove", reached])
+
+
+## One try at the Feather Hollow's perch fruit: from the lower plank's east end
+## running west, from the floor under it, or climbing the west wall and leaping
+## east; `k` sets the run or the frames before the second press.
+func _try_the_feather_perch(boots: bool, mode: String, k: int) -> bool:
+	var start := {"plank": cell_feet(26, 13), "under": cell_feet(18, 22), "wall": cell_feet(1, 6)}
+	var w := make_world({}, "mist/feather_hollow", start[mode])
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var p := w.player
+	p.abilities["boots"] = boots
+	p.abilities["glove"] = true
+	p.abilities["mattock"] = true
+	await frames(4)
+	match mode:
+		"plank":
+			p.input.move_x = -1
+			await frames(k)
+		"wall":
+			p.input.move_x = -1
+			await frames(20)
+			p.input.move_x = 1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(14 if mode == "plank" else maxi(k, 2))
+	p.input.jump_pressed = true
+	await frames(25)
+	p.input.move_x = 0
+	await frames(60)
+	var got := GameState.is_collected("mist/feather_hollow:18,6")
+	w.queue_free()
+	await frames(1)
+	return got
+
 ## Pass 219: the checker's jumps fall short of real ones, so it can show a
 ## secret is reached but never that it is out of reach. The Sky Steps' purse
 ## island stood four rows over the one below, and a plain running jump off

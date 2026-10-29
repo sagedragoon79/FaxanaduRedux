@@ -15,7 +15,7 @@ const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
 ## The Sky Steps' purse sits on the climb's first island, a boots leap up from the
 ## one below (pass 211: it had been listed as the Stride's). Pass 219 raised the
 ## island a row: at four rows a plain jump landed on it (test_abilities.gd).
-const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6, 19]]
+const BOOT_SECRETS := [["mist/feather_hollow", 18, 6], ["daybreak/sky_steps", 6, 19]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5),
 ## even with the Wing Boots, which always come first: behind an elven veil (pass 216;
 ## the gap of pass 211 was crossed by a real jump).
@@ -370,13 +370,14 @@ func test_checker_climbs_falling_water_only_with_the_hour_glass() -> void:
 
 
 func test_checker_rides_bounce_pods() -> void:
-	# A ledge seven tiles up: out of reach, even with the Wing Boots, but for the pod.
+	# A ledge seven tiles up: out of a plain jump's reach, but for the pod. (The
+	# Wing Boots' second jump reaches seven since pass 235.)
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
 	put_tiles(rows, 14, 13, "#", 25, 1)
 	put_tiles(rows, 30, 12, "L")
 	var texts := {"t/ledge": room_text(["name: Ledge"], rows)}
-	var bare := Reach.new(texts, {"boots": true})
+	var bare := Reach.new(texts, {})
 	check(not bare.touchable(bare.reachable(bare.spot_of("t/ledge", "P")), "t/ledge", 30, 12), "the ledge is too high to jump to")
 	put_tiles(rows, 12, 19, "@")
 	texts = {"t/ledge": room_text(["name: Ledge"], rows)}
@@ -402,6 +403,9 @@ func test_checker_rides_wind_currents_downwind_only() -> void:
 	check(not west.touchable(nodes, "t/wind", 53, 12), "turned west, it carries you away from the ledge")
 	check(west.stuck(nodes, [west.spot_of("t/wind", "P")]).is_empty(), "and wherever it drops you, you can walk back")
 	put_tiles(rows, 10, 9, ".", 40, 3)
+	# Thorns under the ledge: the Boots' second jump climbs seven rows (pass 235),
+	# so with no current the only way up would be from the floor right below it.
+	put_tiles(rows, 44, 19, "^", 15, 1)
 	texts = {"t/wind": room_text(["name: Wind"], rows)}
 	var calm := Reach.new(texts, {"boots": true, "stride": true})
 	check(not calm.touchable(calm.reachable(calm.spot_of("t/wind", "P")), "t/wind", 53, 12), "with no current, not even the boots and stride get there")
