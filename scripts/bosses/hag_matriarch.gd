@@ -343,7 +343,7 @@ func die() -> void:
 		return
 	_fizzle()
 	if daughter() != null:
-		_daughter.take_hit(_daughter.hp, Vector2.RIGHT)
+		_daughter.perish()
 	visible = true
 	set_state("dying")
 	dead = true

@@ -1344,3 +1344,52 @@ func test_a_blow_that_costs_a_mask_sounds_heavier() -> void:
 	p.receive_attack(GameHud.MASK_HP, foe, false)
 	check(Sfx.recent.has("hurt") and Sfx.recent.has("hurt_heavy"), "a blow of a whole mask thuds too (%s)" % [Sfx.recent])
 	check(FileAccess.file_exists("res://assets/sfx/hurt_heavy.wav"), "hurt_heavy.wav exists")
+
+
+## Pass 266 (bible 5.5): a guardian's brood goes down with its guardian, and
+## no blow felled it. The Bloom, the Matriarch and the Clockwork Alpha had
+## struck their brood down as if the player had: each Lilith, daughter or hound
+## sprayed gold, rolled a drop, gave experience, counted as a kill for
+## Wanderer's Grace, and piled a kill's hitstop and shake onto the guardian's
+## own death. `Enemy.perish` dissolves a foe with none of that; a real kill
+## still pays it all, and no guardian kills its brood any other way.
+func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
+	var room := Room.from_text("zone: trunk\n---\n" + "\n".join(PackedStringArray(ARENA)))
+	arena.add_child(room)
+	var p := make_player(room, Vector2i(3, 6))
+	p.abilities["stride"] = true
+	p.wanderers_grace = true
+	var bread := Drop.bread_chance
+	Drop.bread_chance = 1.0
+	var paid := func(foe: Enemy, by_blow: bool) -> Array:
+		foe.position = cell_feet(10, 6)
+		room.add_child(foe)
+		await frames(2)
+		var xp: int = GameState.data.xp
+		p.air_dash_charges = 0
+		if by_blow:
+			foe.take_hit(foe.hp, Vector2.RIGHT)
+		else:
+			foe.perish()
+		var regained := p.air_dash_charges > 0
+		await frames(2)
+		var coins := room.get_children().filter(func(n: Node) -> bool: return n is Coin or n is Drop).size()
+		for n in room.get_children():
+			if n is Coin or n is Drop:
+				n.free()
+		return [GameState.data.xp - xp, coins, regained, foe.dead]
+	var died: Array = await paid.call(Monodron.new(), false)
+	check(died[3] and died[0] == 0 and died[1] == 0 and not died[2], "a foe that perishes pays no experience, gold or drop, and is no kill (%s)" % [died])
+	var killed: Array = await paid.call(Monodron.new(), true)
+	check(killed[3] and killed[0] > 0 and killed[1] > 0 and killed[2], "one struck down pays them all, and counts (%s)" % [killed])
+	Drop.bread_chance = bread
+	# No guardian kills its brood with a blow or a bare death any more.
+	var strikes := RegEx.create_from_string("take_hit\\(\\s*\\w+\\.hp\\b|(?<![\\w.])(?!super\\b|self\\b)\\w+\\.die\\(\\)")
+	var found := []
+	for f in DirAccess.get_files_at("res://scripts/bosses/"):
+		if f.ends_with(".gd"):
+			for m in strikes.search_all(FileAccess.get_file_as_string("res://scripts/bosses/" + f)):
+				found.append("%s: %s" % [f, m.get_string()])
+	check(found.is_empty(), "every guardian's brood perishes with it (%s)" % [found])
+	for f in ["pakukame", "hag_matriarch", "clockwork_alpha"]:
+		check(FileAccess.get_file_as_string("res://scripts/bosses/%s.gd" % f).contains(".perish()"), "%s's brood perishes with it" % f)

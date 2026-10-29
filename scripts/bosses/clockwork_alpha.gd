@@ -314,7 +314,7 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	for h in pups:
 		if is_instance_valid(h) and not h.dead:
-			h.die()
+			h.perish()
 	Feel.boss_kill(1.0)
 	Feel.add_trauma(0.7)
 	Sfx.play("break", 0.0, 4.0)

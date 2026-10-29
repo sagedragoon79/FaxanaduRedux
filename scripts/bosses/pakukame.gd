@@ -467,7 +467,7 @@ func die() -> void:
 	head.set_active(false)
 	for l in brood:
 		if is_instance_valid(l) and not l.dead:
-			l.take_hit(l.hp, Vector2.UP)
+			l.perish()
 	if is_instance_valid(leaf_fall):
 		leaf_fall.settle()
 	Feel.boss_kill(1.0)
