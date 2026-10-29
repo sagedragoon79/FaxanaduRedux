@@ -1416,6 +1416,81 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 	BossRush.abandon()
 
 
+## Pass 260: "nothing is won again" held only for what the arena hands out.
+## The rush test above ends each fight by the arena's own signal, so a
+## guardian's real death (Enemy.die) was never seen there: it still sprayed its
+## gold, rolled a drop and gave its experience every rush, and so did whatever
+## it called in (a Lilith, a daughter, a hound). A rush won some 3,000
+## experience and a purse of gold each time. Now a death in a rush leaves none.
+func test_a_boss_rush_kill_wins_no_gold_or_experience() -> void:
+	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
+	var p := w.player
+	await frames(5)
+	GameState.set_flag("lord")
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+	var xp0 := int(GameState.data.xp)
+	BossRush.start(w, p)
+	await frames(5)
+	var arena: BossArena = w.get_tree().get_first_node_in_group("boss_arena")
+	var center := w.room.size_tiles.x * Room.TILE * 0.5
+	for i in 300:
+		if arena.fighting:
+			break
+		p.input.move_x = int(signf(center - p.global_position.x))
+		await frames(1)
+	p.input.clear()
+	check(arena.fighting and arena.boss != null, "the first guardian fights again")
+	if arena.boss == null:
+		BossRush.abandon()
+		w.queue_free()
+		return
+	# A foe it calls in, struck down, and the guardian itself, dying for real.
+	var brood := Monodron.new()
+	w.room.add_child(brood)
+	brood.global_position = p.global_position + Vector2(40, 0)
+	await frames(2)
+	brood.take_hit(brood.hp, Vector2.RIGHT)
+	arena.boss.hp = 0
+	arena.boss.call("_die" if arena.boss.has_method("_die") else "die")
+	var gone := false
+	for i in 600:
+		await frames(1)
+		if not BossRush.active() or BossRush.current_boss() != "rokusutahn":
+			gone = true
+			break
+	await frames(2)
+	var coins := 0
+	var drops := 0
+	for n in w.room.get_children():
+		coins += 1 if n is Coin else 0
+		drops += 1 if n is Drop else 0
+	check(gone, "the guardian falls and the rush goes on")
+	check(int(GameState.data.xp) == xp0, "no experience is won (%d)" % (int(GameState.data.xp) - xp0))
+	check(coins == 0 and drops == 0, "and no gold or drops are left (%d coins, %d drops)" % [coins, drops])
+	BossRush.abandon()
+	w.queue_free()
+	await frames(2)
+	# Outside a rush a foe still pays.
+	var w2 := make_world(_temple(), "test/a", cell_feet(5, 16))
+	await frames(3)
+	var foe := Monodron.new()
+	w2.room.add_child(foe)
+	foe.global_position = w2.player.global_position + Vector2(60, 0)
+	await frames(2)
+	foe.take_hit(foe.hp, Vector2.RIGHT)
+	check(int(GameState.data.xp) > xp0, "outside a rush a kill still pays")
+	w2.queue_free()
+	# Every other guardian pays through Enemy.die; one that pays on its own
+	# must ask the rush first.
+	for dir in ["res://scripts/bosses/", "res://scripts/enemies/"]:
+		for f in DirAccess.get_files_at(dir):
+			if f.ends_with(".gd"):
+				var src := FileAccess.get_file_as_string(dir + f)
+				if src.contains("GameState.add_xp(") or src.contains("Coin.spray("):
+					check(src.contains("BossRush.active()"), "%s pays only outside a rush" % f)
+
+
 ## Pass 158: the boss rush's edges. A fall while the mantra is mid-fade waits
 ## for the fade and then carries you back, once; the clock stops at the fall;
 ## no shrine on the way refills or saves you; no one stands in an arena; a
