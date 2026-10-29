@@ -1784,3 +1784,33 @@ func test_the_journey_counts_every_life_fruit_and_mana_dew() -> void:
 	check(rows[5].label == "Life Fruits" and rows[5].right == "2 / 18" and rows[6].label == "Mana Dew" and rows[6].right == "1 / 16",
 		"the Journey page shows them (%s, %s)" % [rows[5].right, rows[6].right])
 	GameState.new_game()
+
+
+## Pass 253: bible 9 said the game gives 29 skill points: 15 ranks, 9 from the
+## main bosses and 7 from whole mantras. But twelve guardians give one (the
+## Evil One's three forms and the Drowned Warden among them), so it gives 34.
+## The Journey page now counts them, earned against the whole, and learning or
+## unlearning a skill never moves the count.
+func test_the_journey_counts_every_skill_point_the_game_gives() -> void:
+	var w := make_world({}, "eolis/guru_temple")
+	await frames(2)
+	var givers := BossArena.BOSSES.keys().filter(func(id: String) -> bool: return int(BossArena.BOSSES[id].get("skill_points", 0)) > 0)
+	var mantras := 0
+	for id: String in w.catalog:
+		mantras += int(w.catalog[id].get("mantras", 0))
+	check(GameState.RANK_XP.size() - 1 == 15 and givers.size() == 12 and mantras == 15 and Trials.LIST.size() == 6,
+		"15 ranks, 12 guardians that give a point, 15 Mantra Shards in the rooms and 6 trials (%d, %d, %d)" % [givers.size(), mantras, Trials.LIST.size()])
+	var s := Completion.skill_points(w.catalog)
+	check(int(s.points_total) == 34 and int(s.points) == 0, "34 points in all, as bible 9 counts them, and a new save has none (%d, %d)" % [s.points_total, s.points])
+	var cost := 0
+	for n: Dictionary in Skills.nodes():
+		cost += int(n.cost)
+	check(cost > int(s.points_total), "the tree costs more than the game gives (%d against %d)" % [cost, s.points_total])
+	GameState.data.skill_points = 3
+	w.player.gold = 1000
+	check(Skills.learn("keen_edge", w.player) and Skills.learn("fourth_strike", w.player), "two skills learned")
+	check(int(Completion.skill_points(w.catalog).points) == 3, "learning them leaves three points earned")
+	check(Skills.respec(w.player) and int(Completion.skill_points(w.catalog).points) == 3, "and so does unlearning them")
+	var rows := Completion.journey_rows(Completion.tally(w.catalog), [])
+	check(rows[7].label == "Skill points" and rows[7].right == "3 / 34", "the Journey page shows them (%s %s)" % [rows[7].label, rows[7].right])
+	GameState.new_game()

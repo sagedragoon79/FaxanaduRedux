@@ -36,7 +36,27 @@ static func tally(catalog: Dictionary) -> Dictionary:
 	}
 	out.percent = percent(out)
 	out.merge(stat_items(catalog))
+	out.merge(skill_points(catalog))
 	return out
+
+
+## The skill points a save has earned against every one the game gives (pass
+## 253, design bible 9): one a rank past Novice, one from each guardian whose
+## reward names one, and one a whole mantra, from the rooms' Mantra Shards and
+## a shard for each Guru Trial's first clear. Earned is what is held plus what
+## the learned skills cost, so learning or unlearning never moves it.
+static func skill_points(catalog: Dictionary) -> Dictionary:
+	var total := GameState.RANK_XP.size() - 1
+	for id: String in BossArena.BOSSES:
+		total += int(BossArena.BOSSES[id].get("skill_points", 0))
+	var shards := Trials.LIST.size()
+	for room_id: String in catalog:
+		shards += int(catalog[room_id].get("mantras", 0))
+	total += shards / 3
+	var earned := int(GameState.data.skill_points)
+	for id: String in GameState.data.skills:
+		earned += int(GameData.skill(id).get("cost", 0))
+	return {"points": earned, "points_total": total}
 
 
 ## The Life Fruits and Mana Dews a save has taken against every one the game
@@ -116,6 +136,7 @@ static func journey_rows(stats: Dictionary, found: Array) -> Array:
 		share.call("Guardians beaten", "bosses", "The great foes and their lesser kin, each in an arena of its own."),
 		share.call("Life Fruits", "fruits", "In the rooms, on each grocer's shelf, and in a guardian's keeping. Two grow a mask."),
 		share.call("Mana Dew", "dews", "In the rooms, on each grocer's shelf, and in the guardians' keeping."),
+		share.call("Skill points", "points", "From ranks, guardians and whole mantras. The tree costs more than all of them."),
 	]
 	if not found.is_empty():
 		out.append({"label": "Guardians found", "header": true})

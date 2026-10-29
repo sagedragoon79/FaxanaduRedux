@@ -1008,10 +1008,10 @@ It is open when a parry flips it (1.5 s on its back), when it is jammed in a wal
 
 The **Guru** in each town teaches skills. Points come from:
 - **Ranks:** XP from kills raises your title, using the original's 16 ranks (Novice, Aspirant, Battler, Fighter, Adept, Chevalier, Veteran, Warrior, Swordman, Hero, Soldier, Myrmidon, Champion, Superhero, Paladin, Lord). Each rank after Novice = 1 point (15 total).
-- **Bosses:** 1 point each from the 9 main bosses (9 total).
+- **Bosses:** 1 point each from the 12 guardians whose reward names one (12 total): Rokusutahn, Zoradohna, Ripasheiku, Zorugeriru, Pakukame, Borabohra, King Grieve, Shadow Eura, the Drowned Warden, and the Evil One's three forms (avatar, veins and heart). The Foreman and the three mini-bosses give their prize instead (8).
 - **Mantra Shards:** hidden secrets; 3 shards = 1 point (15 shards, 5 points, plus one from each of the six Guru Trials: 7 points in all). Pass 243 turned the two spare shards the rooms had grown (17, so two never made a mantra) into chests, in the Slag Heap and on the Marsh Road.
 
-That is **29 points** available against a tree that costs **54** in total, so players must choose. Respec at any Guru for gold (200 g, then 400 g, 600 g and so on, capped at 2,000 g).
+That is **34 points** available against a tree planned at **54** in all (49 as built, over 27 nodes), so players must choose. **Counted since pass 253:** this line said 29, from the 9 main bosses planned. But the guardians built since then each give a point, so the game has handed out 34 since the Evil One's forms were built. Nothing checked it. `Completion.skill_points` now counts every source (ranks from `GameState.RANK_XP`, the guardians' rewards in `BossArena.BOSSES`, and the rooms' Mantra Shards plus one for each Guru Trial, three to a point). The Journey page shows "Skill points" earned against that whole. Earned is the points held plus what the learned skills cost, so learning and unlearning never move it. Test: `test_the_journey_counts_every_skill_point_the_game_gives` pins it at 34. Respec at any Guru for gold (200 g, then 400 g, 600 g and so on, capped at 2,000 g).
 
 Rank XP thresholds (in `GameState.RANK_XP`): 0, 40, 100, 180, 300, 460, 660, 900, 1,200, 1,560, 2,000, 2,500, 3,100, 3,800, 4,600, 5,500. Starting enemies give 5 XP (Rot Dwarf 12), so the Trunk Hollows take a careful player to about Fighter. Ranks rise the moment you pass a threshold and give the point right away; the Guru is where you spend it. As in Faxanadu, the title itself is the Guru's to give: the next time you visit one after ranking up, the Guru names you by your new title ("From this day you shall be called ADEPT") to a short fanfare while the music dips, then opens the usual menu. Higher ranks hear grander words. `GameState.data.named_rank` remembers the last title named.
 
@@ -1030,7 +1030,7 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
   - Thrift makes spells cost 15% less.
   - With Chain Thunder, a Thunder bolt that strikes a foe leaps to the 2 nearest other foes within 110 px, one after another, for 75% damage each. The arcs fall from above, so shields don't stop them.
   - Time Thief makes the Hour Glass hold 3.5 s instead of 2.5 s (`TimeStop.start(extra)`, `TimeStop.total`).
-- **Mantra of Death (pass 134)**, the Arcana branch's capstone, after Time Thief [3]: the Death spell costs half its MP (`Player.MANTRA_OF_DEATH_MULT`, applied after Thrift by `Player.spell_cost`), so 20 MP, or 17 with Thrift. The scroll alone already unlocks Death, so the node's "unlocks the spell" half is dropped; its menu line says it needs the scroll. The built tree now costs 41 points against the 29 the game gives.
+- **Mantra of Death (pass 134)**, the Arcana branch's capstone, after Time Thief [3]: the Death spell costs half its MP (`Player.MANTRA_OF_DEATH_MULT`, applied after Thrift by `Player.spell_cost`), so 20 MP, or 17 with Thrift. The scroll alone already unlocks Death, so the node's "unlocks the spell" half is dropped; its menu line says it needs the scroll. The built tree now costs 41 points against the 34 the game gives (counted as 29 until pass 253).
 - **Wanderer**, after Second Stride: Feather Fall [2] (pass 101, see 6.10), Treasure Sense [2], Resilience [2], Last Stand [2], Second Wind [3].
   - Treasure Sense puts an orange star on every room the map shows (seen or charted) that still holds an item or chest. The World's catalog lists each room's treasures.
   - Resilience adds one mask (`GameState.RESILIENCE_HP`).
@@ -1039,16 +1039,16 @@ Nodes are built tier by tier as the acts that need them arrive. In the game now:
 - **Wanderer's Grace (pass 142)**, the Wanderer branch's capstone, after Second Wind [3]:
   - A dash lets harm pass through you for 0.2 s instead of 0.1 s (`Player.GRACE_INVULN`, `Player.dash_invuln`).
   - Any foe's death gives back the air dashes you have spent (`Enemy.die` calls `Player.on_kill`), with a puff of feathers and a catch of wind. So a kill in midair can be dashed out of, and a run of kills across a gap can carry you over it.
-  - The built tree now costs 44 points (Wanderer 19 over 10 nodes) against the 29 the game gives.
+  - The built tree now costs 44 points (Wanderer 19 over 10 nodes) against the 34 the game gives (counted as 29 until pass 253).
 - **Thrust (pass 149)**, the Blade branch's eighth node, after Bloodletting [2]: Faxanadu's thrust, as a charged move.
   - The press still swings at once, so the charge builds through the first cut. Held past `thrust_charge` (0.4 s), the blade rings and a spark of light runs off its point. Let go and you thrust.
   - The thrust deals the heavy hit times `thrust_mult` (1.5) through `blade_mult()`, so Keen Edge and the War Glove count. Its point is a long, low box, 52 px past the body (a cut reaches about 34) and half a cut's height. It strikes every foe in it once and drives them back like a heavy hit.
   - On the floor it lunges at 320 px/s for 0.16 s, about 50 px. The lunge stops at the first foe it strikes and recoils like a cut, so it never carries you into a body. Off a ledge it ends, and you step off at no more than a run (pass 153; until then the lunge's full 320 px/s threw you about 67 px out past the lip, four times a run's step). Down a ramp it hugs the floor like a ground dash (10 px snap, 6.5) and rides the slope to the end. In the air the thrust strikes where you are and carries you nowhere, so it never crosses a gap the Elven Stride gates.
   - A blow, a dash, a guard, a drink, a ladder or the water spends the charge. Shadow Eura echoes a thrust as a cut.
-  - The built tree now costs 46 points (Blade 13 over 8 nodes) against the 29 the game gives.
+  - The built tree now costs 46 points (Blade 13 over 8 nodes) against the 34 the game gives (counted as 29 until pass 253).
 - **Executioner (pass 163)**, the Blade branch's ninth node, after Thrust [3]: melee blows on a boss in its opening land for 35% more (`executioner_mult` 1.35, in `combat_tuning.gd`). A common foe gets nothing more, nor does a boss on its guard.
   - Each boss names its opening (`Enemy.punishable()`; for a boss of pieces, `BossSegment.punishable()` asks the boss), so the skill has a window in every fight (8). Bloodletting heals on the same openings. Until now it read only a parry stagger, which most bosses never take.
-  - The built tree now costs 49 points (Blade 16 over 9 nodes) against the 29 the game gives.
+  - The built tree now costs 49 points (Blade 16 over 9 nodes) against the 34 the game gives (counted as 29 until pass 253).
 
 Deviations, and why:
 - The build order skipped Thrust (built in pass 149), Wildfire and the rest. They are bigger mechanics and still come later in their branches.
