@@ -1492,3 +1492,45 @@ func test_a_big_coin_rings_lower_and_longer() -> void:
 	coin._age = 1.0
 	await frames(3)
 	check(not is_instance_valid(coin) and Sfx.recent.has("coin_big"), "taking a 100 g coin plays it (%s)" % [Sfx.recent])
+
+
+## Pass 259 (bible 4.4): "King Grieve defeated: Dartmoor drains." Until pass
+## 259 that was a line two people said; the drowned halls had no water in
+## them. Now the Flooded Hall and the Drowned Nave stand a tile deep (the
+## `tide:` header) and fill their spike pits, you wade with a splash, and once
+## King Grieve is at rest the water is gone and only its mark is left.
+func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
+	for id: String in ["dartmoor/flooded_hall", "dartmoor/drowned_nave"]:
+		var w := make_world({}, id)
+		await frames(3)
+		var tide: Tide = w.room.tide
+		check(tide != null and not tide.drained(), "%s stands in water" % id)
+		if tide == null:
+			continue
+		var floor_cells := 0
+		var pit_cells := 0
+		for c: Vector2i in tide.cells:
+			check(w.room.tiles.get_cell_source_id(c) == -1, "%s: no water in rock (%s)" % [id, c])
+			if c.y == tide.row:
+				floor_cells += 1
+			elif c.y > tide.row:
+				pit_cells += 1
+		check(floor_cells >= w.room.size_tiles.x * 0.75, "%s: a tile deep across most of the floor (%d)" % [id, floor_cells])
+		check(pit_cells >= 4, "%s: and the spike pit fills (%d)" % [id, pit_cells])
+		var wade := Vector2(w.room.size_tiles.x * 0.5 * Room.TILE, (tide.row + 1) * Room.TILE + 2)
+		while w.room.tiles.get_cell_source_id(w.room.cell_at(wade)) == -1 or w.room.tiles.get_cell_source_id(w.room.cell_at(wade + Vector2(0, -Room.TILE))) != -1:
+			wade.x += Room.TILE
+		check(w.room.surface_at(wade) == "mud", "%s: wading splashes (%s)" % [id, w.room.surface_at(wade)])
+		GameState.set_flag(Tide.DRAIN_FLAG)
+		w._enter(id)
+		await frames(3)
+		check(w.room.tide != null and w.room.tide.drained() and not w.room.tide.has_point(wade + Vector2(0, -8)), "%s drains once King Grieve is at rest" % id)
+		check(w.room.surface_at(wade) == "stone", "%s: and the floor is stone again (%s)" % [id, w.room.surface_at(wade)])
+		GameState.data.flags.erase(Tide.DRAIN_FLAG)
+	# No hall above the flood, and no room outside Dartmoor, stands in it.
+	for zone in DirAccess.get_directories_at("res://levels"):
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if f.ends_with(".room"):
+				var head: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])).header
+				if head.has("tide"):
+					check(zone == "dartmoor", "%s/%s: only Dartmoor drowned" % [zone, f])

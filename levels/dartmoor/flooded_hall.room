@@ -1,7 +1,9 @@
 name: Flooded Hall
 zone: dartmoor
 map: 57, -10
+tide: 19
 chest_gold: 640
+sign: 4, 19, [boss:king_grieve] THE HALL OF AUDIENCE. The water has gone down at last, and left its mark on every pillar.|The dwarves who stayed here have grown crystal where their hearts were.
 sign: 4, 19, THE HALL OF AUDIENCE. The water still stands in the halls below.|The dwarves who stayed here have grown crystal where their hearts were.
 door: 1, dartmoor/gate_hall, 2
 door: 2, dartmoor/sunken_stair, 1
