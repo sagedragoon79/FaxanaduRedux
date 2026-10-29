@@ -1021,6 +1021,41 @@ func test_every_sound_the_code_plays_exists() -> void:
 
 
 
+## Pass 254: the pool of voices took turns, so in a busy fight a dozen steps
+## and cuts would cut a long sound short. Now a new sound takes a free voice,
+## or the one nearest its end, and a burst of one sound in a frame takes one.
+func test_a_long_sound_keeps_its_voice_through_a_busy_moment() -> void:
+	await frames(1)
+	Sfx.play("boss_won", 0.0)
+	var held := -1
+	for i in Sfx.POOL_SIZE:
+		if Sfx.voice_sound(i) == "boss_won":
+			held = i
+	check(held >= 0, "the victory takes a voice")
+	var shorts := ["hit", "step", "slash"]
+	for n in Sfx.POOL_SIZE * 2:
+		Sfx.play(shorts[n % 3])
+		await frames(1)
+	check(Sfx.voice_sound(held) == "boss_won", "two pools' worth of short sounds later, the victory still rings (%s)" % Sfx.voice_sound(held))
+	await frames(1)
+	Sfx.recent.clear()
+	for n in 8:
+		Sfx.play("coin")
+	var voices := 0
+	for i in Sfx.POOL_SIZE:
+		if Sfx.voice_sound(i) == "coin":
+			voices += 1
+	check(voices == 1, "eight coins in one frame take one voice (%d)" % voices)
+	check(Sfx.recent.count("coin") == 8, "though each is still heard asked for")
+	await frames(1)
+	Sfx.play("coin")
+	voices = 0
+	for i in Sfx.POOL_SIZE:
+		if Sfx.voice_sound(i) == "coin":
+			voices += 1
+	check(voices == 2, "and the next frame's coin sounds again (%d)" % voices)
+
+
 ## Sounds named at runtime (pass 207): the scan above reads only literal names,
 ## so a helper that picks a sound, or a name built from parts, could play
 ## silence unnoticed. `Sfx.missing` keeps every name asked for that has no

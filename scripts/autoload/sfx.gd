@@ -26,7 +26,11 @@ var missing: Array[String] = []
 
 var _players: Array[AudioStreamPlayer] = []
 var _streams := {}
-var _next := 0
+## When each voice's sound ends (ms, real time, as the mixer plays it).
+var _ends: Array[int] = []
+## The physics frame each sound last started on, so a burst of the same sound
+## in one frame (a spray of coins) takes one voice, not the pool (pass 254).
+var _started_on := {}
 
 
 func _ready() -> void:
@@ -38,6 +42,7 @@ func _ready() -> void:
 		p.bus = "Sfx"
 		add_child(p)
 		_players.append(p)
+		_ends.append(0)
 	load_all()
 
 
@@ -60,13 +65,36 @@ func play(sound: String, pitch_jitter := 0.06, volume_offset_db := 0.0) -> void:
 		if not missing.has(sound):
 			missing.append(sound)
 		return
-	var p := _players[_next]
-	_next = (_next + 1) % POOL_SIZE
+	var frame := Engine.get_physics_frames()
+	if int(_started_on.get(sound, -1)) == frame:
+		return
+	_started_on[sound] = frame
+	var i := _voice()
+	var p := _players[i]
 	p.stream = stream
 	p.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
 	p.volume_db = volume_db + volume_offset_db
+	_ends[i] = Time.get_ticks_msec() + int(stream.get_length() / p.pitch_scale * 1000.0)
 	if not silent:
 		p.play()
+
+
+## The voice a new sound takes (pass 254): a free one, or else the one nearest
+## its end. The pool used to take turns, so in a busy fight a dozen steps and
+## cuts would cut a 2.4 s victory or a phase break short in its first second.
+func _voice() -> int:
+	var best := 0
+	for i in _players.size():
+		if _ends[i] < _ends[best]:
+			best = i
+	return best
+
+
+## What voice `i` holds now: its sound's name while it plays, else "".
+func voice_sound(i: int) -> String:
+	if i < 0 or i >= _players.size() or _ends[i] <= Time.get_ticks_msec() or _players[i].stream == null:
+		return ""
+	return String(_players[i].stream.resource_path.get_file().get_basename())
 
 
 func _get_stream(sound: String) -> AudioStream:
