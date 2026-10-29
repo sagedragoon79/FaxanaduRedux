@@ -1,6 +1,7 @@
 name: Foreman's Gate
 zone: tower
 map: 18, -5
+sign: 28, 19, [boss:foreman] The Foreman's hall. The dwarves set a golem to work the tower.|It has stopped work at last. Its lamp is out, and its mattock is yours.
 sign: 28, 19, The Foreman's hall. The dwarves set a golem to work the tower,|and gave it the foreman's lamp and the foreman's mattock.
 door: 1, tower/bat_belfry, 2
 door: 2, tower/foreman_hall, 1

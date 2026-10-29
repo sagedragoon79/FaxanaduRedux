@@ -1539,3 +1539,46 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 				var head: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])).header
 				if head.has("tide"):
 					check(zone == "dartmoor", "%s/%s: only Dartmoor drowned" % [zone, f])
+
+
+## Pass 267 (bible 4.4): a guardian's hall answers its fall. Most arenas' signs
+## read differently once their guardian is beaten (the Trunk's chewing stops,
+## the Spires' nest is empty), but seven still spoke of theirs as alive: the
+## Sunken Chapel's lanterns burned on after Ripasheiku went dark, the Bloom
+## still grew on the crown-leaf, the Roost still told you to call the storm
+## down. Now every sign in an arena outside Zenis has a word for after, and so
+## do the doorways that named the Singer and the Foreman.
+func test_every_guardians_hall_answers_its_fall() -> void:
+	var missing := []
+	for zone in DirAccess.get_directories_at("res://levels"):
+		if zone == "zenis":
+			continue
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var r := Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+			var boss := String(r.header.get("boss", ""))
+			if boss == "":
+				continue
+			var cells := {}
+			for spec: String in r.lists.get("sign", []):
+				var cell := spec.get_slice(",", 0).strip_edges() + "," + spec.get_slice(",", 1).strip_edges()
+				cells[cell] = bool(cells.get(cell, false)) or spec.get_slice(",", 2).strip_edges().begins_with("[boss:%s]" % boss)
+			for cell: String in cells:
+				if not cells[cell]:
+					missing.append("%s/%s (%s)" % [zone, f.get_basename(), cell])
+	check(missing.is_empty(), "every arena sign has a word for after its guardian (missing: %s)" % [missing])
+	# The doorways, read for real: before and after.
+	for case: Array in [["mist/lantern_landing", "ripasheiku", "sings in there", "Nothing sings"], ["tower/foreman_gate", "foreman", "foreman's mattock", "mattock is yours"], ["mist/sunken_chapel", "ripasheiku", "still burn", "gone out"]]:
+		var w := make_world({}, case[0])
+		await frames(2)
+		var tablet: LoreTablet = null
+		for c in w.room.get_children():
+			if c is LoreTablet and (c as LoreTablet).current_text().contains(case[2]):
+				tablet = c
+		check(tablet != null, "%s tells of its guardian before" % case[0])
+		GameState.set_flag("boss:" + case[1])
+		check(tablet != null and tablet.current_text().contains(case[3]), "and after (%s)" % (tablet.current_text() if tablet else "no tablet"))
+		GameState.data.flags.erase("boss:" + case[1])
+		w.queue_free()
+		await frames(2)

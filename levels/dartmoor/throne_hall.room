@@ -3,6 +3,7 @@ zone: dartmoor
 map: 58, -7
 boss: king_grieve
 prop: 12, 19, water_clock
+sign: 3, 19, [boss:king_grieve] FRATERNAL CASTLE, THE THRONE HALL. The king kept faith with the meteor so his people would live.|He is at rest, and the water is going down. Some of them may yet.
 sign: 3, 19, FRATERNAL CASTLE, THE THRONE HALL. The king kept faith with the meteor so his people would live. They did not.
 npc: 30, 19, dartmoor_steward, boss:king_grieve
 door: 1, dartmoor/kings_kennels, 2
