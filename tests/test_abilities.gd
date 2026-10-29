@@ -251,6 +251,59 @@ func test_the_warden_cache_needs_the_stride() -> void:
 		await frames(1)
 
 
+
+## Pass 232: the Wing Boots opened no room the critical path needed, so a core
+## ability was optional. The Elven Stride now hangs in the Windloft's open air,
+## its centre 136 px over the floor: a plain jump lifts the head 112 px, the
+## second jump 160 px. Proved with the real controller (the checker can't prove
+## "out of reach"): straight up, from a run, off the entry ledge, and leaping
+## off the far wall with the Glove, never without the Boots; with them, a jump
+## and a second jump under it take it.
+func test_the_stride_in_the_windloft_needs_the_wing_boots() -> void:
+	for mode: String in ["floor", "run", "ledge", "wall"]:
+		var reached := 0
+		for k in range(2, 40, 3):
+			if await _try_the_windloft_stride(false, mode, k):
+				reached += 1
+		check(reached == 0, "without the Boots, %s: never (%d of 13)" % [mode, reached])
+	var with_boots := 0
+	for k in range(2, 40, 3):
+		if await _try_the_windloft_stride(true, "floor", k):
+			with_boots += 1
+	check(with_boots >= 6, "with them, a jump and a second jump under it take it (%d of 13)" % with_boots)
+
+
+## One try at the Windloft's Stride: `mode` is where the jump starts (under it,
+## a run along the floor, the entry ledge, or a wall jump off the east wall near
+## the vault), `k` the frames before the second press.
+func _try_the_windloft_stride(boots: bool, mode: String, k: int) -> bool:
+	var start := {"floor": cell_feet(24, 19), "run": cell_feet(14, 19), "ledge": cell_feet(3, 10), "wall": cell_feet(38, 6)}
+	var w := make_world({}, "branches/windloft", start[mode])
+	var p := w.player
+	p.abilities["boots"] = boots
+	p.abilities["glove"] = true
+	p.abilities["mattock"] = true
+	await frames(4)
+	match mode:
+		"floor":
+			await frames(k % 3)
+		"run", "ledge":
+			p.input.move_x = 1
+			await frames(k)
+		"wall":
+			p.input.move_x = 1
+			await frames(10)
+			p.input.move_x = -1
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(k if mode in ["floor", "wall"] else 14)
+	p.input.jump_pressed = true
+	await frames(90)
+	var got := GameState.is_collected("branches/windloft:24,11")
+	w.queue_free()
+	await frames(1)
+	return got
+
 ## Pass 219: the checker's jumps fall short of real ones, so it can show a
 ## secret is reached but never that it is out of reach. The Sky Steps' purse
 ## island stood four rows over the one below, and a plain running jump off
