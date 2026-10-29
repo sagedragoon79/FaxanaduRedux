@@ -2395,3 +2395,39 @@ func test_every_zone_on_the_map_has_a_chart_for_sale() -> void:
 	check(Shop.buy("dartmoor_charts", 1, p) and GameState.has_chart("sunken"), "and the Sunken Spring's")
 	check(p.gold == 0, "for 1,550 gold (%d left)" % p.gold)
 	check(MapScreen.shown("sunken/spring_gate", w.catalog["sunken/spring_gate"], w.room.id) == "charted", "and the deeps show on the map, dimmed")
+
+
+## Pass 265: the original's Mascon kept a bar, where the bar maid gave useful
+## word and a man at the back told stranger things. The remake's Mascon had
+## none. Now the Black Water stands by its Guru: a house under a tavern sign,
+## Barmaid Brigid at its door and Old Cormac beside her. What they tell is true
+## of the world: the Pendant in the far corner of the Matriarch's mire past the
+## east door, Zorugeriru round the Spring of Mist past the Dry Cistern, and a
+## messenger's boots at Feather Hollow by Victim.
+func test_mascon_keeps_the_originals_tavern() -> void:
+	var rooms := _all_rooms()
+	var mascon: Dictionary = rooms["mist/mascon"]
+	var at := {}
+	for spec: String in mascon.lists.get("npc", []):
+		at[spec.get_slice(",", 2).strip_edges()] = int(spec.get_slice(",", 0))
+	var houses := []
+	for spec: String in mascon.lists.get("prop", []):
+		if spec.get_slice(",", 2).strip_edges() == "house":
+			houses.append(int(spec.get_slice(",", 0)))
+	var sign_x := -100
+	for spec: String in mascon.lists.get("sign", []):
+		if spec.contains("tavern"):
+			sign_x = int(spec.get_slice(",", 0))
+	check(at.has("mascon_barmaid") and at.has("mascon_drinker"), "the bar maid and the man at the back stand in Mascon")
+	var tavern := houses.filter(func(x: int) -> bool: return absi(x - sign_x) <= 5 and absi(x - int(at.get("mascon_barmaid", -100))) <= 4)
+	check(tavern.size() == 1, "by a house under the tavern's sign (sign %d, houses %s)" % [sign_x, houses])
+	for id: String in ["mascon_barmaid", "mascon_drinker"]:
+		var npc := GameData.npc(id)
+		check(npc.get("role", "") == "talk" and npc.lines.size() >= 2 and npc.has("lines_cleared"), "%s has word to give, and another once the Tree blooms" % id)
+		check(ResourceLoader.exists("res://assets/sprites/npc_%s.png" % id), "%s has a sheet" % id)
+	var brigid := " ".join(GameData.npc("mascon_barmaid").lines)
+	check(brigid.contains("pendant") and brigid.contains("east door") and _rooms_with_prop(rooms, "pendant") == ["mist/hag_mire"], "the Pendant is where Brigid says, past the east door")
+	check(str(rooms["mist/hag_mire"].lists.door[0]).contains("mist/mascon"), "and the Matriarch's mire is Mascon's east door")
+	check(brigid.contains("Zorugeriru") and String(rooms["mist/spring_of_mist"].header.get("boss", "")) == "zorugeriru" and str(rooms["mist/dry_cistern"].lists.door).contains("mist/spring_of_mist"), "Zorugeriru lies round the Spring of Mist, past the Dry Cistern")
+	var cormac := " ".join(GameData.npc("mascon_drinker").lines)
+	check(cormac.contains("Feather Hollow") and str(rooms["mist/feather_hollow"].lists.door).contains("mist/victim"), "Cormac's Feather Hollow lies by Victim")

@@ -8,8 +8,11 @@ sign: 4, 16, THE MASCON ROAD. The dwarf king's ore barges poled this way to the 
 sign: 37, 16, MASCON, the stilt town on the black water. Its people stayed, and fished, and waited.|When the water fell, the boardwalks came up dripping. So did we.
 prop: 39, 16, lamp
 npc: 42, 16, guru
+sign: 44, 16, THE BLACK WATER, Mascon's tavern. Ale, eel stew, and whatever the barges heard.
 prop: 48, 16, house
-npc: 54, 16, mascon_scribe
+npc: 51, 16, mascon_barmaid
+npc: 53, 16, mascon_drinker
+npc: 56, 16, mascon_scribe
 prop: 58, 16, lamp
 npc: 62, 16, mascon_grocer
 prop: 68, 16, house
