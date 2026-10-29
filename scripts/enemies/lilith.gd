@@ -32,7 +32,7 @@ var _dir := Vector2.ZERO
 
 
 func _init() -> void:
-	max_hp = 10
+	max_hp = 20
 	contact_damage = 0
 	gold_min = 1
 	gold_max = 2
