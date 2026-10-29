@@ -1366,7 +1366,7 @@ func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
 
 
 ## The Act III tier (pass 100): three more nodes in each branch, each after the
-## one before, and a tree that now costs more than the 29 points the game gives.
+## one before, and a tree that now costs more than the 34 points the game gives (pass 253).
 func test_act_three_skills_chain_and_apply() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
@@ -1386,7 +1386,7 @@ func test_act_three_skills_chain_and_apply() -> void:
 	var total := 0
 	for n: Dictionary in Skills.nodes():
 		total += int(n.cost)
-	check(total > 29, "the tree costs more than the game's 29 points, so choices matter (%d)" % total)
+	check(total > 34, "the tree costs more than the game's 34 points, so choices matter (%d)" % total)
 	p.gold = 1000
 	check(Skills.respec(p) and not p.riposte and p.max_hp == hp0 and is_equal_approx(p.spell_cost_mult, 1.0), "a respec takes them all back")
 

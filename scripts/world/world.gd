@@ -190,6 +190,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 	var treasures: Array[String] = []
 	var fruits := 0
 	var dews := 0
+	var mantras := 0
 	var locks := locks_in(room_id, parsed)
 	# Finds laid by a `prop:` line count too (pass 187): the Battle Helmet and the
 	# Joker Key, under the id Room gives them (the prop's own cell).
@@ -207,6 +208,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 					fruits += 1
 				elif grid[y][x] == "W":
 					dews += 1
+				elif grid[y][x] == "*":
+					mantras += 1
 	catalog[room_id] = {
 		"name": header.get("name", room_id),
 		"zone": header.get("zone", ""),
@@ -220,6 +223,8 @@ func _catalog_room(room_id: String, text: String) -> void:
 		## How many of those are Life Fruits and Mana Dews (the Journey page counts them).
 		"fruits": fruits,
 		"dews": dews,
+		## And Mantra Shards (the Journey page counts the skill points they make).
+		"mantras": mantras,
 		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
 		"secret": not parsed.lists.get("secret", []).is_empty(),
 		## Its key doors, `{cell, kind, id}`; the map marks the ones still shut.
