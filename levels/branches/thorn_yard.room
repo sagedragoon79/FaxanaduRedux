@@ -2,6 +2,7 @@ name: The Thorn Yard
 zone: branches
 map: 46, -8
 boss: bark_captain
+sign: 3, 19, [boss:bark_captain] THE THORN YARD. The Tree's first knight has laid down his watch. The wardens may walk here again.
 sign: 3, 19, THE THORN YARD. The Tree's first knight still keeps the watch it was grown for. It no longer knows the wardens' faces.
 door: 1, branches/conflate, 3
 ---

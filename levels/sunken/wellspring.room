@@ -2,6 +2,7 @@ name: The Wellspring
 zone: sunken
 map: 64, -5
 boss: drowned_warden
+sign: 4, 14, [boss:drowned_warden] THE WELLSPRING. Every spring of the Tree rises from this water. Its Warden is gone, and anyone may come near.
 sign: 4, 14, THE WELLSPRING. Every spring of the Tree rises from this water. Its Warden has never let anyone near it.
 door: 1, sunken/source_hall, 2
 ---

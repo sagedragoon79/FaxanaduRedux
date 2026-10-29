@@ -4,6 +4,7 @@ surface: stone
 map: 30, -7
 boss: ripasheiku
 fog: 0.92
+sign: 4, 19, [boss:ripasheiku] The dwarves' chapel, drowned when the Mist rose. The lanterns on the altar have gone out.|The singing has stopped.
 sign: 4, 19, The dwarves' chapel, drowned when the Mist rose. Lanterns still burn on the altar.|Not all of them on the altar.
 door: 1, mist/lantern_landing, 2
 door: 2, mist/marsh_road, 1

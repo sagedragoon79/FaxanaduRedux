@@ -211,6 +211,17 @@ All story triggers check items, not route order.
 | Marsh Hag Matriarch defeated (optional, pass 179) | In Mascon, Reedcutter Siobhe stands by the east door and warns of the Matriarch in the mire past it, and of how her brother learned to break a hex; once the Matriarch sinks for good she can cut reeds in the east mire again |
 | Evil One defeated | Post-game: the Tree blooms (built pass 141, below). ~~Palette shift to spring colors~~ waits for the art polish phase. ~~All enemies respawn as "remnants"~~: foes already return when you re-enter a room, and they are the Tree's own creatures, so they stay as they are for the 100% cleanup |
 
+**Every guardian's hall answers its fall (pass 267):** most arenas' signs already read differently once their guardian was beaten. The Trunk's chewing stops, the Spires' nest is empty, and the Hound's chain has run down. Seven still spoke of theirs as alive:
+- the Sunken Chapel's lanterns "still burn" after Ripasheiku's go dark, and the landing above it still said something sings there;
+- the crown-leaf still grew "nothing but the Bloom";
+- the Thorn Yard's knight still kept the watch;
+- the Roost still told you to wake the conduits and call the storm down;
+- the Wellspring's Warden still "has never let anyone near it";
+- the Gate of Zenis and the Throne Hall did not change;
+- the Foreman's doorway still spoke of its golem at work.
+
+Each now has a `[boss:<id>]` line that reads once its guardian is beaten (Old Cormac's word on the chapel is in the past tense too). `test_every_guardians_hall_answers_its_fall` holds every sign in an arena outside Zenis to a word for after, and reads the doorways before and after. Zenis's halls are left as they are, since the ending follows them.
+
 **The spring keepers (pass 249):** in the original a man stood before each of the three springs, and the spring woke with him: an Elixir for the Spring of Trunk, a sleeper woken with water at the spring in the sky. The remake's springs stood empty, cleared with a press of Up and no one to say what they were. Each now has its keeper, standing beside it (`trunk_keeper`, `mist_keeper`, `sky_keeper` in `data/npcs.json`, each with a `_glad` self once the spring flows):
 - **Odran**, a dwarf of the Trunk, at the Spring of Trunk from the start. His father swore it took an Elixir to wake a spring (the original's riddle); it takes someone to clear the spout. Once it flows he names the two springs higher up and the keepers waiting at them.
 - **Ilka**, of Victim, at the Spring of Mist once Zorugeriru is beaten (no one stands in the fight), who watched the coil from the cistern stair. Once it flows, the fog thins, and Ilka warns that the sky's keeper is a sleeper.
