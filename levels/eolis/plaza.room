@@ -3,6 +3,10 @@ zone: eolis
 map: 1, 0
 chest_gold: 60
 prop: 40, 19, fountain
+sign: 40, 19, [spring:trunk spring:mist spring:sky] The Fountain of Eolis.|Fed by the three springs of the World Tree. It runs full again, for the first time in a season.
+sign: 40, 19, [spring:trunk] The Fountain of Eolis.|Fed by the three springs of the World Tree. Water runs into it again. Not every spring flows yet.
+sign: 40, 19, [spring:mist] The Fountain of Eolis.|Fed by the three springs of the World Tree. Water runs into it again. Not every spring flows yet.
+sign: 40, 19, [spring:sky] The Fountain of Eolis.|Fed by the three springs of the World Tree. Water runs into it again. Not every spring flows yet.
 sign: 40, 19, The Fountain of Eolis.|Fed by the three springs of the World Tree. Dry for a season now.
 npc: 50, 19, townsfolk_well, !spring:sky
 npc: 50, 19, townsfolk_well_glad, spring:sky

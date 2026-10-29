@@ -257,12 +257,17 @@ func build(text: String) -> void:
 
 	for spec: String in lists.get("label", []):
 		_add_label(spec)
+	# Several sign lines on one cell are one tablet that reads whichever holds
+	# when it is read (pass 251): "[spring:trunk] The falls have set." first.
+	var tablets := {}
 	for spec: String in lists.get("sign", []):
 		var parts := spec.split(",", true, 2)
 		if parts.size() == 3:
-			var tablet := LoreTablet.new()
-			tablet.text = parts[2].strip_edges()
-			_spawn(tablet, Vector2(int(parts[0]) * TILE + TILE * 0.5, (int(parts[1]) + 1) * TILE))
+			var cell := Vector2i(int(parts[0]), int(parts[1]))
+			if not tablets.has(cell):
+				tablets[cell] = LoreTablet.new()
+				_spawn(tablets[cell], Vector2(cell.x * TILE + TILE * 0.5, (cell.y + 1) * TILE))
+			(tablets[cell] as LoreTablet).add_variant(parts[2])
 
 	if not _sap_cells.is_empty():
 		_sap_pool()

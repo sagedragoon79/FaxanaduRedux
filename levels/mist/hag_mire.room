@@ -3,6 +3,7 @@ zone: mist
 map: 35, -6
 boss: hag_matriarch
 fog: 0.5
+sign: 3, 16, [boss:hag_matriarch] MIND THE MOTHER. She is gone, but every hag in the fog was her daughter, and they remember.
 sign: 3, 16, MIND THE MOTHER. Every hag in the fog is her daughter, and she remembers each one you burned.
 door: 1, mist/mascon, 2
 prop: 37, 16, pendant

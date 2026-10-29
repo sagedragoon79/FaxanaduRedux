@@ -1,6 +1,7 @@
 name: Source Hall
 zone: sunken
 map: 63, -5
+sign: 26, 14, [boss:drowned_warden] THE SOURCE lies beyond. Its keeper is gone. The deep water is only water now.
 sign: 26, 14, THE SOURCE lies beyond. Something vast keeps it. Turn back if you have ever been afraid of deep water.
 door: 1, sunken/drowned_aqueduct, 2
 door: 2, sunken/wellspring, 1

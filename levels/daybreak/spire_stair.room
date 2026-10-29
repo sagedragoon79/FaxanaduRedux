@@ -2,6 +2,7 @@ name: Spire Stair
 zone: daybreak
 map: 57, -12
 chest_gold: 520
+sign: 3, 41, [boss:borabohra] The old stair to the roost. The nest at the top of the Spires is empty now.|The storm came down, and it did not go back up.
 sign: 3, 41, The old stair to the roost. Something vast has nested at the top of the Spires.|Its wings are made of storm.
 door: 1, daybreak/spire_foot, 2
 door: 2, daybreak/roost, 1

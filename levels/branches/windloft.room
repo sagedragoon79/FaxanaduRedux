@@ -1,6 +1,7 @@
 name: Windloft
 zone: branches
 map: 46, -10
+sign: 22, 19, [boss:pakukame] THE WINDLOFT. Here the wardens learned to stride the gaps between the boughs.|They hung the Stride where only a second step in the air can reach it. East, on the crown-leaf, the Bloom is gone.
 sign: 22, 19, THE WINDLOFT. Here the wardens learned to stride the gaps between the boughs.|They hung the Stride where only a second step in the air can reach it. East, on the crown-leaf, the Bloom is waiting.
 door: 1, branches/north_bough, 1
 door: 2, branches/crown_leaf, 1
