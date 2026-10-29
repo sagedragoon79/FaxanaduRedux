@@ -833,6 +833,37 @@ func test_ripasheiku_climbs_and_reels_you_in_on_a_web() -> void:
 	check(pulled and signf(p.global_position.x - x0) == signf(r.global_position.x - x0), "and reels them toward her")
 
 
+
+## Pass 236: her web was broken only by a dash, and the dash is the Elven
+## Stride's, found a zone past her. With only what the player holds at her
+## chapel (the Glove and the Mattock), a slash cuts the strand.
+func test_a_slash_cuts_ripasheikus_web() -> void:
+	var setup := await _widow_world()
+	var w: World = setup[0]
+	var r: Ripasheiku = setup[2]
+	var p := w.player
+	for k: String in p.abilities:
+		p.abilities[k] = k in ["glove", "mattock"]
+	check(not p.abilities.get("stride", false), "at her chapel the player has no Stride")
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	r.hp = roundi(r.max_hp * 0.6)
+	r.take_hit(1, Vector2.RIGHT)
+	await _until(func() -> bool: return r.on_ceiling and r.state == "hang", 180)
+	r._next_hang = "web"
+	p.teleport(Vector2(r.global_position.x - 120.0, p.global_position.y))
+	await frames(2)
+	var reeled := await _until(func() -> bool: return r.state == "reel", 240)
+	check(reeled, "a web line catches the player")
+	p.input.dash_pressed = true
+	await frames(2)
+	check(r.state == "reel" and not p.is_dashing, "without the Stride a dash does nothing")
+	p.input.attack_pressed = true
+	var cut := await _until(func() -> bool: return r.state != "reel", 6)
+	check(cut and r.state == "hang", "a slash cuts the strand (%s)" % r.state)
+	var x := p.global_position.x
+	await frames(20)
+	check(absf(p.global_position.x - x) < 24.0, "and the pull stops (%.1f px)" % absf(p.global_position.x - x))
+
 func test_ripasheiku_drops_and_lies_open() -> void:
 	var setup := await _widow_world()
 	var r: Ripasheiku = setup[2]
