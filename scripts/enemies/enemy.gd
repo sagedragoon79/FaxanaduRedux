@@ -237,10 +237,13 @@ func die() -> void:
 	d.global_position = center()
 	# Risk pays (design bible 10.1, pass 197): a deep zone's foes hit harder
 	# (Room.threat, 5.5) and drop that much more gold.
-	var room := get_parent() as Room
-	Coin.spray(get_parent(), center(), roundi(randi_range(gold_min, gold_max) * (room.threat() if room != null else 1.0)))
-	Drop.roll(get_parent(), center(), poison_drops)
-	GameState.add_xp(xp)
+	# A boss rush wins nothing again (bible 11, pass 260): no gold, drops or
+	# experience from a guardian or anything it calls in.
+	if not BossRush.active():
+		var room := get_parent() as Room
+		Coin.spray(get_parent(), center(), roundi(randi_range(gold_min, gold_max) * (room.threat() if room != null else 1.0)))
+		Drop.roll(get_parent(), center(), poison_drops)
+		GameState.add_xp(xp)
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null:
 		p.on_kill()

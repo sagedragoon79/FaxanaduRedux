@@ -537,8 +537,10 @@ func _shatter(s: BossSegment) -> void:
 func _finish() -> void:
 	_set_state("dead")
 	var at := head_position().clamp(ARENA.position + Vector2(40, 40), ARENA.end - Vector2(40, 20))
-	Coin.spray(get_parent(), at, GOLD)
-	GameState.add_xp(XP)
+	if not BossRush.active():
+		# A boss rush wins nothing again (Enemy.die).
+		Coin.spray(get_parent(), at, GOLD)
+		GameState.add_xp(XP)
 	defeated.emit()
 
 
