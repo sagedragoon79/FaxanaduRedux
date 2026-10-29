@@ -1905,6 +1905,59 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 				laid.append(id)
 	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
 
+## Pass 233: the original's gear and goods, each with its old name and a way
+## to get it. Three blades past the one you start with, four armors, three
+## shields, the Battle Helmet, the Elixir and the Ointment: each is sold by a
+## keeper standing in a town, laid in a room, given by a guardian or worn from
+## the start, and each ladder climbs (a later blade hits harder, a later armor
+## stops more, a later shield wards more). Sean's two renames keep old saves.
+func test_the_originals_gear_is_all_here() -> void:
+	var rooms := _all_rooms()
+	var items := GameData.table("items")
+	var npcs := GameData.table("npcs")
+	var shops := GameData.table("shops")
+	const GEAR := {"short_sword": "Short Sword", "long_sword": "Long Sword", "dwarvish_broad_sword": "Dwarvish Broad Sword",
+		"dragon_slayer": "Dragon Slayer", "leather_armor": "Leather Armor", "studded_mail": "Studded Mail",
+		"full_plate": "Full Plate", "battle_suit": "Battle Suit", "small_shield": "Small Shield",
+		"large_shield": "Large Shield", "magic_shield": "Magic Shield", "battle_helmet": "Battle Helmet",
+		"elixir": "Elixir", "ointment": "Ointment"}
+	var wrong := []
+	for id: String in GEAR:
+		if String(items.get(id, {}).get("name", "")) != GEAR[id]:
+			wrong.append(id)
+	check(wrong.is_empty(), "the original's gear keeps its names (wrong: %s)" % [wrong])
+	var ways := {}
+	for id: String in GameState.fresh().gear:
+		ways[id] = "worn from the start"
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("prop", []):
+			ways[spec.get_slice(",", 2).strip_edges()] = id
+	for npc: String in npcs:
+		if npcs[npc].get("role", "") != "shop":
+			continue
+		var standing := false
+		for id: String in rooms:
+			for spec: String in rooms[id].lists.get("npc", []):
+				standing = standing or spec.get_slice(",", 2).strip_edges() == npc
+		if standing:
+			for entry: Dictionary in shops[String(npcs[npc].shop)].stock:
+				ways[String(entry.item)] = npc
+	for boss: String in BossArena.BOSSES:
+		for kind: String in ["blade", "armor"]:
+			if BossArena.BOSSES[boss].has(kind):
+				ways[String(BossArena.BOSSES[boss][kind])] = boss
+	var lost := GEAR.keys().filter(func(id: String) -> bool: return not ways.has(id))
+	check(lost.is_empty(), "and each can be had: sold, laid, given or worn (no way to: %s)" % [lost])
+	var climbs := func(ids: Array, stat: String) -> bool:
+		for i in range(1, ids.size()):
+			if float(items[ids[i]].get(stat, 0.0)) <= float(items[ids[i - 1]].get(stat, 0.0)):
+				return false
+		return true
+	check(climbs.call(["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"], "slash"), "each blade cuts deeper than the last")
+	check(climbs.call(["leather_armor", "studded_mail", "full_plate", "battle_suit"], "defense"), "each armor stops more than the last")
+	check(climbs.call(["small_shield", "large_shield", "magic_shield"], "ward"), "each shield wards more than the last")
+	check(GameState.RENAMED_ITEMS == {"hand_dagger": "short_sword", "giant_blade": "dwarvish_broad_sword"}, "the Hand Dagger and Giant Blade carry over as Sean renamed them")
+
 
 
 ## Pass 209: the original's towns each kept a tool shop and sold keys. Every
