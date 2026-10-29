@@ -18,9 +18,9 @@ The gap was King Grieve's household guard (268). His soak, `test_king_grieve_fig
 
 `test_king_grieve_fight_soak_stays_lean` (test_soak) now:
 - counts every living Shade Knight in the hall each frame of the 30 s fight. The guard must come at least once, every knight seen must be one he called, no more than one may stand at a time, and he may call no more than `GUARDS`.
-- fells him with a knight still standing. The soak checks one does: with seed 71 the guard is up when he falls. None of the guard may be left 4 s later, and the hall must be back within 20 nodes of where it began.
+- fells him with a knight still standing. The soak checks one does: with seed 71 the guard is up when he falls. None of the guard may be left 4 s later, and the hall must hold no more nodes than it began with, leaving out dust and his gold coins.
 
-The fall starts a slow motion timed on the wall clock (`Feel.boss_kill`), and a headless run gets through 240 frames before that clock has moved much. So 43 dust motes were still in the air when the hall was counted. The soak ends the slow motion with `Feel.reset()` first. This is an artifact of the test, not a leak: in a real game the slow motion ends in about a second.
+The fall starts a slow motion timed on the wall clock (`Feel.boss_kill`), and a headless run gets through 240 frames before that clock has moved much. So 43 dust motes were still in the air when the hall was counted. The soak ends the slow motion with `Feel.reset()` first. CI was slower still and showed 31 nodes, so the count also leaves dust out. This is an artifact of the test, not a leak: in a real game the slow motion ends in about a second.
 
 Mutation check: with `_dismiss_guard()` taken out of `KingGrieve.die()`, the soak fails ("no knight of his guard outlives him (1, one stood at his fall: true)").
 

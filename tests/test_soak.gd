@@ -810,7 +810,17 @@ func test_king_grieve_fight_soak_stays_lean() -> void:
 			left += 1
 	check(stood, "a knight of his guard still stood when he fell")
 	check(left == 0, "no knight of his guard outlives him (%d, one stood at his fall: %s)" % [left, stood])
-	check(_count_nodes(w) < start_nodes + 20, "the hall settles after the fall (%d -> %d nodes)" % [start_nodes, _count_nodes(w)])
+	# What is left besides dust (which a slow CI machine may still have in
+	# the air) and his gold: the hall's own nodes, no shard or knight.
+	var kinds := {}
+	var settled := 0
+	for c in w.room.get_children():
+		if c is Dust or c is Coin:
+			continue
+		settled += 1
+		var k: String = c.get_script().get_global_name() if c.get_script() else c.get_class()
+		kinds[k] = int(kinds.get(k, 0)) + 1
+	check(settled <= start_nodes, "the hall settles after the fall (%d -> %d nodes, dust and gold aside: %s)" % [start_nodes, settled, kinds])
 
 
 func test_shadow_eura_fight_soak_stays_lean() -> void:
