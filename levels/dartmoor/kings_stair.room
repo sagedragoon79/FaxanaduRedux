@@ -1,7 +1,7 @@
 name: King's Stair
 zone: dartmoor
 map: 55, -8
-sign: 7, 9, THE KING'S STAIR. Only the king's household went down it, and his hounds.
+sign: 7, 9, THE KING'S STAIR, down to Fraternal Castle. Only the king's household went down it, and his hounds.
 sign: 26, 42, The hounds still keep the stair. Their keys still turn.
 door: 1, dartmoor/drowned_market, 2
 door: 2, dartmoor/kings_kennels, 1
