@@ -10,7 +10,8 @@ extends Enemy
 ## (close) or rears and pounces at where you stand.
 ## Phase 2 (below 66%): she climbs to the vault and hangs there. She drops web
 ## lines: a thread flickers toward you (the tell), then a strand shoots along
-## it; if it catches you it reels you toward her (dash to break free). Or she
+## it; if it catches you it reels you toward her (a slash cuts the strand, as
+## does the Elven Stride's dash once you have it, pass 236). Or she
 ## shivers and drops on you, and lies stunned where she lands, open to blows.
 ## Phase 3 (below 30%, or every lantern broken): she comes down for good, fully
 ## visible, fast and desperate: tells are a quarter shorter, never under
@@ -308,6 +309,10 @@ func _think(delta: float) -> void:
 			var p := player()
 			if p == null or p.dead or p.is_dashing or state_time >= REEL_TIME:
 				set_state("hang")
+			elif p.is_attacking:
+				# A slash cuts the strand: the Stride lies a zone past her (pass 236).
+				set_state("hang")
+				Sfx.play("web_catch", 0.05, 6.0)
 			else:
 				web_tip = p.global_position + Vector2(0, -16)
 				p.pull = (center() - web_tip).normalized() * REEL_PULL

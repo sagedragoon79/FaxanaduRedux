@@ -696,10 +696,10 @@ The core (phase 2) has none: no blade reaches it, only the veins.
 ### 8.3 Ripasheiku, the Lantern Widow (The Mist)
 - **Concept:** A spider-wraith that carries the souls of the drowned as lanterns on her legs. She is invisible except where her lanterns glow.
 - **Arena:** the Sunken Chapel (mist 30,-7, 60x23), east of Lantern Landing: a drowned nave under fog of 0.92, with two side ledges and a high central ledge.
-- **Tests:** reading by light; double jump.
+- **Tests:** reading by light, and keeping your blade ready in the dark. (Until pass 236 this line said double jump, but the Wing Boots lie past the fog her Lantern Key parts; at her chapel the player holds the Glove and the Mattock.)
 - **Body:** 260 HP. Her four lanterns are separate targets on her legs, and each is a light in the fog (70 px). A lantern breaks in one blow and costs her 18 HP. Each broken lantern frees a soul that clings to her as pale fire, so she shows a little more (8% plus 16% a lantern). Her tells always show at least 80%, so they stay readable in the murk.
 - **Phase 1:** she stalks in the dark. Close up she sweeps her front legs (0.55 s tell); farther off she rears and pounces at where you stand (0.65 s tell).
-- **Phase 2 (below 66%):** she climbs to the vault and hangs there. Web: a thread flickers toward you (0.6 s), then a strand shoots along it (360 px). If it catches you it reels you toward her for 0.9 s; a dash breaks free. Drop: she shivers (0.6 s), marking a shadow below, then falls on you and lies stunned for 1.3 s, taking 1.5x damage.
+- **Phase 2 (below 66%):** she climbs to the vault and hangs there. Web: a thread flickers toward you (0.6 s), then a strand shoots along it (360 px). If it catches you it reels you toward her for 0.9 s; a slash cuts the strand, and so does the Elven Stride's dash once you have it. (Pass 236: until then only a dash broke free, and the Stride lies a zone past her, so a player caught at her chapel had no answer. `test_a_slash_cuts_ripasheikus_web` holds it with only the Glove and the Mattock.) Drop: she shivers (0.6 s), marking a shadow below, then falls on you and lies stunned for 1.3 s, taking 1.5x damage.
 - **Phase 3 (below 30%, or all lanterns broken):** she comes down for good. She is fully visible, fast, and desperate, with tells a quarter shorter (never under the minimum).
 - **Reward:** Lantern Key (opens the path to Zorugeriru), Mana Dew, a skill point.
 
