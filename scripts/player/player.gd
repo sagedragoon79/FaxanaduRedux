@@ -1339,10 +1339,7 @@ func _slope_sink(on_floor: bool) -> float:
 ## Plays the step sound for the ground underfoot (design bible 11), falling back
 ## to the plain step outside a room.
 func _footstep(volume_db: float) -> void:
-	var surface := ""
-	var room := get_tree().get_first_node_in_group("room") as Room
-	if room != null:
-		surface = room.surface_at(global_position + Vector2(0, 2))
+	var surface := _ground()
 	Sfx.play("step_" + surface if surface != "" else "step", 0.15, volume_db)
 	footstep.emit(surface)
 
@@ -1900,6 +1897,17 @@ func _spawn_dust(offset: Vector2, kind: String) -> void:
 	if get_parent() == null:
 		return
 	var d := Dust.new()
-	d.setup(kind, facing)
+	var ground := _ground() if kind in Dust.GROUND else ""
+	d.setup(kind, facing, ground)
 	get_parent().add_child(d)
 	d.global_position = global_position + offset
+	if ground == "wade":
+		# Spray leaps from the water's surface, not from the floor under it.
+		var room := get_tree().get_first_node_in_group("room") as Room
+		d.global_position.y = room.to_global(Vector2(0, room.tide.row * Room.TILE)).y
+
+
+## The ground underfoot (`Room.surface_at`), or "" outside a room or in mid-air.
+func _ground() -> String:
+	var room := get_tree().get_first_node_in_group("room") as Room if is_inside_tree() else null
+	return room.surface_at(global_position + Vector2(0, 2)) if room != null else ""

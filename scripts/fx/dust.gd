@@ -26,22 +26,40 @@ const KINDS := {
 	"might": {"count": 2, "speed": Vector2(18, 14), "life": 0.4, "color": Color("ff5a3c"), "size": 2, "rise": -50.0},
 }
 
+## The puffs the feet kick off the ground: they take the ground's look
+## (pass 264), as the steps take its sound.
+const GROUND := ["run", "dash", "jump", "land"]
+## Ground that kicks up something other than pale dust: marsh mud, amber sap,
+## and spray from standing water (`Room.surface_at`).
+const GROUND_TINT := {"mud": Color("5e4c36"), "sap": Color("ffb84a"), "wade": Color("7cc4f0")}
+
 ## The kind this puff was set up as (tests).
 var kind := ""
+## The ground it was kicked off, if it took that ground's look (tests).
+var surface := ""
 var _particles: Array = []  # [pos, vel, life, max_life]
 var _color := Color.WHITE
 var _size := 2
 var _rise := 0.0
 
 
-func setup(kind_name: String, facing := 1) -> void:
+func setup(kind_name: String, facing := 1, ground := "") -> void:
 	kind = kind_name
 	var k: Dictionary = KINDS.get(kind, KINDS["run"])
 	_color = k["color"]
 	_size = k["size"]
 	_rise = k["rise"]
 	var speed: Vector2 = k["speed"]
-	for i in int(k["count"]):
+	if kind in GROUND and GROUND_TINT.has(ground):
+		surface = ground
+		_color = GROUND_TINT[ground]
+		# Mud, sap and water are heavy: flung, they fall back rather than drift.
+		_rise = 260.0
+		if ground == "wade":
+			# Spray leaps higher and wider than dust, out of the surface.
+			speed = Vector2(speed.x * 0.8 + 20.0, 130.0)
+	var count := int(k["count"]) + (3 if surface == "wade" else 0)
+	for i in count:
 		var dir := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 0.2))
 		if kind in ["run", "airdash"]:
 			dir.x = -absf(dir.x) * facing
@@ -50,6 +68,10 @@ func setup(kind_name: String, facing := 1) -> void:
 			dir = Vector2(-randf_range(0.4, 1.0) * facing, randf_range(-1.0, 0.0))
 		if kind in ["debris", "hit", "pogo", "walljump", "splash", "parry", "guard", "coin", "sap", "bark", "embers"]:
 			dir = Vector2.from_angle(randf() * TAU)
+		if surface == "wade":
+			# Spray: thrown up out of the water, falling back into it.
+			dir.y = -randf_range(0.6, 1.4)
+			dir.x *= 0.7
 		var life: float = k["life"] * randf_range(0.7, 1.2)
 		_particles.append([Vector2.ZERO, dir * speed, life, life])
 	z_index = 2
