@@ -532,6 +532,7 @@ Every number in 6.1 to 6.6 and 6.8 to 6.12 is held to this text by a test that r
 | Refreshes | double jump and dash |
 | Valid targets | enemies, projectiles marked pogo-able, thorn bulbs, spikes, lanterns, cracked-stone tops |
 | Hit-stop on pogo | 45 ms |
+| Swing timing (pass 256) | a slash or up-slash cuts for 0.10 s (`slash_active`) and the down-strike for 0.14 s. An up-slash or down-strike then recovers for 0.28 s (`attack_cooldown`) before the next swing, however fast Attack is pressed. A press in its last 0.15 s is held (`attack_buffer`, 5.3) and swings the frame it ends. A side combo's recoveries are combat numbers (5.3, `combo_cooldowns` 0.20, 0.20 and 0.38 for the heavy finisher). A blade's swing speed scales all of them (5.2). These two had been in `MovementTuning` since the prototype but in no table and no test |
 | Bounce-pod (Branches) | landing on a pod from above sets vy = -600 px/s (about 9 tiles of rise in play); release doesn't cut it; refreshes double jump and dash. The pod isn't solid, so walking into it does nothing, and a hop onto it launches |
 
 ### 6.7 Juice checklist (all required before the movement milestone closes)
