@@ -19,6 +19,28 @@ static func status(id: String) -> String:
 	return ""
 
 
+## What a skill works through, when the player hasn't found it yet: the
+## ability or spell's name ("Wing Boots"), else "". A skill can be learned
+## before it, and the tree says it waits (pass 237).
+static func waits_on(id: String) -> String:
+	var uses := String(GameData.skill(id).get("uses", ""))
+	if uses == "" or bool(GameState.data.abilities.get(uses, false)):
+		return ""
+	return uses_name(uses)
+
+
+## The name an ability or spell id goes by in the tree.
+static func uses_name(uses: String) -> String:
+	match uses:
+		"mattock":
+			return "Mattock"
+		"tilte":
+			return "Tilte scroll"
+		"death":
+			return "Death scroll"
+	return String(ItemPickup.INFO[uses].title)
+
+
 static func learn(id: String, p: Player) -> bool:
 	if status(id) != "":
 		return false

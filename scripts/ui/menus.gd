@@ -258,29 +258,39 @@ static func open_lift(tree: SceneTree, p: Player, cage: LiftCage) -> bool:
 	return true
 
 
+## The skill tree's rows, a header for each branch. Each skill row carries its
+## `id`. A skill that works through something not yet found says so (pass 237).
+static func skill_rows() -> Array:
+	var out := []
+	var branch := ""
+	for node: Dictionary in Skills.nodes():
+		if node.branch != branch:
+			branch = node.branch
+			out.append({"label": branch, "header": true, "id": ""})
+		var st := Skills.status(node.id)
+		var right := "%d pt" % int(node.cost)
+		if st == "learned":
+			right = "Learned"
+		var detail: String = node.desc
+		if st == "locked":
+			detail += "  Needs " + String(GameData.skill(node.needs).name) + " first."
+		var waits := Skills.waits_on(node.id)
+		if waits != "":
+			detail += "  Does nothing until you find the %s." % waits
+		out.append({"label": node.name, "right": right, "detail": detail, "enabled": st == "", "id": node.id})
+	return out
+
+
 static func open_skills(tree: SceneTree, p: Player) -> bool:
 	var menu := _menu(tree)
 	if menu == null:
 		return false
 	var ids: Array[String] = []
 	var provider := func() -> Array:
-		var out := []
+		var out := skill_rows()
 		ids.clear()
-		var branch := ""
-		for node: Dictionary in Skills.nodes():
-			if node.branch != branch:
-				branch = node.branch
-				out.append({"label": branch, "header": true})
-				ids.append("")
-			var st := Skills.status(node.id)
-			var right := "%d pt" % int(node.cost)
-			if st == "learned":
-				right = "Learned"
-			var detail: String = node.desc
-			if st == "locked":
-				detail += "  Needs " + String(GameData.skill(node.needs).name) + " first."
-			out.append({"label": node.name, "right": right, "detail": detail, "enabled": st == ""})
-			ids.append(node.id)
+		for row: Dictionary in out:
+			ids.append(String(row.id))
 		return out
 	var on_select := func(i: int) -> void:
 		if Skills.learn(ids[i], p):
