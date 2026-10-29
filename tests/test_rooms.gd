@@ -609,6 +609,38 @@ func test_sap_never_holds_a_dash_and_lets_go_at_its_edge() -> void:
 	await frames(12)
 	check(not p.in_sap and is_equal_approx(p.velocity.x, p.tuning.run_speed), "where the run comes back at once (%.0f)" % p.velocity.x)
 
+
+## Bible 4.2 (pass 249): in the original a keeper stood before each spring. Each
+## of the remake's three has one: there while it is dry (at the Mist's and the
+## Sky's once their guardian is beaten, never mid-fight), glad once it flows.
+func test_every_spring_has_its_keeper() -> void:
+	var springs := {"trunk/spring_of_trunk": ["trunk", "", "trunk_keeper"],
+		"mist/spring_of_mist": ["mist", "boss:zorugeriru", "mist_keeper"],
+		"daybreak/sky_spring": ["sky", "boss:borabohra", "sky_keeper"]}
+	var people := func(w: World) -> Array:
+		return w.room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(n: Npc) -> String: return n.npc_id)
+	for room: String in springs:
+		var spring: String = springs[room][0]
+		var guardian: String = springs[room][1]
+		var keeper: String = springs[room][2]
+		check(GameData.npc(keeper).has("name") and GameData.npc(keeper + "_glad").get("name") == GameData.npc(keeper).name, "%s and their glad self are one person" % keeper)
+		check(Sheet.exists("npc_" + keeper) and Sheet.exists("npc_" + keeper + "_glad"), "with sheets")
+		check(GameData.npc(keeper + "_glad").has("lines_cleared"), "and a word once the Tree blooms")
+		var w := make_world({}, room)
+		await frames(3)
+		if guardian != "":
+			check(not people.call(w).has(keeper), "no keeper at the %s spring while its guardian holds it (%s)" % [spring, people.call(w)])
+			GameState.set_flag(guardian)
+			w._enter(room)
+			await frames(3)
+		check(people.call(w) == [keeper], "the %s spring's keeper waits by it, dry (%s)" % [spring, people.call(w)])
+		GameState.set_flag("spring:" + spring)
+		w._enter(room)
+		await frames(3)
+		check(people.call(w) == [keeper + "_glad"], "and is glad once it flows (%s)" % [people.call(w)])
+		w.queue_free()
+		await frames(2)
+
 # --- Tiles ---------------------------------------------------------------------------
 
 func test_autotiles_match_their_neighbours() -> void:

@@ -2,6 +2,8 @@ name: Spring of Trunk
 zone: trunk
 map: 14, -1
 prop: 28, 16, spring_trunk
+npc: 32, 16, trunk_keeper, !spring:trunk
+npc: 32, 16, trunk_keeper_glad, spring:trunk
 sign: 34, 16, Water once ran from here to Eolis.|The grub chewed the taproot dry. Clear the spout.
 door: 1, trunk/root_chamber, 2
 door: 2, tower/foot, 3
