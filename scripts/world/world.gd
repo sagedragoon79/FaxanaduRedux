@@ -129,6 +129,44 @@ func build_catalog() -> void:
 		_catalog_room(room_id, texts[room_id])
 
 
+## A parsed room's key doors, `{cell, kind, id}`: each `J` is a Jack door unless a
+## `lock:` line names its card, and each `g` is the Sky Gate.
+static func locks_in(room_id: String, parsed: Dictionary) -> Array[Dictionary]:
+	var kinds := {}
+	for spec: String in parsed.lists.get("lock", []):
+		var l := spec.split(",")
+		if l.size() == 3:
+			kinds[Vector2i(int(l[0]), int(l[1]))] = l[2].strip_edges()
+	var out: Array[Dictionary] = []
+	var grid: Array[String] = parsed.grid
+	for y in grid.size():
+		for x in grid[y].length():
+			if grid[y][x] in ["J", "g"]:
+				var cell := Vector2i(x, y)
+				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "jack")
+				out.append({"cell": cell, "kind": kind, "id": "%s:%d,%d" % [room_id, x, y]})
+	return out
+
+
+static var _world_locks: Array[Dictionary] = []
+
+
+## Every key door in the world's room files (read once). The shops ask how many of
+## a card's doors still stand shut, so they never sell a key with no door left
+## (design bible 10.2).
+static func world_locks() -> Array[Dictionary]:
+	if _world_locks.is_empty():
+		var dir := DirAccess.open("res://levels")
+		for zone_dir in dir.get_directories():
+			if zone_dir in OFF_MAP:
+				continue
+			for file in DirAccess.open("res://levels/" + zone_dir).get_files():
+				if file.ends_with(".room"):
+					var room_id := zone_dir + "/" + file.trim_suffix(".room")
+					_world_locks.append_array(locks_in(room_id, Room.parse(FileAccess.get_file_as_string(room_path(room_id)))))
+	return _world_locks
+
+
 func _catalog_room(room_id: String, text: String) -> void:
 	var parsed := Room.parse(text)
 	var header: Dictionary = parsed.header
@@ -152,12 +190,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 	var treasures: Array[String] = []
 	var fruits := 0
 	var dews := 0
-	var kinds := {}
-	for spec: String in parsed.lists.get("lock", []):
-		var l := spec.split(",")
-		if l.size() == 3:
-			kinds[Vector2i(int(l[0]), int(l[1]))] = l[2].strip_edges()
-	var locks: Array[Dictionary] = []
+	var locks := locks_in(room_id, parsed)
 	# Finds laid by a `prop:` line count too (pass 187): the Battle Helmet and the
 	# Joker Key, under the id Room gives them (the prop's own cell).
 	for spec: String in parsed.lists.get("prop", []):
@@ -174,10 +207,6 @@ func _catalog_room(room_id: String, text: String) -> void:
 					fruits += 1
 				elif grid[y][x] == "W":
 					dews += 1
-			elif grid[y][x] in ["J", "g"]:
-				var cell := Vector2i(x, y)
-				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "jack")
-				locks.append({"cell": cell, "kind": kind, "id": "%s:%d,%d" % [room_id, x, y]})
 	catalog[room_id] = {
 		"name": header.get("name", room_id),
 		"zone": header.get("zone", ""),
