@@ -555,6 +555,10 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check_near(t.pogo_bounce, 380.0, 0.0001, "pogo bounce")
 	check_near(t.pogo_bounce_held, 420.0, 0.0001, "pogo bounce, jump held")
 	check_near(t.down_strike_active, 0.14, 0.0001, "down-strike active")
+	# Pass 256: the swing's own timing, in the tuning since the prototype but
+	# never in 6.6's table nor held by a test.
+	check_near(t.slash_active, 0.10, 0.0001, "a slash or up-slash cuts for 0.10 s")
+	check_near(t.attack_cooldown, 0.28, 0.0001, "an up-slash or down-strike recovers for 0.28 s")
 	check(Player.DOWN_STRIKE_SIZE == Vector2(28, 24), "down-strike hitbox 28x24")
 	# Pass 208: the rest of 6.6 and 6.10, until now only read back from the
 	# tuning by their play tests, and the pogo's hit-stop, a literal in the player.
@@ -565,6 +569,34 @@ func test_movement_numbers_match_bible_6_2_to_6_6() -> void:
 	check_near(t.glide_brake, 1500.0, 0.0001, "glide brake")
 	# 5.3, the slash's push back
 	check_near(t.slash_recoil, 120.0, 0.0001, "slash recoil")
+
+
+## Pass 256: an up-slash cuts for `slash_active` and the next swing waits out
+## `attack_cooldown`, however fast Attack is pressed.
+func test_an_up_slash_cuts_then_recovers_as_6_6_says() -> void:
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(3, 11))
+	await _settle(p)
+	var t := p.tuning
+	p.input.up = true
+	p.input.attack_pressed = true
+	await frames(1)
+	check(p.attack_kind == "up" and p.is_attacking, "Up and Attack on the floor is an up-slash")
+	var cutting := 0
+	var next := -1
+	var last := p._attack_timer
+	for i in 40:
+		p.input.attack_pressed = true
+		await frames(1)
+		if p._attack_timer > last:
+			next = i + 1
+			break
+		if p._attack_timer > 0.0:
+			cutting += 1
+		last = p._attack_timer
+	p.input.up = false
+	check(absi(cutting - roundi(t.slash_active * 60.0)) <= 1, "it cuts for about %d frames (%d)" % [roundi(t.slash_active * 60.0), cutting])
+	check(absi(next - roundi(t.attack_cooldown * 60.0)) <= 1, "and with Attack pressed every frame the next swing comes %d frames on (%d)" % [roundi(t.attack_cooldown * 60.0), next])
 
 
 ## Pass 200: 6.1 and the core of 6.2 were only read back from the tuning by the
