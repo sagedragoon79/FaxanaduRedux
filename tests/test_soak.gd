@@ -757,6 +757,8 @@ func test_king_grieve_fight_soak_stays_lean() -> void:
 	var states := {}
 	var shards := 0
 	var seen := {}
+	var guards := {}
+	var most_guards := 0
 	const FIGHT_FRAMES := 1800
 	for f in FIGHT_FRAMES:
 		_mash(w.player, rng, hold)
@@ -776,14 +778,39 @@ func test_king_grieve_fight_soak_stays_lean() -> void:
 			if c is CrystalShard and not seen.has(c.get_instance_id()):
 				seen[c.get_instance_id()] = true
 				shards += 1
+		# His household guard (pass 268): one knight at a time, never more than
+		# GUARDS in the fight (pass 271).
+		var standing := 0
+		for c in w.room.get_children():
+			if c is ShadeKnight and not c.dead:
+				standing += 1
+				guards[c.get_instance_id()] = true
+		most_guards = maxi(most_guards, standing)
 	TimeStop.reset()
 	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
-	print("  King soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
+	print("  King soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s, guards %d (most at once %d)" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys(), guards.size(), most_guards])
 	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("chop_tell") and states.has("ward") and states.has("summon_tell"), "duels and the throne were soaked")
 	check(shards > 0, "and shard waves (%d)" % shards)
+	check(guards.size() >= 1 and guards.size() == boss.guards_called, "and his household guard came (%d called, %d seen)" % [boss.guards_called, guards.size()])
+	check(most_guards <= 1 and boss.guards_called <= KingGrieve.GUARDS, "one knight at a time, %d at most (%d at once, %d called)" % [KingGrieve.GUARDS, most_guards, boss.guards_called])
 	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")
+	# Felled mid-soak, with whatever guard stands (his ward and armour turn a
+	# test's blow, so the fall is called straight): none outlives him, and the
+	# hall settles back to what it held before the fight.
+	var stood := boss.guard_stands()
+	boss.hp = 0
+	boss.die()
+	Feel.reset()  # the fall's slow motion runs on the wall clock, which a headless run outpaces
+	await frames(240)
+	var left := 0
+	for c in w.room.get_children():
+		if c is ShadeKnight and not c.dead:
+			left += 1
+	check(stood, "a knight of his guard still stood when he fell")
+	check(left == 0, "no knight of his guard outlives him (%d, one stood at his fall: %s)" % [left, stood])
+	check(_count_nodes(w) < start_nodes + 20, "the hall settles after the fall (%d -> %d nodes)" % [start_nodes, _count_nodes(w)])
 
 
 func test_shadow_eura_fight_soak_stays_lean() -> void:
