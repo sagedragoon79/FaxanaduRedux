@@ -281,6 +281,10 @@
 		"name": "Bell-Ringer Tamsin", "role": "shop", "shop": "daybreak_charts",
 		"look": {"robe": "#3a4a7a", "trim": "#b8a8ff", "skin": "#d9b08c", "hair": "#c9a27a", "hat": "cap", "ears": true}
 	},
+	"dartmoor_cartographer": {
+		"name": "Sounder Hulda", "role": "shop", "shop": "dartmoor_charts",
+		"look": {"robe": "#2f4a52", "trim": "#7ab8c0", "skin": "#c9a27a", "hair": "#9a9a9a", "hat": "hood", "build": "dwarf", "beard": true}
+	},
 	"daybreak_mayor": {
 		"lines_cleared": ["The rods sing again and the bells ring on their own. No storm needed: the Tree's light runs down the copper now.", "Daybreak will cast you a bell, hero. Your name on it. It is the least we can do, and the loudest."],
 		"name": "Mayor Halloran", "role": "talk",
