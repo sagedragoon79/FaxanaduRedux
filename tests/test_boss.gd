@@ -3567,3 +3567,29 @@ func test_the_matriarch_gives_mana_dew() -> void:
 	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "her Mana Dew grows your magic (%.0f -> %.0f)" % [mp0, float(GameState.data.max_mp)])
 	var ranks := int(GameState.data.rank) - rank
 	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)
+
+
+func test_a_guardians_win_cant_be_lost_while_it_falls() -> void:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var arena: BossArena = setup[1]
+	var b: KingGrieve = setup[2]
+	var p := w.player
+	p.max_hp = 40
+	p.hp = 40
+	check(not arena.falling(), "nothing is falling while the king still stands")
+	p.receive_attack(5, b, false)
+	check(p.hp < 40, "before the killing blow his blows land as usual (hp %d)" % p.hp)
+	p.set("_invuln_timer", 0.0)
+	b.hp = 1
+	b.take_hit(500, Vector2.RIGHT)
+	await frames(2)
+	check(arena.falling(), "the killing blow lands and the king falls")
+	var hp := p.hp
+	p.set("_invuln_timer", 0.0)
+	p.receive_attack(500, b, false)
+	check(not p.dead and p.hp == hp, "a blow still in the air while he falls can't kill the hero (hp %d, dead %s)" % [p.hp, p.dead])
+	await _until(func() -> bool: return not arena.fighting, 400)
+	check(GameState.flag("boss:king_grieve"), "the win is kept")
+	check("dragon_slayer" in GameState.data.gear, "and so is the Dragon Slayer")
+	check(not arena.falling(), "once the doors open nothing is shielded any more")
