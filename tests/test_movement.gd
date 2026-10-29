@@ -1438,3 +1438,63 @@ func test_head_correction_slides_a_dash_into_a_tunnel() -> void:
 	check(await _dash_into_tunnel(2.0), "clipping the tunnel's top by 2 px, the dash slides in")
 	check(await _dash_into_tunnel(4.0), "by 4 px, it still slides in")
 	check(not await _dash_into_tunnel(5.0), "by 5 px, it stops on the lip")
+
+
+## Pass 264 (bible 6.5): what the feet kick up takes the ground's look, as the
+## steps take its sound. A landing on stone puffs pale dust, in the Mist's marsh
+## it flings dark mud, and in Dartmoor's standing water it throws spray that
+## falls back. The run, the jump and a dash along the floor do the same.
+func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
+	var landing := func(room: Room) -> Dust:
+		for i in 90:
+			await frames(1)
+			for c in room.get_children():
+				if c is Dust and c.kind == "land":
+					return c
+		return null
+	var stone := Room.from_text(room_text(["name: T", "zone: tower", "surface: stone"], grid_rows(10, 23)), "t/stone")
+	arena.add_child(stone)
+	var p := make_player(stone, Vector2i(5, 12))
+	var d: Dust = await landing.call(stone)
+	check(d != null and d.surface == "" and d._color == Dust.KINDS["land"]["color"], "a landing on stone puffs pale dust")
+	stone.queue_free()
+	await frames(1)
+	var marsh := Room.from_text(room_text(["name: T", "zone: mist"], grid_rows(10, 23)), "t/marsh")
+	arena.add_child(marsh)
+	p = make_player(marsh, Vector2i(5, 12))
+	d = await landing.call(marsh)
+	check(d != null and d.surface == "mud" and d._color == Dust.GROUND_TINT["mud"], "in the marsh it flings mud (%s)" % (d.surface if d else "none"))
+	await frames(10)
+	p.input.move_x = 1
+	var kicked := ""
+	for i in 40:
+		await frames(1)
+		for c in marsh.get_children():
+			if c is Dust and c.kind == "run":
+				kicked = c.surface
+	p.input.move_x = 0
+	check(kicked == "mud", "and the run kicks up mud too (%s)" % kicked)
+	marsh.queue_free()
+	await frames(1)
+	var w := make_world({}, "dartmoor/flooded_hall")
+	await frames(3)
+	var tide: Tide = w.room.tide
+	var wade := Vector2(w.room.size_tiles.x * 0.5 * Room.TILE, (tide.row + 1) * Room.TILE)
+	while w.room.tiles.get_cell_source_id(w.room.cell_at(wade + Vector2(0, 2))) == -1 or w.room.tiles.get_cell_source_id(w.room.cell_at(wade + Vector2(0, -Room.TILE + 2))) != -1:
+		wade.x += Room.TILE
+	w.player.teleport(wade - Vector2(0, Room.TILE * 5))
+	d = await landing.call(w.room)
+	check(d != null and d.surface == "wade" and d._color == Dust.GROUND_TINT["wade"], "in standing water a landing throws spray (%s)" % (d.surface if d else "none"))
+	if d != null:
+		var up := 0
+		for q: Array in d._particles:
+			if (q[1] as Vector2).y < 0.0:
+				up += 1
+		check(up == d._particles.size() and d._rise > 0.0, "thrown up, every drop, to fall back (%d of %d)" % [up, d._particles.size()])
+	GameState.set_flag(Tide.DRAIN_FLAG)
+	w._enter("dartmoor/flooded_hall")
+	await frames(3)
+	w.player.teleport(wade - Vector2(0, Room.TILE * 5))
+	d = await landing.call(w.room)
+	check(d != null and d.surface == "", "drained, the hall's floor puffs dust again")
+	GameState.data.flags.erase(Tide.DRAIN_FLAG)
