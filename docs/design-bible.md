@@ -915,7 +915,9 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     `boss:evil_one`, 1 skill point) and every light goes home. Deviation: the bible had each strike restore a
     spring; as built it is each third, so the restoration lands as a beat rather than a trickle. The ending and
     credits are next.
-  - **The ending, as built (pass 84):** four seconds after the heart dies (the banner shows first) the game
+  - **The ending, as built (pass 84):** four seconds after the heart dies (the banner shows first; since pass 247
+    the four seconds stop while the game is paused, where the ending had come on under the pause menu and shut it, and
+    the wait belongs to the arena, so a world torn down in them never ends the game; `test_the_ending_waits_out_a_pause_and_dies_with_its_world`) the game
     marks the save `cleared` (and counts `clears`), freezes the world and plays the **EndingScreen** to its own
     theme (`ending`: the Eolis lydian come home at 76 bpm, a rising arpeggio for the climb):
     1. **Epilogue**: the World Tree against the night, the dead meteor at its crown. Its cyan light drains

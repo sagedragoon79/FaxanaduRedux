@@ -2771,6 +2771,44 @@ func test_the_heart_of_the_meteor_dies_for_good() -> void:
 
 
 
+## Pass 247: the four seconds between the Evil One's fall and the ending wait
+## while the game is paused, and a world torn down in them never ends the game.
+func test_the_ending_waits_out_a_pause_and_dies_with_its_world() -> void:
+	var setup := await _heart_world()
+	var w: World = setup[0]
+	var h: EvilHeart = setup[2]
+	_bind(h)
+	await frames(2)
+	_slash(w, h, h.hp)
+	check(await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600), "the Evil One is beaten")
+	var started := [false]
+	var on_end := func() -> void: started[0] = true
+	GameState.ending_started.connect(on_end)
+	var tree := runner.get_tree()
+	tree.paused = true
+	await frames(int(BossArena.ENDING_DELAY * 60) + 60)
+	check(not started[0] and not GameState.flag("cleared"), "paused, the ending waits")
+	tree.paused = false
+	var ended := await _until(func() -> bool: return started[0], int(BossArena.ENDING_DELAY * 60) + 30)
+	check(ended and int(GameState.data.clears) == 1, "and comes once play goes on")
+	# Again, but the world goes before the wait is out.
+	w.queue_free()
+	await frames(2)
+	GameState.new_game()
+	started[0] = false
+	setup = await _heart_world()
+	w = setup[0]
+	h = setup[2]
+	_bind(h)
+	await frames(2)
+	_slash(w, h, h.hp)
+	check(await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600), "beaten again")
+	w.queue_free()
+	await frames(int(BossArena.ENDING_DELAY * 60) + 60)
+	GameState.ending_started.disconnect(on_end)
+	check(not started[0] and not GameState.flag("cleared") and int(GameState.data.get("clears", 0)) == 0, "a world gone before the ending never ends the game")
+
+
 # --- The Drowned Warden (bible 8.10) ----------------------------------------------
 
 func _warden_world() -> Array:
