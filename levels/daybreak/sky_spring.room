@@ -1,6 +1,8 @@
 name: Spring of Sky
 zone: daybreak
 map: 60, -12
+sign: 8, 19, [spring:sky] THE SPRING OF SKY. The storm's eye. The elves drew the rain from here.|It runs to the Tree again, and the storm has broken.
+sign: 8, 19, [boss:borabohra] THE SPRING OF SKY. The storm's eye. The elves drew the rain from here.|The roc is gone. Clear it, and the sky runs to the Tree again.
 sign: 8, 19, THE SPRING OF SKY. The storm's eye. The elves drew the rain from here.|The roc slept on it. Clear it, and the sky runs to the Tree again.
 sign: 38, 19, THE UPPER GATE OF DARTMOOR.|Below, through the clouds, the drowned halls of the dwarf king.
 prop: 20, 18, spring_sky

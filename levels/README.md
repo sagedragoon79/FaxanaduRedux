@@ -10,6 +10,8 @@ map: 0, 0          (the room's top-left on the map, in screens)
 door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
+sign: 8, 19, [spring:trunk] Later   (lines on one cell are one tablet; it reads the first whose
+                   bracketed flags hold, so put the plain line last, as the default)
 npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19); an optional
                    fourth field shows them only once a flag is set, or with !flag until then;
                    several conditions, space-separated, must all hold)

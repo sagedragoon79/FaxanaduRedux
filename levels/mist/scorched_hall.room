@@ -3,6 +3,7 @@ zone: mist
 surface: stone
 map: 33, -7
 chest_gold: 240
+sign: 5, 19, [spring:mist] The Mascon road runs on east.|The spring flows, and the marsh has given the road back.
 sign: 5, 19, The Mascon road runs on east under black water.|When the spring flows, the marsh will give it back.
 door: 1, mist/marsh_road, 2
 door: 2, mist/dry_cistern, 1

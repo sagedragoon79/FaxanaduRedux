@@ -595,6 +595,92 @@ func test_tablet_opens_dialog() -> void:
 	check(got.size() == 1 and got[0].size() == 2, "reading a tablet opens a two-page dialog")
 
 
+## Pass 251: a sign says what the world has become. Lines on one cell are one
+## tablet, and it reads the first whose flags hold at the moment it is read.
+func test_a_tablet_reads_what_the_world_has_become() -> void:
+	var rooms := _rooms()
+	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, [spring:trunk boss:rokusutahn] Both|Done\nsign: 8, 19, [spring:trunk] After\nsign: 8, 19, Before\n---")
+	var w := make_world(rooms, "test/a", cell_feet(8, 19))
+	await frames(3)
+	var tablets: Array[LoreTablet] = []
+	for n in w.room.get_children():
+		if n is LoreTablet:
+			tablets.append(n)
+	check(tablets.size() == 1, "three lines on one cell make one tablet (%d)" % tablets.size())
+	if tablets.is_empty():
+		return
+	var got := []
+	var listener := func(_who: String, pages: Array) -> void: got.append(pages)
+	GameState.dialog_requested.connect(listener)
+	tablets[0].interact(w.player)
+	GameState.set_flag("spring:trunk")
+	tablets[0].interact(w.player)
+	GameState.set_flag("boss:rokusutahn")
+	tablets[0].interact(w.player)
+	GameState.dialog_requested.disconnect(listener)
+	check(got == [["Before"], ["After"], ["Both", "Done"]], "it reads Before, then After, then Both as the flags are set, without leaving the room (%s)" % [got])
+
+
+## Pass 251: every sign that foretold a change the world makes has a line for
+## after it, and every bracketed flag is one the game can set.
+func test_every_world_change_rewrites_its_sign() -> void:
+	var catalog := {}
+	for zone in DirAccess.get_directories_at("res://levels"):
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if f.ends_with(".room"):
+				catalog[zone + "/" + f.get_basename()] = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+	var bosses := {}
+	for id: String in catalog:
+		var b := String(catalog[id].header.get("boss", ""))
+		if b != "":
+			bosses[b] = id
+	var bad := []
+	for id: String in catalog:
+		var cells := {}
+		for spec: String in catalog[id].lists.get("sign", []):
+			var parts := spec.split(",", true, 2)
+			var cell := "%s,%s" % [parts[0].strip_edges(), parts[1].strip_edges()]
+			var line := parts[2].strip_edges()
+			var conds := ""
+			if line.begins_with("["):
+				conds = line.substr(1, line.find("]") - 1)
+			cells[cell] = cells.get(cell, []) + [conds]
+			for c: String in conds.split(" ", false):
+				c = c.trim_prefix("!")
+				var known := false
+				if c.begins_with("boss:"):
+					known = bosses.has(c.trim_prefix("boss:"))
+				elif c.begins_with("spring:"):
+					known = c.trim_prefix("spring:") in ["trunk", "mist", "sky"]
+				elif c.begins_with("conduits:"):
+					var r = catalog.get(c.trim_prefix("conduits:"))
+					known = r != null and "\n".join(r.grid).contains("c")
+				if not known:
+					bad.append("%s %s: no such flag %s" % [id, cell, c])
+		for cell: String in cells:
+			if cells[cell].size() > 1 and cells[cell][-1] != "":
+				bad.append("%s %s: no plain line to fall back on" % [id, cell])
+	check(bad.is_empty(), "every bracketed sign line names a real flag and falls back: %s" % [bad])
+	# The signs that said "when the spring runs" or "something waits" each learn otherwise.
+	var told := [["eolis/plaza", "40,19", "spring:trunk"], ["eolis/plaza", "40,19", "spring:sky"],
+		["trunk/amber_falls", "18,36", "spring:trunk"], ["trunk/spring_of_trunk", "34,16", "spring:trunk"],
+		["trunk/boss_gate", "16,19", "boss:rokusutahn"], ["mist/scorched_hall", "5,19", "spring:mist"],
+		["mist/victim_causeway", "6,19", "spring:mist"], ["mist/spring_of_mist", "3,19", "spring:mist"],
+		["tower/forepaw_gate", "28,19", "boss:zoradohna"], ["daybreak/spire_foot", "30,19", "conduits:daybreak/spire_foot"],
+		["daybreak/spire_stair", "3,41", "boss:borabohra"], ["daybreak/sky_spring", "8,19", "spring:sky"],
+		["dartmoor/kings_kennels", "76,16", "boss:king_grieve"], ["sunken/source_hall", "26,14", "boss:drowned_warden"],
+		["branches/windloft", "22,19", "boss:pakukame"]]
+	var missing := []
+	for t: Array in told:
+		var found := false
+		for spec: String in catalog.get(t[0], {"lists": {}}).lists.get("sign", []):
+			var parts := spec.split(",", true, 2)
+			found = found or ("%s,%s" % [parts[0].strip_edges(), parts[1].strip_edges()] == t[1] and parts[2].strip_edges().begins_with("[") and parts[2].substr(0, parts[2].find("]")).contains(t[2]))
+		if not found:
+			missing.append("%s %s" % [t[0], t[2]])
+	check(missing.is_empty(), "each foretold change has its sign line: missing %s" % [missing])
+
+
 func test_sap_slows_running_and_jumping() -> void:
 	var extra := {}
 	for x in range(10, 30):
