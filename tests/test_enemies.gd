@@ -2117,3 +2117,53 @@ func test_a_flash_whitens_the_foe_not_a_box() -> void:
 				var src := FileAccess.get_file_as_string(dir + file)
 				var m := box.search(src)
 				check(m == null, "%s washes its silhouette (%s)" % [file, "" if m == null else m.get_string().strip_edges()])
+
+
+## Pass 234: the telegraph rule (CLAUDE.md, bible 7) held as a whole. Every
+## wind-up a foe or guardian names (a *TELL, a WINDUP, a WARN) lasts at least
+## Enemy.MIN_TELEGRAPH, and every guardian that quickens its tells by phase
+## clamps them to it. The one exception is a crystal spike's own floor glow: it
+## only says where, after its caster's full tell has said when, so each caster
+## must wind up for at least MIN_TELEGRAPH before it erupts.
+const FOLLOW_ON_TELLS := {"crystal_spike.gd:WARN": "CrystalSpike.new()"}
+func test_every_wind_up_in_the_game_is_fair() -> void:
+	var short: Array[String] = []
+	var unclamped: Array[String] = []
+	var spawners: Array[String] = []
+	var seen := 0
+	for dir in ["res://scripts/enemies", "res://scripts/bosses"]:
+		for f in DirAccess.get_files_at(dir):
+			if not f.ends_with(".gd"):
+				continue
+			var script := load(dir + "/" + f) as Script
+			var consts := script.get_script_constant_map()
+			for k: String in consts:
+				if not (k.contains("TELL") or k.begins_with("WINDUP") or k == "WARN") or not consts[k] is float or k.ends_with("_ALPHA"):
+					continue
+				seen += 1
+				if consts[k] < Enemy.MIN_TELEGRAPH and not FOLLOW_ON_TELLS.has(f + ":" + k):
+					short.append("%s:%s %.2f" % [f, k, consts[k]])
+			var text := script.source_code
+			var at := text.find("\nfunc tell(")
+			if at >= 0 and not text.substr(at, text.find("\n\n", at) - at).contains("maxf(Enemy.MIN_TELEGRAPH"):
+				unclamped.append(f)
+			if text.contains(String(FOLLOW_ON_TELLS["crystal_spike.gd:WARN"])):
+				spawners.append(f)
+	check(seen >= 70, "found the wind-ups (%d)" % seen)
+	check(short.is_empty(), "each lasts at least %.2f s: %s" % [Enemy.MIN_TELEGRAPH, short])
+	check(unclamped.is_empty(), "each quickened tell is clamped to it: %s" % [unclamped])
+	spawners.sort()
+	check(spawners == ["crystal_dwarf.gd", "evil_avatar.gd", "evil_heart.gd", "king_grieve.gd"], "the crystal spikes have four casters (%s)" % [spawners])
+	# Each caster's tell before an eruption, at its quickest phase.
+	check(CrystalDwarf.WINDUP >= Enemy.MIN_TELEGRAPH, "the Crystal Dwarf winds up first")
+	var avatar := EvilAvatar.new()
+	avatar.phase = 2
+	var heart := EvilHeart.new()
+	heart.phase = 3
+	var king := KingGrieve.new()
+	king.phase = 3
+	check(avatar.tell(EvilAvatar.RAIN_TELL) >= Enemy.MIN_TELEGRAPH, "the Avatar raises its arm first (%.2f s)" % avatar.tell(EvilAvatar.RAIN_TELL))
+	check(heart.tell() >= Enemy.MIN_TELEGRAPH, "crystal gathers under the Heart first (%.2f s)" % heart.tell())
+	check(king.tell(KingGrieve.BURST_TELL) >= Enemy.MIN_TELEGRAPH, "King Grieve raises the axe first (%.2f s)" % king.tell(KingGrieve.BURST_TELL))
+	for n: Node in [avatar, heart, king]:
+		n.free()
