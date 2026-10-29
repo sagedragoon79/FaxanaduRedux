@@ -1133,6 +1133,63 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 					foe.free()
 
 
+## Pass 258: a foe a guardian calls into its fight is a foe like any other,
+## so it answers to the same sheet. The Matriarch's daughter (a Marsh Hag) and
+## the Alpha's pack (Clockwork Hounds) stand in rooms too, so the sheet already
+## held them; Pakukame's Liliths (pass 257) stand nowhere else, and fell to a
+## single slash of the Branches' par blade. Every Enemy a guardian's script
+## makes must be a room foe on the sheet or listed here with its zone.
+const SUMMONED := {"Lilith": "branches"}
+
+func test_a_guardians_brood_answers_to_the_sheet() -> void:
+	var classes := {}
+	for c: Dictionary in ProjectSettings.get_global_class_list():
+		classes[String(c["class"])] = String(c["path"])
+	var bosses := {}
+	for row: Array in sheet_bosses:
+		bosses[(row[0] as Script).get_global_name()] = true
+		# A guardian's shots are on its own row of the sheet.
+		for shot: Script in row[2]:
+			bosses[shot.get_global_name()] = true
+	var placed := {}
+	for ch: String in sheet_foes:
+		placed[(sheet_foes[ch][0] as Script).get_global_name()] = true
+	var made := RegEx.create_from_string("\\b([A-Z][A-Za-z]+)\\.new\\(\\)")
+	var found := {}
+	for f in DirAccess.get_files_at("res://scripts/bosses/"):
+		if not f.ends_with(".gd") or f == "boss_arena.gd":
+			continue
+		for m in made.search_all(FileAccess.get_file_as_string("res://scripts/bosses/" + f)):
+			var name := m.get_string(1)
+			if not classes.has(name) or bosses.has(name):
+				continue
+			var script := load(classes[name]) as Script
+			var base := script
+			while base != null and base.resource_path != "res://scripts/enemies/enemy.gd":
+				base = base.get_base_script()
+			if base != null:
+				found[name] = f
+	check(found.has("Lilith") and found.has("MarshHag") and found.has("ClockworkHound"), "found the guardians' broods (%s)" % [found])
+	for name: String in found:
+		check(placed.has(name) or SUMMONED.has(name), "%s (called by %s) is on the sheet" % [name, found[name]])
+	for name: String in SUMMONED:
+		var zone: String = SUMMONED[name]
+		var kit: Array = PAR_KIT[zone]
+		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
+		var script := load(classes[name]) as Script
+		var foe: Enemy = script.new()
+		var slashes := ceili(float(foe.max_hp) / cut)
+		var blows := _blows(script)
+		if foe.contact_damage > 0:
+			blows.append(foe.contact_damage)
+		foe.free()
+		var hardest := 0
+		for b in blows:
+			hardest = maxi(hardest, _through_par(b, zone, script))
+		check(slashes >= 2 and slashes <= 7, "%s in %s falls in 2 to 7 slashes of the par blade (%d)" % [name, zone, slashes])
+		check(hardest >= 1 and hardest <= 28, "%s in %s hits for at most 1.4 masks through par armor (%d)" % [name, zone, hardest])
+
+
 ## Pass 218: the sheet's kit past King Grieve is the one the game gives there.
 func test_the_sheet_past_king_grieve_holds_the_dragon_slayer() -> void:
 	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == PAST_GRIEVE_KIT[0], "King Grieve gives the blade the sheet expects past him")
