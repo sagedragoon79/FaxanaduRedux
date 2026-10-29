@@ -16,6 +16,8 @@ signal respawned
 const MAGIC := "magic"
 ## A ward turning part of a hex rings under the hurt (pass 230).
 const WARD_SOUND := "ward"
+## A guard held with too little MP to pay for a blow breaks (pass 242).
+const GUARD_BREAK_SOUND := "guard_break"
 const BODY_SIZE := Vector2(12, 40)
 
 # Collision layers (see docs/architecture.md).
@@ -299,6 +301,8 @@ var _thrust_glint := 0.0
 ## This thrust began on the floor and is still lunging.
 var _thrust_lunge := false
 var _parry_timer := 0.0
+## Set when a guard breaks; the shield stays down until Block is let go.
+var guard_broken := false
 var _drink_timer := 0.0
 var _cast_cooldown := 0.0
 var _dead_timer := 0.0
@@ -1354,7 +1358,9 @@ func _update_block() -> void:
 		return
 	if input.block_pressed:
 		_parry_timer = combat.parry_window
-	is_blocking = input.block_held and not is_dashing and not is_attacking and not is_drinking
+	if not input.block_held:
+		guard_broken = false
+	is_blocking = input.block_held and not guard_broken and not is_dashing and not is_attacking and not is_drinking
 
 
 func _update_drink(delta: float, on_floor: bool) -> void:
@@ -1586,6 +1592,15 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		Sfx.play("guard")
 		take_damage(int(round(damage * (1.0 - guard_reduction))), false, knock)
 		return "guarded"
+	if is_blocking and from_front:
+		# Too little MP to pay for the guard: it breaks, loud and plain, and the
+		# blow lands whole. The shield stays down until Block is let go, so a
+		# held guard never seems to stand when it can't (pass 242).
+		guard_broken = true
+		is_blocking = false
+		_spawn_dust(Vector2(facing * 10, -24), "guard")
+		Sfx.play(GUARD_BREAK_SOUND)
+		Feel.add_trauma(0.25)
 	take_damage(damage, false, knock)
 	return "hit"
 

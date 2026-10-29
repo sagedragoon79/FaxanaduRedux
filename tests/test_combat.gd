@@ -122,6 +122,33 @@ func test_guard_halves_damage_and_costs_mp() -> void:
 	check(p.mp < mp_before - p.combat.guard_mp_cost + 1.0, "guarding costs MP")
 
 
+## A guard break (pass 242): a guard held with too little MP to pay for the
+## blow breaks with its own sound, the blow lands whole, and the shield stays
+## down until Block is let go and raised again.
+func test_a_guard_with_no_mp_breaks_and_drops() -> void:
+	var a := _dwarf_arena()
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	p.input.block_held = true
+	await frames(2)
+	p.mp = p.combat.guard_mp_cost - 1.0
+	check(p.is_blocking, "the guard is up")
+	await _wait_for_swing(dwarf, 1)
+	Sfx.recent.clear()
+	await frames(4)
+	check(p.hp == p.max_hp - RotDwarf.SWING_DAMAGE, "with too little MP the blow lands whole (hp %d)" % p.hp)
+	check(Player.GUARD_BREAK_SOUND in Sfx.recent and not ("guard" in Sfx.recent), "the guard breaks with its own sound, not the held guard's (%s)" % [Sfx.recent])
+	check(p.guard_broken and not p.is_blocking, "and the shield drops")
+	await frames(10)
+	check(not p.is_blocking, "it stays down while Block is still held")
+	p.input.block_held = false
+	await frames(1)
+	p.input.block_held = true
+	await frames(1)
+	check(p.is_blocking and not p.guard_broken, "let go and raise it again and it is back")
+	p.input.block_held = false
+
+
 func test_clean_hit_knocks_back() -> void:
 	var a := _dwarf_arena()
 	var p: Player = a[1]
