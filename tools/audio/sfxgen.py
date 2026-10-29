@@ -1320,6 +1320,60 @@ def main():
         out[s0:s0 + tn] += timp * (1.0 if k == 3 else 0.5)
     save("boss_won", out, 0.6)
 
+    # Wading Dartmoor's standing water (pass 262): the shin pushing water
+    # aside in a slosh, and a couple of drips falling back off the boot.
+    d = 0.24
+    n = int(RATE * d)
+    t = t_axis(d)
+    slosh = lowpass(highpass(noise(d), 220), slide(1800, 500, d)) * env(n, 0.03, 1.8)
+    out = slosh * 0.8
+    for at, f in ((0.11, 1500.0), (0.17, 1900.0)):
+        dn = int(RATE * 0.04)
+        drip = osc(slide(f, f * 1.6, 0.04, 0.5), "sine") * env(dn, 0.001, 3.0) * 0.3
+        out[int(RATE * at):int(RATE * at) + dn] += drip
+    save("step_wade", out, 0.5)
+
+    # A Lilith's tell (pass 262): a thin shriek rising through the beat of
+    # its wings, before the dive.
+    d = 0.4
+    n = int(RATE * d)
+    t = t_axis(d)
+    wings = 0.6 + 0.4 * np.sin(2 * np.pi * 26 * t)
+    cry = osc(slide(820, 1700, d, 0.7) * (1 + 0.03 * np.sin(2 * np.pi * 9 * t)), "saw")
+    cry = lowpass(highpass(cry, 500), 3200) * wings * env(n, 0.06, 1.2)
+    flap = lowpass(highpass(noise(d), 900), 2600) * wings * env(n, 0.02, 1.0) * 0.35
+    save("lilith_screech", mix(cry, flap), 0.55)
+
+    # Its dive: a falling whistle and the air torn past folded wings.
+    d = 0.42
+    n = int(RATE * d)
+    whistle = osc(slide(1500, 480, d, 0.8), "sine") * env(n, 0.01, 1.3)
+    rush = lowpass(highpass(noise(d), 600), slide(4200, 1100, d)) * env(n, 0.12, 1.1) * 0.7
+    save("lilith_dive", mix(whistle * 0.6, rush), 0.45)
+
+    # The Bloom's petals flaring to loose its brood (pass 262): a dry rustle
+    # swelling under a low, rising, many-winged hum.
+    d = 0.7
+    n = int(RATE * d)
+    t = t_axis(d)
+    hum = sum(osc(slide(f, f * 1.5, d, 0.8), "saw") for f in (110.0, 113.0, 166.0)) / 3
+    hum = lowpass(hum * (0.7 + 0.3 * np.sin(2 * np.pi * 22 * t)), 1200) * np.clip(t / 0.5, 0, 1) * env(n, 0.001, 0.6)
+    rustle = lowpass(highpass(noise(d), 1200), 4000) * (0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 7 * t))) * np.clip(t / 0.4, 0, 1) * env(n, 0.001, 0.8) * 0.5
+    save("bloom_brood", mix(hum, rustle), 0.55)
+
+    # The brood loosed: the petals snapping open with a soft pop, and a
+    # flurry of wings scattering out of them.
+    d = 0.55
+    n = int(RATE * d)
+    t = t_axis(d)
+    pn = int(RATE * 0.08)
+    pop = lowpass(osc(slide(180, 70, 0.08), "sine"), 500) * env(pn, 0.001, 1.5)
+    pop += lowpass(noise(0.08), 2400) * env(pn, 0.001, 4.0) * 0.4
+    flurry = lowpass(highpass(noise(d), 800), 3600) * (0.55 + 0.45 * np.sin(2 * np.pi * 31 * t)) * env(n, 0.02, 1.4) * 0.7
+    out = flurry.copy()
+    out[:pn] += pop * 0.5
+    save("brood_loose", out, 0.55)
+
 
 if __name__ == "__main__":
     main()

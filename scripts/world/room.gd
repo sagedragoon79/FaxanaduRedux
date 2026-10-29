@@ -872,15 +872,16 @@ func is_one_way_at(world_pos: Vector2) -> bool:
 
 
 ## The ground under `world_pos` (a point just below the feet) for footsteps:
-## "stone", "moss", "mud", "plank", "iron" or "sap", or "" in mid-air.
+## "stone", "moss", "mud", "plank", "iron", "sap" or "wade" (standing water),
+## or "" in mid-air.
 func surface_at(world_pos: Vector2) -> String:
 	if is_sap_at(world_pos + Vector2(0, -TILE * 0.5)):
 		return "sap"
 	if is_one_way_at(world_pos):
 		return "plank"
 	if tide != null and tide.has_point(world_pos + Vector2(0, -TILE * 0.5)):
-		# Wading Dartmoor's standing water.
-		return "mud"
+		# Wading Dartmoor's standing water (its own slosh since pass 262).
+		return "wade"
 	var cell := cell_at(world_pos)
 	if tiles.get_cell_source_id(cell) == -1:
 		return ""

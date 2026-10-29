@@ -795,7 +795,7 @@ func test_footsteps_follow_the_surface_underfoot() -> void:
 	check(room.surface_at(below.call(22, 14)) == "plank", "platforms are planks")
 	check(room.surface_at(below.call(31, 19)) == "sap", "a sap pool squelches")
 	check(room.surface_at(below.call(10, 10)) == "", "nothing underfoot in mid-air")
-	for s: String in ["stone", "moss", "mud", "plank", "iron", "sap"]:
+	for s: String in ["stone", "moss", "mud", "plank", "iron", "sap", "wade"]:
 		check(ResourceLoader.exists("res://assets/sfx/step_%s.wav" % s), "a step sound for %s" % s)
 	var heard: Array[String] = []
 	var p := make_player(room, Vector2i(3, 19))
@@ -1520,7 +1520,12 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 		var wade := Vector2(w.room.size_tiles.x * 0.5 * Room.TILE, (tide.row + 1) * Room.TILE + 2)
 		while w.room.tiles.get_cell_source_id(w.room.cell_at(wade)) == -1 or w.room.tiles.get_cell_source_id(w.room.cell_at(wade + Vector2(0, -Room.TILE))) != -1:
 			wade.x += Room.TILE
-		check(w.room.surface_at(wade) == "mud", "%s: wading splashes (%s)" % [id, w.room.surface_at(wade)])
+		check(w.room.surface_at(wade) == "wade", "%s: wading sloshes (%s)" % [id, w.room.surface_at(wade)])
+		# Pass 262: a step in it sloshes with its own sound, not the Mist's mud.
+		w.player.global_position = wade - Vector2(0, 2)
+		Sfx.recent.clear()
+		w.player.call("_footstep", -10.0)
+		check(Sfx.recent.has("step_wade") and not Sfx.recent.has("step_mud"), "%s: a step in the water sloshes (%s)" % [id, Sfx.recent])
 		GameState.set_flag(Tide.DRAIN_FLAG)
 		w._enter(id)
 		await frames(3)
