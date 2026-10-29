@@ -602,7 +602,7 @@ The original Faxanadu is a game of ladders: every climb in the World Tree went u
 | Top | climbing past the top steps you onto its plank; Down there climbs back on |
 | Bottom | climbing down onto a floor lets go; climbing off the bottom of a ladder that hangs in the air lets you fall |
 | Jump | leaves with a full ground jump, moving the way you hold (run speed) |
-| Dash | a stride leaves the ladder and dashes as usual |
+| Dash | a stride leaves the ladder and dashes as usual. Only a dash that goes lets go (pass 240): before the Elven Stride, or on the ground dash's cooldown, a dash press keeps you on the rungs instead of dropping you off them; a press on the cooldown is held (6.5) and goes when it ends |
 | Regrab | after you jump or are knocked off, the same ladder can't be grabbed for 0.25 s |
 | Hits | any damage knocks you off the rungs |
 | Attacks | none while climbing (as in the original): jump off to fight |

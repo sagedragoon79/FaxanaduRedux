@@ -377,8 +377,10 @@ func _physics_process(delta: float) -> void:
 	if _try_interact(on_floor):
 		input.end_frame()
 		return
-	if on_ladder and input.dash_pressed:
-		# A stride leaves the ladder: the dash below takes it from here.
+	if on_ladder and _dash_buffer_timer > 0.0 and _dash_cooldown <= 0.0:
+		# A stride leaves the ladder: the dash below takes it from here. Only a
+		# dash that will go lets go (pass 240): without the Elven Stride, or on
+		# the ground dash's cooldown, the press keeps you on the rungs.
 		_leave_ladder()
 	if on_ladder or _try_grab_ladder(on_floor):
 		_thrust_charge = 0.0

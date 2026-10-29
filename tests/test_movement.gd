@@ -1233,6 +1233,32 @@ func test_ladders_jump_off_hits_and_hanging_ends() -> void:
 	room.free()
 
 
+## Dash on a ladder (bible 6.11, pass 240): a stride leaves the rungs and
+## dashes; a press that can't dash (no Elven Stride yet) keeps you on them.
+func test_a_dash_only_lets_go_of_a_ladder_when_it_dashes() -> void:
+	var room := make_room(LADDERS)
+	var p := make_player(room, Vector2i(9, 10), {"stride": false})
+	await frames(3)
+	p.input.up = true
+	await frames(30)
+	p.input.up = false
+	check(p.on_ladder, "on the ladder")
+	var y := p.global_position.y
+	p.input.dash_pressed = true
+	await frames(1)
+	await frames(20)
+	check(p.on_ladder and not p.is_dashing and absf(p.global_position.y - y) < 0.5, "without the Elven Stride a dash press keeps you on the rungs (y %.1f -> %.1f)" % [y, p.global_position.y])
+	p.abilities["stride"] = true
+	p.input.move_x = 1
+	p.input.dash_pressed = true
+	await frames(1)
+	check(not p.on_ladder and p.is_dashing, "with it, the stride leaves the ladder and dashes")
+	await frames(9)
+	check(p.global_position.x > 9.5 * 16.0 + 40.0, "off to the side (x %.1f)" % p.global_position.x)
+	p.input.move_x = 0
+	room.free()
+
+
 ## The camera on a ladder (bible 6.7, pass 130): it leads the way you climb.
 func test_the_camera_leads_the_way_up_or_down_a_ladder() -> void:
 	check(GameCamera.CLIMB_LEAD == 64.0 and GameCamera.CLIMB_LEAD_EASE == 0.5, "the climb lead is 64 px, eased over 0.5 s")
