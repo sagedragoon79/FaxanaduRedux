@@ -586,14 +586,32 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	var total_usec := 0
 	var slowest := 0
 	var states := {}
+	var most_brood := 0
+	var bites: Array[String] = []  # phase 2 bites: count@jaws x/root x
+	var last_state := ""
+	var leaf_y := w.player.global_position.y
 	const FIGHT_FRAMES := 1800
-	for f in FIGHT_FRAMES:
+	var ran := 0
+	# Up to 20 s more in phase 2 if the leaf has not been torn yet: where the
+	# jaws come down rides on the mashing and the uprooted lunges.
+	for f in FIGHT_FRAMES + 1200:
+		if f >= FIGHT_FRAMES and boss.gaps.size() >= 1:
+			break
+		ran += 1
 		_mash(w.player, rng, hold)
-		if f % 300 == 150 and w.player.is_on_floor() and not w.player.dead:
+		if f % 300 == 60 and boss.phase == 1 and w.player.is_on_floor() and not w.player.dead:
 			# Into biting range now and then: the mashing alone may keep its
 			# distance for the whole fight, and then the bite is never soaked.
 			var side := -1.0 if w.player.global_position.x < boss.global_position.x else 1.0
 			w.player.teleport(Vector2(boss.global_position.x + side * Pakukame.BITE_RANGE * 0.5, w.player.global_position.y))
+		elif boss.phase >= 2 and boss.state in ["idle", "bite_tell"]:
+			# Phase 2: while the jaws choose and aim, the player stands far
+			# enough out on the leaf for them to tear it, over its wider
+			# stretch (pass 263: a bite close to the root or a wall never
+			# tears, and the mashing walked back under the root, so the
+			# floor's tearing had gone unsoaked).
+			var side := 1.0 if boss.arena.end.x - boss.global_position.x > boss.global_position.x - boss.arena.position.x else -1.0
+			w.player.teleport(Vector2(boss.global_position.x + side * Pakukame.BITE_RANGE * 0.9, leaf_y))
 		# Phase 2 halfway through, so the leaf gets torn too.
 		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
 			boss.phase = 2
@@ -602,14 +620,35 @@ func test_bloom_fight_soak_stays_lean() -> void:
 		var dt := Time.get_ticks_usec() - t0
 		total_usec += dt
 		slowest = maxi(slowest, dt)
+		if boss.state == "gape" and last_state != "gape" and boss.phase >= 2:
+			bites.append("%d@%d/%d" % [int(boss.get("_bites")), int(boss.get("_to").x), int(boss.global_position.x)])
+		last_state = boss.state
 		states[boss.state] = true
 		peak = maxi(peak, _count_nodes(w))
-	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
-	print("  Bloom soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, gaps %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, boss.gaps.size(), states.keys()])
+		most_brood = maxi(most_brood, boss.brood_alive())
+	var avg_ms := total_usec / 1000.0 / ran
+	print("  Bloom soak: %d frames, %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, gaps %d, states %s, bites %s" % [ran, avg_ms, slowest / 1000.0, start_nodes, peak, boss.gaps.size(), states.keys(), bites])
 	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("gape") and states.has("whip"), "bites and lashes were soaked")
-	check(boss.gaps.size() <= Pakukame.MAX_GAPS, "the leaf is never torn past %d gaps" % Pakukame.MAX_GAPS)
+	check(boss.gaps.size() >= 1 and boss.gaps.size() <= Pakukame.MAX_GAPS, "the leaf was torn, never past %d gaps (%d; bites %s, arena %s)" % [Pakukame.MAX_GAPS, boss.gaps.size(), bites, boss.arena])
+	check(states.has("brood_tell") and most_brood >= 1 and most_brood <= Pakukame.BROOD, "the brood was loosed, never more than %d at once (%d)" % [Pakukame.BROOD, most_brood])
+	# Struck down with its brood in the air, the Bloom takes every Lilith with
+	# it: none is left flying, and none outlives the room's settling.
+	if boss.brood_alive() == 0:
+		boss.phase = 2
+		boss.call("_loose_brood")
+		await frames(40)
+	check(boss.brood_alive() >= 1, "a brood is flying when the Bloom falls")
+	boss.hp = 1
+	boss.take_hit(1, Vector2.UP)
+	var left := 0
+	for i in 240:
+		await frames(1)
+		left = w.room.get_children().filter(func(n: Node) -> bool: return n is Lilith).size()
+		if left == 0:
+			break
+	check(boss.brood_alive() == 0 and left == 0, "no Lilith outlives the Bloom (%d left)" % left)
 	w.queue_free()
 	await frames(2)
 
