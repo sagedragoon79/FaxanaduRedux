@@ -1612,6 +1612,10 @@ func _riposte(foe: Node2D) -> void:
 func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if invulnerable or dead:
 		return
+	if is_inside_tree() and BossArena.any_falling(get_tree()):
+		# The killing blow has landed: the win can't be lost to what is still
+		# in the air while the guardian falls (pass 239).
+		return
 	if from_hazard and Trials.active():
 		# A Guru Trial (bible 3.1): a miss costs time, never health.
 		Sfx.play("hurt", 0.05, -4.0)

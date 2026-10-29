@@ -362,6 +362,21 @@ func _on_defeated() -> void:
 		get_tree().create_timer(ENDING_DELAY, true, false, true).timeout.connect(GameState.begin_ending)
 
 
+## True from a guardian's killing blow until the arena opens: the win is
+## the player's, so nothing left in the air (a spike, a shard, the flood) can
+## kill them in the boss's dying moments and lose it (pass 239).
+func falling() -> bool:
+	return fighting and boss != null and is_instance_valid(boss) and bool(boss.get("dead"))
+
+
+## Any arena whose guardian is falling.
+static func any_falling(tree: SceneTree) -> bool:
+	for a: Node in tree.get_nodes_in_group("boss_arena"):
+		if (a as BossArena).falling():
+			return true
+	return false
+
+
 ## "+1 skill point", "+2 skill points".
 static func point_line(points: int) -> String:
 	return "+%d skill point" % points if points == 1 else "+%d skill points" % points
