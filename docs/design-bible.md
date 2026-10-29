@@ -889,7 +889,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
     No blade reaches it. It feeds through six **light veins** (legend `x`, `LightVein`) grown above the ledges up
     the shaft; one cut (or a pogo, which also bounces you) severs a vein, and its health bar is the veins still
     lit (10 each). While you climb it fires **core beams** (`CoreBeam`) at you: the line flickers for its tell
-    (0.6 s) and then burns for 0.35 s, 16 damage, unparryable. Below half (three veins left) the tell is 0.45 s,
+    (0.6 s) and then burns for 0.35 s, 16 damage, unparryable. The core's `zap` marks the line; since pass 244 the lance sears as it fires (`core_beam`: a whoomph of light, a falling whine, a low thrum), so the dodge has a beat to the ear. Until then every other tell-then-strike hazard in the game sounded its strike, and the beam, the final fight's main pressure, was silent (`test_a_cores_beam_sears_as_it_fires`). Below half (three veins left) the tell is 0.45 s,
     volleys come every 1.6 s instead of 2.2 s, and every other volley is a pair of beams fanned to either side of
     you (stand still between them). The Hour Glass holds the core and its beams. With the last vein cut the core
     gutters ("The Veins Go Dark", 1 skill point); the veins stay dark for good (`boss:evil_veins`). Deviation:

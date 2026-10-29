@@ -7,6 +7,9 @@ extends Node2D
 ## holds it, line and all. The origin is where it is fired from.
 
 const FIRE := 0.35
+## The lance striking (pass 244): the core's `zap` marks the line as it is
+## drawn, and this sears as the light fires, so the ear has the dodge's beat.
+const FIRE_SOUND := "core_beam"
 const LENGTH := 1400.0
 const WIDTH := 12.0
 const DAMAGE := 16
@@ -40,7 +43,10 @@ func distance_to(p: Vector2) -> float:
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
 		return
+	var was := _t
 	_t += delta
+	if was < tell and _t >= tell:
+		Sfx.play(FIRE_SOUND, 0.05, -2.0)
 	if _t >= tell + FIRE:
 		queue_free()
 		return

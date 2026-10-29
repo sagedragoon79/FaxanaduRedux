@@ -483,6 +483,18 @@ def main():
     hum = osc(np.full(n, 120.0), "square", 0.5) * 0.25
     save("zap", mix(snap, sizzle * 0.5 * env(n, 0.005, 1.6), hum * env(n, 0.005, 2.5)), 0.6)
 
+    # The core's beam striking (pass 244): the zap marks the line, this is the
+    # lance itself. A bright whoomph of light tearing open, a searing high whine
+    # that falls as it burns out over the beam's 0.35 s, and a low thrum under it.
+    d = 0.42
+    n = int(RATE * d)
+    whoomph = lowpass(noise(0.08), 2400) * env(int(RATE * 0.08), 0.002, 1.4)
+    whoomph = np.concatenate([whoomph, np.zeros(n - len(whoomph))])
+    whine = osc(slide(2600, 1400, d), "sine") * env(n, 0.004, 1.8) * 0.6
+    sear = highpass(lowpass(noise(d), 9000), 2500) * env(n, 0.003, 1.5) * 0.45
+    thrum = osc(slide(90, 70, d), "square", 0.4) * env(n, 0.004, 2.2) * 0.3
+    save("core_beam", mix(whoomph, whine, sear, thrum), 0.55)
+
     # A fireball bursting: a soft whump and a spray of crackling embers.
     d = 0.55
     n = int(RATE * d)
