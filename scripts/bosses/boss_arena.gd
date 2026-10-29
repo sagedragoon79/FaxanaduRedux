@@ -359,7 +359,15 @@ func _on_defeated() -> void:
 	won.emit()
 	if boss_id == "evil_one":
 		# The last fight: the ending follows once the banner has had its moment.
-		get_tree().create_timer(ENDING_DELAY, true, false, true).timeout.connect(GameState.begin_ending)
+		# The wait stops while the game is paused (pass 247: it ran on under the
+		# pause menu and the ending shut it), and it belongs to the arena, so a
+		# world torn down meanwhile never ends the game.
+		get_tree().create_timer(ENDING_DELAY, false, false, true).timeout.connect(_begin_ending)
+
+
+func _begin_ending() -> void:
+	if is_inside_tree():
+		GameState.begin_ending()
 
 
 ## True from a guardian's killing blow until the arena opens: the win is
