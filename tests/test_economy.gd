@@ -1989,6 +1989,8 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 			if row.contains("&"):
 				laid.append(id)
 	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
+	# Pass 257: the original's Pakukame looses Liliths three at a time.
+	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 241: the original's Fraternal Castle, where King Grieve kept the
 	# Dragon Slayer and the Demon Ring, is his hall by name, and the stair
 	# down to it says where it goes.
