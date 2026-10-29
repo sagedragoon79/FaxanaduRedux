@@ -64,14 +64,14 @@ func _think(delta: float) -> void:
 			if state_time >= HOVER_TIME + slot * 0.35:
 				velocity = Vector2.ZERO
 				set_state("windup")
-				Sfx.play("buzz", 0.15, -6.0)
+				Sfx.play("lilith_screech", 0.15, -6.0)
 		"windup":
 			velocity = velocity.move_toward(Vector2.ZERO, 500.0 * delta)
 			face_player()
 			if state_time >= WINDUP:
 				_dir = off.normalized() if off.x != INF else Vector2(facing, 0)
 				set_state("dive")
-				Sfx.play("whoosh", 0.15, -6.0)
+				Sfx.play("lilith_dive", 0.15, -6.0)
 		"dive":
 			velocity = _dir * DIVE_SPEED
 			if state_time >= DIVE_TIME or get_slide_collision_count() > 0:

@@ -2060,6 +2060,9 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"clockwork_alpha": ["key_wind", "spring_jam"],
 		"bark_captain": ["bough_vault", "lance_plant"],
 		"hag_matriarch": ["matriarch_cackle", "bog_sink", "bog_rise"],
+		# The Bloom and its brood (pass 262).
+		"lilith": ["lilith_screech", "lilith_dive"],
+		"pakukame": ["bloom_brood", "brood_loose"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
 	var kin := {"bark_knight": ["bark_captain"], "marsh_hag": ["hag_matriarch"]}

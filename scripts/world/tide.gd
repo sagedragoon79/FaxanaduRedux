@@ -3,7 +3,7 @@ extends Node2D
 ## The standing water of Dartmoor's drowned halls (design bible 4.4, `tide:`
 ## header). Until King Grieve is at rest it stands a tile deep on the floors
 ## and fills the pits below them: a still, dark water you wade through (your
-## steps splash), drawn translucent in front of what stands in it so the spikes
+## steps slosh), drawn translucent in front of what stands in it so the spikes
 ## under it still show. Once he is at rest Dartmoor drains, and all that is left
 ## is the tide mark where the surface stood, and silt on the floor.
 

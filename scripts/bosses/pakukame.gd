@@ -356,7 +356,7 @@ func _choose() -> void:
 	if pick != "bite" and phase >= 2 and brood_alive() == 0 and _since_brood >= BROOD_EVERY:
 		pick = "brood"
 		_since_brood = 0
-		Sfx.play("buzz", 0.05, 0.0)
+		Sfx.play("bloom_brood", 0.05, 0.0)
 	_last = pick
 	face_player()
 	_whip_dir = int(signf(dx)) if dx != 0.0 else facing
@@ -455,7 +455,7 @@ func _loose_brood() -> void:
 		l.global_position = head.global_position + Vector2((i - 1) * 10.0, -8.0)
 		l.home = l.global_position
 		brood.append(l)
-	Sfx.play("whoosh", 0.1, 0.0)
+	Sfx.play("brood_loose", 0.1, 0.0)
 	Feel.add_trauma(0.2)
 
 
