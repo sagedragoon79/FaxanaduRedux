@@ -453,7 +453,7 @@ So a hit costs about a mask from the first root to the meteor, and what grows is
 
 All numbers are at the internal resolution (1 unit = 1 px at 640x360). Tile = 16 px. Player collision box = 12x40 px (sprite about 48x56). These are starting values for the movement prototype, tuned there and then frozen.
 
-Every number in 6.1 to 6.6 and 6.8 to 6.11 is held to this text by a test that reads it from `MovementTuning` (`test_movement.gd`), and each one also has a test of what it does in play. The last left out were pinned in pass 208: the bounce-pod's launch (6.6), the glide's fall speed and brake (6.10), and the pogo's 45 ms hit-stop, which had been a bare number in the player's code and is now `pogo_hitstop`. Until pass 200 the run, the brakes, the turn, the jump cut and the fall limits were only read back from the tuning by their play tests, so a changed number would have moved its test along with it.
+Every number in 6.1 to 6.6 and 6.8 to 6.12 is held to this text by a test that reads it from `MovementTuning` (`test_movement.gd`), and each one also has a test of what it does in play. The last left out were pinned in pass 208: the bounce-pod's launch (6.6), the glide's fall speed and brake (6.10), and the pogo's 45 ms hit-stop, which had been a bare number in the player's code and is now `pogo_hitstop`. Until pass 200 the run, the brakes, the turn, the jump cut and the fall limits were only read back from the tuning by their play tests, so a changed number would have moved its test along with it.
 
 ### 6.1 Ground movement
 
@@ -612,6 +612,20 @@ The original Faxanadu is a game of ladders: every climb in the World Tree went u
 | Look | two wooden rails and two rungs per tile, drawn behind the tiles so the top plank caps them |
 
 The reachability checker treats a spot with the feet on a ladder as a standing spot: it climbs to the ladder cells above and below and over the top onto the plank, and jumps from a ladder as from the floor.
+
+### 6.12 Sap (pass 248)
+
+Amber sap in the Trunk Hollows' pools, and the puddles a Sap Spitter's globs leave for 4 s, hold your feet. The numbers live in `MovementTuning` (`sap_speed`, `sap_jump`); until pass 248 they were constants in the player's code, outside this section and its tests.
+
+| Parameter | Value |
+|-----------|-------|
+| In the sap | the point 6 px above the feet lies in a sap tile (`Room.is_sap_at`) |
+| Run | 50% of the pace (82 px/s at a full run) |
+| Ground jump | leaves at 72% of its speed, 288 px/s: about 37 px of rise, a little over two tiles |
+| What it doesn't hold | the double jump, the wall jump and the dash, at full strength: the way out. A dash in the sap goes at 380 px/s (`test_sap_never_holds_a_dash_and_lets_go_at_its_edge`) |
+| Leaving | the run comes back the frame you step clear |
+| Feel | the feet sink into the drawn sap, and each step squelches (13.3) |
+| Spring of Trunk | once it is restored the pools harden into amber you walk on (4.4) |
 
 **Where ladders go (pass 125):** where the original put them, between floors that already connect, so a ladder is the plain way up and never a key. They go in shafts you otherwise climb by a zigzag of planks, and never in a shaft that is an ability gate (the Fungus Shaft is the Glove's). `test_ladders_never_open_a_gated_room` takes every ladder out and checks that, before the Glove and with it, the ladders open no room the bare rooms keep shut. Placed so far:
 - the Hollow Mouth: floor to the high plank under the way to the Mossy Overhang;

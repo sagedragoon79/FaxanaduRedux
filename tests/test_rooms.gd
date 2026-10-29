@@ -572,14 +572,42 @@ func test_sap_slows_running_and_jumping() -> void:
 	p.input.move_x = 1
 	await frames(30)
 	check(p.in_sap, "standing in the sap pool")
-	check_near(p.velocity.x, p.tuning.run_speed * Player.SAP_SPEED, 1.0, "run speed halved in sap")
+	check_near(p.velocity.x, p.tuning.run_speed * p.tuning.sap_speed, 1.0, "run speed halved in sap")
 	p.input.move_x = 0
 	p.input.jump_pressed = true
 	p.input.jump_held = true
 	await frames(1)
 	# One frame of gravity has already been applied.
-	check_near(-p.velocity.y, p.tuning.jump_velocity * Player.SAP_JUMP - p.tuning.gravity / 60.0, 2.0, "weaker jump out of sap")
+	check_near(-p.velocity.y, p.tuning.jump_velocity * p.tuning.sap_jump - p.tuning.gravity / 60.0, 2.0, "weaker jump out of sap")
 
+
+
+## Bible 6.12 (pass 248): sap holds only the run and the ground jump. A dash goes
+## out of it at full speed, and the run comes back the moment you step clear.
+func test_sap_never_holds_a_dash_and_lets_go_at_its_edge() -> void:
+	var extra := {}
+	for x in range(10, 30):
+		extra[Vector2i(x, 20)] = "~"
+		extra[Vector2i(x, 21)] = "~"
+	var w := make_world(_rooms(extra), "test/a", cell_feet(14, 21))
+	var p := w.player
+	p.abilities["stride"] = true
+	await frames(5)
+	p.input.move_x = 1
+	await frames(20)
+	check(p.in_sap and is_equal_approx(p.velocity.x, p.tuning.run_speed * p.tuning.sap_speed), "wading at half a run (%.0f)" % p.velocity.x)
+	p.input.dash_pressed = true
+	await frames(2)
+	check(p.is_dashing and is_equal_approx(p.velocity.x, p.tuning.dash_speed), "a dash in the sap goes at full speed (%.0f)" % p.velocity.x)
+	var left := false
+	for i in 240:
+		await frames(1)
+		if not p.in_sap:
+			left = true
+			break
+	check(left, "and wading on, you reach the pool's edge")
+	await frames(12)
+	check(not p.in_sap and is_equal_approx(p.velocity.x, p.tuning.run_speed), "where the run comes back at once (%.0f)" % p.velocity.x)
 
 # --- Tiles ---------------------------------------------------------------------------
 
