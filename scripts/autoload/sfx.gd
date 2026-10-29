@@ -6,6 +6,12 @@ const SFX_DIR := "res://assets/sfx/"
 
 var volume_db := -6.0
 
+## Decibels a sound is played above its file (pass 270). The loudest cues, the
+## cut landing and the hero's hurt, are saved a few dB under where they play so
+## every file keeps headroom inside the mix check (tools/audio/levels.py,
+## HEADROOM); this lifts them back, so in game they are as loud as ever.
+const LIFT := {"hit": 2.2, "hurt": 3.1}
+
 ## True with no sound device (the Dummy driver: headless tests and CI). Nothing
 ## is started then: the dummy driver never mixes, so the audio server would keep
 ## every playback to the end and report them as leaks at exit.
@@ -73,7 +79,7 @@ func play(sound: String, pitch_jitter := 0.06, volume_offset_db := 0.0) -> void:
 	var p := _players[i]
 	p.stream = stream
 	p.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
-	p.volume_db = volume_db + volume_offset_db
+	p.volume_db = volume_db + volume_offset_db + float(LIFT.get(sound, 0.0))
 	_ends[i] = Time.get_ticks_msec() + int(stream.get_length() / p.pitch_scale * 1000.0)
 	if not silent:
 		p.play()

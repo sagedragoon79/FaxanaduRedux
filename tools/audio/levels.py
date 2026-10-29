@@ -8,7 +8,10 @@ Loudness is the RMS of the audible part (samples above -50 dBFS), so a short
 hit with a long quiet tail is not judged by its silence. Music is measured
 from the file the game plays (a supplied .mp3 or .wav before the .ogg
 placeholder), decoded with ffmpeg. A sound is an outlier when its loudness is more than
-SPREAD dB from the median of its group, or its peak is at or over CLIP.
+SPREAD dB from the median of its group, or its peak is at or over CLIP. A sound
+effect must also keep HEADROOM dB inside the spread (pass 270): one sitting on
+the edge failed the check whenever a new sound nudged the median. A cue that
+must play louder is saved quieter and lifted in game (Sfx.LIFT).
 """
 import subprocess
 import sys
@@ -22,6 +25,7 @@ SFX = ROOT / "assets" / "sfx"
 MUSIC = ROOT / "assets" / "music"
 CLIP = -0.1
 SPREAD = 9.0
+HEADROOM = 1.5
 
 
 def db(x):
@@ -63,13 +67,13 @@ def group(paths, reader):
     return {p.stem: measure(reader(p)) for p in sorted(paths)}
 
 
-def outliers(levels):
+def outliers(levels, headroom=0.0):
     med = float(np.median([r for _, r in levels.values()]))
     bad = []
     for name, (peak, rms) in levels.items():
         if peak >= CLIP:
             bad.append(f"{name}: clips (peak {peak:.1f} dBFS)")
-        elif abs(rms - med) > SPREAD:
+        elif abs(rms - med) > SPREAD - headroom:
             bad.append(f"{name}: loudness {rms:.1f} dB, {rms - med:+.1f} from the median {med:.1f}")
     return med, bad
 
@@ -81,7 +85,7 @@ def main():
     amb = group([p for p in tracks if p.stem.startswith("amb_")], read_ogg)
     problems = []
     for title, levels in (("Sound effects", sfx), ("Music", music), ("Ambience", amb)):
-        med, bad = outliers(levels)
+        med, bad = outliers(levels, HEADROOM if levels is sfx else 0.0)
         print(f"{title}: {len(levels)} files, median loudness {med:.1f} dB")
         if "--check" not in sys.argv:
             for name, (peak, rms) in levels.items():

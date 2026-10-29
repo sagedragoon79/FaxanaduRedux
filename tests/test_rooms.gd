@@ -1056,6 +1056,48 @@ func test_a_long_sound_keeps_its_voice_through_a_busy_moment() -> void:
 	check(voices == 2, "and the next frame's coin sounds again (%d)" % voices)
 
 
+## Pass 270: the hero's hurt sat 8.9 dB over the median sound effect, a tenth
+## of a dB inside the mix check's spread, so any new quiet sound tipped the
+## check red. The loudest cues are now saved under the line (levels.py keeps
+## HEADROOM inside the spread) and Sfx.LIFT plays them back as loud as before.
+func test_the_loudest_cues_are_lifted_in_game_not_in_the_file() -> void:
+	await frames(1)
+	check(Sfx.LIFT.has("hurt") and Sfx.LIFT.has("hit"), "the hurt and the cut landing are lifted (%s)" % [Sfx.LIFT])
+	for sound: String in Sfx.LIFT:
+		var lift := float(Sfx.LIFT[sound])
+		check(lift > 0.0 and lift <= 6.0, "%s is lifted a few dB, not a remix (%.1f)" % [sound, lift])
+		check(ResourceLoader.exists("res://assets/sfx/%s.wav" % sound), "a lifted sound has a file (%s)" % sound)
+	# Another test may have muted the effects (AudioStreamPlayer floors at -80 dB).
+	var base := Sfx.volume_db
+	Sfx.volume_db = -6.0
+	for sound: String in ["hurt", "hit", "slash"]:
+		# The voice this play takes (one ringing from an earlier test can end later
+		# than it, so look for the one whose end was just set).
+		var before := Sfx._ends.duplicate()
+		Sfx._started_on.erase(sound)
+		Sfx.play(sound, 0.0, -1.0)
+		var voice := -1
+		for i in Sfx.POOL_SIZE:
+			if Sfx._ends[i] != before[i] and Sfx.voice_sound(i) == sound:
+				voice = i
+		check(voice >= 0, "%s takes a voice" % sound)
+		if voice >= 0:
+			var want := Sfx.volume_db - 1.0 + float(Sfx.LIFT.get(sound, 0.0))
+			check(is_equal_approx(Sfx._players[voice].volume_db, want),
+				"%s plays at %.1f dB, its lift on top of the caller's offset (%.1f)" % [sound, want, Sfx._players[voice].volume_db])
+		await frames(1)
+	Sfx.volume_db = base
+	# The hurt is still the hero's loudest cue in game: its file is as loud as
+	# the cut landing's (levels.py), and it is lifted the more.
+	check(float(Sfx.LIFT.hurt) > float(Sfx.LIFT.hit), "the hurt is lifted more than the cut landing")
+	# The sound generator saves them that much under their old level.
+	var gen := FileAccess.get_file_as_string("res://tools/audio/sfxgen.py")
+	for pair: Array in [["hit", 0.8, 0.62], ["hurt", 0.6, 0.42]]:
+		var drop := -20.0 * log(float(pair[2]) / float(pair[1])) / log(10.0)
+		check(absf(drop - float(Sfx.LIFT[pair[0]])) < 0.15, "%s's lift (%.1f) gives back its file's cut (%.2f)" % [pair[0], Sfx.LIFT[pair[0]], drop])
+		check(gen.contains('save("%s",' % pair[0]) and gen.contains("%s)" % pair[2]), "sfxgen saves %s at gain %s" % [pair[0], pair[2]])
+
+
 ## Sounds named at runtime (pass 207): the scan above reads only literal names,
 ## so a helper that picks a sound, or a name built from parts, could play
 ## silence unnoticed. `Sfx.missing` keeps every name asked for that has no
