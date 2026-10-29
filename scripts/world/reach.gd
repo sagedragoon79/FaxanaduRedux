@@ -19,6 +19,13 @@ const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
 ## With the Wing Boots: a second jump at the top adds three tiles of rise
 ## (double_jump_height 48) and keeps the player in the air longer.
 const BOOT_JUMP := {0: 7, 1: 7, 2: 7, 3: 6, 4: 6, 5: 5, 6: 3}
+## How many rows over the cell you stand in a pickup can be and still be
+## touched with a jump. In play the head (40 px tall, a pickup's touch reaching
+## 4 px past it) rises 116 px over the feet with a plain jump and 164 px with the
+## second: the centre of a pickup six rows up is 104 px over the feet, eight
+## rows up 136 px, each with a margin.
+const TOUCH_RISE := 6
+const BOOT_TOUCH_RISE := 8
 ## Off a bounce-pod (legend `@`): pod_bounce 600 rises about nine tiles in play.
 const POD_JUMP := {0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 4, 7: 3}
 ## Inside wrong gravity (legend `v`, GravityDrift.PULL 0.4) a jump rises about 11
@@ -645,9 +652,11 @@ func spot_of(room_id: String, marker: String) -> String:
 
 
 ## True if a pickup at tile (x, y) can be touched from some reachable node:
-## standing in it, or jumping into it from below (within 4 tiles).
+## standing in it, or jumping into it from below: within TOUCH_RISE rows, or
+## BOOT_TOUCH_RISE with the Wing Boots' second jump (pass 232).
 func touchable(nodes: Dictionary, room_id: String, x: int, y: int) -> bool:
-	for dy in range(0, 7):
+	var rise := BOOT_TOUCH_RISE if abilities.get("boots", false) else TOUCH_RISE
+	for dy in range(0, rise + 1):
 		for dx in range(-1, 2):
 			if nodes.has(key(room_id, x + dx, y + dy)):
 				if dy <= 2 or _column_clear(room_id, x + dx, y, y + dy):

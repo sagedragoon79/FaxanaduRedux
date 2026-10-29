@@ -20,6 +20,10 @@ const BOOT_SECRETS := [["mist/feather_hollow", 18, 7], ["daybreak/sky_steps", 6,
 ## even with the Wing Boots, which always come first: behind an elven veil (pass 216;
 ## the gap of pass 211 was crossed by a real jump).
 const STRIDE_SECRETS := [["branches/north_bough", 2, 6]]
+## Critical-path pickups only the Wing Boots' second jump reaches (pass 232):
+## the Elven Stride hangs in the Windloft's open air, nine rows over the floor and
+## far from any wall, so the Boots must come before the Stride.
+const BOOT_GATES := [["branches/windloft", 24, 11]]
 ## Pickups only the Branches' wind reaches once the Spring of Sky turns it
 ## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
 const WIND_SECRETS := [["branches/thicket_road", 38, 8]]
@@ -184,8 +188,8 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "but not the sky islands past the air-dash gaps")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) \
-				and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not BOOT_GATES.has([p[0], p[2], p[3]]) \
+				and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -270,7 +274,7 @@ func test_wing_boots_reach_the_high_perch() -> void:
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
 	check(bare.touchable(nodes, "mist/feather_hollow", 30, 15), "the Wing Boots can be reached without them")
-	for s: Array in BOOT_SECRETS:
+	for s: Array in BOOT_SECRETS + BOOT_GATES:
 		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Wing Boots" % [s])
 	set["boots"] = true
 	var reach := Reach.new(_texts(), set, true)
@@ -531,7 +535,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
-	check(bare.touchable(nodes, "branches/windloft", 30, 14), "the Elven Stride can be reached without it")
+	check(bare.touchable(nodes, "branches/windloft", 24, 11), "the Elven Stride can be reached without it")
 	for s: Array in STRIDE_SECRETS:
 		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride, even with the Wing Boots" % [s])
 	set["stride"] = true
