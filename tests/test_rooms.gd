@@ -100,6 +100,40 @@ func test_shrine_saves_and_round_trips() -> void:
 	check(not GameState.has_save(SAVE_SLOT), "save deleted")
 
 
+## Bible 5.4 (pass 250): the purse you drop on dying is in the save, and comes
+## back with it. The save had kept it as "value" while loading asked for "gold",
+## so every purse was thrown away the moment a save was loaded.
+func test_a_dropped_purse_survives_a_save_and_load() -> void:
+	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
+	GameState.slot = SAVE_SLOT
+	await frames(5)
+	var p := w.player
+	p.input.up_pressed = true
+	await frames(2)
+	p.gold = 100
+	p.teleport(cell_feet(30, 19))
+	await frames(3)
+	p.take_damage(9999)
+	check(p.dead and is_instance_valid(p.purse) and p.purse.value == 60, "dying drops 60 of 100 gold in a purse")
+	await frames(int(p.combat.respawn_delay * 60.0) + 30)
+	check(GameState.data.purse.get("value") == 60, "the purse is in the game state (%s)" % [GameState.data.purse])
+	GameState.save_game()
+	GameState.new_game()
+	check(GameState.load_game(SAVE_SLOT), "the save loads")
+	check(GameState.data.purse.get("room") == "test/a" and int(GameState.data.purse.get("value", 0)) == 60, "and the purse is still in it (%s)" % [GameState.data.purse])
+	# Legacy and broken purses: one named "gold" is read; an empty one is dropped.
+	var old := GameState.fresh()
+	old.purse = {"room": "test/a", "x": 1, "y": 2, "gold": 9}
+	check(int(GameState.sanitize(old).get("purse", {}).get("value", 0)) == 9, "a purse saved as gold is read")
+	old.purse = {"room": "test/a", "x": 1, "y": 2, "value": 0}
+	check(GameState.sanitize(old).get("purse", {"x": 1}).is_empty(), "an empty purse is dropped")
+	w._enter("test/a")
+	await frames(3)
+	var bags := w.room.get_children().filter(func(c: Node) -> bool: return c is GoldPurse)
+	check(bags.size() == 1 and bags[0].value == 60, "the loaded world lays it where you fell (%d)" % bags.size())
+	GameState.delete_save(SAVE_SLOT)
+
+
 func test_act_one_state_survives_a_save_round_trip() -> void:
 	GameState.slot = SAVE_SLOT
 	GameState.set_flag("spring:trunk")

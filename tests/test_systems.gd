@@ -510,7 +510,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.charts = {"trunk": true}
 	d.pins = [["trunk/entrance", 64, 96], ["mist/fog_gate", 200, 40]]
 	d.flags = {"spring:trunk": true, "boss:rokusutahn": true}
-	d.purse = {"room": "trunk/sap_tunnel", "x": 100, "y": 200, "gold": 77}
+	d.purse = {"room": "trunk/sap_tunnel", "x": 100.0, "y": 200.0, "value": 77}  # the shape World writes (pass 250)
 	d.save_room = "eolis/guru_hall"
 	d.save_pos = [120, 304]
 	d.play_time = 3725.5

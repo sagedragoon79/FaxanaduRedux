@@ -625,9 +625,16 @@ static func sanitize(src: Variant) -> Dictionary:
 	for room: Variant in out.gurus.keys():
 		if not _is_point(out.gurus[room]):
 			out.gurus.erase(room)
+	# The purse dropped on the last death holds its gold as "value", the name
+	# World writes. Until pass 250 this asked for "gold", so every purse was
+	# thrown away on load; a save that names it "gold" is read as well.
+	if not out.purse.is_empty() and not out.purse.has("value") and out.purse.has("gold"):
+		out.purse.value = out.purse.gold
 	if not out.purse.is_empty() and not (out.purse.get("room") is String and _is_number(out.purse.get("x"))
-			and _is_number(out.purse.get("y")) and _is_number(out.purse.get("gold"))):
+			and _is_number(out.purse.get("y")) and _is_number(out.purse.get("value")) and float(out.purse.value) > 0.0):
 		out.purse = {}
+	elif not out.purse.is_empty():
+		out.purse = {"room": out.purse.room, "x": float(out.purse.x), "y": float(out.purse.y), "value": int(out.purse.value)}
 	# Nothing falls below a new game's: no zero health, no negative gold.
 	var base := fresh()
 	for k: String in base:

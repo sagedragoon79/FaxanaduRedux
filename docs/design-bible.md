@@ -394,7 +394,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 ### 5.4 Death and recovery
 
-On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses.
+On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses. The purse is part of the save (`data.purse`: its room, where it lies and the gold in it, as `value`), so quitting and loading leaves it waiting. Until pass 250 loading asked for the gold under another name (`gold`) and threw every purse away, so a death followed by a load lost the 60% for good; a save that names it `gold` is still read. `test_a_dropped_purse_survives_a_save_and_load`.
 
 ### 5.5 Damage balance sheet (pass 194)
 
