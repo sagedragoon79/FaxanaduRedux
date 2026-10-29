@@ -755,6 +755,37 @@ func test_crystal_dwarf_raises_his_fist_then_erupts_spikes() -> void:
 	check(p.hp < hp, "and catches a player standing in its path")
 
 
+## Bible 7 (pass 246): each spike of an eruption cracks up through the floor with
+## a glassy stab as it rises, not while its mark glows, and two that rise on
+## the same frame sound once.
+func test_a_crystal_spike_stabs_up_with_a_sound() -> void:
+	var room := _room_with({})
+	make_player(room, Vector2i(30, 6))
+	await frames(2)
+	var s := CrystalSpike.new()
+	s.delay = 0.1
+	room.add_child(s)
+	s.global_position = Vector2(10 * 16, 7 * 16)
+	Sfx.recent.clear()
+	var early := false
+	while is_instance_valid(s) and s.rise() <= 0.0:
+		early = early or CrystalSpike.STAB_SOUND in Sfx.recent
+		await frames(1)
+	check(not early, "the spike's mark glows in silence")
+	check(CrystalSpike.STAB_SOUND in Sfx.recent, "and it stabs up with a crack of crystal (%s)" % [Sfx.recent])
+	await frames(40)
+	check(Sfx.recent.count(CrystalSpike.STAB_SOUND) == 1, "once (%d)" % Sfx.recent.count(CrystalSpike.STAB_SOUND))
+	# A pair rising together, as the Evil Heart's wave runs both ways, sounds once.
+	Sfx.recent.clear()
+	for x in [6, 14]:
+		var t := CrystalSpike.new()
+		room.add_child(t)
+		t.global_position = Vector2(x * 16, 7 * 16)
+	await frames(30)
+	check(Sfx.recent.count(CrystalSpike.STAB_SOUND) == 1, "two on one frame sound once (%d)" % Sfx.recent.count(CrystalSpike.STAB_SOUND))
+	check(FileAccess.file_exists("res://assets/sfx/%s.wav" % CrystalSpike.STAB_SOUND), "the sound is on disk")
+
+
 func test_crystal_spikes_hug_the_floor() -> void:
 	var room := _room_with({})
 	var p := make_player(room, Vector2i(10, 6))

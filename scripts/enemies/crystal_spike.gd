@@ -14,6 +14,13 @@ const LIGHT := Color("f0a0f0")
 const MID := Color("c050c8")
 const DARK := Color("6a2a78")
 const OUTLINE := Color("13101f")
+## Each spike cracks up through the floor with a glassy ping (pass 246), so an
+## eruption ticks along the floor toward you as the spikes rise.
+## Two spikes that rise on the same frame (the Evil Heart's wave runs both ways)
+## sound once.
+const STAB_SOUND := "crystal_stab"
+
+static var _stab_frame := -1
 
 var delay := 0.0
 var _t := 0.0
@@ -44,7 +51,11 @@ func hit_rect() -> Rect2:
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
 		return  # held still by the Hour Glass
+	var was := _t
 	_t += delta
+	if was < delay + WARN and _t >= delay + WARN and Engine.get_physics_frames() != _stab_frame:
+		_stab_frame = Engine.get_physics_frames()
+		Sfx.play(STAB_SOUND, 0.08, -6.0)
 	if _t >= delay + WARN + UP:
 		queue_free()
 		return

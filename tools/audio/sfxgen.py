@@ -495,6 +495,17 @@ def main():
     thrum = osc(slide(90, 70, d), "square", 0.4) * env(n, 0.004, 2.2) * 0.3
     save("core_beam", mix(whoomph, whine, sear, thrum), 0.55)
 
+    # A Crystal Dwarf's spike stabbing up through the floor (pass 246): a dry
+    # crack of stone giving way and a hard glassy ping with out-of-tune partials,
+    # short, so the six of an eruption tick along the floor toward you.
+    d = 0.24
+    n = int(RATE * d)
+    crack = highpass(noise(0.03), 1800) * env(int(RATE * 0.03), 0.0005, 2.2)
+    crack = np.concatenate([crack, np.zeros(n - len(crack))])
+    ping = (osc(np.full(n, 2093.0), "sine") + 0.55 * osc(np.full(n, 3311.0), "sine") + 0.3 * osc(np.full(n, 4870.0), "sine")) * env(n, 0.001, 3.0) * 0.5
+    grind = lowpass(noise(d), 900) * env(n, 0.002, 4.0) * 0.35
+    save("crystal_stab", mix(crack, ping, grind), 0.5)
+
     # A fireball bursting: a soft whump and a spray of crackling embers.
     d = 0.55
     n = int(RATE * d)
