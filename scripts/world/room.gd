@@ -40,6 +40,8 @@ var _winds_east := {}
 var _winds_west := {}
 ## Deep water cells (legend `a`), one SwimWater for the room after the grid.
 var _water := {}
+## Dartmoor's standing water (the `tide:` header), until King Grieve is at rest.
+var tide: Tide
 ## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
 var _seals := {}
 ## Ladder cells (legend `"`, bible 6.11). The top cell of each is also a plank.
@@ -654,11 +656,26 @@ func _place_falls() -> void:
 			if _solid_look.has(c + Vector2i.UP):
 				water.roofed[c] = true
 		add_child(water)
+	if header.has("tide"):
+		_place_tide(int(header.tide))
 	for box in _blocks(_seals):
 		var seal := HeartSeal.new()
 		seal.cells = box
 		seal.persist_id = _pickup_id(box.position)
 		add_child(seal)
+
+
+## Standing water (design bible 4.4): from row `row` down to the first tile
+## in every column open at that row.
+func _place_tide(row: int) -> void:
+	tide = Tide.new()
+	tide.row = row
+	for x in size_tiles.x:
+		var y := row
+		while y < size_tiles.y and tiles.get_cell_source_id(Vector2i(x, y)) == -1:
+			tide.cells[Vector2i(x, y)] = true
+			y += 1
+	add_child(tide)
 
 
 ## The bounding boxes of each connected block of `cells`.
@@ -861,6 +878,9 @@ func surface_at(world_pos: Vector2) -> String:
 		return "sap"
 	if is_one_way_at(world_pos):
 		return "plank"
+	if tide != null and tide.has_point(world_pos + Vector2(0, -TILE * 0.5)):
+		# Wading Dartmoor's standing water.
+		return "mud"
 	var cell := cell_at(world_pos)
 	if tiles.get_cell_source_id(cell) == -1:
 		return ""

@@ -1,6 +1,7 @@
 name: Drowned Nave
 zone: dartmoor
 map: 53, -9
+tide: 19
 sign: 74, 19, THE DROWNED NAVE. Here the king's guard knelt. Some of them never rose.
 sign: 4, 19, THE WATER-CLOCK. It stopped when the flood came. Its glass still holds the hour.|Turn it, and the falling water stands still with it.
 door: 1, dartmoor/onyx_crypt, 2
