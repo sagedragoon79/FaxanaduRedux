@@ -1948,6 +1948,15 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 			if row.contains("&"):
 				laid.append(id)
 	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
+	# Pass 241: the original's Fraternal Castle, where King Grieve kept the
+	# Dragon Slayer and the Demon Ring, is his hall by name, and the stair
+	# down to it says where it goes.
+	var hall: Dictionary = rooms.get("dartmoor/throne_hall", {"header": {}})
+	check(String(hall.header.get("name", "")) == "Fraternal Castle" and String(hall.header.get("boss", "")) == "king_grieve", "King Grieve's hall is Fraternal Castle")
+	var told := false
+	for spec: String in rooms.get("dartmoor/kings_stair", {"lists": {}}).lists.get("sign", []):
+		told = told or spec.contains("Fraternal Castle")
+	check(told, "and the King's Stair's sign says it goes down to Fraternal Castle")
 
 ## Pass 233: the original's gear and goods, each with its old name and a way
 ## to get it. Three blades past the one you start with, four armors, three
