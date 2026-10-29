@@ -15,46 +15,57 @@ static func _gold_footer(p: Player) -> Callable:
 	return func() -> String: return "Gold %d" % p.gold
 
 
+## A shop's rows as the menu shows them: price or why it can't be bought, and a
+## detail line (pulled out of open_shop so a test can read them).
+static func shop_rows(shop_id: String, p: Player) -> Array:
+	var shop := GameData.shop(shop_id)
+	var out := []
+	for i in Shop.shelf(shop_id):
+		var entry: Dictionary = shop.stock[i]
+		var item := GameData.item(entry.item)
+		var st := Shop.status(shop_id, i, p)
+		var right := "%d g" % int(entry.price)
+		if st == "owned":
+			right = "Owned"
+		elif st == "full":
+			right = "Full"
+		elif st == "sold out":
+			right = "Sold out"
+		elif st == "locked":
+			right = "Needs I"
+		elif st == "enough":
+			right = "Enough"
+		elif st == "shards":
+			right = "Needs shard"
+		elif st == "worn":
+			right = "Worn"
+		elif item.kind == "dye" and GameState.owns_dye(String(entry.item)):
+			right = "Wear"
+		var detail: String = item.desc
+		if item.kind == "key":
+			var kind := String(entry.item).trim_suffix("_key")
+			detail += "  You have %d." % GameState.key_count(kind)
+			if st == "enough":
+				detail += " " + ("Its door stands open." if Shop.doors_shut(kind) == 0 else "Enough for every %s door left." % kind.capitalize())
+		elif item.kind == "ointment":
+			detail += "  You have %d." % p.ointments
+		elif item.kind == "temper":
+			var blade := String(GameState.data.equipment.blade)
+			detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
+			if Shop.shards(entry) > 0:
+				detail += "  Costs a Meteor Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
+		elif item.kind == "blade":
+			detail += "  " + blade_numbers(String(entry.item))
+		out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
+	return out
+
+
 static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 	var menu := _menu(tree)
 	if menu == null:
 		return false
 	var shop := GameData.shop(shop_id)
-	var provider := func() -> Array:
-		var out := []
-		for i in Shop.shelf(shop_id):
-			var entry: Dictionary = shop.stock[i]
-			var item := GameData.item(entry.item)
-			var st := Shop.status(shop_id, i, p)
-			var right := "%d g" % int(entry.price)
-			if st == "owned":
-				right = "Owned"
-			elif st == "full":
-				right = "Full"
-			elif st == "sold out":
-				right = "Sold out"
-			elif st == "locked":
-				right = "Needs I"
-			elif st == "shards":
-				right = "Needs shard"
-			elif st == "worn":
-				right = "Worn"
-			elif item.kind == "dye" and GameState.owns_dye(String(entry.item)):
-				right = "Wear"
-			var detail: String = item.desc
-			if item.kind == "key":
-				detail += "  You have %d." % GameState.key_count(String(entry.item).trim_suffix("_key"))
-			elif item.kind == "ointment":
-				detail += "  You have %d." % p.ointments
-			elif item.kind == "temper":
-				var blade := String(GameState.data.equipment.blade)
-				detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
-				if Shop.shards(entry) > 0:
-					detail += "  Costs a Meteor Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
-			elif item.kind == "blade":
-				detail += "  " + blade_numbers(String(entry.item))
-			out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
-		return out
+	var provider := func() -> Array: return shop_rows(shop_id, p)
 	var on_select := func(row: int) -> void:
 		var i: int = Shop.shelf(shop_id)[row]
 		var wearing: bool = GameData.item(shop.stock[i].item).kind == "dye" and GameState.owns_dye(String(shop.stock[i].item))

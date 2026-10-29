@@ -24,7 +24,8 @@ static func shelf(shop_id: String) -> Array[int]:
 
 ## Why an entry can't be bought right now: "" (it can), "hidden" (not on the
 ## shelf yet), "owned", "full", "sold out", "locked" (a second temper before the
-## first), "shards" (too few Meteor Shards for an entry's "shards") or "gold".
+## first), "enough" (the keys you hold already open every door of that card still
+## shut), "shards" (too few Meteor Shards for an entry's "shards") or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
@@ -43,6 +44,10 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 		"ointment":
 			if p.ointments >= OINTMENT_MAX:
 				return "full"
+		"key":
+			var kind := String(entry.item).trim_suffix("_key")
+			if GameState.key_count(kind) >= doors_shut(kind):
+				return "enough"
 		"temper":
 			var level := GameState.temper_level(String(GameState.data.equipment.blade))
 			if level >= int(item.level):
@@ -65,6 +70,16 @@ static func status(shop_id: String, index: int, p: Player) -> String:
 	if p.gold < int(entry.price):
 		return "gold"
 	return ""
+
+
+## How many of a card's doors in the world still stand shut (pass 245). Each card
+## has one door, so a second key of it was gold for nothing.
+static func doors_shut(kind: String) -> int:
+	var n := 0
+	for lock: Dictionary in World.world_locks():
+		if lock.kind == kind and not GameState.is_collected(String(lock.id)):
+			n += 1
+	return n
 
 
 ## Meteor Shards an entry costs besides its gold (design bible 5.2).

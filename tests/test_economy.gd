@@ -41,8 +41,10 @@ func test_once_only_stock_sells_out() -> void:
 	check(Shop.buy("eolis_items", 1, p), "bought Mana Dew")
 	check(p.max_mp == mp0 + GameState.MANA_DEW_MP, "max MP grew")
 	check(Shop.status("eolis_items", 1, p) == "sold out", "Mana Dew sold out")
-	check(Shop.buy("eolis_items", 0, p) and Shop.buy("eolis_items", 0, p), "keys can be bought again and again")
-	check(GameState.key_count("jack") == 2, "two Jack Keys")
+	# A key is not once-only stock, but it is sold only while a door of its card
+	# waits for it (pass 245): one Jack door, so one Jack Key.
+	check(Shop.buy("eolis_items", 0, p) and Shop.status("eolis_items", 0, p) == "enough", "a key sells while its door waits, then says Enough")
+	check(GameState.key_count("jack") == 1, "one Jack Key")
 
 
 func test_armor_reduces_damage() -> void:
@@ -151,6 +153,45 @@ func test_the_card_keys_are_sold_and_the_joker_is_found() -> void:
 	w.texts["test/town"] = rooms["test/town"]
 	w._enter("test/town")
 	check(_find(w.room, ItemPickup) == null, "it never comes back")
+
+
+## Bible 10.2 (pass 245): each card has one door, and every grocer cuts Jack Keys,
+## so a key shop stops selling a card once the keys you hold open every door of it
+## still shut. A second Jack Key had been 150 g for nothing.
+func test_a_key_shop_sells_no_key_without_a_door() -> void:
+	GameState.new_game()
+	var w := make_world(_town(), "test/town")
+	await frames(2)
+	var p := w.player
+	var seen := {}
+	for lock: Dictionary in World.world_locks():
+		seen[lock.kind] = int(seen.get(lock.kind, 0)) + 1
+	check(seen == {"jack": 1, "queen": 1, "king": 1, "ace": 1, "joker": 1, "sky": 1}, "one door of each card in the world, and the Sky Gate (%s)" % [seen])
+	var stock: Array = GameData.shop("dartmoor_keys").stock
+	var at := func(item: String) -> int: return stock.find_custom(func(e: Dictionary) -> bool: return e.item == item)
+	var jack: int = at.call("jack_key")
+	p.gold = 5000
+	check(Shop.doors_shut("jack") == 1 and Shop.status("dartmoor_keys", jack, p) == "", "with the Jack door shut and no key, the Jack Key is for sale")
+	check(Shop.buy("dartmoor_keys", jack, p) and GameState.key_count("jack") == 1, "you buy one")
+	check(Shop.status("dartmoor_keys", jack, p) == "enough" and not Shop.buy("dartmoor_keys", jack, p), "a second is not sold: one key opens the one door")
+	check(p.gold == 5000 - 150 and GameState.key_count("jack") == 1, "and costs nothing (%d g, %d keys)" % [p.gold, GameState.key_count("jack")])
+	var row: Dictionary = Menus.shop_rows("dartmoor_keys", p)[Shop.shelf("dartmoor_keys").find(jack)]
+	check(row.right == "Enough" and not row.enabled and String(row.detail).ends_with("You have 1. Enough for every Jack door left."), "the row says why (%s, %s)" % [row.right, row.detail])
+	# The door opens and spends the key: the card is done with.
+	var door: Dictionary = World.world_locks().filter(func(l: Dictionary) -> bool: return l.kind == "jack")[0]
+	GameState.collect(String(door.id))
+	GameState.add_key("jack", -1)
+	row = Menus.shop_rows("dartmoor_keys", p)[Shop.shelf("dartmoor_keys").find(jack)]
+	check(Shop.doors_shut("jack") == 0 and Shop.status("dartmoor_keys", jack, p) == "enough", "with its door open, no Jack Key is sold again")
+	check(String(row.detail).ends_with("You have 0. Its door stands open."), "the row says the door is open (%s)" % row.detail)
+	# The other cards are still for sale, and every key row fits the menu's box.
+	for item: String in ["queen_key", "king_key", "ace_key"]:
+		check(Shop.status("dartmoor_keys", at.call(item), p) == "", "the %s is still for sale" % item)
+	GameState.add_key("queen", 1)
+	var width := ListMenu.PANEL.size.x - 28
+	for r: Dictionary in Menus.shop_rows("dartmoor_keys", p):
+		check(PixelFont.wrap_lines(String(r.detail), width, 9).size() <= 3, "%s fits in three lines" % r.label)
+	w.queue_free()
 
 
 func test_every_card_door_guards_a_vault() -> void:
