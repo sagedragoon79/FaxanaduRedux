@@ -52,6 +52,34 @@ func _start_on_right_wall(abilities := {}) -> Player:
 	return p
 
 
+
+## Pass 238: a wall slide shed dust every 0.06 s and made no sound. The glove
+## rasps as you catch the wall and every Player.WALL_SCRAPE after, and only
+## while you slide: not without the Climbing Glove.
+func test_a_wall_slide_rasps_down_the_wall() -> void:
+	for glove: bool in [true, false]:
+		var room := make_room(SHAFT)
+		var p := make_player(room, Vector2i(14, 6), {"glove": glove})
+		Sfx.recent.clear()
+		p.input.move_x = 1
+		var first := -1
+		var sliding := 0
+		for i in 60:
+			await frames(1)
+			if p.is_wall_sliding:
+				sliding += 1
+				if first < 0:
+					first = i
+		var rasps := Sfx.recent.count(Player.WALL_SLIDE_SOUND)
+		if glove:
+			var expected := 1 + int(floor((sliding - 1) / 60.0 / Player.WALL_SCRAPE))
+			check(first >= 0 and sliding >= 30, "with the Glove the player slides (%d frames)" % sliding)
+			check(absi(rasps - expected) <= 1, "it rasps on the catch and every %.2f s after (%d, about %d)" % [Player.WALL_SCRAPE, rasps, expected])
+		else:
+			check(rasps == 0 and sliding == 0, "without the Glove there is no slide and no rasp (%d)" % rasps)
+		room.queue_free()
+		await frames(1)
+
 func test_wall_slide_caps_fall_speed() -> void:
 	var p := await _start_on_right_wall()
 	await frames(20)

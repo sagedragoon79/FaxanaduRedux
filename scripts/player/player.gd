@@ -59,6 +59,9 @@ const GLASS_TICKS := 3
 const GLASS_TICK := 0.25
 const GLASS_TICK_SOUND := "glass_tick"
 const GLASS_END_SOUND := "glass_end"
+## A wall slide rasps as you catch the wall and every WALL_SCRAPE seconds after (pass 238).
+const WALL_SLIDE_SOUND := "wall_slide"
+const WALL_SCRAPE := 0.24
 ## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
@@ -283,6 +286,7 @@ var _peak_fall_speed := 0.0
 ## The highest point (smallest y) of the current time in the air.
 var _air_top_y := INF
 var _dust_timer := 0.0
+var _scrape_timer := 0.0
 var _step_timer := 0.0
 var _combo_timer := 0.0
 var _attack_buffer_timer := 0.0
@@ -607,6 +611,12 @@ func _apply_wall_slide() -> void:
 			# Carry the overshoot so the puffs keep a true 0.06 s beat.
 			_dust_timer = 0.06 + maxf(_dust_timer, -0.06)
 			_spawn_dust(Vector2(wall_dir * BODY_SIZE.x * 0.5, -BODY_SIZE.y * 0.6), "wall")
+		# The glove rasps down the wall as you catch it, and every WALL_SCRAPE
+		# after (pass 238: the slide had dust and no sound).
+		_scrape_timer -= get_physics_process_delta_time()
+		if not was_sliding or _scrape_timer <= 0.0:
+			_scrape_timer = WALL_SCRAPE
+			Sfx.play(WALL_SLIDE_SOUND, 0.08, -4.0 if not was_sliding else -8.0)
 
 
 # --- Horizontal -----------------------------------------------------------------

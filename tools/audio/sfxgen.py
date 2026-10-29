@@ -513,6 +513,15 @@ def main():
     whoosh = highpass(lowpass(noise(d), slide(900, 2600, d, 0.6)), 300) * env(n, 0.06, 1.4)
     save("glide", whoosh, 0.35)
 
+    # A wall slide (pass 238): the glove's leather dragging down bark and stone,
+    # a short rough rasp with a gritty flutter, quiet under a beat of repeats.
+    d = 0.22
+    n = int(RATE * d)
+    t = np.arange(n) / RATE
+    grit = 0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 37 * t)) * (0.7 + 0.3 * np.random.default_rng(238).random(n))
+    rasp = highpass(lowpass(noise(d), slide(2600, 1500, d)), 500) * grit * env(n, 0.02, 1.2)
+    save("wall_slide", rasp, 0.4)
+
     # Low health: a muffled double heartbeat, lub then dub.
     d = 0.42
     n = int(RATE * d)
