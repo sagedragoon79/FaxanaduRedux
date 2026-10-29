@@ -238,6 +238,50 @@ func test_skill_rules() -> void:
 	check(Skills.respec_cost() == 400, "the next respec costs more")
 
 
+
+## Pass 237: a skill can be learned before the ability it works through (the
+## tree deepens in order, not by what you have found), and only two of nine said
+## so, in their own words. Every such skill names what it uses, and until that is
+## found the tree says it does nothing yet. Each "uses" is a real ability, and a
+## skill that names one in its text without a "uses" is caught.
+func test_the_skill_tree_says_what_a_skill_waits_on() -> void:
+	GameState.new_game()
+	var names := {"mattock": "Mattock", "deluge": "Deluge", "tilte": "Tilte", "thunder": "Thunder", "hourglass": "Hour Glass",
+		"death": "Death", "stride": "Stride", "boots": "Wing Boots", "fire": "Fire"}
+	var untagged := []
+	var users := []
+	for node: Dictionary in Skills.nodes():
+		var uses := String(node.get("uses", ""))
+		if uses != "":
+			users.append(node.id)
+			check(GameState.data.abilities.has(uses), "%s uses a real ability (%s)" % [node.id, uses])
+			continue
+		for a: String in names:
+			if String(node.desc).contains(names[a]):
+				untagged.append("%s: %s" % [node.id, a])
+	check(untagged.is_empty(), "a skill that names an ability says it uses it: %s" % [untagged])
+	check(users.size() == 9, "nine skills work through something found (%d)" % users.size())
+	var rows := Menus.skill_rows()
+	var by_id := {}
+	for row: Dictionary in rows:
+		by_id[row.id] = row
+	for id: String in users:
+		check(String(by_id[id].detail).contains("Does nothing until you find the " + Skills.waits_on(id) + "."), "on a new game %s says what it waits on" % id)
+	check(not String(by_id.keen_edge.detail).contains("Does nothing"), "a skill that needs nothing says nothing")
+	check(String(by_id.feather_fall.detail).ends_with("Does nothing until you find the Wing Boots."), "Feather Fall waits on the Wing Boots")
+	check(String(by_id.mattock_mastery.detail).contains("the Mattock."), "Mattock Mastery on the Mattock")
+	for id: String in GameState.data.abilities:
+		GameState.data.abilities[id] = true
+	rows = Menus.skill_rows()
+	check(not rows.any(func(r: Dictionary) -> bool: return String(r.get("detail", "")).contains("Does nothing")), "with everything found, no skill waits")
+	GameState.new_game()
+	var width := ListMenu.PANEL.size.x - 28
+	var long := []
+	for row: Dictionary in Menus.skill_rows():
+		if PixelFont.wrap_lines(String(row.get("detail", "")), width, 9).size() > 3:
+			long.append(row.label)
+	check(long.is_empty(), "every skill's line fits in three lines: %s" % [long])
+
 func test_stat_skills() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
