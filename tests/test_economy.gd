@@ -1991,6 +1991,27 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
+	# Pass 273: the original's Naga floats up and down over the ladders of the
+	# Tower of Trunk, where the climb meets it.
+	var nagas := []
+	for id: String in rooms:
+		for row: String in rooms[id].grid:
+			if row.contains(")"):
+				nagas.append(id)
+	check(load("res://scripts/enemies/naga.gd") != null and nagas.size() >= 2 and nagas.all(func(id: String) -> bool: return id.begins_with("tower/")), "Nagas float over the Tower's ladders (%s)" % [nagas])
+	for id: String in nagas:
+		var grid: Array = rooms[id].grid
+		var near := false
+		for y in grid.size():
+			var x := String(grid[y]).find(")")
+			if x < 0:
+				continue
+			for dy in range(-3, 4):
+				for dx in range(-6, 7):
+					var yy: int = y + dy
+					if yy >= 0 and yy < grid.size() and x + dx >= 0 and x + dx < String(grid[yy]).length() and String(grid[yy])[x + dx] == "\"":
+						near = true
+		check(near, "%s: its Naga floats by a ladder" % id)
 	# Pass 241: the original's Fraternal Castle, where King Grieve kept the
 	# Dragon Slayer and the Demon Ring, is his hall by name, and the stair
 	# down to it says where it goes.
@@ -2255,7 +2276,7 @@ const GOLD_FOES := {
 	"V": "bog_myconid", "p": "drowned_dwarf", "m": "leaf_mantis", "!": "bark_knight",
 	";": "seed_bomber", "?": "marsh_hag", "t": "thunder_beetle", "y": "storm_harpy",
 	"]": "spire_sentinel", "q": "crystal_dwarf", "e": "shade_knight", "j": "clockwork_hound",
-	"s": "meteor_slug", "l": "spring_eel",
+	"s": "meteor_slug", "l": "spring_eel", ")": "naga",
 }
 
 

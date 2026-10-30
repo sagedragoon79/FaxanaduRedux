@@ -1033,7 +1033,7 @@ var sheet_foes := {
 	"!": [BarkKnight, null], ";": [SeedBomber, BomberSeed], "?": [MarshHag, MireGrasp],
 	"t": [ThunderBeetle, null], "y": [StormHarpy, HarpyFeather], "]": [SpireSentinel, null],
 	"q": [CrystalDwarf, CrystalSpike], "e": [ShadeKnight, null], "j": [ClockworkHound, null],
-	"s": [MeteorSlug, MeteorGlob], "l": [SpringEel, null],
+	"s": [MeteorSlug, MeteorGlob], "l": [SpringEel, null], ")": [Naga, null],
 }
 
 
