@@ -274,9 +274,9 @@ func test_armor_picks_its_body_set() -> void:
 				if not solid:
 					bad.append("%s:%s:%d crown %s" % [sheet, anim, i, f.head])
 	check(bad.is_empty(), "every armor has idle, walk and run with hand, neck, head (on the crown) and back points (%s)" % [bad])
-	# The Battle Helmet is Sean's pixel helmet, a little wider than the head at the 2x density.
+	# The Battle Helmet is cut from the PixelLab helmed elf, a little wider than the head at the 2x density.
 	var helm := PlayerVisual.HELMET.get_size()
-	check(helm.x >= 16 and helm.x <= 26 and helm.y > helm.x, "the helmet layer is a head-sized sprite (%s)" % helm)
+	check(helm.x >= 16 and helm.x <= 26 and helm.y >= 16 and helm.y <= 28, "the helmet layer is a head-sized sprite (%s)" % helm)
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)

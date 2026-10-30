@@ -1572,7 +1572,12 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   violet-tinted steel and the outline are too grey or too dark to count. The helmed Battle Suit (`"hair": false`) shows
   no hair, and its crest keeps its purple.
 - **Helmet:** with any set but the Battle Suit, the Battle Helmet stays a layer on the head point (Sean, 2026-10-30);
-  only the Battle Suit has a helmed set.
+  only the Battle Suit has a helmed set. The layer is cut from that set's art (`tools/art/helmetgen.py`): the helm and
+  the face and ear it frames, from the first frame of the helmed idle, at the sets' scale, so it matches the helmed
+  Battle Suit (it replaces Sean's pixel helmet, made for the Autosprite hero). `PlayerVisual.HELMET_OFFSET` is what
+  helmetgen measures on the bare Battle Suit, whose head lies where the helm's does.
+- **Run speed:** each set's run plays at the frame rate its stride needs for the planted foot to keep pace with the
+  ground at the run speed (165 px/s, section 6): 25 to 36 fps, from the foot's backward travel per cycle.
 
 ## 14. Technical Architecture (Godot)
 
