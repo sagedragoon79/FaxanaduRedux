@@ -1151,6 +1151,8 @@ Deviations, and why:
 
 The goal: buy one key upgrade per zone without grinding, and buy everything only if you explore.
 
+**Gold stays in the room (pass 285).** Pass 283 kept every food and item drop inside its room, but coins were left out. A coin falls until something stops it, so gold from a foe slain over a floor gap fell through and was lost unless the hero stood within the magnet's 100 px. Struck from a ladder with a Rune Dagger or a spell, the Tower's two Nagas lost 18 and 13 of 72 test coins down their shafts. Coins now keep to the room by the same rule as drops (`Drop.keep_in_room`): a coin stops at a side edge, and one that falls through a gap rests on the floor at the gap's nearer edge. `test_a_nagas_gold_lands_where_you_can_reach_it`.
+
 ### 10.2 Shops
 
 | Shop | Location | Sells |

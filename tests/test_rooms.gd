@@ -1683,6 +1683,54 @@ func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
 		await frames(2)
 
 
+func test_a_nagas_gold_lands_where_you_can_reach_it() -> void:
+	for id: String in ["tower/foot", "tower/mine_shaft"]:
+		var w := make_world({}, id)
+		await frames(2)
+		var n: Naga = null
+		for c in w.room.get_children():
+			if c is Naga:
+				n = c
+			elif c is Enemy:
+				c.queue_free()
+		check(n != null, "%s keeps its Naga" % id)
+		if n == null:
+			w.queue_free()
+			await frames(1)
+			continue
+		var bounds := Rect2(Vector2.ZERO, Vector2(w.room.size_tiles) * Room.TILE)
+		# The hero struck from afar (a thrown Rune Dagger, a spell) and waits out
+		# of the coins' magnet range, so each coin is judged where it comes to rest.
+		w.player.teleport(Vector2(3 * Room.TILE, 4 * Room.TILE))
+		w.player.frozen = true
+		var lost: Array[String] = []
+		var tried := 0
+		var start_gold := w.player.gold
+		for k in 8:
+			for dy in [-Naga.SWING, 0.0, Naga.SWING]:
+				for vx in [-80.0, 0.0, 80.0]:
+					var at := n.home + Vector2(k * 15.0, dy - 22.0)
+					var c := Coin.new()
+					c.value = 5
+					c.velocity = Vector2(vx, -200)
+					w.room.add_child(c)
+					c.global_position = at
+					tried += 1
+					for f in 240:
+						await frames(1)
+						if not is_instance_valid(c) or c._age > 0.8 and c.is_on_floor() and absf(c.velocity.x) < 1.0:
+							break
+					if not is_instance_valid(c) or not c.is_on_floor() or not bounds.has_point(c.global_position):
+						lost.append("(%d, %d) vx %d -> %s" % [at.x, at.y, vx, c.global_position if is_instance_valid(c) else "gone"])
+					if is_instance_valid(c):
+						c.free()
+		check(w.player.gold == start_gold, "%s: no coin was taken while it was judged" % id)
+		w.player.frozen = false
+		check(lost.is_empty(), "%s: every coin lands on a floor in the room (%d of %d lost: %s)" % [id, lost.size(), tried, lost])
+		w.queue_free()
+		await frames(2)
+
+
 func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
