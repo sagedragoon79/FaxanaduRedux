@@ -275,6 +275,8 @@ var _glove_timer := 0.0
 var _glove_spark := 0.0
 var _poison_timer := 0.0
 var _poison_tick := 0.0
+## Health each poison tick takes: POISON_DAMAGE scaled by the room's threat.
+var _poison_damage := POISON_DAMAGE
 var _attack_timer := 0.0
 var _attack_cooldown := 0.0
 var _attack_hits := {}
@@ -1759,10 +1761,13 @@ func _tick_glove(delta: float) -> void:
 
 
 ## Drinks in poison: for POISON_TIME seconds you lose POISON_DAMAGE health
-## every POISON_TICK, down to 1. An Ointment keeps it off. False if it didn't take.
+## every POISON_TICK, down to 1, scaled by the room's threat like a foe's blow
+## (bible 7, pass 306). An Ointment keeps it off. False if it didn't take.
 func poison() -> bool:
 	if dead or _ointment_timer > 0.0:
 		return false
+	var room := get_tree().get_first_node_in_group("room") as Room
+	_poison_damage = POISON_DAMAGE if room == null else roundi(POISON_DAMAGE * room.threat())
 	_poison_timer = POISON_TIME
 	_poison_tick = POISON_TICK
 	return true
@@ -1779,7 +1784,7 @@ func _tick_poison(delta: float) -> void:
 	if _poison_tick <= 0.0:
 		_poison_tick += POISON_TICK
 		if not dead and _ointment_timer <= 0.0 and hp > 1:
-			hp = maxi(1, hp - POISON_DAMAGE)
+			hp = maxi(1, hp - _poison_damage)
 			health_changed.emit(hp, max_hp)
 	if _poison_timer <= 0.0:
 		GameState.toast.emit("The poison fades.")
