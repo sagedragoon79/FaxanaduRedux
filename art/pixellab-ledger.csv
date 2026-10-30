@@ -979,3 +979,27 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r2,?,queued 854a7614-37c8-4814-9fce-f9bcd4b2bc3d,plate_cloak_large_shield_block_r2
 2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r2,1.0 generations,"done 854a7614-37c8-4814-9fce-f9bcd4b2bc3d, 9 image(s)",plate_cloak_large_shield_block_r2
 2026-10-30,characters/animations,hero/base_cloak/magic_shield/block_r2,1.0 generations,"done 3469f54c-8799-41ed-9685-109e3953fdd8, 9 image(s)",base_cloak_magic_shield_block_r2
+2026-10-30,characters/animations,hero/studded_cloak/throw_up,?,queued d773b73b-f36b-42f2-a866-8a760725f6b7,studded_cloak_throw_up
+2026-10-30,characters/animations,hero/base_cloak/throw_up,?,queued 1dc9e1a5-420d-49f3-b52d-26906a2ed8ff,base_cloak_throw_up
+2026-10-30,characters/animations,hero/leather_cloak/throw_up,?,queued c9277485-90bc-4700-923b-6410e0438fc2,leather_cloak_throw_up
+2026-10-30,characters/animations,hero/base_cloak/throw,?,queued b2614242-fc73-47fb-8813-8010d5bb935c,base_cloak_throw
+2026-10-30,characters/animations,hero/plate_cloak/throw_up,?,queued a80ebf77-1da9-43f3-80bb-d4f4a188c213,plate_cloak_throw_up
+2026-10-30,characters/animations,hero/battle_cloak/throw_up,?,queued bdce77b2-961d-4860-9666-91af49bd3489,battle_cloak_throw_up
+2026-10-30,characters/animations,hero/plate_cloak/throw,?,queued 6f701026-5c21-4a59-b2f5-fa566e379b53,plate_cloak_throw
+2026-10-30,characters/animations,hero/battle_helm_cloak/throw_up,?,queued 2fe58e3f-3431-4101-aa50-9b13c1e5e50b,battle_helm_cloak_throw_up
+2026-10-30,characters/animations,hero/studded_cloak/throw,?,queued ed821110-8eb8-402d-ba33-18ac4827df0e,studded_cloak_throw
+2026-10-30,characters/animations,hero/battle_helm_cloak/throw,?,queued 1b406b71-3d7a-4e0c-a5c4-9cb905d76896,battle_helm_cloak_throw
+2026-10-30,characters/animations,hero/battle_cloak/throw,?,queued 06b2a667-a436-44fb-b268-0dd8107be517,battle_cloak_throw
+2026-10-30,characters/animations,hero/leather_cloak/throw,?,queued 5683c338-da3c-47b0-ad17-61ed2fd6c470,leather_cloak_throw
+2026-10-30,characters/animations,hero/leather_cloak/throw_up,1.0 generations,"done c9277485-90bc-4700-923b-6410e0438fc2, 9 image(s)",leather_cloak_throw_up
+2026-10-30,characters/animations,hero/base_cloak/throw,1.0 generations,"done b2614242-fc73-47fb-8813-8010d5bb935c, 9 image(s)",base_cloak_throw
+2026-10-30,characters/animations,hero/studded_cloak/throw,1.0 generations,"done ed821110-8eb8-402d-ba33-18ac4827df0e, 9 image(s)",studded_cloak_throw
+2026-10-30,characters/animations,hero/plate_cloak/throw,1.0 generations,"done 6f701026-5c21-4a59-b2f5-fa566e379b53, 9 image(s)",plate_cloak_throw
+2026-10-30,characters/animations,hero/plate_cloak/throw_up,1.0 generations,"done a80ebf77-1da9-43f3-80bb-d4f4a188c213, 9 image(s)",plate_cloak_throw_up
+2026-10-30,characters/animations,hero/leather_cloak/throw,1.0 generations,"done 5683c338-da3c-47b0-ad17-61ed2fd6c470, 9 image(s)",leather_cloak_throw
+2026-10-30,characters/animations,hero/battle_helm_cloak/throw_up,1.0 generations,"done 2fe58e3f-3431-4101-aa50-9b13c1e5e50b, 9 image(s)",battle_helm_cloak_throw_up
+2026-10-30,characters/animations,hero/studded_cloak/throw_up,1.0 generations,"done d773b73b-f36b-42f2-a866-8a760725f6b7, 9 image(s)",studded_cloak_throw_up
+2026-10-30,characters/animations,hero/base_cloak/throw_up,1.0 generations,"done 1dc9e1a5-420d-49f3-b52d-26906a2ed8ff, 9 image(s)",base_cloak_throw_up
+2026-10-30,characters/animations,hero/battle_cloak/throw_up,1.0 generations,"done bdce77b2-961d-4860-9666-91af49bd3489, 9 image(s)",battle_cloak_throw_up
+2026-10-30,characters/animations,hero/battle_cloak/throw,1.0 generations,"done 06b2a667-a436-44fb-b268-0dd8107be517, 9 image(s)",battle_cloak_throw
+2026-10-30,characters/animations,hero/battle_helm_cloak/throw,1.0 generations,"done 1b406b71-3d7a-4e0c-a5c4-9cb905d76896, 9 image(s)",battle_helm_cloak_throw

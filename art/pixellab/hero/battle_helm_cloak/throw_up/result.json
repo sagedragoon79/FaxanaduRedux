@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "2fe58e3f-3431-4101-aa50-9b13c1e5e50b",
+ "status": "completed",
+ "created_at": "2026-10-30T22:27:49.447817+00:00",
+ "last_response": {
+  "seed": 1363305170,
+  "type": "done",
+  "action": "throws a small dagger straight up: a quick overhead flick of his right hand from his shoulder up above his head, the hand snapping open at the top, his gaze up, feet planted, then he recovers to a ready stance. Nothing flies from his hand. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9569565217391304,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "ca3c97af-4da4-42ba-9ada-dd4c5675a5ed",
+  "character_id": "0c79dd09-b02f-4357-8e85-7eae229cbda4",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0c79dd09-b02f-4357-8e85-7eae229cbda4/animations/ca3c97af-4da4-42ba-9ada-dd4c5675a5ed/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "2b87a678-1eea-4fa2-badf-43e30701f489",
+  "animation_name": "custom-throws a small dagger straight",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "5b888b90-d49a-4b5c-bb83-3fa7928b40ce",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T22:28:15.746341+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

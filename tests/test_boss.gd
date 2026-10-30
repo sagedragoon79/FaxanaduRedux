@@ -2197,6 +2197,11 @@ func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
 	check(absf(b.global_position.x - b.mirrored(then).x) < 6.0, "it copies where you were %.1f s ago, mirrored (%.0f vs %.0f)" % [ShadowEura.DELAY, b.global_position.x, b.mirrored(then).x])
 	check(b.global_position.x > b.mirrored(p.global_position).x + 20.0, "so it lags behind you")
 	check(b.facing == -1, "facing back at you")
+	# A clip the old sheet lacks (the Rune Dagger's flick) mirrors as its cast.
+	p.abilities["rune_dagger"] = true
+	p.throw_dagger()
+	await frames(2)
+	check(p.visual.anim == "throw" and b._history.back().anim == "cast", "a throw is reflected as the cast (%s, %s)" % [p.visual.anim, b._history.back().anim])
 
 
 func test_shadow_eura_echoes_your_swing_and_a_parry_breaks_it() -> void:

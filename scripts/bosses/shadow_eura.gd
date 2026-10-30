@@ -410,7 +410,12 @@ func _record() -> void:
 	var vis := p.visual
 	var anim := vis.anim if vis != null else "idle"
 	var frame := vis.frame if vis != null else 0
-	if vis != null and vis.sheet != PlayerVisual.SHEET_NAME:
+	if not Sheet.has_anim(PlayerVisual.SHEET_NAME, anim):
+		# A clip only the body sets have (the Rune Dagger's flick): the old
+		# sheet's nearest, the cast's outthrust hand.
+		anim = "cast"
+		frame = 0
+	elif vis != null and vis.sheet != PlayerVisual.SHEET_NAME:
 		# A body set's clip has its own frame count: take the same point in the
 		# old sheet's clip, which the shadow is drawn from.
 		var mine: int = Sheet.get_sheet(vis.sheet).animations[anim].frames.size()
