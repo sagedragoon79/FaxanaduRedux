@@ -241,3 +241,53 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/battle_helm/hurt,1.0 generations,"done 08b3cb39-4ac7-4db6-8b51-139643414d8a, 9 image(s)",battle_helm_hurt_armor_clip
 2026-10-30,characters/animations,hero/battle_helm/run,1.0 generations,"done 24c76b9a-1b94-44b2-beb8-875f871e4d83, 9 image(s)",battle_helm_run_armor_clip
 2026-10-30,characters/animations,hero/battle_helm/idle,8.0 generations,"done e6b22002-0d8e-456b-85ce-77afceb3f420, 9 image(s)",battle_helm_idle_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/swing,?,queued 05c6c2a3-9974-4603-b281-5e627a2f70ea,battle_helm_swing_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash2,?,queued caf0ebc4-1052-491a-8db6-23e9853478a9,battle_helm_slash2_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/pogo_air3,?,queued 4b071a0c-83da-4d86-a113-c6a0c439e352,battle_helm_pogo
+2026-10-30,characters/animations,hero/battle_helm/slash1,?,queued 7ecdecef-8ea3-4b49-a5f6-cd98e0b0931c,battle_helm_slash1_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash_up,?,queued 4577a97e-c24d-44ee-99b0-00e9fc75d974,battle_helm_slash_up_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash3,?,queued faf63dad-da3f-4995-a690-e14313df5191,battle_helm_slash3_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/pogo_air9,?,queued 11b0f54b-de92-46f5-b8da-c1f23f3c4bd7,battle_helm_pogo
+2026-10-30,characters/animations,hero/battle_helm/pogo_air3,2.0 generations,"done 4b071a0c-83da-4d86-a113-c6a0c439e352, 13 image(s)",battle_helm_pogo
+2026-10-30,characters/animations,hero/battle_helm/swing,2.0 generations,"done 05c6c2a3-9974-4603-b281-5e627a2f70ea, 13 image(s)",battle_helm_swing_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash2,2.0 generations,"done caf0ebc4-1052-491a-8db6-23e9853478a9, 13 image(s)",battle_helm_slash2_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash_up,2.0 generations,"done 4577a97e-c24d-44ee-99b0-00e9fc75d974, 13 image(s)",battle_helm_slash_up_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/slash1,2.0 generations,"done 7ecdecef-8ea3-4b49-a5f6-cd98e0b0931c, 13 image(s)",battle_helm_slash1_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/pogo_air9,2.0 generations,"done 11b0f54b-de92-46f5-b8da-c1f23f3c4bd7, 13 image(s)",battle_helm_pogo
+2026-10-30,characters/animations,hero/battle_helm/slash3,2.0 generations,"done faf63dad-da3f-4995-a690-e14313df5191, 13 image(s)",battle_helm_slash3_armor_clip
+2026-10-30,create-character-state,hero/states/base_long_sword,?,queued dc2dfb5b-4859-4f20-9a22-9e8bff1c662d,base_holding_long_sword
+2026-10-30,create-character-state,hero/states/base_dragon_slayer,?,queued 37119c3f-f4a4-42bd-96ce-4437ab01f534,base_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/base_broad_sword,?,queued 446dfe9e-561a-42e3-aa22-2edac88f6752,base_holding_broad_sword
+2026-10-30,create-character-state,hero/states/leather_long_sword,?,queued 108103d0-66a6-4ece-94af-c9954faaef49,leather_holding_long_sword
+2026-10-30,create-character-state,hero/states/base_long_sword,25.0 generations,"done dc2dfb5b-4859-4f20-9a22-9e8bff1c662d, 0 image(s)",base_holding_long_sword
+2026-10-30,create-character-state,hero/states/leather_broad_sword,?,queued 187487f8-1e9d-473a-aacb-3049ce980ea3,leather_holding_broad_sword
+2026-10-30,create-character-state,hero/states/base_broad_sword,25.0 generations,"done 446dfe9e-561a-42e3-aa22-2edac88f6752, 0 image(s)",base_holding_broad_sword
+2026-10-30,create-character-state,hero/states/leather_dragon_slayer,?,queued 394e453d-ce81-4741-a278-78f9ffd128af,leather_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/base_dragon_slayer,25.0 generations,"done 37119c3f-f4a4-42bd-96ce-4437ab01f534, 0 image(s)",base_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_long_sword,?,queued 91ac6735-9833-4356-b51e-e42cea890630,studded_holding_long_sword
+2026-10-30,create-character-state,hero/states/leather_long_sword,25.0 generations,"done 108103d0-66a6-4ece-94af-c9954faaef49, 0 image(s)",leather_holding_long_sword
+2026-10-30,create-character-state,hero/states/studded_broad_sword,?,queued 8c892182-6482-48ad-b6da-92095dc02697,studded_holding_broad_sword
+2026-10-30,create-character-state,hero/states/leather_dragon_slayer,25.0 generations,"done 394e453d-ce81-4741-a278-78f9ffd128af, 0 image(s)",leather_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_dragon_slayer,?,queued d93b202c-e9d3-4887-90a0-43a6f81fd8ff,studded_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_broad_sword,25.0 generations,"done 8c892182-6482-48ad-b6da-92095dc02697, 0 image(s)",studded_holding_broad_sword
+2026-10-30,create-character-state,hero/states/plate_long_sword,?,queued 5d6b6f2d-15b1-49a3-bd65-66da64e4f810,plate_holding_long_sword
+2026-10-30,create-character-state,hero/states/leather_broad_sword,25.0 generations,"done 187487f8-1e9d-473a-aacb-3049ce980ea3, 0 image(s)",leather_holding_broad_sword
+2026-10-30,create-character-state,hero/states/plate_broad_sword,?,queued d4bffe58-81b6-4961-a8b8-d780aa1073af,plate_holding_broad_sword
+2026-10-30,create-character-state,hero/states/studded_long_sword,25.0 generations,"done 91ac6735-9833-4356-b51e-e42cea890630, 0 image(s)",studded_holding_long_sword
+2026-10-30,create-character-state,hero/states/plate_dragon_slayer,?,queued c7677968-4f98-4743-abc9-5b60e229856c,plate_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/plate_long_sword,25.0 generations,"done 5d6b6f2d-15b1-49a3-bd65-66da64e4f810, 0 image(s)",plate_holding_long_sword
+2026-10-30,create-character-state,hero/states/battle_long_sword,?,queued 8ab327fc-8985-45b2-a485-4fba86994f5b,battle_holding_long_sword
+2026-10-30,create-character-state,hero/states/plate_broad_sword,25.0 generations,"done d4bffe58-81b6-4961-a8b8-d780aa1073af, 0 image(s)",plate_holding_broad_sword
+2026-10-30,create-character-state,hero/states/battle_broad_sword,?,queued abc168c5-740d-4985-b9af-918db35ac052,battle_holding_broad_sword
+2026-10-30,create-character-state,hero/states/studded_dragon_slayer,25.0 generations,"done d93b202c-e9d3-4887-90a0-43a6f81fd8ff, 0 image(s)",studded_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_dragon_slayer,?,queued 0dd4018f-4726-43f1-9ea5-1bb972b5b2d6,battle_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/plate_dragon_slayer,25.0 generations,"done c7677968-4f98-4743-abc9-5b60e229856c, 0 image(s)",plate_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_helm_long_sword,?,queued d7810ea5-de82-4cef-8d6c-95bc9d87937d,battle_helm_holding_long_sword
+2026-10-30,create-character-state,hero/states/battle_long_sword,25.0 generations,"done 8ab327fc-8985-45b2-a485-4fba86994f5b, 0 image(s)",battle_holding_long_sword
+2026-10-30,create-character-state,hero/states/battle_helm_broad_sword,?,queued 18daa60a-8525-4b1b-9752-b5d91dae2597,battle_helm_holding_broad_sword
+2026-10-30,create-character-state,hero/states/battle_dragon_slayer,25.0 generations,"done 0dd4018f-4726-43f1-9ea5-1bb972b5b2d6, 0 image(s)",battle_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_helm_dragon_slayer,?,queued 4b70b262-eee6-4435-ba35-379d834ba83e,battle_helm_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_broad_sword,25.0 generations,"done abc168c5-740d-4985-b9af-918db35ac052, 0 image(s)",battle_holding_broad_sword
+2026-10-30,create-character-state,hero/states/battle_helm_broad_sword,25.0 generations,"done 18daa60a-8525-4b1b-9752-b5d91dae2597, 0 image(s)",battle_helm_holding_broad_sword
+2026-10-30,create-character-state,hero/states/battle_helm_dragon_slayer,25.0 generations,"done 4b70b262-eee6-4435-ba35-379d834ba83e, 0 image(s)",battle_helm_holding_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_helm_long_sword,25.0 generations,"done d7810ea5-de82-4cef-8d6c-95bc9d87937d, 0 image(s)",battle_helm_holding_long_sword

@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "875609fe-00a4-49cd-9bdd-285371a0e61b",
+ "status": "completed",
+ "created_at": "2026-10-30T16:47:13.895334+00:00",
+ "last_response": {
+  "seed": 4002913429,
+  "type": "done",
+  "action": "collapsing defeated: he staggers, drops to his knees, then falls forward face down onto the ground and lies still. He faces right in strict side profile the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.4601308580164305,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "11c1fbec-b465-47b9-b1ca-a11ba77fa121",
+  "character_id": "79da29d1-164a-41e2-8629-e0642cdec467",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/79da29d1-164a-41e2-8629-e0642cdec467/animations/11c1fbec-b465-47b9-b1ca-a11ba77fa121/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "b987faa2-9d8d-4c52-83da-d14936bb632a",
+  "animation_name": "custom-collapsing defeated: he stagge",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "32114f91-e943-44ea-84f0-59a25bc2ff1f",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:47:41.727853+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
