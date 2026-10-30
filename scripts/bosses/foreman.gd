@@ -85,9 +85,10 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * (FAST if phase == 2 else 1.0))
 
 
-## Its opening (Enemy.punishable): stunned or reeling from a parry.
+## Its opening (Enemy.punishable): stunned against a wall. Its rock never
+## reels from a parry (stagger below), so that is its only window.
 func punishable() -> bool:
-	return stunned() or is_staggered()
+	return stunned()
 
 
 func stunned() -> bool:

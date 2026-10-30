@@ -3800,3 +3800,66 @@ func test_king_grieve_calls_his_household_guard_from_the_throne() -> void:
 	check(GameState.data.xp == xp and w.room.get_children().filter(func(n: Node) -> bool: return n is Coin or n is Drop).is_empty(), "and pays nothing")
 	b._summon()
 	check(b.guards_called == 2, "and no more than %d come in a fight" % KingGrieve.GUARDS)
+
+
+## Pass 276 (bible 8, the openings table): each guardian names its opening as
+## punishable(), which Executioner and Bloodletting read, and the table says
+## what it is. Nothing held the table to the fights: the Foreman's row said
+## "or reeling from a parry", but its rock never reels, so that window never
+## opened. Here each guardian whose row names a parry is started in its own
+## arena and sent reeling as a parry would, and must stand open; the Foreman
+## must not. Every row naming a parry is checked.
+func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
+	const BY_NAME := {
+		"The Bark Knight Captain": "bark_captain", "The Marsh Hag Matriarch": "hag_matriarch",
+		"The Clockwork Alpha": "clockwork_alpha", "King Grieve": "king_grieve", "Shadow Eura": "shadow_eura",
+		"The Evil One, phase 1": "evil_avatar", "The Foreman": "foreman",
+	}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var at := bible.find("**The openings, as built (pass 163):**")
+	check(at >= 0, "bible 8 has the openings table")
+	var parried := {}
+	var rows := 0
+	for line: String in bible.substr(at, 2500).split("\n"):
+		var cells := line.split("|")
+		if cells.size() != 4 or not line.begins_with("| ") or line.begins_with("| Boss") or line.begins_with("| ---"):
+			continue
+		rows += 1
+		var opening := cells[2].strip_edges()
+		if opening.contains("parry"):
+			parried[cells[1].strip_edges()] = not opening.begins_with("stunned against a wall")
+	check(rows >= 15, "the table names every guardian's opening (%d rows)" % rows)
+	check(parried.keys().all(func(n: String) -> bool: return BY_NAME.has(n)), "each row naming a parry is checked (%s)" % [parried.keys()])
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	for name: String in parried:
+		var id: String = BY_NAME.get(name, "")
+		if not rooms.has(id):
+			check(false, "%s has an arena" % name)
+			continue
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		await _until(func() -> bool: return not (boss.state in ["intro", "dormant", "reveal"]), 400)
+		await frames(30)
+		var shut: bool = not boss.punishable()
+		boss.stagger()
+		await frames(1)
+		if parried[name]:
+			check(shut and boss.punishable(), "%s: on its guard it is shut, and a parry opens it (%s)" % [name, boss.state])
+		else:
+			check(not boss.punishable(), "%s: a parry does not open it, as its row says (%s)" % [name, boss.state])
+		w.queue_free()
+		await frames(2)
