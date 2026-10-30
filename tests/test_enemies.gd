@@ -2323,6 +2323,39 @@ func test_a_slain_naga_leaves_a_great_loaf() -> void:
 	room.free()
 
 
+## Pass 289: as in the original, a slain Myconid always leaves bread, even
+## with every drop chance at zero, and eating it heals a bread's worth.
+func test_a_slain_myconid_leaves_bread() -> void:
+	var room := make_room(["##############################", "#............................#", "#............................#", "#............................#", "#............................#", "##############################"])
+	var p := make_player(room, Vector2i(3, 4))
+	await frames(5)
+	var chances := [Drop.bread_chance, Drop.mana_chance, Drop.rare_chance]
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
+	Drop.rare_chance = 0.0
+	var m := BogMyconid.new()
+	room.add_child(m)
+	m.global_position = cell_feet(20, 4)
+	await frames(2)
+	m.take_hit(999, Vector2.RIGHT)
+	Drop.bread_chance = chances[0]
+	Drop.mana_chance = chances[1]
+	Drop.rare_chance = chances[2]
+	var drops := room.get_children().filter(func(c: Node) -> bool: return c is Drop)
+	check(drops.size() == 1 and drops[0].kind == "bread", "it leaves bread, though no drop was rolled (%s)" % [drops.map(func(d: Drop) -> String: return d.kind)])
+	if drops.is_empty():
+		room.free()
+		return
+	var bread: Drop = drops[0]
+	await frames(60)
+	check(bread.is_on_floor(), "it falls to the floor")
+	p.hp = 20
+	p.teleport(bread.global_position)
+	await frames(3)
+	check(p.hp == 20 + Drop.BREAD_HEAL and not is_instance_valid(bread), "eaten, it heals %d (%d)" % [Drop.BREAD_HEAL, p.hp])
+	room.free()
+
+
 func test_the_nagas_bite_can_be_parried() -> void:
 	var rows: Array = ["##############################"]
 	for i in 12:

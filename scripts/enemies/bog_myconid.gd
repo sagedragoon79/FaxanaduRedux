@@ -5,6 +5,8 @@ extends Enemy
 ## telegraph, a light that shows through the fog), then it bursts into a cloud
 ## of spores that hangs in the air and stings anyone inside. Spent, its cap
 ## sags open and soft: strike it then for half again the damage. Legend `V`.
+## As in the original, where the Myconid always drops health-restoring bread,
+## a slain one always leaves a loaf of bread (pass 289).
 
 ## How near you must come (px, centre to centre) before it swells.
 const SIGHT_X := 84.0
@@ -30,6 +32,7 @@ func _init() -> void:
 	gold_min = 3
 	gold_max = 7
 	xp = 8
+	sure_drop = "bread"
 	body_size = Vector2(20, 26)
 	knockback = 0.0
 	contact_damage = 10

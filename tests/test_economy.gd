@@ -2003,6 +2003,10 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	var naga := Naga.new()
 	check(naga.sure_drop == "loaf" and Drop.LOAF_HEAL > Drop.BREAD_HEAL, "a slain Naga leaves the great loaf")
 	naga.free()
+	# Pass 289: the Myconid, the original's one walker that always drops bread.
+	var myconid := BogMyconid.new()
+	check(myconid.sure_drop == "bread", "a slain Myconid leaves bread")
+	myconid.free()
 	for id: String in nagas:
 		var grid: Array = rooms[id].grid
 		var near := false
