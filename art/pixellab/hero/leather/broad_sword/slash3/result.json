@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "499fc872-4fd5-4501-93c4-c2b05fc4e1ce",
+ "status": "completed",
+ "created_at": "2026-10-30T17:50:09.704805+00:00",
+ "last_response": {
+  "seed": 1643192960,
+  "type": "done",
+  "action": "a heavy overhead finishing slash: he raises the great sword high above his head with both hands, leaps slightly forward and chops down hard in a big arc in front of him to knee height, then recovers. He faces right in strict side profile the whole time and never turns toward the camera. The great sword stays the same size and shape in every frame. He holds the great sword in both hands.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "4e7c5290-4aaf-4081-adc7-d8ec96c72317",
+  "character_id": "f725aa56-2f65-4c2a-b999-9229f2a19702",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f725aa56-2f65-4c2a-b999-9229f2a19702/animations/4e7c5290-4aaf-4081-adc7-d8ec96c72317/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "3bbb57d8-b398-48b9-aabc-6d3dde08e356",
+  "animation_name": "custom-a heavy overhead finishing sla",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "2811ba3b-b3a3-4327-b363-f20bc9076f5b",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T17:50:37.536562+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

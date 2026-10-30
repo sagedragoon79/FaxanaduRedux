@@ -351,5 +351,347 @@
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, battle_helm armor of Sean's elf, battle_helm state 79da29d1, pixminimax"},
    "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, battle_helm armor of Sean's elf, battle_helm state 79da29d1, pixminimax"}
   }
+ },
+ "hero_base_long_sword": {
+  "dir": "../pixellab/sheets/hero_base_long_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 8, 9], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_leather_long_sword": {
+  "dir": "../pixellab/sheets/hero_leather_long_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, leather armor of Sean's elf, leather state 2d157505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_studded_long_sword": {
+  "dir": "../pixellab/sheets/hero_studded_long_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, studded armor of Sean's elf, studded state 739d02b0, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_plate_long_sword": {
+  "dir": "../pixellab/sheets/hero_plate_long_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, plate armor of Sean's elf, plate state 58c47505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 8, 9], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_battle_long_sword": {
+  "dir": "../pixellab/sheets/hero_battle_long_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle armor of Sean's elf, battle state 50e97960, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_battle_helm_long_sword": {
+  "dir": "../pixellab/sheets/hero_battle_helm_long_sword",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle_helm armor of Sean's elf, battle_helm state 79da29d1, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Long Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Long Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 6, 7, 8], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Long Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Long Sword, pixminimax"}
+  }
+ },
+ "hero_base_broad_sword": {
+  "dir": "../pixellab/sheets/hero_base_broad_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 7, 8], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_leather_broad_sword": {
+  "dir": "../pixellab/sheets/hero_leather_broad_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, leather armor of Sean's elf, leather state 2d157505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_studded_broad_sword": {
+  "dir": "../pixellab/sheets/hero_studded_broad_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, studded armor of Sean's elf, studded state 739d02b0, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_plate_broad_sword": {
+  "dir": "../pixellab/sheets/hero_plate_broad_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, plate armor of Sean's elf, plate state 58c47505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_battle_broad_sword": {
+  "dir": "../pixellab/sheets/hero_battle_broad_sword",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle armor of Sean's elf, battle state 50e97960, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 6, 7, 8], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_battle_helm_broad_sword": {
+  "dir": "../pixellab/sheets/hero_battle_helm_broad_sword",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle_helm armor of Sean's elf, battle_helm state 79da29d1, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dwarvish Broad Sword, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dwarvish Broad Sword, pixminimax"}
+  }
+ },
+ "hero_base_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_base_dragon_slayer",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, base set holding the Dragon Slayer, pixminimax"}
+  }
+ },
+ "hero_leather_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_leather_dragon_slayer",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, leather armor of Sean's elf, leather state 2d157505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, leather set holding the Dragon Slayer, pixminimax"}
+  }
+ },
+ "hero_studded_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_studded_dragon_slayer",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, studded armor of Sean's elf, studded state 739d02b0, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 5, 6], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, studded set holding the Dragon Slayer, pixminimax"}
+  }
+ },
+ "hero_plate_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_plate_dragon_slayer",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, plate armor of Sean's elf, plate state 58c47505, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, plate set holding the Dragon Slayer, pixminimax"}
+  }
+ },
+ "hero_battle_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_battle_dragon_slayer",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle armor of Sean's elf, battle state 50e97960, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 3, 4], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle set holding the Dragon Slayer, pixminimax"}
+  }
+ },
+ "hero_battle_helm_dragon_slayer": {
+  "dir": "../pixellab/sheets/hero_battle_helm_dragon_slayer",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab, battle_helm armor of Sean's elf, battle_helm state 79da29d1, v3 idle"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 4, 5, 6], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dragon Slayer, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dragon Slayer, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dragon Slayer, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set holding the Dragon Slayer, pixminimax"}
+  }
  }
 }

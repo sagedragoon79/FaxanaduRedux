@@ -291,3 +291,159 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,create-character-state,hero/states/battle_helm_broad_sword,25.0 generations,"done 18daa60a-8525-4b1b-9752-b5d91dae2597, 0 image(s)",battle_helm_holding_broad_sword
 2026-10-30,create-character-state,hero/states/battle_helm_dragon_slayer,25.0 generations,"done 4b70b262-eee6-4435-ba35-379d834ba83e, 0 image(s)",battle_helm_holding_dragon_slayer
 2026-10-30,create-character-state,hero/states/battle_helm_long_sword,25.0 generations,"done d7810ea5-de82-4cef-8d6c-95bc9d87937d, 0 image(s)",battle_helm_holding_long_sword
+2026-10-30,characters/animations,hero/base/long_sword/slash3,?,queued 0a328436-0b43-401c-96d5-ce5e2fbed869,base_long_sword_slash3
+2026-10-30,characters/animations,hero/base/long_sword/slash2,?,queued 228af5dc-1079-4f65-9171-efd66d327f5e,base_long_sword_slash2
+2026-10-30,characters/animations,hero/base/broad_sword/slash_up,?,queued 4b30fefb-8c7f-4a1c-adbb-e61a514dcc3b,base_broad_sword_slash_up
+2026-10-30,characters/animations,hero/base/long_sword/slash1,?,queued 0a5d64aa-a7db-42c9-aebb-2ad70094c1bf,base_long_sword_slash1
+2026-10-30,characters/animations,hero/base/broad_sword/slash2,?,queued 1b0a91f8-bca8-44d9-bbcc-ab78f69dfe9d,base_broad_sword_slash2
+2026-10-30,characters/animations,hero/base/broad_sword/slash1,?,queued f7e02589-12c6-4380-8acc-ab6a8bf6b85c,base_broad_sword_slash1
+2026-10-30,characters/animations,hero/base/broad_sword/slash3,?,queued 40ecd2ae-3fdf-496d-b430-c9995a76281e,base_broad_sword_slash3
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash1,?,queued b38eb958-5dcf-4e12-8dde-ac5f14d323ce,base_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/base/long_sword/slash_up,?,queued 02e5a2c9-0622-4245-9564-dbae4f136f64,base_long_sword_slash_up
+2026-10-30,characters/animations,hero/base/long_sword/slash3,2.0 generations,"done 0a328436-0b43-401c-96d5-ce5e2fbed869, 13 image(s)",base_long_sword_slash3
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash2,?,queued 177097c1-b75c-4225-bd3c-b2133a16e809,base_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/base/long_sword/slash2,2.0 generations,"done 228af5dc-1079-4f65-9171-efd66d327f5e, 13 image(s)",base_long_sword_slash2
+2026-10-30,characters/animations,hero/base/broad_sword/slash3,2.0 generations,"done 40ecd2ae-3fdf-496d-b430-c9995a76281e, 13 image(s)",base_broad_sword_slash3
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash3,?,queued fb564282-05f4-4530-b07e-9c78e99a52ae,base_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash_up,?,queued 67fa24b3-c821-434b-8436-7ec3a8202c1f,base_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/base/long_sword/slash1,2.0 generations,"done 0a5d64aa-a7db-42c9-aebb-2ad70094c1bf, 13 image(s)",base_long_sword_slash1
+2026-10-30,characters/animations,hero/leather/long_sword/slash1,?,queued 162c67da-fe86-4e00-b9e1-b27dd790d148,leather_long_sword_slash1
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash1,2.0 generations,"done b38eb958-5dcf-4e12-8dde-ac5f14d323ce, 13 image(s)",base_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/leather/long_sword/slash2,?,queued 741c801d-763d-4ded-8be3-882bf14ee926,leather_long_sword_slash2
+2026-10-30,characters/animations,hero/base/long_sword/slash_up,2.0 generations,"done 02e5a2c9-0622-4245-9564-dbae4f136f64, 13 image(s)",base_long_sword_slash_up
+2026-10-30,characters/animations,hero/leather/long_sword/slash3,?,queued d28f243a-6964-4f27-b4a2-6e85f4ddb836,leather_long_sword_slash3
+2026-10-30,characters/animations,hero/base/broad_sword/slash_up,2.0 generations,"done 4b30fefb-8c7f-4a1c-adbb-e61a514dcc3b, 13 image(s)",base_broad_sword_slash_up
+2026-10-30,characters/animations,hero/leather/long_sword/slash_up,?,queued c1c081ba-d602-4a4d-b01b-4b4d9083bb0d,leather_long_sword_slash_up
+2026-10-30,characters/animations,hero/base/broad_sword/slash2,2.0 generations,"done 1b0a91f8-bca8-44d9-bbcc-ab78f69dfe9d, 13 image(s)",base_broad_sword_slash2
+2026-10-30,characters/animations,hero/base/broad_sword/slash1,2.0 generations,"done f7e02589-12c6-4380-8acc-ab6a8bf6b85c, 13 image(s)",base_broad_sword_slash1
+2026-10-30,characters/animations,hero/leather/broad_sword/slash1,?,queued 878c2d86-544b-4745-a73d-4a129bed151e,leather_broad_sword_slash1
+2026-10-30,characters/animations,hero/leather/broad_sword/slash2,?,queued 36f0509d-cbe4-475f-bcaf-d1c03bfec654,leather_broad_sword_slash2
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash_up,2.0 generations,"done 67fa24b3-c821-434b-8436-7ec3a8202c1f, 13 image(s)",base_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/leather/broad_sword/slash3,?,queued 499fc872-4fd5-4501-93c4-c2b05fc4e1ce,leather_broad_sword_slash3
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash2,2.0 generations,"done 177097c1-b75c-4225-bd3c-b2133a16e809, 13 image(s)",base_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/leather/long_sword/slash1,2.0 generations,"done 162c67da-fe86-4e00-b9e1-b27dd790d148, 13 image(s)",leather_long_sword_slash1
+2026-10-30,characters/animations,hero/leather/broad_sword/slash_up,?,queued 7df45dc8-bed0-4680-b1f4-8165e516129b,leather_broad_sword_slash_up
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash1,?,queued ef5482f8-9bc9-4803-a0af-896775851df4,leather_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/base/dragon_slayer/slash3,2.0 generations,"done fb564282-05f4-4530-b07e-9c78e99a52ae, 13 image(s)",base_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash2,?,queued cf2d72de-f91e-4830-a044-c1ae27df05fa,leather_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/leather/long_sword/slash2,2.0 generations,"done 741c801d-763d-4ded-8be3-882bf14ee926, 13 image(s)",leather_long_sword_slash2
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash3,?,queued 8c110e72-99af-46fe-b4fe-7be4ca34fa75,leather_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/leather/broad_sword/slash2,2.0 generations,"done 36f0509d-cbe4-475f-bcaf-d1c03bfec654, 13 image(s)",leather_broad_sword_slash2
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash_up,?,queued ee548f2e-5637-4f0f-81dc-e01ca4156a12,leather_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash1,2.0 generations,"done ef5482f8-9bc9-4803-a0af-896775851df4, 13 image(s)",leather_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/studded/long_sword/slash1,?,queued 6b79b991-cdff-48bc-a045-db4bf2fe1d3e,studded_long_sword_slash1
+2026-10-30,characters/animations,hero/leather/broad_sword/slash3,2.0 generations,"done 499fc872-4fd5-4501-93c4-c2b05fc4e1ce, 13 image(s)",leather_broad_sword_slash3
+2026-10-30,characters/animations,hero/studded/long_sword/slash2,?,queued 81e35f3a-3371-44c0-bd4c-756748ea9516,studded_long_sword_slash2
+2026-10-30,characters/animations,hero/leather/broad_sword/slash_up,2.0 generations,"done 7df45dc8-bed0-4680-b1f4-8165e516129b, 13 image(s)",leather_broad_sword_slash_up
+2026-10-30,characters/animations,hero/studded/long_sword/slash3,?,queued b33fc30c-c02d-40b1-9e7c-dffd8db4cc12,studded_long_sword_slash3
+2026-10-30,characters/animations,hero/leather/broad_sword/slash1,2.0 generations,"done 878c2d86-544b-4745-a73d-4a129bed151e, 13 image(s)",leather_broad_sword_slash1
+2026-10-30,characters/animations,hero/studded/long_sword/slash_up,?,queued a6ed3b32-d444-4a70-8747-e6509dac9699,studded_long_sword_slash_up
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash2,2.0 generations,"done cf2d72de-f91e-4830-a044-c1ae27df05fa, 13 image(s)",leather_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/studded/broad_sword/slash1,?,queued dcbffb0d-3b65-4429-8021-0bb735614cd2,studded_broad_sword_slash1
+2026-10-30,characters/animations,hero/leather/long_sword/slash_up,2.0 generations,"done c1c081ba-d602-4a4d-b01b-4b4d9083bb0d, 13 image(s)",leather_long_sword_slash_up
+2026-10-30,characters/animations,hero/studded/broad_sword/slash2,?,queued 7d5a8477-bd02-456d-971f-b4fe8c409f7a,studded_broad_sword_slash2
+2026-10-30,characters/animations,hero/leather/long_sword/slash3,2.0 generations,"done d28f243a-6964-4f27-b4a2-6e85f4ddb836, 13 image(s)",leather_long_sword_slash3
+2026-10-30,characters/animations,hero/studded/broad_sword/slash3,?,queued d5ddfa32-8b5d-40a1-b583-13e18d5f4988,studded_broad_sword_slash3
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash3,2.0 generations,"done 8c110e72-99af-46fe-b4fe-7be4ca34fa75, 13 image(s)",leather_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/studded/broad_sword/slash_up,?,queued 3096f6e5-cff7-4c31-bc64-18cdbab6d54a,studded_broad_sword_slash_up
+2026-10-30,characters/animations,hero/studded/long_sword/slash1,2.0 generations,"done 6b79b991-cdff-48bc-a045-db4bf2fe1d3e, 13 image(s)",studded_long_sword_slash1
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash1,?,queued b0beba07-15c0-46e4-a70a-f327434f7a18,studded_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/studded/long_sword/slash3,2.0 generations,"done b33fc30c-c02d-40b1-9e7c-dffd8db4cc12, 13 image(s)",studded_long_sword_slash3
+2026-10-30,characters/animations,hero/leather/dragon_slayer/slash_up,2.0 generations,"done ee548f2e-5637-4f0f-81dc-e01ca4156a12, 13 image(s)",leather_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash2,?,queued f0202ffd-e5a4-4b7b-95cd-38e31edae72f,studded_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash3,?,queued d0c39454-2e14-4cbf-b192-64077894d210,studded_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/studded/long_sword/slash2,2.0 generations,"done 81e35f3a-3371-44c0-bd4c-756748ea9516, 13 image(s)",studded_long_sword_slash2
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash_up,?,queued eb71b3c9-a8e2-4550-ae97-dd124f712421,studded_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/studded/long_sword/slash_up,2.0 generations,"done a6ed3b32-d444-4a70-8747-e6509dac9699, 13 image(s)",studded_long_sword_slash_up
+2026-10-30,characters/animations,hero/plate/long_sword/slash1,?,queued 69c1672e-f761-41d7-962d-5bcdbf807334,plate_long_sword_slash1
+2026-10-30,characters/animations,hero/studded/broad_sword/slash1,2.0 generations,"done dcbffb0d-3b65-4429-8021-0bb735614cd2, 13 image(s)",studded_broad_sword_slash1
+2026-10-30,characters/animations,hero/plate/long_sword/slash2,?,queued 1b3dce12-cd52-40fc-865c-e31d4eafafb5,plate_long_sword_slash2
+2026-10-30,characters/animations,hero/studded/broad_sword/slash3,2.0 generations,"done d5ddfa32-8b5d-40a1-b583-13e18d5f4988, 13 image(s)",studded_broad_sword_slash3
+2026-10-30,characters/animations,hero/plate/long_sword/slash3,?,queued bd6a745f-532e-4312-97b1-875056a206a6,plate_long_sword_slash3
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash3,2.0 generations,"done d0c39454-2e14-4cbf-b192-64077894d210, 13 image(s)",studded_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/plate/long_sword/slash_up,?,queued e728f21f-e62c-40da-927b-1f6ffc27386d,plate_long_sword_slash_up
+2026-10-30,characters/animations,hero/studded/broad_sword/slash_up,2.0 generations,"done 3096f6e5-cff7-4c31-bc64-18cdbab6d54a, 13 image(s)",studded_broad_sword_slash_up
+2026-10-30,characters/animations,hero/plate/broad_sword/slash1,?,queued 13dd30f7-7a0b-4df1-af06-abb15850dac2,plate_broad_sword_slash1
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash1,2.0 generations,"done b0beba07-15c0-46e4-a70a-f327434f7a18, 13 image(s)",studded_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/plate/broad_sword/slash2,?,queued 9bc8e378-8902-4368-8066-73cb2354ae7e,plate_broad_sword_slash2
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash_up,2.0 generations,"done eb71b3c9-a8e2-4550-ae97-dd124f712421, 13 image(s)",studded_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/plate/broad_sword/slash3,?,queued 8d6ef3b5-0f85-4e7e-aa2d-1eb6441a4674,plate_broad_sword_slash3
+2026-10-30,characters/animations,hero/studded/dragon_slayer/slash2,2.0 generations,"done f0202ffd-e5a4-4b7b-95cd-38e31edae72f, 13 image(s)",studded_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/plate/broad_sword/slash_up,?,queued a24dbb66-9c82-461f-bc72-ca0dcf3cabfd,plate_broad_sword_slash_up
+2026-10-30,characters/animations,hero/plate/long_sword/slash2,2.0 generations,"done 1b3dce12-cd52-40fc-865c-e31d4eafafb5, 13 image(s)",plate_long_sword_slash2
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash1,?,queued 45d8ffb1-3158-41d2-ab4f-22e31beade45,plate_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/plate/long_sword/slash1,2.0 generations,"done 69c1672e-f761-41d7-962d-5bcdbf807334, 13 image(s)",plate_long_sword_slash1
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash2,?,queued 5d398301-92d3-4945-a181-eb26a8720829,plate_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/studded/broad_sword/slash2,2.0 generations,"done 7d5a8477-bd02-456d-971f-b4fe8c409f7a, 13 image(s)",studded_broad_sword_slash2
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash3,?,queued 672cd28b-39ca-43ff-97bf-fa6673ef6dda,plate_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/plate/long_sword/slash3,2.0 generations,"done bd6a745f-532e-4312-97b1-875056a206a6, 13 image(s)",plate_long_sword_slash3
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash_up,?,queued 36bbd87a-0c9c-4c6a-b818-d261cbb99eb3,plate_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/plate/broad_sword/slash1,2.0 generations,"done 13dd30f7-7a0b-4df1-af06-abb15850dac2, 13 image(s)",plate_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle/long_sword/slash1,?,queued 7f7b3bb0-e317-4453-832a-812bdd3144b7,battle_long_sword_slash1
+2026-10-30,characters/animations,hero/plate/broad_sword/slash2,2.0 generations,"done 9bc8e378-8902-4368-8066-73cb2354ae7e, 13 image(s)",plate_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle/long_sword/slash2,?,queued 51769f00-637d-468f-b863-4dd04b01c44e,battle_long_sword_slash2
+2026-10-30,characters/animations,hero/plate/broad_sword/slash3,2.0 generations,"done 8d6ef3b5-0f85-4e7e-aa2d-1eb6441a4674, 13 image(s)",plate_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle/long_sword/slash3,?,queued 362e7a13-5478-4a01-afac-98b3b753d45d,battle_long_sword_slash3
+2026-10-30,characters/animations,hero/plate/long_sword/slash_up,2.0 generations,"done e728f21f-e62c-40da-927b-1f6ffc27386d, 13 image(s)",plate_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle/long_sword/slash_up,?,queued 4a68d2e6-88ed-450a-a828-d5ff7722bf3d,battle_long_sword_slash_up
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash1,2.0 generations,"done 45d8ffb1-3158-41d2-ab4f-22e31beade45, 13 image(s)",plate_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle/broad_sword/slash1,?,queued 0354e8ae-71f6-4e91-824d-d33e6e2e52e1,battle_broad_sword_slash1
+2026-10-30,characters/animations,hero/plate/broad_sword/slash_up,2.0 generations,"done a24dbb66-9c82-461f-bc72-ca0dcf3cabfd, 13 image(s)",plate_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle/broad_sword/slash2,?,queued ed92a403-c10c-4461-82db-638b21894825,battle_broad_sword_slash2
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash2,2.0 generations,"done 5d398301-92d3-4945-a181-eb26a8720829, 13 image(s)",plate_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle/broad_sword/slash3,?,queued 04f26057-c589-4c0e-8d66-11f78828778a,battle_broad_sword_slash3
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash3,2.0 generations,"done 672cd28b-39ca-43ff-97bf-fa6673ef6dda, 13 image(s)",plate_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle/broad_sword/slash_up,?,queued 2ad7b3dc-0670-4f44-99d4-8a1624b36949,battle_broad_sword_slash_up
+2026-10-30,characters/animations,hero/plate/dragon_slayer/slash_up,2.0 generations,"done 36bbd87a-0c9c-4c6a-b818-d261cbb99eb3, 13 image(s)",plate_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash1,?,queued c275cca6-2d13-496b-b000-075bd1344337,battle_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle/long_sword/slash2,2.0 generations,"done 51769f00-637d-468f-b863-4dd04b01c44e, 13 image(s)",battle_long_sword_slash2
+2026-10-30,characters/animations,hero/battle/long_sword/slash1,2.0 generations,"done 7f7b3bb0-e317-4453-832a-812bdd3144b7, 13 image(s)",battle_long_sword_slash1
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash2,?,queued 8d9a484d-ed31-48e5-9643-4af9305fb0bb,battle_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash3,?,queued ce05d9d4-bf8c-41ec-a773-218aeed2162f,battle_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle/long_sword/slash_up,2.0 generations,"done 4a68d2e6-88ed-450a-a828-d5ff7722bf3d, 13 image(s)",battle_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash_up,?,queued 2cc221f1-e3d9-4c27-a54b-0057b4fbb498,battle_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle/long_sword/slash3,2.0 generations,"done 362e7a13-5478-4a01-afac-98b3b753d45d, 13 image(s)",battle_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash1,?,queued a63a2a9e-0dd4-4973-9447-ba1cb2daa0af,battle_helm_long_sword_slash1
+2026-10-30,characters/animations,hero/battle/broad_sword/slash3,2.0 generations,"done 04f26057-c589-4c0e-8d66-11f78828778a, 13 image(s)",battle_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash2,?,queued 57acff96-420b-4801-9079-2fbedfba3542,battle_helm_long_sword_slash2
+2026-10-30,characters/animations,hero/battle/broad_sword/slash2,2.0 generations,"done ed92a403-c10c-4461-82db-638b21894825, 13 image(s)",battle_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash3,?,queued 1a2b6e8e-1254-4ce8-bae1-60793ccc9d9c,battle_helm_long_sword_slash3
+2026-10-30,characters/animations,hero/battle/broad_sword/slash_up,2.0 generations,"done 2ad7b3dc-0670-4f44-99d4-8a1624b36949, 13 image(s)",battle_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash_up,?,queued 5b46e3d0-45bc-4c6f-9d51-3eaa4d3007fc,battle_helm_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash3,2.0 generations,"done ce05d9d4-bf8c-41ec-a773-218aeed2162f, 13 image(s)",battle_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash_up,2.0 generations,"done 2cc221f1-e3d9-4c27-a54b-0057b4fbb498, 13 image(s)",battle_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash1,?,queued ce456a6c-ea4c-44b0-be46-4220fad2f124,battle_helm_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash2,?,queued cc87cca1-f7ba-4048-a380-75a353171edf,battle_helm_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash2,2.0 generations,"done 8d9a484d-ed31-48e5-9643-4af9305fb0bb, 13 image(s)",battle_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash3,?,queued 9da62c93-86ed-4f7e-ae0e-c713b64ff8f1,battle_helm_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash2,2.0 generations,"done 57acff96-420b-4801-9079-2fbedfba3542, 13 image(s)",battle_helm_long_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash_up,?,queued 8aa08589-286b-4b3c-9d04-f365b18fa7fa,battle_helm_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash1,2.0 generations,"done a63a2a9e-0dd4-4973-9447-ba1cb2daa0af, 13 image(s)",battle_helm_long_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash1,?,queued 92c7dc21-6530-43ca-a0f1-f15bfa2c78fd,battle_helm_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash3,2.0 generations,"done 1a2b6e8e-1254-4ce8-bae1-60793ccc9d9c, 13 image(s)",battle_helm_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash2,?,queued c5e1a224-5523-4d28-88df-8e7559420b1f,battle_helm_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_helm/long_sword/slash_up,2.0 generations,"done 5b46e3d0-45bc-4c6f-9d51-3eaa4d3007fc, 13 image(s)",battle_helm_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash3,?,queued 3b28aa09-13a1-4a30-b158-e55858784e2e,battle_helm_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle/broad_sword/slash1,2.0 generations,"done 0354e8ae-71f6-4e91-824d-d33e6e2e52e1, 13 image(s)",battle_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash_up,?,queued 3255cfae-5091-4b9d-8b8a-005dbe408392,battle_helm_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle/dragon_slayer/slash1,2.0 generations,"done c275cca6-2d13-496b-b000-075bd1344337, 13 image(s)",battle_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash2,2.0 generations,"done cc87cca1-f7ba-4048-a380-75a353171edf, 13 image(s)",battle_helm_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash_up,2.0 generations,"done 8aa08589-286b-4b3c-9d04-f365b18fa7fa, 13 image(s)",battle_helm_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash1,2.0 generations,"done ce456a6c-ea4c-44b0-be46-4220fad2f124, 13 image(s)",battle_helm_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm/broad_sword/slash3,2.0 generations,"done 9da62c93-86ed-4f7e-ae0e-c713b64ff8f1, 13 image(s)",battle_helm_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash2,2.0 generations,"done c5e1a224-5523-4d28-88df-8e7559420b1f, 13 image(s)",battle_helm_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash1,2.0 generations,"done 92c7dc21-6530-43ca-a0f1-f15bfa2c78fd, 13 image(s)",battle_helm_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash3,2.0 generations,"done 3b28aa09-13a1-4a30-b158-e55858784e2e, 13 image(s)",battle_helm_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_helm/dragon_slayer/slash_up,2.0 generations,"done 3255cfae-5091-4b9d-8b8a-005dbe408392, 13 image(s)",battle_helm_dragon_slayer_slash_up
+2026-10-30,create-character-state,hero/states/base_cloak_key,?,queued 6ac23df7-337b-42e3-a8b1-68cd049731aa,base_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/leather_cloak_key,?,queued 9a457b02-0aa0-49f0-84d4-f770fd12eff2,leather_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/base_cloak_key,25.0 generations,"done 6ac23df7-337b-42e3-a8b1-68cd049731aa, 0 image(s)",base_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/leather_cloak_key,25.0 generations,"done 9a457b02-0aa0-49f0-84d4-f770fd12eff2, 0 image(s)",leather_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/leather_cloak_short_sword,?,queued 09698c90-7ee9-4096-a084-2044e6693aac,leather_cloak_holding_the_Short_Sword
+2026-10-30,characters/animations,hero/leather_cloak/walk,?,queued fda7efd6-1b10-4256-8f3d-5e31e234403d,leather_cloak_sample_walk
+2026-10-30,characters/animations,hero/leather_cloak/run,?,queued d6b2fa94-24fc-4ef9-98a9-ad10b855a9fa,leather_cloak_sample_run
+2026-10-30,characters/animations,hero/leather_cloak/jump,?,queued d2ed4875-6c02-40c1-a59f-7a037f6f4582,leather_cloak_sample_jump
+2026-10-30,characters/animations,hero/leather_cloak/run,1.0 generations,"done d6b2fa94-24fc-4ef9-98a9-ad10b855a9fa, 9 image(s)",leather_cloak_sample_run
+2026-10-30,characters/animations,hero/leather_cloak/walk,2.0 generations,"done fda7efd6-1b10-4256-8f3d-5e31e234403d, 13 image(s)",leather_cloak_sample_walk
+2026-10-30,create-character-state,hero/states/leather_cloak_short_sword,25.0 generations,"done 09698c90-7ee9-4096-a084-2044e6693aac, 0 image(s)",leather_cloak_holding_the_Short_Sword
+2026-10-30,characters/animations,hero/leather_cloak/jump,2.0 generations,"done d2ed4875-6c02-40c1-a59f-7a037f6f4582, 17 image(s)",leather_cloak_sample_jump

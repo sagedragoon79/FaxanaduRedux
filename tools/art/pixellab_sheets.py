@@ -49,6 +49,13 @@ for _armor in ("leather", "studded", "plate", "battle", "battle_helm"):
         ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
         ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
         ("drink.png", "drink"), ("cast.png", "cast"))}
+# Each set's four attacks again with the other blades (Sean: swords are drawn into the attacks),
+# from its state holding that blade: sheet "hero_<set>_<blade>".
+for _set in ("base", "leather", "studded", "plate", "battle", "battle_helm"):
+    for _blade in ("long_sword", "broad_sword", "dragon_slayer"):
+        # The set's own idle too, as the importer's reference for scale (it never plays from here).
+        SHEETS[f"hero_{_set}_{_blade}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"], **{
+            f"{clip}.png": f"hero/{_set}/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
 # Retakes that came out better: pogos that stay in the air, and a first slash in profile.
 SHEETS["hero_leather"]["pogo.png"] = "hero/leather/pogo_air3"
 SHEETS["hero_studded"]["pogo.png"] = "hero/studded/pogo_air9"
@@ -62,10 +69,42 @@ def frames_of(folder):
     return sorted(p for p in (SOURCES / folder).glob("[0-9][0-9].png"))
 
 
+# PixelLab sometimes leaves a flat grey slab behind a smear or a cloak (one exact neutral grey,
+# about (130, 128, 130)). Any patch of it bigger than this is erased; small specks may be armor.
+SLAB_MIN = 150
+
+
+def clear_slabs(im):
+    px = im.load()
+    w, h = im.size
+
+    def slab(c):
+        return c[3] > 0 and 120 <= c[1] <= 140 and abs(c[0] - c[1]) <= 4 and abs(c[2] - c[1]) <= 4
+
+    seen = set()
+    for y in range(h):
+        for x in range(w):
+            if (x, y) in seen or not slab(px[x, y]):
+                continue
+            patch, todo = [], [(x, y)]
+            seen.add((x, y))
+            while todo:
+                cx, cy = todo.pop()
+                patch.append((cx, cy))
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen and slab(px[nx, ny]):
+                        seen.add((nx, ny))
+                        todo.append((nx, ny))
+            if len(patch) >= SLAB_MIN:
+                for q in patch:
+                    px[q] = (0, 0, 0, 0)
+    return im
+
+
 def pack(paths):
     strip = Image.new("RGBA", (CELL * len(paths), CELL))
     for i, p in enumerate(paths):
-        im = Image.open(p).convert("RGBA")
+        im = clear_slabs(Image.open(p).convert("RGBA"))
         # PixelLab clips are 256 px canvases; a smaller one is centred on the cell's floor.
         strip.alpha_composite(im, (i * CELL + (CELL - im.width) // 2, CELL - im.height))
     return strip
