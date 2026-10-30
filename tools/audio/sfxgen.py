@@ -1398,6 +1398,21 @@ def main():
     out[at:at + sn] += snap
     save("naga_strike", out, 0.8)
 
+    # An empty flask (pass 286): the cork pulls on nothing. A dry pop, then the
+    # hollow glass rings twice, small and high, with no swallow after it.
+    d = 0.32
+    n = int(RATE * d)
+    out = np.zeros(n)
+    pn = int(RATE * 0.03)
+    out[:pn] += lowpass(highpass(noise(0.03), 600), 3000) * env(pn, 0.0005, 4.0) * 0.6
+    for st, f, a in ((0.04, 1760.0, 0.5), (0.12, 2350.0, 0.3)):
+        i = int(RATE * st)
+        ln = n - i
+        ring = osc(slide(f, f * 0.98, ln / RATE), "sine") * env(ln, 0.001, 3.0)
+        body = osc(slide(f * 0.25, f * 0.24, ln / RATE), "sine") * env(ln, 0.002, 4.0) * 0.35
+        out[i:] += (ring + body)[:ln] * a
+    save("flask_empty", out, 0.45)
+
 
 if __name__ == "__main__":
     main()

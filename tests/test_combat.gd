@@ -847,6 +847,63 @@ func test_spikes_cost_a_mask_and_casts_wait_their_cooldown() -> void:
 	room.free()
 
 
+## Pass 286 (bible 13.3): a press that does nothing is heard when there is a
+## reason to tell you. An empty flask clinks; a spell short of MP and a glass
+## still running back fizzle; each once per press, spending nothing. A cast
+## pressed inside its cooldown stays silent: the cast just sounded.
+func test_a_refused_drink_cast_or_glass_is_heard_once() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"hourglass": true})
+	p.max_hp = 100
+	p.hp = 50
+	await frames(4)
+	# The empty flask.
+	p.flask_charges = 0
+	Sfx.recent.clear()
+	p.input.heal_pressed = true
+	await frames(1)
+	p.input.heal_pressed = false
+	await frames(30)
+	check(Sfx.recent == ["flask_empty"], "an empty flask clinks, once (%s)" % [Sfx.recent])
+	check(p.hp == 50 and not p.is_drinking, "and nothing is drunk (%d)" % p.hp)
+	check(ResourceLoader.exists("res://assets/sfx/flask_empty.wav"), "flask_empty is rendered")
+	# A full flask at full health: nothing to drink for, nothing heard.
+	p.flask_charges = 2
+	p.hp = 100
+	Sfx.recent.clear()
+	p.input.heal_pressed = true
+	await frames(1)
+	await frames(30)
+	check(Sfx.recent.is_empty() and p.flask_charges == 2, "at full health a press is quiet and spends nothing (%s)" % [Sfx.recent])
+	# A spell short of MP.
+	p.mp = p.spell_cost(p.equipped_spell) - 1.0
+	var mp := p.mp
+	Sfx.recent.clear()
+	p.input.spell_pressed = true
+	await frames(1)
+	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("cast"), "a spell short of MP fizzles, once (%s)" % [Sfx.recent])
+	check(p.mp <= mp + 0.1, "and spends nothing (%.1f)" % p.mp)
+	# A cast, then a press inside the cooldown: silent.
+	p.mp = 60.0
+	p.input.spell_pressed = true
+	await frames(1)
+	Sfx.recent.clear()
+	await frames(6)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(not Sfx.recent.has("fizzle") and not Sfx.recent.has("cast"), "a press inside the cooldown is silent (%s)" % [Sfx.recent])
+	# The glass, turned while it runs back.
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(TimeStop.active(), "the glass turns")
+	Sfx.recent.clear()
+	p.input.hourglass_pressed = true
+	await frames(1)
+	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("hourglass"), "turned again while it runs back, it fizzles, once (%s)" % [Sfx.recent])
+	TimeStop.reset()
+	room.free()
+
+
 ## Bible 5.3: guarding you walk at 40% of a run; MP comes back at 2 a second.
 func test_a_guard_walks_slow_and_mp_comes_back_slowly() -> void:
 	var room := make_room(ARENA)

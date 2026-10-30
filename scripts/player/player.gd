@@ -1370,6 +1370,11 @@ func _update_drink(delta: float, on_floor: bool) -> void:
 			Sfx.play("heal")
 			health_changed.emit(hp, max_hp)
 		return
+	if input.heal_pressed and flask_charges <= 0:
+		# An empty flask is heard (pass 286): the cork pulls on nothing, so a
+		# press in a tight spot isn't met with silence. Shrines refill it.
+		Sfx.play("flask_empty", 0.0, -2.0)
+		return
 	if input.heal_pressed and flask_charges > 0 and on_floor and hp < max_hp and not is_attacking and not is_dashing:
 		_drink_timer = combat.drink_time * drink_mult
 		Sfx.play("drink")
