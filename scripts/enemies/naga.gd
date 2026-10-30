@@ -16,10 +16,14 @@ const SIGHT := 112.0
 ## Level with it: the player's chest within this many px of its head.
 const LEVEL := 24.0
 const WINDUP := 0.5
+## In the coil it follows your height along its column, slower than you climb
+## (pass 275): a climber who keeps climbing is still met by the strike, and the
+## safe way past is in its recovery after a strike.
+const COIL_TRACK := 60.0
 const STRIKE_SPEED := 260.0
 const STRIKE_TIME := 0.4
-const RETURN_SPEED := 90.0
-const COOLDOWN := 1.2
+const RETURN_SPEED := 120.0
+const COOLDOWN := 2.0
 ## Its body brushed against: a scrape. The strike's bite is the real harm,
 ## and it can be parried.
 const TOUCH_DAMAGE := 8
@@ -96,6 +100,9 @@ func _think(delta: float) -> void:
 				Sfx.play("naga_hiss", 0.1, -4.0)
 		"coil":
 			velocity = Vector2.ZERO
+			if off.x != INF:
+				var want := clampf(center().y + off.y, home.y - SWING, home.y + SWING)
+				velocity.y = clampf((want - global_position.y) / maxf(delta, 0.001), -COIL_TRACK, COIL_TRACK)
 			face_player()
 			if state_time >= WINDUP:
 				_dir = Vector2(facing, 0)
