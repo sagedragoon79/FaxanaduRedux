@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "21ffcbcf-b961-4dc5-b7bc-741b38473192",
+ "status": "completed",
+ "created_at": "2026-10-30T19:11:22.497674+00:00",
+ "last_response": {
+  "seed": 4258858452,
+  "type": "done",
+  "action": "a heavy overhead mattock swing to break stone: he raises the mattock high behind his head with both hands, steps forward and brings it down hard in a big arc in front of him to knee height, the pick biting into the stone with a jolt, then wrenches it free and returns to ready. He faces right in strict side profile the whole time and never turns toward the camera. The mattock stays the same size and shape in every frame. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.36112190060124466,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "0e88bb6a-d225-4f2f-8ae4-c7c5e107142e",
+  "character_id": "7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7cb3ebd9-d8b4-4c0c-9f55-5d1162b8f489/animations/0e88bb6a-d225-4f2f-8ae4-c7c5e107142e/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "6eacce2d-ed18-4bde-a1dd-91259c1913a7",
+  "animation_name": "custom-a heavy overhead mattock swing",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "f728b22f-6d89-405a-b419-78dd2096291a",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:11:48.216259+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

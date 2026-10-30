@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "57c1a3d1-16bf-4f44-80cc-c7d487dfd8ad",
+ "status": "completed",
+ "created_at": "2026-10-30T19:05:21.646700+00:00",
+ "last_response": {
+  "seed": 112628005,
+  "type": "done",
+  "action": "an upward great sword slash: he thrusts the great sword straight up overhead in a fast rising arc, the blade pointing at the sky above his head at the peak, then brings it back down to ready. He faces right in strict side profile the whole time and never turns toward the camera. The great sword stays the same size and shape in every frame. He holds the great sword in both hands. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9591428571428571,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "3190c77d-982b-4c61-9ef9-de2aa815b4a3",
+  "character_id": "1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ed6baaf-67b0-42c2-ac9d-d4c3d70733ea/animations/3190c77d-982b-4c61-9ef9-de2aa815b4a3/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "e7def4f2-5f6b-4d67-b36f-bdfa9e04fbfa",
+  "animation_name": "custom-an upward great sword slash: h",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "878cab54-850e-44d9-9525-494e9bbdb9bc",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:05:47.355081+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

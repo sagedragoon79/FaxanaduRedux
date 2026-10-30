@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "0d16db15-3353-45ea-97bc-30e9f22f4acc",
+ "status": "completed",
+ "created_at": "2026-10-30T19:12:08.070987+00:00",
+ "last_response": {
+  "seed": 1364847390,
+  "type": "done",
+  "action": "a fast running cycle seen strictly from the side, long strides with each leg, arms pumping, leaning forward slightly, loops seamlessly, running in place. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.29343521381511684,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "fbf578dd-cd05-43e2-a9ae-164337c9540f",
+  "character_id": "049a8cb7-2ae7-491f-a83d-3bfedbb97fd0",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/fbf578dd-cd05-43e2-a9ae-164337c9540f/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "39206ee7-7473-48c8-8bdc-1f57e0cde272",
+  "animation_name": "custom-a fast running cycle seen stri",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "164b9143-50e7-4e94-a38a-c901a60422ba",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:12:34.525328+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

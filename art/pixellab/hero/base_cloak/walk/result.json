@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "70b85dfa-df99-4922-ab6c-bee5d82d8b43",
+ "status": "completed",
+ "created_at": "2026-10-30T18:53:58.890159+00:00",
+ "last_response": {
+  "seed": 3774420780,
+  "type": "done",
+  "action": "a brisk walk cycle seen strictly from the side, one full stride with each leg, arms swinging naturally, loops seamlessly, walking in place. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "9c25f59c-d946-4eac-84c5-2be371a2324c",
+  "character_id": "ce65acea-2d45-4c2d-b219-3051b774225b",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/9c25f59c-d946-4eac-84c5-2be371a2324c/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "f3ee28c2-b661-4bce-9536-4c031ba1c67b",
+  "animation_name": "custom-a brisk walk cycle seen strict",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "b056ba84-4030-4484-b592-cf096c34d9d3",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T18:54:24.768668+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

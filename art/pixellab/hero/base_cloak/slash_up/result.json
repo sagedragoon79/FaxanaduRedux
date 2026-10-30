@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "93a58aaf-08e9-4b94-aab7-e2715c12f91c",
+ "status": "completed",
+ "created_at": "2026-10-30T18:58:24.573561+00:00",
+ "last_response": {
+  "seed": 2942717937,
+  "type": "message_done",
+  "action": "an upward sword slash: he thrusts the sword straight up overhead in a fast rising arc, the blade pointing at the sky above his head at the peak, then brings it back down to ready. He faces right in strict side profile the whole time and never turns toward the camera. The sword stays the same size and shape in every frame. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.47703113757905324,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16",
+  "character_id": "ac35bd04-a13d-49bb-b89a-ca14f363ac47",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ac35bd04-a13d-49bb-b89a-ca14f363ac47/animations/a840f6a9-ac3c-45d5-b2d4-ebc6fe187e16/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "3e8f87af-3dc3-4c83-96f4-da2defd52c99",
+  "animation_name": "custom-an upward sword slash: he thru",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "17746163-66a8-47a1-bd84-73fa8fd5cb17",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T18:58:52.367797+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
