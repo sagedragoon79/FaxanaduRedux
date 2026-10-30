@@ -3863,3 +3863,70 @@ func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
 			check(not boss.punishable(), "%s: a parry does not open it, as its row says (%s)" % [name, boss.state])
 		w.queue_free()
 		await frames(2)
+
+
+## Bible 13.3 (pass 102): every boss telegraph is heard as it starts. The scan in
+## test_enemies reads set_state("x_tell") calls, but most guardians pick a move and
+## enter it as set_state(pick + "_tell"), which the scan cannot read. So each
+## guardian is fought here for a while, and every tell it enters must sound in the
+## frame it starts (or the two after).
+func test_every_guardian_tell_is_heard_as_it_starts() -> void:
+	var tell_re := RegEx.create_from_string("windup|tell|^wind$|^coil$|^rev$|^unfold$|^gather$")
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	var silent: Array[String] = []
+	var tells := {}
+	for id: String in rooms:
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		if ar == null:
+			w.queue_free()
+			await frames(2)
+			continue
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		var last := String(boss.state)
+		var heard: Array[int] = []
+		var opened := {}
+		Sfx.recent.clear()
+		for f in 1500:
+			await frames(1)
+			if not is_instance_valid(boss) or boss.dead:
+				break
+			w.player.hp = 99999
+			if f == 600 and "max_hp" in boss:
+				# Down past its phase marks, to hear the later tells too.
+				boss.hp = maxi(2, ceili(boss.max_hp * 0.15) + 1)
+				boss.take_hit(1, Vector2.RIGHT)
+			var mine := Sfx.recent.filter(func(s: String) -> bool:
+				return not (s.begins_with("step_") or s in ["hurt", "land", "guard_hit", "heal"]))
+			Sfx.recent.clear()
+			heard.append(1 if not mine.is_empty() else 0)
+			var s := String(boss.state)
+			if s != last and tell_re.search(s) != null:
+				opened[s] = f
+			last = s
+			for t: String in opened.keys():
+				var at: int = opened[t]
+				if f - at >= 2:
+					var ok := heard[at] + heard[at + 1] + heard[at + 2] > 0
+					tells["%s:%s" % [id, t]] = true
+					if not ok and not silent.has("%s:%s" % [id, t]):
+						silent.append("%s:%s" % [id, t])
+					opened.erase(t)
+		Sfx.recent.clear()
+		w.queue_free()
+		await frames(2)
+	check(tells.size() >= 30, "the guardians show their tells (%d)" % tells.size())
+	check(silent.is_empty(), "every tell sounds as it starts: %s" % [silent])

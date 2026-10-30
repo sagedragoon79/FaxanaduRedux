@@ -255,6 +255,8 @@ func _choose(dist: float) -> void:
 	_since_pull = 0 if pick == "pull" else _since_pull + 1
 	face_player()
 	set_state(pick + "_tell")
+	# Heard as it starts (bible 13.3): the blade drawn back, or the spell gathering.
+	Sfx.play("tell_blade" if pick in ["cleave", "lunge"] else "tell_charge", 0.05, -2.0)
 
 
 func cleave_rect() -> Rect2:

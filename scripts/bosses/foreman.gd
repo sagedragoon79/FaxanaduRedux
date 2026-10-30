@@ -180,8 +180,12 @@ func _choose(dist: float) -> void:
 	_since_charge = 0 if pick == "charge" else _since_charge + 1
 	face_player()
 	set_state(pick + "_tell")
+	# Every tell is heard as it starts (bible 13.3): the charge is his roar, the
+	# pound and the heaved rock a low groan swelling up.
 	if pick == "charge":
 		Sfx.play("roar", 0.1, -10.0)
+	else:
+		Sfx.play("tell_heavy", 0.05, -2.0)
 
 
 func pound_rect() -> Rect2:
