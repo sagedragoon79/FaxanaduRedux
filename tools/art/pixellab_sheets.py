@@ -27,6 +27,16 @@ SHEETS = {
         "jump.png": "hero/sample/jump_mm",
         "pogo.png": "mattock/pogo_mm",
         "mattock_swing.png": "mattock/swing_mm",
+        "slash1.png": "hero/base/slash1b",
+        "slash2.png": "hero/base/slash2b",
+        "slash3.png": "hero/base/slash3",
+        "slash_up.png": "hero/base/slash_up",
+        "dash.png": "hero/base/dash",
+        "wall.png": "hero/base/wall",
+        "hurt.png": "hero/base/hurt",
+        "death.png": "hero/base/death",
+        "drink.png": "hero/base/drink",
+        "cast.png": "hero/base/cast",
     },
 }
 

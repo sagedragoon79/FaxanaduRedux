@@ -19,6 +19,7 @@ extends Node2D
 ##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
 ##   --shot-pogo                play a simple pogo hand: run right, jump off edges, strike down
 ##                              whenever falling (as the Mantra of Thorns test does)
+##   --shot-attack=N            press Attack every N frames (a sword combo, for captures)
 ##   --film=DIR                 save every frame up to --shot-frames as DIR/0000.png ... (with
 ##                              --film-every=N, every Nth), for animated captures
 ##   --map                      open the map before the screenshot
@@ -435,6 +436,9 @@ func _take_shot() -> void:
 	if _args.has("shot-throw") and _frames == int(_args["shot-throw"]):
 		# Screenshots: throw the Rune Dagger on this frame (to catch it in flight).
 		player.throw_dagger()
+	if _args.has("shot-attack") and player != null and _frames > 20:
+		player.input.scripted = true
+		player.input.attack_pressed = _frames % int(_args["shot-attack"]) == 0
 	if _args.has("shot-pogo") and player != null:
 		_pogo_hand()
 	if _args.has("film") and _frames % int(_args.get("film-every", "1")) == 0:

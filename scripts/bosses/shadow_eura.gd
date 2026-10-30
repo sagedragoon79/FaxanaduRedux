@@ -408,8 +408,15 @@ func _record() -> void:
 	if p == null:
 		return
 	var vis := p.visual
-	_history.append({"t": _clock, "pos": p.global_position, "facing": p.facing,
-		"anim": vis.anim if vis != null else "idle", "frame": vis.frame if vis != null else 0})
+	var anim := vis.anim if vis != null else "idle"
+	var frame := vis.frame if vis != null else 0
+	if vis != null and vis.sheet != PlayerVisual.SHEET_NAME:
+		# A body set's clip has its own frame count: take the same point in the
+		# old sheet's clip, which the shadow is drawn from.
+		var mine: int = Sheet.get_sheet(vis.sheet).animations[anim].frames.size()
+		var its: int = Sheet.get_sheet(PlayerVisual.SHEET_NAME).animations[anim].frames.size()
+		frame = mini(frame * its / maxi(mine, 1), its - 1)
+	_history.append({"t": _clock, "pos": p.global_position, "facing": p.facing, "anim": anim, "frame": frame})
 	while _history.size() > 2 and _history[1].t <= _clock - DELAY:
 		_history.pop_front()
 	if _swings >= 0 and p.swing_count != _swings and state in ["intro", "mirror", "echo"]:

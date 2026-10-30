@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "2938fa5e-dd9c-42c5-ad5f-747163b2fdf4",
+ "status": "completed",
+ "created_at": "2026-10-30T15:12:45.442744+00:00",
+ "last_response": {
+  "seed": 497383528,
+  "type": "done",
+  "action": "a heavy overhead finishing slash: he raises the sword high above his head with both hands, leaps slightly forward and chops down hard in a big arc in front of him to knee height, then recovers. He faces right in strict side profile the whole time and never turns toward the camera. The sword stays the same size and shape in every frame.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "4ca8ac50-7bbd-4e89-bd70-31ca1874d066",
+  "character_id": "e66a21a5-2948-421c-975c-7b63c754409f",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/e66a21a5-2948-421c-975c-7b63c754409f/animations/4ca8ac50-7bbd-4e89-bd70-31ca1874d066/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "658217cc-9558-4685-ba28-ee00b749adac",
+  "animation_name": "custom-a heavy overhead finishing sla",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "f8ce6f4e-d31b-4365-a2da-db2ffff0caae",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T15:13:20.558755+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
