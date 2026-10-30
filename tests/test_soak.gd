@@ -1741,6 +1741,74 @@ func test_every_room_loads_and_settles_inside_the_budget() -> void:
 	check(heavy.is_empty(), "every settled room averages under 8 ms a frame: %s" % [heavy])
 
 
+## Pass 287: no foe's spoils ever leave its room. Passes 283 and 285 kept a
+## drop and a coin in the room (`Drop.keep_in_room`), tested in the two Naga
+## rooms. Here every foe in every room dies at once, each leaving a loaf and
+## three coins, and every one of them must come to rest on a floor inside the
+## room, within its life, while the room keeps its frame budget. The hero is
+## frozen and counted out (dead), so nothing is taken before it is judged.
+func test_every_foes_spoils_rest_in_its_room() -> void:
+	var w := make_world({}, Trials.TEMPLE)
+	await frames(3)
+	var ids: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for file: String in DirAccess.get_files_at("res://levels/" + zone):
+			if file.ends_with(".room"):
+				ids.append(zone + "/" + file.trim_suffix(".room"))
+	ids.sort()
+	var lost: Array[String] = []
+	var heavy: Array[String] = []
+	var dropped := 0
+	var rooms := 0
+	for id in ids:
+		w.start(id)
+		await frames(2)
+		var p := w.player
+		p.frozen = true
+		p.dead = true
+		var bounds := Rect2(Vector2.ZERO, Vector2(w.room.size_tiles) * Room.TILE)
+		var spoils: Array[CharacterBody2D] = []
+		var k := 0
+		for e in w.room.get_children():
+			if not e is Enemy:
+				continue
+			var at := (e as Enemy).global_position + Vector2(0, -12)
+			var d := Drop.make(w.room, at, "loaf")
+			d.velocity = Vector2(40.0 if k % 2 == 0 else -40.0, -200)
+			spoils.append(d)
+			for vx in [-80.0, 0.0, 80.0]:
+				var c := Coin.new()
+				c.value = 5
+				c.velocity = Vector2(vx, -200)
+				w.room.add_child(c)
+				c.global_position = at
+				spoils.append(c)
+			k += 1
+		if spoils.is_empty():
+			p.dead = false
+			p.frozen = false
+			continue
+		rooms += 1
+		dropped += spoils.size()
+		var t0 := Time.get_ticks_usec()
+		await frames(300)
+		var frame_ms := (Time.get_ticks_usec() - t0) / 1000.0 / 300.0
+		if frame_ms > 8.0:
+			heavy.append("%s %.2f ms" % [id, frame_ms])
+		for b in spoils:
+			if not is_instance_valid(b) or b.is_queued_for_deletion():
+				lost.append("%s: gone" % id)
+			elif not b.is_on_floor() or not bounds.has_point(b.global_position):
+				lost.append("%s: %s at %s" % [id, "loaf" if b is Drop else "coin", b.global_position])
+			if is_instance_valid(b):
+				b.free()
+		p.dead = false
+		p.frozen = false
+	check(rooms >= 80, "foes stood in most rooms (%d rooms, %d spoils)" % [rooms, dropped])
+	check(lost.is_empty(), "every foe's loaf and coins rest on a floor in its room (%d of %d lost: %s)" % [lost.size(), dropped, lost.slice(0, 24)])
+	check(heavy.is_empty(), "and each room keeps its frame budget meanwhile: %s" % [heavy])
+
+
 ## Pass 220: every guardian's win says what it gave. A boss with a line of its
 ## own (Shadow Eura, the Evil One's avatar and veins) shows that line, which until
 ## pass 220 was written but never shown, and a skill point it gives is always
