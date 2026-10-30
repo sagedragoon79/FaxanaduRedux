@@ -1498,3 +1498,61 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 	d = await landing.call(w.room)
 	check(d != null and d.surface == "", "drained, the hall's floor puffs dust again")
 	GameState.data.flags.erase(Tide.DRAIN_FLAG)
+
+
+## Pass 272: bible 4.4 says Dartmoor's standing water (pass 259) is not deep
+## enough to swim, and that it neither slows you nor hides a hazard. Nothing
+## held that: a tide cell that read as swimming water, or a drag on the wade,
+## would have passed every test. Here, in the Flooded Hall's water: the run
+## reaches full speed, a jump rises its full height, and the spike pit under
+## the surface still bites, all without a stroke of swimming.
+func test_wading_neither_slows_nor_floats_nor_hides_the_spikes() -> void:
+	var w := make_world({}, "dartmoor/flooded_hall", cell_feet(10, 19))
+	for c in w.room.get_children():
+		if c is Enemy:
+			c.queue_free()
+	await frames(3)
+	var p := w.player
+	var t := p.tuning
+	var tide: Tide = w.room.tide
+	check(tide != null and not tide.drained(), "the hall stands in water")
+	if tide == null:
+		return
+	await _settle(p)
+	check(w.room.surface_at(p.global_position + Vector2(0, 2)) == "wade", "the hero stands in it (%s)" % w.room.surface_at(p.global_position + Vector2(0, 2)))
+	# Run east through the water, short of the pit (tiles 26-29).
+	var swam := false
+	var top := 0.0
+	p.input.move_x = 1
+	for i in 36:
+		await frames(1)
+		swam = swam or p.swimming
+		top = maxf(top, p.velocity.x)
+	p.input.move_x = 0
+	check(not swam, "wading is not swimming")
+	check_near(top, t.run_speed, 1.0, "the run reaches full speed in the water (px/s)")
+	await _settle(p)
+	var start_y := p.global_position.y
+	var min_y := start_y
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	for i in 70:
+		await frames(1)
+		swam = swam or p.swimming
+		min_y = minf(min_y, p.global_position.y)
+	p.input.jump_held = false
+	check_near(start_y - min_y, t.jump_height, 3.0, "a jump out of the water rises its full height (px)")
+	check(not swam, "and never takes a stroke")
+	# The pit under the surface: water to the spikes, and the spikes still bite.
+	var pit := Vector2i(27, 20)
+	check(tide.has_point(Vector2(pit) * Room.TILE + Vector2(8, 8)), "the spike pit is full of water")
+	p.max_hp = 999
+	p.hp = 999
+	p.teleport(w.room.to_global(Vector2(pit.x * Room.TILE + Room.TILE * 0.5, pit.y * Room.TILE + 4)))
+	for i in 40:
+		await frames(1)
+		swam = swam or p.swimming
+		if p.hp < 999:
+			break
+	check(p.hp < 999, "the spikes under the water still hurt (hp %d)" % p.hp)
+	check(not swam, "and the pit is waded, not swum")
