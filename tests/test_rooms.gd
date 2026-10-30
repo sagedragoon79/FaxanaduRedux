@@ -1731,6 +1731,63 @@ func test_a_nagas_gold_lands_where_you_can_reach_it() -> void:
 		await frames(2)
 
 
+## Pass 291: a foe knocked through a gap in its room's floor dies as it leaves
+## and pays out where you can reach it. In every room every walking foe is
+## driven by blows to one side, then the other: none may be left alive below
+## the room, and a fallen one's coins rest on a floor inside it.
+func test_a_foe_knocked_out_of_its_room_falls_to_its_death() -> void:
+	var w := make_world({}, Trials.TEMPLE)
+	await frames(3)
+	var ids: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for file: String in DirAccess.get_files_at("res://levels/" + zone):
+			if file.ends_with(".room"):
+				ids.append(zone + "/" + file.trim_suffix(".room"))
+	ids.sort()
+	var lost: Array[String] = []
+	var fell: Array[String] = []
+	var unpaid: Array[String] = []
+	for id in ids:
+		for side: float in [-1.0, 1.0]:
+			w.start(id)
+			await frames(2)
+			w.player.frozen = true
+			w.player.dead = true
+			var foes: Array = []
+			for e in w.room.get_children():
+				if e is Enemy and e.uses_gravity and not e.is_in_group("boss"):
+					e.max_hp = 99999
+					e.hp = 99999
+					# Only a fall kills a foe here: no blow comes near its health.
+					e.died.connect(func(x: Enemy) -> void: fell.append("%s %s" % [id, x.get_script().get_global_name()]))
+					foes.append(e)
+			if foes.is_empty():
+				w.player.dead = false
+				w.player.frozen = false
+				break
+			var gold_before := w.player.gold
+			var bounds := Rect2(Vector2.ZERO, Vector2(w.room.size_tiles) * Room.TILE)
+			for k in 12:
+				for e: Variant in foes:
+					if is_instance_valid(e) and not e.dead:
+						e.take_hit(1, Vector2(side * 1.8, 0))
+				await frames(18)
+			await frames(90)
+			for e: Variant in foes:
+				if not is_instance_valid(e):
+					continue
+				if not e.dead and e.global_position.y > bounds.end.y:
+					lost.append("%s %s" % [id, e.get_script().get_global_name()])
+			for c in w.room.get_children():
+				if c is Coin and not (c.is_on_floor() and bounds.has_point(c.global_position)):
+					unpaid.append("%s coin at %s" % [id, c.global_position])
+			w.player.dead = false
+			w.player.frozen = false
+	check(fell.size() >= 10, "foes were knocked through floor gaps (%d fell: %s)" % [fell.size(), fell])
+	check(lost.is_empty(), "none is left alive below its room: %s" % [lost])
+	check(unpaid.is_empty(), "and a fallen foe's coins rest on a floor in the room: %s" % [unpaid.slice(0, 8)])
+
+
 func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
