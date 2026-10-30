@@ -2274,3 +2274,57 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 			coiled = true
 	check(back, "it glides back to its column")
 	check(not coiled, "and never strikes at one above its swing")
+
+
+## Pass 274 (bible 5.3, "Parry: enemy staggered"): the Naga's strike was its
+## body's touch, which no shield can meet, while every other telegraphed bite
+## and slash in the game (the Spring Eel's, the Hound's, the Mantis's) is a
+## blow a parry turns. Now the strike is a bite: a parry takes no harm and
+## sets the serpent reeling, and an unmet bite lands whole. Its floating body
+## only scrapes. The hero stands on the floor here, as in the rooms: the first
+## cut ended a strike on any touch of its long body with the floor, so a Naga
+## level with a hero on the ground never reached them.
+func test_the_nagas_bite_can_be_parried() -> void:
+	var rows: Array = ["##############################"]
+	for i in 12:
+		rows.append("#............................#")
+	rows.append("##############################")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(10, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	p.has_shield = true
+	await frames(10)
+	var feet := p.global_position
+	var n := Naga.new()
+	room.add_child(n)
+	n.global_position = feet + Vector2(44, -20)
+	n.home = n.global_position
+	check(n.contact_damage == Naga.TOUCH_DAMAGE and Naga.TOUCH_DAMAGE < Naga.BITE_DAMAGE, "its body only scrapes (%d), the bite is the harm (%d)" % [Naga.TOUCH_DAMAGE, Naga.BITE_DAMAGE])
+	var meet := func(parry: bool) -> int:
+		p.global_position = feet
+		p.facing = 1
+		n.global_position = n.home
+		n.set_state("float")
+		n._cooldown = 0.0
+		n.velocity = Vector2.ZERO
+		var hp := p.hp
+		for i in 90:
+			await frames(1)
+			if n.state == "strike":
+				break
+		if parry:
+			p.input.block_pressed = true
+			p.input.block_held = true
+		for i in 20:
+			await frames(1)
+			p.input.block_pressed = false
+		p.input.block_held = false
+		return hp - p.hp
+	var took: int = await meet.call(true)
+	check(took == 0, "a parried bite does no harm (%d)" % took)
+	check(n.is_staggered(), "and sets the serpent reeling (%s)" % n.state)
+	await frames(90)
+	check(not n.is_staggered() and n.state != "stagger", "then it gathers itself (%s)" % n.state)
+	took = await meet.call(false)
+	check(took == Naga.BITE_DAMAGE, "unmet, the bite lands whole (%d)" % took)

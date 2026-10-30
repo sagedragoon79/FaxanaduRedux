@@ -6,7 +6,8 @@ extends Enemy
 ## to its swing. When you are level with it and in front, within about seven
 ## tiles, it draws its head back and flares its hood with a hiss (telegraph),
 ## then strikes straight out along that level, and glides back to its column.
-## Code-drawn at 2x.
+## The strike is a bite, and a shield's parry meets it like any blade's: no
+## harm, and the serpent reels (pass 274). Code-drawn at 2x.
 
 ## How far it floats above and below its home, and how long one swing takes.
 const SWING := 40.0
@@ -19,7 +20,10 @@ const STRIKE_SPEED := 260.0
 const STRIKE_TIME := 0.4
 const RETURN_SPEED := 90.0
 const COOLDOWN := 1.2
-const TOUCH_DAMAGE := 16
+## Its body brushed against: a scrape. The strike's bite is the real harm,
+## and it can be parried.
+const TOUCH_DAMAGE := 8
+const BITE_DAMAGE := 16
 
 const OUTLINE := Color("10201c")
 const SCALE := Color("3c8a6a")
@@ -32,6 +36,8 @@ const TONGUE := Color("e04050")
 
 var _dir := Vector2.ZERO
 var _cooldown := 0.0
+## Whether this strike has bitten (or been parried) already.
+var _bit := false
 ## Where in its swing it starts (0 to 1), so a room's Nagas need not swing
 ## together, and the game time it has floated (the swing follows game time,
 ## not the wall clock, so hitstop and slow motion hold it).
@@ -62,6 +68,11 @@ func swing_point(t: float) -> Vector2:
 	return home + Vector2(0, sin((t / SWING_TIME + _phase) * TAU) * SWING)
 
 
+## Where the jaws close in a strike: just ahead of it, along its level.
+func bite_rect() -> Rect2:
+	return Rect2(center() + Vector2(facing * 18.0 - 12.0, -12.0), Vector2(24, 20))
+
+
 ## True when the player is level with its head and in front of it, near enough to strike.
 func sees_level(off: Vector2) -> bool:
 	return off.x != INF and absf(off.y) <= LEVEL and absf(off.x) <= SIGHT
@@ -70,6 +81,8 @@ func sees_level(off: Vector2) -> bool:
 func _think(delta: float) -> void:
 	_cooldown -= delta
 	var off := player_offset()
+	# In the strike the bite does the harm (parryable), not the touch.
+	contact_damage = 0 if state == "strike" else TOUCH_DAMAGE
 	match state:
 		"float":
 			_swung += delta
@@ -86,11 +99,16 @@ func _think(delta: float) -> void:
 			face_player()
 			if state_time >= WINDUP:
 				_dir = Vector2(facing, 0)
+				_bit = false
 				set_state("strike")
 				Sfx.play("naga_strike", 0.1, -4.0)
 		"strike":
 			velocity = _dir * STRIKE_SPEED
-			if state_time >= STRIKE_TIME or get_slide_collision_count() > 0:
+			if not _bit and hit_player_in_rect(bite_rect(), BITE_DAMAGE) != "":
+				_bit = true
+			if state != "strike":
+				return
+			if state_time >= STRIKE_TIME or is_on_wall():
 				set_state("return")
 		"return":
 			var d := home - global_position
