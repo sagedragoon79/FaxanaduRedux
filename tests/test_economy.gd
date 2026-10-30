@@ -711,6 +711,36 @@ func test_bread_shrines_and_ointment_beat_poison() -> void:
 
 
 
+## Bible 13.3 (pass 302): every drop is heard as it is taken, and says what it
+## gave. Poison an Ointment keeps off was the one pickup that made no sound.
+func test_every_drop_is_heard_as_it_is_taken() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	var heard := {}
+	for kind: String in ["bread", "loaf", "mana", "poison", "glove", "ointment", "warded"]:
+		if kind == "warded":
+			p.ointments = 1
+			p.use_ointment()
+		var d := Drop.make(w.room, cell_feet(20, 19), "poison" if kind == "warded" else kind)
+		await frames(30)
+		p.teleport(d.global_position)
+		Sfx.recent.clear()
+		var toasts: Array[String] = []
+		var listen := func(text: String) -> void: toasts.append(text)
+		GameState.toast.connect(listen)
+		await frames(3)
+		GameState.toast.disconnect(listen)
+		check(not is_instance_valid(d), "%s is taken" % kind)
+		heard[kind] = Sfx.recent.duplicate()
+		check(not Sfx.recent.is_empty(), "taking %s makes a sound (%s)" % [kind, Sfx.recent])
+		check(not toasts.is_empty(), "and says what it gave (%s: %s)" % [kind, toasts])
+		p.teleport(cell_feet(8, 19))
+		p.cure_poison()
+		await frames(2)
+	check(heard.warded.has("ward"), "poison kept off rings like a ward (%s)" % [heard.warded])
+
+
 func test_the_guru_names_your_title_once() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(9, 19))
 	var p := w.player
