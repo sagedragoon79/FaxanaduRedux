@@ -1999,6 +1999,10 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 			if row.contains(")"):
 				nagas.append(id)
 	check(load("res://scripts/enemies/naga.gd") != null and nagas.size() >= 2 and nagas.all(func(id: String) -> bool: return id.begins_with("tower/")), "Nagas float over the Tower's ladders (%s)" % [nagas])
+	# Pass 281: and, slain, it always leaves the original's largest bread.
+	var naga := Naga.new()
+	check(naga.sure_drop == "loaf" and Drop.LOAF_HEAL > Drop.BREAD_HEAL, "a slain Naga leaves the great loaf")
+	naga.free()
 	for id: String in nagas:
 		var grid: Array = rooms[id].grid
 		var near := false

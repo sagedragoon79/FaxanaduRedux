@@ -8,6 +8,8 @@ extends Enemy
 ## then strikes straight out along that level, and glides back to its column.
 ## The strike is a bite, and a shield's parry meets it like any blade's: no
 ## harm, and the serpent reels (pass 274). Code-drawn at 2x.
+## As in the original, a slain Naga always leaves the largest bread there is,
+## a great loaf (pass 281).
 
 ## How far it floats above and below its home, and how long one swing takes.
 const SWING := 40.0
@@ -55,6 +57,7 @@ func _init() -> void:
 	gold_min = 3
 	gold_max = 5
 	xp = 6
+	sure_drop = "loaf"
 	body_size = Vector2(22, 44)
 	body_centered = true
 	uses_gravity = false

@@ -449,9 +449,9 @@ func _debug_open() -> void:
 	if _args.has("use-ointment"):
 		player.use_ointment()
 	if _args.has("drops"):
-		for i in 5:
+		for i in 6:
 			var d := Drop.new()
-			d.kind = ["bread", "mana", "poison", "glove", "ointment"][i]
+			d.kind = ["bread", "mana", "poison", "glove", "ointment", "loaf"][i]
 			d.velocity = Vector2(0, 1)
 			world.room.add_child(d)
 			d.global_position = player.global_position + Vector2(36 + i * 24, -8)
