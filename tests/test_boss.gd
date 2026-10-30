@@ -3870,6 +3870,16 @@ func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
 ## enter it as set_state(pick + "_tell"), which the scan cannot read. So each
 ## guardian is fought here for a while, and every tell it enters must sound in the
 ## frame it starts (or the two after).
+## The tells a 25 s fight may not reach, by guardian: [method, fields to set
+## first, arguments]. Each is how the fight itself enters that tell.
+const DRIVEN_TELLS := {
+	"foreman": [["_choose", {"_last": "", "_since_charge": 0}, [100.0]]],
+	"drowned_warden": [["_choose", {"phase": 3, "_count": 3}, [300.0]]],
+	"king_grieve": [["_open", {}, ["burst_tell", "burst"]]],
+	"shadow_eura": [["_tell", {}, ["cast_tell"]], ["_tell", {}, ["dash_tell"]]],
+}
+
+
 func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 	var tell_re := RegEx.create_from_string("windup|tell|^wind$|^coil$|^rev$|^unfold$|^gather$")
 	var rooms := {}
@@ -3881,6 +3891,7 @@ func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 	w0.queue_free()
 	await frames(2)
 	var silent: Array[String] = []
+	var unheard: Array[String] = []
 	var tells := {}
 	for id: String in rooms:
 		GameState.new_game()
@@ -3925,8 +3936,46 @@ func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 					if not ok and not silent.has("%s:%s" % [id, t]):
 						silent.append("%s:%s" % [id, t])
 					opened.erase(t)
+		# The rarer picks a 25 s fight may not reach (pass 284), entered as the
+		# fight enters them: each must sound in the call that opens it.
+		for entry: Array in DRIVEN_TELLS.get(id, []):
+			if not is_instance_valid(boss) or boss.dead:
+				break
+			for k: String in entry[1]:
+				boss.set(k, entry[1][k])
+			Sfx.recent.clear()
+			boss.callv(entry[0], entry[2])
+			var t := String(boss.state)
+			tells["%s:%s" % [id, t]] = true
+			if tell_re.search(t) == null or Sfx.recent.is_empty():
+				silent.append("%s:%s (driven, %s)" % [id, t, Sfx.recent])
+			await frames(1)
+		# Every tell its script names must be heard: in the fight, driven, or
+		# entered only by name with a sound on the next lines (what the scan in
+		# test_enemies reads). A tell entered any other way and never heard fails.
+		if is_instance_valid(boss):
+			var arm := RegEx.create_from_string("^\\t+((\"[a-z_0-9]+\", )*\"[a-z_0-9]+\"):\\s*$")
+			var lines := FileAccess.get_file_as_string(boss.get_script().resource_path).split("\n")
+			for line in lines:
+				var m := arm.search(line)
+				if m == null:
+					continue
+				for name: String in m.get_string(1).replace("\"", "").split(", "):
+					var key := "%s:%s" % [id, name]
+					if tell_re.search(name) == null or tells.has(key) or unheard.has(key):
+						continue
+					var named := 0
+					var sounded := 0
+					for i in lines.size():
+						if lines[i].contains("state(\"%s\")" % name) or lines[i].contains("set_mode(\"%s\")" % name):
+							named += 1
+							if "\n".join(lines.slice(i, i + 4)).contains("Sfx.play("):
+								sounded += 1
+					if named == 0 or sounded < named:
+						unheard.append(key)
 		Sfx.recent.clear()
 		w.queue_free()
 		await frames(2)
 	check(tells.size() >= 30, "the guardians show their tells (%d)" % tells.size())
 	check(silent.is_empty(), "every tell sounds as it starts: %s" % [silent])
+	check(unheard.is_empty(), "every tell a guardian's script names is heard, fought or driven: %s" % [unheard])
