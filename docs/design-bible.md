@@ -661,6 +661,21 @@ Amber sap in the Trunk Hollows' pools, and the puddles a Sap Spitter's globs lea
 - the Tower Foot: the floor up the right wall to the ledge at the Winch Hall door, beside the plank zigzag;
 - the Mine Shaft: the bottom of the shaft up the right side, through the upper floor beside the miners' doors.
 
+### 6.13 Set back (pass 288)
+
+A spike or a thorn (5.3: one mask) puts you back on the last safe ground. That is where you last stood on the floor with no hazard within 20 px either side or just below your feet.
+
+**It must be the room's own ground.** Footing that can go is never kept as the safe spot. That covers:
+- a cracked block you break;
+- a Bark Knight's rooted lance, or the Captain's;
+- a crystal shard;
+- a gate or raft that opens or comes;
+- a foothold of stilled water, which melts (pass 162).
+
+Until pass 288, only the water was left out. Stand on a cracked block over spikes, then hop and pogo it to pieces: you fell onto the spikes and were set back into the air where the block had been, so you fell onto them again. That cost four masks in three seconds, and the loop never ended. Now only a floor of the room's tiles counts (`Player._on_fleeting_ground`). The set-back lands you on the floor you stood on before the block, for one mask.
+
+`test_a_spike_never_sets_you_back_onto_footing_that_is_gone`.
+
 ---
 
 ## 7. Enemies

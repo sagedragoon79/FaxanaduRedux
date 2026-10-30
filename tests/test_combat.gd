@@ -847,6 +847,40 @@ func test_spikes_cost_a_mask_and_casts_wait_their_cooldown() -> void:
 	room.free()
 
 
+## Pass 288 (bible 6): a spike sets you back on ground that lasts. Footing that
+## can go (a cracked block you broke, a Bark Knight's rooted lance, a held
+## crystal) is never kept as the safe spot, or a fall onto the spikes it hid
+## would set you back into the air above them, again and again.
+func test_a_spike_never_sets_you_back_onto_footing_that_is_gone() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[5] = "#..........C.......#"
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var block: CrackedBlock = null
+	for c in room.get_children():
+		if c is CrackedBlock:
+			block = c
+	check(block != null, "the arena has its cracked block")
+	if block == null:
+		room.free()
+		return
+	block.respawns = false
+	var ground := p.global_position
+	# Stand on the block a while, then it breaks under you.
+	p.teleport(block.global_position + Vector2(0, -8))
+	await frames(20)
+	check(p.is_on_floor(), "standing on the cracked block")
+	block.break_block(true)
+	await frames(180)
+	check(p.hp == 100 - CombatTuning.new().hazard_damage, "the spikes cost one mask, not a run of them (%d)" % (100 - p.hp))
+	check(p.is_on_floor() and p.global_position.distance_to(ground) < 2.0, "and set you back on the floor you stood on before the block (%s, floor %s)" % [p.global_position, ground])
+	room.free()
+
+
 ## Pass 286 (bible 13.3): a press that does nothing is heard when there is a
 ## reason to tell you. An empty flask clinks; a spell short of MP and a glass
 ## still running back fizzle; each once per press, spending nothing. A cast

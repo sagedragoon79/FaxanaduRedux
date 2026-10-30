@@ -1316,7 +1316,7 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 		# A walk steps slower than a run (pass 183).
 		_step_timer = 0.26 * clampf(tuning.run_speed / absf(velocity.x), 1.0, 1.6)
 		_footstep(-10.0)
-	if on_floor and not _hazard_near() and not _on_stilled_water():
+	if on_floor and not _hazard_near() and not _on_fleeting_ground():
 		safe_position = global_position
 	_was_on_floor = on_floor
 	visual.position.y = _slope_sink(on_floor)
@@ -1526,12 +1526,16 @@ func _check_hazards() -> void:
 			return
 
 
-## Standing on a foothold of stilled water (Waterfall): it melts when time runs
-## again, so it is never a safe place to be set back to (pass 162).
-func _on_stilled_water() -> bool:
+## Standing on footing that can go, so never a safe place to be set back to.
+## A foothold of stilled water melts when time runs again (pass 162). Since
+## pass 288 that is any floor but the room's own tiles: a cracked block you
+## break, a Bark Knight's rooted lance, a crystal, a gate or a raft. Set back
+## onto a block that was gone, you fell onto the spikes it had hidden, and
+## again, a mask each time.
+func _on_fleeting_ground() -> bool:
 	for i in get_slide_collision_count():
-		var c := get_slide_collision(i).get_collider() as Node
-		if c != null and c.get_parent() is Waterfall:
+		var k := get_slide_collision(i)
+		if k.get_normal().y < -0.5 and not k.get_collider() is TileMapLayer:
 			return true
 	return false
 
