@@ -3,14 +3,15 @@ extends Node2D
 ## A damage number (design bible 14, an option, off by default; pass 154): the
 ## damage a blow actually dealt pops up over what it struck, rises and fades.
 ## A foe's number is white, a heavy blow's (the finisher, a thrust, a Riposte)
-## gold and twice the size, and the player's own losses are red.
+## gold and twice the size, and the player's own losses are red (a poison
+## tick's green, like the poisoned masks).
 
 const LIFE := 0.7
 const RISE := 18.0
 const FADE := 0.25
 const OUTLINE := Color(0.05, 0.04, 0.06)
-const COLORS := {"hit": Color("ffffff"), "heavy": Color("ffd25a"), "hurt": Color("ff5a4a")}
-const SIZES := {"hit": 10, "heavy": 20, "hurt": 10}
+const COLORS := {"hit": Color("ffffff"), "heavy": Color("ffd25a"), "hurt": Color("ff5a4a"), "poison": GameHud.POISONED}
+const SIZES := {"hit": 10, "heavy": 20, "hurt": 10, "poison": 10}
 
 var amount := 0
 var kind := "hit"
