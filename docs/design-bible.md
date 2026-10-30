@@ -1175,6 +1175,8 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 
 **Gold stays in the room (pass 285).** Pass 283 kept every food and item drop inside its room, but coins were left out. A coin falls until something stops it, so gold from a foe slain over a floor gap fell through and was lost unless the hero stood within the magnet's 100 px. Struck from a ladder with a Rune Dagger or a spell, the Tower's two Nagas lost 18 and 13 of 72 test coins down their shafts. Coins now keep to the room by the same rule as drops (`Drop.keep_in_room`): a coin stops at a side edge, and one that falls through a gap rests on the floor at the gap's nearer edge. `test_a_nagas_gold_lands_where_you_can_reach_it`.
 
+**No drop rests at a side door (pass 307).** A drop or coin that reached a side edge stopped 8 px in, inside the door's cell, and one could also come to rest on the tile just inside. A door is three tiles tall, so a jump over a flask there meets the wall above the door and drops you on it: once pass 306 made poison bite 4 a second in the deep zones, a flask by a door was a toll on the way out unless you waited out its 10 s. Where the two tiles inside a side edge are open, `Drop.keep_in_room` now stops drops and coins on the second of them (`Drop.DOOR_CLEAR`, 40 px in). A hop from anywhere 20 to 44 px short of the flask clears it and lands short of the door (`test_a_drop_never_rests_in_a_doorway`); at one tile in, no hop of any timing did. Gold is drawn in by the magnet as before.
+
 ### 10.2 Shops
 
 | Shop | Location | Sells |

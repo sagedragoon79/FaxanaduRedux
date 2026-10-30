@@ -1854,3 +1854,41 @@ func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 				check(bitten >= 6, "%s: holding Up straight past, the bite meets the climber nearly every time (%d of 8)" % [id, bitten])
 		w.queue_free()
 		await frames(1)
+
+
+## Bible 10.1 (pass 307): a drop never rests at a side door. A door is three tiles
+## tall: a jump over a flask lying on the tile just inside it meets the
+## wall above the door and drops you on the flask, so poison there was a toll on
+## the way out. It now stops two tiles in, and a hop clears it and lands short
+## of the door across a wide window of timings.
+func test_a_drop_never_rests_in_a_doorway() -> void:
+	for lead: int in [20, 28, 36, 44]:
+		var w := make_world(_rooms(), "test/b", cell_feet(8, 19))
+		var p := w.player
+		await frames(3)
+		var flask := Drop.make(w.room, Vector2(4, 19 * 16 + 8), "poison")
+		flask.velocity = Vector2(-60, 0)
+		await frames(20)
+		var door: Rect2 = w.room.doors[1].rect
+		var fx := flask.global_position.x
+		check(fx >= Drop.DOOR_CLEAR - 0.5 and not door.grow(16).has_point(flask.global_position + Vector2(0, -2)),
+			"the flask rests two tiles in from the door (%.1f)" % fx)
+		p.input.scripted = true
+		p.input.move_x = -1
+		var jumped := -1
+		for f in 120:
+			if jumped < 0 and p.global_position.x < fx + lead:
+				p.input.jump_pressed = true
+				jumped = f
+			else:
+				p.input.jump_pressed = false
+			p.input.jump_held = jumped >= 0 and f - jumped < 8
+			await frames(1)
+			if w.room.id != "test/b":
+				break
+		check(w.room.id == "test/a" and p.poison_left == 0.0,
+			"a hop %d px short of it clears it and the door takes you on" % lead)
+		p.input.move_x = 0
+		p.input.jump_held = false
+		w.queue_free()
+		await frames(2)
