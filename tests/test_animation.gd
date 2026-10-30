@@ -242,6 +242,40 @@ func test_a_worn_blade_swings_from_its_own_clips() -> void:
 	GameState.data.equipment["armor"] = ""
 
 
+func test_a_worn_shield_is_drawn_into_the_block() -> void:
+	# Shields are drawn into the block pose (design bible 13.5): with a shield on,
+	# a set blocks from "<set>_<shield>" and the code-drawn shield is not added.
+	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+		for shield: String in PlayerVisual.SHIELD_SHEETS:
+			check(Sheet.has_anim(sheet + "_" + shield, "block"), "%s_%s has block" % [sheet, shield])
+	GameState.data.equipment["armor"] = "leather_armor"
+	GameState.data.equipment["shield"] = "large_shield"
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.input.block_held = true
+	await frames(3)
+	check(p.is_blocking, "the hero blocks")
+	check(p.visual.anim == "block" and p.visual.sheet == "hero_leather_large_shield", "the block plays from the shield's clip (%s %s)" % [p.visual.sheet, p.visual.anim])
+	check(p.visual.shield_drawn(), "its art holds the shield, so none is drawn over it")
+	p.input.block_held = false
+	await frames(2)
+	GameState.data.equipment["armor"] = ""
+	GameState.data.equipment["shield"] = "magic_shield"
+	p.input.block_held = true
+	await frames(3)
+	check(p.visual.sheet == "hero_base_magic_shield", "unarmored, the base set holds it (%s)" % p.visual.sheet)
+	p.input.block_held = false
+	await frames(2)
+	PlayerVisual.body_sets = false
+	p.input.block_held = true
+	await frames(3)
+	check(p.visual.sheet == "player" and not p.visual.shield_drawn(), "the old hero holds the drawn shield (%s)" % p.visual.sheet)
+	p.input.block_held = false
+	PlayerVisual.body_sets = true
+	GameState.data.equipment["shield"] = ""
+
+
 func test_armor_picks_its_body_set() -> void:
 	# Paper doll (design bible 13.4): each armor has a body sheet of its own,
 	# with the same clips, and anchors for the layers drawn over it.

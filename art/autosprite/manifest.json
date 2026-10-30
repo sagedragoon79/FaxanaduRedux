@@ -693,5 +693,293 @@
    "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Dragon Slayer, pixminimax"},
    "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Dragon Slayer, pixminimax"}
   }
+ },
+ "hero_base_small_shield": {
+  "dir": "../pixellab/sheets/hero_base_small_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_base_large_shield": {
+  "dir": "../pixellab/sheets/hero_base_large_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak holding the Large Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_base_magic_shield": {
+  "dir": "../pixellab/sheets/hero_base_magic_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7, 8], "fps": 14, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_leather_small_shield": {
+  "dir": "../pixellab/sheets/hero_leather_small_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_leather_large_shield": {
+  "dir": "../pixellab/sheets/hero_leather_large_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7, 8], "fps": 14, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
+  }
+ },
+ "hero_leather_magic_shield": {
+  "dir": "../pixellab/sheets/hero_leather_magic_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_studded_small_shield": {
+  "dir": "../pixellab/sheets/hero_studded_small_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_studded_large_shield": {
+  "dir": "../pixellab/sheets/hero_studded_large_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7, 8], "fps": 14, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
+  }
+ },
+ "hero_studded_magic_shield": {
+  "dir": "../pixellab/sheets/hero_studded_magic_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_plate_small_shield": {
+  "dir": "../pixellab/sheets/hero_plate_small_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_plate_large_shield": {
+  "dir": "../pixellab/sheets/hero_plate_large_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 14, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
+  }
+ },
+ "hero_plate_magic_shield": {
+  "dir": "../pixellab/sheets/hero_plate_magic_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_small_shield": {
+  "dir": "../pixellab/sheets/hero_battle_small_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_large_shield": {
+  "dir": "../pixellab/sheets/hero_battle_large_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [5, 6, 7], "fps": 14, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_magic_shield": {
+  "dir": "../pixellab/sheets/hero_battle_magic_shield",
+  "head": true,
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_helm_small_shield": {
+  "dir": "../pixellab/sheets/hero_battle_helm_small_shield",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true, "hair": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_helm_large_shield": {
+  "dir": "../pixellab/sheets/hero_battle_helm_large_shield",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true, "hair": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2], "fps": 14, "loop": false, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
+  }
+ },
+ "hero_battle_helm_magic_shield": {
+  "dir": "../pixellab/sheets/hero_battle_helm_magic_shield",
+  "head": "top",
+  "colors": 56,
+  "ramps": ["night", "stone"],
+  "height": 46.0,
+  "density": 2,
+  "reference": "idle",
+  "detect": "hero",
+  "flags": {"scarf": false, "cloak": true, "key_cloak": true, "hair": false},
+  "rim": {"color": [176, 204, 232], "mix": 0.4},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
+   "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
+  }
  }
 }

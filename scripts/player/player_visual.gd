@@ -28,6 +28,10 @@ const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
 const BLADE_SHEETS := {"long_sword": "long_sword", "dwarvish_broad_sword": "broad_sword", "dragon_slayer": "dragon_slayer"}
 ## The clips a blade sheet holds (its idle is only the importer's reference for scale).
 const BLADE_CLIPS := ["slash1", "slash2", "slash3", "slash_up"]
+## Shields are drawn into the block pose the same way: "<set>_<shield>" holds the
+## set's block with that shield up (hero_plate_large_shield). Without one the
+## code-drawn shield is held over the clip.
+const SHIELD_SHEETS := ["small_shield", "large_shield", "magic_shield"]
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -226,6 +230,11 @@ static func sheet_for(name: String) -> String:
 		var held := body + "_" + blade
 		if Sheet.exists(held) and Sheet.has_anim(held, name):
 			return held
+	var shield := String(GameState.data.equipment.get("shield", ""))
+	if name == "block" and shield in SHIELD_SHEETS:
+		var guard := body + "_" + shield
+		if Sheet.exists(guard) and Sheet.has_anim(guard, name):
+			return guard
 	return body if Sheet.has_anim(body, name) else SHEET_NAME
 
 
@@ -340,7 +349,7 @@ func _draw() -> void:
 		_draw_helmet(Vector2(crown[0], crown[1]), tint)
 	if info.has("blade"):
 		_draw_blade(hand, deg_to_rad(float(info.blade)), BLADE_LENGTH + player.reach_bonus * 0.75, tint)
-	if anim == "block":
+	if anim == "block" and not shield_drawn():
 		_draw_shield(hand + Vector2(2, 0), tint)
 	elif anim == "drink" and not info.get("art_prop", false):
 		draw_rect(Rect2(hand + Vector2(-2, -6), Vector2(4, 6)), OUTLINE)
@@ -374,6 +383,11 @@ func _draw_helmet(crown: Vector2, tint: Color) -> void:
 	var at := HELMET_RUN_OFFSET if run else HELMET_OFFSET
 	draw_texture_rect(HELMET, Rect2(at, HELMET.get_size() * 0.5), false, tint)
 	draw_set_transform(Vector2.ZERO)
+
+
+## Whether the playing sheet's art holds the shield (a "<set>_<shield>" sheet).
+func shield_drawn() -> bool:
+	return SHIELD_SHEETS.any(func(h: String) -> bool: return sheet.ends_with("_" + h))
 
 
 func _draw_shield(at: Vector2, tint: Color) -> void:

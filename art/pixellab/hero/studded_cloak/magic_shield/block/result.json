@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "67102db2-9711-4e2c-84ae-fdafaad6eb7d",
+ "status": "completed",
+ "created_at": "2026-10-30T21:29:13.647799+00:00",
+ "last_response": {
+  "seed": 909028172,
+  "type": "done",
+  "action": "braces behind the raised shield to block a blow: he sets his feet, hunches his shoulders and pushes the shield forward, absorbing an impact, then holds the guard steady. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9621739130434782,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "5a6dedb0-1914-488a-acba-7f52a2cfef96",
+  "character_id": "57211845-9572-4771-855c-5df0517f025b",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/57211845-9572-4771-855c-5df0517f025b/animations/5a6dedb0-1914-488a-acba-7f52a2cfef96/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "625f4ccd-5918-4124-9aa0-91950e09dc89",
+  "animation_name": "custom-braces behind the raised shiel",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "211ac7da-f8a8-40d3-8910-cfdbbb70f88a",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T21:29:40.273867+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
