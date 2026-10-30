@@ -1624,3 +1624,80 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 		GameState.data.flags.erase("boss:" + case[1])
 		w.queue_free()
 		await frames(2)
+
+
+## Pass 275 (bible 7, the Naga): "a climb past it is timed to its swing" was
+## not true. Its coil froze it where it was, so by the time it struck, a
+## climber holding Up was already above its bite: every climb past both Nagas
+## went unbitten, whatever the swing. Now the coil follows the climber's height
+## along its column, slower than a climb, and its recovery is longer. In each
+## Naga's room, for climbs started at eight points of its swing: holding Up
+## straight past is met by the bite nearly every time, and baiting it (climb into its
+## level, drop back as it hoods, climb again once it has glided off the
+## ladder) always gets past.
+func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
+	for id: String in ["tower/foot", "tower/mine_shaft"]:
+		var w := make_world({}, id)
+		await frames(2)
+		var n: Naga = null
+		for c in w.room.get_children():
+			if c is Naga:
+				n = c
+			elif c is Enemy:
+				c.queue_free()
+		check(n != null, "%s keeps its Naga" % id)
+		if n == null:
+			w.queue_free()
+			await frames(1)
+			continue
+		# Its ladder, and the floor at the ladder's foot.
+		var cell := w.room.cell_at(n.home)
+		var lx := -1
+		for dx in range(1, 8):
+			if w.room.is_ladder_at(Vector2((cell.x + dx) * Room.TILE + 8, cell.y * Room.TILE + 8)):
+				lx = cell.x + dx
+				break
+		var foot := cell.y
+		while w.room.is_ladder_at(Vector2(lx * Room.TILE + 8, (foot + 1) * Room.TILE + 8)):
+			foot += 1
+		var above := (cell.y - 6) * Room.TILE
+		var p := w.player
+		for bait: bool in [false, true]:
+			var bitten := 0
+			var past := 0
+			for k in 8:
+				p.max_hp = 999
+				p.hp = 999
+				p.teleport(Vector2(lx * Room.TILE + 8, (foot + 1) * Room.TILE))
+				n.global_position = n.home
+				n.velocity = Vector2.ZERO
+				n.set_state("float")
+				n._swung = k * Naga.SWING_TIME / 8.0
+				n._cooldown = 0.0
+				p.input.up = true
+				var step := 0
+				for f in 600:
+					await frames(1)
+					if bait and step == 0 and n.state == "coil":
+						step = 1
+						p.input.up = false
+						p.input.down = true
+					elif step == 1 and n.state in ["return", "float"] and absf(n.global_position.x - p.global_position.x) > 40.0:
+						step = 2
+						p.input.down = false
+						p.input.up = true
+					if p.global_position.y < above:
+						break
+				p.input.up = false
+				p.input.down = false
+				if p.hp < 999:
+					bitten += 1
+				if p.global_position.y < above:
+					past += 1
+				await frames(20)
+			if bait:
+				check(bitten == 0 and past == 8, "%s: baited, its strike spent, every climb gets past unbitten (%d bitten, %d past of 8)" % [id, bitten, past])
+			else:
+				check(bitten >= 6, "%s: holding Up straight past, the bite meets the climber nearly every time (%d of 8)" % [id, bitten])
+		w.queue_free()
+		await frames(1)
