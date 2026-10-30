@@ -1,0 +1,23 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 25.0
+ },
+ "id": "77696ff7-14b4-4b24-81c2-ac402a8b647a",
+ "status": "completed",
+ "created_at": "2026-10-30T15:56:30.550973+00:00",
+ "last_response": {
+  "character_id": "a18b9a79-1c3b-4f0f-a860-d1778edbcbcf",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a18b9a79-1c3b-4f0f-a860-d1778edbcbcf/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a18b9a79-1c3b-4f0f-a860-d1778edbcbcf/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a18b9a79-1c3b-4f0f-a860-d1778edbcbcf/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a18b9a79-1c3b-4f0f-a860-d1778edbcbcf/rotations/south.png"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 25
+  }
+ }
+}

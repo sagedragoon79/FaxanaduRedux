@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "cc110fe9-0471-425a-9f3c-a4cff9fafea8",
+ "status": "completed",
+ "created_at": "2026-10-30T16:09:17.209151+00:00",
+ "last_response": {
+  "seed": 2807585143,
+  "type": "done",
+  "action": "clinging to a wall on his right while sliding down it: his right hand and right foot pressed against the wall in front of him, knees bent, body crouched against the wall, looking up, holding the grip. He faces right in strict side profile the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.23147425752475448,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "93256f28-ebe2-4944-a2a7-c4842db38450",
+  "character_id": "739d02b0-fc8f-4cf4-a067-332d21fb9358",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/93256f28-ebe2-4944-a2a7-c4842db38450/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "62c2a268-af16-4da6-aa4e-0506672e3330",
+  "animation_name": "custom-clinging to a wall on his righ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "002ee9f2-0a9c-4088-a25f-b15526fe8d9f",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:09:43.53477+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
