@@ -2093,6 +2093,10 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	var death := bible.get_slice("### 5.4 Death and recovery", 1).get_slice("\n### ", 0)
 	check(death.contains("Deviation") and death.contains("lowest point for that rank"), "5.4 says what the original's death took (experience to the rank's floor, gold by rank)")
 	check(bible.contains("names only \"food and money\" from foes"), "7 notes the mana orb is the remake's, not the original's")
+	# Pass 305: the manual's Poison is one fixed loss, and its Ointment wards
+	# off enemy attacks; the remake's lingering poison and warded flask say so.
+	check(bible.contains("\"The hero's power will decrease by a fixed amount.\"") and bible.contains("from any enemy attack"), "7 quotes the original's Poison and Ointment beside the remake's")
+	check(Player.POISON_TIME > Player.POISON_TICK, "and the remake's poison lingers over ticks (%.0f s, a tick every %.0f s)" % [Player.POISON_TIME, Player.POISON_TICK])
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 273: the original's Naga floats up and down over the ladders of the
