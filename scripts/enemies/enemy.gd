@@ -60,6 +60,8 @@ var knockback := 140.0
 var hits_taken := 0
 ## True once it has gone down with its master (`perish`), not to a blow.
 var perished := false
+## True once it has fallen out of its room (`_fall_out_of_room`, pass 298).
+var fell := false
 ## True while a thrown blade's hit lands (`take_throw`, pass 188): a sting, not
 ## a blow, so it chips no bark, breaks no hex and never reaches the Heart.
 var thrown := false
@@ -153,6 +155,7 @@ func _fall_out_of_room() -> void:
 	if room == null or not uses_gravity or is_in_group("boss"):
 		return
 	if global_position.y > room.size_tiles.y * Room.TILE + FALL_MARGIN:
+		fell = true
 		die()
 
 
@@ -283,8 +286,12 @@ func die() -> void:
 	if not perished:
 		if p != null:
 			p.on_kill()
-		Feel.hitstop(p.combat.kill_hitstop if p != null else CombatTuning.new().kill_hitstop)
-		Feel.add_trauma(0.25)
+		# A fall is a kill but no blow (pass 298): it dies below the screen a
+		# moment after the blow that sent it, so a kill's freeze and shake then
+		# would hitch the game for nothing you can see.
+		if not fell:
+			Feel.hitstop(p.combat.kill_hitstop if p != null else CombatTuning.new().kill_hitstop)
+			Feel.add_trauma(0.25)
 	Sfx.play("enemy_die")
 	if corrupted:
 		var seed := MeteorSeed.new()
@@ -332,6 +339,7 @@ func _respawn() -> void:
 	material = null
 	dead = false
 	perished = false
+	fell = false
 	hp = max_hp
 	visible = true
 	collision_layer = Player.LAYER_ENEMY

@@ -926,6 +926,41 @@ func test_a_set_back_drops_the_presses_buffered_on_the_way_down() -> void:
 	room.free()
 
 
+## Pass 298 (bible 7, 5.3): a foe that falls out of its room is a kill, and
+## pays like one, but no blow lands as it dies below the screen, a moment after
+## the blow that sent it. A kill's freeze and shake there only hitched the game.
+func test_a_foe_that_falls_out_pays_without_a_kills_freeze() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[2] = "#.........M........#"
+	rows[7] = "#########....#######"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(4)
+	var foe: Enemy = null
+	for c in room.get_children():
+		if c is Monodron:
+			foe = c
+	check(foe != null, "a Monodron hangs over the gap")
+	if foe == null:
+		room.free()
+		return
+	foe.gold_min = 5
+	foe.gold_max = 5
+	var gone: Array = []
+	foe.died.connect(func(e: Enemy) -> void: gone.append(e))
+	Feel.last_hitstop = 0.0
+	Feel.trauma = 0.0
+	await _until(func() -> bool: return not gone.is_empty(), 120)
+	check(not gone.is_empty() and foe.fell, "it falls out of the room and dies")
+	check(Feel.last_hitstop == 0.0 and Feel.trauma < 0.01, "with no kill's freeze or shake (hitstop %.2f, trauma %.2f)" % [Feel.last_hitstop, Feel.trauma])
+	var coins := 0
+	for c in room.get_children():
+		if c is Coin:
+			coins += 1
+	check(coins > 0, "but it still pays its gold (%d coins)" % coins)
+	room.free()
+
+
 ## Pass 286 (bible 13.3): a press that does nothing is heard when there is a
 ## reason to tell you. An empty flask clinks; a spell short of MP and a glass
 ## still running back fizzle; each once per press, spending nothing. A cast
