@@ -46,7 +46,7 @@
 		"stock": [
 			{"item": "temper_1", "price": 700},
 			{"item": "temper_2", "price": 1600, "shards": 1},
-			{"item": "ointment", "price": 280},
+			{"item": "ointment", "price": 300},
 			{"item": "jack_key", "price": 150}
 		]
 	},

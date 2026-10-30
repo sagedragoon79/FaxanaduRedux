@@ -2452,3 +2452,47 @@ func test_mascon_keeps_the_originals_tavern() -> void:
 	check(brigid.contains("Zorugeriru") and String(rooms["mist/spring_of_mist"].header.get("boss", "")) == "zorugeriru" and str(rooms["mist/dry_cistern"].lists.door).contains("mist/spring_of_mist"), "Zorugeriru lies round the Spring of Mist, past the Dry Cistern")
 	var cormac := " ".join(GameData.npc("mascon_drinker").lines)
 	check(cormac.contains("Feather Hollow") and str(rooms["mist/feather_hollow"].lists.door).contains("mist/victim"), "Cormac's Feather Hollow lies by Victim")
+
+
+## Pass 277 (bible 10.2): the shop table gives each staple one price, but
+## nothing held the shelves to it. The Forepaw Forge sold an Ointment for 280
+## while every other shelf asked 300, and the Cartographer row promised one in
+## every town at 200 to 800 g when six towns keep one and the Eolis chart is
+## 40. Now every shelf's staples cost what the table says, the one-per-shop
+## goods stay in their ranges, and the table states each price it holds.
+func test_every_shelf_asks_the_shop_tables_price() -> void:
+	const FIXED := {"ointment": 300, "elixir": 1500, "jack_key": 150, "queen_key": 400, "king_key": 900,
+		"ace_key": 1800, "fire_scroll": 1200, "tilte_scroll": 2500}
+	const RANGES := {"mana_dew": [500, 1200], "life_fruit": [800, 2000]}
+	var shops := GameData.table("shops")
+	var off := []
+	var charts := {}
+	for id: String in shops:
+		var once := {}
+		for entry: Dictionary in shops[id].get("stock", []):
+			var item := String(entry.get("item", ""))
+			var price := int(entry.get("price", 0))
+			if FIXED.has(item) and price != FIXED[item]:
+				off.append("%s: %s at %d, not %d" % [id, item, price, FIXED[item]])
+			if RANGES.has(item):
+				if price < RANGES[item][0] or price > RANGES[item][1]:
+					off.append("%s: %s at %d, outside %s" % [id, item, price, RANGES[item]])
+				once[item] = int(once.get(item, 0)) + 1
+			if GameData.item(item).get("kind", "") == "chart":
+				charts[id] = true
+				if price < 40 or price > 800:
+					off.append("%s: %s at %d, outside 40 to 800" % [id, item, price])
+		for item: String in once:
+			if once[item] > 1:
+				off.append("%s: %d %s on one shelf" % [id, once[item], item])
+	check(off.is_empty(), "every shelf asks the table's price: %s" % [off])
+	var towns := charts.keys().map(func(id: String) -> String: return id.get_slice("_", 0))
+	towns.sort()
+	check(towns == ["conflate", "dartmoor", "daybreak", "eolis", "forepaw", "victim"], "six towns keep a cartographer, as the table says (%s)" % [towns])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var at := bible.find("### 10.2 Shops")
+	var table := bible.substr(at, bible.find("\n\n", bible.find("| Shop |", at)) - at)
+	for said: String in ["Ointment (10 s invulnerability, 300 g", "Elixir (auto-revive, max 1, 1,500 g)", "Jack (150 g), Queen (400 g), King (900 g), Ace (1,800 g)",
+			"Fire (1,200 g), Tilte (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
+			"| Cartographer | Eolis, Forepaw, Victim, Conflate, Daybreak, Dartmoor | each zone's chart (40 to 800 g"]:
+		check(table.contains(said), "the table says it: %s" % said)
