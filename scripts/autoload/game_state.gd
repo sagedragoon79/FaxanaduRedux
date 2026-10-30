@@ -121,6 +121,7 @@ static func fresh() -> Dictionary:
 		## the Equipment page swaps between them.
 		"gear": ["short_sword"],
 		"dye": "",
+		"hair": "",
 	}
 
 
@@ -155,6 +156,12 @@ func set_flag(id: String, value := true) -> void:
 func dye() -> String:
 	var id := String(data.get("dye", ""))
 	return id if id != "" else "warden_dye"
+
+
+## The hair color chosen on the Equipment page (an id of PlayerVisual.HAIR).
+func hair() -> String:
+	var id := String(data.get("hair", ""))
+	return id if PlayerVisual.HAIR.has(id) else "violet"
 
 
 ## Gives a dye won rather than bought (a Guru Trial's mantra time, pass 164):

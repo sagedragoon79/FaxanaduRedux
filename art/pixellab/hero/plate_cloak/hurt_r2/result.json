@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "0c1024a6-6dfb-438c-97ed-6a7694a8830d",
+ "status": "completed",
+ "created_at": "2026-10-30T19:50:45.876212+00:00",
+ "last_response": {
+  "seed": 2899823596,
+  "type": "message_done",
+  "action": "recoiling from a hit to the chest: he is knocked backward, head snapping back, arms flung out, staggering a step back, then catches himself. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9865217391304347,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4",
+  "character_id": "049a8cb7-2ae7-491f-a83d-3bfedbb97fd0",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/049a8cb7-2ae7-491f-a83d-3bfedbb97fd0/animations/70201e68-00dc-44d6-bbbc-f6c7fb9f0ab4/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "661572a0-3ebc-4545-9a21-c977b41fb258",
+  "animation_name": "custom-recoiling from a hit to the ch",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "aa050b8a-7f53-462a-be81-c986e5afb363",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:51:15.837407+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

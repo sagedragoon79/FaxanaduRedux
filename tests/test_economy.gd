@@ -1731,7 +1731,8 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	var stock: Array = GameData.shop("eolis_dyes").stock
 	var sold := stock.filter(func(e: Dictionary) -> bool: return int(e.price) > 0)
 	check(sold.size() == 6, "she sells six dyes (%d)" % sold.size())
-	PlayerVisual.body_sets = false  # the ranger's cloak takes dyes; the body sets have none yet
+	PlayerVisual.body_sets = false  # the ranger's sheet: its own green cloak takes dyes (the key sets have their own test)
+	await frames(2)
 	check(GameState.dye() == "warden_dye" and PlayerVisual.dye_look().is_empty(), "a new game wears Warden Green, the cloak's own")
 	check(p.visual.material == null, "so the sprite is drawn as it is")
 	check(Shop.status("eolis_dyes", 0, p) == "worn", "which shows as worn")
@@ -1752,6 +1753,63 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	check(Completion.award({"percent": 100}) and Shop.shelf("eolis_dyes").has(lord), "100% puts it on the shelf")
 	check(Shop.buy("eolis_dyes", lord, p) and PlayerVisual.dye_look()[1], "it is given, and it glows")
 	PlayerVisual.body_sets = true
+
+
+## The PixelLab sets draw the cloak in a key green and keep the elf's purple
+## hair (design bible 13.5): one shader recolors both, Warden Green included,
+## and the hair takes the color chosen on the Equipment page. The helmed set's
+## purple crest is not hair.
+func test_the_key_green_cloak_and_the_hair_take_their_colors() -> void:
+	GameState.new_game()
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	check(p.visual.sheet == "hero_base" and Sheet.flag("hero_base", "key_cloak", false), "the bare elf is a key-green set")
+	var mat := p.visual.material as ShaderMaterial
+	check(mat != null and mat.shader == PlayerVisual.KEY_SHADER, "so the sprite always wears the key shader")
+	check(mat.get_shader_parameter("dye") == PlayerVisual.WARDEN_KEY, "Warden Green on the key: the cloak's own green")
+	check(GameState.hair() == "violet" and not mat.get_shader_parameter("hair_on"), "a new game keeps the drawn violet hair")
+	GameState.data.dye = "ember_dye"
+	GameState.data.hair = "copper"
+	await frames(2)
+	mat = p.visual.material as ShaderMaterial
+	check(mat.get_shader_parameter("dye") == Color("d0453f"), "a dye goes on the key")
+	check(mat.get_shader_parameter("hair_on") and mat.get_shader_parameter("hair") == Color(PlayerVisual.HAIR.copper[1]), "the hair takes its color")
+	# The shader's keys, on the colors the import keeps: the cloak's key and rim
+	# greens, the hair's violets; not the tunic, the plate's violet steel or the outline.
+	check(_keyed(Color8(5, 235, 5)) == "cloak" and _keyed(Color8(103, 217, 113)) == "cloak", "the key green and its rim light are cloak")
+	check(_keyed(Color8(143, 43, 176)) == "hair" and _keyed(Color8(112, 33, 137)) == "hair", "the hair's violets are hair")
+	check(_keyed(Color8(79, 100, 80)) == "" and _keyed(Color8(122, 108, 151)) == "" and _keyed(Color8(68, 58, 92)) == "",
+		"the tunic, the violet steel and the outline are neither")
+	var rows := Menus.equipment_rows()
+	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
+	var at := labels.find("Hair")
+	check(at > 0 and labels.slice(at + 1) == PlayerVisual.HAIR.values().map(func(h: Array) -> String: return h[0]), "the Equipment page lists every hair color (%s)" % [labels])
+	check(rows[labels.find("Copper")].right == "Worn", "marking the one chosen")
+	Menus.choose_equipment(Menus.HAIR_PREFIX + "silver", p)
+	check(GameState.hair() == "silver", "choosing one colors the hair")
+	GameState.data.hair = "no_such_color"
+	check(GameState.hair() == "violet", "an unknown color falls back to violet")
+	GameState.data.equipment.armor = "battle_suit"
+	GameState.data.equipment.helmet = "battle_helmet"
+	GameState.data.hair = "gold"
+	await frames(3)
+	mat = p.visual.material as ShaderMaterial
+	check(p.visual.sheet == "hero_battle_helm" and not mat.get_shader_parameter("hair_on"), "under the helm no hair shows, so its crest keeps its purple")
+	GameState.data.equipment.armor = ""
+	GameState.data.equipment.helmet = ""
+	GameState.data.dye = ""
+	GameState.data.hair = ""
+
+
+## Which key the hero shader puts `c` under, as hero_dye.gdshader does: "cloak", "hair" or "".
+func _keyed(c: Color) -> String:
+	var h := c.h
+	if h >= 0.25 and h <= 0.42 and c.s > 0.5:
+		return "cloak"
+	if h >= 0.72 and h <= 0.9 and c.s > 0.5 and c.v > 0.35:
+		return "hair"
+	return ""
 
 
 ## A plateau that runs down a six-tile ramp, and one that ends at a lip over a pit.
@@ -2197,8 +2255,8 @@ func test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak() -> void
 	var rows := Menus.equipment_rows()
 	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
 	var at := labels.find("Cloak")
-	check(at > 0 and rows[at].get("header", false) and labels.slice(at + 1) == ["Warden Green", "Tide Blue", "Lord's Gold", "Mantra Slate"],
-		"the page ends with the Cloak and its dyes (%s)" % [labels])
+	check(at > 0 and rows[at].get("header", false) and labels.slice(at + 1, at + 5) == ["Warden Green", "Tide Blue", "Lord's Gold", "Mantra Slate"]
+		and labels[at + 5] == "Hair", "the page ends with the Cloak and its dyes, then the Hair (%s)" % [labels])
 	check(rows[labels.find("Mantra Slate")].right == "Worn", "marking the one on")
 	check(String(rows[1].detail).contains("Cuts 8, heavy 14."), "a blade's row gives its numbers")
 	# Every row's detail fits the menu's box (three lines), the longest gear

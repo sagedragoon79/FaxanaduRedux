@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "d08527c7-6050-41b7-bbd3-b00cf058dbd5",
+ "status": "completed",
+ "created_at": "2026-10-30T19:20:17.101274+00:00",
+ "last_response": {
+  "seed": 3753428144,
+  "type": "done",
+  "action": "collapsing defeated: he staggers, drops to his knees, then falls forward face down onto the ground and lies still. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9705714285714285,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "6d21d553-7d8f-4ac3-ac27-afa5092625d0",
+  "character_id": "cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/cb8e3d62-8c4c-4e1e-a0ed-7ae02075a27c/animations/6d21d553-7d8f-4ac3-ac27-afa5092625d0/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "057f7005-254f-4b56-9aca-6a0286fde0d3",
+  "animation_name": "custom-collapsing defeated: he stagge",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "112854fd-c867-4687-9bfc-0d3bc376eeed",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:20:43.691725+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

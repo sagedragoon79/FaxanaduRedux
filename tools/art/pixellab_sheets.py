@@ -19,83 +19,71 @@ OUT = SOURCES / "sheets"
 CELL = 256
 
 # sheet -> {strip file: clip folder under art/pixellab/ (frames 00.png, 01.png ...)}
-SHEETS = {
-    "hero_base": {
-        "idle.png": "hero/sample/idle_v3",
-        "run.png": "hero/base/run",
-        "walk.png": "hero/base/walk_mm",
-        "jump.png": "hero/sample/jump_mm",
-        "pogo.png": "mattock/pogo_mm",
-        "mattock_swing.png": "mattock/swing_mm",
-        "slash1.png": "hero/base/slash1b",
-        "slash2.png": "hero/base/slash2b",
-        "slash3.png": "hero/base/slash3",
-        "slash_up.png": "hero/base/slash_up",
-        "dash.png": "hero/base/dash",
-        "wall.png": "hero/base/wall",
-        "hurt.png": "hero/base/hurt",
-        "death.png": "hero/base/death",
-        "drink.png": "hero/base/drink",
-        "cast.png": "hero/base/cast",
-    },
-}
+CLIPS = (("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.png", "jump"),
+         ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
+         ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
+         ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
+         ("drink.png", "drink"), ("cast.png", "cast"))
+SETS = ("base", "leather", "studded", "plate", "battle", "battle_helm")
 
-# The armor tiers (character states of Sean's elf, design bible 13.5): the same clips, made from
-# the armor's own state, its state holding the Short Sword (attacks) and holding the Mattock.
-for _armor in ("leather", "studded", "plate", "battle", "battle_helm"):
-    SHEETS["hero_" + _armor] = {strip: f"hero/{_armor}/{clip}" for strip, clip in (
-        ("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.png", "jump"),
-        ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
-        ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
-        ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
-        ("drink.png", "drink"), ("cast.png", "cast"))}
+# The bare elf and the armor tiers (character states of Sean's elf, design bible 13.5), each with
+# the cloak drawn in a key green the game dyes: clips made from the set's cloaked state, its state
+# holding the Short Sword (attacks) and holding the Mattock (pogo and swing).
+SHEETS = {"hero_" + s: {strip: f"hero/{s}_cloak/{clip}" for strip, clip in CLIPS} for s in SETS}
 # Each set's four attacks again with the other blades (Sean: swords are drawn into the attacks),
 # from its state holding that blade: sheet "hero_<set>_<blade>".
-for _set in ("base", "leather", "studded", "plate", "battle", "battle_helm"):
+for _set in SETS:
     for _blade in ("long_sword", "broad_sword", "dragon_slayer"):
         # The set's own idle too, as the importer's reference for scale (it never plays from here).
         SHEETS[f"hero_{_set}_{_blade}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"], **{
-            f"{clip}.png": f"hero/{_set}/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
-# Retakes that came out better: pogos that stay in the air, and a first slash in profile.
-SHEETS["hero_leather"]["pogo.png"] = "hero/leather/pogo_air3"
-SHEETS["hero_studded"]["pogo.png"] = "hero/studded/pogo_air9"
-SHEETS["hero_plate"]["pogo.png"] = "hero/plate/pogo_air9"
-SHEETS["hero_battle"]["pogo.png"] = "hero/battle/pogo_air3"
-SHEETS["hero_battle"]["slash1.png"] = "hero/battle/slash1b"
-SHEETS["hero_battle_helm"]["pogo.png"] = "hero/battle_helm/pogo_air3"
+            f"{clip}.png": f"hero/{_set}_cloak/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
+
+# Retakes where the first take's cloak dropped out of the frame (drawn as an empty outline).
+SHEETS["hero_plate"].update({"run.png": "hero/plate_cloak/run_r1", "walk.png": "hero/plate_cloak/walk_r1",
+                             "drink.png": "hero/plate_cloak/drink_r2", "hurt.png": "hero/plate_cloak/hurt_r1",
+                             "slash1.png": "hero/plate_cloak/slash1_r1"})
+SHEETS["hero_studded"]["walk.png"] = "hero/studded_cloak/walk_r2"
+SHEETS["hero_battle_helm"].update({"walk.png": "hero/battle_helm_cloak/walk_r2", "slash2.png": "hero/battle_helm_cloak/slash2_r1"})
+SHEETS["hero_battle_helm_dragon_slayer"]["slash1.png"] = "hero/battle_helm_cloak/dragon_slayer/slash1_r1"
 
 
 def frames_of(folder):
     return sorted(p for p in (SOURCES / folder).glob("[0-9][0-9].png"))
 
 
-# PixelLab sometimes leaves a flat grey slab behind a smear or a cloak (one exact neutral grey,
-# about (130, 128, 130)). Any patch of it bigger than this is erased; small specks may be armor.
-SLAB_MIN = 150
+# PixelLab sometimes leaves a flat grey slab behind a smear or a cloak: a big patch of dull grey,
+# often one exact colour (about (130, 128, 130), (150, 142, 146), (128, 130, 126) or the bluer (119, 135, 142)) with a few
+# mottled neighbours. A connected patch of dull grey is erased when it is bigger than SLAB_MIN and
+# mostly one flat colour; the armor's steel is shaded, so no one colour dominates that much of it.
+SLAB_MIN = 400
+SLAB_FLAT = 0.5
+
+
+def is_slab_grey(c):
+    r, g, b, a = c
+    # Not green-cast: the tunic's dull green is never a slab.
+    return a > 0 and 95 <= max(r, g, b) <= 160 and max(r, g, b) - min(r, g, b) <= 32 and g <= max(r, b) + 4
 
 
 def clear_slabs(im):
     px = im.load()
     w, h = im.size
-
-    def slab(c):
-        return c[3] > 0 and 120 <= c[1] <= 140 and abs(c[0] - c[1]) <= 4 and abs(c[2] - c[1]) <= 4
-
     seen = set()
     for y in range(h):
         for x in range(w):
-            if (x, y) in seen or not slab(px[x, y]):
+            if (x, y) in seen or not is_slab_grey(px[x, y]):
                 continue
-            patch, todo = [], [(x, y)]
+            patch, todo, counts = [], [(x, y)], {}
             seen.add((x, y))
             while todo:
                 cx, cy = todo.pop()
                 patch.append((cx, cy))
+                counts[px[cx, cy]] = counts.get(px[cx, cy], 0) + 1
                 for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
-                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen and slab(px[nx, ny]):
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen and is_slab_grey(px[nx, ny]):
                         seen.add((nx, ny))
                         todo.append((nx, ny))
-            if len(patch) >= SLAB_MIN:
+            if len(patch) >= SLAB_MIN and max(counts.values()) >= SLAB_FLAT * len(patch):
                 for q in patch:
                     px[q] = (0, 0, 0, 0)
     return im

@@ -1555,13 +1555,21 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   (silver, a faint blue edge glow, golden winged guard). Each blade sheet holds only the attacks, plus the set's own idle
   as the importer's reference for scale; `PlayerVisual.sheet_for` plays an attack from the worn blade's sheet
   (`BLADE_SHEETS`, `BLADE_CLIPS`), and everything else from the set. The Short Sword is each set's own attacks.
-- **Grey slabs:** PixelLab sometimes leaves a flat neutral-grey patch behind a smear or a cloak; `pixellab_sheets.py`
-  erases any such patch of 150 px or more when it packs the strips.
-- **Cloaks (interim):** the armor sets wear the code cloak and hood (13.4) as the Autosprite sets did, so the cloak dyes
-  still show. Only the bare `hero_base` has the manifest flag `"cloak": true`, which hides the layer. Next (Sean,
-  2026-10-30): the cloak is drawn into every set in a chroma-key green ("like a green screen") and the dyes recolor that
-  green in game, replacing the code layer. A key-green cloak on the leather state keeps its color through walk, run and
-  jump clips (`hero/leather_cloak/`).
+- **Grey slabs:** PixelLab sometimes leaves a flat dull-grey patch behind a smear or a cloak (one exact grey with a
+  faint warm, violet, green or blue cast, plus a few mottled neighbours); `pixellab_sheets.py` erases a connected patch
+  of such greys when it is 400 px or more and mostly one colour, so the shaded armor steel is never touched.
+- **Cloaks, drawn in (Sean, 2026-10-30):** every set, the bare elf included, is made again from a state wearing a long
+  cloak in a chroma-key green with gold trim ("like a green screen"), with every clip and blade (`hero/<set>_cloak/`).
+  `shaders/hero_dye.gdshader` recolors the key (a saturated pure green nothing else on the hero uses) to the worn dye,
+  keeping its shading; Warden Green is the lit tone `PlayerVisual.WARDEN_KEY`. The sets carry the manifest flags
+  `"cloak": true` (the code cloak and hood of 13.4 are not drawn over them) and `"key_cloak": true` (the shader). Where a
+  take dropped the cloak to an empty outline it was retaken (the plate set's most often), picked around, or kept where
+  the cloak only swings behind the body.
+- **Hair (Sean, 2026-10-30):** the elf's violet hair is the only saturated purple on him, so the same shader recolors
+  it to the hair color chosen on the Equipment page (a Hair section after the Cloak: Violet, the art's own, Copper,
+  Raven, Silver, Gold and Ash; free, any time; `PlayerVisual.HAIR`, saved as `GameState.data.hair`). The armor's
+  violet-tinted steel and the outline are too grey or too dark to count. The helmed Battle Suit (`"hair": false`) shows
+  no hair, and its crest keeps its purple.
 - **Helmet:** with any set but the Battle Suit, the Battle Helmet stays a layer on the head point (Sean, 2026-10-30);
   only the Battle Suit has a helmed set.
 
