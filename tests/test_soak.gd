@@ -1169,7 +1169,9 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 ## (bible 4, pass 299). Down through a floor door you fall onto footing the
 ## spike set-back keeps (bible 6.13): on tiles, unhurt, no hazard beside it. Up
 ## through a ceiling door you pop out of the floor door on the far side and,
-## steering one way or the other, land beside it instead of dropping back in.
+## steering one way or the other, land beside it instead of dropping back in,
+## even with the steer begun a quarter second after you arrive (pass 304), a
+## player's time to see the new room and react.
 ## Its gates stand open, as they do whenever the far side can be reached.
 func test_every_door_up_or_down_lands_you_on_footing() -> void:
 	var w := make_world({}, "eolis/west_gate")
@@ -1198,7 +1200,7 @@ func test_every_door_up_or_down_lands_you_on_footing() -> void:
 			var where := "%s door %d -> %s" % [id, n, d.target]
 			var landed := ""
 			for side: int in ([0] if d.edge == "bottom" else [-1, 1]):
-				landed = await _ride_door(w, id, n, side)
+				landed = await _ride_door(w, id, n, side, 0 if d.edge == "bottom" else REACT_FRAMES)
 				if landed == "":
 					break
 			if d.edge == "bottom":
@@ -1214,10 +1216,15 @@ func test_every_door_up_or_down_lands_you_on_footing() -> void:
 	check(problems.is_empty(), "every door up or down lands you on footing: %s" % [problems])
 
 
-## Takes door `n` of room `id`, steering `side` once on the far side, and waits
-## for the player to come to rest there. Returns "" when they stand (or swim)
+## Frames a player takes to see the room a ceiling door brought them to and
+## steer (pass 304): a quarter second.
+const REACT_FRAMES := 15
+
+
+## Takes door `n` of room `id`, steering `side` from `wait` frames after
+## arriving on the far side, and waits for the player to come to rest there. Returns "" when they stand (or swim)
 ## on footing the set-back keeps, else what went wrong.
-func _ride_door(w: World, id: String, n: int, side: int) -> String:
+func _ride_door(w: World, id: String, n: int, side: int, wait := 0) -> String:
 	w.start(id)
 	_clear_foes(w)
 	w.player.input.move_x = 0
@@ -1225,6 +1232,7 @@ func _ride_door(w: World, id: String, n: int, side: int) -> String:
 	var hp := w.player.hp
 	w.use_door(n)
 	var target := ""
+	var arrived := 0
 	for f in 240:
 		await frames(1)
 		if w.busy:
@@ -1234,8 +1242,9 @@ func _ride_door(w: World, id: String, n: int, side: int) -> String:
 			if w.room.id == id:
 				continue
 			target = w.room.id
+			arrived = f
 			_clear_foes(w)
-		p.input.move_x = side
+		p.input.move_x = side if f - arrived >= wait else 0
 		if w.room.id != target:
 			p.input.move_x = 0
 			return "fell back to %s" % w.room.id
