@@ -182,6 +182,8 @@ func _collect(p: Player) -> void:
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
+		# Every drop says what it gave (pass 301), as bread does.
+		GameState.toast.emit("A mana orb. +%d magic." % roundi(MANA_GAIN))
 		Sfx.play("mana_orb", 0.04, -2.0)
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -4)
