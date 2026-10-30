@@ -403,7 +403,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Thrust (skill, 9) | hold Attack 0.4 s, let go: heavy hit x1.5, a 320 px/s lunge for 0.16 s on the floor, 0.35 s cooldown |
 | Gold coins | Magnet after 0.4 s within 100 px |
 | Relics (pass 201, 5.2) | the Pendant: blade hits x1.1; the Magical Rod: Deluge x1.5 |
-| Death (5.4) | 60% of the purse dropped where you fell |
+| Death (5.4) | 60% of the purse dropped where you fell (on the last safe ground if that was not the room's own floor) |
 | Spikes and thorns (pass 282) | 20 damage (one mask) before armor; you are set back on the last safe ground |
 | Casting (pass 282) | 0.35 s between casts; a press made sooner casts nothing and is not saved |
 | Bread / great loaf (pass 282, 7) | +15 HP / +40 HP (the loaf: a slain Naga's). A slain Bog Myconid always leaves bread (pass 289) |
@@ -411,7 +411,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 
 ### 5.4 Death and recovery
 
-On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses. The purse is part of the save (`data.purse`: its room, where it lies and the gold in it, as `value`), so quitting and loading leaves it waiting. Until pass 250 loading asked for the gold under another name (`gold`) and threw every purse away, so a death followed by a load lost the 60% for good; a save that names it `gold` is still read. `test_a_dropped_purse_survives_a_save_and_load`.
+On death you return to the last Guru or shrine. You drop **60% of carried gold** as a glowing purse where you died. Reach it to recover it; die first and it is gone. XP and items are never lost. This keeps tension without the original's harsh losses. The purse is part of the save (`data.purse`: its room, where it lies and the gold in it, as `value`), so quitting and loading leaves it waiting. Until pass 250 loading asked for the gold under another name (`gold`) and threw every purse away, so a death followed by a load lost the 60% for good; a save that names it `gold` is still read. `test_a_dropped_purse_survives_a_save_and_load`. **Ground you can come back to (pass 293):** the purse is left where you fell only when you fell on the room's own floor. Killed in the air, on footing that can go (6.13) or by a hazard, you leave it on the last safe ground you stood on (`Player.safe_position`). It had lain wherever the blow found you. Killed in the Bloom's gap or Rokusutahn's pit, it lay in the pit, and the next time the room loaded the floor was whole again around it: the gold was buried in the tiles for good. `test_a_death_in_a_torn_pit_leaves_the_purse_beside_it`.
 
 ### 5.5 Damage balance sheet (pass 194)
 
