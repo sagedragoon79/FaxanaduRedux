@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "4435fc4e-d191-4fc5-a7af-dfe65ca0abfa",
+ "status": "completed",
+ "created_at": "2026-10-30T19:25:27.794112+00:00",
+ "last_response": {
+  "seed": 1244544529,
+  "type": "message_done",
+  "action": "an airborne downward pogo strike in mid-air: he stays high in the air the whole time and never touches the ground. He tucks his knees up high, raises the mattock over his head with both hands, then drives it hard straight down so the iron head points at the ground far below his boots, holds that pose with knees tucked for a beat, then lifts it again. He faces right in strict side profile the whole time and never turns toward the camera. The mattock stays the same size and shape in every frame. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9842857142857143,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "6acfd18f-5031-4177-aefc-c7e39d337a13",
+  "character_id": "4b616821-0763-4765-890d-08ad5656ddb3",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/4b616821-0763-4765-890d-08ad5656ddb3/animations/6acfd18f-5031-4177-aefc-c7e39d337a13/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "66d787ad-7cee-4bbf-a58e-d94f1e1757cf",
+  "animation_name": "custom-an airborne downward pogo stri",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "09a3d65b-b690-4ffa-a108-5cc457f62b01",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:25:53.498374+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

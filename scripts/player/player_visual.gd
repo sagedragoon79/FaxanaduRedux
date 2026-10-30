@@ -61,6 +61,21 @@ const WALK_POSE := 0.7
 const OVERRIDABLE := ["idle", "walk", "run", "rise", "apex", "fall"]
 
 const DYE_SHADER := preload("res://shaders/cloak_dye.gdshader")
+## The PixelLab sets draw the cloak in a key green and keep the purple hair; this
+## recolors both (manifest flag "key_cloak", design bible 13.5).
+const KEY_SHADER := preload("res://shaders/hero_dye.gdshader")
+## Warden Green on a key-green cloak: the lit tone of the code cloak's GREEN.
+const WARDEN_KEY := Color("4f8a4c")
+## Hair colors, chosen on the Equipment page: id -> [name, lit tone]. Violet is
+## the art's own purple, left as drawn.
+const HAIR := {
+	"violet": ["Violet", ""],
+	"copper": ["Copper", "c8743c"],
+	"raven": ["Raven", "4a4458"],
+	"silver": ["Silver", "dcd8e8"],
+	"gold": ["Gold", "e8c460"],
+	"ash": ["Ash", "a49c98"],
+}
 
 ## "anim:frame" holds the player in one frame (screenshots: --shot-pose).
 static var forced := ""
@@ -261,15 +276,35 @@ static func dye_look() -> Array:
 	return [Color(String(item.color)), bool(item.get("glow", false))]
 
 
-## Puts the worn dye's shader on the sprite when the dye changes. The body
-## sets have no cloak (it will be a layer of its own), and their greens are a
-## tunic and elven steel, so they are drawn undyed.
+## The hair color chosen (an id of HAIR): [lit color], or empty for the art's own violet.
+static func hair_look() -> Array:
+	var tone := String(HAIR.get(GameState.hair(), ["", ""])[1])
+	return [] if tone == "" else [Color(tone)]
+
+
+## Puts the worn dye's shader on the sprite when the dye, the hair or the sheet
+## changes. A key-green set always has it (Warden Green is a dye like any other
+## there); the ranger's sheet only for a dye that is not its own green. The other
+## body sets' greens are a tunic and elven steel, so they are drawn undyed.
 func _sync_dye() -> void:
-	var worn := GameState.dye() if sheet == SHEET_NAME else ""
-	if worn == _dye_worn:
+	var keyed: bool = sheet != SHEET_NAME and Sheet.flag(sheet, "key_cloak", false)
+	var worn := GameState.dye() if sheet == SHEET_NAME or keyed else ""
+	var state := "%s|%s|%s" % [worn, GameState.hair() if keyed else "", keyed]
+	if state == _dye_worn:
 		return
-	_dye_worn = worn
+	_dye_worn = state
 	var look := dye_look() if worn != "" else []
+	if keyed:
+		var mat := ShaderMaterial.new()
+		mat.shader = KEY_SHADER
+		mat.set_shader_parameter("dye", WARDEN_KEY if look.is_empty() else look[0])
+		mat.set_shader_parameter("glow", false if look.is_empty() else look[1])
+		var hair: Array = hair_look() if Sheet.flag(sheet, "hair", true) else []
+		mat.set_shader_parameter("hair_on", not hair.is_empty())
+		if not hair.is_empty():
+			mat.set_shader_parameter("hair", hair[0])
+		material = mat
+		return
 	if look.is_empty():
 		material = null
 		return

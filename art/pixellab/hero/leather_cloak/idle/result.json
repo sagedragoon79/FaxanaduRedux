@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 8.0
+ },
+ "id": "e4ca169f-8534-4254-b2ef-e0565035a737",
+ "status": "completed",
+ "created_at": "2026-10-30T18:59:48.458508+00:00",
+ "last_response": {
+  "seed": 2512752024,
+  "type": "done",
+  "action": "subtle breathing idle, standing relaxed, chest rising and falling, hair stirring slightly, loops seamlessly. He stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.33348029643057553,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "160a6201-c107-4fc6-a968-693e129451d6",
+  "character_id": "6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/160a6201-c107-4fc6-a968-693e129451d6/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 8
+  },
+  "generation_id": "525c139f-b6e5-4ab1-995a-bfa617f1629a",
+  "animation_name": "custom-subtle breathing idle, standin",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "v3",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "e3cabd2a-9e79-493c-9025-b6796671c676",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T18:59:53.613108+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

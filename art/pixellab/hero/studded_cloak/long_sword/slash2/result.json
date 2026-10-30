@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "1a47c445-86c1-499a-8278-0a922420b27b",
+ "status": "completed",
+ "created_at": "2026-10-30T19:09:58.803001+00:00",
+ "last_response": {
+  "seed": 2158486463,
+  "type": "done",
+  "action": "a quick rising diagonal sword cut: from the low ready stance he sweeps the sword upward and forward from his knee to above his head in front of him, stepping forward, then lowers it back to ready. He faces right in strict side profile the whole time, his chest always facing right, never turning toward the camera or away from it. The sword stays the same size and shape in every frame. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.39590144499094715,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "cc461bf6-4fdf-4691-8504-39848d13e499",
+  "character_id": "7d7cae4f-d527-44d2-b1a3-36a4a73a629c",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d7cae4f-d527-44d2-b1a3-36a4a73a629c/animations/cc461bf6-4fdf-4691-8504-39848d13e499/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "7c1e3205-d647-4545-bc17-16c882cacd1e",
+  "animation_name": "custom-a quick rising diagonal sword ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "5cfb4e32-963b-48c4-96d3-0be17d614f05",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:10:24.527465+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

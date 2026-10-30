@@ -519,6 +519,7 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	d.trials = {"walls": 41.27}
 	d.dyes = ["tide_dye"]
 	d.dye = "tide_dye"
+	d.hair = "copper"
 	var unset: Array[String] = []
 	for k: String in fresh:
 		if k != "version" and _same(d[k], fresh[k]):

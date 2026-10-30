@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "42902ace-7007-4c48-9907-75f4bab45706",
+ "status": "completed",
+ "created_at": "2026-10-30T18:59:52.507599+00:00",
+ "last_response": {
+  "seed": 191959522,
+  "type": "done",
+  "action": "a fast forward air dash: he lunges forward low and horizontal, body leaning far forward, arms swept back, legs trailing, a streak of speed, then recovers upright. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.29597983655997295,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "b92827dc-8804-4787-8a05-318bf5824623",
+  "character_id": "6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/6ddcf3a0-b4cd-48c9-9874-fc7d4af31cf0/animations/b92827dc-8804-4787-8a05-318bf5824623/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "329ca3ba-8684-467d-a5b5-b5c18e67268e",
+  "animation_name": "custom-a fast forward air dash: he lu",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "4339aa9a-6694-4027-9728-883dcc2a91dc",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T19:00:18.192361+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

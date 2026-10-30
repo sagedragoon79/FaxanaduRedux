@@ -549,11 +549,17 @@ class Importer:
         if len(ys) == 0:
             return meta
         top, h = ys.min(), ys.max() - ys.min() + 1
-        row = int(top + 0.16 * h)
-        cols = np.nonzero(solid[row])[0]
+
+        def filled(row):
+            # The nearest row at or below `row` with pixels: a loose speck or a lifted
+            # cloak tip can top the frame with a gap under it.
+            while row < solid.shape[0] - 1 and not solid[row].any():
+                row += 1
+            return row, np.nonzero(solid[row])[0]
+
+        row, cols = filled(int(top + 0.16 * h))
         meta["neck"] = self.to_point((cols.min() + cols.max()) / 2.0, row)
-        row = int(top + 0.21 * h)
-        cols = np.nonzero(solid[row])[0]
+        row, cols = filled(int(top + 0.21 * h))
         meta["back"] = self.to_point(cols.min() + 0.03 * h, row)
         band = solid.copy()
         band[:int(top + 0.2 * h)] = False

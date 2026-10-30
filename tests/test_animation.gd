@@ -312,14 +312,16 @@ func test_armor_picks_its_body_set() -> void:
 
 
 func test_the_hood_is_down_in_town_and_up_outside() -> void:
-	# The cloak layer over the body sets (design bible 13.4): its hood is up
-	# out in the world, down in a town, and down under a helmet. Worn over the
-	# Leather set: the PixelLab base hero draws no code cloak (13.5).
+	# The cloak layer (design bible 13.4): its hood is up out in the world,
+	# down in a town, and down under a helmet. Every PixelLab set draws its
+	# cloak in, in key green (13.5), so over them the layer is not drawn.
 	GameState.data.equipment["armor"] = "leather_armor"
 	var wild := make_room(ARENA)
 	var p := make_player(wild, Vector2i(3, 6))
 	await frames(10)
-	check(not wild.is_town() and p.cloak.hood == 1.0 and p.cloak.shown(), "out in the world the hood is up, over the body set")
+	for set: String in PlayerVisual.ARMOR_SHEETS.values() + PlayerVisual.HELMED_SHEETS.values():
+		check(Sheet.flag(set, "cloak", false) and Sheet.flag(set, "key_cloak", false), "%s draws its cloak in, in key green" % set)
+	check(not wild.is_town() and p.cloak.hood == 1.0 and not p.cloak.shown(), "out in the world the hood is up, and the layer hides over the set")
 	var town := make_room(ARENA)
 	town.position = Vector2(0, 400)
 	town._people = 1
@@ -339,7 +341,7 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	check(hem.y > p.global_position.y - 12.0 and hem.y <= p.global_position.y, "the cape hangs to the ankles (%s, feet %s)" % [hem, p.global_position])
 	p.input.block_held = true
 	await frames(4)
-	check(not p.cloak.shown(), "a clip from the ranger's sheet draws its own cloak, so the layer hides")
+	check(not p.cloak.shown(), "a clip from the ranger's sheet draws its own cloak too")
 	p.input.block_held = false
 	GameState.data.equipment["armor"] = ""
 

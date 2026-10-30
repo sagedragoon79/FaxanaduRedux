@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "8280d3e0-dacc-49ae-a4eb-53787d44e9ff",
+ "status": "completed",
+ "created_at": "2026-10-30T18:53:59.295574+00:00",
+ "last_response": {
+  "seed": 3015618469,
+  "type": "done",
+  "action": "drinks a small red potion: takes a small glass vial from his belt, raises it to his lips, tilts his head back and drinks, then lowers it. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.3611554372877305,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "c0b26902-622a-49f9-a172-c94bbf6a00a9",
+  "character_id": "ce65acea-2d45-4c2d-b219-3051b774225b",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ce65acea-2d45-4c2d-b219-3051b774225b/animations/c0b26902-622a-49f9-a172-c94bbf6a00a9/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "e0142008-7906-4275-8f9a-0d990e74faae",
+  "animation_name": "custom-drinks a small red potion: tak",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "7363ee7c-897b-468d-ae1c-9e2d27ae0b10",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T18:54:25.323523+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

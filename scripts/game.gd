@@ -32,6 +32,7 @@ extends Node2D
 ##   --carry=A,B                carry rings (elf), keys (jack_key) and shards (potion_shard), for screenshots
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
+##   --hair=ID                  color the hair (PlayerVisual.HAIR, e.g. copper)
 ##   --armor=ID                 wear an armor (data/items.json, kind "armor"), and its body set
 ##   --wear=A,B                 own and wear gear (blades, armor, shields, helmets), e.g. for --open=equipment
 ##   --hp=N                     start with N health (for screenshots)
@@ -292,6 +293,8 @@ func _process(_delta: float) -> void:
 			GameState.obtain_gear(id, player)
 		if menu.is_open:
 			menu.refresh()
+	if _args.has("hair") and _frames == 2:
+		GameState.data.hair = String(_args["hair"])
 	if _args.has("dye") and _frames == 2:
 		# Screenshots: wear a cloak dye (e.g. --dye=lord_dye).
 		GameState.data.dye = String(_args["dye"])

@@ -395,6 +395,10 @@ static func cloak_dyes() -> Array:
 	return out
 
 
+## Equipment rows for a hair color carry this before the PlayerVisual.HAIR id.
+const HAIR_PREFIX := "hair:"
+
+
 ## The Equipment page (pause menu, pass 186): every blade, armor, shield and
 ## helmet you have, by slot, and your cloak's dyes (pass 189). Choose one to
 ## put it on; choose what you wear (not the blade or the cloak) to take it off.
@@ -425,6 +429,11 @@ static func equipment_rows() -> Array:
 	for id: String in cloak_dyes():
 		var item := GameData.item(id)
 		out.append({"label": item.name, "right": "Worn" if GameState.dye() == id else "", "detail": String(item.desc), "enabled": true, "id": id})
+	# Hair (Sean, 2026-10-30): the elf's purple is keyed like the cloak, so any color, any time.
+	out.append({"label": "Hair", "header": true})
+	for hair: String in PlayerVisual.HAIR:
+		var chosen := GameState.hair() == hair
+		out.append({"label": PlayerVisual.HAIR[hair][0], "right": "Worn" if chosen else "", "detail": "Your own violet." if hair == "violet" else "A different color for your hair.", "enabled": true, "id": HAIR_PREFIX + hair})
 	return out
 
 
@@ -437,8 +446,13 @@ static func worn_totals(p: Player) -> String:
 	return "Armor %d%%   Ward %d%%" % [roundi(p.defense * 100.0), roundi(p.magic_ward * 100.0)]
 
 
-## A row chosen on the Equipment page: gear goes on (or off), a dye on the cloak.
+## A row chosen on the Equipment page: gear goes on (or off), a dye on the cloak,
+## a color on the hair.
 static func choose_equipment(id: String, p: Player) -> void:
+	if id.begins_with(HAIR_PREFIX):
+		GameState.data.hair = id.trim_prefix(HAIR_PREFIX)
+		Sfx.play("cloth", 0.0)
+		return
 	if GameData.item(id).get("kind", "") == "dye":
 		if cloak_dyes().has(id):
 			GameState.data.dye = id

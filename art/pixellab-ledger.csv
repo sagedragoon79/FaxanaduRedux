@@ -447,3 +447,435 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/leather_cloak/walk,2.0 generations,"done fda7efd6-1b10-4256-8f3d-5e31e234403d, 13 image(s)",leather_cloak_sample_walk
 2026-10-30,create-character-state,hero/states/leather_cloak_short_sword,25.0 generations,"done 09698c90-7ee9-4096-a084-2044e6693aac, 0 image(s)",leather_cloak_holding_the_Short_Sword
 2026-10-30,characters/animations,hero/leather_cloak/jump,2.0 generations,"done d2ed4875-6c02-40c1-a59f-7a037f6f4582, 17 image(s)",leather_cloak_sample_jump
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_key,?,queued 7810120b-7815-427b-ae79-da8161b2d535,battle_helm_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/studded_cloak_key,?,queued ef946e2f-261d-4e36-b6fa-11d7fc6034b5,studded_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/plate_cloak_key,?,queued 4d35dab3-14bc-46dc-95eb-ef42c1a49ea2,plate_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/battle_cloak_key,?,queued 9a8195dd-524c-4186-857a-f3c4e04e75f3,battle_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/battle_cloak_key,25.0 generations,"done 9a8195dd-524c-4186-857a-f3c4e04e75f3, 0 image(s)",battle_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_key,25.0 generations,"done 7810120b-7815-427b-ae79-da8161b2d535, 0 image(s)",battle_helm_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/plate_cloak_key,25.0 generations,"done 4d35dab3-14bc-46dc-95eb-ef42c1a49ea2, 0 image(s)",plate_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/studded_cloak_key,25.0 generations,"done ef946e2f-261d-4e36-b6fa-11d7fc6034b5, 0 image(s)",studded_with_a_chroma_key_cloak
+2026-10-30,create-character-state,hero/states/base_cloak_dragon_slayer,?,queued c280a7d0-153c-4ca3-989a-e98545e81030,base_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/base_cloak_short_sword,?,queued 29d8aaf3-f1b4-46e6-94f9-330e324061f1,base_cloak_short_sword
+2026-10-30,create-character-state,hero/states/base_cloak_mattock,?,queued 0c0a4c0e-08e7-48b8-995f-bce5e4de34d9,base_cloak_mattock
+2026-10-30,create-character-state,hero/states/base_cloak_broad_sword,?,queued 3c406fce-53b5-492c-9332-77c1ff15c51a,base_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/base_cloak_long_sword,?,queued 654f9953-f7e1-488f-a75e-c011ccf7d434,base_cloak_long_sword
+2026-10-30,create-character-state,hero/states/base_cloak_long_sword,25.0 generations,"done 654f9953-f7e1-488f-a75e-c011ccf7d434, 0 image(s)",base_cloak_long_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_mattock,?,queued 4775aa4f-b92d-48ec-a31a-f00701d2ae2b,leather_cloak_mattock
+2026-10-30,create-character-state,hero/states/base_cloak_short_sword,25.0 generations,"done 29d8aaf3-f1b4-46e6-94f9-330e324061f1, 0 image(s)",base_cloak_short_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_long_sword,?,queued e3340f35-75ae-443b-a5a3-1e7d38ced586,leather_cloak_long_sword
+2026-10-30,create-character-state,hero/states/base_cloak_mattock,25.0 generations,"done 0c0a4c0e-08e7-48b8-995f-bce5e4de34d9, 0 image(s)",base_cloak_mattock
+2026-10-30,create-character-state,hero/states/leather_cloak_broad_sword,?,queued 238613d7-8d64-4f24-8a77-07265e441e31,leather_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/base_cloak_broad_sword,25.0 generations,"done 3c406fce-53b5-492c-9332-77c1ff15c51a, 0 image(s)",base_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_dragon_slayer,?,queued 02249581-ec3a-4445-9be8-fcb0831a8395,leather_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/base_cloak_dragon_slayer,25.0 generations,"done c280a7d0-153c-4ca3-989a-e98545e81030, 0 image(s)",base_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_cloak_short_sword,?,queued 7b617596-0ed8-49db-864f-0480a3249169,studded_cloak_short_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_mattock,25.0 generations,"done 4775aa4f-b92d-48ec-a31a-f00701d2ae2b, 0 image(s)",leather_cloak_mattock
+2026-10-30,create-character-state,hero/states/studded_cloak_mattock,?,queued 300b4a2e-2ded-4af3-8b65-efec83d62ed6,studded_cloak_mattock
+2026-10-30,create-character-state,hero/states/leather_cloak_broad_sword,25.0 generations,"done 238613d7-8d64-4f24-8a77-07265e441e31, 0 image(s)",leather_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/studded_cloak_long_sword,?,queued 68501891-95af-4683-a6aa-2adc884e38e3,studded_cloak_long_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_long_sword,25.0 generations,"done e3340f35-75ae-443b-a5a3-1e7d38ced586, 0 image(s)",leather_cloak_long_sword
+2026-10-30,create-character-state,hero/states/studded_cloak_broad_sword,?,queued 0b1d43ba-233b-44bd-8423-4d6a904b8720,studded_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/leather_cloak_dragon_slayer,25.0 generations,"done 02249581-ec3a-4445-9be8-fcb0831a8395, 0 image(s)",leather_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_cloak_dragon_slayer,?,queued bb36441c-c8e9-40ba-8af5-020715fff759,studded_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/studded_cloak_short_sword,25.0 generations,"done 7b617596-0ed8-49db-864f-0480a3249169, 0 image(s)",studded_cloak_short_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_short_sword,?,queued b443d857-d9a9-474f-b182-0baf8f99054c,plate_cloak_short_sword
+2026-10-30,create-character-state,hero/states/studded_cloak_mattock,25.0 generations,"done 300b4a2e-2ded-4af3-8b65-efec83d62ed6, 0 image(s)",studded_cloak_mattock
+2026-10-30,create-character-state,hero/states/plate_cloak_mattock,?,queued 5f43abec-044f-464f-99c8-67c2724a6f75,plate_cloak_mattock
+2026-10-30,create-character-state,hero/states/studded_cloak_long_sword,25.0 generations,"done 68501891-95af-4683-a6aa-2adc884e38e3, 0 image(s)",studded_cloak_long_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_long_sword,?,queued 6cde3454-6059-41a1-b905-95c89b5c2653,plate_cloak_long_sword
+2026-10-30,create-character-state,hero/states/studded_cloak_broad_sword,25.0 generations,"done 0b1d43ba-233b-44bd-8423-4d6a904b8720, 0 image(s)",studded_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_broad_sword,?,queued c8580e76-3245-4bf7-a5fe-ee2e0decbe4c,plate_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/studded_cloak_dragon_slayer,25.0 generations,"done bb36441c-c8e9-40ba-8af5-020715fff759, 0 image(s)",studded_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/plate_cloak_dragon_slayer,?,queued eb55dee6-779d-4211-90c6-d8f6f03c8326,plate_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/plate_cloak_short_sword,25.0 generations,"done b443d857-d9a9-474f-b182-0baf8f99054c, 0 image(s)",plate_cloak_short_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_short_sword,?,queued eabf42f2-0383-4eeb-b7ef-478054a9e50f,battle_cloak_short_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_mattock,25.0 generations,"done 5f43abec-044f-464f-99c8-67c2724a6f75, 0 image(s)",plate_cloak_mattock
+2026-10-30,create-character-state,hero/states/battle_cloak_mattock,?,queued fea68ba5-9382-4e5b-af13-5cddd0eddc5d,battle_cloak_mattock
+2026-10-30,create-character-state,hero/states/plate_cloak_long_sword,25.0 generations,"done 6cde3454-6059-41a1-b905-95c89b5c2653, 0 image(s)",plate_cloak_long_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_long_sword,?,queued 5ca24783-bc7e-461c-8fa5-159b2769f6e5,battle_cloak_long_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_broad_sword,25.0 generations,"done c8580e76-3245-4bf7-a5fe-ee2e0decbe4c, 0 image(s)",plate_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_broad_sword,?,queued a26f9cf8-d068-4879-9b4b-85af08cce0c0,battle_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/plate_cloak_dragon_slayer,25.0 generations,"done eb55dee6-779d-4211-90c6-d8f6f03c8326, 0 image(s)",plate_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_cloak_dragon_slayer,?,queued 8cc5eea2-46c9-4078-9a3a-09448441b3ed,battle_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_cloak_short_sword,25.0 generations,"done eabf42f2-0383-4eeb-b7ef-478054a9e50f, 0 image(s)",battle_cloak_short_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_short_sword,?,queued 42550a91-2a15-467c-adeb-8222f6d53680,battle_helm_cloak_short_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_long_sword,25.0 generations,"done 5ca24783-bc7e-461c-8fa5-159b2769f6e5, 0 image(s)",battle_cloak_long_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_mattock,?,queued 79ee6902-1e48-47b9-8ac5-79f1f4c19fb1,battle_helm_cloak_mattock
+2026-10-30,create-character-state,hero/states/battle_cloak_mattock,25.0 generations,"done fea68ba5-9382-4e5b-af13-5cddd0eddc5d, 0 image(s)",battle_cloak_mattock
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_long_sword,?,queued c69cf2e6-2861-4b92-bc91-fc22ec50677c,battle_helm_cloak_long_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_broad_sword,25.0 generations,"done a26f9cf8-d068-4879-9b4b-85af08cce0c0, 0 image(s)",battle_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_broad_sword,?,queued dde5d646-49df-463f-9f9e-c3c579c55b90,battle_helm_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/battle_cloak_dragon_slayer,25.0 generations,"done 8cc5eea2-46c9-4078-9a3a-09448441b3ed, 0 image(s)",battle_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_dragon_slayer,?,queued b314f040-4e8a-4ce5-9f76-939eaed64655,battle_helm_cloak_dragon_slayer
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_mattock,25.0 generations,"done 79ee6902-1e48-47b9-8ac5-79f1f4c19fb1, 0 image(s)",battle_helm_cloak_mattock
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_short_sword,25.0 generations,"done 42550a91-2a15-467c-adeb-8222f6d53680, 0 image(s)",battle_helm_cloak_short_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_long_sword,25.0 generations,"done c69cf2e6-2861-4b92-bc91-fc22ec50677c, 0 image(s)",battle_helm_cloak_long_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_broad_sword,25.0 generations,"done dde5d646-49df-463f-9f9e-c3c579c55b90, 0 image(s)",battle_helm_cloak_broad_sword
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_dragon_slayer,25.0 generations,"done b314f040-4e8a-4ce5-9f76-939eaed64655, 0 image(s)",battle_helm_cloak_dragon_slayer
+2026-10-30,characters/animations,hero/base_cloak/walk,?,queued 70b85dfa-df99-4922-ab6c-bee5d82d8b43,base_cloak_walk
+2026-10-30,characters/animations,hero/base_cloak/drink,?,queued 8280d3e0-dacc-49ae-a4eb-53787d44e9ff,base_cloak_drink
+2026-10-30,characters/animations,hero/base_cloak/dash,?,queued 20de1291-8f13-4114-938f-2c03abda4245,base_cloak_dash
+2026-10-30,characters/animations,hero/base_cloak/run,?,queued 5487fe0d-cb44-46f0-8758-62197a315e4d,base_cloak_run
+2026-10-30,characters/animations,hero/base_cloak/hurt,?,queued 57e10b43-8826-4459-8626-94c10bb260a4,base_cloak_hurt
+2026-10-30,characters/animations,hero/base_cloak/idle,?,queued a53e3620-fd97-4705-8118-c4dc20a02288,base_cloak_idle
+2026-10-30,characters/animations,hero/base_cloak/death,?,queued 0055362e-63e1-4e5c-a94c-dd1fea368619,base_cloak_death
+2026-10-30,characters/animations,hero/base_cloak/jump,?,queued d9cf5904-49d8-420a-b447-c9de019a133f,base_cloak_jump
+2026-10-30,characters/animations,hero/base_cloak/wall,?,queued b68a54ff-0df6-4642-9004-a585b43f7259,base_cloak_wall
+2026-10-30,characters/animations,hero/base_cloak/hurt,1.0 generations,"done 57e10b43-8826-4459-8626-94c10bb260a4, 9 image(s)",base_cloak_hurt
+2026-10-30,characters/animations,hero/base_cloak/cast,?,queued ba544707-6349-4881-b5c9-8a28b298766e,base_cloak_cast
+2026-10-30,characters/animations,hero/base_cloak/dash,1.0 generations,"done 20de1291-8f13-4114-938f-2c03abda4245, 9 image(s)",base_cloak_dash
+2026-10-30,characters/animations,hero/base_cloak/wall,1.0 generations,"done b68a54ff-0df6-4642-9004-a585b43f7259, 9 image(s)",base_cloak_wall
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash1,?,queued 41641e3b-9556-4d1d-94e2-3ded74c4a5bb,base_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/base_cloak/slash1,?,queued 95fa9e3f-f6c2-4e7a-b877-29a915efe2f0,base_cloak_slash1
+2026-10-30,characters/animations,hero/base_cloak/death,2.0 generations,"done 0055362e-63e1-4e5c-a94c-dd1fea368619, 13 image(s)",base_cloak_death
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash1,?,queued 448a4b13-02be-4573-9148-97d8063c967d,base_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/base_cloak/run,1.0 generations,"done 5487fe0d-cb44-46f0-8758-62197a315e4d, 9 image(s)",base_cloak_run
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash1,?,queued 47a96b7d-f581-444d-a339-e393d8ee34f0,base_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/base_cloak/drink,2.0 generations,"done 8280d3e0-dacc-49ae-a4eb-53787d44e9ff, 13 image(s)",base_cloak_drink
+2026-10-30,characters/animations,hero/base_cloak/slash2,?,queued 92b7792c-6805-4dde-adf2-64fbdbdb6969,base_cloak_slash2
+2026-10-30,characters/animations,hero/base_cloak/walk,2.0 generations,"done 70b85dfa-df99-4922-ab6c-bee5d82d8b43, 13 image(s)",base_cloak_walk
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash2,?,queued 1aacc8cc-8ff8-497a-8b53-021edc8442f7,base_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/base_cloak/idle,8.0 generations,"done a53e3620-fd97-4705-8118-c4dc20a02288, 9 image(s)",base_cloak_idle
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash2,?,queued 8ec8b278-4a03-45c3-aaf7-3f359071fefc,base_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/base_cloak/slash1,2.0 generations,"done 95fa9e3f-f6c2-4e7a-b877-29a915efe2f0, 13 image(s)",base_cloak_slash1
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash2,?,queued f2bcefac-f201-449c-b8fd-4ae8be2c8426,base_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash1,2.0 generations,"done 47a96b7d-f581-444d-a339-e393d8ee34f0, 13 image(s)",base_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/base_cloak/slash3,?,queued 8fec456d-073d-48bd-9765-384c6a0cd9c9,base_cloak_slash3
+2026-10-30,characters/animations,hero/base_cloak/jump,2.0 generations,"done d9cf5904-49d8-420a-b447-c9de019a133f, 17 image(s)",base_cloak_jump
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash1,2.0 generations,"done 41641e3b-9556-4d1d-94e2-3ded74c4a5bb, 13 image(s)",base_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/base_cloak/cast,1.0 generations,"done ba544707-6349-4881-b5c9-8a28b298766e, 9 image(s)",base_cloak_cast
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash3,?,queued 624483f6-ca01-41de-9989-7a127b8cd10b,base_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash3,?,queued 2885309d-ecde-4ab1-a71e-6c8a3c96dc34,base_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash3,?,queued 23b5c8ce-3fa0-48a9-bd69-a03a2a86d2b7,base_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash1,2.0 generations,"done 448a4b13-02be-4573-9148-97d8063c967d, 13 image(s)",base_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/base_cloak/slash_up,?,queued 93a58aaf-08e9-4b94-aab7-e2715c12f91c,base_cloak_slash_up
+2026-10-30,characters/animations,hero/base_cloak/slash2,2.0 generations,"done 92b7792c-6805-4dde-adf2-64fbdbdb6969, 13 image(s)",base_cloak_slash2
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash2,2.0 generations,"done 1aacc8cc-8ff8-497a-8b53-021edc8442f7, 13 image(s)",base_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash_up,?,queued a58d4974-2772-4ae5-913f-fd3a1b908e7b,base_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash_up,?,queued 1dcc68bf-8a55-4ee6-aa74-e7216a4fea0c,base_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash2,2.0 generations,"done f2bcefac-f201-449c-b8fd-4ae8be2c8426, 13 image(s)",base_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash_up,?,queued 777e331a-15ca-412b-9c7a-c3e2465a02dd,base_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/base_cloak/slash3,2.0 generations,"done 8fec456d-073d-48bd-9765-384c6a0cd9c9, 13 image(s)",base_cloak_slash3
+2026-10-30,characters/animations,hero/base_cloak/pogo,?,queued ea3b3ecd-c503-450c-baa3-54447ec30c34,base_cloak_pogo
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash2,2.0 generations,"done 8ec8b278-4a03-45c3-aaf7-3f359071fefc, 13 image(s)",base_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/base_cloak/swing,?,queued e6f72eaf-0a77-4c92-be41-a9ab08230e61,base_cloak_swing
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash3,2.0 generations,"done 624483f6-ca01-41de-9989-7a127b8cd10b, 13 image(s)",base_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/leather_cloak/idle,?,queued e4ca169f-8534-4254-b2ef-e0565035a737,leather_cloak_idle
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash3,2.0 generations,"done 2885309d-ecde-4ab1-a71e-6c8a3c96dc34, 13 image(s)",base_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/leather_cloak/dash,?,queued 42902ace-7007-4c48-9907-75f4bab45706,leather_cloak_dash
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash3,2.0 generations,"done 23b5c8ce-3fa0-48a9-bd69-a03a2a86d2b7, 13 image(s)",base_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/leather_cloak/wall,?,queued 6c787564-588d-4c04-aa6c-b61a4373f9e1,leather_cloak_wall
+2026-10-30,characters/animations,hero/base_cloak/long_sword/slash_up,2.0 generations,"done a58d4974-2772-4ae5-913f-fd3a1b908e7b, 13 image(s)",base_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/hurt,?,queued 3ff80288-f02f-4e22-994a-35b8e3c05188,leather_cloak_hurt
+2026-10-30,characters/animations,hero/base_cloak/broad_sword/slash_up,2.0 generations,"done 1dcc68bf-8a55-4ee6-aa74-e7216a4fea0c, 13 image(s)",base_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/death,?,queued d034f3f7-874e-4ca6-827e-50d380a5c6b2,leather_cloak_death
+2026-10-30,characters/animations,hero/base_cloak/slash_up,2.0 generations,"done 93a58aaf-08e9-4b94-aab7-e2715c12f91c, 13 image(s)",base_cloak_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/drink,?,queued 6e861354-0d37-4639-b7b5-b0f51c6f2fff,leather_cloak_drink
+2026-10-30,characters/animations,hero/leather_cloak/dash,1.0 generations,"done 42902ace-7007-4c48-9907-75f4bab45706, 9 image(s)",leather_cloak_dash
+2026-10-30,characters/animations,hero/leather_cloak/cast,?,queued 046584dd-69f7-4fbe-824b-4054bb960a30,leather_cloak_cast
+2026-10-30,characters/animations,hero/base_cloak/swing,2.0 generations,"done e6f72eaf-0a77-4c92-be41-a9ab08230e61, 13 image(s)",base_cloak_swing
+2026-10-30,characters/animations,hero/leather_cloak/slash1,?,queued f308b28c-456e-4038-b939-ac4b016a46a2,leather_cloak_slash1
+2026-10-30,characters/animations,hero/leather_cloak/idle,8.0 generations,"done e4ca169f-8534-4254-b2ef-e0565035a737, 9 image(s)",leather_cloak_idle
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash1,?,queued 3d865f7e-063c-4f71-befb-9b00da9d08d8,leather_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/leather_cloak/wall,1.0 generations,"done 6c787564-588d-4c04-aa6c-b61a4373f9e1, 9 image(s)",leather_cloak_wall
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash1,?,queued bed2ba70-3974-4ca3-9940-34d13b7a4717,leather_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/base_cloak/pogo,2.0 generations,"done ea3b3ecd-c503-450c-baa3-54447ec30c34, 13 image(s)",base_cloak_pogo
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash1,?,queued 07fb1ba5-0c3b-44d2-aa52-26daed8dc338,leather_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/leather_cloak/hurt,1.0 generations,"done 3ff80288-f02f-4e22-994a-35b8e3c05188, 9 image(s)",leather_cloak_hurt
+2026-10-30,characters/animations,hero/leather_cloak/slash2,?,queued 63382082-bf59-4c3b-888b-d79aa7ca7855,leather_cloak_slash2
+2026-10-30,characters/animations,hero/base_cloak/dragon_slayer/slash_up,2.0 generations,"done 777e331a-15ca-412b-9c7a-c3e2465a02dd, 13 image(s)",base_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash2,?,queued 428a04d0-42d2-41ac-8f1d-b9e5524c2d33,leather_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash1,2.0 generations,"done 3d865f7e-063c-4f71-befb-9b00da9d08d8, 13 image(s)",leather_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash2,?,queued 2045fdfc-6b82-4327-a15c-9e28eb4694d5,leather_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/leather_cloak/drink,2.0 generations,"done 6e861354-0d37-4639-b7b5-b0f51c6f2fff, 13 image(s)",leather_cloak_drink
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash2,?,queued af7bd30c-f341-4ae5-b95f-8ef0fd717a55,leather_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/leather_cloak/slash2,2.0 generations,"done 63382082-bf59-4c3b-888b-d79aa7ca7855, 13 image(s)",leather_cloak_slash2
+2026-10-30,characters/animations,hero/leather_cloak/slash3,?,queued 8246b5e2-0fb2-40d4-b118-62e4049f8b74,leather_cloak_slash3
+2026-10-30,characters/animations,hero/leather_cloak/cast,1.0 generations,"done 046584dd-69f7-4fbe-824b-4054bb960a30, 9 image(s)",leather_cloak_cast
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash3,?,queued 9bc325d3-667a-408c-b0f9-8760ef41668e,leather_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash1,2.0 generations,"done bed2ba70-3974-4ca3-9940-34d13b7a4717, 13 image(s)",leather_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash3,?,queued 19590883-0ca6-403e-81d3-cf477982f2d4,leather_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash1,2.0 generations,"done 07fb1ba5-0c3b-44d2-aa52-26daed8dc338, 13 image(s)",leather_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/leather_cloak/slash1,2.0 generations,"done f308b28c-456e-4038-b939-ac4b016a46a2, 13 image(s)",leather_cloak_slash1
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash3,?,queued e1a79357-b8cd-42f6-bf79-c8a137a0e3d8,leather_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/leather_cloak/slash_up,?,queued c4ee2566-ef52-44b9-8ab6-7bd7c60c2a14,leather_cloak_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash2,2.0 generations,"done 428a04d0-42d2-41ac-8f1d-b9e5524c2d33, 13 image(s)",leather_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash_up,?,queued c0b5755d-b549-4010-bc8a-741f87fb768c,leather_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/death,2.0 generations,"done d034f3f7-874e-4ca6-827e-50d380a5c6b2, 13 image(s)",leather_cloak_death
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash_up,?,queued 57c1a3d1-16bf-4f44-80cc-c7d487dfd8ad,leather_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash2,2.0 generations,"done af7bd30c-f341-4ae5-b95f-8ef0fd717a55, 13 image(s)",leather_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash_up,?,queued 8b3a310a-fba2-4623-bb24-8dcb76ad51f1,leather_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash2,2.0 generations,"done 2045fdfc-6b82-4327-a15c-9e28eb4694d5, 13 image(s)",leather_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/leather_cloak/pogo,?,queued f398f32f-f960-4563-ae0e-4aac88b801e4,leather_cloak_pogo
+2026-10-30,characters/animations,hero/leather_cloak/slash3,2.0 generations,"done 8246b5e2-0fb2-40d4-b118-62e4049f8b74, 13 image(s)",leather_cloak_slash3
+2026-10-30,characters/animations,hero/leather_cloak/swing,?,queued ef0699ec-e55a-479a-bab0-9fea1cfe2953,leather_cloak_swing
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash3,2.0 generations,"done e1a79357-b8cd-42f6-bf79-c8a137a0e3d8, 13 image(s)",leather_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash3,2.0 generations,"done 9bc325d3-667a-408c-b0f9-8760ef41668e, 13 image(s)",leather_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/studded_cloak/idle,?,queued ddbbcca1-b934-4a9a-9f73-1dfffe76fb7f,studded_cloak_idle
+2026-10-30,characters/animations,hero/studded_cloak/run,?,queued 8007baba-9adf-4e0f-8a19-d25d60ba7d21,studded_cloak_run
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash3,2.0 generations,"done 19590883-0ca6-403e-81d3-cf477982f2d4, 13 image(s)",leather_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/studded_cloak/walk,?,queued 8a1edd04-d24c-467f-a0ca-41f6fcb28a25,studded_cloak_walk
+2026-10-30,characters/animations,hero/leather_cloak/long_sword/slash_up,2.0 generations,"done c0b5755d-b549-4010-bc8a-741f87fb768c, 13 image(s)",leather_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/jump,?,queued 6e688669-dba6-427a-acbf-088f9dd11898,studded_cloak_jump
+2026-10-30,characters/animations,hero/leather_cloak/slash_up,2.0 generations,"done c4ee2566-ef52-44b9-8ab6-7bd7c60c2a14, 13 image(s)",leather_cloak_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/dash,?,queued f8807a86-3a48-489e-bedf-1ba4f82c6dc7,studded_cloak_dash
+2026-10-30,characters/animations,hero/leather_cloak/pogo,2.0 generations,"done f398f32f-f960-4563-ae0e-4aac88b801e4, 13 image(s)",leather_cloak_pogo
+2026-10-30,characters/animations,hero/leather_cloak/dragon_slayer/slash_up,2.0 generations,"done 8b3a310a-fba2-4623-bb24-8dcb76ad51f1, 13 image(s)",leather_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/wall,?,queued d45a6671-dae5-48d4-adb0-5b66d3ac517e,studded_cloak_wall
+2026-10-30,characters/animations,hero/studded_cloak/hurt,?,queued d9fb7ea9-6ad8-4667-9c19-fd7c9b785b5e,studded_cloak_hurt
+2026-10-30,characters/animations,hero/studded_cloak/run,1.0 generations,"done 8007baba-9adf-4e0f-8a19-d25d60ba7d21, 9 image(s)",studded_cloak_run
+2026-10-30,characters/animations,hero/studded_cloak/death,?,queued addc84b8-69cc-4df4-b355-79a6cef465c6,studded_cloak_death
+2026-10-30,characters/animations,hero/leather_cloak/swing,2.0 generations,"done ef0699ec-e55a-479a-bab0-9fea1cfe2953, 13 image(s)",leather_cloak_swing
+2026-10-30,characters/animations,hero/studded_cloak/drink,?,queued c54cb66d-eec5-4d03-9fc0-2442fa24ee94,studded_cloak_drink
+2026-10-30,characters/animations,hero/studded_cloak/walk,2.0 generations,"done 8a1edd04-d24c-467f-a0ca-41f6fcb28a25, 13 image(s)",studded_cloak_walk
+2026-10-30,characters/animations,hero/studded_cloak/cast,?,queued 60f373ba-f172-44e9-a946-d9350d8df5a1,studded_cloak_cast
+2026-10-30,characters/animations,hero/leather_cloak/broad_sword/slash_up,2.0 generations,"done 57c1a3d1-16bf-4f44-80cc-c7d487dfd8ad, 13 image(s)",leather_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/dash,1.0 generations,"done f8807a86-3a48-489e-bedf-1ba4f82c6dc7, 9 image(s)",studded_cloak_dash
+2026-10-30,characters/animations,hero/studded_cloak/slash1,?,queued cbc2bd5e-a8b9-40dd-8312-a6b13d8e4b5f,studded_cloak_slash1
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash1,?,queued 5df7c3af-c130-43ea-80a2-b42df66426e7,studded_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/studded_cloak/wall,1.0 generations,"done d45a6671-dae5-48d4-adb0-5b66d3ac517e, 9 image(s)",studded_cloak_wall
+2026-10-30,characters/animations,hero/studded_cloak/slash2,?,queued 68ff314e-be4e-44f7-8897-5cf7c809afb4,studded_cloak_slash2
+2026-10-30,characters/animations,hero/studded_cloak/idle,8.0 generations,"done ddbbcca1-b934-4a9a-9f73-1dfffe76fb7f, 9 image(s)",studded_cloak_idle
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash2,?,queued 1a47c445-86c1-499a-8278-0a922420b27b,studded_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/studded_cloak/jump,2.0 generations,"done 6e688669-dba6-427a-acbf-088f9dd11898, 17 image(s)",studded_cloak_jump
+2026-10-30,characters/animations,hero/studded_cloak/slash3,?,queued c03d51bb-7800-44af-9eeb-f2898b7dd1e0,studded_cloak_slash3
+2026-10-30,characters/animations,hero/studded_cloak/drink,2.0 generations,"done c54cb66d-eec5-4d03-9fc0-2442fa24ee94, 13 image(s)",studded_cloak_drink
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash3,?,queued 25e75f02-99a2-41e2-b3f6-e3009d6c0532,studded_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/studded_cloak/cast,1.0 generations,"done 60f373ba-f172-44e9-a946-d9350d8df5a1, 9 image(s)",studded_cloak_cast
+2026-10-30,characters/animations,hero/studded_cloak/death,2.0 generations,"done addc84b8-69cc-4df4-b355-79a6cef465c6, 13 image(s)",studded_cloak_death
+2026-10-30,characters/animations,hero/studded_cloak/slash_up,?,queued 35cdf803-5c5a-43e3-823b-2bc9804b73da,studded_cloak_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash_up,?,queued 00a15b1d-04b1-4935-baeb-91bff4b8f07b,studded_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/hurt,1.0 generations,"done d9fb7ea9-6ad8-4667-9c19-fd7c9b785b5e, 9 image(s)",studded_cloak_hurt
+2026-10-30,characters/animations,hero/studded_cloak/pogo,?,queued 0e32e8a7-765a-4c5b-a374-273401a447c8,studded_cloak_pogo
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash1,2.0 generations,"done 5df7c3af-c130-43ea-80a2-b42df66426e7, 13 image(s)",studded_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/studded_cloak/swing,?,queued 21ffcbcf-b961-4dc5-b7bc-741b38473192,studded_cloak_swing
+2026-10-30,characters/animations,hero/studded_cloak/slash3,2.0 generations,"done c03d51bb-7800-44af-9eeb-f2898b7dd1e0, 13 image(s)",studded_cloak_slash3
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash2,2.0 generations,"done 1a47c445-86c1-499a-8278-0a922420b27b, 13 image(s)",studded_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/plate_cloak/idle,?,queued 5d0b9865-7bf5-4488-81d2-88f6a8ae9f9d,plate_cloak_idle
+2026-10-30,characters/animations,hero/plate_cloak/run,?,queued 0d16db15-3353-45ea-97bc-30e9f22f4acc,plate_cloak_run
+2026-10-30,characters/animations,hero/studded_cloak/slash1,2.0 generations,"done cbc2bd5e-a8b9-40dd-8312-a6b13d8e4b5f, 13 image(s)",studded_cloak_slash1
+2026-10-30,characters/animations,hero/plate_cloak/walk,?,queued 6d4d095c-0cab-43f2-a639-d2f06831b7d2,plate_cloak_walk
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash3,2.0 generations,"done 25e75f02-99a2-41e2-b3f6-e3009d6c0532, 13 image(s)",studded_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/plate_cloak/jump,?,queued 7d22277b-790b-4d9e-99e7-00f98bc47bc5,plate_cloak_jump
+2026-10-30,characters/animations,hero/studded_cloak/pogo,2.0 generations,"done 0e32e8a7-765a-4c5b-a374-273401a447c8, 13 image(s)",studded_cloak_pogo
+2026-10-30,characters/animations,hero/plate_cloak/dash,?,queued 25d1cdaf-797b-4883-bdc1-a0a676f04df5,plate_cloak_dash
+2026-10-30,characters/animations,hero/studded_cloak/slash2,2.0 generations,"done 68ff314e-be4e-44f7-8897-5cf7c809afb4, 13 image(s)",studded_cloak_slash2
+2026-10-30,characters/animations,hero/plate_cloak/wall,?,queued 053bb0d0-44b6-4d91-9ce3-6ed1224b6126,plate_cloak_wall
+2026-10-30,characters/animations,hero/studded_cloak/swing,2.0 generations,"done 21ffcbcf-b961-4dc5-b7bc-741b38473192, 13 image(s)",studded_cloak_swing
+2026-10-30,characters/animations,hero/plate_cloak/hurt,?,queued 19808130-0dc4-422e-9043-d5a0cd0bf9ce,plate_cloak_hurt
+2026-10-30,characters/animations,hero/studded_cloak/long_sword/slash_up,2.0 generations,"done 00a15b1d-04b1-4935-baeb-91bff4b8f07b, 13 image(s)",studded_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/death,?,queued 83751df8-8e87-49a3-801c-03afecc878de,plate_cloak_death
+2026-10-30,characters/animations,hero/plate_cloak/run,1.0 generations,"done 0d16db15-3353-45ea-97bc-30e9f22f4acc, 9 image(s)",plate_cloak_run
+2026-10-30,characters/animations,hero/plate_cloak/drink,?,queued 6c792f08-0168-4116-a057-d83feaf20b2a,plate_cloak_drink
+2026-10-30,characters/animations,hero/plate_cloak/walk,2.0 generations,"done 6d4d095c-0cab-43f2-a639-d2f06831b7d2, 13 image(s)",plate_cloak_walk
+2026-10-30,characters/animations,hero/plate_cloak/cast,?,queued fb6e4ad0-f081-4875-aeb2-8e258d69f044,plate_cloak_cast
+2026-10-30,characters/animations,hero/plate_cloak/idle,8.0 generations,"done 5d0b9865-7bf5-4488-81d2-88f6a8ae9f9d, 9 image(s)",plate_cloak_idle
+2026-10-30,characters/animations,hero/plate_cloak/slash1,?,queued 20d7e906-d925-4995-a2e2-9fe953a37ae7,plate_cloak_slash1
+2026-10-30,characters/animations,hero/studded_cloak/slash_up,2.0 generations,"done 35cdf803-5c5a-43e3-823b-2bc9804b73da, 13 image(s)",studded_cloak_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash1,?,queued bdffa8ce-7e92-48eb-bfef-3a1b07f225ba,plate_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/plate_cloak/wall,1.0 generations,"done 053bb0d0-44b6-4d91-9ce3-6ed1224b6126, 9 image(s)",plate_cloak_wall
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash1,?,queued aa0d9ca0-fe71-4e60-89d9-76dcb465ecff,plate_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/plate_cloak/hurt,1.0 generations,"done 19808130-0dc4-422e-9043-d5a0cd0bf9ce, 9 image(s)",plate_cloak_hurt
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash1,?,queued d454a15e-728d-4c4f-aa13-ff2aebb1bf6a,plate_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/plate_cloak/death,2.0 generations,"done 83751df8-8e87-49a3-801c-03afecc878de, 13 image(s)",plate_cloak_death
+2026-10-30,characters/animations,hero/plate_cloak/slash2,?,queued 724288ec-0b38-450e-a94c-755db7b1c61a,plate_cloak_slash2
+2026-10-30,characters/animations,hero/plate_cloak/cast,1.0 generations,"done fb6e4ad0-f081-4875-aeb2-8e258d69f044, 9 image(s)",plate_cloak_cast
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash2,?,queued 6759d45f-6f32-48aa-9551-5d96f3604176,plate_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/plate_cloak/drink,2.0 generations,"done 6c792f08-0168-4116-a057-d83feaf20b2a, 13 image(s)",plate_cloak_drink
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash2,?,queued 5e1c414f-5050-49d2-a7dd-9f654f0c0a54,plate_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/plate_cloak/dash,1.0 generations,"done 25d1cdaf-797b-4883-bdc1-a0a676f04df5, 9 image(s)",plate_cloak_dash
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash2,?,queued 08b08581-8b2d-4cfc-88f7-9b064ab08966,plate_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/plate_cloak/slash1,2.0 generations,"done 20d7e906-d925-4995-a2e2-9fe953a37ae7, 13 image(s)",plate_cloak_slash1
+2026-10-30,characters/animations,hero/plate_cloak/slash3,?,queued 4cc59494-afd9-46e0-b931-f8e6bda6581d,plate_cloak_slash3
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash1,2.0 generations,"done bdffa8ce-7e92-48eb-bfef-3a1b07f225ba, 13 image(s)",plate_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash3,?,queued 54645458-068c-44bc-ae18-0bd298ee896e,plate_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/plate_cloak/jump,2.0 generations,"done 7d22277b-790b-4d9e-99e7-00f98bc47bc5, 17 image(s)",plate_cloak_jump
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash1,2.0 generations,"done d454a15e-728d-4c4f-aa13-ff2aebb1bf6a, 13 image(s)",plate_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash3,?,queued 33702f55-f0f5-42c1-bbdf-fd2d871ff18a,plate_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash3,?,queued 73d5bdf9-b40c-446b-874f-40e08d25fc9c,plate_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/plate_cloak/slash2,2.0 generations,"done 724288ec-0b38-450e-a94c-755db7b1c61a, 13 image(s)",plate_cloak_slash2
+2026-10-30,characters/animations,hero/plate_cloak/slash_up,?,queued 8812f7f2-771a-4b7b-bff6-225943186385,plate_cloak_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash1,2.0 generations,"done aa0d9ca0-fe71-4e60-89d9-76dcb465ecff, 13 image(s)",plate_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash_up,?,queued f42f8081-a89c-4388-a9bd-36ea93d73228,plate_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash2,2.0 generations,"done 5e1c414f-5050-49d2-a7dd-9f654f0c0a54, 13 image(s)",plate_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash2,2.0 generations,"done 6759d45f-6f32-48aa-9551-5d96f3604176, 13 image(s)",plate_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash_up,?,queued 0fc9ecdf-20e1-48f3-bf5f-4eaf2706251b,plate_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash_up,?,queued c81f881c-3efd-4d74-b271-28a0496fa1f9,plate_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash2,2.0 generations,"done 08b08581-8b2d-4cfc-88f7-9b064ab08966, 13 image(s)",plate_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/plate_cloak/pogo,?,queued 42f173f2-34ca-445d-8156-cd2116ae5fee,plate_cloak_pogo
+2026-10-30,characters/animations,hero/plate_cloak/slash3,2.0 generations,"done 4cc59494-afd9-46e0-b931-f8e6bda6581d, 13 image(s)",plate_cloak_slash3
+2026-10-30,characters/animations,hero/plate_cloak/swing,?,queued 40dc8959-fd18-4e99-8fe2-d25aff48dee5,plate_cloak_swing
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash3,2.0 generations,"done 54645458-068c-44bc-ae18-0bd298ee896e, 13 image(s)",plate_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash3,2.0 generations,"done 73d5bdf9-b40c-446b-874f-40e08d25fc9c, 13 image(s)",plate_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_cloak/idle,?,queued 9dd52fe9-6855-4be3-960e-db9242e65762,battle_cloak_idle
+2026-10-30,characters/animations,hero/battle_cloak/run,?,queued b18f4584-2449-47d8-b347-ecdf6e2c2b61,battle_cloak_run
+2026-10-30,characters/animations,hero/plate_cloak/slash_up,2.0 generations,"done 8812f7f2-771a-4b7b-bff6-225943186385, 13 image(s)",plate_cloak_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/walk,?,queued 0d1da682-b3a6-4f66-9d22-0e59c63ea704,battle_cloak_walk
+2026-10-30,characters/animations,hero/plate_cloak/dragon_slayer/slash_up,2.0 generations,"done c81f881c-3efd-4d74-b271-28a0496fa1f9, 13 image(s)",plate_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/jump,?,queued 11f3d03f-7644-4dda-bf6b-662ae4fa4166,battle_cloak_jump
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash3,2.0 generations,"done 33702f55-f0f5-42c1-bbdf-fd2d871ff18a, 13 image(s)",plate_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_cloak/dash,?,queued 4c052036-d3fa-4b28-883d-6ca119670e1f,battle_cloak_dash
+2026-10-30,characters/animations,hero/plate_cloak/pogo,2.0 generations,"done 42f173f2-34ca-445d-8156-cd2116ae5fee, 13 image(s)",plate_cloak_pogo
+2026-10-30,characters/animations,hero/battle_cloak/wall,?,queued 57f893f7-8b2e-41c9-83fc-482dadb71905,battle_cloak_wall
+2026-10-30,characters/animations,hero/plate_cloak/broad_sword/slash_up,2.0 generations,"done 0fc9ecdf-20e1-48f3-bf5f-4eaf2706251b, 13 image(s)",plate_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/hurt,?,queued 3d2aa2a4-2ab0-4849-b487-b67b52fa1cbb,battle_cloak_hurt
+2026-10-30,characters/animations,hero/plate_cloak/long_sword/slash_up,2.0 generations,"done f42f8081-a89c-4388-a9bd-36ea93d73228, 13 image(s)",plate_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/death,?,queued d08527c7-6050-41b7-bbd3-b00cf058dbd5,battle_cloak_death
+2026-10-30,characters/animations,hero/battle_cloak/run,1.0 generations,"done b18f4584-2449-47d8-b347-ecdf6e2c2b61, 9 image(s)",battle_cloak_run
+2026-10-30,characters/animations,hero/battle_cloak/drink,?,queued cd6bb411-f94b-419c-aeb5-2ab915b2e6f3,battle_cloak_drink
+2026-10-30,characters/animations,hero/plate_cloak/swing,2.0 generations,"done 40dc8959-fd18-4e99-8fe2-d25aff48dee5, 13 image(s)",plate_cloak_swing
+2026-10-30,characters/animations,hero/battle_cloak/cast,?,queued 219c92d5-0542-4593-a2aa-71294f2a057e,battle_cloak_cast
+2026-10-30,characters/animations,hero/battle_cloak/wall,1.0 generations,"done 57f893f7-8b2e-41c9-83fc-482dadb71905, 9 image(s)",battle_cloak_wall
+2026-10-30,characters/animations,hero/battle_cloak/slash1,?,queued 631ae89b-fdb7-4954-96ac-3c5a6ce4a603,battle_cloak_slash1
+2026-10-30,characters/animations,hero/battle_cloak/idle,8.0 generations,"done 9dd52fe9-6855-4be3-960e-db9242e65762, 9 image(s)",battle_cloak_idle
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash1,?,queued 551a0333-62e4-4c19-9a54-90d9642b6c17,battle_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/battle_cloak/dash,1.0 generations,"done 4c052036-d3fa-4b28-883d-6ca119670e1f, 9 image(s)",battle_cloak_dash
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash1,?,queued e3f4d226-1fec-4a75-9544-9e968138c7ba,battle_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_cloak/hurt,1.0 generations,"done 3d2aa2a4-2ab0-4849-b487-b67b52fa1cbb, 9 image(s)",battle_cloak_hurt
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash1,?,queued 78e199ec-a8fc-4b5d-8e76-095f22f667ce,battle_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_cloak/walk,2.0 generations,"done 0d1da682-b3a6-4f66-9d22-0e59c63ea704, 13 image(s)",battle_cloak_walk
+2026-10-30,characters/animations,hero/battle_cloak/slash2,?,queued 1f3af01d-78d6-475f-aa4d-c5358d149764,battle_cloak_slash2
+2026-10-30,characters/animations,hero/battle_cloak/death,2.0 generations,"done d08527c7-6050-41b7-bbd3-b00cf058dbd5, 13 image(s)",battle_cloak_death
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash2,?,queued 414c7511-4124-4748-a052-ab6e818b1972,battle_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/battle_cloak/cast,1.0 generations,"done 219c92d5-0542-4593-a2aa-71294f2a057e, 9 image(s)",battle_cloak_cast
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash2,?,queued 2f1d060a-6d02-4aa9-8b51-0a44a0072f98,battle_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_cloak/drink,2.0 generations,"done cd6bb411-f94b-419c-aeb5-2ab915b2e6f3, 13 image(s)",battle_cloak_drink
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash2,?,queued 9f6190d9-ee8b-495d-82ad-1c7b2dfb5531,battle_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_cloak/slash1,2.0 generations,"done 631ae89b-fdb7-4954-96ac-3c5a6ce4a603, 13 image(s)",battle_cloak_slash1
+2026-10-30,characters/animations,hero/battle_cloak/slash3,?,queued 95d40b2d-c245-4d78-b583-4d9d9a282e90,battle_cloak_slash3
+2026-10-30,characters/animations,hero/battle_cloak/jump,2.0 generations,"done 11f3d03f-7644-4dda-bf6b-662ae4fa4166, 17 image(s)",battle_cloak_jump
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash3,?,queued da5cf58d-84e7-463e-bb9e-f19e9d8184e8,battle_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash1,2.0 generations,"done 551a0333-62e4-4c19-9a54-90d9642b6c17, 13 image(s)",battle_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash3,?,queued 2b022adc-b91f-4ef8-828d-e6e9dfc463cc,battle_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash1,2.0 generations,"done 78e199ec-a8fc-4b5d-8e76-095f22f667ce, 13 image(s)",battle_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash3,?,queued 071bef14-bd30-4770-8bcb-9a8b8ca272d3,battle_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_cloak/slash2,2.0 generations,"done 1f3af01d-78d6-475f-aa4d-c5358d149764, 13 image(s)",battle_cloak_slash2
+2026-10-30,characters/animations,hero/battle_cloak/slash_up,?,queued 1bc076e9-3e0e-462a-9c7f-e092401b6690,battle_cloak_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash2,2.0 generations,"done 9f6190d9-ee8b-495d-82ad-1c7b2dfb5531, 13 image(s)",battle_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash_up,?,queued 76a7b930-2b1e-4005-9947-71abe0d72d81,battle_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash1,2.0 generations,"done e3f4d226-1fec-4a75-9544-9e968138c7ba, 13 image(s)",battle_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_cloak/slash3,2.0 generations,"done 95d40b2d-c245-4d78-b583-4d9d9a282e90, 13 image(s)",battle_cloak_slash3
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash_up,?,queued 2763d693-d9e1-469a-a09f-3ffd3d2a611d,battle_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash3,2.0 generations,"done 2b022adc-b91f-4ef8-828d-e6e9dfc463cc, 13 image(s)",battle_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash_up,?,queued e531c8d7-71f2-4cbc-ab98-e3a6e634eae4,battle_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/pogo,?,queued 4435fc4e-d191-4fc5-a7af-dfe65ca0abfa,battle_cloak_pogo
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash2,2.0 generations,"done 414c7511-4124-4748-a052-ab6e818b1972, 13 image(s)",battle_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/battle_cloak/swing,?,queued 0751943f-d7b3-484b-a72a-c8b53de93aee,battle_cloak_swing
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash3,2.0 generations,"done da5cf58d-84e7-463e-bb9e-f19e9d8184e8, 13 image(s)",battle_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/idle,?,queued 59df70a7-291e-43ca-8873-60de9258a5aa,battle_helm_cloak_idle
+2026-10-30,characters/animations,hero/battle_cloak/slash_up,2.0 generations,"done 1bc076e9-3e0e-462a-9c7f-e092401b6690, 13 image(s)",battle_cloak_slash_up
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash3,2.0 generations,"done 071bef14-bd30-4770-8bcb-9a8b8ca272d3, 13 image(s)",battle_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/run,?,queued 7e50bfe6-fbd8-4c73-ac42-4f52428b0eb2,battle_helm_cloak_run
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk,?,queued fd3ae7e8-89b7-40b8-b088-96919ef1c911,battle_helm_cloak_walk
+2026-10-30,characters/animations,hero/battle_cloak/long_sword/slash_up,2.0 generations,"done 76a7b930-2b1e-4005-9947-71abe0d72d81, 13 image(s)",battle_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/jump,?,queued 5396ef81-1d95-4098-854b-f3cdbe98e81c,battle_helm_cloak_jump
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash2,2.0 generations,"done 2f1d060a-6d02-4aa9-8b51-0a44a0072f98, 13 image(s)",battle_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/dash,?,queued ac25d4fa-da29-44bb-bca3-8091a64c36ec,battle_helm_cloak_dash
+2026-10-30,characters/animations,hero/battle_cloak/dragon_slayer/slash_up,2.0 generations,"done e531c8d7-71f2-4cbc-ab98-e3a6e634eae4, 13 image(s)",battle_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/wall,?,queued 0269e8fd-aaf5-4189-bc2b-fa672d7205a4,battle_helm_cloak_wall
+2026-10-30,characters/animations,hero/battle_cloak/swing,2.0 generations,"done 0751943f-d7b3-484b-a72a-c8b53de93aee, 13 image(s)",battle_cloak_swing
+2026-10-30,characters/animations,hero/battle_helm_cloak/idle,8.0 generations,"done 59df70a7-291e-43ca-8873-60de9258a5aa, 9 image(s)",battle_helm_cloak_idle
+2026-10-30,characters/animations,hero/battle_helm_cloak/hurt,?,queued fa347285-d1f1-452d-bdf6-5a51ff4a0949,battle_helm_cloak_hurt
+2026-10-30,characters/animations,hero/battle_helm_cloak/death,?,queued 58e305c6-0e35-40a7-9aa5-726fdc1e24cb,battle_helm_cloak_death
+2026-10-30,characters/animations,hero/battle_cloak/pogo,2.0 generations,"done 4435fc4e-d191-4fc5-a7af-dfe65ca0abfa, 13 image(s)",battle_cloak_pogo
+2026-10-30,characters/animations,hero/battle_helm_cloak/drink,?,queued 2100db4f-48a8-48c9-93de-7327494a4af7,battle_helm_cloak_drink
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk,2.0 generations,"done fd3ae7e8-89b7-40b8-b088-96919ef1c911, 13 image(s)",battle_helm_cloak_walk
+2026-10-30,characters/animations,hero/battle_helm_cloak/cast,?,queued ffd49b34-a98e-4667-bb99-ffd3e0aae809,battle_helm_cloak_cast
+2026-10-30,characters/animations,hero/battle_cloak/broad_sword/slash_up,2.0 generations,"done 2763d693-d9e1-469a-a09f-3ffd3d2a611d, 13 image(s)",battle_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash1,?,queued f7a5da32-23ad-4946-af2e-d9227f38d748,battle_helm_cloak_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dash,1.0 generations,"done ac25d4fa-da29-44bb-bca3-8091a64c36ec, 9 image(s)",battle_helm_cloak_dash
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash1,?,queued 888d59fb-8f55-4c14-b112-a999d7fa034d,battle_helm_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/wall,1.0 generations,"done 0269e8fd-aaf5-4189-bc2b-fa672d7205a4, 9 image(s)",battle_helm_cloak_wall
+2026-10-30,characters/animations,hero/battle_helm_cloak/hurt,1.0 generations,"done fa347285-d1f1-452d-bdf6-5a51ff4a0949, 9 image(s)",battle_helm_cloak_hurt
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash1,?,queued e5d25939-0fd3-470f-b8ba-89afaef04a17,battle_helm_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1,?,queued a001f04f-d54d-45a2-882c-522968a96ebc,battle_helm_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/cast,1.0 generations,"done ffd49b34-a98e-4667-bb99-ffd3e0aae809, 9 image(s)",battle_helm_cloak_cast
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2,?,queued a9051755-6c9c-48e0-a6b9-7de92d62afd1,battle_helm_cloak_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/jump,2.0 generations,"done 5396ef81-1d95-4098-854b-f3cdbe98e81c, 17 image(s)",battle_helm_cloak_jump
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash2,?,queued 84ffdfae-88ba-4c01-9e2a-d6cad3720c1b,battle_helm_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/drink,2.0 generations,"done 2100db4f-48a8-48c9-93de-7327494a4af7, 13 image(s)",battle_helm_cloak_drink
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash2,?,queued d60d71e9-4f7f-4695-9887-3db5b96b4418,battle_helm_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/run,1.0 generations,"done 7e50bfe6-fbd8-4c73-ac42-4f52428b0eb2, 9 image(s)",battle_helm_cloak_run
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash2,?,queued 229f62ff-9dbd-4210-a3a8-bffb4a2adfe3,battle_helm_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/death,2.0 generations,"done 58e305c6-0e35-40a7-9aa5-726fdc1e24cb, 13 image(s)",battle_helm_cloak_death
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash3,?,queued 0bf5c07d-30a8-458f-be4f-65872403fe13,battle_helm_cloak_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash1,2.0 generations,"done 888d59fb-8f55-4c14-b112-a999d7fa034d, 13 image(s)",battle_helm_cloak_long_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash3,?,queued 3306e33c-f4ad-4548-9f56-f6e26017815c,battle_helm_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2,2.0 generations,"done a9051755-6c9c-48e0-a6b9-7de92d62afd1, 13 image(s)",battle_helm_cloak_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash3,?,queued 9bfbb0f4-cc71-49aa-a8e6-26307c1b1bfe,battle_helm_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1,2.0 generations,"done a001f04f-d54d-45a2-882c-522968a96ebc, 13 image(s)",battle_helm_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash3,?,queued 3af54a68-7ad8-4a37-bdd0-fa003627d903,battle_helm_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash2,2.0 generations,"done 84ffdfae-88ba-4c01-9e2a-d6cad3720c1b, 13 image(s)",battle_helm_cloak_long_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash_up,?,queued 67483247-553a-4bd6-b185-057e9eae344b,battle_helm_cloak_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash1,2.0 generations,"done e5d25939-0fd3-470f-b8ba-89afaef04a17, 13 image(s)",battle_helm_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash_up,?,queued e680f58b-5d33-4673-884f-8202cbd22f08,battle_helm_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash2,2.0 generations,"done 229f62ff-9dbd-4210-a3a8-bffb4a2adfe3, 13 image(s)",battle_helm_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash_up,?,queued 15f402b0-e791-479b-a23c-581304a93af9,battle_helm_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash1,2.0 generations,"done f7a5da32-23ad-4946-af2e-d9227f38d748, 13 image(s)",battle_helm_cloak_slash1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash_up,?,queued 415a6c8f-7ffe-4b0e-9705-8c54df9c03bc,battle_helm_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash2,2.0 generations,"done d60d71e9-4f7f-4695-9887-3db5b96b4418, 13 image(s)",battle_helm_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/battle_helm_cloak/pogo,?,queued 944df349-9d9b-40c8-a972-fcaa28f1cb9b,battle_helm_cloak_pogo
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash3,2.0 generations,"done 3306e33c-f4ad-4548-9f56-f6e26017815c, 13 image(s)",battle_helm_cloak_long_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/swing,?,queued 100e0381-8a7c-44bf-8dd5-63428eaa9be5,battle_helm_cloak_swing
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash3,2.0 generations,"done 0bf5c07d-30a8-458f-be4f-65872403fe13, 13 image(s)",battle_helm_cloak_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash3,2.0 generations,"done 3af54a68-7ad8-4a37-bdd0-fa003627d903, 13 image(s)",battle_helm_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash_up,2.0 generations,"done 67483247-553a-4bd6-b185-057e9eae344b, 13 image(s)",battle_helm_cloak_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash_up,2.0 generations,"done 15f402b0-e791-479b-a23c-581304a93af9, 13 image(s)",battle_helm_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash_up,2.0 generations,"done 415a6c8f-7ffe-4b0e-9705-8c54df9c03bc, 13 image(s)",battle_helm_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/broad_sword/slash3,2.0 generations,"done 9bfbb0f4-cc71-49aa-a8e6-26307c1b1bfe, 13 image(s)",battle_helm_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/battle_helm_cloak/swing,2.0 generations,"done 100e0381-8a7c-44bf-8dd5-63428eaa9be5, 13 image(s)",battle_helm_cloak_swing
+2026-10-30,characters/animations,hero/battle_helm_cloak/long_sword/slash_up,2.0 generations,"done e680f58b-5d33-4673-884f-8202cbd22f08, 13 image(s)",battle_helm_cloak_long_sword_slash_up
+2026-10-30,characters/animations,hero/battle_helm_cloak/pogo,2.0 generations,"done 944df349-9d9b-40c8-a972-fcaa28f1cb9b, 13 image(s)",battle_helm_cloak_pogo
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash1,?,queued bd0cbbbb-07ac-4d5c-ab1f-7112cf315686,studded_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash_up,?,queued 1156b927-a145-407f-b038-d1cb151244cd,studded_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash2,?,queued aa550119-d1dd-4226-b418-6d6b598790b6,studded_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash3,?,queued c9a0ec22-3376-4a7c-9051-bc789b3c6ff3,studded_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash_up,?,queued 3b03aaa5-7f6d-4a05-b9c3-bccaf8c16392,studded_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash1,?,queued 665a99d3-d256-45fd-8bb9-7ca62aea9a8a,studded_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash2,?,queued 48a44629-acfc-40b9-ac77-2a792e6e52c2,studded_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash3,?,queued 7bbb7f2c-72cc-4207-8a96-7bab23dbb6f1,studded_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash1,2.0 generations,"done bd0cbbbb-07ac-4d5c-ab1f-7112cf315686, 13 image(s)",studded_cloak_broad_sword_slash1
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash3,2.0 generations,"done c9a0ec22-3376-4a7c-9051-bc789b3c6ff3, 13 image(s)",studded_cloak_broad_sword_slash3
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash3,2.0 generations,"done 7bbb7f2c-72cc-4207-8a96-7bab23dbb6f1, 13 image(s)",studded_cloak_dragon_slayer_slash3
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash_up,2.0 generations,"done 3b03aaa5-7f6d-4a05-b9c3-bccaf8c16392, 13 image(s)",studded_cloak_dragon_slayer_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash2,2.0 generations,"done aa550119-d1dd-4226-b418-6d6b598790b6, 13 image(s)",studded_cloak_broad_sword_slash2
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash1,2.0 generations,"done 665a99d3-d256-45fd-8bb9-7ca62aea9a8a, 13 image(s)",studded_cloak_dragon_slayer_slash1
+2026-10-30,characters/animations,hero/studded_cloak/broad_sword/slash_up,2.0 generations,"done 1156b927-a145-407f-b038-d1cb151244cd, 13 image(s)",studded_cloak_broad_sword_slash_up
+2026-10-30,characters/animations,hero/studded_cloak/dragon_slayer/slash2,2.0 generations,"done 48a44629-acfc-40b9-ac77-2a792e6e52c2, 13 image(s)",studded_cloak_dragon_slayer_slash2
+2026-10-30,characters/animations,hero/plate_cloak/slash1_r1,?,queued 812c25bd-1cba-4446-bd71-b3dbe853c057,plate_cloak_slash1_retake1
+2026-10-30,characters/animations,hero/plate_cloak/run_r1,?,queued 71558af5-637d-49a2-b0de-3c844816bd9d,plate_cloak_run_retake1
+2026-10-30,characters/animations,hero/plate_cloak/hurt_r1,?,queued ccfcde60-162a-4ab6-b695-dc4f79400492,plate_cloak_hurt_retake1
+2026-10-30,characters/animations,hero/plate_cloak/drink_r2,?,queued 00bab01a-82e0-4a7e-bcd7-d3a93a190937,plate_cloak_drink_retake2
+2026-10-30,characters/animations,hero/plate_cloak/hurt_r2,?,queued 0c1024a6-6dfb-438c-97ed-6a7694a8830d,plate_cloak_hurt_retake2
+2026-10-30,characters/animations,hero/plate_cloak/drink_r1,?,queued 18bb0d6f-6c92-47c5-abcb-0311a90f4d93,plate_cloak_drink_retake1
+2026-10-30,characters/animations,hero/plate_cloak/walk_r2,?,queued c81c8bd4-b2b2-4711-b29f-cf50526512a7,plate_cloak_walk_retake2
+2026-10-30,characters/animations,hero/plate_cloak/run_r2,?,queued b0b443fe-a3a5-4d55-a3ef-3a0a8d38e7d4,plate_cloak_run_retake2
+2026-10-30,characters/animations,hero/plate_cloak/walk_r1,?,queued 90405829-7289-4951-9b1d-6953a1ee0062,plate_cloak_walk_retake1
+2026-10-30,characters/animations,hero/plate_cloak/hurt_r1,1.0 generations,"done ccfcde60-162a-4ab6-b695-dc4f79400492, 9 image(s)",plate_cloak_hurt_retake1
+2026-10-30,characters/animations,hero/plate_cloak/slash1_r2,?,queued f3b0059c-0450-45ff-a7c4-9bc468f8f194,plate_cloak_slash1_retake2
+2026-10-30,characters/animations,hero/plate_cloak/drink_r2,2.0 generations,"done 00bab01a-82e0-4a7e-bcd7-d3a93a190937, 13 image(s)",plate_cloak_drink_retake2
+2026-10-30,characters/animations,hero/plate_cloak/hurt_r2,1.0 generations,"done 0c1024a6-6dfb-438c-97ed-6a7694a8830d, 9 image(s)",plate_cloak_hurt_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk_r1,?,queued a2d83670-9b93-423f-8f9c-22258aed1a98,battle_helm_cloak_walk_retake1
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk_r2,?,queued 9f92afe4-c83a-47d9-b817-4d9509091f9f,battle_helm_cloak_walk_retake2
+2026-10-30,characters/animations,hero/plate_cloak/slash1_r1,2.0 generations,"done 812c25bd-1cba-4446-bd71-b3dbe853c057, 13 image(s)",plate_cloak_slash1_retake1
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2_r1,?,queued 1eea2e6e-b6d2-493e-a253-0df82b75d854,battle_helm_cloak_slash2_retake1
+2026-10-30,characters/animations,hero/plate_cloak/run_r2,1.0 generations,"done b0b443fe-a3a5-4d55-a3ef-3a0a8d38e7d4, 9 image(s)",plate_cloak_run_retake2
+2026-10-30,characters/animations,hero/plate_cloak/walk_r2,2.0 generations,"done c81c8bd4-b2b2-4711-b29f-cf50526512a7, 13 image(s)",plate_cloak_walk_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2_r2,?,queued 887154ff-0762-4a00-b9fe-e1fcc51422ee,battle_helm_cloak_slash2_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1_r1,?,queued ba1b2aa5-765b-4837-a12b-890f7f33bed0,battle_helm_cloak_dragon_slayer_slash1_retake1
+2026-10-30,characters/animations,hero/plate_cloak/walk_r1,2.0 generations,"done 90405829-7289-4951-9b1d-6953a1ee0062, 13 image(s)",plate_cloak_walk_retake1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1_r2,?,queued 916ea538-ab6a-46e8-ba4c-aac8bc17392f,battle_helm_cloak_dragon_slayer_slash1_retake2
+2026-10-30,characters/animations,hero/plate_cloak/run_r1,1.0 generations,"done 71558af5-637d-49a2-b0de-3c844816bd9d, 9 image(s)",plate_cloak_run_retake1
+2026-10-30,characters/animations,hero/studded_cloak/walk_r1,?,queued 75a3d432-7e08-447f-9001-7f235cfb54f0,studded_cloak_walk_retake1
+2026-10-30,characters/animations,hero/plate_cloak/drink_r1,2.0 generations,"done 18bb0d6f-6c92-47c5-abcb-0311a90f4d93, 13 image(s)",plate_cloak_drink_retake1
+2026-10-30,characters/animations,hero/studded_cloak/walk_r2,?,queued b26018aa-e9a1-4ae7-924e-58be386714fe,studded_cloak_walk_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk_r2,2.0 generations,"done 9f92afe4-c83a-47d9-b817-4d9509091f9f, 13 image(s)",battle_helm_cloak_walk_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2_r2,2.0 generations,"done 887154ff-0762-4a00-b9fe-e1fcc51422ee, 13 image(s)",battle_helm_cloak_slash2_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/slash2_r1,2.0 generations,"done 1eea2e6e-b6d2-493e-a253-0df82b75d854, 13 image(s)",battle_helm_cloak_slash2_retake1
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1_r1,2.0 generations,"done ba1b2aa5-765b-4837-a12b-890f7f33bed0, 13 image(s)",battle_helm_cloak_dragon_slayer_slash1_retake1
+2026-10-30,characters/animations,hero/battle_helm_cloak/walk_r1,2.0 generations,"done a2d83670-9b93-423f-8f9c-22258aed1a98, 13 image(s)",battle_helm_cloak_walk_retake1
+2026-10-30,characters/animations,hero/studded_cloak/walk_r2,2.0 generations,"done b26018aa-e9a1-4ae7-924e-58be386714fe, 13 image(s)",studded_cloak_walk_retake2
+2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1_r2,2.0 generations,"done 916ea538-ab6a-46e8-ba4c-aac8bc17392f, 13 image(s)",battle_helm_cloak_dragon_slayer_slash1_retake2
+2026-10-30,characters/animations,hero/plate_cloak/slash1_r2,2.0 generations,"done f3b0059c-0450-45ff-a7c4-9bc468f8f194, 13 image(s)",plate_cloak_slash1_retake2
+2026-10-30,characters/animations,hero/studded_cloak/walk_r1,2.0 generations,"done 75a3d432-7e08-447f-9001-7f235cfb54f0, 13 image(s)",studded_cloak_walk_retake1
