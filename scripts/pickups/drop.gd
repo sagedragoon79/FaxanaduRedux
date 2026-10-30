@@ -12,6 +12,8 @@ const GRAVITY := 700.0
 const COLLECT_RANGE := 14.0
 const LIFETIME := 10.0
 const BREAD_HEAL := 15
+## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
+const LOAF_HEAL := 40
 const MANA_GAIN := 12.0
 ## Chances, per kill, of bread and of a mana orb. Tests set them to 0 or 1.
 static var bread_chance := 0.08
@@ -75,8 +77,13 @@ static func roll(parent: Node, at: Vector2, can_poison := false) -> Drop:
 		k = "glove" if randf() < GLOVE_SHARE else "ointment"
 	if k == "":
 		return null
+	return make(parent, at, k)
+
+
+## Makes a drop of `kind` at `at`.
+static func make(parent: Node, at: Vector2, kind_: String) -> Drop:
 	var d := Drop.new()
-	d.kind = k
+	d.kind = kind_
 	parent.add_child(d)
 	d.global_position = at
 	return d
@@ -100,13 +107,14 @@ func _physics_process(delta: float) -> void:
 
 func _collect(p: Player) -> void:
 	var d := Dust.new()
-	if kind == "bread":
-		p.hp = mini(p.max_hp, p.hp + BREAD_HEAL)
+	if kind == "bread" or kind == "loaf":
+		var heal := LOAF_HEAL if kind == "loaf" else BREAD_HEAL
+		p.hp = mini(p.max_hp, p.hp + heal)
 		p.cure_poison()
 		p.health_changed.emit(p.hp, p.max_hp)
 		d.setup("heal")
-		GameState.toast.emit("Bread. +%d health." % BREAD_HEAL)
-		Sfx.play("heal", 0.1, -6.0)
+		GameState.toast.emit(("A great loaf. +%d health." if kind == "loaf" else "Bread. +%d health.") % heal)
+		Sfx.play("heal", 0.1, -6.0 if kind == "bread" else -3.0)
 	elif kind == "poison":
 		d.setup("debris")
 		if p.poison():
@@ -154,6 +162,18 @@ func _draw() -> void:
 		_px(3, -6, 2, 2, CRUMB)
 		_px(-4, -10, 3, 1, CRUMB_LIGHT)
 		_px(-8, -1, 16, 1, CRUST_DARK)
+	elif kind == "loaf":
+		# A long braided loaf, twice the bread's length, three scores across it.
+		_px(-14, -11, 28, 11, CRUST_DARK)
+		_px(-16, -8, 32, 7, CRUST_DARK)
+		_px(-13, -12, 26, 11, CRUST)
+		_px(-15, -9, 30, 7, CRUST)
+		for x in [-9, -2, 5]:
+			_px(x, -10, 3, 2, CRUMB)
+			_px(x + 1, -8, 3, 2, CRUMB)
+		_px(-11, -12, 6, 1, CRUMB_LIGHT)
+		_px(-3, -12, 4, 1, CRUMB_LIGHT)
+		_px(-16, -1, 32, 1, CRUST_DARK)
 	elif kind == "poison":
 		# A squat violet flask with a cork and a bone-white skull.
 		_px(-6, -12, 12, 12, VIAL_DARK)

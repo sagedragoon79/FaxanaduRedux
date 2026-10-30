@@ -25,6 +25,9 @@ const WASH_SHADER := preload("res://shaders/wash.gdshader")
 @export var respawn_time := 0.0
 ## May this enemy leave poison (Drop.poison_chance)? The Tower and beyond.
 @export var poison_drops := false
+## A drop this foe always leaves instead of rolling for one (Drop kinds; the
+## Naga's great loaf, pass 281). Empty: it rolls, as every foe did.
+@export var sure_drop := ""
 ## Grown through with meteor crystal (Zenis, design bible 8.9): tougher, richer,
 ## and it leaves a MeteorSeed that bursts where it dies. Set before it enters the tree.
 @export var corrupted := false
@@ -256,7 +259,10 @@ func die() -> void:
 	if not BossRush.active() and not perished:
 		var room := get_parent() as Room
 		Coin.spray(get_parent(), center(), roundi(randi_range(gold_min, gold_max) * (room.threat() if room != null else 1.0)))
-		Drop.roll(get_parent(), center(), poison_drops)
+		if sure_drop != "":
+			Drop.make(get_parent(), center(), sure_drop)
+		else:
+			Drop.roll(get_parent(), center(), poison_drops)
 		GameState.add_xp(xp)
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if not perished:

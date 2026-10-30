@@ -2284,6 +2284,45 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 ## only scrapes. The hero stands on the floor here, as in the rooms: the first
 ## cut ended a strike on any touch of its long body with the floor, so a Naga
 ## level with a hero on the ground never reached them.
+## Bible 7 (pass 281): as in the original, a slain Naga always leaves the
+## largest bread there is, a great loaf, and eating it heals LOAF_HEAL.
+func test_a_slain_naga_leaves_a_great_loaf() -> void:
+	var rows: Array = ["##############################"]
+	for i in 12:
+		rows.append("#............................#")
+	rows.append("##############################")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(4, 12))
+	await frames(5)
+	var chances := [Drop.bread_chance, Drop.mana_chance, Drop.rare_chance]
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
+	Drop.rare_chance = 0.0
+	var n := Naga.new()
+	room.add_child(n)
+	n.global_position = cell_feet(20, 9)
+	n.home = n.global_position
+	await frames(2)
+	n.take_hit(999, Vector2.RIGHT)
+	Drop.bread_chance = chances[0]
+	Drop.mana_chance = chances[1]
+	Drop.rare_chance = chances[2]
+	var loaves := room.get_children().filter(func(c: Node) -> bool: return c is Drop)
+	check(loaves.size() == 1 and loaves[0].kind == "loaf", "it leaves a great loaf, though no drop was rolled (%s)" % [loaves.map(func(d: Drop) -> String: return d.kind)])
+	check(Drop.LOAF_HEAL > Drop.BREAD_HEAL, "the largest bread there is (%d against %d)" % [Drop.LOAF_HEAL, Drop.BREAD_HEAL])
+	if loaves.is_empty():
+		room.free()
+		return
+	var loaf: Drop = loaves[0]
+	await frames(60)
+	check(loaf.is_on_floor(), "it falls to the floor")
+	p.hp = 20
+	p.teleport(loaf.global_position)
+	await frames(3)
+	check(p.hp == 20 + Drop.LOAF_HEAL and not is_instance_valid(loaf), "eaten, it heals %d (%d)" % [Drop.LOAF_HEAL, p.hp])
+	room.free()
+
+
 func test_the_nagas_bite_can_be_parried() -> void:
 	var rows: Array = ["##############################"]
 	for i in 12:
