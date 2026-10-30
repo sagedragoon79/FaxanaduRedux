@@ -1635,6 +1635,54 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 ## straight past is met by the bite nearly every time, and baiting it (climb into its
 ## level, drop back as it hoods, climb again once it has glided off the
 ## ladder) always gets past.
+## Bible 7 (pass 283): the great loaf a slain Naga leaves (pass 281) falls
+## down the Tower's ladder shafts. Wherever along its swing and strike the
+## serpent dies, and whichever way the loaf pops, it must come to rest on a
+## floor inside the room, where you can walk to it, not fall out through the
+## gap in the shaft's floor to the room below.
+func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
+	for id: String in ["tower/foot", "tower/mine_shaft"]:
+		var w := make_world({}, id)
+		await frames(2)
+		var n: Naga = null
+		for c in w.room.get_children():
+			if c is Naga:
+				n = c
+			elif c is Enemy:
+				c.queue_free()
+		check(n != null, "%s keeps its Naga" % id)
+		if n == null:
+			w.queue_free()
+			await frames(1)
+			continue
+		var bounds := Rect2(Vector2.ZERO, Vector2(w.room.size_tiles) * Room.TILE)
+		# The hero waits up out of the way, so no loaf is eaten before it is judged.
+		w.player.teleport(Vector2(3 * Room.TILE, 4 * Room.TILE))
+		w.player.frozen = true
+		var lost: Array[String] = []
+		var tried := 0
+		# Its strike carries it up to 104 px toward the ladder (to its right).
+		for k in 8:
+			for dy in [-Naga.SWING, 0.0, Naga.SWING]:
+				for vx in [-40.0, 0.0, 40.0]:
+					var at := n.home + Vector2(k * 15.0, dy - 22.0)
+					var d := Drop.make(w.room, at, "loaf")
+					d.velocity = Vector2(vx, -200)
+					tried += 1
+					for f in 240:
+						await frames(1)
+						if not is_instance_valid(d) or d.is_on_floor() and absf(d.velocity.x) < 1.0:
+							break
+					if not is_instance_valid(d) or not d.is_on_floor() or not bounds.has_point(d.global_position):
+						lost.append("(%d, %d) vx %d -> %s" % [at.x, at.y, vx, d.global_position if is_instance_valid(d) else "gone"])
+					if is_instance_valid(d):
+						d.free()
+		w.player.frozen = false
+		check(lost.is_empty(), "%s: every loaf lands on a floor in the room (%d of %d lost: %s)" % [id, lost.size(), tried, lost])
+		w.queue_free()
+		await frames(2)
+
+
 func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)

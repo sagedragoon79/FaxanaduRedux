@@ -96,6 +96,7 @@ func _physics_process(delta: float) -> void:
 		return
 	velocity.y = minf(velocity.y + GRAVITY * delta, 400.0)
 	move_and_slide()
+	_keep_in_room()
 	if is_on_floor():
 		velocity.x = move_toward(velocity.x, 0.0, 300.0 * delta)
 	var p := get_tree().get_first_node_in_group("player") as Player
@@ -103,6 +104,35 @@ func _physics_process(delta: float) -> void:
 		_collect(p)
 		return
 	queue_redraw()
+
+
+## A drop never leaves its room (pass 283): one that pops past a side edge
+## stops at it, and one that falls out through a gap in the floor (the Tower's
+## shafts drop through to the room below) comes to rest on the floor at the
+## gap's nearer edge, where you can walk to it.
+func _keep_in_room() -> void:
+	var room := get_parent() as Room
+	if room == null:
+		return
+	var size := Vector2(room.size_tiles) * Room.TILE
+	if global_position.x < 8.0 or global_position.x > size.x - 8.0:
+		global_position.x = clampf(global_position.x, 8.0, size.x - 8.0)
+		velocity.x = 0.0
+	if global_position.y <= size.y:
+		return
+	var last := room.size_tiles.y - 1
+	var c := int(global_position.x / Room.TILE)
+	for dist in range(1, room.size_tiles.x):
+		for col in [c - dist, c + dist]:
+			if col < 0 or col >= room.size_tiles.x or not room.is_solid_at(Vector2(col + 0.5, last + 0.5) * Room.TILE):
+				continue
+			var top := last
+			while top > 0 and room.is_solid_at(Vector2(col + 0.5, top - 0.5) * Room.TILE):
+				top -= 1
+			global_position = Vector2((col + 0.5) * Room.TILE, top * Room.TILE)
+			velocity = Vector2.ZERO
+			return
+	queue_free()
 
 
 func _collect(p: Player) -> void:
