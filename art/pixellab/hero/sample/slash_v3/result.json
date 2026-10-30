@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 8.0
+ },
+ "id": "367408f6-c441-46d2-bba9-c2bbd0558ddc",
+ "status": "completed",
+ "created_at": "2026-10-30T05:14:42.349630+00:00",
+ "last_response": {
+  "seed": 4033008403,
+  "type": "message_done",
+  "action": "a fast horizontal sword slash: he draws a short steel sword from his hip and swings it in a wide arc forward at chest height, then recovers to a ready stance, strict side view facing right",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9569565217391304,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "bab2f31e-3c1a-4537-978d-786f4cf44219",
+  "character_id": "b246489c-7954-474d-9e05-d4a09467b5d6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/bab2f31e-3c1a-4537-978d-786f4cf44219/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 8
+  },
+  "generation_id": "d5acefef-f127-48be-9d27-d3ea96d79f4c",
+  "animation_name": "custom-a fast horizontal sword slash:",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "v3",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "690c1911-ca80-4d56-b76b-09425ce9fc72",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T05:14:47.88217+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

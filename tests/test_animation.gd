@@ -287,7 +287,9 @@ func test_armor_picks_its_body_set() -> void:
 
 func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	# The cloak layer over the body sets (design bible 13.4): its hood is up
-	# out in the world, down in a town, and down under a helmet.
+	# out in the world, down in a town, and down under a helmet. Worn over the
+	# Leather set: the PixelLab base hero draws no code cloak (13.5).
+	GameState.data.equipment["armor"] = "leather_armor"
 	var wild := make_room(ARENA)
 	var p := make_player(wild, Vector2i(3, 6))
 	await frames(10)
@@ -313,3 +315,36 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	p.input.jump_held = true
 	await frames(4)
 	check(not p.cloak.shown(), "a clip from the ranger's sheet draws its own cloak, so the layer hides")
+	GameState.data.equipment["armor"] = ""
+
+
+## The PixelLab hero (design bible 13.5): the Mattock is drawn on a pogo,
+## its iron head reaching under the feet into the strike's hitbox, and the blow
+## plays out over the bounce (a pogo ends the attack the frame it lands).
+func test_the_mattock_pogo_reaches_under_the_feet_and_plays_out() -> void:
+	var s := Sheet.get_sheet("hero_base")
+	check(Sheet.has_anim("hero_base", "strike_down"), "the base hero has a Mattock pogo")
+	var img := (s.tex as Texture2D).get_image()
+	var cell: Vector2 = s.cell
+	var origin: Vector2 = s.origin
+	var den := float(s.density)
+	var a: Dictionary = s.animations["strike_down"]
+	var deepest := 0.0
+	for i in a.frames.size():
+		for y in range(int(origin.y), int(cell.y)):
+			for x in range(int(cell.x)):
+				if img.get_pixel(int(i * cell.x) + x, int(a.row * cell.y) + y).a > 0.5:
+					deepest = maxf(deepest, (y - origin.y) / den)
+	check(deepest >= 8.0 and deepest <= 24.0, "the Mattock's head reaches under the feet, into the hitbox (%.1f px)" % deepest)
+	GameState.new_game()
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(5, 2))
+	p.global_position.y -= 40.0
+	await frames(1)
+	p.visual.anim = "strike_down"
+	p.visual.anim_time = 0.0
+	await frames(3)
+	check(not p.is_attacking and p.visual.anim == "strike_down", "the blow plays on after the strike ends (%s)" % p.visual.anim)
+	await frames(30)
+	check(p.visual.anim != "strike_down", "and then gives way (%s)" % p.visual.anim)
+	GameState.new_game()

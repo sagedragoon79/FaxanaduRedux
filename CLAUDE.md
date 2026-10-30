@@ -43,7 +43,7 @@ bible changes substantially (link in the project memory).
 - Every new mechanic gets a test in `tests/`.
 - PixelLab (second art generator): `python3 tools/art/pixellab.py` (balance, post, job, get). The token is a cloud network secret for api.pixellab.ai (the proxy adds the header;
   off the cloud set `PIXELLAB_API_KEY`); never commit it. It also feeds the PixelLab MCP server in `.mcp.json`. Every call is logged in
-  `art/pixellab-ledger.csv`; outputs land in `art/pixellab/`. No production art until Sean picks the art direction.
+  `art/pixellab-ledger.csv`; outputs land in `art/pixellab/`. The hero and his gear are made in PixelLab (Sean, 2026-10-30; design bible 13.5): `python3 tools/art/pixellab_sheets.py` packs the clips for the importer.
 - Autosprite credits are limited: log every call in `art/autosprite-ledger.csv` and spend them
   only on character animation (design bible section 13.2).
 

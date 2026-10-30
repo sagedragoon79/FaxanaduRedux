@@ -1289,7 +1289,7 @@ An arena you have not entered is never named, so the page spoils nothing. The wo
 | Method | Best for | Why |
 |--------|----------|-----|
 | **Autosprite** (API or MCP, about 500 credits) | Character animations: player, enemies, bosses, NPCs | Generating consistent multi-frame character animation is the hardest, most expensive thing to do by code. Spend credits only here. |
-| **PixelLab** (API via `tools/art/pixellab.py`, or its MCP server in `.mcp.json`; token as a cloud network secret for api.pixellab.ai) | Second source for generated art, alongside or instead of Autosprite: characters with 4 or 8 directions, text and skeleton animation, sidescroller tilesets, map objects, UI, inpaint and pixel clean-up | Connected 2026-10-28 so art is not blocked on Autosprite credits. Spend nothing on production until Sean settles the art direction (13.2 applies: log every call, in `art/pixellab-ledger.csv`). |
+| **PixelLab** (API via `tools/art/pixellab.py`, or its MCP server in `.mcp.json`; token as a cloud network secret for api.pixellab.ai) | The hero and his gear (13.5, Sean 2026-10-30), and a second source for other generated art: characters with 4 or 8 directions, text and skeleton animation, sidescroller tilesets, map objects, UI, inpaint and pixel clean-up | Connected 2026-10-28 so art is not blocked on Autosprite credits. Sean asked for the hero and gear in PixelLab with quality first (5,000 generations a month). Log every call in `art/pixellab-ledger.csv`. |
 | **Code-generated pixel art** (Python + Pillow/NumPy scripts in `tools/art/`) | Tilesets, autotile variants, props, UI, icons, fonts layout, VFX sprites, normal maps, palettes, recolors | Deterministic, free, reproducible, easy to iterate in the loop. |
 | **Blender** (MCP) | Large background paintings, boss parts that rotate, sky gradients, 3D-to-pixel renders of complex shapes (gears, Tree trunk, meteor) | Render low-res with flat shading, then quantize to the palette and clean up by code. |
 | **Other art-app MCPs** (Aseprite, Krita, Photoshop, as available) | Cleanup passes, palette remaps, sprite sheet packing, hand-fixing artifacts in Autosprite output | Precision edits. |
@@ -1486,6 +1486,32 @@ ranger clip by clip. The hero is drawn in layers so gear does not multiply anima
   `Room.is_town()`), raised or lowered over 0.35 s when that changes, and always down under a helmet. It takes the
   worn dye's color (Warden Green is its own), so the 14 dyes need no extra art. The body sets themselves are drawn
   undyed, and while a clip falls back to the ranger's sheet (which draws its own cloak) the layer hides.
+
+### 13.5 The PixelLab hero (2026-10-30)
+
+Sean asked for the hero and his gear to be made in PixelLab, quality first. The base is **Sean's own PixelLab elf**
+(character `b246489c`, "Right Facing relaxed": side view, 256 px canvas, the same purple-haired elf in the green tunic as
+13.4's reference), so the look is his. Sources are in `art/pixellab/` (`hero/`, `mattock/`), packed into strip sheets by
+`tools/art/pixellab_sheets.py` (`art/pixellab/sheets/<sheet>/`) and imported by the same importer as Autosprite clips
+(`art/autosprite/manifest.json`, whose `dir` points at the strips): same scale (46 world px), palette, outline and rim.
+
+- **What works, by mode:** armor tiers as **character states** (`create-character-state`, 25 generations each: leather,
+  studded mail, full plate and Battle Suit all match Sean's T-pose references). Clips in **pixminimax** mode (about 2
+  generations for 12 frames at 256 px) stay in strict profile when the prompt says so, and draw props well (the jump,
+  walk, the Mattock pogo and swing). v3-mode attacks turned toward the camera on the recovery; skeleton-v3 jumps came
+  out stiff. Outfit transfer works but costs 25 per 3 frames, too dear for whole clips.
+- **Swords are drawn into the attack clips** (Sean, 2026-10-30): each armor's attacks are made holding each blade, not
+  a separate sword layer. A state of the hero holding the weapon is made first, and the clip animates from it.
+- **The Mattock is drawn** (Sean, 2026-10-30: "build out the mattock asset and swing animation"): a dwarven iron
+  mattock, adze blade and pick, on an iron-banded ash haft. The pogo (`strike_down`) is the hero driving it straight down
+  beneath his tucked knees: two frames of the pixminimax pogo clip, moved 58 source px down (`"lower"`) so the knees
+  sit at the feet and the iron head reaches about 12 px below them, into the strike's 24 px hitbox. Hero sheets are 84
+  px tall (`spritegen.ARMOR_CELL`, 23 px under the origin) to hold it. The strike plays to its end over the bounce
+  (`PlayerVisual.FINISH`), since a pogo ends the attack the frame it lands. An overhead swing that breaks stone is
+  made (`mattock/swing_mm`) for a later breaking pose; the item art is `mattock/item/02.png`.
+- **Imported so far (`hero_base`):** idle, walk, run (Sean's own run clip), rise, apex, fall and the Mattock pogo. Its
+  manifest flag `"cloak": true` hides the code cloak and hood, which covered the new face; drawn-in cloaks per set follow
+  (13.4). Other clips still fall back to the old sheet until they are made.
 
 ## 14. Technical Architecture (Godot)
 

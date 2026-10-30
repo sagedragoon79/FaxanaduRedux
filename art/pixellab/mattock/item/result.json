@@ -1,0 +1,35 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 10.0
+ },
+ "id": "c260b667-4603-49e3-a1fe-ebe9ecad0874",
+ "status": "completed",
+ "created_at": "2026-10-30T14:04:03.177992+00:00",
+ "last_response": {
+  "seed": 490405247,
+  "type": "message_done",
+  "action": "Touching up pixels",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png"
+  ],
+  "progress": 0.85,
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 10
+  },
+  "generation_id": "e64eab2c-0acf-41e9-8cb1-9204561ae41f",
+  "usage_cost_usd": 0.08,
+  "billing_charged": true,
+  "style_reference": "general_no_background_128x128.png",
+  "style_selection": null,
+  "style_reference_path": "general_images/general_no_background_128x128.png",
+  "generation_started_at": "2026-10-30T14:04:09.353274+00:00",
+  "original_image_n_colors": 101,
+  "quantized_image_n_colors": 52
+ }
+}

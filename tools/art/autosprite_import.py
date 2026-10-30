@@ -32,6 +32,9 @@ animations of which sheet they replace:
                "anchor": "ground",       "ground": each frame's lowest pixel on the origin;
                                          "fixed": the reference frame's feet (jumps, deaths);
                                          "center": the reference frame's middle (fliers)
+               "lower": 58,              source pixels the figure is moved down after anchoring: the
+                                         pogo's mattock reaches below the feet (hero sheets are 84
+                                         world px tall, 23 under the origin, for it)
                "feet_x": "self",         "self": find the feet in this sheet's first picked frame
                                          (attack moves come in 512 px cells, figure bottom-centre);
                                          a number: the source column (poses packed on one spot)
@@ -449,8 +452,9 @@ class Importer:
         xs = np.nonzero(bottom.any(0))[0]
         return (xs.min() + xs.max() + 1) / 2.0
 
-    def frame(self, src, anchor, ref_x=None):
-        """One source frame -> (RGBA image, white mask image, palette key grid)."""
+    def frame(self, src, anchor, ref_x=None, lower=0.0):
+        """One source frame -> (RGBA image, white mask image, palette key grid). `lower` moves
+        the figure down by that many source pixels (a pogo's mattock reaching under the feet)."""
         s = self.scale
         rgb, alpha = self.small(src)
         # Where the frame lands in the cell: the reference feet (scaled) on the origin.
@@ -462,7 +466,7 @@ class Importer:
             box = _bbox(src[..., 3])
             fy = box[3] + 1.0 if box else fy
         ox = int(round(self.origin[0] - (self.ref_x if ref_x is None else ref_x) * s))
-        oy = int(round(self.origin[1] - fy * s))
+        oy = int(round(self.origin[1] - (fy - lower) * s))
         cw, ch = self.cell
         solid = np.zeros((ch, cw), bool)
         keys = np.full((ch, cw), -1, np.int32)
@@ -623,7 +627,7 @@ def imported(name, cell, origin, code_meta):
         if ref_x == "self":
             ref_x = imp.feet_x(srcs[0])
         for i, src in enumerate(srcs):
-            img, mask, grid = imp.frame(src, spec.get("anchor", "ground"), ref_x)
+            img, mask, grid = imp.frame(src, spec.get("anchor", "ground"), ref_x, spec.get("lower", 0))
             meta = base[min(len(base) - 1, i * len(base) // len(srcs))]
             meta = {k: v for k, v in meta.items() if k not in spec.get("drop", [])}
             meta.update(spec.get("meta", {}))

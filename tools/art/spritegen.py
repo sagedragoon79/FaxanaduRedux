@@ -262,6 +262,8 @@ ANIMATIONS = [
 # The hero's body sets (paper doll, design bible 13.4): one sheet per armor, each holding only
 # the clips imported for it (art/autosprite/manifest.json); the game falls back to "player".
 ARMOR_SHEETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]
+# Their cells run 20 px deeper under the feet than the code rig's, for the Mattock's head on a pogo.
+ARMOR_CELL = (CELL, CELL + 20)
 
 
 def main():
@@ -271,7 +273,7 @@ def main():
     for sheet in ARMOR_SHEETS:
         clips = manifest.get(sheet, {}).get("animations", {})
         if clips:
-            write_sheet(sheet, (CELL, CELL), ORIGIN, [a for a in anims if a[0] in clips], render)
+            write_sheet(sheet, ARMOR_CELL, ORIGIN, [a for a in anims if a[0] in clips], render)
 
 
 if __name__ == "__main__":

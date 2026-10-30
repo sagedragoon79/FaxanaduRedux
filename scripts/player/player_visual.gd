@@ -46,8 +46,9 @@ const HELMET_RUN_OFFSET := Vector2(-3.5, -3.5)
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
-## ends (the recovery frames of a swing).
-const FINISH := ["slash1", "slash2", "slash3", "slash_up", "cast"]
+## ends (the recovery frames of a swing). A pogo's strike ends the moment it
+## lands, so the Mattock's blow plays out over the bounce.
+const FINISH := ["slash1", "slash2", "slash3", "slash_up", "strike_down", "cast"]
 ## Poses an unfinished swing may play over.
 ## The speed share (MovementTuning.speed_fraction) at or under which moving is a walk.
 const WALK_POSE := 0.7

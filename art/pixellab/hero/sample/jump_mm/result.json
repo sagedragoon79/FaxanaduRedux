@@ -1,0 +1,78 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "30e46181-3dc4-4aa1-b17c-e5a1239370ea",
+ "status": "completed",
+ "created_at": "2026-10-30T13:58:16.065513+00:00",
+ "last_response": {
+  "seed": 3703793278,
+  "type": "message_done",
+  "action": "a nimble platformer jump seen strictly from the side: a quick crouch, he springs upward with knees tucked and arms swinging up, floats at the peak, then falls with legs extending down and lands softly in a crouch. He always faces right in strict side profile and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png",
+   "13.png",
+   "14.png",
+   "15.png",
+   "16.png"
+  ],
+  "status": "initializing",
+  "progress": 0.5981944618153904,
+  "direction": "east",
+  "frame_count": 17,
+  "animation_id": "0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4",
+  "character_id": "b246489c-7954-474d-9e05-d4a09467b5d6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/12.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/13.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/14.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/15.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/0dd5c62b-eb87-46f4-b61f-a2c0cf48d5e4/east/16.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "2adf0ed1-90b0-49a9-b006-9b450b057f42",
+  "animation_name": "custom-a nimble platformer jump seen ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "e844f1bf-0496-4455-b2d8-862d340ab868",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T13:58:43.02155+00:00",
+  "requested_frame_count": 16,
+  "estimated_wait_seconds": 0
+ }
+}
