@@ -8,6 +8,8 @@ signal died(enemy: Enemy)
 
 const GRAVITY := 1200.0
 const MAX_FALL := 500.0
+## How far below its room's floor line a falling foe goes before it is lost (px).
+const FALL_MARGIN := 24.0
 ## Wind-ups shorter than this are unfair (design bible section 7).
 const MIN_TELEGRAPH := 0.35
 ## How long a body takes to break up after its death.
@@ -138,7 +140,20 @@ func _physics_process(delta: float) -> void:
 	if uses_gravity:
 		velocity.y = minf(velocity.y + GRAVITY * delta, MAX_FALL)
 	move_and_slide()
+	_fall_out_of_room()
 	queue_redraw()
+
+
+## A foe knocked through a gap in its room's floor (a Tower shaft, the Trunk's
+## drops) falls to its death (pass 291). It used to fall on below the room for
+## good, its gold, drop and experience lost with it. Now it dies as it leaves,
+## and its coins and drop come to rest at the gap's edge (Drop.keep_in_room).
+func _fall_out_of_room() -> void:
+	var room := get_parent() as Room
+	if room == null or not uses_gravity or is_in_group("boss"):
+		return
+	if global_position.y > room.size_tiles.y * Room.TILE + FALL_MARGIN:
+		die()
 
 
 ## Override: AI for one frame.
