@@ -562,8 +562,14 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 	await frames(40)
 	p.mp = 10.0
 	Sfx.recent.clear()
+	var toasts: Array[String] = []
+	var listen := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(listen)
 	p.teleport(orb.global_position)
 	await frames(3)
+	GameState.toast.disconnect(listen)
+	# Pass 301 (bible 10): like bread, it says what it gave.
+	check(toasts == ["A mana orb. +12 magic."], "and says so, as bread does (%s)" % [toasts])
 	check(p.mp >= 10.0 + Drop.MANA_GAIN and p.mp < 11.0 + Drop.MANA_GAIN, "which refills magic (%.1f, with a moment of regeneration)" % p.mp)
 	# Pass 294 (bible 13.3): it sounds like magic poured back, not the menu's blip.
 	check(Sfx.recent.has("mana_orb") and not Sfx.recent.has("blip"), "taking it plays mana_orb, not the menu's blip (%s)" % [Sfx.recent])

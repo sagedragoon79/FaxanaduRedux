@@ -407,7 +407,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Spikes and thorns (pass 282) | 20 damage (one mask) before armor; you are set back on the last safe ground |
 | Casting (pass 282) | 0.35 s between casts; a press made sooner casts nothing and is not saved |
 | Bread / great loaf (pass 282, 7) | +15 HP / +40 HP (the loaf: a slain Naga's). A slain Bog Myconid always leaves bread (pass 289) |
-| Drops (pass 290, 7) | each kill rolls once: bread 8%, a mana orb 10% (+12 MP), poison 7% (Tower foes on, `poison_drops`; skull-marked, sickens you), a rare item 2.5% (the War Glove 60%, else an Ointment). A foe with a sure drop (the Naga, the Myconid) leaves it instead of rolling |
+| Drops (pass 290, 7) | each kill rolls once: bread 8%, a mana orb 10% (+12 MP), poison 7% (Tower foes on, `poison_drops`; skull-marked, sickens you), a rare item 2.5% (the War Glove 60%, else an Ointment). A foe with a sure drop (the Naga, the Myconid) leaves it instead of rolling. Taking any drop shows a toast that says what it gave (pass 301: the mana orb was the only one that showed nothing, so its +12 MP was nowhere a player could read it) |
 
 ### 5.4 Death and recovery
 
