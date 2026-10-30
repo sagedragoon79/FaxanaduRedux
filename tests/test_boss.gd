@@ -1440,6 +1440,33 @@ func test_phase_two_bites_tear_the_leaf() -> void:
 	check(spikes >= Pakukame.TEAR_WIDTH, "thorns line the gap (%d)" % spikes)
 
 
+## Pass 292 (bible 6.13, 8.5): ground a guardian tears away is no place to be
+## set back to. A spike sets you back where you last stood on tiles; when the
+## Bloom's bite tore the leaf from under your feet, that spot was the gap, so
+## its thorns set you back over themselves until you were dead.
+func test_a_torn_floor_never_sets_you_back_over_the_gap() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var p := w.player
+	k.process_mode = Node.PROCESS_MODE_DISABLED
+	p.max_hp = 100
+	p.hp = 100
+	for dx: float in [180.0, -200.0]:
+		var x := k.global_position.x + dx
+		p.teleport(Vector2(x, k.floor_y()))
+		await frames(20)
+		check(p.is_on_floor(), "standing on the leaf at %+d" % dx)
+		var hp := p.hp
+		var torn := k.gaps.size()
+		k._tear_leaf(x)
+		check(k.gaps.size() == torn + 1, "the bite tears the leaf under you (%d gaps)" % k.gaps.size())
+		await frames(240)
+		check(hp - p.hp == CombatTuning.new().hazard_damage, "the thorns cost one mask, not a run of them (%d)" % (hp - p.hp))
+		check(p.is_on_floor() and w.room.is_solid_at(p.global_position + Vector2(0, 4)), "and set you back on the leaf beside the gap (%s)" % p.global_position)
+		p.hp = 100
+
+
 func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
