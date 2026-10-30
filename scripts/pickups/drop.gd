@@ -15,13 +15,18 @@ const BREAD_HEAL := 15
 ## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
 const LOAF_HEAL := 40
 const MANA_GAIN := 12.0
-## Chances, per kill, of bread and of a mana orb. Tests set them to 0 or 1.
-static var bread_chance := 0.08
-static var mana_chance := 0.1
-## Chance of poison, per kill, from enemies with `poison_drops`.
-static var poison_chance := 0.07
-## Chance of a rare item, per kill, from any enemy; then the War Glove's share of it.
-static var rare_chance := 0.025
+## The game's chances per kill (bible 5.3, Drops): bread, a mana orb, poison
+## (from enemies with `poison_drops`) and a rare item (any enemy), whose War
+## Glove share is GLOVE_SHARE. The test runner zeroes the live chances below.
+const BREAD_CHANCE := 0.08
+const MANA_CHANCE := 0.1
+const POISON_CHANCE := 0.07
+const RARE_CHANCE := 0.025
+## The live chances. Tests set them to 0 or 1.
+static var bread_chance := BREAD_CHANCE
+static var mana_chance := MANA_CHANCE
+static var poison_chance := POISON_CHANCE
+static var rare_chance := RARE_CHANCE
 const GLOVE_SHARE := 0.6
 
 const CRUST := Color("b0662a")

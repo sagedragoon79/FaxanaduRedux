@@ -808,6 +808,8 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
 	check_near(c.cast_cooldown, 0.35, 0.0001, "0.35 s between casts (pass 282)")
 	check(Drop.BREAD_HEAL == 15 and Drop.LOAF_HEAL == 40, "bread +15, the Naga's great loaf +40 (pass 282)")
+	check(Drop.BREAD_CHANCE == 0.08 and Drop.MANA_CHANCE == 0.1 and Drop.POISON_CHANCE == 0.07 and Drop.RARE_CHANCE == 0.025, "drops: bread 8%, mana 10%, poison 7%, rare 2.5% (pass 290)")
+	check(Drop.MANA_GAIN == 12.0 and Drop.GLOVE_SHARE == 0.6, "a mana orb gives 12 MP; a rare drop is the War Glove 60% of the time (pass 290)")
 
 
 ## Bible 5.3 (pass 282): spikes cost a mask (20) through no armor and set
@@ -936,6 +938,41 @@ func test_a_refused_drink_cast_or_glass_is_heard_once() -> void:
 	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("hourglass"), "turned again while it runs back, it fizzles, once (%s)" % [Sfx.recent])
 	TimeStop.reset()
 	room.free()
+
+
+## Pass 290 (bible 5.3, Drops): a kill's roll gives each drop at its share.
+## 40,000 seeded rolls, with and without poison, each within a point of the
+## table; a foe without `poison_drops` never leaves poison.
+func test_a_kills_drop_comes_at_the_tables_odds() -> void:
+	var parent := Node2D.new()
+	arena.add_child(parent)
+	# The runner turns drops off for every test; turn on the game's own odds.
+	Drop.bread_chance = Drop.BREAD_CHANCE
+	Drop.mana_chance = Drop.MANA_CHANCE
+	Drop.poison_chance = Drop.POISON_CHANCE
+	Drop.rare_chance = Drop.RARE_CHANCE
+	seed(290)
+	for can_poison: bool in [false, true]:
+		var counts := {"": 0, "bread": 0, "mana": 0, "poison": 0, "glove": 0, "ointment": 0}
+		var n := 20000
+		for i in n:
+			var d := Drop.roll(parent, Vector2.ZERO, can_poison)
+			counts[d.kind if d != null else ""] += 1
+			if d != null:
+				d.free()
+		var share := func(k: String) -> float: return float(counts[k]) / n
+		var rare: float = share.call("glove") + share.call("ointment")
+		check(absf(share.call("bread") - Drop.BREAD_CHANCE) < 0.01, "bread at %.1f%% (%.1f%%)" % [Drop.BREAD_CHANCE * 100, share.call("bread") * 100])
+		check(absf(share.call("mana") - Drop.MANA_CHANCE) < 0.01, "a mana orb at %.1f%% (%.1f%%)" % [Drop.MANA_CHANCE * 100, share.call("mana") * 100])
+		check(absf(share.call("poison") - (Drop.POISON_CHANCE if can_poison else 0.0)) < 0.01, "poison at %.1f%% %s (%.1f%%)" % [Drop.POISON_CHANCE * 100 if can_poison else 0.0, "from a Tower foe" if can_poison else "from any other", share.call("poison") * 100])
+		check(absf(rare - Drop.RARE_CHANCE) < 0.01, "a rare item at %.1f%% (%.1f%%)" % [Drop.RARE_CHANCE * 100, rare * 100])
+		check(absf(float(counts["glove"]) / maxf(1.0, counts["glove"] + counts["ointment"]) - Drop.GLOVE_SHARE) < 0.08, "of them the War Glove %.0f%% (%d of %d)" % [Drop.GLOVE_SHARE * 100, counts["glove"], counts["glove"] + counts["ointment"]])
+	randomize()
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
+	Drop.poison_chance = 0.0
+	Drop.rare_chance = 0.0
+	parent.free()
 
 
 ## Bible 5.3: guarding you walk at 40% of a run; MP comes back at 2 a second.
