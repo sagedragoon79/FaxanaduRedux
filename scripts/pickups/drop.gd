@@ -164,6 +164,9 @@ func _collect(p: Player) -> void:
 			Sfx.play("hurt", 0.1, -6.0)
 		else:
 			GameState.toast.emit("The Ointment keeps the poison off.")
+			# Every drop is heard as it is taken (pass 302): the ring of a ward
+			# turning harm, the sound the shield's ward makes against sorcery.
+			Sfx.play("ward", 0.05, -6.0)
 	elif kind == "glove":
 		d.setup("might")
 		p.put_on_glove()
