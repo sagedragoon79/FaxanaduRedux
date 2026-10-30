@@ -411,21 +411,42 @@ func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
 ## The spot a spike sets the player back to (bible 6.13, pass 292) is never over
 ## floor just torn away: it was the tile they stood on, so a bite that tore the
 ## leaf from under them had them set back over its thorns until they died. It
-## moves to the nearer tile beside the pit.
+## moves to the nearer tile beside the pit. So does a purse lying there (bible
+## 5.4, pass 300): left from a death earlier in the fight, it would hang over
+## the thorns, and taking it back would cost a mask.
 func _keep_set_back_off(col_from: int, col_to: int, row: int) -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
-	if p == null:
-		return
-	var at := p.safe_position
+	if p != null:
+		var x := _beside_pit(p.safe_position, col_from, col_to, row)
+		if not is_nan(x):
+			p.safe_position = Vector2(x, row * TILE)
+	for c in get_children():
+		if not c is GoldPurse or c.is_queued_for_deletion():
+			continue
+		var bag := c as GoldPurse
+		var x := _beside_pit(bag.position, col_from, col_to, row)
+		if is_nan(x):
+			continue
+		bag.position = Vector2(x, row * TILE)
+		var kept: Dictionary = GameState.data.get("purse", {})
+		if kept.get("room", "") == id:
+			kept.x = bag.position.x
+			kept.y = bag.position.y
+
+
+## Where a spot standing on floor about to be torn from `col_from` to `col_to`
+## on `row` moves to: the x of the nearer solid tile beside the pit, or NAN if
+## the spot is not over the tear (or no tile is left beside it).
+func _beside_pit(at: Vector2, col_from: int, col_to: int, row: int) -> float:
 	if at.x < col_from * TILE or at.x >= (col_to + 1) * TILE or absf(at.y - row * TILE) > TILE * 0.5:
-		return
+		return NAN
 	var left := (col_from - 0.5) * TILE
 	var right := (col_to + 1.5) * TILE
 	var sides := [left, right] if at.x - left <= right - at.x else [right, left]
 	for x: float in sides:
 		if is_solid_at(Vector2(x, row * TILE + TILE * 0.5)):
-			p.safe_position = Vector2(x, row * TILE)
-			return
+			return x
+	return NAN
 
 
 func _amber_on() -> bool:
