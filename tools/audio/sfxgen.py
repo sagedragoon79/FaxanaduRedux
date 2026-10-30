@@ -1413,6 +1413,21 @@ def main():
         out[i:] += (ring + body)[:ln] * a
     save("flask_empty", out, 0.45)
 
+    # A mana orb taken (pass 294): magic poured back in. It had borrowed the
+    # menu cursor's blip. A soft breath of air under three glassy notes rising
+    # quickly up a major triad, each with a faint shimmer a fifth above.
+    d = 0.42
+    n = int(RATE * d)
+    out = np.zeros(n)
+    out += lowpass(highpass(noise(d), 1800), 6000) * env(n, 0.03, 2.5) * 0.12
+    for st, f, a in ((0.0, 880.0, 0.45), (0.05, 1108.7, 0.5), (0.1, 1318.5, 0.6)):
+        i = int(RATE * st)
+        ln = n - i
+        note = osc(np.full(ln, f), "sine") * env(ln, 0.004, 2.2)
+        shimmer = osc(np.full(ln, f * 1.5), "sine") * env(ln, 0.01, 3.0) * 0.25
+        out[i:] += (note + shimmer) * a
+    save("mana_orb", out, 0.4)
+
 
 if __name__ == "__main__":
     main()

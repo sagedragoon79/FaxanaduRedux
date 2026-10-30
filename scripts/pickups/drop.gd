@@ -182,7 +182,7 @@ func _collect(p: Player) -> void:
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
-		Sfx.play("blip", 0.1, -4.0)
+		Sfx.play("mana_orb", 0.04, -2.0)
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -4)
 	queue_free()
