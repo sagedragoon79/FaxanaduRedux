@@ -1006,6 +1006,100 @@ func test_evil_heart_fight_soak_stays_lean() -> void:
 
 
 
+## The guardians with no fight soak of their own (pass 279): each fought for 20
+## seconds against a mashing player who can't die, pushed past its phase marks
+## halfway so its later moves come too. Effects must not pile up, the room must
+## settle back once the mashing stops, and a frame must stay inside the budget.
+func test_every_other_guardian_fight_soak_stays_lean() -> void:
+	const GUARDIANS := ["rokusutahn", "clockwork_alpha", "bark_captain", "hag_matriarch", "zoradohna", "drowned_warden"]
+	const FIGHT_FRAMES := 1200
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	for id: String in GUARDIANS:
+		check(rooms.has(id), "%s has an arena" % id)
+		if not rooms.has(id):
+			continue
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss: Node2D = ar.boss
+		var full: int = boss.hp
+		# Down on the arena floor, away from the door it came in by.
+		if "arena" in boss:
+			var a: Rect2 = boss.arena
+			w.player.teleport(Vector2(a.get_center().x, a.end.y - 1.0))
+		var room := w.room
+		var floor_hp := ceili(full * 0.9)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 279
+		var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+		var start_nodes := _count_nodes(w)
+		var peak := start_nodes
+		var total_usec := 0
+		var phases := {}
+		for f in FIGHT_FRAMES:
+			if f == FIGHT_FRAMES / 2:
+				floor_hp = ceili(full * 0.15)
+				boss.hp = floor_hp + 1
+				# A blow lands the phase change on those that check it as they are hit.
+				if boss.has_method("take_hit"):
+					boss.take_hit(1, Vector2.RIGHT)
+			# It can't fall: the soak is of the fight, not of its end.
+			boss.hp = maxi(boss.hp, floor_hp)
+			w.player.hp = 99999
+			_mash(w.player, rng, hold)
+			var t0 := Time.get_ticks_usec()
+			await frames(1)
+			total_usec += Time.get_ticks_usec() - t0
+			peak = maxi(peak, _count_nodes(w))
+			if w.room != room or not is_instance_valid(boss) or boss.dead:
+				break
+			phases[boss.phase] = true
+		check(w.room == room and is_instance_valid(boss) and not boss.dead, "%s: the fight ran its course" % id)
+		if w.room != room or not is_instance_valid(boss):
+			w.queue_free()
+			await frames(2)
+			continue
+		# Hands off: what the fight threw must clear away again.
+		w.player.input.clear()
+		var settled := 0
+		for f in 240:
+			await frames(1)
+			w.player.hp = 99999
+			boss.hp = maxi(boss.hp, floor_hp)
+		var kinds := {}
+		var spikes := 0
+		for c in w.room.get_children():
+			if c is Spikes:
+				spikes += 1
+			# (Rokusutahn's torn floor and its spikes are meant to stay.)
+			if not (c is Dust or c is Coin or c is Spikes):
+				settled += 1
+				var k := String(c.get_script().get_global_name()) if c.get_script() else c.get_class()
+				kinds[k] = kinds.get(k, 0) + 1
+		var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
+		print("  %s soak: %.2f ms a frame on average, nodes %d -> peak %d, settled %d, phases %s" % [id, avg_ms, start_nodes, peak, settled, phases.keys()])
+		check(peak < start_nodes + 60, "%s: effects never pile up (%d -> %d nodes)" % [id, start_nodes, peak])
+		check(settled <= start_nodes + 6, "%s: the room settles once the mashing stops (%d -> %d nodes: %s)" % [id, start_nodes, settled, kinds])
+		# The floor tears once: one spike per torn column (26), not a new row each roar.
+		check(spikes <= 26, "%s: spikes never stack (%d)" % [id, spikes])
+		check(phases.size() >= 2, "%s: the soak reached its later phase (%s)" % [id, phases.keys()])
+		check(avg_ms < 16.6, "%s: a frame averages under the 60 fps budget (%.2f ms)" % [id, avg_ms])
+		w.queue_free()
+		await frames(2)
+
+
 ## Every room id in the game (not the gym), in a fixed order.
 func _all_room_ids(w: World) -> Array:
 	var ids := w.catalog.keys()
