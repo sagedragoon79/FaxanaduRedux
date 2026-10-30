@@ -1548,7 +1548,8 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   holding the Mattock (the pogo). Each clip starts from the state's own pose, so picks skip frame 0; some picks differ by
   armor where a take turned toward the camera or carries an effect (kept in the manifest). Pogos are made with "he stays
   high in the air the whole time and never touches the ground", since the first takes landed and struck the floor.
-  They replace the Autosprite body sets; `hero_battle_helm` (the Battle Suit under the Battle Helmet) follows.
+  They replace the Autosprite body sets. `hero_battle_helm`, the Battle Suit under the Battle Helmet, is made the same way
+  from a state of the battle set wearing a crested mithril helm (its head point is the crown of the helm, `"head": "top"`).
 - **Cloaks:** the armor sets wear the code cloak and hood (13.4) as the Autosprite sets did, so the cloak dyes still
   show; on them the hood frames the face. Only the bare `hero_base` has the manifest flag `"cloak": true`, which hides
   the layer (its hood covered Sean's elf's face), so the unarmored hero shows no dye.
