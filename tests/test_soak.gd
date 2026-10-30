@@ -1859,3 +1859,43 @@ func test_every_guardians_win_says_what_it_gave() -> void:
 		await frames(1)
 	check(told >= 14, "every arena's win was heard (%d)" % told)
 	check(untold.is_empty(), "every win says what it gave, to a fanfare: %s" % [untold])
+
+
+## Pass 295 (bible 6.13): the room's own floor always counts as footing. Pass
+## 292 made a tile that is gone no footing, read from the cell under the floor
+## contact. On a ledge's corner the contact lies on the line between two cells,
+## and the empty one to its right was read, so standing there never kept a safe
+## spot (150 of 63,792 floor frames walking these rooms both ways). Both cells
+## beside the line are read now.
+const CORNER_ROOMS := ["tower/winch_hall", "trunk/deep_roots", "trunk/taproot_vault", "mist/mascon", "dartmoor/alpha_den"]
+
+
+func test_a_ledge_corner_is_footing_for_the_set_back() -> void:
+	var floors := 0
+	var gone: Array[String] = []
+	for id: String in CORNER_ROOMS:
+		var room := Room.from_file("res://levels/%s.room" % id)
+		arena.add_child(room)
+		var p := Player.new()
+		p.input.scripted = true
+		p.position = room.spawn_position
+		room.add_child(p)
+		p.max_hp = 99999
+		p.hp = 99999
+		for dir: int in [1, -1]:
+			p.input.move_x = dir
+			for i in 120:
+				await frames(1)
+				var on_tiles := false
+				for j in p.get_slide_collision_count():
+					var k := p.get_slide_collision(j)
+					on_tiles = on_tiles or (k.get_normal().y < -0.5 and k.get_collider() is TileMapLayer)
+				if on_tiles:
+					floors += 1
+					if p._on_fleeting_ground() and gone.size() < 10:
+						gone.append("%s at %s" % [id, p.global_position])
+		p.input.move_x = 0
+		room.queue_free()
+		await frames(1)
+	check(floors > 500, "the walk stands on tiles (%d frames)" % floors)
+	check(gone.is_empty(), "no tile floor reads as gone: %s" % [gone])
