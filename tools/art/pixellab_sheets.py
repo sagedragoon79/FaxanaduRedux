@@ -38,6 +38,13 @@ for _set in SETS:
         SHEETS[f"hero_{_set}_{_blade}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"], **{
             f"{clip}.png": f"hero/{_set}_cloak/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
 
+# Each set's block, from its state holding each shield up to guard (the shields are drawn in):
+# sheet "hero_<set>_<shield>", the block and the set's idle as the importer's reference.
+for _set in SETS:
+    for _shield in ("small_shield", "large_shield", "magic_shield"):
+        SHEETS[f"hero_{_set}_{_shield}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"],
+                                             "block.png": f"hero/{_set}_cloak/{_shield}/block"}
+
 # Retakes where the first take's cloak dropped out of the frame (drawn as an empty outline).
 SHEETS["hero_plate"].update({"run.png": "hero/plate_cloak/run_r1", "walk.png": "hero/plate_cloak/walk_r1",
                              "drink.png": "hero/plate_cloak/drink_r2", "hurt.png": "hero/plate_cloak/hurt_r1",
@@ -45,6 +52,13 @@ SHEETS["hero_plate"].update({"run.png": "hero/plate_cloak/run_r1", "walk.png": "
 SHEETS["hero_studded"]["walk.png"] = "hero/studded_cloak/walk_r2"
 SHEETS["hero_battle_helm"].update({"walk.png": "hero/battle_helm_cloak/walk_r2", "slash2.png": "hero/battle_helm_cloak/slash2_r1"})
 SHEETS["hero_battle_helm_dragon_slayer"]["slash1.png"] = "hero/battle_helm_cloak/dragon_slayer/slash1_r1"
+# The Large Shield again on every set but the base, to match its crimson face and silver rim
+# (the first takes drew it plain steel or dark), and blocks whose cloak dropped out.
+for _set in ("leather", "studded", "plate", "battle", "battle_helm"):
+    SHEETS[f"hero_{_set}_large_shield"]["block.png"] = f"hero/{_set}_cloak/large_shield/block_r1"
+for _set in ("leather", "battle"):
+    SHEETS[f"hero_{_set}_magic_shield"]["block.png"] = f"hero/{_set}_cloak/magic_shield/block_r1"
+SHEETS["hero_base_magic_shield"]["block.png"] = "hero/base_cloak/magic_shield/block_r2"
 
 
 def frames_of(folder):
@@ -89,10 +103,42 @@ def clear_slabs(im):
     return im
 
 
+# A slab that touches the shaded steel floods into it and fails the flatness test above. In the
+# takes listed here a large connected patch of one exact grey is erased on its own (not
+# everywhere: the Broad Sword's blade and some tunics are flat greys that size).
+FLAT_MIN = 600
+FLAT_SLABS = {"hero/plate_cloak/large_shield/block_r1"}
+
+
+def clear_flat(im):
+    px = im.load()
+    w, h = im.size
+    seen = set()
+    for y in range(h):
+        for x in range(w):
+            c = px[x, y]
+            if (x, y) in seen or c[3] == 0 or not (95 <= max(c[:3]) <= 170 and max(c[:3]) - min(c[:3]) <= 40):
+                continue
+            patch, todo = [], [(x, y)]
+            seen.add((x, y))
+            while todo:
+                cx, cy = todo.pop()
+                patch.append((cx, cy))
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen and px[nx, ny] == c:
+                        seen.add((nx, ny))
+                        todo.append((nx, ny))
+            if len(patch) >= FLAT_MIN:
+                for q in patch:
+                    px[q] = (0, 0, 0, 0)
+
+
 def pack(paths):
     strip = Image.new("RGBA", (CELL * len(paths), CELL))
     for i, p in enumerate(paths):
         im = clear_slabs(Image.open(p).convert("RGBA"))
+        if p.parent.relative_to(SOURCES).as_posix() in FLAT_SLABS:
+            clear_flat(im)
         # PixelLab clips are 256 px canvases; a smaller one is centred on the cell's floor.
         strip.alpha_composite(im, (i * CELL + (CELL - im.width) // 2, CELL - im.height))
     return strip

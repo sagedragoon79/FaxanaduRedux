@@ -1556,6 +1556,11 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   (silver, a faint blue edge glow, golden winged guard). Each blade sheet holds only the attacks, plus the set's own idle
   as the importer's reference for scale; `PlayerVisual.sheet_for` plays an attack from the worn blade's sheet
   (`BLADE_SHEETS`, `BLADE_CLIPS`), and everything else from the set. The Short Sword is each set's own attacks.
+- **Shields, drawn into the block (`hero_<set>_<small|large|magic>_shield`):** each cloaked set from a state holding
+  each shield up to guard (the Small Shield a round wooden buckler with an iron boss, the Large Shield a tall kite shield
+  with a crimson face and silver rim, the Magic Shield a long leaf of pale sea-green mithril with gold trim), and from it
+  a braced block clip that holds on its last frame. `sheet_for("block")` plays it for the worn shield (`SHIELD_SHEETS`);
+  the code-drawn shield is held over the block only on a sheet without one (the old hero).
 - **Grey slabs:** PixelLab sometimes leaves a flat dull-grey patch behind a smear or a cloak (one exact grey with a
   faint warm, violet, green or blue cast, plus a few mottled neighbours); `pixellab_sheets.py` erases a connected patch
   of such greys when it is 400 px or more and mostly one colour, so the shaded armor steel is never touched.

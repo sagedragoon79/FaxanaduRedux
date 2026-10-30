@@ -879,3 +879,103 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/battle_helm_cloak/dragon_slayer/slash1_r2,2.0 generations,"done 916ea538-ab6a-46e8-ba4c-aac8bc17392f, 13 image(s)",battle_helm_cloak_dragon_slayer_slash1_retake2
 2026-10-30,characters/animations,hero/plate_cloak/slash1_r2,2.0 generations,"done f3b0059c-0450-45ff-a7c4-9bc468f8f194, 13 image(s)",plate_cloak_slash1_retake2
 2026-10-30,characters/animations,hero/studded_cloak/walk_r1,2.0 generations,"done 75a3d432-7e08-447f-9001-7f235cfb54f0, 13 image(s)",studded_cloak_walk_retake1
+2026-10-30,create-character-state,hero/states/leather_cloak_magic_shield,?,queued 231e3653-80eb-40f8-be02-bbd262c2e779,leather_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/base_cloak_large_shield,?,queued ac0bf2f0-8fdf-47b8-8dad-ff76d79fbd9e,base_cloak_large_shield
+2026-10-30,create-character-state,hero/states/leather_cloak_small_shield,?,queued 8113d904-ad61-42d9-ab3e-1626270669a4,leather_cloak_small_shield
+2026-10-30,create-character-state,hero/states/base_cloak_small_shield,?,queued a11b5b7b-c153-472d-938a-925ce474e834,base_cloak_small_shield
+2026-10-30,create-character-state,hero/states/base_cloak_magic_shield,?,queued 0f848915-a2cc-439c-8489-9860881184a6,base_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/leather_cloak_large_shield,?,queued e462df0a-3338-464c-898d-bf75bae8a989,leather_cloak_large_shield
+2026-10-30,create-character-state,hero/states/leather_cloak_magic_shield,25.0 generations,"done 231e3653-80eb-40f8-be02-bbd262c2e779, 0 image(s)",leather_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_small_shield,?,queued fc71325d-b410-4b4d-9f31-d64996f5c593,studded_cloak_small_shield
+2026-10-30,create-character-state,hero/states/base_cloak_large_shield,25.0 generations,"done ac0bf2f0-8fdf-47b8-8dad-ff76d79fbd9e, 0 image(s)",base_cloak_large_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_large_shield,?,queued 65358c00-510d-4409-a942-37e8f0ea2fed,studded_cloak_large_shield
+2026-10-30,create-character-state,hero/states/leather_cloak_large_shield,25.0 generations,"done e462df0a-3338-464c-898d-bf75bae8a989, 0 image(s)",leather_cloak_large_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_magic_shield,?,queued 704a3d6e-033b-496c-9829-c0a9b58655f1,studded_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/leather_cloak_small_shield,25.0 generations,"done 8113d904-ad61-42d9-ab3e-1626270669a4, 0 image(s)",leather_cloak_small_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_small_shield,?,queued 7150e789-8504-4f12-8347-61fcb545e367,plate_cloak_small_shield
+2026-10-30,create-character-state,hero/states/base_cloak_magic_shield,25.0 generations,"done 0f848915-a2cc-439c-8489-9860881184a6, 0 image(s)",base_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_large_shield,?,queued 9d47db9a-4afe-4b66-a3b9-ac27cfa1891b,plate_cloak_large_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_small_shield,25.0 generations,"done fc71325d-b410-4b4d-9f31-d64996f5c593, 0 image(s)",studded_cloak_small_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_magic_shield,?,queued f493d777-5b3f-461e-9ca8-7f5ed8235e7f,plate_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_large_shield,25.0 generations,"done 65358c00-510d-4409-a942-37e8f0ea2fed, 0 image(s)",studded_cloak_large_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_small_shield,?,queued c02173ed-02ef-478b-9662-8f6278ea3824,battle_cloak_small_shield
+2026-10-30,create-character-state,hero/states/base_cloak_small_shield,25.0 generations,"done a11b5b7b-c153-472d-938a-925ce474e834, 0 image(s)",base_cloak_small_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_large_shield,?,queued 7e629fee-db72-474e-80e0-47f0787d47d7,battle_cloak_large_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_large_shield,25.0 generations,"done 9d47db9a-4afe-4b66-a3b9-ac27cfa1891b, 0 image(s)",plate_cloak_large_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_magic_shield,?,queued 0d40edf2-6173-4ed7-8e71-084e79276ead,battle_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/studded_cloak_magic_shield,25.0 generations,"done 704a3d6e-033b-496c-9829-c0a9b58655f1, 0 image(s)",studded_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_small_shield,?,queued 2fbc9aec-e982-47b3-bc6c-cd93e270b596,battle_helm_cloak_small_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_small_shield,25.0 generations,"done 7150e789-8504-4f12-8347-61fcb545e367, 0 image(s)",plate_cloak_small_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_large_shield,?,queued fd6a59a4-f812-4909-83cd-e01f67f5c14d,battle_helm_cloak_large_shield
+2026-10-30,create-character-state,hero/states/plate_cloak_magic_shield,25.0 generations,"done f493d777-5b3f-461e-9ca8-7f5ed8235e7f, 0 image(s)",plate_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_magic_shield,?,queued f199cfbd-8c33-4c6b-ab9f-de797fd7d476,battle_helm_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_magic_shield,25.0 generations,"done 0d40edf2-6173-4ed7-8e71-084e79276ead, 0 image(s)",battle_cloak_magic_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_large_shield,25.0 generations,"done 7e629fee-db72-474e-80e0-47f0787d47d7, 0 image(s)",battle_cloak_large_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_large_shield,25.0 generations,"done fd6a59a4-f812-4909-83cd-e01f67f5c14d, 0 image(s)",battle_helm_cloak_large_shield
+2026-10-30,create-character-state,hero/states/battle_cloak_small_shield,25.0 generations,"done c02173ed-02ef-478b-9662-8f6278ea3824, 0 image(s)",battle_cloak_small_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_small_shield,25.0 generations,"done 2fbc9aec-e982-47b3-bc6c-cd93e270b596, 0 image(s)",battle_helm_cloak_small_shield
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_magic_shield,25.0 generations,"done f199cfbd-8c33-4c6b-ab9f-de797fd7d476, 0 image(s)",battle_helm_cloak_magic_shield
+2026-10-30,characters/animations,hero/leather_cloak/large_shield/block,?,queued 9dcf92df-65be-4dfe-8b08-4b2f9dd15a7d,leather_cloak_large_shield_block
+2026-10-30,characters/animations,hero/base_cloak/magic_shield/block,?,queued a579dfc8-51a6-4b99-ba33-9b4925b4a851,base_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/magic_shield/block,?,queued 67102db2-9711-4e2c-84ae-fdafaad6eb7d,studded_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/large_shield/block,?,queued 600f8afa-ca93-4ef5-82c2-d82de2cd306e,studded_cloak_large_shield_block
+2026-10-30,characters/animations,hero/base_cloak/large_shield/block,?,queued 32d9321d-2e8f-45bb-a5c5-45440e32e2a7,base_cloak_large_shield_block
+2026-10-30,characters/animations,hero/base_cloak/small_shield/block,?,queued 4802b19c-0755-4d8d-b8f7-dc21830783eb,base_cloak_small_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/small_shield/block,?,queued bc834ffc-b65b-4b5b-8220-effaeb56d477,studded_cloak_small_shield_block
+2026-10-30,characters/animations,hero/leather_cloak/magic_shield/block,?,queued 79141a48-301a-4b79-8b5d-b98fd4f8ac20,leather_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/leather_cloak/small_shield/block,?,queued 80bbc1c3-00d5-4ad2-a79f-d8194a63a16a,leather_cloak_small_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/magic_shield/block,1.0 generations,"done 67102db2-9711-4e2c-84ae-fdafaad6eb7d, 9 image(s)",studded_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/small_shield/block,?,queued 049f3ed1-d86a-4657-a7a0-2d6fe7ce18c2,plate_cloak_small_shield_block
+2026-10-30,characters/animations,hero/base_cloak/large_shield/block,1.0 generations,"done 32d9321d-2e8f-45bb-a5c5-45440e32e2a7, 9 image(s)",base_cloak_large_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/large_shield/block,1.0 generations,"done 600f8afa-ca93-4ef5-82c2-d82de2cd306e, 9 image(s)",studded_cloak_large_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block,?,queued fa7856bb-9b4a-4b5b-971f-21f5aa78a278,plate_cloak_large_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/magic_shield/block,?,queued bcce9e1f-bd0d-42e1-8ce3-8367e1263be6,plate_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/studded_cloak/small_shield/block,1.0 generations,"done bc834ffc-b65b-4b5b-8220-effaeb56d477, 9 image(s)",studded_cloak_small_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/small_shield/block,?,queued dc79c902-0482-47f7-a65d-0d936f83ab41,battle_cloak_small_shield_block
+2026-10-30,characters/animations,hero/leather_cloak/small_shield/block,1.0 generations,"done 80bbc1c3-00d5-4ad2-a79f-d8194a63a16a, 9 image(s)",leather_cloak_small_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/large_shield/block,?,queued 6fe8a766-eefd-44b3-b778-414b4ed5c189,battle_cloak_large_shield_block
+2026-10-30,characters/animations,hero/base_cloak/magic_shield/block,1.0 generations,"done a579dfc8-51a6-4b99-ba33-9b4925b4a851, 9 image(s)",base_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/magic_shield/block,?,queued 839488fb-fda2-4136-ae57-684a0a08e9e2,battle_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/leather_cloak/magic_shield/block,1.0 generations,"done 79141a48-301a-4b79-8b5d-b98fd4f8ac20, 9 image(s)",leather_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/small_shield/block,?,queued 04df3ea6-9f09-42c8-a28b-2b7792487521,battle_helm_cloak_small_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/small_shield/block,1.0 generations,"done 049f3ed1-d86a-4657-a7a0-2d6fe7ce18c2, 9 image(s)",plate_cloak_small_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/large_shield/block,?,queued c7dcabe1-96fd-4c22-94ff-823ddc42151a,battle_helm_cloak_large_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block,1.0 generations,"done fa7856bb-9b4a-4b5b-971f-21f5aa78a278, 9 image(s)",plate_cloak_large_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/magic_shield/block,?,queued 7038ab71-2261-437d-acae-e45e790e0615,battle_helm_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/base_cloak/small_shield/block,1.0 generations,"done 4802b19c-0755-4d8d-b8f7-dc21830783eb, 9 image(s)",base_cloak_small_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/large_shield/block,1.0 generations,"done 6fe8a766-eefd-44b3-b778-414b4ed5c189, 9 image(s)",battle_cloak_large_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/small_shield/block,1.0 generations,"done dc79c902-0482-47f7-a65d-0d936f83ab41, 9 image(s)",battle_cloak_small_shield_block
+2026-10-30,characters/animations,hero/plate_cloak/magic_shield/block,1.0 generations,"done bcce9e1f-bd0d-42e1-8ce3-8367e1263be6, 9 image(s)",plate_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/small_shield/block,1.0 generations,"done 04df3ea6-9f09-42c8-a28b-2b7792487521, 9 image(s)",battle_helm_cloak_small_shield_block
+2026-10-30,characters/animations,hero/battle_cloak/magic_shield/block,1.0 generations,"done 839488fb-fda2-4136-ae57-684a0a08e9e2, 9 image(s)",battle_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/magic_shield/block,1.0 generations,"done 7038ab71-2261-437d-acae-e45e790e0615, 9 image(s)",battle_helm_cloak_magic_shield_block
+2026-10-30,characters/animations,hero/battle_helm_cloak/large_shield/block,1.0 generations,"done c7dcabe1-96fd-4c22-94ff-823ddc42151a, 9 image(s)",battle_helm_cloak_large_shield_block
+2026-10-30,characters/animations,hero/leather_cloak/large_shield/block,1.0 generations,"done 9dcf92df-65be-4dfe-8b08-4b2f9dd15a7d, 9 image(s)",leather_cloak_large_shield_block
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_large_shield_r1,?,queued 0d80c48d-6615-4a24-967d-ad1b4c1c4c65,battle_helm_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/studded_cloak_large_shield_r1,?,queued 74504aa1-fa4d-4e5b-990c-fefe38683b6a,studded_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/plate_cloak_large_shield_r1,?,queued e00c999a-8db1-4af8-9577-e6c065ce5105,plate_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/battle_cloak_large_shield_r1,?,queued 66af529c-f2cf-42c1-b450-aeabd08c9124,battle_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/leather_cloak_large_shield_r1,?,queued fe032e8a-4e9c-4107-9eb8-5ea10e49b7ef,leather_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/plate_cloak_large_shield_r1,25.0 generations,"done e00c999a-8db1-4af8-9577-e6c065ce5105, 0 image(s)",plate_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/battle_cloak_large_shield_r1,25.0 generations,"done 66af529c-f2cf-42c1-b450-aeabd08c9124, 0 image(s)",battle_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/studded_cloak_large_shield_r1,25.0 generations,"done 74504aa1-fa4d-4e5b-990c-fefe38683b6a, 0 image(s)",studded_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/leather_cloak_large_shield_r1,25.0 generations,"done fe032e8a-4e9c-4107-9eb8-5ea10e49b7ef, 0 image(s)",leather_cloak_large_shield_r1
+2026-10-30,create-character-state,hero/states/battle_helm_cloak_large_shield_r1,25.0 generations,"done 0d80c48d-6615-4a24-967d-ad1b4c1c4c65, 0 image(s)",battle_helm_cloak_large_shield_r1
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r1,?,queued f5609c6e-76a0-4d60-bfea-bdc1f7818d99,plate_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/leather_cloak/magic_shield/block_r1,?,queued 0f04023c-2da4-43a2-8b30-236e4d172008,leather_cloak_magic_shield_block_r1
+2026-10-30,characters/animations,hero/studded_cloak/large_shield/block_r1,?,queued f9831aeb-af6f-4ff8-b91e-30bf97b46972,studded_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/battle_helm_cloak/large_shield/block_r1,?,queued 2f9e62d2-44c7-4ac5-9035-88ee38a613d7,battle_helm_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/battle_cloak/magic_shield/block_r1,?,queued dc6625e2-6d9d-4628-8fcc-c7e24306e8af,battle_cloak_magic_shield_block_r1
+2026-10-30,characters/animations,hero/leather_cloak/large_shield/block_r1,?,queued cba4794c-e779-44a5-89f6-1ed36a5ae449,leather_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/battle_cloak/large_shield/block_r1,?,queued e003db9a-4eba-4573-955d-7f20e98caa7d,battle_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r1,1.0 generations,"done f5609c6e-76a0-4d60-bfea-bdc1f7818d99, 9 image(s)",plate_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/studded_cloak/large_shield/block_r1,1.0 generations,"done f9831aeb-af6f-4ff8-b91e-30bf97b46972, 9 image(s)",studded_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/leather_cloak/magic_shield/block_r1,1.0 generations,"done 0f04023c-2da4-43a2-8b30-236e4d172008, 9 image(s)",leather_cloak_magic_shield_block_r1
+2026-10-30,characters/animations,hero/battle_cloak/large_shield/block_r1,1.0 generations,"done e003db9a-4eba-4573-955d-7f20e98caa7d, 9 image(s)",battle_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/battle_cloak/magic_shield/block_r1,1.0 generations,"done dc6625e2-6d9d-4628-8fcc-c7e24306e8af, 9 image(s)",battle_cloak_magic_shield_block_r1
+2026-10-30,characters/animations,hero/battle_helm_cloak/large_shield/block_r1,1.0 generations,"done 2f9e62d2-44c7-4ac5-9035-88ee38a613d7, 9 image(s)",battle_helm_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/leather_cloak/large_shield/block_r1,1.0 generations,"done cba4794c-e779-44a5-89f6-1ed36a5ae449, 9 image(s)",leather_cloak_large_shield_block_r1
+2026-10-30,characters/animations,hero/base_cloak/magic_shield/block_r2,?,queued 3469f54c-8799-41ed-9685-109e3953fdd8,base_cloak_magic_shield_block_r2
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r2,?,queued 854a7614-37c8-4814-9fce-f9bcd4b2bc3d,plate_cloak_large_shield_block_r2
+2026-10-30,characters/animations,hero/plate_cloak/large_shield/block_r2,1.0 generations,"done 854a7614-37c8-4814-9fce-f9bcd4b2bc3d, 9 image(s)",plate_cloak_large_shield_block_r2
+2026-10-30,characters/animations,hero/base_cloak/magic_shield/block_r2,1.0 generations,"done 3469f54c-8799-41ed-9685-109e3953fdd8, 9 image(s)",base_cloak_magic_shield_block_r2
