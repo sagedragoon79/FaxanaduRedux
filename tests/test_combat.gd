@@ -805,6 +805,46 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Pendant x1.1, the Magical Rod's Deluge x1.5")
 	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
 	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
+	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
+	check_near(c.cast_cooldown, 0.35, 0.0001, "0.35 s between casts (pass 282)")
+	check(Drop.BREAD_HEAL == 15 and Drop.LOAF_HEAL == 40, "bread +15, the Naga's great loaf +40 (pass 282)")
+
+
+## Bible 5.3 (pass 282): spikes cost a mask (20) through no armor and set
+## you back on safe ground; a spell can't be cast again within 0.35 s, and the
+## press made too soon is spent, not saved.
+func test_spikes_cost_a_mask_and_casts_wait_their_cooldown() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var safe := p.global_position
+	p.teleport(cell_feet(11, 6))
+	await frames(2)
+	check(p.hp == 100 - CombatTuning.new().hazard_damage, "a spike costs a whole mask (%d)" % (100 - p.hp))
+	await frames(2)
+	check(p.global_position.distance_to(safe) < 2.0, "and sets you back where you last stood safe (%s)" % p.global_position)
+	await frames(60)
+	# Casting: a second press inside 0.35 s casts nothing; after it, it casts.
+	p.mp = 60.0
+	var cost := p.spell_cost(p.equipped_spell)
+	p.input.spell_pressed = true
+	await frames(1)
+	check_near(p.mp, 60.0 - cost, 0.2, "a cast spends its MP (%.1f)" % p.mp)
+	var after_one := p.mp
+	await frames(int(CombatTuning.new().cast_cooldown * 60.0) - 6)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(p.mp > after_one - cost * 0.5, "pressed again inside the cooldown, nothing is cast (%.1f)" % p.mp)
+	await frames(10)
+	check(p.mp > after_one - cost * 0.5, "and the early press is not saved for later (%.1f)" % p.mp)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(p.mp < after_one - cost * 0.5, "once the cooldown is over, it casts again (%.1f)" % p.mp)
+	room.free()
 
 
 ## Bible 5.3: guarding you walk at 40% of a run; MP comes back at 2 a second.

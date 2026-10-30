@@ -404,6 +404,9 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Gold coins | Magnet after 0.4 s within 100 px |
 | Relics (pass 201, 5.2) | the Pendant: blade hits x1.1; the Magical Rod: Deluge x1.5 |
 | Death (5.4) | 60% of the purse dropped where you fell |
+| Spikes and thorns (pass 282) | 20 damage (one mask) before armor; you are set back on the last safe ground |
+| Casting (pass 282) | 0.35 s between casts; a press made sooner casts nothing and is not saved |
+| Bread / great loaf (pass 282, 7) | +15 HP / +40 HP (the loaf: a slain Naga's) |
 
 ### 5.4 Death and recovery
 
