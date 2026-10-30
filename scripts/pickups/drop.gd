@@ -11,6 +11,9 @@ extends CharacterBody2D
 const GRAVITY := 700.0
 const COLLECT_RANGE := 14.0
 const LIFETIME := 10.0
+## How far in from a side edge a drop comes to rest when that edge is a door:
+## the second open tile, where a hop clears it and lands short of the door.
+const DOOR_CLEAR := 40.0
 const BREAD_HEAL := 15
 ## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
 const LOAF_HEAL := 40
@@ -127,8 +130,14 @@ static func keep_in_room(body: CharacterBody2D) -> void:
 		return
 	var at := body.global_position
 	var size := Vector2(room.size_tiles) * Room.TILE
-	if at.x < 8.0 or at.x > size.x - 8.0:
-		body.global_position.x = clampf(at.x, 8.0, size.x - 8.0)
+	# Nor does it rest at a side door (pass 307): a door is three tiles tall, and
+	# a jump over a flask lying just inside it meets the wall above the
+	# door and drops you on it, so poison there was a toll on the way out. Where
+	# the two tiles inside the edge are open, it stops on the second of them.
+	var lo := DOOR_CLEAR if _open_inside(room, 0.0, at.y) else 8.0
+	var hi := size.x - (DOOR_CLEAR if _open_inside(room, size.x, at.y) else 8.0)
+	if at.x < lo or at.x > hi:
+		body.global_position.x = clampf(at.x, lo, hi)
 		body.velocity.x = 0.0
 	if at.y <= size.y:
 		return
@@ -146,6 +155,15 @@ static func keep_in_room(body: CharacterBody2D) -> void:
 			return
 	body.queue_free()
 
+
+
+## Whether the two tiles in from the side edge at `edge_x` are open at height `y`.
+static func _open_inside(room: Room, edge_x: float, y: float) -> bool:
+	var step := Room.TILE if edge_x == 0.0 else -Room.TILE
+	for i in [1, 2]:
+		if room.is_solid_at(Vector2(edge_x + step * (i + 0.5), y - 4.0)):
+			return false
+	return true
 
 func _collect(p: Player) -> void:
 	var d := Dust.new()
