@@ -1164,6 +1164,98 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 	check(end_count - start_count < 40, "and a lap of the whole game leaves nothing behind (%d -> %d nodes)" % [start_count, end_count])
 
 
+
+## Every floor and ceiling door, played with the real controller and no abilities
+## (bible 4, pass 299). Down through a floor door you fall onto footing the
+## spike set-back keeps (bible 6.13): on tiles, unhurt, no hazard beside it. Up
+## through a ceiling door you pop out of the floor door on the far side and,
+## steering one way or the other, land beside it instead of dropping back in.
+## Its gates stand open, as they do whenever the far side can be reached.
+func test_every_door_up_or_down_lands_you_on_footing() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	w.player.max_hp = 99999
+	w.player.hp = 99999
+	for a: String in w.player.abilities:
+		w.player.abilities[a] = false
+	GameState.data.rings = ZenisGate.RINGS.duplicate()
+	GameState.set_flag(ZenisGate.FLAG)
+	# The flue damper (Zoradohna) and the bound fog over the Veiled Rise (the
+	# Lantern Key) stand open before you can reach the rooms above them.
+	GameState.set_flag(FlueDamper.FLAG)
+	GameState.set_flag("curtain:mist/lantern_landing")
+	w.player.input.scripted = true
+	await frames(5)
+	var problems: Array[String] = []
+	var downs := 0
+	var ups := 0
+	for id: String in _all_room_ids(w):
+		w.start(id)
+		var doors: Dictionary = w.room.doors.duplicate()
+		for n: int in doors:
+			var d: Dictionary = doors[n]
+			if not String(d.edge) in ["top", "bottom"]:
+				continue
+			var where := "%s door %d -> %s" % [id, n, d.target]
+			var landed := ""
+			for side: int in ([0] if d.edge == "bottom" else [-1, 1]):
+				landed = await _ride_door(w, id, n, side)
+				if landed == "":
+					break
+			if d.edge == "bottom":
+				downs += 1
+			else:
+				ups += 1
+			if landed != "":
+				problems.append("%s: %s" % [where, landed])
+	w.player.input.move_x = 0
+	w.player.input.scripted = false
+	print("  Up and down: %d floor doors, %d ceiling doors" % [downs, ups])
+	check(downs > 20 and ups > 20, "rode every floor and ceiling door (%d down, %d up)" % [downs, ups])
+	check(problems.is_empty(), "every door up or down lands you on footing: %s" % [problems])
+
+
+## Takes door `n` of room `id`, steering `side` once on the far side, and waits
+## for the player to come to rest there. Returns "" when they stand (or swim)
+## on footing the set-back keeps, else what went wrong.
+func _ride_door(w: World, id: String, n: int, side: int) -> String:
+	w.start(id)
+	_clear_foes(w)
+	w.player.input.move_x = 0
+	await frames(1)
+	var hp := w.player.hp
+	w.use_door(n)
+	var target := ""
+	for f in 240:
+		await frames(1)
+		if w.busy:
+			continue
+		var p := w.player
+		if target == "":
+			if w.room.id == id:
+				continue
+			target = w.room.id
+			_clear_foes(w)
+		p.input.move_x = side
+		if w.room.id != target:
+			p.input.move_x = 0
+			return "fell back to %s" % w.room.id
+		if p.dead or p.hp < hp:
+			p.input.move_x = 0
+			return "hurt at %s" % p.global_position
+		if p.swimming:
+			p.input.move_x = 0
+			return ""
+		if p.is_on_floor():
+			p.input.move_x = 0
+			await frames(2)
+			if p._hazard_near():
+				return "landed by a hazard at %s" % p.global_position
+			if p.safe_position.distance_to(p.global_position) > 2.0:
+				return "the set-back would not keep %s (it holds %s)" % [p.global_position, p.safe_position]
+			return ""
+	w.player.input.move_x = 0
+	return "never landed (at %s in %s)" % [w.player.global_position, w.room.id]
+
 ## Rests at every shrine in the game, then loads that save into a fresh world
 ## the way Continue does: you wake in the shrine's room, standing, out of the walls.
 func test_every_shrine_saves_and_continues_where_you_rested() -> void:
