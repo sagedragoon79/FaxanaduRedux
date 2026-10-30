@@ -276,6 +276,39 @@ func test_a_worn_shield_is_drawn_into_the_block() -> void:
 	GameState.data.equipment["shield"] = ""
 
 
+func test_a_rune_dagger_throw_plays_its_flick() -> void:
+	# The Rune Dagger's throw (design bible 13.5): each set flicks it forward, or
+	# up when thrown up, over the legs' poses; the old hero has no flick.
+	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+		for clip in ["throw", "throw_up"]:
+			check(Sheet.has_anim(sheet, clip), "%s has %s" % [sheet, clip])
+	GameState.data.equipment["armor"] = "full_plate"
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	p.abilities["rune_dagger"] = true
+	await frames(6)
+	p.input.throw_pressed = true
+	await frames(2)
+	p.input.throw_pressed = false
+	check(p.visual.anim == "throw" and p.visual.sheet == "hero_plate", "the forward flick plays (%s %s)" % [p.visual.sheet, p.visual.anim])
+	await frames(30)
+	check(p.visual.anim == "idle", "and gives way to the idle when done (%s)" % p.visual.anim)
+	p.input.up = true
+	p.throw_dagger()
+	await frames(2)
+	p.input.up = false
+	check(p.visual.anim == "throw_up", "thrown up, the flick goes up (%s)" % p.visual.anim)
+	await frames(30)
+	PlayerVisual.body_sets = false
+	p.throw_dagger()
+	await frames(2)
+	check(p.visual.sheet == "player" and p.visual.anim == "idle", "the old hero just stands (%s %s)" % [p.visual.sheet, p.visual.anim])
+	PlayerVisual.body_sets = true
+	GameState.data.equipment["armor"] = ""
+	for d in runner.get_tree().get_nodes_in_group("projectile"):
+		d.free()
+
+
 func test_armor_picks_its_body_set() -> void:
 	# Paper doll (design bible 13.4): each armor has a body sheet of its own,
 	# with the same clips, and anchors for the layers drawn over it.

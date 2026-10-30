@@ -58,7 +58,7 @@ const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
 ## ends (the recovery frames of a swing). A pogo's strike ends the moment it
 ## lands, so the Mattock's blow plays out over the bounce.
-const FINISH := ["slash1", "slash2", "slash3", "slash_up", "strike_down", "cast"]
+const FINISH := ["slash1", "slash2", "slash3", "slash_up", "strike_down", "cast", "throw", "throw_up"]
 ## Poses an unfinished swing may play over.
 ## The speed share (MovementTuning.speed_fraction) at or under which moving is a walk.
 const WALK_POSE := 0.7
@@ -100,6 +100,7 @@ var _dye_worn := ""
 var _blink_time := 0.0
 var _red_time := 0.0
 var _swings := 0
+var _throws := 0
 
 
 ## The sheet: {"cell", "origin", "columns", "animations", ...} (see Sheet).
@@ -126,6 +127,15 @@ func _physics_process(delta: float) -> void:
 	var next := anim_for(player, pose)
 	var restart := player.swing_count != _swings
 	_swings = player.swing_count
+	if player.throws != _throws:
+		# A Rune Dagger thrown (design bible 13.5): the flick plays out over the
+		# legs' poses, forward or up as the dagger went, where the set has it.
+		_throws = player.throws
+		var up := is_instance_valid(player.rune_dagger) and player.rune_dagger.dir.y < 0.0
+		var flick := "throw_up" if up else "throw"
+		if pose in OVERRIDABLE and Sheet.has_anim(sheet_for(flick), flick):
+			next = flick
+			restart = true
 	if anim in FINISH and not finished() and pose in OVERRIDABLE and not restart:
 		next = anim
 	if next != anim or restart:

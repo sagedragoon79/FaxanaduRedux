@@ -194,7 +194,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, base set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 12, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_leather": {
@@ -225,7 +227,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 4], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 4], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, leather set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 12, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_studded": {
@@ -256,7 +260,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, studded set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 12, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_plate": {
@@ -287,7 +293,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2], "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, plate set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 12, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_battle": {
@@ -318,7 +326,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, battle set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 12, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_battle_helm": {
@@ -349,7 +359,9 @@
    "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
    "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
-   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 5], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"}
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 5], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 16, "loop": false, "pixellab": "PixelLab, battle_helm set with the key-green cloak flicking a Rune Dagger forward, pixminimax"},
+   "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 12, "loop": false, "pixellab": "PixelLab, battle_helm set with the key-green cloak flicking a Rune Dagger straight up, pixminimax"}
   }
  },
  "hero_base_long_sword": {

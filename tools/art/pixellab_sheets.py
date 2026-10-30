@@ -23,7 +23,7 @@ CLIPS = (("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.
          ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
          ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
          ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
-         ("drink.png", "drink"), ("cast.png", "cast"))
+         ("drink.png", "drink"), ("cast.png", "cast"), ("throw.png", "throw"), ("throw_up.png", "throw_up"))
 SETS = ("base", "leather", "studded", "plate", "battle", "battle_helm")
 
 # The bare elf and the armor tiers (character states of Sean's elf, design bible 13.5), each with
