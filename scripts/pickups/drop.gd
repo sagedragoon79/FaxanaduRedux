@@ -15,13 +15,18 @@ const BREAD_HEAL := 15
 ## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
 const LOAF_HEAL := 40
 const MANA_GAIN := 12.0
-## Chances, per kill, of bread and of a mana orb. Tests set them to 0 or 1.
-static var bread_chance := 0.08
-static var mana_chance := 0.1
-## Chance of poison, per kill, from enemies with `poison_drops`.
-static var poison_chance := 0.07
-## Chance of a rare item, per kill, from any enemy; then the War Glove's share of it.
-static var rare_chance := 0.025
+## The game's chances per kill (bible 5.3, Drops): bread, a mana orb, poison
+## (from enemies with `poison_drops`) and a rare item (any enemy), whose War
+## Glove share is GLOVE_SHARE. The test runner zeroes the live chances below.
+const BREAD_CHANCE := 0.08
+const MANA_CHANCE := 0.1
+const POISON_CHANCE := 0.07
+const RARE_CHANCE := 0.025
+## The live chances. Tests set them to 0 or 1.
+static var bread_chance := BREAD_CHANCE
+static var mana_chance := MANA_CHANCE
+static var poison_chance := POISON_CHANCE
+static var rare_chance := RARE_CHANCE
 const GLOVE_SHARE := 0.6
 
 const CRUST := Color("b0662a")
@@ -96,6 +101,7 @@ func _physics_process(delta: float) -> void:
 		return
 	velocity.y = minf(velocity.y + GRAVITY * delta, 400.0)
 	move_and_slide()
+	_keep_in_room()
 	if is_on_floor():
 		velocity.x = move_toward(velocity.x, 0.0, 300.0 * delta)
 	var p := get_tree().get_first_node_in_group("player") as Player
@@ -103,6 +109,42 @@ func _physics_process(delta: float) -> void:
 		_collect(p)
 		return
 	queue_redraw()
+
+
+## A drop never leaves its room (pass 283): one that pops past a side edge
+## stops at it, and one that falls out through a gap in the floor (the Tower's
+## shafts drop through to the room below) comes to rest on the floor at the
+## gap's nearer edge, where you can walk to it. Coins keep to it too (pass 285).
+func _keep_in_room() -> void:
+	Drop.keep_in_room(self)
+
+
+## Holds `body` (a drop or a coin) inside its room, as above. Frees it if the
+## room's bottom row has no floor to rest it on.
+static func keep_in_room(body: CharacterBody2D) -> void:
+	var room := body.get_parent() as Room
+	if room == null:
+		return
+	var at := body.global_position
+	var size := Vector2(room.size_tiles) * Room.TILE
+	if at.x < 8.0 or at.x > size.x - 8.0:
+		body.global_position.x = clampf(at.x, 8.0, size.x - 8.0)
+		body.velocity.x = 0.0
+	if at.y <= size.y:
+		return
+	var last := room.size_tiles.y - 1
+	var c := int(at.x / Room.TILE)
+	for dist in range(1, room.size_tiles.x):
+		for col in [c - dist, c + dist]:
+			if col < 0 or col >= room.size_tiles.x or not room.is_solid_at(Vector2(col + 0.5, last + 0.5) * Room.TILE):
+				continue
+			var top := last
+			while top > 0 and room.is_solid_at(Vector2(col + 0.5, top - 0.5) * Room.TILE):
+				top -= 1
+			body.global_position = Vector2((col + 0.5) * Room.TILE, top * Room.TILE)
+			body.velocity = Vector2.ZERO
+			return
+	body.queue_free()
 
 
 func _collect(p: Player) -> void:
@@ -140,7 +182,7 @@ func _collect(p: Player) -> void:
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
-		Sfx.play("blip", 0.1, -4.0)
+		Sfx.play("mana_orb", 0.04, -2.0)
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -4)
 	queue_free()

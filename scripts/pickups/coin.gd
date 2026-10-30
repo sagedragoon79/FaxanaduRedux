@@ -55,6 +55,8 @@ func _physics_process(delta: float) -> void:
 	velocity.y += GRAVITY * delta
 	var was_falling := velocity.y > 60.0
 	move_and_slide()
+	# A coin never leaves its room through a floor gap or a side door (pass 285).
+	Drop.keep_in_room(self)
 	if is_on_floor():
 		velocity.x = move_toward(velocity.x, 0.0, 300.0 * delta)
 		if was_falling and _age < 0.8:

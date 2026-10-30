@@ -805,6 +805,217 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Pendant x1.1, the Magical Rod's Deluge x1.5")
 	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
 	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
+	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
+	check_near(c.cast_cooldown, 0.35, 0.0001, "0.35 s between casts (pass 282)")
+	check(Drop.BREAD_HEAL == 15 and Drop.LOAF_HEAL == 40, "bread +15, the Naga's great loaf +40 (pass 282)")
+	check(Drop.BREAD_CHANCE == 0.08 and Drop.MANA_CHANCE == 0.1 and Drop.POISON_CHANCE == 0.07 and Drop.RARE_CHANCE == 0.025, "drops: bread 8%, mana 10%, poison 7%, rare 2.5% (pass 290)")
+	check(Drop.MANA_GAIN == 12.0 and Drop.GLOVE_SHARE == 0.6, "a mana orb gives 12 MP; a rare drop is the War Glove 60% of the time (pass 290)")
+
+
+## Bible 5.3 (pass 282): spikes cost a mask (20) through no armor and set
+## you back on safe ground; a spell can't be cast again within 0.35 s, and the
+## press made too soon is spent, not saved.
+func test_spikes_cost_a_mask_and_casts_wait_their_cooldown() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var safe := p.global_position
+	p.teleport(cell_feet(11, 6))
+	await frames(2)
+	check(p.hp == 100 - CombatTuning.new().hazard_damage, "a spike costs a whole mask (%d)" % (100 - p.hp))
+	await frames(2)
+	check(p.global_position.distance_to(safe) < 2.0, "and sets you back where you last stood safe (%s)" % p.global_position)
+	await frames(60)
+	# Casting: a second press inside 0.35 s casts nothing; after it, it casts.
+	p.mp = 60.0
+	var cost := p.spell_cost(p.equipped_spell)
+	p.input.spell_pressed = true
+	await frames(1)
+	check_near(p.mp, 60.0 - cost, 0.2, "a cast spends its MP (%.1f)" % p.mp)
+	var after_one := p.mp
+	await frames(int(CombatTuning.new().cast_cooldown * 60.0) - 6)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(p.mp > after_one - cost * 0.5, "pressed again inside the cooldown, nothing is cast (%.1f)" % p.mp)
+	await frames(10)
+	check(p.mp > after_one - cost * 0.5, "and the early press is not saved for later (%.1f)" % p.mp)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(p.mp < after_one - cost * 0.5, "once the cooldown is over, it casts again (%.1f)" % p.mp)
+	room.free()
+
+
+## Pass 288 (bible 6): a spike sets you back on ground that lasts. Footing that
+## can go (a cracked block you broke, a Bark Knight's rooted lance, a held
+## crystal) is never kept as the safe spot, or a fall onto the spikes it hid
+## would set you back into the air above them, again and again.
+func test_a_spike_never_sets_you_back_onto_footing_that_is_gone() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[5] = "#..........C.......#"
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var block: CrackedBlock = null
+	for c in room.get_children():
+		if c is CrackedBlock:
+			block = c
+	check(block != null, "the arena has its cracked block")
+	if block == null:
+		room.free()
+		return
+	block.respawns = false
+	var ground := p.global_position
+	# Stand on the block a while, then it breaks under you.
+	p.teleport(block.global_position + Vector2(0, -8))
+	await frames(20)
+	check(p.is_on_floor(), "standing on the cracked block")
+	block.break_block(true)
+	await frames(180)
+	check(p.hp == 100 - CombatTuning.new().hazard_damage, "the spikes cost one mask, not a run of them (%d)" % (100 - p.hp))
+	check(p.is_on_floor() and p.global_position.distance_to(ground) < 2.0, "and set you back on the floor you stood on before the block (%s, floor %s)" % [p.global_position, ground])
+	room.free()
+
+
+## Pass 296 (bible 6.13): a set-back is a fresh start. A jump or dash pressed
+## as you fell onto the spikes was still buffered when the spikes set you
+## back, so it fired on arrival: you hopped (or dashed) off the safe spot with
+## no press of your own, often straight back toward the spikes.
+func test_a_set_back_drops_the_presses_buffered_on_the_way_down() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6), {"stride": true})
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var ground := p.global_position
+	for press: String in ["jump", "dash"]:
+		p.facing = 1
+		# Dropped from high over the spikes; the press comes just before they bite.
+		p.teleport(Vector2(11.5 * Room.TILE, 2 * Room.TILE))
+		await _until(func() -> bool: return p.global_position.y > 6 * Room.TILE + 2.0, 60)
+		p.air_dash_charges = 0
+		if press == "jump":
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+		else:
+			p.input.dash_pressed = true
+		await frames(1)
+		p.input.jump_pressed = false
+		p.input.dash_pressed = false
+		await _until(func() -> bool: return p.hp < 100, 30)
+		check(p.hp < 100 and p.global_position.distance_to(ground) < 2.0, "the spikes set you back (%s, %s)" % [press, p.global_position])
+		var moved := 0.0
+		var rose := 0.0
+		for i in 30:
+			await frames(1)
+			moved = maxf(moved, absf(p.global_position.x - ground.x))
+			rose = maxf(rose, ground.y - p.global_position.y)
+		p.input.jump_held = false
+		check(rose < 1.0 and moved < 1.0, "and the %s pressed on the way down does not fire there (rose %.1f, moved %.1f)" % [press, rose, moved])
+		check(p.facing == 1, "you still face the way you were")
+		p.hp = 100
+		await frames(70)
+	room.free()
+
+
+## Pass 286 (bible 13.3): a press that does nothing is heard when there is a
+## reason to tell you. An empty flask clinks; a spell short of MP and a glass
+## still running back fizzle; each once per press, spending nothing. A cast
+## pressed inside its cooldown stays silent: the cast just sounded.
+func test_a_refused_drink_cast_or_glass_is_heard_once() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"hourglass": true})
+	p.max_hp = 100
+	p.hp = 50
+	await frames(4)
+	# The empty flask.
+	p.flask_charges = 0
+	Sfx.recent.clear()
+	p.input.heal_pressed = true
+	await frames(1)
+	p.input.heal_pressed = false
+	await frames(30)
+	check(Sfx.recent == ["flask_empty"], "an empty flask clinks, once (%s)" % [Sfx.recent])
+	check(p.hp == 50 and not p.is_drinking, "and nothing is drunk (%d)" % p.hp)
+	check(ResourceLoader.exists("res://assets/sfx/flask_empty.wav"), "flask_empty is rendered")
+	# A full flask at full health: nothing to drink for, nothing heard.
+	p.flask_charges = 2
+	p.hp = 100
+	Sfx.recent.clear()
+	p.input.heal_pressed = true
+	await frames(1)
+	await frames(30)
+	check(Sfx.recent.is_empty() and p.flask_charges == 2, "at full health a press is quiet and spends nothing (%s)" % [Sfx.recent])
+	# A spell short of MP.
+	p.mp = p.spell_cost(p.equipped_spell) - 1.0
+	var mp := p.mp
+	Sfx.recent.clear()
+	p.input.spell_pressed = true
+	await frames(1)
+	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("cast"), "a spell short of MP fizzles, once (%s)" % [Sfx.recent])
+	check(p.mp <= mp + 0.1, "and spends nothing (%.1f)" % p.mp)
+	# A cast, then a press inside the cooldown: silent.
+	p.mp = 60.0
+	p.input.spell_pressed = true
+	await frames(1)
+	Sfx.recent.clear()
+	await frames(6)
+	p.input.spell_pressed = true
+	await frames(1)
+	check(not Sfx.recent.has("fizzle") and not Sfx.recent.has("cast"), "a press inside the cooldown is silent (%s)" % [Sfx.recent])
+	# The glass, turned while it runs back.
+	p.input.hourglass_pressed = true
+	await frames(2)
+	check(TimeStop.active(), "the glass turns")
+	Sfx.recent.clear()
+	p.input.hourglass_pressed = true
+	await frames(1)
+	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("hourglass"), "turned again while it runs back, it fizzles, once (%s)" % [Sfx.recent])
+	TimeStop.reset()
+	room.free()
+
+
+## Pass 290 (bible 5.3, Drops): a kill's roll gives each drop at its share.
+## 40,000 seeded rolls, with and without poison, each within a point of the
+## table; a foe without `poison_drops` never leaves poison.
+func test_a_kills_drop_comes_at_the_tables_odds() -> void:
+	var parent := Node2D.new()
+	arena.add_child(parent)
+	# The runner turns drops off for every test; turn on the game's own odds.
+	Drop.bread_chance = Drop.BREAD_CHANCE
+	Drop.mana_chance = Drop.MANA_CHANCE
+	Drop.poison_chance = Drop.POISON_CHANCE
+	Drop.rare_chance = Drop.RARE_CHANCE
+	seed(290)
+	for can_poison: bool in [false, true]:
+		var counts := {"": 0, "bread": 0, "mana": 0, "poison": 0, "glove": 0, "ointment": 0}
+		var n := 20000
+		for i in n:
+			var d := Drop.roll(parent, Vector2.ZERO, can_poison)
+			counts[d.kind if d != null else ""] += 1
+			if d != null:
+				d.free()
+		var share := func(k: String) -> float: return float(counts[k]) / n
+		var rare: float = share.call("glove") + share.call("ointment")
+		check(absf(share.call("bread") - Drop.BREAD_CHANCE) < 0.01, "bread at %.1f%% (%.1f%%)" % [Drop.BREAD_CHANCE * 100, share.call("bread") * 100])
+		check(absf(share.call("mana") - Drop.MANA_CHANCE) < 0.01, "a mana orb at %.1f%% (%.1f%%)" % [Drop.MANA_CHANCE * 100, share.call("mana") * 100])
+		check(absf(share.call("poison") - (Drop.POISON_CHANCE if can_poison else 0.0)) < 0.01, "poison at %.1f%% %s (%.1f%%)" % [Drop.POISON_CHANCE * 100 if can_poison else 0.0, "from a Tower foe" if can_poison else "from any other", share.call("poison") * 100])
+		check(absf(rare - Drop.RARE_CHANCE) < 0.01, "a rare item at %.1f%% (%.1f%%)" % [Drop.RARE_CHANCE * 100, rare * 100])
+		check(absf(float(counts["glove"]) / maxf(1.0, counts["glove"] + counts["ointment"]) - Drop.GLOVE_SHARE) < 0.08, "of them the War Glove %.0f%% (%d of %d)" % [Drop.GLOVE_SHARE * 100, counts["glove"], counts["glove"] + counts["ointment"]])
+	randomize()
+	Drop.bread_chance = 0.0
+	Drop.mana_chance = 0.0
+	Drop.poison_chance = 0.0
+	Drop.rare_chance = 0.0
+	parent.free()
 
 
 ## Bible 5.3: guarding you walk at 40% of a run; MP comes back at 2 a second.

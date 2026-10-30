@@ -1316,7 +1316,7 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 		# A walk steps slower than a run (pass 183).
 		_step_timer = 0.26 * clampf(tuning.run_speed / absf(velocity.x), 1.0, 1.6)
 		_footstep(-10.0)
-	if on_floor and not _hazard_near() and not _on_stilled_water():
+	if on_floor and not _hazard_near() and not _on_fleeting_ground():
 		safe_position = global_position
 	_was_on_floor = on_floor
 	visual.position.y = _slope_sink(on_floor)
@@ -1369,6 +1369,11 @@ func _update_drink(delta: float, on_floor: bool) -> void:
 			_spawn_dust(Vector2(0, -20), "heal")
 			Sfx.play("heal")
 			health_changed.emit(hp, max_hp)
+		return
+	if input.heal_pressed and flask_charges <= 0:
+		# An empty flask is heard (pass 286): the cork pulls on nothing, so a
+		# press in a tight spot isn't met with silence. Shrines refill it.
+		Sfx.play("flask_empty", 0.0, -2.0)
 		return
 	if input.heal_pressed and flask_charges > 0 and on_floor and hp < max_hp and not is_attacking and not is_dashing:
 		_drink_timer = combat.drink_time * drink_mult
@@ -1521,13 +1526,27 @@ func _check_hazards() -> void:
 			return
 
 
-## Standing on a foothold of stilled water (Waterfall): it melts when time runs
-## again, so it is never a safe place to be set back to (pass 162).
-func _on_stilled_water() -> bool:
+## Standing on footing that can go, so never a safe place to be set back to.
+## A foothold of stilled water melts when time runs again (pass 162). Since
+## pass 288 that is any floor but the room's own tiles: a cracked block you
+## break, a Bark Knight's rooted lance, a crystal, a gate or a raft. Set back
+## onto a block that was gone, you fell onto the spikes it had hidden, and
+## again, a mask each time.
+func _on_fleeting_ground() -> bool:
 	for i in get_slide_collision_count():
-		var c := get_slide_collision(i).get_collider() as Node
-		if c != null and c.get_parent() is Waterfall:
+		var k := get_slide_collision(i)
+		if k.get_normal().y < -0.5 and not k.get_collider() is TileMapLayer:
 			return true
+		# A tile just torn away (pass 292) still holds you for a frame, until
+		# the layer rebuilds its collision: it is no footing either.
+		var layer := k.get_collider() as TileMapLayer
+		if k.get_normal().y < -0.5 and layer != null:
+			# A contact on a ledge's corner lies on the line between two cells
+			# (pass 295): it is footing if the tile on either side is still there.
+			var at := layer.to_local(k.get_position() + Vector2(0, 1))
+			if layer.get_cell_source_id(layer.local_to_map(at + Vector2(-0.5, 0))) == -1 \
+					and layer.get_cell_source_id(layer.local_to_map(at + Vector2(0.5, 0))) == -1:
+				return true
 	return false
 
 
@@ -1632,7 +1651,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		Sfx.play("hurt", 0.05, -4.0)
 		visual.flash_hurt()
 		_invuln_timer = tuning.hurt_invuln
-		teleport(safe_position)
+		set_back()
 		return
 	if defense > 0.0:
 		amount = maxi(1, roundi(amount * (1.0 - defense)))
@@ -1679,10 +1698,15 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if hp <= 0:
 		hp = 0
 		health_changed.emit(hp, max_hp)
-		_die(safe_position if from_hazard else global_position)
+		# The purse is left on ground you can come back to (bible 5.4, pass 293):
+		# where you fell if that was the room's own floor, else the last safe
+		# spot. Killed in the air over a torn pit, it had lain in the pit, and
+		# the floor came back whole around it when the room loaded again.
+		var on_ground := is_on_floor() and not _hazard_near() and not _on_fleeting_ground()
+		_die(global_position if on_ground and not from_hazard else safe_position)
 		return
 	if from_hazard:
-		teleport(safe_position)
+		set_back()
 	elif knock_dir != 0:
 		velocity = Vector2(knock_dir * combat.hurt_knockback.x, -combat.hurt_knockback.y)
 		_control_lock_timer = combat.hurt_control_lock
@@ -1867,6 +1891,19 @@ func _try_interact(on_floor: bool) -> bool:
 func can_reach(node: Node2D) -> bool:
 	var d := node.global_position - global_position
 	return absf(d.x) <= 22.0 and absf(d.y) <= 24.0
+
+
+## Puts you back on the last safe ground (bible 6.13). It is a fresh start
+## (pass 296): a jump, dash, swing or throw pressed on the way into the hazard,
+## and the ledge's grace, would fire on arrival with no press of your own.
+func set_back() -> void:
+	teleport(safe_position)
+	_jump_buffer_timer = 0.0
+	_dash_buffer_timer = 0.0
+	_attack_buffer_timer = 0.0
+	_throw_buffer_timer = 0.0
+	_coyote_timer = 0.0
+	_wall_coyote_timer = 0.0
 
 
 func teleport(pos: Vector2) -> void:

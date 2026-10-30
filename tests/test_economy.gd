@@ -561,9 +561,13 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 	check(orb != null and orb.kind == "mana", "or a mana orb")
 	await frames(40)
 	p.mp = 10.0
+	Sfx.recent.clear()
 	p.teleport(orb.global_position)
 	await frames(3)
 	check(p.mp >= 10.0 + Drop.MANA_GAIN and p.mp < 11.0 + Drop.MANA_GAIN, "which refills magic (%.1f, with a moment of regeneration)" % p.mp)
+	# Pass 294 (bible 13.3): it sounds like magic poured back, not the menu's blip.
+	check(Sfx.recent.has("mana_orb") and not Sfx.recent.has("blip"), "taking it plays mana_orb, not the menu's blip (%s)" % [Sfx.recent])
+	check(ResourceLoader.exists("res://assets/sfx/mana_orb.wav"), "mana_orb is rendered")
 	Drop.mana_chance = 1.0
 	Drop.bread_chance = 0.0
 	var spare := Drop.roll(w.room, cell_feet(30, 19))
@@ -2003,6 +2007,10 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	var naga := Naga.new()
 	check(naga.sure_drop == "loaf" and Drop.LOAF_HEAL > Drop.BREAD_HEAL, "a slain Naga leaves the great loaf")
 	naga.free()
+	# Pass 289: the Myconid, the original's one walker that always drops bread.
+	var myconid := BogMyconid.new()
+	check(myconid.sure_drop == "bread", "a slain Myconid leaves bread")
+	myconid.free()
 	for id: String in nagas:
 		var grid: Array = rooms[id].grid
 		var near := false
