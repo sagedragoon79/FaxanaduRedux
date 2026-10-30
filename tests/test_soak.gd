@@ -1418,7 +1418,7 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 	_journey_buff(w)
 	await frames(10)
 	var r := {"rooms": 0, "reloads": 0, "worst": 0, "second": 0, "where": "", "spikes": 0, "problems": [],
-		"bloomed": 0, "still": 0, "festival": 0}
+		"bloomed": 0, "still": 0, "festival": 0, "loads": []}
 	var visited := {w.room.id: true}
 	if postgame:
 		_tally_bloom(w, r)
@@ -1436,8 +1436,14 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 			_mash(w.player, hand, hold)
 			var before := w.room
 			var t0 := Time.get_ticks_usec()
+			var sheets0 := Sheet._cache.size()
+			var sounds0 := Sfx.loads
 			await frames(1)
 			var dt := Time.get_ticks_usec() - t0
+			# Play loads nothing from disk (pass 303): a sheet or sound first
+			# loaded mid-room is a hitch waiting to happen on a slower disk.
+			if w.room == before and f >= entered + 3 and (Sheet._cache.size() != sheets0 or Sfx.loads != sounds0):
+				r.loads.append("%s frame %d: sheets %s, sounds %d" % [w.room.id, f, Sheet._cache.keys().slice(sheets0), Sfx.loads - sounds0])
 			if w.room != before:
 				# Mashing walked out through an edge door: a load, not play.
 				entered = f
@@ -1507,6 +1513,7 @@ const LONE_FRAME_LIMIT := 100_000
 
 
 func _check_frames(r: Dictionary) -> void:
+	check(r.get("loads", []).is_empty(), "no sheet or sound is first loaded in play, after a room is built: %s" % [r.get("loads", [])])
 	check(int(r.second) < FRAME_BUDGET, "no two frames of play spike past 50 ms (second worst %.1f ms)" % (int(r.second) / 1000.0))
 	check(int(r.worst) < LONE_FRAME_LIMIT, "and not even a lone frame passes 100 ms (%.1f ms, %s)" % [int(r.worst) / 1000.0, r.where])
 	if int(r.worst) >= FRAME_BUDGET:
@@ -1547,6 +1554,7 @@ func _merge(a: Dictionary, b: Dictionary) -> Dictionary:
 	# The second-worst of the two: the larger of the losing worst and both seconds.
 	out.second = maxi(mini(int(a.worst), int(b.worst)), maxi(int(a.second), int(b.second)))
 	out.problems = a.problems + b.problems
+	out.loads = a.get("loads", []) + b.get("loads", [])
 	return out
 
 
