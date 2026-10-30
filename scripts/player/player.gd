@@ -1537,6 +1537,13 @@ func _on_fleeting_ground() -> bool:
 		var k := get_slide_collision(i)
 		if k.get_normal().y < -0.5 and not k.get_collider() is TileMapLayer:
 			return true
+		# A tile just torn away (pass 292) still holds you for a frame, until
+		# the layer rebuilds its collision: it is no footing either.
+		var layer := k.get_collider() as TileMapLayer
+		if k.get_normal().y < -0.5 and layer != null:
+			var cell := layer.local_to_map(layer.to_local(k.get_position() + Vector2(0, 1)))
+			if layer.get_cell_source_id(cell) == -1:
+				return true
 	return false
 
 

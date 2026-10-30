@@ -388,9 +388,11 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			push_warning("Unknown prop in %s: %s" % [id, kind])
 
 
-## Phase 3 of Rokusutahn: removes floor rows `row_from`..`row_to` between the
-## columns, and lines the new pit's floor with spikes.
+## A guardian tears the floor (Rokusutahn's phase 3, the Bloom's bites): removes
+## floor rows `row_from`..`row_to` between the columns, and lines the new pit's
+## floor with spikes.
 func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
+	_keep_set_back_off(col_from, col_to, row_from)
 	for x in range(col_from, col_to + 1):
 		for y in range(row_from, row_to + 1):
 			tiles.erase_cell(Vector2i(x, y))
@@ -404,6 +406,26 @@ func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
 			var cell := Vector2i(x, y)
 			if _solid_look.has(cell) and tiles.get_cell_source_id(cell) != -1:
 				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ground(_ground_mask(cell), cell, _depth(cell)))
+
+
+## The spot a spike sets the player back to (bible 6.13, pass 292) is never over
+## floor just torn away: it was the tile they stood on, so a bite that tore the
+## leaf from under them had them set back over its thorns until they died. It
+## moves to the nearer tile beside the pit.
+func _keep_set_back_off(col_from: int, col_to: int, row: int) -> void:
+	var p := get_tree().get_first_node_in_group("player") as Player
+	if p == null:
+		return
+	var at := p.safe_position
+	if at.x < col_from * TILE or at.x >= (col_to + 1) * TILE or absf(at.y - row * TILE) > TILE * 0.5:
+		return
+	var left := (col_from - 0.5) * TILE
+	var right := (col_to + 1.5) * TILE
+	var sides := [left, right] if at.x - left <= right - at.x else [right, left]
+	for x: float in sides:
+		if is_solid_at(Vector2(x, row * TILE + TILE * 0.5)):
+			p.safe_position = Vector2(x, row * TILE)
+			return
 
 
 func _amber_on() -> bool:
