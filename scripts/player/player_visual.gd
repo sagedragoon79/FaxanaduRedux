@@ -22,6 +22,12 @@ const ARMOR_SHEETS := {
 ## the helmet on (Sean's Battle Suit + Battle Helmet character): the helmet
 ## layer is not drawn over it.
 const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
+## Swords are drawn into the attack clips (design bible 13.5): each body set has
+## its attacks again with every blade but the Short Sword, as the sheet
+## "<set>_<suffix>" (hero_plate_long_sword). The Short Sword is the set's own.
+const BLADE_SHEETS := {"long_sword": "long_sword", "dwarvish_broad_sword": "broad_sword", "dragon_slayer": "dragon_slayer"}
+## The clips a blade sheet holds (its idle is only the importer's reference for scale).
+const BLADE_CLIPS := ["slash1", "slash2", "slash3", "slash_up"]
 
 const OUTLINE := Color("120f19")
 const STEEL := Color("cec5d3")
@@ -194,10 +200,18 @@ static func armor_sheet() -> String:
 	return name if name != "" and Sheet.exists(name) else ""
 
 
-## The sheet that plays `name`: the worn armor's set if it has the clip.
+## The sheet that plays `name`: the worn armor's set if it has the clip, and
+## for an attack, the set's clips with the worn blade if it has them.
 static func sheet_for(name: String) -> String:
 	var body := armor_sheet()
-	return body if body != "" and Sheet.has_anim(body, name) else SHEET_NAME
+	if body == "":
+		return SHEET_NAME
+	var blade: String = BLADE_SHEETS.get(String(GameState.data.equipment.get("blade", "")), "")
+	if blade != "" and name in BLADE_CLIPS:
+		var held := body + "_" + blade
+		if Sheet.exists(held) and Sheet.has_anim(held, name):
+			return held
+	return body if Sheet.has_anim(body, name) else SHEET_NAME
 
 
 ## The frame of `name` shown at time `t`.

@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "228af5dc-1079-4f65-9171-efd66d327f5e",
+ "status": "completed",
+ "created_at": "2026-10-30T17:45:59.337874+00:00",
+ "last_response": {
+  "seed": 1482535038,
+  "type": "message_done",
+  "action": "a quick rising diagonal sword cut: from the low ready stance he sweeps the sword upward and forward from his knee to above his head in front of him, stepping forward, then lowers it back to ready. He faces right in strict side profile the whole time, his chest always facing right, never turning toward the camera or away from it. The sword stays the same size and shape in every frame.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "fa03aff5-29a8-4651-90ac-dd2c207b97ab",
+  "character_id": "d2438651-1109-4413-90c3-0f18c3b7e573",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/d2438651-1109-4413-90c3-0f18c3b7e573/animations/fa03aff5-29a8-4651-90ac-dd2c207b97ab/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "d36ac2fe-7017-49bc-a277-9fd041fb6e83",
+  "animation_name": "custom-a quick rising diagonal sword ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "36f640fd-6dfb-4cce-9996-eb0045c99e6d",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T17:46:28.576074+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

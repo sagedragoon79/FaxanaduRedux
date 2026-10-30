@@ -217,6 +217,31 @@ func test_dense_sheets_keep_world_size() -> void:
 	check(one.size == (d.cell as Vector2) / float(d.density), "the player sheet keeps its world size at its density (%s)" % one)
 
 
+func test_a_worn_blade_swings_from_its_own_clips() -> void:
+	# Swords are drawn into the attacks (design bible 13.5): with any blade but
+	# the Short Sword, a set's attacks play from "<set>_<blade>"; the rest of
+	# its clips stay the set's own.
+	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+		for blade: String in PlayerVisual.BLADE_SHEETS.values():
+			for clip in PlayerVisual.BLADE_CLIPS:
+				check(Sheet.has_anim(sheet + "_" + blade, clip), "%s_%s has %s" % [sheet, blade, clip])
+	GameState.data.equipment["armor"] = "full_plate"
+	GameState.data.equipment["blade"] = "long_sword"
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	check(p.visual.sheet == "hero_plate" and p.visual.anim == "idle", "idle is the set's own (%s %s)" % [p.visual.sheet, p.visual.anim])
+	p.input.attack_pressed = true
+	await frames(2)
+	check(p.visual.anim == "slash1" and p.visual.sheet == "hero_plate_long_sword", "the Long Sword swings from its clips (%s %s)" % [p.visual.sheet, p.visual.anim])
+	await frames(40)
+	GameState.data.equipment["blade"] = "short_sword"
+	p.input.attack_pressed = true
+	await frames(2)
+	check(p.visual.anim == "slash1" and p.visual.sheet == "hero_plate", "the Short Sword is the set's own (%s %s)" % [p.visual.sheet, p.visual.anim])
+	GameState.data.equipment["armor"] = ""
+
+
 func test_armor_picks_its_body_set() -> void:
 	# Paper doll (design bible 13.4): each armor has a body sheet of its own,
 	# with the same clips, and anchors for the layers drawn over it.

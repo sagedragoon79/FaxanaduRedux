@@ -1550,9 +1550,20 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   high in the air the whole time and never touches the ground", since the first takes landed and struck the floor.
   They replace the Autosprite body sets. `hero_battle_helm`, the Battle Suit under the Battle Helmet, is made the same way
   from a state of the battle set wearing a crested mithril helm (its head point is the crown of the helm, `"head": "top"`).
-- **Cloaks:** the armor sets wear the code cloak and hood (13.4) as the Autosprite sets did, so the cloak dyes still
-  show; on them the hood frames the face. Only the bare `hero_base` has the manifest flag `"cloak": true`, which hides
-  the layer (its hood covered Sean's elf's face), so the unarmored hero shows no dye.
+- **The other blades (`hero_<set>_<long_sword|broad_sword|dragon_slayer>`):** every set's four attacks again, from its
+  state holding the Long Sword, the Dwarvish Broad Sword (in both hands, as long as he is tall) or the Dragon Slayer
+  (silver, a faint blue edge glow, golden winged guard). Each blade sheet holds only the attacks, plus the set's own idle
+  as the importer's reference for scale; `PlayerVisual.sheet_for` plays an attack from the worn blade's sheet
+  (`BLADE_SHEETS`, `BLADE_CLIPS`), and everything else from the set. The Short Sword is each set's own attacks.
+- **Grey slabs:** PixelLab sometimes leaves a flat neutral-grey patch behind a smear or a cloak; `pixellab_sheets.py`
+  erases any such patch of 150 px or more when it packs the strips.
+- **Cloaks (interim):** the armor sets wear the code cloak and hood (13.4) as the Autosprite sets did, so the cloak dyes
+  still show. Only the bare `hero_base` has the manifest flag `"cloak": true`, which hides the layer. Next (Sean,
+  2026-10-30): the cloak is drawn into every set in a chroma-key green ("like a green screen") and the dyes recolor that
+  green in game, replacing the code layer. A key-green cloak on the leather state keeps its color through walk, run and
+  jump clips (`hero/leather_cloak/`).
+- **Helmet:** with any set but the Battle Suit, the Battle Helmet stays a layer on the head point (Sean, 2026-10-30);
+  only the Battle Suit has a helmed set.
 
 ## 14. Technical Architecture (Godot)
 
