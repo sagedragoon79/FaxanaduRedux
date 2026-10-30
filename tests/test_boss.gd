@@ -1497,6 +1497,42 @@ func test_a_death_in_a_torn_pit_leaves_the_purse_beside_it() -> void:
 	check(at.x < gap.x * Room.TILE or at.x >= (gap.y + 1) * Room.TILE, "beside the gap, not over it (%s, gap %s)" % [at, gap])
 
 
+
+## A purse left from a death earlier in the fight (bible 5.4, pass 300) lies on
+## the leaf. When a bite tears the leaf away under it, it moves beside the gap
+## with the set-back spot, so taking it back never means a drop onto the thorns.
+func test_a_purse_on_torn_leaf_moves_beside_the_gap() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var p := w.player
+	k.process_mode = Node.PROCESS_MODE_DISABLED
+	var x := k.global_position.x + 180.0
+	p.teleport(Vector2(k.global_position.x - 120.0, k.floor_y()))
+	var bag := GoldPurse.new()
+	bag.value = 300
+	w.room.add_child(bag)
+	bag.position = Vector2(x, k.floor_y())
+	GameState.data.purse = {"room": w.room.id, "x": bag.position.x, "y": bag.position.y, "value": bag.value}
+	await frames(5)
+	k._tear_leaf(x)
+	await frames(5)
+	check(not k.gaps.is_empty(), "the bite tears the leaf")
+	if k.gaps.is_empty():
+		GameState.data.purse = {}
+		return
+	var gap: Vector2i = k.gaps[0]
+	var at := bag.position
+	check(at.x < gap.x * Room.TILE or at.x >= (gap.y + 1) * Room.TILE, "the purse moves beside the gap, not over it (%s, gap %s)" % [at, gap])
+	check(absf(at.y - k.floor_y()) < 1.0 and w.room.is_solid_at(at + Vector2(0, 4)), "onto the leaf (%s)" % at)
+	check(is_equal_approx(float(GameState.data.purse.x), at.x), "and a reload puts it there too (%s)" % [GameState.data.purse])
+	var gold := p.gold
+	p.teleport(at)
+	await frames(3)
+	check(p.gold == gold + 300 and not is_instance_valid(bag), "standing there takes it back (%d)" % p.gold)
+	check(p.hp == p.max_hp, "without a hurt (%d)" % p.hp)
+	GameState.data.purse = {}
+
 func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
