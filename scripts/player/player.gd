@@ -1541,8 +1541,11 @@ func _on_fleeting_ground() -> bool:
 		# the layer rebuilds its collision: it is no footing either.
 		var layer := k.get_collider() as TileMapLayer
 		if k.get_normal().y < -0.5 and layer != null:
-			var cell := layer.local_to_map(layer.to_local(k.get_position() + Vector2(0, 1)))
-			if layer.get_cell_source_id(cell) == -1:
+			# A contact on a ledge's corner lies on the line between two cells
+			# (pass 295): it is footing if the tile on either side is still there.
+			var at := layer.to_local(k.get_position() + Vector2(0, 1))
+			if layer.get_cell_source_id(layer.local_to_map(at + Vector2(-0.5, 0))) == -1 \
+					and layer.get_cell_source_id(layer.local_to_map(at + Vector2(0.5, 0))) == -1:
 				return true
 	return false
 
