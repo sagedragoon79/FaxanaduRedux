@@ -1177,6 +1177,8 @@ The goal: buy one key upgrade per zone without grinding, and buy everything only
 
 **No drop rests at a side door (pass 307).** A drop or coin that reached a side edge stopped 8 px in, inside the door's cell, and one could also come to rest on the tile just inside. A door is three tiles tall, so a jump over a flask there meets the wall above the door and drops you on it: once pass 306 made poison bite 4 a second in the deep zones, a flask by a door was a toll on the way out unless you waited out its 10 s. Where the two tiles inside a side edge are open, `Drop.keep_in_room` now stops drops and coins on the second of them (`Drop.DOOR_CLEAR`, 40 px in). A hop from anywhere 20 to 44 px short of the flask clears it and lands short of the door (`test_a_drop_never_rests_in_a_doorway`); at one tile in, no hop of any timing did. Gold is drawn in by the magnet as before.
 
+**No drop rests on spikes (pass 308).** Pass 300 moved a purse off the Bloom's torn leaf, but not the other drops. A Lilith struck down over a tear dropped its bread, mana or War Glove into the thorns, and bread lying on the leaf when it tore fell in after it. Taking it cost a blow, so the 2.5% War Glove was a trap. A drop that comes to rest on spikes, a torn pit's or a level's, now moves to the nearest floor beside them, at most four tiles up the pit's side (`Drop.SPIKE_STEP_RISE`). `test_a_drop_never_rests_in_the_thorns` tears the leaf under bread and drops a War Glove into the pit: both rest on the leaf and are taken without a blow. Gold needs no rule: the magnet draws coins out of a pit.
+
 ### 10.2 Shops
 
 | Shop | Location | Sells |
