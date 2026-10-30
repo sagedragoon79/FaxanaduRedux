@@ -1,0 +1,64 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "33590440-2e1e-4eb1-86cc-82fbc17fd836",
+ "status": "completed",
+ "created_at": "2026-10-30T05:25:45.080348+00:00",
+ "last_response": {
+  "seed": 2412843049,
+  "type": "done",
+  "action": "smoothing frames",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png"
+  ],
+  "progress": 0.95375,
+  "direction": "east",
+  "frame_count": 11,
+  "animation_id": "04941882-77a3-47da-a255-2540b757e53a",
+  "character_id": "b246489c-7954-474d-9e05-d4a09467b5d6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b246489c-7954-474d-9e05-d4a09467b5d6/animations/04941882-77a3-47da-a255-2540b757e53a/east/10.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 3
+  },
+  "generation_id": "327a869c-0194-4c9a-ab2d-b71f9bc03f20",
+  "animation_name": null,
+  "queue_position": 0,
+  "billing_charged": true,
+  "generation_model": "skeleton-v3_custom",
+  "saved_to_storage": true,
+  "animation_group_id": "0ed9689c-5fa2-4f5f-8084-2f4850c9848d",
+  "animation_description": "an athletic platformer jump: crouch, spring straight up with knees tucked and arms raised, hang at the top, fall with legs reaching down, land in a crouch. He stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "generation_started_at": "2026-10-30T05:25:47.588734+00:00",
+  "requested_frame_count": 11,
+  "template_animation_id": "custom-an athletic platformer jump: c",
+  "estimated_wait_seconds": 0
+ }
+}

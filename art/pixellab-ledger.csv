@@ -1,3 +1,39 @@
 date,endpoint,out_dir,cost,result,notes
 2026-10-28,create-image-pixflux,test/apple,0,error: HTTP 502 upstream request failed,connection test via the script; not charged
 2026-10-28,create-image-pixflux,test/apple,1.0 generations,"ok, 1 image(s)","connection test, retried with curl and saved with pixellab.save; balance 4992 -> 4991 generations"
+2026-10-30,create-character-state,hero/sample/leather_state,?,queued 507d7a8e-dad4-4b7e-87d8-410a21938e6f,sample: leather armor state of Sean's base
+2026-10-30,create-character-state,hero/sample/leather_state,25.0 generations,done 507d7a8e-dad4-4b7e-87d8-410a21938e6f,sample: leather armor state of Sean's base
+2026-10-30,transfer-outfit-v2,hero/sample/leather_transfer,?,queued 8006f023-aea4-40bc-b4e6-ee0495c369d4,"sample: leather outfit transfer onto Sean's base, 3 frames"
+2026-10-30,transfer-outfit-v2,hero/sample/leather_transfer,25.0 generations,done 8006f023-aea4-40bc-b4e6-ee0495c369d4,"sample: leather outfit transfer onto Sean's base, 3 frames"
+2026-10-30,characters/animations,hero/sample/slash_v3,?,queued 367408f6-c441-46d2-bba9-c2bbd0558ddc,sample: v3 slash east on Sean's base
+2026-10-30,characters/animations,hero/sample/slash_v3,8.0 generations,done 367408f6-c441-46d2-bba9-c2bbd0558ddc,sample: v3 slash east on Sean's base
+2026-10-30,characters/animations,hero/sample/slash_mm,?,queued 16e51c19-44d9-44c5-bfaa-1c06e68588bf,sample: slash_mm east on Sean's base
+2026-10-30,characters/animations,hero/sample/slash_mm,2.0 generations,done 16e51c19-44d9-44c5-bfaa-1c06e68588bf,sample: slash_mm east on Sean's base
+2026-10-30,characters/animations,hero/sample/idle_v3,?,queued f4252ce8-65e7-4047-b439-343f78647d39,sample: idle_v3 east on Sean's base
+2026-10-30,characters/animations,hero/sample/idle_v3,8.0 generations,done f4252ce8-65e7-4047-b439-343f78647d39,sample: idle_v3 east on Sean's base
+2026-10-30,create-character-state,hero/states/studded,?,queued 9bd6fc65-0e45-4c12-b1d0-5284a904a5ff,armor state studded of Sean's base
+2026-10-30,create-character-state,hero/states/studded,25.0 generations,done 9bd6fc65-0e45-4c12-b1d0-5284a904a5ff,armor state studded of Sean's base
+2026-10-30,create-character-state,hero/states/plate,?,queued 6d2d9e59-7145-4f05-9589-7e3ea58a8b97,armor state plate of Sean's base
+2026-10-30,create-character-state,hero/states/plate,25.0 generations,done 6d2d9e59-7145-4f05-9589-7e3ea58a8b97,armor state plate of Sean's base
+2026-10-30,create-character-state,hero/states/battle,?,queued 01ade148-973f-4286-a5e5-ab0c84616894,armor state battle of Sean's base
+2026-10-30,create-character-state,hero/states/battle,25.0 generations,done 01ade148-973f-4286-a5e5-ab0c84616894,armor state battle of Sean's base
+2026-10-30,characters/animations,hero/sample/slash_skel,?,queued 26e58b9e-2f88-4924-bbc3-8f554aeb54a4,sample: slash_skel east on Sean's base
+2026-10-30,characters/animations,hero/sample/slash_skel,3.0 generations,done 26e58b9e-2f88-4924-bbc3-8f554aeb54a4,sample: slash_skel east on Sean's base
+2026-10-30,characters/animations,hero/sample/jump_skel,?,queued 33590440-2e1e-4eb1-86cc-82fbc17fd836,sample: jump_skel east on Sean's base
+2026-10-30,characters/animations,hero/sample/jump_skel,3.0 generations,done 33590440-2e1e-4eb1-86cc-82fbc17fd836,sample: jump_skel east on Sean's base
+2026-10-30,create-character-state,hero/states/base_short_sword,?,queued 379e5e0e-3b1c-490b-a748-70dbc31311fa,base elf holding the short sword
+2026-10-30,create-character-state,hero/states/base_short_sword,25.0 generations,done 379e5e0e-3b1c-490b-a748-70dbc31311fa,base elf holding the short sword
+2026-10-30,characters/animations,hero/sample/jump_mm,?,queued 30e46181-3dc4-4aa1-b17c-e5a1239370ea,test: pixminimax jump
+2026-10-30,characters/animations,hero/sample/jump_mm,2.0 generations,done 30e46181-3dc4-4aa1-b17c-e5a1239370ea,test: pixminimax jump
+2026-10-30,generate-image-v2,mattock/item,?,queued c260b667-4603-49e3-a1fe-ebe9ecad0874,"Mattock item art, side view"
+2026-10-30,generate-image-v2,mattock/item,10.0 generations,done c260b667-4603-49e3-a1fe-ebe9ecad0874,"Mattock item art, side view"
+2026-10-30,create-character-state,hero/states/base_mattock,?,queued 27bfa58b-6803-49ff-9ca8-77576bdc0605,base elf holding the Mattock
+2026-10-30,create-character-state,hero/states/base_mattock,25.0 generations,done 27bfa58b-6803-49ff-9ca8-77576bdc0605,base elf holding the Mattock
+2026-10-30,characters/animations,mattock/swing_mm,?,queued 193de80f-4e30-4320-b627-dd6f9b03d41e,Mattock swing_mm on the base elf
+2026-10-30,characters/animations,mattock/swing_mm,2.0 generations,done 193de80f-4e30-4320-b627-dd6f9b03d41e,Mattock swing_mm on the base elf
+2026-10-30,characters/animations,mattock/pogo_mm,?,queued 4810f089-2093-43ac-9908-140a27792a50,Mattock pogo_mm on the base elf
+2026-10-30,characters/animations,mattock/pogo_mm,2.0 generations,done 4810f089-2093-43ac-9908-140a27792a50,Mattock pogo_mm on the base elf
+2026-10-30,characters/animations,mattock/pogo_v3,?,queued 1dea1e7d-0fa5-46ac-becf-c8ad72b654bb,Mattock pogo_v3 on the base elf
+2026-10-30,characters/animations,mattock/pogo_v3,8.0 generations,done 1dea1e7d-0fa5-46ac-becf-c8ad72b654bb,Mattock pogo_v3 on the base elf
+2026-10-30,characters/animations,hero/base/walk_mm,?,queued 04303daa-3ef4-448c-8eb7-b9f2b8646066,base elf walk
+2026-10-30,characters/animations,hero/base/walk_mm,2.0 generations,done 04303daa-3ef4-448c-8eb7-b9f2b8646066,base elf walk

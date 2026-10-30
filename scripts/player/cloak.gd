@@ -98,6 +98,9 @@ func _anchors() -> Array[Vector2]:
 
 
 func _physics_process(delta: float) -> void:
+	if delta <= 0.0:
+		# Hit-stop (a pogo's 45 ms) freezes time: the cloak's wind would divide by zero.
+		return
 	hood = move_toward(hood, hood_target(), delta / HOOD_TIME)
 	_moved = Vector2.ZERO if _body == Vector2.INF else player.global_position - _body
 	if _moved.length() > 16.0:

@@ -17,6 +17,10 @@ extends Node2D
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
+##   --shot-pogo                play a simple pogo hand: run right, jump off edges, strike down
+##                              whenever falling (as the Mantra of Thorns test does)
+##   --film=DIR                 save every frame up to --shot-frames as DIR/0000.png ... (with
+##                              --film-every=N, every Nth), for animated captures
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
 ##   --open=shop:ID|guru|trials|title|skills|pause|options|controls|journey|equipment|inventory
@@ -431,10 +435,34 @@ func _take_shot() -> void:
 	if _args.has("shot-throw") and _frames == int(_args["shot-throw"]):
 		# Screenshots: throw the Rune Dagger on this frame (to catch it in flight).
 		player.throw_dagger()
+	if _args.has("shot-pogo") and player != null:
+		_pogo_hand()
+	if _args.has("film") and _frames % int(_args.get("film-every", "1")) == 0:
+		var dir := String(_args["film"])
+		DirAccess.make_dir_recursive_absolute(dir)
+		get_viewport().get_texture().get_image().save_png("%s/%04d.png" % [dir, _frames])
+		if _frames >= int(_args.get("shot-frames", "30")):
+			get_tree().quit()
 	if _args.has("shot") and _frames == int(_args.get("shot-frames", "30")):
 		var img := get_viewport().get_texture().get_image()
 		img.save_png(_args["shot"])
 		get_tree().quit()
+
+
+## Screenshots (--shot-pogo): run right, jump off each edge and strike down just above the floor,
+## so a capture shows the Mattock's pogo along a spike corridor.
+func _pogo_hand() -> void:
+	var p := player
+	p.input.scripted = true
+	p.input.move_x = 1
+	var on := p.is_on_floor()
+	var off_edge := on and not world.room.is_solid_at(p.global_position + Vector2(10, 4))
+	p.input.jump_pressed = off_edge
+	p.input.jump_held = off_edge
+	var falling := not on and p.velocity.y > 0.0
+	p.input.down = falling
+	# Strike just above whatever lies below (the spikes sit on solid stone a tile down).
+	p.input.attack_pressed = falling and world.room.is_solid_at(p.global_position + Vector2(0, 40))
 
 
 func _debug_open() -> void:

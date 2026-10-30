@@ -154,7 +154,11 @@ def main():
         log(endpoint, out_dir, cost(result), "queued " + " ".join(jobs), note)
         for i, job in enumerate(jobs):
             print(f"waiting on job {job}")
-            save(wait(job), out_dir if len(jobs) == 1 else f"{out_dir}/{i:02d}")
+            dest = out_dir if len(jobs) == 1 else f"{out_dir}/{i:02d}"
+            done = wait(job)
+            n = save(done, dest)
+            # The queued answer carries no price; the finished job does.
+            log(endpoint, dest, cost(done), f"done {job}, {n} image(s)", note)
     else:
         sys.exit(__doc__)
 
