@@ -1274,6 +1274,69 @@ func test_ladders_jump_off_hits_and_hanging_ends() -> void:
 	room.free()
 
 
+func _until(cond: Callable, max_frames: int) -> bool:
+	for i in max_frames:
+		if cond.call():
+			return true
+		await frames(1)
+	return cond.call()
+
+
+## Bible 6.11 (pass 280): taking hold of a ladder refreshes the double jump
+## and the air dash; a swing in progress can't take hold until it ends; and on
+## the rungs there are no attacks: a swing, a throw or a spell pressed there
+## does nothing, and you stay on.
+func test_a_ladder_refreshes_air_moves_and_holds_no_attacks() -> void:
+	var room := make_room(LADDERS)
+	var p := make_player(room, Vector2i(9, 10), {"rune_dagger": true})
+	await frames(3)
+	# From the air, with the double jump and the air dash spent.
+	p.teleport(Vector2(14.5 * 16.0, 7 * 16.0))
+	await frames(2)
+	check(not p.is_on_floor(), "in the air beside the hanging ladder")
+	p.has_double_jump = false
+	p.air_dash_charges = 0
+	p.input.up = true
+	await frames(1)
+	p.input.up = false
+	check(p.on_ladder, "you catch the hanging ladder from the air")
+	check(p.has_double_jump and p.air_dash_charges >= 1, "and taking hold gives back the double jump and the air dash (%s, %d)" % [p.has_double_jump, p.air_dash_charges])
+	p.input.down = true
+	await _until(func() -> bool: return not p.on_ladder, 120)
+	p.input.down = false
+	await frames(30)
+	# Mid-swing at the foot of the long ladder: Up waits for the swing to end.
+	p.teleport(Vector2(9.5 * 16.0, 11 * 16.0))
+	await frames(3)
+	p.input.attack_pressed = true
+	await frames(1)
+	check(p.is_attacking, "a swing starts")
+	p.input.up = true
+	await frames(1)
+	check(not p.on_ladder, "mid-swing, Up does not take hold")
+	await _until(func() -> bool: return p.on_ladder, 60)
+	check(p.on_ladder and not p.is_attacking, "once the swing ends, it does")
+	await frames(20)
+	p.input.up = false
+	await frames(2)
+	# On the rungs: no swing, no throw, no spell.
+	var y := p.global_position.y
+	var mp := p.mp
+	var throws := p.throws
+	var kids := room.get_child_count()
+	p.input.attack_pressed = true
+	await frames(1)
+	p.input.throw_pressed = true
+	await frames(1)
+	p.input.spell_pressed = true
+	await frames(10)
+	check(p.on_ladder and absf(p.global_position.y - y) < 0.5, "you stay on the rungs (y %.1f -> %.1f)" % [y, p.global_position.y])
+	check(not p.is_attacking, "a swing pressed on a ladder does not swing")
+	check(p.throws == throws, "nor does a throw throw")
+	check(p.mp >= mp and room.get_child_count() == kids, "nor a spell cast (mp %.0f -> %.0f, nodes %d -> %d)" % [mp, p.mp, kids, room.get_child_count()])
+	room.free()
+
+
 ## Dash on a ladder (bible 6.11, pass 240): a stride leaves the rungs and
 ## dashes; a press that can't dash (no Elven Stride yet) keeps you on them.
 func test_a_dash_only_lets_go_of_a_ladder_when_it_dashes() -> void:

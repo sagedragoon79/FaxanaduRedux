@@ -635,6 +635,8 @@ The original Faxanadu is a game of ladders: every climb in the World Tree went u
 | Camera | leads 64 px up or down the way you climb (6.7, pass 130), so a long shaft shows where you are going |
 | Look | two wooden rails and two rungs per tile, drawn behind the tiles so the top plank caps them |
 
+**Held to the table (pass 280):** the take-hold row's rules and the attacks row had no test of their own until pass 280. `test_a_ladder_refreshes_air_moves_and_holds_no_attacks` checks three things. Catching a hanging ladder from the air with the double jump and the air dash spent gives both back. Up during a swing does not take hold until the swing ends. On the rungs, a swing, a Rune Dagger throw or a spell pressed there does nothing (no swing, no dagger, no mana spent, no bolt), and you stay on. Leaving out the refresh or the swing guard makes it fail.
+
 The reachability checker treats a spot with the feet on a ladder as a standing spot: it climbs to the ladder cells above and below and over the top onto the plank, and jumps from a ladder as from the floor.
 
 ### 6.12 Sap (pass 248)
