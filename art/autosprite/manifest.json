@@ -184,7 +184,17 @@
    "rise": {"file": "jump.png", "frame_size": 256, "columns": 17, "count": 17, "pick": [7], "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), pixminimax jump"},
    "apex": {"file": "jump.png", "frame_size": 256, "columns": 17, "count": 17, "pick": [9], "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), pixminimax jump"},
    "fall": {"file": "jump.png", "frame_size": 256, "columns": 17, "count": 17, "pick": [12, 13], "pixellab": "PixelLab, Sean's elf b246489c (side view, 256 px), pixminimax jump"},
-   "strike_down": {"file": "pogo.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4], "seq": [0, 1, 1], "fps": 12, "anchor": "fixed", "lower": 58, "extra_ramps": ["stone"], "drop": ["blade"], "meta": {"art_blade": true, "art_prop": true}, "pixellab": "PixelLab, Mattock state d1775a21 of the elf, pixminimax pogo strike"}
+   "strike_down": {"file": "pogo.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4], "seq": [0, 1, 1], "fps": 12, "anchor": "fixed", "lower": 58, "extra_ramps": ["stone"], "drop": ["blade"], "meta": {"art_blade": true, "art_prop": true}, "pixellab": "PixelLab, Mattock state d1775a21 of the elf, pixminimax pogo strike"},
+   "slash1": {"file": "slash1.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, short sword state e66a21a5 of Sean's elf, pixminimax"},
+   "slash2": {"file": "slash2.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "seq": [0, 1, 2, 3], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, short sword state e66a21a5 of Sean's elf, pixminimax"},
+   "slash3": {"file": "slash3.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 6, 7, 8, 9], "seq": [0, 1, 2, 3, 4, 4], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, short sword state e66a21a5 of Sean's elf, pixminimax"},
+   "slash_up": {"file": "slash_up.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6], "seq": [0, 1, 2, 2], "fps": 20, "extra_ramps": ["stone", "sky"], "drop": ["blade"], "meta": {"art_blade": true}, "pixellab": "PixelLab, short sword state e66a21a5 of Sean's elf, pixminimax"},
+   "dash": {"file": "dash.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"},
+   "wall": {"file": "wall.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4], "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "ground", "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"},
+   "drink": {"file": "drink.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 8, "loop": true, "meta": {"art_prop": true}, "extra_ramps": ["ember"], "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"},
+   "cast": {"file": "cast.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "seq": [0, 1, 1, 1], "fps": 16, "erase": [160, 260], "erase_white": true, "pixellab": "PixelLab, Sean's elf b246489c, pixminimax"}
   }
  },
  "hero_leather": {

@@ -37,3 +37,44 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,mattock/pogo_v3,8.0 generations,done 1dea1e7d-0fa5-46ac-becf-c8ad72b654bb,Mattock pogo_v3 on the base elf
 2026-10-30,characters/animations,hero/base/walk_mm,?,queued 04303daa-3ef4-448c-8eb7-b9f2b8646066,base elf walk
 2026-10-30,characters/animations,hero/base/walk_mm,2.0 generations,done 04303daa-3ef4-448c-8eb7-b9f2b8646066,base elf walk
+2026-10-30,characters/animations,hero/base/slash1,?,queued 71737947-e81a-49de-bb74-19eb53e2ab56,base elf slash1 (pixminimax)
+2026-10-30,characters/animations,hero/base/slash2,?,queued ce4ec8cb-ea07-4148-88a0-1ec0fecb8485,base elf slash2 (pixminimax)
+2026-10-30,characters/animations,hero/base/slash_up,?,queued 1092ed3b-73e5-40bb-8e15-55c3053c6106,base elf slash_up (pixminimax)
+2026-10-30,characters/animations,hero/base/slash3,?,queued 2938fa5e-dd9c-42c5-ad5f-747163b2fdf4,base elf slash3 (pixminimax)
+2026-10-30,characters/animations,hero/base/dash,?,queued 904a4c13-83c5-4936-b6d7-4d6823e1c303,base elf dash (pixminimax)
+2026-10-30,characters/animations,hero/base/hurt,?,queued e15dc8a0-ce43-4fbd-99e3-96c1efb0ac51,base elf hurt (pixminimax)
+2026-10-30,characters/animations,hero/base/wall,?,queued 1c48064c-d3d2-4a14-a200-e375bde0cd7c,base elf wall (pixminimax)
+2026-10-30,characters/animations,hero/base/death,?,queued d88c9bbd-971f-48c7-a585-0ae0793500b5,base elf death (pixminimax)
+2026-10-30,characters/animations,hero/base/drink,?,queued 7bb045e9-c9e2-4236-9b14-1bfb9230b918,base elf drink (pixminimax)
+2026-10-30,characters/animations,hero/base/cast,?,queued 4ef86078-7c93-456b-9c3e-85579f543277,base elf cast (pixminimax)
+2026-10-30,characters/animations,hero/base/hurt,1.0 generations,"done e15dc8a0-ce43-4fbd-99e3-96c1efb0ac51, 9 image(s)",base elf hurt (pixminimax)
+2026-10-30,characters/animations,hero/base/cast,1.0 generations,"done 4ef86078-7c93-456b-9c3e-85579f543277, 9 image(s)",base elf cast (pixminimax)
+2026-10-30,characters/animations,hero/base/slash1,2.0 generations,"done 71737947-e81a-49de-bb74-19eb53e2ab56, 13 image(s)",base elf slash1 (pixminimax)
+2026-10-30,characters/animations,hero/base/wall,1.0 generations,"done 1c48064c-d3d2-4a14-a200-e375bde0cd7c, 9 image(s)",base elf wall (pixminimax)
+2026-10-30,characters/animations,hero/base/dash,1.0 generations,"done 904a4c13-83c5-4936-b6d7-4d6823e1c303, 9 image(s)",base elf dash (pixminimax)
+2026-10-30,characters/animations,hero/base/drink,2.0 generations,"done 7bb045e9-c9e2-4236-9b14-1bfb9230b918, 13 image(s)",base elf drink (pixminimax)
+2026-10-30,characters/animations,hero/base/slash2,2.0 generations,"done ce4ec8cb-ea07-4148-88a0-1ec0fecb8485, 13 image(s)",base elf slash2 (pixminimax)
+2026-10-30,characters/animations,hero/base/slash3,2.0 generations,"done 2938fa5e-dd9c-42c5-ad5f-747163b2fdf4, 13 image(s)",base elf slash3 (pixminimax)
+2026-10-30,characters/animations,hero/base/slash_up,2.0 generations,"done 1092ed3b-73e5-40bb-8e15-55c3053c6106, 13 image(s)",base elf slash_up (pixminimax)
+2026-10-30,characters/animations,hero/base/death,2.0 generations,"done d88c9bbd-971f-48c7-a585-0ae0793500b5, 13 image(s)",base elf death (pixminimax)
+2026-10-30,characters/animations,hero/base/slash2b,?,queued 778633fa-c1de-48eb-904f-c7238d36ef47,base elf slash2b retry
+2026-10-30,characters/animations,hero/base/slash1b,?,queued b7688769-c3ec-4e75-8e12-0a9be5ee99bc,base elf slash1b retry
+2026-10-30,characters/animations,hero/base/slash2b,2.0 generations,"done 778633fa-c1de-48eb-904f-c7238d36ef47, 13 image(s)",base elf slash2b retry
+2026-10-30,characters/animations,hero/base/slash1b,2.0 generations,"done b7688769-c3ec-4e75-8e12-0a9be5ee99bc, 13 image(s)",base elf slash1b retry
+2026-10-30,create-character-state,hero/states/leather_short_sword,?,queued 4f677f81-bde9-4278-bb89-237212252677,leather armor holding the Short Sword
+2026-10-30,create-character-state,hero/states/studded_short_sword,?,queued bf66893a-79f0-4c06-8f4f-82bdca5e3b27,studded armor holding the Short Sword
+2026-10-30,create-character-state,hero/states/battle_short_sword,?,queued f2289946-d938-4a1c-9294-6ca29b5de928,battle armor holding the Short Sword
+2026-10-30,create-character-state,hero/states/plate_short_sword,?,queued 77696ff7-14b4-4b24-81c2-ac402a8b647a,plate armor holding the Short Sword
+2026-10-30,characters/animations,hero/leather/walk,?,queued 56b638db-c8ef-4617-97d4-bb68104090a0,leather walk (pixminimax)
+2026-10-30,characters/animations,hero/leather/dash,?,queued 87dda5f5-d534-4ad4-baad-b1cf40b89cb3,leather dash (pixminimax)
+2026-10-30,characters/animations,hero/leather/death,?,queued e1fe8caf-98b4-4aac-b6aa-407a1f0c433e,leather death (pixminimax)
+2026-10-30,characters/animations,hero/leather/hurt,?,queued a5b72426-84e9-4aa4-80a3-142f516e3f4f,leather hurt (pixminimax)
+2026-10-30,characters/animations,hero/leather/wall,?,queued d8da3b2c-d3b5-48b9-9d32-b5877069540f,leather wall (pixminimax)
+2026-10-30,characters/animations,hero/leather/idle,?,queued f7866994-8696-40ac-9007-b04be7732ee1,leather idle (v3)
+2026-10-30,characters/animations,hero/leather/dash,1.0 generations,"done 87dda5f5-d534-4ad4-baad-b1cf40b89cb3, 9 image(s)",leather dash (pixminimax)
+2026-10-30,characters/animations,hero/leather/hurt,1.0 generations,"done a5b72426-84e9-4aa4-80a3-142f516e3f4f, 9 image(s)",leather hurt (pixminimax)
+2026-10-30,characters/animations,hero/leather/wall,1.0 generations,"done d8da3b2c-d3b5-48b9-9d32-b5877069540f, 9 image(s)",leather wall (pixminimax)
+2026-10-30,characters/animations,hero/leather/death,2.0 generations,"done e1fe8caf-98b4-4aac-b6aa-407a1f0c433e, 13 image(s)",leather death (pixminimax)
+2026-10-30,characters/animations,hero/leather/idle,8.0 generations,"done f7866994-8696-40ac-9007-b04be7732ee1, 9 image(s)",leather idle (v3)
+2026-10-30,create-character-state,hero/states/leather_short_sword,25.0 generations,"done 4f677f81-bde9-4278-bb89-237212252677, 0 image(s)",leather armor holding the Short Sword
+2026-10-30,create-character-state,hero/states/plate_short_sword,25.0 generations,"done 77696ff7-14b4-4b24-81c2-ac402a8b647a, 0 image(s)",plate armor holding the Short Sword

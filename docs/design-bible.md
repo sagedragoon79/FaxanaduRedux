@@ -1539,7 +1539,10 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   px tall (`spritegen.ARMOR_CELL`, 23 px under the origin) to hold it. The strike plays to its end over the bounce
   (`PlayerVisual.FINISH`), since a pogo ends the attack the frame it lands. An overhead swing that breaks stone is
   made (`mattock/swing_mm`) for a later breaking pose; the item art is `mattock/item/02.png`.
-- **Imported so far (`hero_base`):** idle, walk, run (Sean's own run clip), rise, apex, fall and the Mattock pogo. Its
+- **Imported so far (`hero_base`):** idle, walk, run (Sean's own run clip), rise, apex, fall, the Mattock pogo, and
+  (pixminimax, holding the Short Sword) the three-hit combo (a thrust, a rising cut and an overhead chop), the upward
+  slash, dash, wall slide, hurt, death, drinking a potion and casting. Frames with artifacts are left out by `pick`
+  (the dash's color smear, the hurt clip's red arrow, the cast's teal turn). Its
   manifest flag `"cloak": true` hides the code cloak and hood, which covered the new face; drawn-in cloaks per set follow
   (13.4). Other clips still fall back to the old sheet until they are made.
 
