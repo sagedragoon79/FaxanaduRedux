@@ -1651,7 +1651,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		Sfx.play("hurt", 0.05, -4.0)
 		visual.flash_hurt()
 		_invuln_timer = tuning.hurt_invuln
-		teleport(safe_position)
+		set_back()
 		return
 	if defense > 0.0:
 		amount = maxi(1, roundi(amount * (1.0 - defense)))
@@ -1706,7 +1706,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		_die(global_position if on_ground and not from_hazard else safe_position)
 		return
 	if from_hazard:
-		teleport(safe_position)
+		set_back()
 	elif knock_dir != 0:
 		velocity = Vector2(knock_dir * combat.hurt_knockback.x, -combat.hurt_knockback.y)
 		_control_lock_timer = combat.hurt_control_lock
@@ -1891,6 +1891,19 @@ func _try_interact(on_floor: bool) -> bool:
 func can_reach(node: Node2D) -> bool:
 	var d := node.global_position - global_position
 	return absf(d.x) <= 22.0 and absf(d.y) <= 24.0
+
+
+## Puts you back on the last safe ground (bible 6.13). It is a fresh start
+## (pass 296): a jump, dash, swing or throw pressed on the way into the hazard,
+## and the ledge's grace, would fire on arrival with no press of your own.
+func set_back() -> void:
+	teleport(safe_position)
+	_jump_buffer_timer = 0.0
+	_dash_buffer_timer = 0.0
+	_attack_buffer_timer = 0.0
+	_throw_buffer_timer = 0.0
+	_coyote_timer = 0.0
+	_wall_coyote_timer = 0.0
 
 
 func teleport(pos: Vector2) -> void:
