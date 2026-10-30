@@ -1376,6 +1376,28 @@ def main():
     out[:pn] += pop * 0.5
     save("brood_loose", out, 0.55)
 
+    # A Naga's tell (pass 273): a long rasping hiss swelling as the hood
+    # flares, with the dry rattle of scales drawn back.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    hiss = highpass(lowpass(noise(d), slide(5200, 7600, d)), 2400) * np.clip(t / 0.18, 0, 1) * env(n, 0.001, 0.7)
+    rasp = 0.75 + 0.25 * np.sign(np.sin(2 * np.pi * 38 * t))
+    scales = lowpass(highpass(noise(d), 900), 2600) * (0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 11 * t))) * env(n, 0.01, 1.6) * 0.35
+    save("naga_hiss", mix(hiss * rasp, scales), 0.6)
+
+    # Its strike: the body lashing through the air and the jaws snapping shut.
+    d = 0.3
+    n = int(RATE * d)
+    lash = lowpass(highpass(noise(d), 500), slide(1200, 5200, d, 0.6)) * env(n, 0.03, 1.4)
+    sn = int(RATE * 0.05)
+    snap = highpass(lowpass(noise(0.05), 6000), 1500) * env(sn, 0.0005, 5.0)
+    snap += osc(slide(900, 300, 0.05), "square", 0.3) * env(sn, 0.0005, 5.0) * 0.4
+    out = lash * 0.8
+    at = int(RATE * 0.2)
+    out[at:at + sn] += snap
+    save("naga_strike", out, 0.8)
+
 
 if __name__ == "__main__":
     main()

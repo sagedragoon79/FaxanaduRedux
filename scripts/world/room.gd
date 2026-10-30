@@ -556,6 +556,8 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			# A Spring Eel, in a cell of the water it never leaves.
 			_water[cell] = true
 			_spawn_enemy(SpringEel.new(), center)
+		")":
+			_spawn_enemy(Naga.new(), center)
 		"R":
 			var gate := RootGate.new()
 			_spawn(gate, center)

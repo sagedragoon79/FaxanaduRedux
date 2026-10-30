@@ -2063,6 +2063,8 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		# The Bloom and its brood (pass 262).
 		"lilith": ["lilith_screech", "lilith_dive"],
 		"pakukame": ["bloom_brood", "brood_loose"],
+		# The original's Naga (pass 273).
+		"naga": ["naga_hiss", "naga_strike"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
 	var kin := {"bark_knight": ["bark_captain"], "marsh_hag": ["hag_matriarch"]}
@@ -2201,3 +2203,74 @@ func test_every_wind_up_in_the_game_is_fair() -> void:
 	check(king.tell(KingGrieve.BURST_TELL) >= Enemy.MIN_TELEGRAPH, "King Grieve raises the axe first (%.2f s)" % king.tell(KingGrieve.BURST_TELL))
 	for n: Node in [avatar, heart, king]:
 		n.free()
+
+
+## Pass 273 (bible 7): the original's Naga, a serpent that floats up and down,
+## most often over the ladders. It keeps its column while it swings; level
+## with it and in front, it hoods and hisses for at least the telegraph, then
+## strikes straight out along that level, and glides back to its column.
+func test_the_naga_floats_its_column_and_strikes_level() -> void:
+	var rows: Array = ["##############################"]
+	for i in 12:
+		rows.append("#............................#")
+	rows.append("##############################")
+	var row: String = rows[6]
+	rows[6] = row.substr(0, 22) + ")" + row.substr(23)
+	var room := make_room(rows)
+	var n: Naga = _find(room, Naga)
+	check(n != null, "the legend ) lays a Naga")
+	if n == null:
+		return
+	# Far off, out of its sight: it floats its swing and keeps its column.
+	var p := make_player(room, Vector2i(2, 12))
+	p.max_hp = 9999
+	p.hp = 9999
+	var top := INF
+	var low := -INF
+	var drift := 0.0
+	var coiled := false
+	for i in int(Naga.SWING_TIME * 60.0) + 10:
+		await frames(1)
+		top = minf(top, n.global_position.y)
+		low = maxf(low, n.global_position.y)
+		drift = maxf(drift, absf(n.global_position.x - n.home.x))
+		coiled = coiled or n.state == "coil"
+	check(low - top >= Naga.SWING * 1.5, "it floats up and down its column (%.0f px)" % (low - top))
+	check(drift < 1.0 and not coiled, "and keeps to it with no one level in sight (drift %.1f)" % drift)
+	# Level with it and in front, six tiles off: it hoods, hisses, strikes along that level.
+	p.teleport(Vector2(16 * Room.TILE + 8, 13 * Room.TILE))
+	n.global_position = n.home
+	n._cooldown = 0.0
+	var coil := 0
+	var struck_y := []
+	var hp := p.hp
+	Sfx.recent.clear()
+	for i in 240:
+		# Hold the player level with its head, wherever its swing has it.
+		p.global_position.y = n.center().y + 20.0
+		p.velocity = Vector2.ZERO
+		await frames(1)
+		if n.state == "coil":
+			coil += 1
+		if n.state == "strike":
+			struck_y.append(n.global_position.y)
+		if p.hp < hp and n.state != "strike" and not struck_y.is_empty():
+			break
+	check(coil / 60.0 >= Enemy.MIN_TELEGRAPH, "it hoods before it strikes (%d frames)" % coil)
+	check(Sfx.recent.has("naga_hiss") and Sfx.recent.has("naga_strike"), "with a hiss, then the strike (%s)" % [Sfx.recent])
+	check(not struck_y.is_empty() and (struck_y.max() - struck_y.min()) < 1.0, "the strike runs straight along its level")
+	check(p.hp < hp, "and bites (%d)" % (hp - p.hp))
+	# Out of line, above its swing, it only floats; and it glides back to its column.
+	p.teleport(Vector2(16 * Room.TILE + 8, 2 * Room.TILE))
+	var back := false
+	coiled = false
+	for i in 240:
+		p.global_position = Vector2(16 * Room.TILE + 8, 2 * Room.TILE)
+		p.velocity = Vector2.ZERO
+		await frames(1)
+		if n.state == "float" and absf(n.global_position.x - n.home.x) < 4.0:
+			back = true
+		if back and n.state == "coil":
+			coiled = true
+	check(back, "it glides back to its column")
+	check(not coiled, "and never strikes at one above its swing")
