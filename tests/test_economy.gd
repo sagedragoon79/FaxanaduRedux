@@ -710,6 +710,38 @@ func test_bread_shrines_and_ointment_beat_poison() -> void:
 	check(not p.poison(), "an Ointment keeps poison off")
 
 
+## Bible 7 (pass 306): poison is a foe's leaving, so it bites as hard as the
+## room's foes do (5.5): a fixed 2 a tick was 16 health at most, under 6% of a
+## late hero's 280 while every blow around it doubled. It still spares the last
+## point, and an Ointment rubbed on mid-poison stops what is left of it.
+func test_poison_bites_as_hard_as_the_rooms_foes() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	for zone: String in ["tower", "mist", "zenis"]:
+		w.room.zone = zone
+		p.hp = 100
+		check(p.poison(), "poisoned in %s" % zone)
+		await frames(roundi(Player.POISON_TICK * 60.0 * 2.0) + 2)
+		var bite := roundi(Player.POISON_DAMAGE * float(CombatTuning.ZONE_THREAT[zone]))
+		check(p.hp == 100 - 2 * bite, "in %s each tick takes %d (%d)" % [zone, bite, p.hp])
+		p.cure_poison()
+	check(roundi(Player.POISON_DAMAGE * float(CombatTuning.ZONE_THREAT["zenis"])) > Player.POISON_DAMAGE,
+		"the deepest zones bite harder than the Tower")
+	p.hp = 3
+	p.poison()
+	await frames(roundi(Player.POISON_TICK * 60.0 * 2.0) + 2)
+	check(p.hp == 1 and not p.dead, "and still spares the last point (%d)" % p.hp)
+	p.cure_poison()
+	w.room.zone = "test"
+	p.hp = 50
+	p.poison()
+	p.ointments = 1
+	check(p.use_ointment(), "an Ointment goes on mid-poison")
+	await frames(roundi(Player.POISON_TIME * 60.0) + 2)
+	check(p.hp == 50 and p.poison_left == 0.0, "and the rest of the poison passes harmlessly (%d)" % p.hp)
+
+
 
 ## Bible 13.3 (pass 302): every drop is heard as it is taken, and says what it
 ## gave. Poison an Ointment keeps off was the one pickup that made no sound.
