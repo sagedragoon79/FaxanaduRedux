@@ -883,6 +883,49 @@ func test_a_spike_never_sets_you_back_onto_footing_that_is_gone() -> void:
 	room.free()
 
 
+## Pass 296 (bible 6.13): a set-back is a fresh start. A jump or dash pressed
+## as you fell onto the spikes was still buffered when the spikes set you
+## back, so it fired on arrival: you hopped (or dashed) off the safe spot with
+## no press of your own, often straight back toward the spikes.
+func test_a_set_back_drops_the_presses_buffered_on_the_way_down() -> void:
+	var rows: Array = ARENA.duplicate()
+	rows[6] = "#.........^^^......#"
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6), {"stride": true})
+	p.max_hp = 100
+	p.hp = 100
+	await frames(4)
+	var ground := p.global_position
+	for press: String in ["jump", "dash"]:
+		p.facing = 1
+		# Dropped from high over the spikes; the press comes just before they bite.
+		p.teleport(Vector2(11.5 * Room.TILE, 2 * Room.TILE))
+		await _until(func() -> bool: return p.global_position.y > 6 * Room.TILE + 2.0, 60)
+		p.air_dash_charges = 0
+		if press == "jump":
+			p.input.jump_pressed = true
+			p.input.jump_held = true
+		else:
+			p.input.dash_pressed = true
+		await frames(1)
+		p.input.jump_pressed = false
+		p.input.dash_pressed = false
+		await _until(func() -> bool: return p.hp < 100, 30)
+		check(p.hp < 100 and p.global_position.distance_to(ground) < 2.0, "the spikes set you back (%s, %s)" % [press, p.global_position])
+		var moved := 0.0
+		var rose := 0.0
+		for i in 30:
+			await frames(1)
+			moved = maxf(moved, absf(p.global_position.x - ground.x))
+			rose = maxf(rose, ground.y - p.global_position.y)
+		p.input.jump_held = false
+		check(rose < 1.0 and moved < 1.0, "and the %s pressed on the way down does not fire there (rose %.1f, moved %.1f)" % [press, rose, moved])
+		check(p.facing == 1, "you still face the way you were")
+		p.hp = 100
+		await frames(70)
+	room.free()
+
+
 ## Pass 286 (bible 13.3): a press that does nothing is heard when there is a
 ## reason to tell you. An empty flask clinks; a spell short of MP and a glass
 ## still running back fizzle; each once per press, spending nothing. A cast

@@ -308,7 +308,7 @@ func _physics_process(delta: float) -> void:
 		return
 	player.in_sap = room.is_sap_at(player.global_position + Vector2(0, -6))
 	if player.global_position.y > room.pixel_rect().end.y + FALL_RESCUE:
-		player.teleport(player.safe_position)
+		player.set_back()
 		camera.snap_to_target()
 		return
 	var body := player.body_rect()
