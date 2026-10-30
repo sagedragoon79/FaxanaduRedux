@@ -1467,6 +1467,36 @@ func test_a_torn_floor_never_sets_you_back_over_the_gap() -> void:
 		p.hp = 100
 
 
+## Pass 293 (bible 5.4): the purse a death drops lies on ground you can come
+## back to. It was left where you fell, so a blow that killed you in the Bloom's
+## gap left it in the pit, and the leaf came back whole around it the next time
+## the room loaded: the gold was buried in the floor for good.
+func test_a_death_in_a_torn_pit_leaves_the_purse_beside_it() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var p := w.player
+	k.process_mode = Node.PROCESS_MODE_DISABLED
+	p.max_hp = 100
+	p.hp = 100
+	p.gold = 500
+	var x := k.global_position.x + 180.0
+	p.teleport(Vector2(x, k.floor_y()))
+	await frames(20)
+	k._tear_leaf(x)
+	await _until(func() -> bool: return p.global_position.y > k.floor_y() + 12.0, 60)
+	check(p.global_position.y > k.floor_y() + 12.0, "you drop into the gap (%s)" % p.global_position)
+	p.take_damage(9999)
+	await frames(1)
+	check(p.dead and is_instance_valid(p.purse), "a blow there kills you and drops a purse")
+	if not is_instance_valid(p.purse):
+		return
+	var at := p.purse.global_position
+	check(absf(at.y - k.floor_y()) < 1.0 and w.room.is_solid_at(at + Vector2(0, 4)), "the purse lies on the leaf, not in the pit (%s)" % at)
+	var gap: Vector2i = k.gaps[0]
+	check(at.x < gap.x * Room.TILE or at.x >= (gap.y + 1) * Room.TILE, "beside the gap, not over it (%s, gap %s)" % [at, gap])
+
+
 func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]

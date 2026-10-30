@@ -1695,7 +1695,12 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	if hp <= 0:
 		hp = 0
 		health_changed.emit(hp, max_hp)
-		_die(safe_position if from_hazard else global_position)
+		# The purse is left on ground you can come back to (bible 5.4, pass 293):
+		# where you fell if that was the room's own floor, else the last safe
+		# spot. Killed in the air over a torn pit, it had lain in the pit, and
+		# the floor came back whole around it when the room loaded again.
+		var on_ground := is_on_floor() and not _hazard_near() and not _on_fleeting_ground()
+		_die(global_position if on_ground and not from_hazard else safe_position)
 		return
 	if from_hazard:
 		teleport(safe_position)
