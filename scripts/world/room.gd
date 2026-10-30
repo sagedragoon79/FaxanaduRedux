@@ -4,6 +4,7 @@ extends Node2D
 ## separator, then an ASCII tile grid. See levels/README.md for the legend.
 
 const TILE := TilesetFactory.TILE
+const PAINTED_DIR := "res://assets/painted/"
 ## Props that lay a find, once: the World catalog counts them as treasures (pass 187).
 const FOUND_PROPS := ["joker_key", "battle_helmet", "pendant", "magical_rod"]
 ## One screen in tiles (640x360 px). Map cells and room sizes count in screens.
@@ -21,6 +22,8 @@ var header := {}
 var size_tiles := Vector2i.ZERO
 var spawn_position := Vector2.ZERO
 var tiles: TileMapLayer
+## Shows a painted plate instead of its tiles (painterly scenery test, see _apply_plate).
+var painted := false
 var secrets: TileMapLayer
 ## Hidden planks (legend `i`), seen only through the Black Onyx.
 var phantoms: TileMapLayer
@@ -303,6 +306,32 @@ func build(text: String) -> void:
 		add_child(arena)
 
 	_restore_purse()
+	_apply_plate()
+
+
+## Painterly scenery test (tools/art/paintgen.py): a room with a painted plate in
+## assets/painted/<room id>.png shows it instead of its tiles, decor, fountain and
+## door frames. Collision is untouched; only the look changes.
+func _apply_plate() -> void:
+	var path := PAINTED_DIR + id + ".png"
+	if id == "" or not ResourceLoader.exists(path):
+		return
+	painted = true
+	var plate := Sprite2D.new()
+	plate.name = "Plate"
+	plate.texture = load(path)
+	plate.centered = false
+	plate.scale = Vector2(size_tiles * TILE) / plate.texture.get_size()
+	plate.z_index = -3
+	add_child(plate)
+	tiles.self_modulate.a = 0.0
+	for c in get_children():
+		if c is Decor:
+			(c as Decor).visible = false
+		elif c is Fountain:
+			(c as CanvasItem).self_modulate.a = 0.0
+		elif c is DoorMarker:
+			(c as DoorMarker).framed = false
 
 
 ## True once this room's Root Heart has been struck (on this visit or an earlier one).
