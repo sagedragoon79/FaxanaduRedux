@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "38d5affe-6981-4ad8-af99-61818c555251",
+ "status": "completed",
+ "created_at": "2026-10-30T16:03:34.391846+00:00",
+ "last_response": {
+  "seed": 4237972749,
+  "type": "done",
+  "action": "casts a spell: he thrusts his right hand forward with the palm open, a burst of magic light at his fingertips, his other hand drawn back, then recovers. He faces right in strict side profile the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.2527743657956671,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "9467b0a8-6941-4da9-add0-98f9901d7dee",
+  "character_id": "2d157505-9e7a-4818-b72e-d2df07650774",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2d157505-9e7a-4818-b72e-d2df07650774/animations/9467b0a8-6941-4da9-add0-98f9901d7dee/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "f058fb66-f229-48af-a7b2-1a6998c7dcec",
+  "animation_name": "custom-casts a spell: he thrusts his ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "6c81f491-976f-4df1-b5bb-9074443b9771",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:04:00.424686+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

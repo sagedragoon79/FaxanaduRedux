@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "ebe54068-6ef5-42f9-811e-d016988c65f8",
+ "status": "completed",
+ "created_at": "2026-10-30T16:24:17.172928+00:00",
+ "last_response": {
+  "seed": 1071082424,
+  "type": "message_done",
+  "action": "a heavy overhead mattock swing to break stone: he raises the mattock high behind his head with both hands, steps forward and brings it down hard in a big arc in front of him to knee height, the pick biting into the stone with a jolt, then wrenches it free and returns to ready. He faces right in strict side profile the whole time and never turns toward the camera. The mattock stays the same size and shape in every frame.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9785714285714285,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "2813226d-d404-4ab2-be8d-6fa9793bcec0",
+  "character_id": "7d17738c-1494-4b13-bbef-4897a9e94e42",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/7d17738c-1494-4b13-bbef-4897a9e94e42/animations/2813226d-d404-4ab2-be8d-6fa9793bcec0/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "bcb7c0b0-5984-4a4f-ab7e-db05ca5d3ee4",
+  "animation_name": "custom-a heavy overhead mattock swing",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "3fbce6f4-fd42-4ef0-a035-514a4e576cc7",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:24:44.18316+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

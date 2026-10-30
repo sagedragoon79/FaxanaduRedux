@@ -1542,9 +1542,16 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
 - **Imported so far (`hero_base`):** idle, walk, run (Sean's own run clip), rise, apex, fall, the Mattock pogo, and
   (pixminimax, holding the Short Sword) the three-hit combo (a thrust, a rising cut and an overhead chop), the upward
   slash, dash, wall slide, hurt, death, drinking a potion and casting. Frames with artifacts are left out by `pick`
-  (the dash's color smear, the hurt clip's red arrow, the cast's teal turn). Its
-  manifest flag `"cloak": true` hides the code cloak and hood, which covered the new face; drawn-in cloaks per set follow
-  (13.4). Other clips still fall back to the old sheet until they are made.
+  (the dash's color smear, the hurt clip's red arrow, the cast's teal turn).
+- **The armor tiers (`hero_leather`, `hero_studded`, `hero_plate`, `hero_battle`):** the same seventeen clips, made
+  from each armor's state (movement, hurt, death, drink, cast), its state holding the Short Sword (the four attacks) and
+  holding the Mattock (the pogo). Each clip starts from the state's own pose, so picks skip frame 0; some picks differ by
+  armor where a take turned toward the camera or carries an effect (kept in the manifest). Pogos are made with "he stays
+  high in the air the whole time and never touches the ground", since the first takes landed and struck the floor.
+  They replace the Autosprite body sets; `hero_battle_helm` (the Battle Suit under the Battle Helmet) follows.
+- **Cloaks:** the armor sets wear the code cloak and hood (13.4) as the Autosprite sets did, so the cloak dyes still
+  show; on them the hood frames the face. Only the bare `hero_base` has the manifest flag `"cloak": true`, which hides
+  the layer (its hood covered Sean's elf's face), so the unarmored hero shows no dye.
 
 ## 14. Technical Architecture (Godot)
 

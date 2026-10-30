@@ -40,6 +40,22 @@ SHEETS = {
     },
 }
 
+# The armor tiers (character states of Sean's elf, design bible 13.5): the same clips, made from
+# the armor's own state, its state holding the Short Sword (attacks) and holding the Mattock.
+for _armor in ("leather", "studded", "plate", "battle"):
+    SHEETS["hero_" + _armor] = {strip: f"hero/{_armor}/{clip}" for strip, clip in (
+        ("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.png", "jump"),
+        ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
+        ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
+        ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
+        ("drink.png", "drink"), ("cast.png", "cast"))}
+# Retakes that came out better: pogos that stay in the air, and a first slash in profile.
+SHEETS["hero_leather"]["pogo.png"] = "hero/leather/pogo_air3"
+SHEETS["hero_studded"]["pogo.png"] = "hero/studded/pogo_air9"
+SHEETS["hero_plate"]["pogo.png"] = "hero/plate/pogo_air9"
+SHEETS["hero_battle"]["pogo.png"] = "hero/battle/pogo_air3"
+SHEETS["hero_battle"]["slash1.png"] = "hero/battle/slash1b"
+
 
 def frames_of(folder):
     return sorted(p for p in (SOURCES / folder).glob("[0-9][0-9].png"))

@@ -78,3 +78,166 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/leather/idle,8.0 generations,"done f7866994-8696-40ac-9007-b04be7732ee1, 9 image(s)",leather idle (v3)
 2026-10-30,create-character-state,hero/states/leather_short_sword,25.0 generations,"done 4f677f81-bde9-4278-bb89-237212252677, 0 image(s)",leather armor holding the Short Sword
 2026-10-30,create-character-state,hero/states/plate_short_sword,25.0 generations,"done 77696ff7-14b4-4b24-81c2-ac402a8b647a, 0 image(s)",plate armor holding the Short Sword
+2026-10-30,characters/animations,hero/leather/cast,?,queued 38d5affe-6981-4ad8-af99-61818c555251,leather_cast_armor_clip
+2026-10-30,characters/animations,hero/leather/drink,?,queued 826899f7-d211-4311-8f97-124dc1dc2a07,leather_drink_armor_clip
+2026-10-30,characters/animations,hero/leather/jump,?,queued 2d25384d-62c4-4ab6-8030-7fa0af5bd7c6,leather_jump_armor_clip
+2026-10-30,characters/animations,hero/leather/run,?,queued c3209320-5af0-4344-9f80-d0c53cf10304,leather_run_armor_clip
+2026-10-30,characters/animations,hero/leather/slash1,?,queued c585153a-4875-44d1-bf88-a783625eede7,leather_slash1_armor_clip
+2026-10-30,characters/animations,hero/leather/slash2,?,queued 92da6eee-8225-49f3-a85d-d1bc043f1bad,leather_slash2_armor_clip
+2026-10-30,characters/animations,hero/leather/slash3,?,queued bdb6a344-c9c6-4b1c-b07e-bb68c9a0ebfd,leather_slash3_armor_clip
+2026-10-30,characters/animations,hero/leather/walk,2.0 generations,"done 56b638db-c8ef-4617-97d4-bb68104090a0, 13 image(s)",leather walk (pixminimax)
+2026-10-30,characters/animations,hero/leather/run,1.0 generations,"done c3209320-5af0-4344-9f80-d0c53cf10304, 9 image(s)",leather_run_armor_clip
+2026-10-30,characters/animations,hero/studded/cast,?,queued a1f10dde-1076-4e64-afc6-5f2a1a8086bd,studded_cast_armor_clip
+2026-10-30,characters/animations,hero/leather/cast,1.0 generations,"done 38d5affe-6981-4ad8-af99-61818c555251, 9 image(s)",leather_cast_armor_clip
+2026-10-30,characters/animations,hero/studded/dash,?,queued 382f59d1-786c-4587-bfe2-172e58929e48,studded_dash_armor_clip
+2026-10-30,create-character-state,hero/states/leather_mattock,?,queued 5c27eb2a-d1c7-4534-a5bc-cc152d9f2e34,leather_armor_holding_the_Mattock
+2026-10-30,create-character-state,hero/states/studded_short_sword,25.0 generations,"done bf66893a-79f0-4c06-8f4f-82bdca5e3b27, 0 image(s)",studded armor holding the Short Sword
+2026-10-30,characters/animations,hero/leather/drink,2.0 generations,"done 826899f7-d211-4311-8f97-124dc1dc2a07, 13 image(s)",leather_drink_armor_clip
+2026-10-30,characters/animations,hero/leather/slash_up,?,queued 0831869e-0c8b-4e18-8c0f-35177ed513a9,leather_slash_up_armor_clip
+2026-10-30,characters/animations,hero/studded/death,?,queued a2070655-b7e7-47db-b588-1dd9d92def16,studded_death_armor_clip
+2026-10-30,characters/animations,hero/leather/slash1,2.0 generations,"done c585153a-4875-44d1-bf88-a783625eede7, 13 image(s)",leather_slash1_armor_clip
+2026-10-30,characters/animations,hero/plate/slash1,?,queued 90a19c19-7fb4-44a0-8d42-1e1d5b5e69d0,plate_slash1_armor_clip
+2026-10-30,characters/animations,hero/leather/jump,2.0 generations,"done 2d25384d-62c4-4ab6-8030-7fa0af5bd7c6, 17 image(s)",leather_jump_armor_clip
+2026-10-30,characters/animations,hero/leather/slash2,2.0 generations,"done 92da6eee-8225-49f3-a85d-d1bc043f1bad, 13 image(s)",leather_slash2_armor_clip
+2026-10-30,characters/animations,hero/studded/drink,?,queued c74ad9f8-5733-4a86-8bbf-7b470c0100e6,studded_drink_armor_clip
+2026-10-30,characters/animations,hero/plate/slash2,?,queued a0f924da-a726-4af4-871f-3e7e4ea81d76,plate_slash2_armor_clip
+2026-10-30,create-character-state,hero/states/studded_mattock,?,queued fe040567-9b96-44ec-9756-359d1f56ea29,studded_armor_holding_the_Mattock
+2026-10-30,characters/animations,hero/studded/dash,1.0 generations,"done 382f59d1-786c-4587-bfe2-172e58929e48, 9 image(s)",studded_dash_armor_clip
+2026-10-30,characters/animations,hero/studded/hurt,?,queued 9afc7505-720f-4103-9815-4eda088e9b34,studded_hurt_armor_clip
+2026-10-30,characters/animations,hero/studded/cast,1.0 generations,"done a1f10dde-1076-4e64-afc6-5f2a1a8086bd, 9 image(s)",studded_cast_armor_clip
+2026-10-30,characters/animations,hero/studded/idle,?,queued 3153ee2d-b45a-4c8d-bbfb-7a579a66bef1,studded_idle_armor_clip
+2026-10-30,characters/animations,hero/leather/slash_up,2.0 generations,"done 0831869e-0c8b-4e18-8c0f-35177ed513a9, 13 image(s)",leather_slash_up_armor_clip
+2026-10-30,characters/animations,hero/plate/slash3,?,queued f8fd1131-8bc7-4359-a000-36cd5114789f,plate_slash3_armor_clip
+2026-10-30,create-character-state,hero/states/leather_mattock,25.0 generations,"done 5c27eb2a-d1c7-4534-a5bc-cc152d9f2e34, 0 image(s)",leather_armor_holding_the_Mattock
+2026-10-30,create-character-state,hero/states/plate_mattock,?,queued b76679ef-442b-4cf6-b761-df612f0031ce,plate_armor_holding_the_Mattock
+2026-10-30,characters/animations,hero/plate/slash1,2.0 generations,"done 90a19c19-7fb4-44a0-8d42-1e1d5b5e69d0, 13 image(s)",plate_slash1_armor_clip
+2026-10-30,characters/animations,hero/plate/slash_up,?,queued 7d8a7ead-d0a6-47f8-84df-44261e2c32f0,plate_slash_up_armor_clip
+2026-10-30,characters/animations,hero/studded/drink,2.0 generations,"done c74ad9f8-5733-4a86-8bbf-7b470c0100e6, 13 image(s)",studded_drink_armor_clip
+2026-10-30,characters/animations,hero/studded/jump,?,queued 7cb23e7c-d37c-4dd4-a74a-2f86f6f43383,studded_jump_armor_clip
+2026-10-30,characters/animations,hero/studded/death,2.0 generations,"done a2070655-b7e7-47db-b588-1dd9d92def16, 13 image(s)",studded_death_armor_clip
+2026-10-30,characters/animations,hero/studded/run,?,queued 03fe37cf-0b04-4a48-ba76-badb93e10805,studded_run_armor_clip
+2026-10-30,characters/animations,hero/studded/idle,8.0 generations,"done 3153ee2d-b45a-4c8d-bbfb-7a579a66bef1, 9 image(s)",studded_idle_armor_clip
+2026-10-30,characters/animations,hero/studded/walk,?,queued 4555da14-0c1e-460f-971d-ccc52b345bad,studded_walk_armor_clip
+2026-10-30,characters/animations,hero/plate/slash2,2.0 generations,"done a0f924da-a726-4af4-871f-3e7e4ea81d76, 13 image(s)",plate_slash2_armor_clip
+2026-10-30,create-character-state,hero/states/studded_mattock,25.0 generations,"done fe040567-9b96-44ec-9756-359d1f56ea29, 0 image(s)",studded_armor_holding_the_Mattock
+2026-10-30,create-character-state,hero/states/battle_mattock,?,queued a4ab7b98-f96a-4576-bd35-829b683cce78,battle_armor_holding_the_Mattock
+2026-10-30,characters/animations,hero/studded/hurt,1.0 generations,"done 9afc7505-720f-4103-9815-4eda088e9b34, 9 image(s)",studded_hurt_armor_clip
+2026-10-30,characters/animations,hero/studded/wall,?,queued cc110fe9-0471-425a-9f3c-a4cff9fafea8,studded_wall_armor_clip
+2026-10-30,characters/animations,hero/leather/swing,?,queued d38d9bcc-12bc-4bc4-9aee-9f90245384ed,leather_swing_armor_clip
+2026-10-30,characters/animations,hero/studded/swing,?,queued 483c774c-1068-4792-bcba-2c1447a312b3,studded_swing_armor_clip
+2026-10-30,characters/animations,hero/leather/pogo,?,queued d18e5ff8-1bbc-4f23-917f-966bf622f544,leather_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/pogo,?,queued 9971adeb-5ba5-43dc-971e-188305d75753,studded_pogo_armor_clip
+2026-10-30,characters/animations,hero/plate/pogo,?,queued 43657c90-5588-4518-bbda-d217cdb57b69,plate_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/swing,2.0 generations,"done 483c774c-1068-4792-bcba-2c1447a312b3, 13 image(s)",studded_swing_armor_clip
+2026-10-30,characters/animations,hero/plate/swing,?,queued ebe54068-6ef5-42f9-811e-d016988c65f8,plate_swing_armor_clip
+2026-10-30,characters/animations,hero/leather/swing,2.0 generations,"done d38d9bcc-12bc-4bc4-9aee-9f90245384ed, 13 image(s)",leather_swing_armor_clip
+2026-10-30,characters/animations,hero/battle/pogo,?,queued 4df38f52-494f-4239-ba5f-07d46b9258a8,battle_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/pogo,2.0 generations,"done 9971adeb-5ba5-43dc-971e-188305d75753, 13 image(s)",studded_pogo_armor_clip
+2026-10-30,characters/animations,hero/battle/swing,?,queued 61ae888a-e463-4f90-91de-b75b3b1629cb,battle_swing_armor_clip
+2026-10-30,characters/animations,hero/plate/pogo,2.0 generations,"done 43657c90-5588-4518-bbda-d217cdb57b69, 13 image(s)",plate_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/slash1,?,queued c262e19c-46ea-4c83-be13-a9151d9aca4a,studded_slash1_armor_clip
+2026-10-30,characters/animations,hero/leather/pogo,2.0 generations,"done d18e5ff8-1bbc-4f23-917f-966bf622f544, 13 image(s)",leather_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/slash2,?,queued 0dc2ee6b-7936-41f6-865f-9ab97e871f88,studded_slash2_armor_clip
+2026-10-30,characters/animations,hero/battle/pogo,2.0 generations,"done 4df38f52-494f-4239-ba5f-07d46b9258a8, 13 image(s)",battle_pogo_armor_clip
+2026-10-30,characters/animations,hero/studded/slash3,?,queued 757aa9bf-d819-4440-b909-0ef326dffa3b,studded_slash3_armor_clip
+2026-10-30,characters/animations,hero/plate/swing,2.0 generations,"done ebe54068-6ef5-42f9-811e-d016988c65f8, 13 image(s)",plate_swing_armor_clip
+2026-10-30,characters/animations,hero/studded/slash_up,?,queued 359abf85-6cfc-4ad9-af94-383631e40f93,studded_slash_up_armor_clip
+2026-10-30,characters/animations,hero/studded/slash1,2.0 generations,"done c262e19c-46ea-4c83-be13-a9151d9aca4a, 13 image(s)",studded_slash1_armor_clip
+2026-10-30,characters/animations,hero/battle/slash1,?,queued b6c03988-7da7-4270-b890-f0a47ea64916,battle_slash1_armor_clip
+2026-10-30,characters/animations,hero/studded/slash2,2.0 generations,"done 0dc2ee6b-7936-41f6-865f-9ab97e871f88, 13 image(s)",studded_slash2_armor_clip
+2026-10-30,characters/animations,hero/battle/slash2,?,queued d0beeeb5-a5ca-4470-837b-f62fe4e737ac,battle_slash2_armor_clip
+2026-10-30,characters/animations,hero/battle/swing,2.0 generations,"done 61ae888a-e463-4f90-91de-b75b3b1629cb, 13 image(s)",battle_swing_armor_clip
+2026-10-30,characters/animations,hero/battle/slash3,?,queued 815220ff-b589-4df5-b9c8-76b56aee074a,battle_slash3_armor_clip
+2026-10-30,characters/animations,hero/studded/slash_up,2.0 generations,"done 359abf85-6cfc-4ad9-af94-383631e40f93, 13 image(s)",studded_slash_up_armor_clip
+2026-10-30,characters/animations,hero/battle/slash_up,?,queued a9ef37dd-8a30-4a04-9765-c8ff52c348f0,battle_slash_up_armor_clip
+2026-10-30,characters/animations,hero/studded/slash3,2.0 generations,"done 757aa9bf-d819-4440-b909-0ef326dffa3b, 13 image(s)",studded_slash3_armor_clip
+2026-10-30,characters/animations,hero/plate/walk,?,queued 0ccd5492-50aa-4b04-8922-f74914278e09,plate_walk_armor_clip
+2026-10-30,characters/animations,hero/battle/slash2,2.0 generations,"done d0beeeb5-a5ca-4470-837b-f62fe4e737ac, 13 image(s)",battle_slash2_armor_clip
+2026-10-30,characters/animations,hero/plate/jump,?,queued 012afafa-bb4e-4254-8524-e874c74da88f,plate_jump_armor_clip
+2026-10-30,characters/animations,hero/battle/slash1,2.0 generations,"done b6c03988-7da7-4270-b890-f0a47ea64916, 13 image(s)",battle_slash1_armor_clip
+2026-10-30,characters/animations,hero/plate/dash,?,queued 2fbac26d-927e-4aaf-943d-34e382ff9813,plate_dash_armor_clip
+2026-10-30,characters/animations,hero/battle/slash3,2.0 generations,"done 815220ff-b589-4df5-b9c8-76b56aee074a, 13 image(s)",battle_slash3_armor_clip
+2026-10-30,characters/animations,hero/plate/wall,?,queued 98e673ca-50ce-4a30-b739-71d97a83ba6a,plate_wall_armor_clip
+2026-10-30,characters/animations,hero/plate/walk,2.0 generations,"done 0ccd5492-50aa-4b04-8922-f74914278e09, 13 image(s)",plate_walk_armor_clip
+2026-10-30,characters/animations,hero/plate/hurt,?,queued 058f4057-1a6a-4add-8e91-926eb6ce2b59,plate_hurt_armor_clip
+2026-10-30,characters/animations,hero/plate/dash,1.0 generations,"done 2fbac26d-927e-4aaf-943d-34e382ff9813, 9 image(s)",plate_dash_armor_clip
+2026-10-30,characters/animations,hero/plate/death,?,queued 9c0a66bc-9ebc-4b20-a7ba-6318995c67f0,plate_death_armor_clip
+2026-10-30,characters/animations,hero/battle/slash_up,2.0 generations,"done a9ef37dd-8a30-4a04-9765-c8ff52c348f0, 13 image(s)",battle_slash_up_armor_clip
+2026-10-30,characters/animations,hero/plate/drink,?,queued 2a525694-4c58-4703-bc8f-96f1a0337c45,plate_drink_armor_clip
+2026-10-30,characters/animations,hero/plate/wall,1.0 generations,"done 98e673ca-50ce-4a30-b739-71d97a83ba6a, 9 image(s)",plate_wall_armor_clip
+2026-10-30,characters/animations,hero/plate/cast,?,queued 9d39c110-a03f-477e-a1c9-8272aa4d2b9d,plate_cast_armor_clip
+2026-10-30,characters/animations,hero/plate/hurt,1.0 generations,"done 058f4057-1a6a-4add-8e91-926eb6ce2b59, 9 image(s)",plate_hurt_armor_clip
+2026-10-30,characters/animations,hero/plate/run,?,queued 9d0e45dd-1836-4d64-95e6-67b62938a598,plate_run_armor_clip
+2026-10-30,characters/animations,hero/plate/jump,2.0 generations,"done 012afafa-bb4e-4254-8524-e874c74da88f, 17 image(s)",plate_jump_armor_clip
+2026-10-30,characters/animations,hero/plate/idle,?,queued 78045f1d-2136-468b-9bbf-5e708a1da920,plate_idle_armor_clip
+2026-10-30,characters/animations,hero/plate/cast,1.0 generations,"done 9d39c110-a03f-477e-a1c9-8272aa4d2b9d, 9 image(s)",plate_cast_armor_clip
+2026-10-30,characters/animations,hero/battle/walk,?,queued b3a2c1dc-b7ac-4311-9ef1-f4d332029b7b,battle_walk_armor_clip
+2026-10-30,characters/animations,hero/plate/death,2.0 generations,"done 9c0a66bc-9ebc-4b20-a7ba-6318995c67f0, 13 image(s)",plate_death_armor_clip
+2026-10-30,characters/animations,hero/battle/jump,?,queued 9eaa59a8-cb42-4c60-a20e-c21ef934f41e,battle_jump_armor_clip
+2026-10-30,characters/animations,hero/plate/run,1.0 generations,"done 9d0e45dd-1836-4d64-95e6-67b62938a598, 9 image(s)",plate_run_armor_clip
+2026-10-30,characters/animations,hero/battle/dash,?,queued db9b9300-9a79-43c1-bc61-5670377bb26e,battle_dash_armor_clip
+2026-10-30,characters/animations,hero/plate/drink,2.0 generations,"done 2a525694-4c58-4703-bc8f-96f1a0337c45, 13 image(s)",plate_drink_armor_clip
+2026-10-30,characters/animations,hero/battle/wall,?,queued db96dfd7-ed6d-4ab9-892b-c7ac3b70d675,battle_wall_armor_clip
+2026-10-30,characters/animations,hero/battle/walk,2.0 generations,"done b3a2c1dc-b7ac-4311-9ef1-f4d332029b7b, 13 image(s)",battle_walk_armor_clip
+2026-10-30,characters/animations,hero/battle/hurt,?,queued eb08fb08-120e-4914-ad04-a46e54eb596e,battle_hurt_armor_clip
+2026-10-30,characters/animations,hero/battle/dash,1.0 generations,"done db9b9300-9a79-43c1-bc61-5670377bb26e, 9 image(s)",battle_dash_armor_clip
+2026-10-30,characters/animations,hero/battle/death,?,queued ee604e2f-58ce-434f-a498-dfd52a2bc16c,battle_death_armor_clip
+2026-10-30,characters/animations,hero/plate/idle,8.0 generations,"done 78045f1d-2136-468b-9bbf-5e708a1da920, 9 image(s)",plate_idle_armor_clip
+2026-10-30,characters/animations,hero/battle/drink,?,queued cf8bd494-b3e6-4812-9f37-5e529d5f3457,battle_drink_armor_clip
+2026-10-30,characters/animations,hero/battle/wall,1.0 generations,"done db96dfd7-ed6d-4ab9-892b-c7ac3b70d675, 9 image(s)",battle_wall_armor_clip
+2026-10-30,characters/animations,hero/battle/cast,?,queued e359c424-6428-4d06-ba56-150f46c60257,battle_cast_armor_clip
+2026-10-30,characters/animations,hero/battle/hurt,1.0 generations,"done eb08fb08-120e-4914-ad04-a46e54eb596e, 9 image(s)",battle_hurt_armor_clip
+2026-10-30,characters/animations,hero/battle/run,?,queued ebf19515-e6c0-4dd7-b412-9537c870820e,battle_run_armor_clip
+2026-10-30,characters/animations,hero/battle/jump,2.0 generations,"done 9eaa59a8-cb42-4c60-a20e-c21ef934f41e, 17 image(s)",battle_jump_armor_clip
+2026-10-30,characters/animations,hero/battle/idle,?,queued 84c2a4d7-ae74-49bd-990f-92f3b81754a0,battle_idle_armor_clip
+2026-10-30,characters/animations,hero/battle/death,2.0 generations,"done ee604e2f-58ce-434f-a498-dfd52a2bc16c, 13 image(s)",battle_death_armor_clip
+2026-10-30,characters/animations,hero/battle/drink,2.0 generations,"done cf8bd494-b3e6-4812-9f37-5e529d5f3457, 13 image(s)",battle_drink_armor_clip
+2026-10-30,characters/animations,hero/battle/run,1.0 generations,"done ebf19515-e6c0-4dd7-b412-9537c870820e, 9 image(s)",battle_run_armor_clip
+2026-10-30,characters/animations,hero/battle/cast,1.0 generations,"done e359c424-6428-4d06-ba56-150f46c60257, 9 image(s)",battle_cast_armor_clip
+2026-10-30,characters/animations,hero/battle/idle,8.0 generations,"done 84c2a4d7-ae74-49bd-990f-92f3b81754a0, 9 image(s)",battle_idle_armor_clip
+2026-10-30,characters/animations,hero/leather/pogo_air9,?,queued e5a3b2de-5070-4eee-8055-ce2786689dd7,leather_pogo_airborne_retake
+2026-10-30,characters/animations,hero/plate/pogo_air3,?,queued bf83dcbf-256d-4d10-8a84-f4370ceb10c7,plate_pogo_airborne_retake
+2026-10-30,characters/animations,hero/plate/pogo_air9,?,queued 3b5df014-0f39-4dfb-9f94-2a5974ee1583,plate_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/pogo_air9,?,queued 824d4782-14d2-47c3-aad6-c54feb7dab90,battle_pogo_airborne_retake
+2026-10-30,characters/animations,hero/leather/pogo_air3,?,queued 22d29ba5-8c1a-434f-b795-a4f08b4f567c,leather_pogo_airborne_retake
+2026-10-30,characters/animations,hero/studded/pogo_air9,?,queued 91e85d9f-1d1d-432c-905c-f5c3b11be29d,studded_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/pogo_air3,?,queued 8655f5ad-548a-45a0-b597-73d1611e2586,battle_pogo_airborne_retake
+2026-10-30,characters/animations,hero/studded/pogo_air3,?,queued 0c0e795a-2cc6-4921-b424-8fe2bee01007,studded_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/slash1b,?,queued 345e9261-5fa6-43d8-bce7-2dcf3558b3e0,battle_slash1_retake
+2026-10-30,characters/animations,hero/studded/slash1b,?,queued 0b8fa1a8-6b05-4042-8f39-082dbfe9fd0c,studded_slash1_retake
+2026-10-30,create-character-state,hero/states/battle_helm,?,queued 4125b0ee-fad5-498c-8985-ccc477d9b7ce,battle_suit_with_the_Battle_Helmet
+2026-10-30,characters/animations,hero/leather/pogo_air9,2.0 generations,"done e5a3b2de-5070-4eee-8055-ce2786689dd7, 13 image(s)",leather_pogo_airborne_retake
+2026-10-30,characters/animations,hero/studded/slash1b,2.0 generations,"done 0b8fa1a8-6b05-4042-8f39-082dbfe9fd0c, 13 image(s)",studded_slash1_retake
+2026-10-30,characters/animations,hero/leather/pogo_air3,2.0 generations,"done 22d29ba5-8c1a-434f-b795-a4f08b4f567c, 13 image(s)",leather_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/pogo_air9,2.0 generations,"done 824d4782-14d2-47c3-aad6-c54feb7dab90, 13 image(s)",battle_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/slash1b,2.0 generations,"done 345e9261-5fa6-43d8-bce7-2dcf3558b3e0, 13 image(s)",battle_slash1_retake
+2026-10-30,characters/animations,hero/studded/pogo_air3,2.0 generations,"done 0c0e795a-2cc6-4921-b424-8fe2bee01007, 13 image(s)",studded_pogo_airborne_retake
+2026-10-30,characters/animations,hero/battle/pogo_air3,2.0 generations,"done 8655f5ad-548a-45a0-b597-73d1611e2586, 13 image(s)",battle_pogo_airborne_retake
+2026-10-30,characters/animations,hero/studded/pogo_air9,2.0 generations,"done 91e85d9f-1d1d-432c-905c-f5c3b11be29d, 13 image(s)",studded_pogo_airborne_retake
+2026-10-30,characters/animations,hero/plate/pogo_air3,2.0 generations,"done bf83dcbf-256d-4d10-8a84-f4370ceb10c7, 13 image(s)",plate_pogo_airborne_retake
+2026-10-30,create-character-state,hero/states/battle_helm,25.0 generations,"done 4125b0ee-fad5-498c-8985-ccc477d9b7ce, 0 image(s)",battle_suit_with_the_Battle_Helmet
+2026-10-30,characters/animations,hero/plate/pogo_air9,2.0 generations,"done 3b5df014-0f39-4dfb-9f94-2a5974ee1583, 13 image(s)",plate_pogo_airborne_retake
+2026-10-30,create-character-state,hero/states/battle_helm_mattock,?,queued 46ee20e7-a0a1-442a-98b8-21ff1d70e010,battle_helm_holding_the_Mattock
+2026-10-30,characters/animations,hero/battle_helm/walk,?,queued b20f8d77-0251-4250-951a-1b0240fa357c,battle_helm_walk_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/jump,?,queued 85f12254-1dd9-4995-bb5e-a0dac91a0347,battle_helm_jump_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/dash,?,queued e5553c52-75ce-40cd-aa26-0460293cd360,battle_helm_dash_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/wall,?,queued b7b71a71-03fe-4f3a-b853-15372c146321,battle_helm_wall_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/death,?,queued 875609fe-00a4-49cd-9bdd-285371a0e61b,battle_helm_death_armor_clip
+2026-10-30,create-character-state,hero/states/battle_helm_short_sword,?,queued cf16e071-edff-4c97-a8cc-a8f422a765c0,battle_helm_holding_the_Short_Sword
+2026-10-30,characters/animations,hero/battle_helm/hurt,?,queued 08b3cb39-4ac7-4db6-8b51-139643414d8a,battle_helm_hurt_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/dash,1.0 generations,"done e5553c52-75ce-40cd-aa26-0460293cd360, 9 image(s)",battle_helm_dash_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/drink,?,queued 58310930-3a21-4803-be1c-b62e08ab2663,battle_helm_drink_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/walk,2.0 generations,"done b20f8d77-0251-4250-951a-1b0240fa357c, 13 image(s)",battle_helm_walk_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/wall,1.0 generations,"done b7b71a71-03fe-4f3a-b853-15372c146321, 9 image(s)",battle_helm_wall_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/run,?,queued 24c76b9a-1b94-44b2-beb8-875f871e4d83,battle_helm_run_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/cast,?,queued 42cb827c-1e82-41c5-8f32-5e820b9eaa33,battle_helm_cast_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/jump,2.0 generations,"done 85f12254-1dd9-4995-bb5e-a0dac91a0347, 17 image(s)",battle_helm_jump_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/idle,?,queued e6b22002-0d8e-456b-85ce-77afceb3f420,battle_helm_idle_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/death,2.0 generations,"done 875609fe-00a4-49cd-9bdd-285371a0e61b, 13 image(s)",battle_helm_death_armor_clip
+2026-10-30,create-character-state,hero/states/battle_helm_mattock,25.0 generations,"done 46ee20e7-a0a1-442a-98b8-21ff1d70e010, 0 image(s)",battle_helm_holding_the_Mattock
+2026-10-30,create-character-state,hero/states/battle_helm_short_sword,25.0 generations,"done cf16e071-edff-4c97-a8cc-a8f422a765c0, 0 image(s)",battle_helm_holding_the_Short_Sword
+2026-10-30,characters/animations,hero/battle_helm/cast,1.0 generations,"done 42cb827c-1e82-41c5-8f32-5e820b9eaa33, 9 image(s)",battle_helm_cast_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/drink,2.0 generations,"done 58310930-3a21-4803-be1c-b62e08ab2663, 13 image(s)",battle_helm_drink_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/hurt,1.0 generations,"done 08b3cb39-4ac7-4db6-8b51-139643414d8a, 9 image(s)",battle_helm_hurt_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/run,1.0 generations,"done 24c76b9a-1b94-44b2-beb8-875f871e4d83, 9 image(s)",battle_helm_run_armor_clip
+2026-10-30,characters/animations,hero/battle_helm/idle,8.0 generations,"done e6b22002-0d8e-456b-85ce-77afceb3f420, 9 image(s)",battle_helm_idle_armor_clip

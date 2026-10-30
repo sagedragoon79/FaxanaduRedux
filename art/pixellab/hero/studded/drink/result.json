@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "c74ad9f8-5733-4a86-8bbf-7b470c0100e6",
+ "status": "completed",
+ "created_at": "2026-10-30T16:06:16.921947+00:00",
+ "last_response": {
+  "seed": 557063439,
+  "type": "message_done",
+  "action": "drinks a small red potion: takes a small glass vial from his belt, raises it to his lips, tilts his head back and drinks, then lowers it. He faces right in strict side profile the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "71d90aab-a9e6-4e60-9598-83e22da3a32c",
+  "character_id": "739d02b0-fc8f-4cf4-a067-332d21fb9358",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/739d02b0-fc8f-4cf4-a067-332d21fb9358/animations/71d90aab-a9e6-4e60-9598-83e22da3a32c/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "e28b48d0-1118-46de-8403-97ba70c02e41",
+  "animation_name": "custom-drinks a small red potion: tak",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "550eeb7f-20ec-44a3-bfc5-fe1edbd5aac1",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:06:43.007069+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

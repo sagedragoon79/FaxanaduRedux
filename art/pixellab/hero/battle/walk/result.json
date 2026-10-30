@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "b3a2c1dc-b7ac-4311-9ef1-f4d332029b7b",
+ "status": "completed",
+ "created_at": "2026-10-30T16:32:45.489977+00:00",
+ "last_response": {
+  "seed": 1287957047,
+  "type": "message_done",
+  "action": "a brisk walk cycle seen strictly from the side, one full stride with each leg, arms swinging naturally, loops seamlessly, walking in place. He faces right in strict side profile the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.3498047511306613,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "6e07098a-0067-4663-bae4-25e1b8604e6c",
+  "character_id": "50e97960-d7a4-4bc3-b1fb-216689ecfa38",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/50e97960-d7a4-4bc3-b1fb-216689ecfa38/animations/6e07098a-0067-4663-bae4-25e1b8604e6c/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "eef0a22e-ecd5-4b2a-a1f0-fb8bd9f3acbf",
+  "animation_name": "custom-a brisk walk cycle seen strict",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "48740934-5def-41ff-9b20-c94d0f87762d",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:33:12.672272+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -267,10 +267,11 @@ func test_armor_picks_its_body_set() -> void:
 	await frames(12)
 	check(p.visual.anim == "run" and p.visual.sheet == "hero_plate", "and runs in it (%s %s)" % [p.visual.anim, p.visual.sheet])
 	p.input.move_x = 0
-	p.input.jump_pressed = true
-	p.input.jump_held = true
+	await frames(20)
+	p.input.block_held = true
 	await frames(4)
-	check(p.visual.anim == "rise" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
+	check(p.visual.anim == "block" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
+	p.input.block_held = false
 	# The Battle Suit worn with the Battle Helmet has a body of its own, drawn helmed.
 	GameState.data.equipment.armor = "battle_suit"
 	GameState.data.equipment.helmet = "battle_helmet"
@@ -311,10 +312,10 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	check(p.cloak.hood == 1.0, "and goes up again without it")
 	var hem: Vector2 = p.cloak._inner[Cloak.SEGMENTS]
 	check(hem.y > p.global_position.y - 12.0 and hem.y <= p.global_position.y, "the cape hangs to the ankles (%s, feet %s)" % [hem, p.global_position])
-	p.input.jump_pressed = true
-	p.input.jump_held = true
+	p.input.block_held = true
 	await frames(4)
 	check(not p.cloak.shown(), "a clip from the ranger's sheet draws its own cloak, so the layer hides")
+	p.input.block_held = false
 	GameState.data.equipment["armor"] = ""
 
 

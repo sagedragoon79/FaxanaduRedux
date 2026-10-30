@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "4df38f52-494f-4239-ba5f-07d46b9258a8",
+ "status": "completed",
+ "created_at": "2026-10-30T16:24:22.453898+00:00",
+ "last_response": {
+  "seed": 2391468766,
+  "type": "message_done",
+  "action": "an airborne downward pogo strike: he hops up and tucks his knees, swings the mattock up over his head with both hands, then drives it hard straight down beneath his feet so the iron head points at the ground below him, hangs there for a beat as if striking something under him, then pulls the mattock back up as he rebounds. He faces right in strict side profile the whole time and never turns toward the camera. The mattock stays the same size and shape in every frame.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9728571428571429,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "9a15bd79-8724-4dcc-876f-1bd2f604090a",
+  "character_id": "1ccae129-3f47-4369-8464-e6b82c3a53c3",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ccae129-3f47-4369-8464-e6b82c3a53c3/animations/9a15bd79-8724-4dcc-876f-1bd2f604090a/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "1996283d-0d80-4143-a0e2-b4eb01701ed5",
+  "animation_name": "custom-an airborne downward pogo stri",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "b77408b5-037f-4ee3-bf2a-bca465dea740",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-30T16:24:49.978863+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
