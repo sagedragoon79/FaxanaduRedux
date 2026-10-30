@@ -361,6 +361,9 @@ func _choose() -> void:
 	face_player()
 	_whip_dir = int(signf(dx)) if dx != 0.0 else facing
 	set_state(pick + "_tell")
+	# Heard as it starts (bible 13.3); the brood has its own rustle, above.
+	if pick != "brood":
+		Sfx.play({"bite": "tell_heavy", "whip": "tell_blade"}.get(pick, "tell_charge"), 0.05, -2.0)
 	if pick == "bite":
 		_bites += 1
 

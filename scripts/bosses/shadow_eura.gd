@@ -617,6 +617,8 @@ func _tell(s: String) -> void:
 	velocity.x = 0.0
 	face_player()
 	set_state(s)
+	# Heard as it starts (bible 13.3), with the hero's own shared tells.
+	Sfx.play({"heavy_tell": "tell_heavy", "cast_tell": "tell_charge"}.get(s, "tell_blade"), 0.05, -2.0)
 
 
 func _swing(kind: String, next: String) -> void:

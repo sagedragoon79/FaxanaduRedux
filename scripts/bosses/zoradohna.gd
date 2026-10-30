@@ -261,6 +261,8 @@ func _choose(dist: float) -> void:
 		Sfx.play("whir", 0.1, -2.0)
 		return
 	set_state(pick + "_tell")
+	# Heard as it starts (bible 13.3): the drill spinning up, the hull heaving to slam.
+	Sfx.play("tell_charge" if pick == "drill" else "tell_heavy", 0.05, -2.0)
 
 
 ## The drill's reach in front of the hull.

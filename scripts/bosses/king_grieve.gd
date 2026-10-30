@@ -323,6 +323,9 @@ func _open(tell_state: String, next: String) -> void:
 	face_player()
 	_next = next
 	set_state(tell_state)
+	# Heard as it starts (bible 13.3): the axe raised for the chop, drawn back for
+	# the sweep, the cracked crown gathering its burst.
+	Sfx.play({"chop_tell": "tell_heavy", "sweep_tell": "tell_blade"}.get(tell_state, "tell_charge"), 0.05, -2.0)
 
 
 ## Where the axe bites: the chop high and long, the sweep low and wide.

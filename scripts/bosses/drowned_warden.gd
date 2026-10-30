@@ -312,8 +312,12 @@ func _choose(dist: float) -> void:
 		Sfx.play("dive", 0.0, 0.0)
 	else:
 		set_state(pick + "_tell")
+		# Heard as it starts (bible 13.3): the wave swells, the trident is drawn
+		# back, the undertow gathers.
 		if pick == "wave":
 			Sfx.play("swell", 0.05, -4.0)
+		else:
+			Sfx.play("tell_blade" if pick == "thrust" else "tell_charge", 0.05, -2.0)
 
 
 func _keep_in_lane() -> void:
