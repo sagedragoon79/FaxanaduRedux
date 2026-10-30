@@ -209,6 +209,24 @@ def strokes(cv: Canvas, n, length, width, seed, alpha=0.8, jitter=0.05, base_ang
     cv.rgb = cv.rgb * (1 - m) + arr[..., :3] * m
 
 
+def crisp(cv: Canvas, pre, keep=0.8, ink=0.35, sharpen=0.7):
+    """Takes the shape edges back from the brushwork: near a strong edge in `pre`
+    (the canvas before the strokes) the clean shape shows through, a thin dark
+    line marks the edge (Legend of Mana style linework), and an unsharp mask
+    firms up the strokes themselves."""
+    lum = ndimage.gaussian_filter(pre.mean(-1), 0.8)
+    mag = np.hypot(ndimage.sobel(lum, 0), ndimage.sobel(lum, 1))
+    band = np.clip(mag * 5, 0, 1)
+    band = ndimage.grey_dilation(band, size=3)
+    band = ndimage.gaussian_filter(band, 0.8)[..., None]
+    cv.rgb = cv.rgb * (1 - band * keep) + pre * band * keep
+    line = np.clip((mag - 0.12) * 6, 0, 1)
+    line = ndimage.gaussian_filter(line, 0.6)[..., None]
+    cv.rgb *= 1 - line * ink
+    blur = np.stack([ndimage.gaussian_filter(cv.rgb[..., i], 1.6) for i in range(3)], -1)
+    cv.rgb = cv.rgb + sharpen * (cv.rgb - blur)
+
+
 def rough_edges(cv: Canvas, amount, cell, seed):
     """Breaks the alpha edge up like dry brush."""
     n = noise(cv.w, cv.h, cell, seed, wrap=cv.wrap, octaves=3)
@@ -400,12 +418,14 @@ def paint_mid():
     cv.lay(np.clip((yy - ground + 10) / 30, 0, 1), STONE_D * 0.8)
     # Light from windows and lamps, inside the painted shapes only.
     g = glow(w, h, lit, wrap=True)
-    strokes(cv, 16000, (20, 50), (6, 12), 81, alpha=0.75, base_angle=math.pi / 2, follow=0.9)
+    pre = cv.rgb.copy()
+    strokes(cv, 16000, (20, 50), (6, 12), 81, alpha=0.6, base_angle=math.pi / 2, follow=0.9)
     strokes(cv, 16000, (8, 22), (2, 5), 82, alpha=0.7, base_angle=math.pi / 2, follow=1.2)
+    crisp(cv, pre, keep=0.5, ink=0.2, sharpen=0.4)
     cv.light(g * 0.9, cv.a)
-    rough_edges(cv, 0.5, 6, 83)
+    rough_edges(cv, 0.3, 6, 83)
     # Atmosphere: they stand in the dusk haze, a step back from the plate.
-    soften(cv, DUSK, 0.28, sat=0.75)
+    soften(cv, DUSK, 0.2, sat=0.8)
     grain(cv, 84, 0.03)
     # Their glow spills into the air around them.
     halo = np.clip(g.mean(-1) * 1.4, 0, 0.55)
@@ -763,7 +783,8 @@ def paint_plate(grid):
     cv.light(light_field * 0.8 + pool * floor[..., None], cv.a)
 
     # Re-paint with brushes: broad first, then fine, bark and cobbles keep their grain.
-    strokes(cv, 26000, (24, 56), (8, 14), 101, alpha=0.6, base_angle=0.0, follow=0.9)
+    pre = cv.rgb.copy()
+    strokes(cv, 26000, (24, 56), (8, 14), 101, alpha=0.45, base_angle=0.0, follow=0.9)
     vert = np.zeros((h, w), np.float32)
     vert[:] = math.pi / 2
     vert[floor_y:] = 0.0
@@ -772,10 +793,10 @@ def paint_plate(grid):
     # Glass and flames stay bright through the strokes.
     cv.light(glow(w, h, [(hx * T + 16, hy * T, 22, AMBER_L, 0.9) for hx, hy in hanging] +
                   [(px * T + 16, floor_y - 171, 20, AMBER_L, 0.9) for px in posts]))
-    rough_edges(cv, 0.35, 5, 104)
-    # Scenery a touch softer and cooler than the cast, so the sprites pop.
-    soften(cv, DUSK, 0.06, sat=0.92)
-    cv.rgb = np.clip(cv.rgb, 0, 1) ** 1.15 * 0.92
+    # The near layer stays sharp: clean edges, linework, firm strokes, no haze.
+    crisp(cv, pre, keep=0.75, ink=0.4, sharpen=0.8)
+    rough_edges(cv, 0.15, 5, 104)
+    cv.rgb = np.clip(cv.rgb, 0, 1) ** 1.1 * 0.95
     grain(cv, 105, 0.03)
     # The floor and walls the player touches stay fully opaque.
     solidm = ndimage.binary_dilation(wall > 0.5, iterations=2).astype(np.float32)
