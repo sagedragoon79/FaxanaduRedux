@@ -40,15 +40,15 @@ const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
 const OINTMENT := Color("f0c02e")
 const POISON := Color("8fd14f")
-## The Battle Helmet layer: Sean's pixel helmet (tools/art/helmetgen.py), drawn
+## The Battle Helmet layer: the helm of the PixelLab helmed elf (tools/art/helmetgen.py), drawn
 ## at the sheets' 2x density with its top-left this far from the frame's crown.
 const HELMET := preload("res://assets/sprites/battle_helmet.png")
-const HELMET_OFFSET := Vector2(-4.5, -2)
+const HELMET_OFFSET := Vector2(-5.5, -4)
 ## In a body set's run the head leans into the stride, so the helmet tips
 ## forward with it (radians) and sits this far from the crown instead; upright,
 ## the leaning hair would show over the visor.
 const HELMET_RUN_TILT := 0.26
-const HELMET_RUN_OFFSET := Vector2(-3.5, -3.5)
+const HELMET_RUN_OFFSET := Vector2(-4.5, -5.5)
 ## Blade length in pixels before the weapon's reach bonus.
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
