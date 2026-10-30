@@ -1533,6 +1533,42 @@ func test_a_purse_on_torn_leaf_moves_beside_the_gap() -> void:
 	check(p.hp == p.max_hp, "without a hurt (%d)" % p.hp)
 	GameState.data.purse = {}
 
+## Bible 8.5 (pass 308): a drop never rests on spikes. A Lilith struck down over
+## a torn leaf dropped its bread or War Glove into the thorns, where taking it
+## cost a blow. A drop that lands on spikes now moves to the leaf beside the pit,
+## whether it lay there when the leaf tore or fell in after.
+func test_a_drop_never_rests_in_the_thorns() -> void:
+	var setup := await _bloom_world()
+	var w: World = setup[0]
+	var k: Pakukame = setup[2]
+	var p := w.player
+	k.process_mode = Node.PROCESS_MODE_DISABLED
+	var x := k.global_position.x + 180.0
+	p.teleport(Vector2(k.global_position.x - 120.0, k.floor_y()))
+	var lying := Drop.make(w.room, Vector2(x, k.floor_y() - 4.0), "bread")
+	await frames(20)
+	k._tear_leaf(x)
+	check(not k.gaps.is_empty(), "the bite tears the leaf")
+	if k.gaps.is_empty():
+		return
+	var gap: Vector2i = k.gaps[0]
+	var falling := Drop.make(w.room, Vector2((gap.x + gap.y + 1) * 0.5 * Room.TILE, k.floor_y() - 40.0), "glove")
+	falling.velocity = Vector2.ZERO
+	await frames(60)
+	for d: Variant in [lying, falling]:
+		if not check(is_instance_valid(d), "both drops are still there"):
+			return
+		var at: Vector2 = d.global_position
+		check(at.x < gap.x * Room.TILE or at.x >= (gap.y + 1) * Room.TILE, "the %s rests beside the pit, not in it (%s, gap %s)" % [d.kind, at, gap])
+		check(absf(at.y - k.floor_y()) < 1.0, "on the leaf (%s)" % at)
+	var spots: Array[Vector2] = [lying.global_position, falling.global_position]
+	for at in spots:
+		p.teleport(at)
+		await frames(3)
+	check(not is_instance_valid(lying) and not is_instance_valid(falling), "both are taken")
+	check(p.hp == p.max_hp, "without a blow (%d)" % p.hp)
+
+
 func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]

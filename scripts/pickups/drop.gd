@@ -14,6 +14,8 @@ const LIFETIME := 10.0
 ## How far in from a side edge a drop comes to rest when that edge is a door:
 ## the second open tile, where a hop clears it and lands short of the door.
 const DOOR_CLEAR := 40.0
+## How many tiles up the side of a spiked pit a drop may step to rest beside it.
+const SPIKE_STEP_RISE := 4
 const BREAD_HEAL := 15
 ## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
 const LOAF_HEAL := 40
@@ -107,12 +109,45 @@ func _physics_process(delta: float) -> void:
 	_keep_in_room()
 	if is_on_floor():
 		velocity.x = move_toward(velocity.x, 0.0, 300.0 * delta)
+		if velocity.x == 0.0:
+			_step_off_spikes()
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null and not p.dead and _age > 0.3 and p.body_rect().grow(COLLECT_RANGE * 0.5).has_point(global_position + Vector2(0, -3)):
 		_collect(p)
 		return
 	queue_redraw()
 
+
+
+## A drop never rests on spikes (pass 308): one that falls into a spiked pit,
+## a Lilith struck down over a torn leaf or a foe slain over a crystal trench,
+## would cost a blow to take. It moves to the nearest floor beside the pit, up
+## to SPIKE_STEP_RISE tiles above it, as a purse on torn floor does (pass 300).
+func _step_off_spikes() -> void:
+	var room := get_parent() as Room
+	if room == null or not _spiked(room, global_position):
+		return
+	var c := int(global_position.x / Room.TILE)
+	var row := int(roundf(global_position.y / Room.TILE))
+	for dist in range(1, room.size_tiles.x):
+		for col: int in [c - dist, c + dist]:
+			if col < 0 or col >= room.size_tiles.x:
+				continue
+			var top := row
+			while top > row - SPIKE_STEP_RISE and room.is_solid_at(Vector2(col + 0.5, top - 0.5) * Room.TILE):
+				top -= 1
+			var spot := Vector2((col + 0.5) * Room.TILE, top * Room.TILE)
+			if room.is_solid_at(spot + Vector2(0, 8)) and not room.is_solid_at(spot - Vector2(0, 8)) and not _spiked(room, spot):
+				global_position = spot
+				velocity = Vector2.ZERO
+				return
+
+
+static func _spiked(room: Room, at: Vector2) -> bool:
+	for c in room.get_children():
+		if c is Spikes and absf(c.global_position.x - at.x) <= Room.TILE * 0.5 and absf(c.global_position.y - at.y) < 6.0:
+			return true
+	return false
 
 ## A drop never leaves its room (pass 283): one that pops past a side edge
 ## stops at it, and one that falls out through a gap in the floor (the Tower's
