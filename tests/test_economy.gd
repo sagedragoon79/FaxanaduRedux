@@ -2279,6 +2279,11 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	var flask_row := bible.get_slice("| Red Potion flask |", 1).get_slice("\n", 0)
 	var most := int(fresh.flask_max) + 9 / 3 + 1
 	check(flask_row.contains("| %d charges, each still %d HP |" % [most, tuning.flask_heal]), "the flask's row says its most: %d charges of %d HP (%s)" % [most, tuning.flask_heal, flask_row.left(60)])
+	# Pass 329: the manual ranks the spells against Deluge; the remake keeps
+	# Fire's 1.5 and says why it left the rest.
+	check(bible.contains("\"has 1.5 times the power of Deluge\"") and bible.contains("\"has four times the power of Deluge\"") and bible.contains("\"has six times the power of fire\""), "the bible quotes the original's spell powers")
+	check(int(Spells.DATA.fire.damage) * 2 == int(Spells.DATA.deluge.damage) * 3, "Fire keeps the original's 1.5 times Deluge (%d, %d)" % [Spells.DATA.fire.damage, Spells.DATA.deluge.damage])
+	check(int(Spells.DATA.death.damage) > int(Spells.DATA.fire.damage) and int(Spells.DATA.death.damage) > int(Spells.DATA.thunder.damage), "and Death still hits hardest")
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 273: the original's Naga floats up and down over the ladders of the
