@@ -2101,3 +2101,34 @@ func test_the_mercy_assist_doubles_a_hits_grace() -> void:
 	check(Settings.mercy, "the choice is saved")
 	_restore()
 	check(not Settings.mercy, "and the suite runs on the default, off")
+
+
+## Pass 343: bible 14 promised three save slots, and the game has always kept
+## one (`Game.SAVE_SLOT`); its accessibility line names the options' steps
+## (game speed 70 to 100% in tens, shake and flash names, the mercy assist's
+## 0.8 s to 1.6 s). No test read any of it. These hold the line to the code,
+## and the one slot's safe write and backup to what the bible now says.
+func test_the_bibles_saves_and_options_are_as_built() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var tech := bible.get_slice("## 14. Technical Architecture", 1).get_slice("\n## 15. ", 0)
+	var slot: int = (load("res://scripts/game.gd") as Script).get_script_constant_map()["SAVE_SLOT"]
+	check(tech.contains("a single save (`Game.SAVE_SLOT`, `%s`)" % (GameState.SAVE_PATH % slot)), "14 names the one save and its path (slot %d)" % slot)
+	# The safe write keeps the last good copy, and a damaged save falls back to it.
+	var path := "user://test_pass_343.json"
+	check(GameState.write_safely(path, "{\"a\": 1}") and GameState.write_safely(path, "{\"a\": 2}"), "a save writes twice")
+	check(FileAccess.get_file_as_string(path) == "{\"a\": 2}" and FileAccess.get_file_as_string(path + ".bak") == "{\"a\": 1}", "the last good copy is kept as .bak")
+	check(not FileAccess.file_exists(path + ".tmp"), "no .tmp is left behind")
+	for f: String in [path, path + ".bak"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
+	check(tech.contains("with the last good copy kept as `.bak`"), "14 says so")
+	# The accessibility line's numbers.
+	var speeds := Settings.SPEED_STEPS.map(func(s: float) -> int: return roundi(s * 100.0))
+	speeds.sort()
+	var tens := true
+	for i in range(1, speeds.size()):
+		tens = tens and speeds[i] - speeds[i - 1] == 10
+	check(tens and tech.contains("game speed slider (%d to %d%%; steps of 10)" % [speeds[0], speeds[-1]]), "14 gives the game speed's range and steps (%s)" % [speeds])
+	check(tech.contains("shake (%s)" % ", ".join(Settings.SHAKE_NAMES).to_lower()), "14 names the shake steps (%s)" % [Settings.SHAKE_NAMES])
+	check(tech.contains("flashes (%s)" % ", ".join(Settings.FLASH_NAMES).to_lower()), "14 names the flash steps (%s)" % [Settings.FLASH_NAMES])
+	var invuln := MovementTuning.new().hurt_invuln
+	check(tech.contains("(%s s to %s s, `Settings.MERCY_MULT`" % [String.num(invuln), String.num(invuln * Settings.MERCY_MULT)]), "14 gives the mercy assist's grace (%s s, x%s)" % [invuln, Settings.MERCY_MULT])
