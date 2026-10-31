@@ -1591,6 +1591,32 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 			if zone_of[name] == zone_of[mini] and not name in MINI_BOSSES:
 				longest = maxi(longest, slashes[name])
 		check(slashes[mini] <= 25 and slashes[mini] <= longest, "%s (a mini-boss, %d) is no longer than %s's guardians (%d)" % [mini, slashes[mini], zone_of[mini], longest])
+	# Pass 324: the bible's table (5.5) names each guardian's count, and every
+	# `(ClassName, N HP` the bible names is the boss's MAX_HP.
+	const NAMED := {"Zoradohna": "Zoradohna", "Foreman": "the Foreman", "Zorugeriru": "Zorugeriru", "Ripasheiku": "Ripasheiku",
+		"HagMatriarch": "the Marsh Hag Matriarch", "Pakukame": "Pakukame", "BarkCaptain": "the Bark Knight Captain",
+		"Borabohra": "Borabohra", "KingGrieve": "King Grieve", "ClockworkAlpha": "the Clockwork Alpha", "ShadowEura": "Shadow Eura",
+		"DrownedWarden": "the Drowned Warden", "EvilAvatar": "its avatar", "EvilHeart": "then its heart"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var table := bible.get_slice("**The guardians' health (pass 204).**", 1).get_slice("\n\n`test_", 0)
+	var hp_named := []
+	for name: String in slashes:
+		var said := table.get_slice(String(NAMED.get(name, name)) + " ", 1).get_slice(" ", 0).to_int()
+		check(said == slashes[name], "5.5's table gives %s %d par slashes, and the code %d" % [name, said, slashes[name]])
+		var boss: Enemy = (load("res://scripts/bosses/%s.gd" % name.to_snake_case()) as Script).new() if ResourceLoader.exists("res://scripts/bosses/%s.gd" % name.to_snake_case()) else null
+		if boss == null:
+			continue
+		var at := 0
+		while true:
+			at = bible.find("`%s`, " % name, at)
+			if at < 0:
+				break
+			at += name.length() + 4
+			var num := bible.substr(at, 12).get_slice(" ", 0).to_int()
+			if bible.substr(at, 12).get_slice(" ", 1).begins_with("HP") and num != boss.max_hp:
+				hp_named.append("%s says %d, MAX_HP %d" % [name, num, boss.max_hp])
+		boss.free()
+	check(hp_named.is_empty(), "every guardian's HP the bible names is its MAX_HP (%s)" % [hp_named])
 	var finale: int = slashes["EvilAvatar"] + slashes["EvilHeart"]
 	for name: String in slashes:
 		if not name in ["EvilAvatar", "EvilHeart"] and not name in OPTIONAL_BOSSES:
