@@ -1264,6 +1264,42 @@ func test_damage_numbers_show_what_each_blow_dealt() -> void:
 	check(not Settings.damage_numbers, "and the suite runs on the default, off")
 
 
+
+## Bible 14 (pass 309): with damage numbers on, each poison tick shows what it
+## took, in the poisoned masks' green. Poison bites as the room's foes do since
+## pass 306 (2 in the Tower, up to 4 deep), and a tick was the one loss of health
+## that showed no number. A tick an Ointment keeps off, or one that would take
+## the last point, shows nothing.
+func test_damage_numbers_show_each_poison_tick() -> void:
+	Settings.path = TEMP_SETTINGS
+	Settings.reset()
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	w.room.zone = "zenis"
+	p.hp = 100
+	p.poison()
+	await frames(roundi(Player.POISON_TICK * 60.0) + 2)
+	check(_numbers(w.room).is_empty() and p.hp < 100, "off: a tick shows no number")
+	Settings.adjust("numbers", 1)
+	var before := p.hp
+	await frames(roundi(Player.POISON_TICK * 60.0))
+	var nums: Array = _numbers(w.room).filter(func(n: DamageNumber) -> bool: return n.kind == "poison")
+	check(nums.size() == 1 and nums[0].amount == before - p.hp and nums[0].amount == 4,
+		"on: a Zenis tick shows the 4 it took (%s)" % [nums.map(func(n: DamageNumber) -> int: return n.amount)])
+	check(DamageNumber.COLORS.poison == GameHud.POISONED, "in the poisoned masks' green")
+	p.hp = 1
+	await frames(roundi(Player.POISON_TICK * 60.0))
+	p.ointments = 1
+	p.use_ointment()
+	p.hp = 50
+	await frames(roundi(Player.POISON_TICK * 60.0))
+	check(_numbers(w.room).filter(func(n: DamageNumber) -> bool: return n.kind == "poison" and n != nums[0]).is_empty(),
+		"a tick that takes nothing (the last point, an Ointment) shows nothing")
+	p.cure_poison()
+	_restore()
+	check(not Settings.damage_numbers, "and the suite runs on the default, off")
+
 ## Pass 155: the third trial, the Mantra of Thorns, is a pogo course: a spike
 ## corridor, a pit under a chain of thorn bulbs, and two bulbs up to a hanging
 ## slab that nothing else reaches. A simple pogo-playing hand clears it in the

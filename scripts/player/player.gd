@@ -1784,7 +1784,11 @@ func _tick_poison(delta: float) -> void:
 	if _poison_tick <= 0.0:
 		_poison_tick += POISON_TICK
 		if not dead and _ointment_timer <= 0.0 and hp > 1:
+			var before := hp
 			hp = maxi(1, hp - _poison_damage)
+			# With damage numbers on, each tick shows what it took, in the
+			# masks' sick green (pass 309): it varies with the zone (pass 306).
+			DamageNumber.spawn(get_parent(), global_position + Vector2(0, -44), before - hp, "poison")
 			health_changed.emit(hp, max_hp)
 	if _poison_timer <= 0.0:
 		GameState.toast.emit("The poison fades.")
