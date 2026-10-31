@@ -1619,3 +1619,57 @@ func test_wading_neither_slows_nor_floats_nor_hides_the_spikes() -> void:
 			break
 	check(p.hp < 999, "the spikes under the water still hurt (hp %d)" % p.hp)
 	check(not swam, "and the pit is waded, not swum")
+
+
+## Bible 6 (pass 312): poison never touches movement. Since pass 306 a tick takes
+## up to 4 health, and passes 309 and 310 gave it a number and a sound, but it is
+## no blow: no knockback, no hurt flash, no invulnerability, no lost dash or
+## climb. A poisoned hero and a well one, given the same hands, move frame for
+## frame alike through a dash, a wall slide and a ladder climb, with a tick
+## landing inside each.
+func test_a_poison_tick_never_touches_movement() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 30, 4, "#", 3, 16)
+	put_tiles(rows, 6, 8, "\"", 1, 12)
+	put_tiles(rows, 4, 19, "P")
+	var paths := []
+	var states := []
+	for sick: bool in [false, true]:
+		var w := make_world({"test/a": room_text(["name: A", "zone: test"], rows)}, "test/a", cell_feet(18, 19))
+		var p := w.player
+		p.abilities.stride = true
+		p.abilities.glove = true
+		await frames(3)
+		if sick:
+			p.poison()
+		var path: Array[Vector2] = []
+		var seen := {}
+		for f in 150:
+			var i := p.input
+			i.dash_pressed = f == 6
+			i.jump_pressed = f == 40
+			i.jump_held = f >= 40 and f < 60
+			i.move_x = 1 if f < 100 else 0
+			if f == 100:
+				p.teleport(cell_feet(6, 19))
+			i.up = f > 102
+			if sick and f in [8, 45, 70, 130]:
+				p._poison_tick = 0.0001
+			await frames(1)
+			path.append(p.global_position)
+			if sick and f in [8, 45, 70, 130]:
+				seen[f] = "dash" if p.is_dashing else ("slide" if p.is_wall_sliding else ("ladder" if p.on_ladder else ("air" if not p.is_on_floor() else "floor")))
+		paths.append(path)
+		states.append([p.hp, p.max_hp, seen])
+		p.cure_poison()
+		w.queue_free()
+		await frames(2)
+	var seen: Dictionary = states[1][2]
+	check(seen.get(8) == "dash" and seen.get(45) == "air" and seen.get(70) == "slide" and seen.get(130) == "ladder", "ticks land in a dash, a jump, a wall slide and a climb (%s)" % seen)
+	check(states[1][0] < states[0][0], "and bite (%d against %d)" % [states[1][0], states[0][0]])
+	var first := -1
+	for f in paths[0].size():
+		if not (paths[0][f] as Vector2).is_equal_approx(paths[1][f]):
+			first = f
+			break
+	check(first == -1, "poisoned and well heroes move alike, frame for frame (first apart at %d)" % first)
