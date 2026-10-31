@@ -4343,3 +4343,64 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 			check(n >= 2 and n - 2 < phases.size() and absi(pct - roundi(phases[n - 2] * 100.0)) <= 1,
 				"%s says phase %d starts below %s, and the script at %s" % [sec, n, said, phases])
 	check(named >= 14, "the guardians' sections name their phase marks (%d)" % named)
+
+
+## Pass 348: bible 8 (pass 239) says a guardian dies in "a dying window of 1.2
+## to 2.5 s" before its arena opens, but no test timed one; each script keeps
+## its own `DYING_TIME` (Rokusutahn none: his segments shatter one by one).
+## This fells every guardian in its own arena and times, in game seconds, the
+## span from the killing blow to the arena's `defeated`, and holds the bible's
+## range to the shortest and the longest.
+func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var said := bible.get_slice("**A won fight stays won (pass 239).**", 1).get_slice("\n", 0)
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	var times := {}
+	for id: String in BossArena.BOSSES:
+		if not check(rooms.has(id), "%s has an arena" % id):
+			continue
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		await _until(func() -> bool: return not (String(boss.get("state")) in ["intro", "dormant", "reveal", "lurk", ""]), 600)
+		await frames(10)
+		var done := [false]
+		boss.connect("defeated", func() -> void: done[0] = true)
+		if boss.has_method("die"):
+			boss.call("die")
+		else:
+			boss.call("_die")
+		# Game seconds: each frame's delta, which the kill's slow motion
+		# scales (the slow motion runs on the wall clock, which a headless
+		# run outpaces, so frames are no measure of what the eye sees).
+		var t := 0.0
+		for f in 900:
+			if done[0]:
+				break
+			await frames(1)
+			t += runner.get_physics_process_delta_time()
+		check(done[0], "%s falls and its arena hears it" % id)
+		times[id] = snappedf(t, 0.01)
+		Feel.reset()
+		w.queue_free()
+		await frames(2)
+	var shortest := 99.0
+	var longest := 0.0
+	for id: String in times:
+		shortest = minf(shortest, times[id])
+		longest = maxf(longest, times[id])
+	check(shortest >= 1.0 and longest <= 2.7, "every guardian falls in 1 to 2.7 s (%.2f to %.2f)" % [shortest, longest])
+	check(said.contains("a dying window of %s to %s s" % [String.num(snappedf(shortest, 0.1)), String.num(snappedf(longest, 0.1))]), "8 gives the range as played, %.1f to %.1f s (%s)" % [shortest, longest, said.left(90)])
