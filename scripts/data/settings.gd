@@ -46,6 +46,15 @@ static func reset() -> void:
 	keys = {}
 
 
+## Every option, by name (pass 327): what the test runner compares against a
+## fresh reset() to catch a test that leaves one changed. A new option goes in
+## here as well; `test_every_option_is_in_the_snapshot` reads this file's
+## static vars to hold it.
+static func snapshot() -> Dictionary:
+	return {"shake": shake, "flashes": flashes, "rumble": rumble, "damage_numbers": damage_numbers, "mercy": mercy,
+		"music_volume": music_volume, "sound_volume": sound_volume, "speed": speed, "keys": keys.duplicate()}
+
+
 static func load_settings() -> void:
 	reset()
 	# A damaged file falls back to its backup, then to the defaults (pass 109).
