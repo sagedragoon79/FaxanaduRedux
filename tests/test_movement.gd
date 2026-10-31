@@ -599,6 +599,53 @@ func test_an_up_slash_cuts_then_recovers_as_6_6_says() -> void:
 	check(absi(next - roundi(t.attack_cooldown * 60.0)) <= 1, "and with Attack pressed every frame the next swing comes %d frames on (%d)" % [roundi(t.attack_cooldown * 60.0), next])
 
 
+## Pass 328: the pinned tests above hold each number to a literal copied from
+## the bible, so a number changed in the tuning and its test together would
+## leave section 6 saying the old one. This reads the text itself: every
+## number MovementTuning exports must be written somewhere in section 6, in one
+## of the ways the bible writes numbers (165, 1,800, 0.10 s, 45 ms, 40%, x1.6).
+func test_every_movement_number_is_written_in_bible_6() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var six := bible.get_slice("## 6. Movement", 1).get_slice("\n## 7. ", 0)
+	var t := MovementTuning.new()
+	var unwritten := []
+	var count := 0
+	for prop: Dictionary in t.get_property_list():
+		if not (prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE) or not (prop.type in [TYPE_FLOAT, TYPE_INT]):
+			continue
+		count += 1
+		var f := float(t.get(prop.name))
+		if not _written(six, f):
+			unwritten.append("%s %s" % [prop.name, String.num(f)])
+	check(count >= 50, "every exported movement number is read (%d)" % count)
+	check(unwritten.is_empty(), "every movement number is written in bible 6 (not: %s)" % [unwritten])
+
+
+## Whether `text` writes `f` as the bible does, standing alone (not inside a
+## longer number).
+func _written(text: String, f: float) -> bool:
+	var forms := [String.num(f), "%.2f" % f]
+	# A whole number, or a derived one (gravity from 2h/t²) the bible gives
+	# to the whole px.
+	var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) or absf(f) < 100.0 else [floori(f), roundi(f)]
+	for i: int in wholes:
+		forms.append(str(i))
+		if absi(i) >= 1000:
+			forms.append("%d,%03d" % [i / 1000, absi(i) % 1000])
+	if f > 0.0 and f < 1.0:
+		forms.append("%d ms" % roundi(f * 1000.0))
+		forms.append("%d%%" % roundi(f * 100.0))
+	for form: String in forms:
+		var at := text.find(form)
+		while at >= 0:
+			var before := text[at - 1] if at > 0 else " "
+			var after := text[at + form.length()] if at + form.length() < text.length() else " "
+			if not (before in "0123456789.,") and not (after in "0123456789") and not (after == "," and at + form.length() + 1 < text.length() and text[at + form.length() + 1] in "0123456789"):
+				return true
+			at = text.find(form, at + 1)
+	return false
+
+
 ## Pass 200: 6.1 and the core of 6.2 were only read back from the tuning by the
 ## behaviour tests, so a changed number moved the test with it. These hold the
 ## numbers to the bible, and the tests after them hold what each one does.
