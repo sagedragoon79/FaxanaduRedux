@@ -682,6 +682,8 @@ Until pass 288, only the water was left out. Stand on a cracked block over spike
 
 (Deviation: spikes and their set-back come from the genre, not from the original, where harm comes from foes and a blow knocks you back. The Mattock's pogo (A2) is built around them, so the remake keeps them, and the set-back is the genre's rule for them.)
 
+**Poison is no blow (pass 312).** Since pass 306 a poison tick takes up to 4 health, and passes 309 and 310 gave it a green number and a glug. It still never touches movement: no knockback, no hurt flash or invulnerability, no lost dash, slide or climb. A poisoned hero and a well one, given the same inputs, move frame for frame alike through a dash, a jump, a wall slide and a ladder climb with a tick landing in each (`test_a_poison_tick_never_touches_movement`). A hop over a flask before a door (pass 307) clears it from 22 to 58 px short at a run with a short hop and 22 to 94 px with a full jump; at a walk the window is 16 to 40 px with a full jump.
+
 ---
 
 ## 7. Enemies
