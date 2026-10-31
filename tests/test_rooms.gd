@@ -2046,3 +2046,52 @@ func _room_size(path: String) -> Vector2i:
 	for row: String in rows:
 		w = maxi(w, row.length())
 	return Vector2i(w, rows.size())
+
+
+## Pass 334: bible 13.3 planned "about 180" effects and "about 22" tracks, and
+## no line said what was built. This holds the as-built counts to `assets/`,
+## and the reverse of `test_every_sound_the_code_plays_exists`: every effect on
+## disk is named in the code, whole or after a prefix built at runtime.
+func test_the_bible_counts_the_games_sounds() -> void:
+	var sfx: Array[String] = []
+	for f: String in DirAccess.get_files_at("res://assets/sfx"):
+		if f.ends_with(".wav"):
+			sfx.append(f.get_basename())
+	var tracks := 0
+	var beds := 0
+	for f: String in DirAccess.get_files_at("res://assets/music"):
+		if f.get_extension() in ["ogg", "mp3", "wav"]:
+			if f.begins_with("amb_"):
+				beds += 1
+			else:
+				tracks += 1
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var built := bible.get_slice("- **SFX (CODE synth + CC0 packs):**", 1).get_slice("**As built (pass 334):**", 1).get_slice("\n", 0)
+	check(built.contains("**%d sound effects**" % sfx.size()), "13.3 counts the sound effects (%d)" % sfx.size())
+	check(built.contains("**%d music tracks** with **%d ambience beds**" % [tracks, beds]), "13.3 counts the tracks and beds (%d, %d)" % [tracks, beds])
+	var groups := RegEx.create_from_string("(\\d+) (?:for towns|variants|guardians' own)|each of the (\\d+) areas")
+	var named := 4 # boss, miniboss, title, ending
+	for m: RegExMatch in groups.search_all(built):
+		named += int(m.get_string(1) if m.get_string(1) != "" else m.get_string(2))
+	check(named == tracks, "13.3's list of tracks adds up to the folder (%d of %d)" % [named, tracks])
+	var code := ""
+	var dirs: Array[String] = ["res://scripts"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub: String in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f: String in DirAccess.get_files_at(d):
+			if f.ends_with(".gd"):
+				code += FileAccess.get_file_as_string(d + "/" + f)
+	var prefixes := RegEx.create_from_string("\"([a-z]+_)\" \\+")
+	var built_from: Array[String] = []
+	for m: RegExMatch in prefixes.search_all(code):
+		built_from.append(m.get_string(1))
+	var unplayed := []
+	for s: String in sfx:
+		if code.contains("\"%s\"" % s):
+			continue
+		if built_from.any(func(pre: String) -> bool: return s.begins_with(pre)):
+			continue
+		unplayed.append(s)
+	check(unplayed.is_empty(), "every sound effect on disk is played by the code (not: %s)" % [unplayed])
