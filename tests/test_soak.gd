@@ -108,6 +108,12 @@ const TOWER_FRAMES := 420
 const GLASS_FRAMES := 660
 ## Frames timed in each room once it has loaded (the room-load sweep, pass 166).
 const SETTLE_FRAMES := 12
+## Pass 335: three laps of every room; 1.5 GB is bible 14's budget, and a lap
+## after the first may grow by less than 4 MB or 50 objects.
+const MEMORY_LAPS := 3
+const MEMORY_BUDGET := 1536 * 1048576
+const MEMORY_DRIFT := 4 * 1048576
+const OBJECT_DRIFT := 50
 
 
 ## Every Tower room, live (enemies, doors, gates), with every ability and a
@@ -2027,3 +2033,36 @@ func test_a_ledge_corner_is_footing_for_the_set_back() -> void:
 		await frames(1)
 	check(floors > 500, "the walk stands on tiles (%d frames)" % floors)
 	check(gone.is_empty(), "no tile floor reads as gone: %s" % [gone])
+
+
+
+## Pass 335: bible 14's budget says "under 1.5 GB RAM", and nothing measured
+## it, or whether walking the world leaks. This enters every room three times.
+## The first lap fills the caches; the next two must hold the same memory and
+## the same number of live objects, so a room change that leaves anything
+## behind (a node, a tween, a sound) grows them lap on lap. Headless, the
+## memory is the engine's own (scripts, resources, nodes); textures on the GPU
+## are not in it.
+func test_walking_the_world_holds_its_memory() -> void:
+	var w := make_world({}, Trials.TEMPLE)
+	await frames(3)
+	var ids: Array[String] = []
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for file: String in DirAccess.get_files_at("res://levels/" + zone):
+			if file.ends_with(".room"):
+				ids.append(zone + "/" + file.trim_suffix(".room"))
+	ids.sort()
+	var peaks: Array[int] = []
+	var objects: Array[int] = []
+	for lap in MEMORY_LAPS:
+		var peak := 0
+		for id in ids:
+			w.start(id)
+			await frames(3)
+			peak = maxi(peak, OS.get_static_memory_usage())
+		peaks.append(peak)
+		objects.append(int(Performance.get_monitor(Performance.OBJECT_COUNT)))
+	var mb := func(b: int) -> float: return b / 1048576.0
+	check(peaks.max() < MEMORY_BUDGET, "the world stays under bible 14's 1.5 GB (peak %.0f MB)" % mb.call(peaks.max()))
+	check(peaks[2] - peaks[1] < MEMORY_DRIFT, "a third lap of every room needs no more memory than the second (%.1f MB, %.1f MB)" % [mb.call(peaks[1]), mb.call(peaks[2])])
+	check(absi(objects[2] - objects[1]) <= OBJECT_DRIFT, "and leaves as many live objects (%d, %d)" % [objects[1], objects[2]])
