@@ -1789,6 +1789,9 @@ func _tick_poison(delta: float) -> void:
 			# With damage numbers on, each tick shows what it took, in the
 			# masks' sick green (pass 309): it varies with the zone (pass 306).
 			DamageNumber.spawn(get_parent(), global_position + Vector2(0, -44), before - hp, "poison")
+			# And a small wet glug (pass 310): a tick was the one loss of health
+			# with no sound.
+			Sfx.play("poison_tick", 0.08, -4.0)
 			health_changed.emit(hp, max_hp)
 	if _poison_timer <= 0.0:
 		GameState.toast.emit("The poison fades.")
