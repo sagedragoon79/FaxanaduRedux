@@ -1189,6 +1189,20 @@ func test_the_rune_dagger_flies_strikes_and_reforms_at_your_hip() -> void:
 	p.input.up = false
 
 
+## Pass 326: a dagger that strikes a wall pings with its own voice. It
+## borrowed the shield's `guard` clank, so a throw at stone sounded like a block.
+func test_a_dagger_on_stone_pings_and_never_clanks_like_a_shield() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(14, 6))
+	await frames(6)
+	p.abilities["rune_dagger"] = true
+	Sfx.recent.clear()
+	p.input.throw_pressed = true
+	await frames(30)
+	check(Sfx.recent.has(RuneDagger.WALL_SOUND) and not Sfx.recent.has("guard"), "a dagger on stone pings, never the shield's clank (%s)" % [Sfx.recent])
+	check(FileAccess.file_exists("res://assets/sfx/%s.wav" % RuneDagger.WALL_SOUND), "%s.wav exists" % RuneDagger.WALL_SOUND)
+
+
 ## Pass 190: gear is heard. A dagger that lands bites, the two-handed Broad
 ## Sword swings with a heavier voice, and the Equipment page sheathes a blade,
 ## buckles on gear and swishes a dye.
