@@ -2423,3 +2423,108 @@ func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
 	TimeStop.reset()
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("\"It can stop the movement of the enemy for a fixed period of time.\"") and p.hp > 0, "bible 4.1 quotes the original's glass")
+
+
+## Pass 338: bible 7's zone table gave a wind-up for 21 of the 25 foes and a
+## health for 12, and no test read any of it. Its numbers table now gives each
+## foe's health, touch, first wind-up and main blow; this holds every row to
+## the script, and every wind-up, health and touch the zone table's words
+## name to the same script.
+func test_every_foes_numbers_are_written_in_bible_7() -> void:
+	# Foe: [script, wind-up constant, blow: [script, constant] or "contact"].
+	const FOES := {
+		"Monodron": ["monodron", "WINDUP", "contact"],
+		"Hornet": ["hornet", "WINDUP", "contact"],
+		"Rot Dwarf": ["rot_dwarf", "WINDUP", ["rot_dwarf", "SWING_DAMAGE"]],
+		"Grub Lump": ["grub_lump", "WINDUP", ["grub_lump", "DROP_DAMAGE"]],
+		"Sap Spitter": ["sap_spitter", "WINDUP", ["sap_glob", "DAMAGE"]],
+		"Iron Dwarf": ["iron_dwarf", "WINDUP", ["iron_dwarf", "SLAM_DAMAGE"]],
+		"Minecart Rider": ["minecart_rider", "REV", ["minecart_rider", "CHARGE_CONTACT"]],
+		"Gear Bat": ["gear_bat", "WINDUP", ["gear_blade", "DAMAGE"]],
+		"Naga": ["naga", "WINDUP", ["naga", "BITE_DAMAGE"]],
+		"Lantern Ghost": ["lantern_ghost", "WINDUP", ["lantern_ghost", "LUNGE_DAMAGE"]],
+		"Bog Myconid": ["bog_myconid", "WINDUP", ["spore_cloud", "DAMAGE"]],
+		"Drowned Dwarf": ["drowned_dwarf", "HEAVE", ["drowned_dwarf", "SLAM_DAMAGE"]],
+		"Marsh Hag": ["marsh_hag", "HEX", ["mire_grasp", "DAMAGE"]],
+		"Leaf Mantis": ["leaf_mantis", "UNFOLD", ["leaf_mantis", "SLASH_DAMAGE"]],
+		"Bark Knight": ["bark_knight", "BRACE", ["bark_knight", "THRUST_DAMAGE"]],
+		"Seed Bomber": ["seed_bomber", "WINDUP", ["bomber_seed", "DAMAGE"]],
+		"Lilith": ["lilith", "WINDUP", ["lilith", "TOUCH_DAMAGE"]],
+		"Storm Harpy": ["storm_harpy", "WINDUP", ["harpy_feather", "DAMAGE"]],
+		"Thunder Beetle": ["thunder_beetle", "CHARGE", ["thunder_beetle", "DISCHARGE_DAMAGE"]],
+		"Spire Sentinel": ["spire_sentinel", "RAISE", ["spire_sentinel", "SLAM_DAMAGE"]],
+		"Crystal Dwarf": ["crystal_dwarf", "WINDUP", ["crystal_dwarf", "FIST_DAMAGE"]],
+		"Shade Knight": ["shade_knight", "THRUST_TELL", ["shade_knight", "THRUST_DAMAGE"]],
+		"Clockwork Hound": ["clockwork_hound", "WIND", ["clockwork_hound", "BITE_DAMAGE"]],
+		"Meteor Slug": ["meteor_slug", "SWELL", ["meteor_glob", "DAMAGE"]],
+		"Spring Eel": ["spring_eel", "COIL", ["spring_eel", "BITE"]],
+	}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var seven := bible.get_slice("\n## 7. Enemies", 1).get_slice("\n## 8. ", 0)
+	var zones := seven.get_slice("| Zone | Enemies |", 1).get_slice("\n\n", 0)
+	var table := seven.get_slice("| Foe | HP | Touch | Wind-up (s) | Blow |", 1).get_slice("\n\n", 0)
+	# Every foe in scripts/enemies has a row (the Meteor Seed is a dying foe's
+	# burst, 8.9, not a foe).
+	for f: String in DirAccess.get_files_at("res://scripts/enemies"):
+		if not f.ends_with(".gd") or f in ["enemy.gd", "meteor_seed.gd"]:
+			continue
+		var s: Script = load("res://scripts/enemies/" + f)
+		if s.get_base_script() == Enemy:
+			check(FOES.values().any(func(v: Array) -> bool: return v[0] + ".gd" == f), "bible 7's numbers table has a row for %s" % f)
+	for foe: String in FOES:
+		var spec: Array = FOES[foe]
+		var script: Script = load("res://scripts/enemies/%s.gd" % spec[0])
+		var consts := script.get_script_constant_map()
+		var e: Enemy = script.new()
+		var tell: float = consts[spec[1]]
+		var blow: int = e.contact_damage if spec[2] is String else load("res://scripts/enemies/%s.gd" % spec[2][0]).get_script_constant_map()[spec[2][1]]
+		# A foe that lies hidden (a sunk dwarf, a folded mantis, a rising imp)
+		# touches for nothing until it shows itself.
+		var touch: int = e.contact_damage if e.contact_damage > 0 else consts.get("CONTACT", consts.get("TOUCH_DAMAGE", 0))
+		var row := table.get_slice("\n| %s | " % foe, 1).get_slice("\n", 0)
+		var cells := row.split(" | ")
+		check(cells.size() == 4, "bible 7's numbers table has a row for the %s" % foe)
+		if cells.size() == 4:
+			check(int(cells[0]) == e.max_hp, "%s's health: the bible says %s, the script %d" % [foe, cells[0], e.max_hp])
+			check(int(cells[1]) == touch, "%s's touch: the bible says %s, the script %d" % [foe, cells[1], touch])
+			check(is_equal_approx(float(cells[2]), tell), "%s's wind-up: the bible says %s, the script %s" % [foe, cells[2], tell])
+			check(cells[3].begins_with("%d (" % blow), "%s's blow: the bible says %s, the script %d" % [foe, cells[3], blow])
+		check(tell >= Enemy.MIN_TELEGRAPH, "%s's wind-up is fair" % foe)
+		# The zone table's own words, between the foe's name and its closing
+		# bracket, name the same wind-up and any health or touch they give.
+		var words := _bracketed(zones, foe + " (")
+		check(words != "", "bible 7's zone table describes the %s" % foe)
+		check(words.contains("%s s" % String.num(tell)), "the zone table gives the %s's wind-up (%s s)" % [foe, tell])
+		var re := RegEx.create_from_string("(\\d+) HP|HP (\\d+)")
+		for m: RegExMatch in re.search_all(words):
+			var hp := int(m.get_string(1) if m.get_string(1) != "" else m.get_string(2))
+			check(hp == e.max_hp, "the zone table gives the %s %d HP, the script %d" % [foe, hp, e.max_hp])
+		re = RegEx.create_from_string("(?:contact|touch) (\\d+)")
+		for m: RegExMatch in re.search_all(words):
+			check(int(m.get_string(1)) == touch, "the zone table gives the %s a touch of %s, the script %d" % [foe, m.get_string(1), touch])
+		e.free()
+
+
+## The text after `opening` up to its matching closing bracket (brackets in
+## `code`, such as a legend, don't count), or "".
+func _bracketed(text: String, opening: String) -> String:
+	var at := text.find(opening)
+	if at < 0:
+		return ""
+	var depth := 1
+	var code := false
+	var i := at + opening.length()
+	while i < text.length():
+		var c := text[i]
+		if c == "`":
+			code = not code
+		elif code:
+			pass
+		elif c == "(":
+			depth += 1
+		elif c == ")":
+			depth -= 1
+			if depth == 0:
+				return text.substr(at + opening.length(), i - at - opening.length())
+		i += 1
+	return ""
