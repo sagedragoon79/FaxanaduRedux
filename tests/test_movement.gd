@@ -1759,3 +1759,67 @@ func test_every_field_number_is_written_in_bible_6_14() -> void:
 			continue
 		var row := table.substr(table.rfind("\n", at) + 1).get_slice("\n", 0)
 		check(written_in(row, float(fields[name])), "6.14's row writes %s, %s (%s)" % [name, String.num(fields[name]), row])
+
+
+## Pass 344: the check above finds a number anywhere in section 6, in any of
+## its forms (0.8 is also "1", "80%" and "800 ms"), so two tuning numbers the
+## section never named passed on coincidence: `hurt_invuln` (0.8, found in the
+## land squash's "1.25x0.8") and `slash_recoil` (120, found in the climb jump).
+## This holds each number to its own subsection, written as the bible writes a
+## number there (the number itself, two places, a whole px, a thousands comma, ms or a
+## percent).
+func test_every_movement_number_is_written_where_it_belongs() -> void:
+	const HOME := {
+		"6.1": ["run_speed", "ground_accel", "ground_decel", "turn_multiplier", "walk_fraction", "walk_tilt", "run_tilt"],
+		"6.2": ["jump_height", "jump_time_to_apex", "fall_gravity_multiplier", "jump_cut_multiplier", "apex_threshold",
+			"apex_gravity_multiplier", "max_fall_speed", "max_fast_fall_speed", "air_accel", "air_decel", "coyote_time",
+			"jump_buffer_time", "corner_correction_px", "ledge_correction_px", "head_correction_px", "gravity", "jump_velocity"],
+		"6.3": ["wall_slide_speed", "wall_stick_time", "wall_jump_x", "wall_jump_y", "wall_climb_jump_x", "wall_jump_lock",
+			"wall_climb_jump_lock", "wall_jump_blend", "wall_coyote_time"],
+		"6.4": ["double_jump_height", "double_jump_velocity"],
+		"6.5": ["dash_speed", "dash_time", "dash_invuln", "air_dash_charges", "ground_dash_cooldown", "dash_buffer_time", "ground_dash_snap"],
+		"6.6": ["pogo_bounce", "pogo_bounce_held", "pogo_hitstop", "pod_bounce", "slash_active", "down_strike_active", "attack_cooldown"],
+		"6.7": ["hurt_invuln", "slash_recoil"],
+		"6.8": ["swim_speed_multiplier", "swim_float", "swim_sink", "swim_drag", "swim_stroke"],
+		"6.9": ["wind_speed", "wind_drag"],
+		"6.10": ["glide_fall_speed", "glide_brake"],
+		"6.11": ["ladder_speed", "ladder_snap", "ladder_regrab"],
+		"6.12": ["sap_speed", "sap_jump"],
+	}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var six := bible.get_slice("## 6. Movement", 1).get_slice("\n## 7. ", 0)
+	var passes := RegEx.create_from_string("(?i)pass(es)? \\d+((, | and | to |-)\\d+)*")
+	var t := MovementTuning.new()
+	var homed := {}
+	var astray := []
+	for sec: String in HOME:
+		var text := passes.sub(six.get_slice("\n### %s " % sec, 1).get_slice("\n### ", 0), "pass", true)
+		# 6.7 is the juice list, full of numbers; its two tuning numbers have
+		# a line of their own.
+		if sec == "6.7":
+			text = text.get_slice("- **Hurt and recoil", 1).get_slice("\n", 0)
+		for prop: String in HOME[sec]:
+			homed[prop] = true
+			var f := float(t.get(prop))
+			var forms := [String.num(f), "%.2f" % f]
+			# A whole number, or a derived one (gravity from 2h/t²) to the px.
+			var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) else ([floori(f), roundi(f)] if absf(f) >= 100.0 else [])
+			for i: int in wholes:
+				forms.append(str(i))
+				if i >= 1000:
+					forms.append("%d,%03d" % [i / 1000, i % 1000])
+			if f > 0.0 and f < 1.0:
+				forms.append("%d ms" % roundi(f * 1000.0))
+				forms.append("%d%%" % roundi(f * 100.0))
+			var found := false
+			for form: String in forms:
+				var re := RegEx.create_from_string("(?<![\\d.,])%s(?![\\d])" % form.replace(".", "\\."))
+				found = found or re.search(text) != null
+			if not found:
+				astray.append("%s %s not in %s" % [prop, String.num(f), sec])
+	check(astray.is_empty(), "every movement number is written in its own subsection (%s)" % [astray])
+	var unhomed := []
+	for prop: Dictionary in t.get_property_list():
+		if prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE and prop.type in [TYPE_FLOAT, TYPE_INT] and not homed.has(prop.name):
+			unhomed.append(prop.name)
+	check(unhomed.is_empty(), "every tuning number has a home subsection (%s)" % [unhomed])
