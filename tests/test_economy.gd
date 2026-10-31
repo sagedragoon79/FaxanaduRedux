@@ -1511,6 +1511,66 @@ func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
 	check(p.tilte_swarm, "the Tilte Swarm skill reaches the player")
 
 
+## Pass 322: every number a skill's page names is the number the code uses.
+## Each skill is learned alone and its effect read back off the hero, so a
+## retuned constant can't leave the skill tree promising the old one.
+func test_every_skill_page_names_the_number_it_gives() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	var desc := {}
+	for n: Dictionary in Skills.nodes():
+		desc[n.id] = String(n.desc)
+	var saved: Array = GameState.data.skills.duplicate()
+	var pct := func(x: float) -> int: return roundi(absf(x) * 100.0)
+	var base_mp := p.max_mp
+	var base_flask := p.flask_max
+	var base_hp := p.max_hp
+	var said := {}
+	for id: String in ["keen_edge", "keener_edge", "mattock_mastery", "siphon", "thrift", "quick_draught", "gold_sense", "clear_mind", "deep_pockets", "resilience"]:
+		GameState.data.skills = [id]
+		GameState.refresh_stats(p)
+		match id:
+			"keen_edge", "keener_edge": said[id] = "+%d%% melee damage" % pct.call(p.melee_mult - 1.0)
+			"mattock_mastery": said[id] = "%d%% more damage" % pct.call(p.down_strike_mult - 1.0)
+			"siphon": said[id] = "%d%% more MP" % pct.call(p.mp_hit_mult - 1.0)
+			"thrift": said[id] = "%d%% less MP" % pct.call(1.0 - p.spell_cost_mult)
+			"quick_draught": said[id] = "%d%% faster" % pct.call(1.0 - p.drink_mult)
+			"gold_sense": said[id] = "%d%% more gold" % pct.call(p.gold_mult - 1.0)
+			"clear_mind": said[id] = "+%d max MP" % roundi(p.max_mp - base_mp)
+			"deep_pockets": said[id] = "+%d Red Potion charge" % (p.flask_max - base_flask)
+			"resilience": said[id] = "+%d mask of health" % ((p.max_hp - base_hp) / 20)
+	GameState.data.skills = saved
+	GameState.refresh_stats(p)
+	said["bloodletting"] = "heals you %d HP" % Player.BLOODLETTING_HEAL
+	said["executioner"] = "%d%% more" % pct.call(p.combat.executioner_mult - 1.0)
+	said["thrust"] = "half again a heavy hit" if is_equal_approx(p.combat.thrust_mult, 1.5) else "thrust_mult %.2f" % p.combat.thrust_mult
+	said["last_stand"] = "Below %d%% health, you take %d%% less damage" % [pct.call(Player.LAST_STAND_BELOW), pct.call(1.0 - Player.LAST_STAND_TAKEN)]
+	said["time_thief"] = "%d s longer" % roundi(Player.TIME_THIEF_EXTRA)
+	said["mantra_of_death"] = "half its MP" if is_equal_approx(Player.MANTRA_OF_DEATH_MULT, 0.5) else "mult %.2f" % Player.MANTRA_OF_DEATH_MULT
+	said["tilte_swarm"] = "each %d damage" % int(Spells.DATA.tilte.swarm_damage)
+	said["wanderers_grace"] = "%s s longer" % String.num(Player.GRACE_INVULN)
+	var wrong := []
+	for id: String in said:
+		if not String(desc.get(id, "")).contains(said[id]):
+			wrong.append("%s should say \"%s\": \"%s\"" % [id, said[id], desc.get(id, "")])
+	check(wrong.is_empty(), "every skill page names the number the code gives (%s)" % [wrong])
+	check(said.size() >= 18, "and the check covers each skill with a number (%d)" % said.size())
+	# The bible's list (9) names the same numbers.
+	var tree := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**Blade (melee)**", 1).get_slice("\n## ", 0)
+	var nums := {"Keen Edge": said.keen_edge.get_slice(" ", 0), "Keener Edge": said.keener_edge.get_slice(" ", 0), "Mattock Mastery": "+" + said.mattock_mastery.get_slice(" ", 0),
+		"Siphon": "+" + said.siphon.get_slice(" ", 0), "Thrift": said.thrift.get_slice(" ", 0), "Quick Draught": said.quick_draught.get_slice(" ", 0),
+		"Gold Sense": "+" + said.gold_sense.get_slice(" ", 0), "Clear Mind": said.clear_mind.get_slice(" max", 0),
+		"Deep Pockets": said.deep_pockets.get_slice(" Red", 0), "Resilience": said.resilience.get_slice(" of", 0), "Bloodletting": "%d HP" % Player.BLOODLETTING_HEAL,
+		"Executioner": "+%d%%" % pct.call(p.combat.executioner_mult - 1.0), "Last Stand": "below %d%% HP, take %d%% less" % [pct.call(Player.LAST_STAND_BELOW), pct.call(1.0 - Player.LAST_STAND_TAKEN)],
+		"Time Thief": "%d s longer" % roundi(Player.TIME_THIEF_EXTRA), "Wanderer's Grace": "+%s s" % String.num(Player.GRACE_INVULN), "Tilte Swarm": "3 orbs"}
+	var stale := []
+	for name: String in nums:
+		var line := tree.get_slice(". %s:" % name, 1).get_slice("\n", 0)
+		if not line.contains(nums[name]):
+			stale.append("%s: \"%s\" lacks %s" % [name, line.strip_edges(), nums[name]])
+	check(stale.is_empty(), "the bible's skill list names the code's numbers (%s)" % [stale])
+
+
 ## The Act III tier (pass 100): three more nodes in each branch, each after the
 ## one before, and a tree that now costs more than the 34 points the game gives (pass 253).
 func test_act_three_skills_chain_and_apply() -> void:
