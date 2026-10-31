@@ -1740,3 +1740,22 @@ func test_a_dagger_throw_never_touches_movement() -> void:
 			first = f
 			break
 	check(first == -1, "a thrower and a hero who never throws move alike, frame for frame (first apart at %d)" % first)
+
+
+## Pass 336: the fields that move you from outside `MovementTuning` were each
+## written only in their zone's or guardian's section, and their tests read the
+## constant back. Bible 6.14 gathers them; each row must write its constant.
+func test_every_field_number_is_written_in_bible_6_14() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var table := bible.get_slice("### 6.14 ", 1).get_slice("\n## 7. ", 0)
+	var fields := {
+		"GravityDrift.PULL": GravityDrift.PULL, "LeafFall.WEIGHT": LeafFall.WEIGHT,
+		"Updraft.LIFT": Updraft.LIFT, "Player.UPDRAFT_ACCEL": Player.UPDRAFT_ACCEL,
+		"World.RISE_SPEED": absf(World.RISE_SPEED), "Player.BIG_DROP": Player.BIG_DROP,
+	}
+	for name: String in fields:
+		var at := table.find("`%s`" % name)
+		if not check(at >= 0, "6.14 names %s" % name):
+			continue
+		var row := table.substr(table.rfind("\n", at) + 1).get_slice("\n", 0)
+		check(written_in(row, float(fields[name])), "6.14's row writes %s, %s (%s)" % [name, String.num(fields[name]), row])
