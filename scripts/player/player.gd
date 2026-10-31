@@ -49,6 +49,8 @@ const BIG_DROP := 112.0
 const HEAVY_SPARK := 1.6
 ## Skill tree numbers (design bible 9).
 const BLOODLETTING_HEAL := 2
+## Heard as Bloodletting gives health back (pass 318).
+const BLOODLET_SOUND := "bloodlet"
 const LAST_STAND_BELOW := 0.2
 const LAST_STAND_TAKEN := 0.75
 const TIME_THIEF_EXTRA := 1.0
@@ -1139,6 +1141,7 @@ func _process_attack_hits() -> void:
 				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
 				health_changed.emit(hp, max_hp)
 				_spawn_dust(Vector2(0, -20), "heal")
+				Sfx.play(BLOODLET_SOUND, 0.06, -4.0)
 			hit_something = true
 			if collider is Node2D:
 				HitSpark.spawn(get_parent(), _contact_point(rect, collider), dir, HEAVY_SPARK if is_heavy_swing else 1.0)
