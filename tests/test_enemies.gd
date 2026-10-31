@@ -2400,3 +2400,26 @@ func test_the_nagas_bite_can_be_parried() -> void:
 	check(not n.is_staggered() and n.state != "stagger", "then it gathers itself (%s)" % n.state)
 	took = await meet.call(false)
 	check(took == Naga.BITE_DAMAGE, "unmet, the bite lands whole (%d)" % took)
+
+
+## Pass 337 (bible 4.1, the Hour Glass deviation): the original's glass "can
+## stop the movement of the enemy for a fixed period of time". The remake's
+## stops what foes loose and time-locked water, and only clockwork foes stop
+## dead; the rest go on, so a turn of the glass is a tool, not a pause.
+func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
+	var room := _room_with({Vector2i(14, 6): "D", Vector2i(24, 6): "j"})
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(30)
+	var dwarf: Node2D = _find(room, RotDwarf)
+	var hound: Node2D = _find(room, ClockworkHound)
+	if not check(dwarf != null and hound != null, "a Rot Dwarf and a Clockwork Hound stand in the hall"):
+		return
+	TimeStop.start()
+	var d0 := dwarf.global_position
+	var h0 := hound.global_position
+	await frames(90)
+	check(dwarf.global_position.distance_to(d0) > 4.0, "the dwarf walks on through stopped time (%.0f px)" % dwarf.global_position.distance_to(d0))
+	check(hound.global_position.distance_to(h0) < 0.5, "the clockwork hound stops dead (%.1f px)" % hound.global_position.distance_to(h0))
+	TimeStop.reset()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("\"It can stop the movement of the enemy for a fixed period of time.\"") and p.hp > 0, "bible 4.1 quotes the original's glass")
