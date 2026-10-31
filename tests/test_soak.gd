@@ -341,6 +341,10 @@ func test_hydra_fight_soak_stays_lean() -> void:
 	await frames(2)
 
 
+## The shield the soak's shielded rooms wear: the one that does the most.
+const SOAK_SHIELD := "magic_shield"
+
+
 func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var problems: Array[String] = []
 	var turns := 0
@@ -348,6 +352,8 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	var counted := 0
 	var thrusts := 0
 	var throws := 0
+	var guarded := 0
+	var shield_rooms := 0
 	var dir := DirAccess.open("res://levels/" + zone)
 	var ids: Array[String] = []
 	for f in dir.get_files():
@@ -365,6 +371,14 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 			GameState.data.abilities[k] = true
 			w.player.abilities[k] = true
 		_learn_the_blade(w)
+		# The off hand (Sean, 2026-10-31) holds a shield or the Rune Dagger, so
+		# every other room is mashed with the Magic Shield on (guard, parry, the
+		# reflect and the ward) and the rest with the hand free to throw (pass 319).
+		var shielded := ids.find(id) % 2 == 1
+		if shielded:
+			shield_rooms += 1
+			GameState.data.gear.append(SOAK_SHIELD)
+			GameState.wear(SOAK_SHIELD, w.player)
 		w.player.max_hp = 99999
 		w.player.hp = 99999
 		var rng := RandomNumberGenerator.new()
@@ -399,6 +413,8 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 					problems.append("%s frame %d: embedded in %s at %s (vel %s), still at %s" % [id, f, w.room.id, pos, vel, w.player.global_position])
 					break
 				print("  transient overlap: %s frame %d in %s at %s vel %s" % [id, f, w.room.id, pos, vel])
+			if p.is_blocking:
+				guarded += 1
 			peak = maxi(peak, _count_nodes(w))
 		if peak > start_nodes + 400:
 			problems.append("%s: nodes grew from %d to %d" % [id, start_nodes, peak])
@@ -415,7 +431,10 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	if zone != "sunken":
 		# (Underwater a charge is spent: the Sunken Spring is all swimming.)
 		check(thrusts > 0, "the mashing player thrust %d times across %d %s rooms" % [thrusts, ids.size(), label])
-	check(throws >= ids.size(), "the mashing player threw the Rune Dagger %d times across %d %s rooms" % [throws, ids.size(), label])
+	check(throws >= ids.size() - shield_rooms, "the mashing player threw the Rune Dagger %d times across %d %s rooms with the hand free" % [throws, ids.size() - shield_rooms, label])
+	if shield_rooms > 0:
+		print("  %s soak: %d frames guarded across %d shielded rooms" % [label, guarded, shield_rooms])
+		check(guarded >= shield_rooms * 10, "and guarded %d frames across %d rooms with the Magic Shield on" % [guarded, shield_rooms])
 	if glass:
 		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
 		TimeStop.reset()
