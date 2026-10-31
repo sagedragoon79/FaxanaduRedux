@@ -2800,3 +2800,30 @@ func test_every_shelf_asks_the_shop_tables_price() -> void:
 			"| Cartographer | Eolis, Forepaw, Victim, Conflate, Daybreak, Dartmoor | each zone's chart (40 to 800 g"]:
 		check(table.contains(said), "the table says it: %s" % said)
 
+
+
+## Pass 333: bible 9 priced the planned tree at 54, the first draft's total,
+## though its own list (three branches of twelve) had added up to 68 since that
+## draft. These add up the list and hold the built nodes to the code.
+func test_the_bible_prices_the_skill_tree_as_built() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var nine := bible.get_slice("## 9. Skill Tree", 1).get_slice("\n## 10. ", 0)
+	var lists := nine.get_slice("**Blade (melee)**", 1).get_slice("\n---", 0)
+	var line := RegEx.create_from_string("(?m)^\\d+\\. ([^:]+): .*\\[(\\d+)\\]\\s*$")
+	var planned := {}
+	var plan_total := 0
+	for m: RegExMatch in line.search_all(lists):
+		planned[m.get_string(1)] = int(m.get_string(2))
+		plan_total += int(m.get_string(2))
+	check(planned.size() == 36, "the list plans three branches of twelve (%d)" % planned.size())
+	check(nine.contains("a tree planned at **%d** in all" % plan_total), "9 states the plan's total as its list adds up (%d)" % plan_total)
+	var built_total := 0
+	var built := 0
+	var wrong := []
+	for n: Dictionary in Skills.nodes():
+		built += 1
+		built_total += int(n.cost)
+		if int(planned.get(n.name, -1)) != int(n.cost):
+			wrong.append("%s: list [%s], code %d" % [n.name, planned.get(n.name, "none"), n.cost])
+	check(wrong.is_empty(), "every built skill is in the list at its own cost (%s)" % [wrong])
+	check(nine.contains("(%d as built, over %d nodes)" % [built_total, built]), "9 states the built tree's cost and size (%d over %d)" % [built_total, built])
