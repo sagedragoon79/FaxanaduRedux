@@ -807,12 +807,34 @@ The core (phase 2) has none: no blade reaches it, only the veins.
 
 **The Rune Dagger against bosses (pass 188):** it reaches every boss that a blade does, for 6 a throw, and is meant as a way to keep up pressure from a distance, not a way around a fight's lesson. So it splits none of the Bark Knight Captain's plates, breaks none of the Matriarch's hexes and never cuts the Heart (5.2, the Rune Dagger). The two-handed Dwarvish Broad Sword (pass 186) cannot parry, and no boss needs a parry: every opening that a parry gives also comes some other way, or only feeds Executioner and Bloodletting. The Battle Helmet's slot and kept gear change nothing in a fight, apart from letting you swap blades at a pause. **Held since pass 316:** with Sean's off hand the dagger is a whole build's ranged tool, so `test_the_rune_dagger_reaches_every_guardian` fights each guardian of the Boss Rush order in its own arena and throws until one throw stings it, from a step to either side, from under it when it is high, and from the ground beside it when it stands below you. The Drowned Warden, waist-deep in the Wellspring, is reached only that last way: a throw from the ledges or the planks flies over its head, so the islands are where a dagger fights it. The veins and the bound Heart are left out, as above.
 
+**Every guardian's numbers, as built (pass 340).** Each guardian below is told in words. Until pass 340 Rokusutahn's section gave none of his three wind-ups, his health or the mark where his second phase starts, and Pakukame's gave no mark for its third. No test read a guardian's phase marks or wind-ups from the bible. This table gives each guardian's health, the health marks where its phases begin (its `PHASES`) and every named wind-up in its script, before a phase quickens them. `test_every_guardians_numbers_are_written_in_bible_8` holds each row to its script, and each "Phase N (below ...)" line in a guardian's own section to the same mark.
+
+| Guardian | HP | Phases at | Wind-ups (s) |
+| --- | --- | --- | --- |
+| Rokusutahn | 600 | 60%, 30% | 0.8, 0.9 |
+| Zoradohna | 260 | 65%, 30% | 0.7, 0.8 |
+| Ripasheiku | 260 | 66%, 30% | 0.55, 0.6, 0.65 |
+| Zorugeriru | 300 | 60%, 30% | 0.6, 0.7 |
+| Pakukame | 260 | 50%, 25% | 0.5, 0.55, 0.6, 0.7 |
+| Borabohra | 320 | 50%, 25% | 0.6, 0.65, 0.8 |
+| King Grieve | 320 | 50%, 20% | 0.4, 0.45, 0.5, 0.6 |
+| Shadow Eura | 320 | 50%, 20% | 0.4, 0.45, 0.5 |
+| The Evil One's avatar | 360 | 50% | 0.5, 0.55, 0.6 |
+| The Evil One's veins | 10 a vein | 50% | 0.6 |
+| The Evil One's heart | 300 | 66%, 33% | 0.5, 0.6 |
+| The Foreman | 220 | 50% | 0.6, 0.75, 0.85 |
+| The Marsh Hag Matriarch | 230 | 50% | 0.5, 0.7, 0.8 |
+| The Bark Knight Captain | 240 | 50% | 0.65, 0.7 |
+| The Clockwork Alpha | 260 | 50% | 0.6, 0.7, 0.8 |
+| The Drowned Warden | 680 | 66%, 33% | 0.45, 0.6, 0.7 |
+
 ### 8.1 Rokusutahn, the Root-Gnawer (Trunk Hollows)
 - **Concept:** A colossal armored grub that has been chewing the Tree's taproot dry. Its segments are plated in bark; its face is a wheel of mandibles.
 - **Arena:** a cylindrical root chamber with wooden ledges on both walls.
 - **Tests:** wall jumping (just earned).
-- **Phase 1:** bursts out of a wall and lunges across the room; you wall-jump over it. Its tail segments are the weak point.
-- **Phase 2:** burrows into the ceiling and rains sap clumps that harden into temporary platforms.
+- **Body:** 600 HP, spread over a chain of 26 bark-plated segments.
+- **Phase 1:** bursts out of a wall and lunges across the room; you wall-jump over it. Its tail segments are the weak point. Before each lunge the wall he will burst from glows and cracks for 0.9 s.
+- **Phase 2 (below 60%):** burrows into the ceiling and rains sap clumps that harden into temporary platforms. A column of falling dust marks the spot for 0.8 s before he plunges or dangles his tail there.
 - **Phase 3 (below 30%):** tears the floor away; the fight continues on the wall ledges only.
 - **Reward:** Elf Ring, 1 skill point, restores the Spring of Trunk.
 - **Reveal:** on entry the walls shake, the banner names him, and he bursts out of the wall across from you, roars with his mandibles spinning, and pulls back in before the first lunge. Nothing he does in the reveal hurts.
@@ -859,7 +881,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
   - Seed spit (alternating with the whip): the bulb swells for 0.5 s and spits three seeds in arcs, 12 each, parryable.
 - **Phase 2 (below half):** tells a fifth shorter (never under 0.35 s). Every other bite tears a four-tile chunk out of the leaf where it lands, up to three gaps with thorns below, never next to the root or the walls. Their thorns set you back beside the gap, never over it (6.13, pass 292). You stride or bounce across, and strike the open jaws from the gap's edge.
 - **The brood (pass 257):** in the original, Pakukame looses Liliths three at a time until those are destroyed. The remake's Bloom had no brood, so the fight lost the one thing the original's was known for. From phase 2, when it would whip or spit from afar and none of its brood is left, it broods instead (the first far move below half, then no sooner than three moves after the last). The petals flare wide and spin for 0.7 s (a fifth shorter like every phase-2 tell, never under 0.35 s), with a rustling hum (`bloom_brood`, since pass 262), then three **Liliths** fly up out of them. A Lilith (`Lilith`, code-drawn) is a violet imp the size of a hand with pink petal wings: 20 HP (10 until pass 258, when the sheet found it fell to one slash of the Branches' par blade), harmless for its first 0.5 s while it clears the petals, then it hangs above and to one side of you, each of the three in its own place. It screeches with its wings flared for 0.4 s, dives at where you were (250 px/s for 0.45 s, 8 on touch) and climbs back on the other side. Struck down, a Lilith never returns. While any flies the Bloom only whips and spits; once all three are down it may brood again. They die with the Bloom, paying nothing (pass 266, 5.5). Test: `test_the_bloom_looses_its_liliths_three_at_a_time`. Screenshots: `/mnt/project-files/pass-257/brood_260.png`, `brood_320.png`.
-- **Phase 3:** it uproots and chases you along a falling leaf (short chase sequence).
+- **Phase 3 (below a quarter):** it uproots and chases you along a falling leaf (short chase sequence).
   - **As built (pass 90), below a quarter:**
     - When its head next draws back, it spends 1.2 s wrenching its root out of the leaf (the tell). The crown-leaf, cut loose, starts to fall (`LeafFall`): wind and torn leaves rush up past it, and the player weighs 85% while it falls, so jumps hang longer.
     - The Bloom scuttles after you on its roots at 80 px/s, slower than your run. It keeps 48 px from the walls and stops 40 px short of you.
