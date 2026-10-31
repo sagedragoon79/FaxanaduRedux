@@ -2140,3 +2140,30 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 		var para := bible.get_slice("**%s (pass " % town.capitalize(), 1).get_slice("\n\n**", 0)
 		check(para.contains("%s lamp posts" % words), "3.2 counts %s's lamp posts (%d)" % [town, lamps])
 		check(para.contains("at %s" % density) or para.contains("fog at %s" % density), "3.2 gives %s's fog (%s)" % [town, density])
+
+
+## Pass 342: bible 13.3 gives the audio engine's numbers (the voice pool, the
+## music's level and its phase lift, the loudest cues' lift) and the mix
+## check's limits, but no test read them from the bible, and the ambience's
+## level and the crossfade were not written at all. These hold each number to
+## its constant, and the mix check's to `levels.py` itself.
+func test_the_audio_numbers_are_written_in_bible_13_3() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var audio := bible.get_slice("### 13.3 Full asset list", 1).get_slice("\n### 13.4", 0)
+	check(audio.contains("`Sfx` plays through a pool of %d voices" % Sfx.POOL_SIZE), "13.3 gives the voice pool (%d)" % Sfx.POOL_SIZE)
+	check(audio.contains("`Music.MUSIC_DB` raised 1.7 dB to %s" % String.num(Music.MUSIC_DB)), "13.3 gives the music's level (%s dB)" % Music.MUSIC_DB)
+	check(audio.contains("`Music.AMBIENCE_DB` (%d dB)" % roundi(Music.AMBIENCE_DB)) and is_equal_approx(Music.AMBIENCE_DB, roundf(Music.AMBIENCE_DB)), "13.3 gives the ambience's level (%s dB)" % Music.AMBIENCE_DB)
+	check(audio.contains("over `Music.FADE` (%s s)" % String.num(Music.FADE)), "13.3 gives the crossfade (%s s)" % Music.FADE)
+	check(is_equal_approx(Music.PHASE_STEP, pow(2.0, 1.0 / 12.0)) and audio.contains("`pitch_scale` 2^(1/12) per phase, eased over %s s" % String.num(Music.PHASE_SHIFT_TIME)), "13.3 gives the phase lift: a semitone over %s s" % Music.PHASE_SHIFT_TIME)
+	check(audio.contains("`Sfx.LIFT` plays them back %s and %s dB up" % [String.num(Sfx.LIFT["hurt"]), String.num(Sfx.LIFT["hit"])]), "13.3 gives the lift on hurt and hit (%s)" % [Sfx.LIFT])
+	check(Sfx.LIFT.size() == 2, "only hurt and hit are lifted, as 13.3 says (%s)" % [Sfx.LIFT])
+	var order := ", then ".join(Music.EXTENSIONS.map(func(e: String) -> String: return "`.%s`" % e))
+	check(audio.contains("`Music.EXTENSIONS` now looks for %s" % order), "13.3 gives the order a supplied track is looked for (%s)" % order)
+	# The mix check's own limits, read from the script CI runs.
+	var levels := FileAccess.get_file_as_string("res://tools/audio/levels.py")
+	var limit := func(name: String) -> String:
+		var m := RegEx.create_from_string("(?m)^%s = (-?[\\d.]+)$" % name).search(levels)
+		return m.get_string(1) if m != null else "?"
+	check(audio.contains("peak at %s dBFS or over" % limit.call("CLIP")), "13.3 gives the clip limit (%s)" % limit.call("CLIP"))
+	check(audio.contains("strays more than %s dB from its group's median" % str(roundi(String(limit.call("SPREAD")).to_float()))), "13.3 gives the spread (%s)" % limit.call("SPREAD"))
+	check(audio.contains("`HEADROOM` (%s dB)" % limit.call("HEADROOM")), "13.3 gives the headroom (%s)" % limit.call("HEADROOM"))
