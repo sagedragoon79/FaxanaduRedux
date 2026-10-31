@@ -2675,6 +2675,80 @@ func test_the_rooms_hold_the_finds_the_bible_counts() -> void:
 	check((COUNTS["*"] + 6) % 3 == 0, "the rooms' Mantra Shards and the six trials' make whole mantras, none spare")
 
 
+
+## Pass 349: bible 11's secrets table kept the plan's counts for four kinds of
+## secret (18 breakable walls, 10 illusory, 12 key doors, 12 lore tablets) and
+## no test read them. This counts each from the rooms: cracked-stone walls
+## (each run of `C`), rooms with a fake wall (`%` or a `secret:` cover), card
+## doors (each `J` door) and tablets (each cell `sign:` lines carve).
+func test_the_secrets_table_counts_the_rooms() -> void:
+	var rooms := _all_rooms()
+	var walls := 0
+	var veiled := 0
+	var hiding := 0
+	var doors := 0
+	var tablets := 0
+	for id: String in rooms:
+		if id.begins_with("gym/"):
+			continue
+		var grid: Array = rooms[id].grid
+		var fake: bool = not rooms[id].lists.get("secret", []).is_empty()
+		if fake:
+			hiding += 1
+		for y in grid.size():
+			var row: String = grid[y]
+			fake = fake or row.contains("%")
+			for x in row.length():
+				var above: String = grid[y - 1] if y > 0 else ""
+				if row[x] == "J" and not (x < above.length() and above[x] == "J"):
+					doors += 1
+		if fake:
+			veiled += 1
+		walls += _clusters(grid, "C")
+		var cells := {}
+		for spec: String in rooms[id].lists.get("sign", []):
+			cells[spec.get_slice(",", 0).strip_edges() + "," + spec.get_slice(",", 1).strip_edges()] = true
+		tablets += cells.size()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var table := bible.get_slice("## 11. Secrets", 1).get_slice("\n## 12", 0)
+	var cell := func(kind: String) -> String:
+		return table.get_slice("\n| %s | " % kind, 1).get_slice(" |", 0)
+	check(String(cell.call("Breakable walls (Mattock)")).begins_with("%d (" % walls), "11 counts the cracked-stone walls (%d: %s)" % [walls, cell.call("Breakable walls (Mattock)")])
+	check(String(cell.call("Illusory walls (Black Onyx)")).begins_with("%d rooms (" % veiled) and String(cell.call("Illusory walls (Black Onyx)")).contains("%d of them hiding a room" % hiding), "11 counts the rooms with a fake wall, and those hiding a room (%d, %d: %s)" % [veiled, hiding, cell.call("Illusory walls (Black Onyx)")])
+	var cards := ["jack"]
+	for id: String in rooms:
+		for spec: String in rooms[id].lists.get("lock", []):
+			cards.append(spec.get_slice(",", 2).strip_edges())
+	cards.sort()
+	check(doors == cards.size() and cards == ["ace", "jack", "joker", "king", "queen"], "one door of each card (%d doors: %s)" % [doors, cards])
+	check(String(cell.call("Key doors")).begins_with("%d (" % doors), "11 counts the card doors (%d: %s)" % [doors, cell.call("Key doors")])
+	check(String(cell.call("Lore tablets")).begins_with("%d (" % tablets), "11 counts the tablets (%d: %s)" % [tablets, cell.call("Lore tablets")])
+
+
+## How many separate patches of `ch` the grid holds (cells touching side to
+## side or top to bottom are one patch).
+func _clusters(grid: Array, ch: String) -> int:
+	var seen := {}
+	var n := 0
+	for y in grid.size():
+		var row: String = grid[y]
+		for x in row.length():
+			if row[x] != ch or seen.has(Vector2i(x, y)):
+				continue
+			n += 1
+			var stack: Array[Vector2i] = [Vector2i(x, y)]
+			seen[Vector2i(x, y)] = true
+			while not stack.is_empty():
+				var c: Vector2i = stack.pop_back()
+				for d: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+					var at := c + d
+					if at.y < 0 or at.y >= grid.size() or at.x < 0 or at.x >= String(grid[at.y]).length():
+						continue
+					if String(grid[at.y])[at.x] == ch and not seen.has(at):
+						seen[at] = true
+						stack.append(at)
+	return n
+
 ## Pass 261 (bible 3.3, 10.2): "the Cartographer in each town sells the zone
 ## outline", and every zone the map draws had one but Dartmoor and the Sunken
 ## Spring under it, the two zones with the most hidden rooms. Sounder Hulda

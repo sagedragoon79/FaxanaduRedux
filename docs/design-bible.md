@@ -1311,16 +1311,18 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 | Type | Count | How it's hidden | Reward |
 |------|-------|-----------------|--------|
-| Breakable walls (Mattock) | 18 | Cracked stone, sometimes faint | Gold, Life Fruit |
-| Illusory walls (Black Onyx) | 10 | Seam visible only with Onyx | Mantra Shards, lore |
-| Key doors | 12 | Visible, need a card key | Equipment, spells, shortcuts |
+| Breakable walls (Mattock) | 14 (18 planned) | Cracked stone, sometimes faint | Gold, Life Fruit |
+| Illusory walls (Black Onyx) | 14 rooms (10 planned), 12 of them hiding a room | Seam visible only with Onyx | Mantra Shards, lore |
+| Key doors | 5 (12 planned): one of each card | Visible, need a card key | Gold vaults (4.5), never the way on |
 | Life Fruit | 18 (13 in the rooms) | Mix, plus grocers and a mini-boss | +HP |
 | Mana Dew | 16 (9 in the rooms) | Mix, plus grocers and three guardians | +MP |
 | Potion Shards | 9 | Mix | +flask. Held with the rooms' Life Fruit (13), Mana Dew (9), Mantra Shards (15) and Meteor Shards (5) by `test_the_rooms_hold_the_finds_the_bible_counts` since pass 243 |
 | Mantra Shards | 15 | Mostly hard platforming | Skill points |
 | Meteor Shards | 5 (pass 140; was 10) | Hard rooms, hidden pockets | The smith's second temper (5.2). Each blade takes one, so five (one per blade and one spare) replace the planned ten, and none drop from foes: a shard is a find, not a grind |
 | Guru Trials | 6 | Unlock as springs are restored | Cosmetics, a Mantra Shard each |
-| Lore tablets | 12 | Dwarf ruins | Story, map hints |
+| Lore tablets | 142 (12 planned) | Every sign is a carved tablet, in every zone | Story, map hints |
+
+**The table, as built (pass 349).** Like the zone table (3.2) until pass 323, four Count cells were still the plan's, and nothing read them. The rooms hold 14 cracked-stone walls, not 18; the Black Onyx's seam shows in 14 rooms, not 10 (12 of them hide a room, the Journey's hidden rooms); there are 5 card doors, one Jack, Queen, King, Ace and Joker each, not 12, and they guard gold vaults, never equipment, spells or the way on (4.5); and every sign is a lore tablet, 142 of them, where the plan had 12 in the dwarf ruins. `test_the_secrets_table_counts_the_rooms` counts each from `levels/` and holds the table to it.
 
 **The signs remember (pass 251):** a sign was carved once and never changed, so the world told you of things long after they had happened. The Eolis fountain stayed "dry for a season" with all three springs flowing. Amber Falls said "when the spring runs again" after it had. Five bosses still "waited" or "drilled" after they were beaten, and the Spire Foot's gate stayed "cold" once it stood open. Now several sign lines may stand on one cell, and they make one tablet. A line may open with world flags in brackets, the same as a person's fourth field (`[spring:trunk]`, `[boss:king_grieve]`, `[!x]`). When the tablet is read, it shows the first line whose flags all hold, and a plain line holds always, so the plain line goes last as the old text. The tablet picks its line when you read it, so a spring cleared in its own room changes the sign there at once. 16 rooms have a line for afterwards: the plaza fountain (part full, then full), Amber Falls, the Spring of Trunk's spout, the Root Chamber's gate, the Scorched Hall, the Victim Causeway, the Spring of Mist and the Spring of Sky (each for the boss beaten, then the spring cleared), the Hag Mire, the Forepaw Lift's gate, the Spire Foot's gate, the Spire Stair, Alpha's Den, the King's Kennels, the Source Hall and the Windloft. Tests: `test_a_tablet_reads_what_the_world_has_become`, and `test_every_world_change_rewrites_its_sign`, which checks that every bracketed flag names a real boss, spring or room of conduits, that every cell ends on a plain line, and that each of these signs has its line.
 
