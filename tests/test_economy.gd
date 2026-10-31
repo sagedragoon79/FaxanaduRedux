@@ -2827,3 +2827,84 @@ func test_the_bible_prices_the_skill_tree_as_built() -> void:
 			wrong.append("%s: list [%s], code %d" % [n.name, planned.get(n.name, "none"), n.cost])
 	check(wrong.is_empty(), "every built skill is in the list at its own cost (%s)" % [wrong])
 	check(nine.contains("(%d as built, over %d nodes)" % [built_total, built]), "9 states the built tree's cost and size (%d over %d)" % [built_total, built])
+
+
+
+## Pass 341: the gold sheet (bible 10.1) counts each zone's chests, their range
+## and their gold, and the gold a pass of its foes pays, but only the par test
+## read the rooms, and it never read the table. The Trunk had grown from 9
+## chests to 12, the Tower from 13 to 20 and the Mist from 8 to 9, 1,970 g the
+## table didn't know, and the par purse left after Full Plate had grown from
+## about 3,700 to over 4,800. This holds every row and that purse to the rooms.
+func test_the_gold_sheet_counts_the_rooms() -> void:
+	const ROWS := {"Eolis": "eolis", "Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
+		"Branches": "branches", "Daybreak": "daybreak", "Dartmoor": "dartmoor", "Sunken Spring": "sunken", "Zenis": "zenis"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var ten := bible.get_slice("### 10.1 Currency", 1).get_slice("\n### 10.2", 0)
+	var table := ten.get_slice("| Zone | Foe drop (after threat) |", 1).get_slice("\n\n", 0)
+	for name: String in ROWS:
+		var zone: String = ROWS[name]
+		var chests := []
+		var lo := 1 << 30
+		var hi := 0
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+			var each := int(parsed.header.get("chest_gold", "100"))
+			var over := {}
+			for spec: String in parsed.lists.get("chest", []):
+				var c := spec.split(",")
+				over[Vector2i(int(c[0]), int(c[1]))] = int(c[2])
+			var grid: Array = parsed.grid
+			for y in grid.size():
+				var row: String = grid[y]
+				for x in row.length():
+					var ch := row[x]
+					if ch == "$":
+						chests.append(int(over.get(Vector2i(x, y), each)))
+					elif GOLD_FOES.has(ch):
+						var foe: Enemy = load("res://scripts/enemies/%s.gd" % GOLD_FOES[ch]).new()
+						var mult := (Enemy.CORRUPT_GOLD if zone == "zenis" else 1) * float(CombatTuning.ZONE_THREAT.get(zone, 1.0))
+						lo = mini(lo, roundi(foe.gold_min * mult))
+						hi = maxi(hi, roundi(foe.gold_max * mult))
+						foe.free()
+		chests.sort()
+		var gold := _zone_gold(zone)
+		var cells := table.get_slice("\n| %s | " % name, 1).get_slice("\n", 0).trim_suffix(" |").split(" | ")
+		check(cells.size() == 4, "the gold sheet has a row for %s" % name)
+		if cells.size() != 4:
+			continue
+		var drop := "none" if hi == 0 else "%d to %d g" % [lo, hi]
+		check(cells[0].begins_with(drop), "%s's foes drop %s, and the sheet says %s" % [name, drop, cells[0]])
+		var count := "none"
+		if chests.size() == 2:
+			count = "2: %s and %s" % [_grouped(chests[0]), _grouped(chests[1])]
+		elif chests.size() > 0:
+			count = "%d: %s to %s" % [chests.size(), _grouped(chests[0]), _grouped(chests[-1])]
+		check(cells[1] == count, "%s's chests are %s, and the sheet says %s" % [name, count, cells[1]])
+		var total := "none" if gold[0] == 0 else "%s g" % _grouped(gold[0])
+		check(cells[2] == total, "%s's chests hold %s, and the sheet says %s" % [name, total, cells[2]])
+		if gold[1] == 0:
+			check(cells[3] == "none", "%s has no foes, as the sheet says (%s)" % [name, cells[3]])
+		else:
+			var said := cells[3].trim_prefix("about ").trim_suffix(" g").replace(",", "").to_int()
+			check(absi(said - gold[1]) <= 10, "one pass of %s's foes pays %d, and the sheet says %s" % [name, gold[1], cells[3]])
+	# The par purse left after Full Plate (the par test's last buy).
+	var shops: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/shops.json"))
+	var purse := Npc.KING_GOLD
+	for step: Array in GOLD_PATH:
+		var gold := _zone_gold(step[0])
+		purse += gold[0] / 2 + gold[1]
+		for buy: Array in step[1]:
+			for entry: Dictionary in shops[buy[0]].stock:
+				if entry.item == buy[1]:
+					purse -= int(entry.price)
+			if buy[1] == "full_plate":
+				var left := roundi(purse / 100.0) * 100
+				check(ten.contains("About %s g is left after Full Plate" % _grouped(left)), "10.1 gives the purse left after Full Plate (%d, about %s)" % [purse, _grouped(left)])
+
+
+## A whole number with its thousands grouped, as the bible writes gold.
+func _grouped(n: int) -> String:
+	return str(n) if n < 1000 else "%d,%03d" % [n / 1000, n % 1000]
