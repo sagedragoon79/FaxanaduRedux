@@ -57,6 +57,11 @@ const SALVE := Color("7ee0d6")
 var kind := "bread"
 
 var _age := 0.0
+## Checked for spikes since it last came to rest (pass 311): the check scans the
+## room's children, so it runs once as the drop settles, not every frame after.
+var _settled := false
+## How many spike checks have run (for tests: one a settle, not one a frame).
+static var spike_checks := 0
 
 
 func _ready() -> void:
@@ -109,8 +114,11 @@ func _physics_process(delta: float) -> void:
 	_keep_in_room()
 	if is_on_floor():
 		velocity.x = move_toward(velocity.x, 0.0, 300.0 * delta)
-		if velocity.x == 0.0:
+		if velocity.x == 0.0 and not _settled:
+			_settled = true
 			_step_off_spikes()
+	else:
+		_settled = false
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null and not p.dead and _age > 0.3 and p.body_rect().grow(COLLECT_RANGE * 0.5).has_point(global_position + Vector2(0, -3)):
 		_collect(p)
@@ -124,6 +132,7 @@ func _physics_process(delta: float) -> void:
 ## would cost a blow to take. It moves to the nearest floor beside the pit, up
 ## to SPIKE_STEP_RISE tiles above it, as a purse on torn floor does (pass 300).
 func _step_off_spikes() -> void:
+	spike_checks += 1
 	var room := get_parent() as Room
 	if room == null or not _spiked(room, global_position):
 		return
@@ -169,11 +178,13 @@ static func keep_in_room(body: CharacterBody2D) -> void:
 	# a jump over a flask lying just inside it meets the wall above the
 	# door and drops you on it, so poison there was a toll on the way out. Where
 	# the two tiles inside the edge are open, it stops on the second of them.
-	var lo := DOOR_CLEAR if _open_inside(room, 0.0, at.y) else 8.0
-	var hi := size.x - (DOOR_CLEAR if _open_inside(room, size.x, at.y) else 8.0)
-	if at.x < lo or at.x > hi:
-		body.global_position.x = clampf(at.x, lo, hi)
-		body.velocity.x = 0.0
+	# Only near an edge, so a spray of coins in mid-room asks no tiles (pass 311).
+	if at.x < DOOR_CLEAR or at.x > size.x - DOOR_CLEAR:
+		var lo := DOOR_CLEAR if _open_inside(room, 0.0, at.y) else 8.0
+		var hi := size.x - (DOOR_CLEAR if _open_inside(room, size.x, at.y) else 8.0)
+		if at.x < lo or at.x > hi:
+			body.global_position.x = clampf(at.x, lo, hi)
+			body.velocity.x = 0.0
 	if at.y <= size.y:
 		return
 	var last := room.size_tiles.y - 1
