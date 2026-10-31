@@ -684,6 +684,8 @@ Until pass 288, only the water was left out. Stand on a cracked block over spike
 
 **Poison is no blow (pass 312).** Since pass 306 a poison tick takes up to 4 health, and passes 309 and 310 gave it a green number and a glug. It still never touches movement: no knockback, no hurt flash or invulnerability, no lost dash, slide or climb. A poisoned hero and a well one, given the same inputs, move frame for frame alike through a dash, a jump, a wall slide and a ladder climb with a tick landing in each (`test_a_poison_tick_never_touches_movement`). A hop over a flask before a door (pass 307) clears it from 22 to 58 px short at a run with a short hop and 22 to 94 px with a full jump; at a walk the window is 16 to 40 px with a full jump.
 
+**A throw is drawn, not done (pass 320).** Sean's Rune Dagger flick (13.5, 2026-10-30) plays a low ready crouch over the legs' poses, and since his off hand (5.2) the dagger is a whole build's ranged tool, thrown all through a fight. The flick is drawn only: a throw never stops, slows or nudges the hero, and never costs a jump or a wall slide. `test_a_dagger_throw_never_touches_movement` runs a hero who throws on the run (frame 6), at the top of a jump (50) and in a wall slide (100) beside one who never throws, and their paths must match frame for frame. A throw that so much as added 20 px/s of fall parts them by frame 54.
+
 ---
 
 ## 7. Enemies
