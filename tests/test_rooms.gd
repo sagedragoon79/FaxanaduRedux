@@ -2095,3 +2095,48 @@ func test_the_bible_counts_the_games_sounds() -> void:
 			continue
 		unplayed.append(s)
 	check(unplayed.is_empty(), "every sound effect on disk is played by the code (not: %s)" % [unplayed])
+
+
+## Pass 339: bible 4.5 gives each gate its look and its numbers (the fog's
+## sight, a fire seal's burn, a conduit's reach, time-locked water's push), and
+## 3.2 the Mist towns' fog and lamps, but no test read them: a retuned gate
+## would have left the bible behind. Each number is held to its constant here.
+func test_every_gates_number_is_written_in_bible_4_5() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var gates := bible.get_slice("### 4.5 Gate visual language", 1).get_slice("\n---", 0)
+	var tile := float(TilesetFactory.TILE)
+	var said := func(gate: String) -> String:
+		return gates.get_slice("- **%s:**" % gate, 1).get_slice("\n", 0)
+	var fog: String = said.call("Fog (the Mist)")
+	check(fog.contains("around you (about %d tiles)" % roundi(Fog.VISION / tile)), "4.5 gives the fog's sight (%d px)" % Fog.VISION)
+	check(fog.contains("(about %d tiles each)" % roundi(Fog.LANTERN_RADIUS / tile)), "4.5 gives a lantern's light (%d px)" % Fog.LANTERN_RADIUS)
+	check(is_equal_approx(Fog.SPRING_DENSITY, 0.5) and fog.contains("thins it by half"), "4.5: the Spring of Mist halves the fog (%s)" % Fog.SPRING_DENSITY)
+	check(is_equal_approx(Fog.SPRING_VISION, 1.5) and fog.contains("widens your sight by half"), "4.5: the Spring of Mist widens sight by half (%s)" % Fog.SPRING_VISION)
+	check(said.call("Fire seals").contains("burn for %d on touch" % FireSeal.BURN), "4.5 gives a fire seal's burn (%d)" % FireSeal.BURN)
+	check(is_equal_approx(DryBasin.FILL_TIME, 1.0) and said.call("Dry basins").contains("fills it over a second"), "4.5: a basin fills over a second (%s s)" % DryBasin.FILL_TIME)
+	var conduits: String = said.call("Dead conduits")
+	check(conduits.contains("within %d px of one" % ThunderBolt.ARC), "4.5 gives a conduit's reach (%d px)" % ThunderBolt.ARC)
+	var water: String = said.call("Time-locked water")
+	check(water.contains("bears down at %d px/s" % Waterfall.PUSH), "4.5 gives time-locked water's push (%d px/s)" % Waterfall.PUSH)
+	check(water.contains("footholds every %s rows" % ["", "one", "two", "three", "four"][mini(Waterfall.STEP, 4)]), "4.5 gives the frozen footholds' spacing (%d rows)" % Waterfall.STEP)
+	check(said.call("Key doors").contains("every card door is %s tiles tall" % ["", "one", "two", "three", "four"][mini(roundi(KeyDoor.SIZE.y / tile), 4)]), "4.5 gives a card door's height (%d px)" % KeyDoor.SIZE.y)
+	# The Mist's towns (3.2): the marsh's fog, each town's fog and lamp posts,
+	# and the pocket each lamp clears.
+	var lamp := TownLamp.new()
+	var radius := lamp.light_radius
+	lamp.free()
+	check(bible.contains("(0.88 out in the marsh)") and is_equal_approx(Fog.ZONES["mist"], 0.88), "3.2 gives the marsh's fog (%s)" % Fog.ZONES["mist"])
+	check(bible.contains("clears an %d px pocket of fog" % radius), "3.2 gives a town lamp's pocket (%d px)" % radius)
+	for town: String in ["victim", "mascon"]:
+		var text := FileAccess.get_file_as_string("res://levels/mist/%s.room" % town)
+		var lamps := 0
+		var density := ""
+		for line: String in text.get_slice("\n---\n", 0).split("\n"):
+			if line.begins_with("prop: ") and line.ends_with(", lamp"):
+				lamps += 1
+			elif line.begins_with("fog: "):
+				density = line.trim_prefix("fog: ")
+		var words: String = ["", "one", "two", "three", "four", "five"][mini(lamps, 5)]
+		var para := bible.get_slice("**%s (pass " % town.capitalize(), 1).get_slice("\n\n**", 0)
+		check(para.contains("%s lamp posts" % words), "3.2 counts %s's lamp posts (%d)" % [town, lamps])
+		check(para.contains("at %s" % density) or para.contains("fog at %s" % density), "3.2 gives %s's fog (%s)" % [town, density])
