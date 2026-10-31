@@ -696,6 +696,19 @@ Until pass 288, only the water was left out. Stand on a cracked block over spike
 
 **A throw is drawn, not done (pass 320).** Sean's Rune Dagger flick (13.5, 2026-10-30) plays a low ready crouch over the legs' poses, and since his off hand (5.2) the dagger is a whole build's ranged tool, thrown all through a fight. The flick is drawn only: a throw never stops, slows or nudges the hero, and never costs a jump or a wall slide. `test_a_dagger_throw_never_touches_movement` runs a hero who throws on the run (frame 6), at the top of a jump (50) and in a wall slide (100) beside one who never throws, and their paths must match frame for frame. A throw that so much as added 20 px/s of fall parts them by frame 54.
 
+
+### 6.14 Fields outside the tuning (pass 336)
+
+Five things change how you move without living in `movement_tuning.gd`: the fields a zone or a guardian lays over you, and two numbers the world keeps. Each was written only where its zone or guardian is described, and the tests read each one back from its own constant, so a changed number moved its test with it. They are gathered here, and `test_every_field_number_is_written_in_bible_6_14` holds each row to its constant.
+
+| Field | Setting | Constant |
+|-------|---------|----------|
+| Wrong gravity (Zenis, 8.9) | you keep 40% of your weight, gravity and top fall speed alike | `GravityDrift.PULL` |
+| The falling crown-leaf (Pakukame, 8.5) | you weigh 85% while it falls | `LeafFall.WEIGHT` |
+| Borabohra's updraft (8.6) | lifts you to 240 px/s, reached at 1,100 px/s² | `Updraft.LIFT`, `Player.UPDRAFT_ACCEL` |
+| Rising through a floor door (3.3) | you arrive in the room above rising at 430 px/s | `World.RISE_SPEED` |
+| A big drop (6.7) | a landing from 112 px (7 tiles) or more thuds | `Player.BIG_DROP` |
+
 ---
 
 ## 7. Enemies
