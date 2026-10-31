@@ -1428,6 +1428,20 @@ def main():
         out[i:] += (note + shimmer) * a
     save("mana_orb", out, 0.4)
 
+    # A poison tick (pass 310): the sickness taking its bite. It was silent,
+    # though since pass 306 a tick takes up to 4 health. A small wet glug, a
+    # sine bubble sagging from 300 to 170 Hz with a second, smaller one behind
+    # it and a breath of murky noise: sick, not struck, and well under `hurt`.
+    d = 0.22
+    n = int(RATE * d)
+    out = np.zeros(n)
+    out += lowpass(noise(d), 900) * env(n, 0.01, 2.5) * 0.18
+    for st, f0, f1, a in ((0.0, 300.0, 170.0, 0.7), (0.07, 240.0, 150.0, 0.4)):
+        i = int(RATE * st)
+        ln = n - i
+        out[i:] += osc(slide(f0, f1, ln / RATE, 0.6), "sine") * env(ln, 0.004, 2.0) * a
+    save("poison_tick", out, 0.3)
+
 
 if __name__ == "__main__":
     main()

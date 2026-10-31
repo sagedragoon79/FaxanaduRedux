@@ -773,6 +773,49 @@ func test_every_drop_is_heard_as_it_is_taken() -> void:
 	check(heard.warded.has("ward"), "poison kept off rings like a ward (%s)" % [heard.warded])
 
 
+
+## Bible 13.3 (pass 310): a poison tick is heard. Since pass 306 a tick takes up
+## to 4 health, and it was the one loss of health with no sound. It glugs
+## (`poison_tick`), quieter than a blow's `hurt`, and a tick that takes nothing
+## (the last point, under an Ointment) is silent.
+func test_every_poison_tick_is_heard() -> void:
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	w.room.zone = "zenis"
+	p.hp = 100
+	p.poison()
+	Sfx.recent.clear()
+	await frames(roundi(Player.POISON_TICK * 60.0) + 2)
+	check(p.hp == 96 and Sfx.recent.has("poison_tick"), "a tick that bites glugs (%s)" % [Sfx.recent])
+	check(not Sfx.recent.has("hurt") and not Sfx.recent.has("hurt_heavy"), "and is no blow")
+	var tick := _peak("poison_tick")
+	var hurt := _peak("hurt")
+	check(tick > 0.05 and tick < hurt * 0.75, "quieter than a blow (%.2f against %.2f)" % [tick, hurt])
+	p.hp = 1
+	Sfx.recent.clear()
+	await frames(roundi(Player.POISON_TICK * 60.0))
+	check(not Sfx.recent.has("poison_tick"), "a tick at the last point is silent")
+	p.hp = 50
+	p.ointments = 1
+	p.use_ointment()
+	Sfx.recent.clear()
+	await frames(roundi(Player.POISON_TICK * 60.0))
+	check(not Sfx.recent.has("poison_tick"), "and so is one an Ointment keeps off")
+	p.cure_poison()
+
+
+## The loudest sample in a sound's 16-bit source wav, from 0 to 1.
+func _peak(sound: String) -> float:
+	var bytes := FileAccess.get_file_as_bytes("res://assets/sfx/%s.wav" % sound)
+	var at := 12
+	while at + 8 <= bytes.size() and bytes.slice(at, at + 4).get_string_from_ascii() != "data":
+		at += 8 + bytes.decode_u32(at + 4)
+	var top := 0
+	for i in range(at + 8, bytes.size() - 1, 2):
+		top = maxi(top, absi(bytes.decode_s16(i)))
+	return top / 32768.0
+
 func test_the_guru_names_your_title_once() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(9, 19))
 	var p := w.player
