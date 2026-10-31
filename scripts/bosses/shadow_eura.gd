@@ -337,6 +337,14 @@ func _break_free() -> void:
 
 
 ## A parried echo leaves it reeling: it stops copying you and stands open.
+## Reeling from a parry, or spent after a blow of its own (pass 314): the cut
+## from behind (recover) or any free blow, cast or dash (f_recover). A hero with
+## no shield (the Rune Dagger in hand, or a two-hander) can't parry, and still
+## needs a window for Executioner and Bloodletting.
+func punishable() -> bool:
+	return is_staggered() or (not decoy and state in ["recover", "f_recover"])
+
+
 func stagger() -> void:
 	if dead or state in ["dormant", "intro", "dying", "sink", "blink", "shatter"]:
 		return
