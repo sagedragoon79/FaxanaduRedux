@@ -1113,6 +1113,7 @@ Deviations, and why:
 - Light Step is dropped: a dash's own invulnerability already carries you over spikes, so the node did nothing.
 - Pathfinder is dropped: shrines already refill potions.
 - Treasure Sense takes Light Step's place in the build order, at 2 points.
+- **Every number on a skill's page is the code's (pass 322).** Each built skill's in-game page (`data/skills.json`) and its line in this list name the number the code gives: the skill is learned alone and its effect read off the hero (`test_every_skill_page_names_the_number_it_gives`). Nothing held them before, so retuning Bloodletting or Quick Draught would have left both promising the old figure. Executioner's line here said "staggered bosses"; it pays on any opening (pass 314 gave every guardian one without a shield), as its page says.
 
 **Blade (melee)**
 1. Keen Edge: +10% melee damage [1]
@@ -1125,7 +1126,7 @@ Deviations, and why:
 8. Bloodletting: hits on staggered enemies heal 2 HP [2]
 9. Whirlwind: air spin attack [2]
 10. Heavy Hand: heavy hits stagger elites faster [2]
-11. Executioner: +35% damage to staggered bosses [3]
+11. Executioner: +35% damage to a boss in its opening (staggered, or any opening section 8 names) [3]
 12. Dragon Heart: charged lunge releases a shockwave [3]
 
 **Arcana (spells)**
