@@ -1958,3 +1958,31 @@ func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
 			check(foe.dead or foe.hp < hp0, "and a throw from there strikes it (hp %d of %d)" % [foe.hp, hp0])
 		w.queue_free()
 		await frames(2)
+
+
+## Pass 323: the bible's zone table (3.2) and overview (3.1) count the rooms
+## the game has. Until then they carried the plan's counts (about 190 rooms).
+func test_the_bible_counts_each_zones_rooms() -> void:
+	const ZONES := {"Eolis": "eolis", "Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
+		"Branches (Conflate)": "branches", "Branches (Daybreak) and Canopy Spires": "daybreak", "Dartmoor": "dartmoor",
+		"Zenis": "zenis", "Sunken Spring": "sunken", "Guru Trials": "trials"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var table := bible.get_slice("### 3.2 Zones", 1).get_slice("\n\n**", 0)
+	var total := 0
+	var folders := []
+	for dir: String in DirAccess.get_directories_at("res://levels"):
+		if dir != "gym":
+			folders.append(dir)
+	for zone: String in ZONES:
+		var folder: String = ZONES[zone]
+		var n := 0
+		for f: String in DirAccess.get_files_at("res://levels/" + folder):
+			if f.ends_with(".room"):
+				n += 1
+		total += n
+		folders.erase(folder)
+		var row := table.get_slice("| **%s** |" % zone, 1).get_slice("\n", 0)
+		var said := row.get_slice("|", 1).strip_edges()
+		check(said.get_slice(" ", 0).to_int() == n, "3.2 counts %s's rooms: \"%s\", and %s/ has %d" % [zone, said, folder, n])
+	check(folders.is_empty(), "every zone folder has its row in 3.2 (missing: %s)" % [folders])
+	check(bible.contains("**%d rooms** across 7 zones" % total), "3.1 counts the whole tree's rooms (%d)" % total)
