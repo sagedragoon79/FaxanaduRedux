@@ -114,7 +114,7 @@ func squash(amount: Vector2) -> void:
 
 
 func flash_hurt() -> void:
-	_blink_time = player.tuning.hurt_invuln
+	_blink_time = player.hurt_invuln()
 	_red_time = 0.12
 
 

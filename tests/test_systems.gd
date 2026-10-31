@@ -2025,3 +2025,42 @@ func test_the_inventory_lists_supplies_and_charts() -> void:
 	GameState.data.charts = {}
 	p.ointments = 0
 	p.elixirs = 0
+
+
+## Bible 14 (pass 325): the mercy assist. The bible promised assist options
+## and none were built. Mercy doubles a hit's invulnerability (0.8 s to 1.6 s)
+## and the blink with it, while the hurt pose still lets go as soon as before.
+func test_the_mercy_assist_doubles_a_hits_grace() -> void:
+	Settings.path = TEMP_SETTINGS
+	var w := make_world(_town(), "test/town")
+	var p := w.player
+	await frames(3)
+	check(not Settings.mercy and Settings.value_text("mercy") == "Off", "off by default")
+	check(Menus.OPTIONS.any(func(o: Array) -> bool: return o[0] == "mercy"), "it is an Options row")
+	p.hp = 100
+	p.take_damage(10)
+	check_near(p.hurt_invuln(), 0.8, 0.001, "a hit's grace is the tuning's 0.8 s")
+	await frames(54)
+	check(not p.invulnerable, "and is over 0.9 s later")
+	p.take_damage(10)
+	check(p.hp == 80, "so a second blow lands (%d)" % p.hp)
+	await frames(60)
+	Settings.adjust("mercy", 1)
+	check(Settings.mercy and Settings.value_text("mercy") == "On", "the option turns it on")
+	p.take_damage(10)
+	check_near(p.hurt_invuln(), 0.8 * Settings.MERCY_MULT, 0.001, "with mercy the grace is 1.6 s")
+	check(p.visual._blink_time >= 1.6 - 0.001, "and the blink lasts as long (%.2f)" % p.visual._blink_time)
+	await frames(18)
+	check(not p.is_hurt, "the hurt pose still lets go after 0.25 s")
+	await frames(36)
+	check(p.invulnerable, "0.9 s later you still can't be hurt")
+	var hp := p.hp
+	p.take_damage(10)
+	check(p.hp == hp, "so a second blow does nothing (%d)" % p.hp)
+	await frames(48)
+	check(not p.invulnerable, "until 1.6 s have passed")
+	Settings.reset()
+	Settings.load_settings()
+	check(Settings.mercy, "the choice is saved")
+	_restore()
+	check(not Settings.mercy, "and the suite runs on the default, off")

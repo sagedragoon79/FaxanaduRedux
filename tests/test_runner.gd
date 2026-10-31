@@ -108,7 +108,7 @@ func _leaks() -> Array[String]:
 		out.append("a forced pose (%s)" % PlayerVisual.forced)
 	if not PlayerVisual.body_sets:
 		out.append("body sets off")
-	if Settings.path != TestSuite.SETTINGS_PATH or Settings.shake != 0 or Settings.flashes != 0 or not Settings.rumble or Settings.damage_numbers \
+	if Settings.path != TestSuite.SETTINGS_PATH or Settings.shake != 0 or Settings.flashes != 0 or not Settings.rumble or Settings.damage_numbers or Settings.mercy \
 			or Settings.music_volume != 8 or Settings.sound_volume != 8 or Settings.speed != 0 or not Settings.keys.is_empty():
 		out.append("settings changed")
 	if Drop.bread_chance != 0.0 or Drop.mana_chance != 0.0 or Drop.poison_chance != 0.0 or Drop.rare_chance != 0.0:

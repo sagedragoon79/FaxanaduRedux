@@ -1,7 +1,7 @@
 class_name Settings
 extends RefCounted
 ## Player options (design bible 14, accessibility): screen shake, screen
-## flashes, rumble, damage numbers, music and sound volume, game speed and keyboard bindings.
+## flashes, rumble, damage numbers, the mercy assist, music and sound volume, game speed and keyboard bindings.
 ## Kept apart from save slots in user://settings.cfg. The game loads and
 ## applies them at start; tests never do, so they run on the defaults.
 
@@ -12,6 +12,8 @@ const FLASH_STEPS := [1.0, 0.35, 0.0]
 const FLASH_NAMES := ["Full", "Reduced", "Off"]
 const SPEED_STEPS := [1.0, 0.9, 0.8, 0.7]
 const VOLUME_MAX := 10
+## The mercy assist (bible 14, pass 325): a hit's invulnerability lasts this many times as long.
+const MERCY_MULT := 2.0
 ## Keyboard actions the player may rebind (the pad keeps its layout).
 const REBINDABLE := ["move_left", "move_right", "move_up", "move_down", "jump", "attack", "dash", "block", "spell", "heal", "throw", "map"]
 const BUSES := ["Music", "Sfx"]
@@ -21,6 +23,8 @@ static var flashes := 0        # index into FLASH_STEPS
 static var rumble := true
 ## Damage numbers over what a blow strikes (off by default; DamageNumber).
 static var damage_numbers := false
+## The mercy assist (off by default; Player.hurt_invuln).
+static var mercy := false
 static var music_volume := 8
 static var sound_volume := 8
 static var speed := 0          # index into SPEED_STEPS
@@ -35,6 +39,7 @@ static func reset() -> void:
 	flashes = 0
 	rumble = true
 	damage_numbers = false
+	mercy = false
 	music_volume = 8
 	sound_volume = 8
 	speed = 0
@@ -55,6 +60,8 @@ static func load_settings() -> void:
 	rumble = r if r is bool else rumble
 	var dn: Variant = cfg.get_value("feel", "damage_numbers", damage_numbers)
 	damage_numbers = dn if dn is bool else damage_numbers
+	var m: Variant = cfg.get_value("assist", "mercy", mercy)
+	mercy = m if m is bool else mercy
 	speed = _index(cfg.get_value("feel", "speed", speed), SPEED_STEPS.size(), speed)
 	music_volume = _index(cfg.get_value("audio", "music", music_volume), VOLUME_MAX + 1, music_volume)
 	sound_volume = _index(cfg.get_value("audio", "sound", sound_volume), VOLUME_MAX + 1, sound_volume)
@@ -79,6 +86,7 @@ static func save() -> void:
 	cfg.set_value("feel", "flashes", flashes)
 	cfg.set_value("feel", "rumble", rumble)
 	cfg.set_value("feel", "damage_numbers", damage_numbers)
+	cfg.set_value("assist", "mercy", mercy)
 	cfg.set_value("feel", "speed", speed)
 	cfg.set_value("audio", "music", music_volume)
 	cfg.set_value("audio", "sound", sound_volume)
@@ -108,6 +116,7 @@ static func adjust(option: String, step: int) -> void:
 		"flashes": flashes = wrapi(flashes + step, 0, FLASH_STEPS.size())
 		"rumble": rumble = not rumble
 		"numbers": damage_numbers = not damage_numbers
+		"mercy": mercy = not mercy
 		"speed": speed = wrapi(speed + step, 0, SPEED_STEPS.size())
 		"music": music_volume = clampi(music_volume + step, 0, VOLUME_MAX)
 		"sound": sound_volume = clampi(sound_volume + step, 0, VOLUME_MAX)
@@ -154,6 +163,7 @@ static func value_text(option: String) -> String:
 		"flashes": return FLASH_NAMES[flashes]
 		"rumble": return "On" if rumble else "Off"
 		"numbers": return "On" if damage_numbers else "Off"
+		"mercy": return "On" if mercy else "Off"
 		"speed": return "%d%%" % roundi(SPEED_STEPS[speed] * 100.0)
 		"music": return _bar(music_volume)
 		"sound": return _bar(sound_volume)
