@@ -282,7 +282,12 @@ func test_a_rune_dagger_throw_plays_its_flick() -> void:
 	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
 		for clip in ["throw", "throw_up"]:
 			check(Sheet.has_anim(sheet, clip), "%s has %s" % [sheet, clip])
+			# Flicked from the left hand, so each blade's sheet has it too, the sword kept in hand.
+			for blade: String in PlayerVisual.BLADE_SHEETS.values():
+				check(Sheet.has_anim(sheet + "_" + blade, clip), "%s_%s has %s" % [sheet, blade, clip])
 	GameState.data.equipment["armor"] = "full_plate"
+	var held := String(GameState.data.equipment.get("blade", ""))
+	GameState.data.equipment["blade"] = "short_sword"
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6))
 	p.abilities["rune_dagger"] = true
@@ -291,6 +296,12 @@ func test_a_rune_dagger_throw_plays_its_flick() -> void:
 	await frames(2)
 	p.input.throw_pressed = false
 	check(p.visual.anim == "throw" and p.visual.sheet == "hero_plate", "the forward flick plays (%s %s)" % [p.visual.sheet, p.visual.anim])
+	await frames(30)
+	GameState.data.equipment["blade"] = "long_sword"
+	p.throw_dagger()
+	await frames(2)
+	check(p.visual.anim == "throw" and p.visual.sheet == "hero_plate_long_sword", "with the Long Sword kept in hand (%s %s)" % [p.visual.sheet, p.visual.anim])
+	GameState.data.equipment["blade"] = held
 	await frames(30)
 	check(p.visual.anim == "idle", "and gives way to the idle when done (%s)" % p.visual.anim)
 	p.input.up = true

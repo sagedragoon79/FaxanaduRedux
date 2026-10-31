@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "262b2b3a-e1e0-48b9-a35b-96b27f113dd2",
+ "status": "completed",
+ "created_at": "2026-10-31T00:00:09.493106+00:00",
+ "last_response": {
+  "seed": 883606153,
+  "type": "message_done",
+  "action": "in a low ready crouch, knees bent and weight forward, he snaps a quick flat flick of his LEFT hand like throwing a ninja star: the left hand whips from his chest straight out to the right at chest height, wrist snapping open, a fast compact motion, then the left hand returns to guard in the same low ready crouch. His feet stay planted. Nothing flies from his hand. His right hand keeps hold of the sword the whole time, held low and back at his side. He faces right in strict side profile the whole time and never turns toward the camera. The cloak stays bright green, trails behind him and sways with the motion.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9534782608695652,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "b931c19e-67f6-4012-9cda-4942d8daa0cb",
+  "character_id": "12f7555b-1205-49f5-87a7-846d1f425924",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/12f7555b-1205-49f5-87a7-846d1f425924/animations/b931c19e-67f6-4012-9cda-4942d8daa0cb/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "11c4ce4b-4e6f-44a9-96b5-c95d8843afb3",
+  "animation_name": "custom-in a low ready crouch, knees b",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "8dc42e4a-60c9-4081-8dd0-3e1d1b5382f7",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-10-31T00:00:41.769378+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

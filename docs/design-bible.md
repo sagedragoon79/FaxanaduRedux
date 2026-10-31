@@ -1566,10 +1566,12 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
   with a crimson face and silver rim, the Magic Shield a long leaf of pale sea-green mithril with gold trim), and from it
   a braced block clip that holds on its last frame. `sheet_for("block")` plays it for the worn shield (`SHIELD_SHEETS`);
   the code-drawn shield is held over the block only on a sheet without one (the old hero).
-- **The Rune Dagger throw (`throw`, `throw_up`):** each set flicks an open hand forward at chest height, or up over
-  its head, from its cloaked state (the takes drew a dagger in the windup, so the picks start at the release: the
-  dagger is the game's projectile). A throw restarts the flick over the legs' poses and it plays out like a swing's
-  recovery (`PlayerVisual.FINISH`); the old hero, with no flick, only squashes as before.
+- **The Rune Dagger throw (`throw`, `throw_up`, Sean 2026-10-30):** a quick ninja-star flick of the LEFT hand from a
+  low ready crouch, forward at chest height or up over the head, the sword kept in the right hand (so nothing is
+  sheathed). Each set has it with the Short Sword, and each blade sheet with its blade (`BLADE_CLIPS`). The takes drew
+  a dagger or a streak at the release, so the picks start just after it: the dagger is the game's projectile. A throw
+  restarts the flick over the legs' poses and it plays out like a swing's recovery (`PlayerVisual.FINISH`); the old
+  hero, with no flick, only squashes as before. The first right-hand, empty-handed flick (PR #343) is replaced.
 - **Grey slabs:** PixelLab sometimes leaves a flat dull-grey patch behind a smear or a cloak (one exact grey with a
   faint warm, violet, green or blue cast, plus a few mottled neighbours); `pixellab_sheets.py` erases a connected patch
   of such greys when it is 400 px or more and mostly one colour, so the shaded armor steel is never touched.
