@@ -447,3 +447,7 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-30,characters/animations,hero/leather_cloak/walk,2.0 generations,"done fda7efd6-1b10-4256-8f3d-5e31e234403d, 13 image(s)",leather_cloak_sample_walk
 2026-10-30,create-character-state,hero/states/leather_cloak_short_sword,25.0 generations,"done 09698c90-7ee9-4096-a084-2044e6693aac, 0 image(s)",leather_cloak_holding_the_Short_Sword
 2026-10-30,characters/animations,hero/leather_cloak/jump,2.0 generations,"done d2ed4875-6c02-40c1-a59f-7a037f6f4582, 17 image(s)",leather_cloak_sample_jump
+2026-10-31,image-to-pixelart-pro,painted-test/door,?,queued 44638ea3-904f-449b-8816-0b8297285e21,painterly test: GPT door -> pixel
+2026-10-31,image-to-pixelart-pro,painted-test/door,20.0 generations,"done 44638ea3-904f-449b-8816-0b8297285e21, 2 image(s)",painterly test: GPT door -> pixel
+2026-10-31,create-tileset-sidescroller,painted-test/stone_tiles,?,queued ddd95e76-34b2-4259-a69b-37dbe4942ac5,painterly test: GPT wall -> sidescroller tileset
+2026-10-31,create-tileset-sidescroller,painted-test/stone_tiles,1.0 generations,"done ddd95e76-34b2-4259-a69b-37dbe4942ac5, 0 image(s)",painterly test: GPT wall -> sidescroller tileset

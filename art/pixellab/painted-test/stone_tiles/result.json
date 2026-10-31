@@ -1,0 +1,1160 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "ddd95e76-34b2-4259-a69b-37dbe4942ac5",
+ "status": "completed",
+ "created_at": "2026-10-31T01:49:02.043138+00:00",
+ "last_response": {
+  "seed": 3827050202,
+  "type": "done",
+  "usage": {
+   "seconds": 32.7289981842041
+  },
+  "status": "completed",
+  "progress": 0.4697674418604651,
+  "tileset_id": "567e0647-7aca-4704-85e7-da4a3e7f9125",
+  "frame_index": 0,
+  "request_type": "tileset",
+  "tileset_data": {
+   "tiles": [
+    {
+     "id": "9c5c95a8-2007-4c90-a6fc-7756bf27de19",
+     "name": "wang_13",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_0.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a"
+      ],
+      "west": [
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "north": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "0f727316-b556-4ca3-8799-981dae757421"
+      ],
+      "south": [
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_13",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 4
+     }
+    },
+    {
+     "id": "8e32deea-c73b-46a8-86de-c3696cada33a",
+     "name": "wang_10",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_1.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "west": [
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "north": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "0f727316-b556-4ca3-8799-981dae757421"
+      ],
+      "south": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_10",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 2
+     }
+    },
+    {
+     "id": "d6886fe9-272c-47cc-b087-109e76d24252",
+     "name": "wang_4",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_2.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "west": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "north": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4"
+      ],
+      "south": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_4",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 4
+     }
+    },
+    {
+     "id": "a5221169-384d-449d-8847-453dc10eb8cf",
+     "name": "wang_12",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_3.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a"
+      ],
+      "west": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "north": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "south": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_12",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 5,
+      "row": 3
+     }
+    },
+    {
+     "id": "69006279-d4c1-402c-bc0d-36de03bbdd08",
+     "name": "wang_6",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_4.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a"
+      ],
+      "west": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706"
+      ],
+      "north": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "south": [
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_6",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 5
+     }
+    },
+    {
+     "id": "427dacf9-8f0a-4316-b70d-95474dc0dc92",
+     "name": "wang_8",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_5.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320"
+      ],
+      "west": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ],
+      "north": [
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "south": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_8",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 3
+     }
+    },
+    {
+     "id": "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+     "name": "wang_0",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_6.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320"
+      ],
+      "west": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706"
+      ],
+      "north": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4"
+      ],
+      "south": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_0",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 6
+     }
+    },
+    {
+     "id": "d1f811f8-d701-4ec7-a62c-23330ad6b0a3",
+     "name": "wang_1",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_7.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a"
+      ],
+      "west": [
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ],
+      "north": [
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "0f727316-b556-4ca3-8799-981dae757421"
+      ],
+      "south": [
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_1",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 1
+     }
+    },
+    {
+     "id": "fcea6730-a21b-4d0c-b79e-78d845daf2e0",
+     "name": "wang_11",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_8.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "west": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ],
+      "north": [
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "south": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_11",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 2
+     }
+    },
+    {
+     "id": "f577dfc2-6344-4393-b427-3c3e6ba3e498",
+     "name": "wang_3",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_9.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "west": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706"
+      ],
+      "north": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4"
+      ],
+      "south": [
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_3",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 1
+     }
+    },
+    {
+     "id": "b64de7ef-7cfb-4287-8626-4abb665c5844",
+     "name": "wang_2",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_10.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320"
+      ],
+      "west": [
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "north": [
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "south": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_2",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 1
+     }
+    },
+    {
+     "id": "17f5dce2-7b10-4ab0-9dfc-04bae4e0b6c4",
+     "name": "wang_5",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_11.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320"
+      ],
+      "west": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "north": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4"
+      ],
+      "south": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_5",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 2
+     }
+    },
+    {
+     "id": "470c0258-27b8-46a7-9e1c-96c78e2e486a",
+     "name": "wang_15",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_12.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "west": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "north": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "south": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_15",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 2
+     }
+    },
+    {
+     "id": "5497c0f3-5046-4b8f-900f-58518b81815b",
+     "name": "wang_14",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_13.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "west": [
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "north": [
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "0d2c4dbf-6011-4e75-8ede-105c0efb4ae0",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ],
+      "south": [
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1c5dd6e5-b513-4ece-a06b-07eb8a97f320",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "e048bd67-054a-42f5-8588-dfa114926a86"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_14",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 3
+     }
+    },
+    {
+     "id": "98f04549-26d6-4021-8e93-c3b3edf48458",
+     "name": "wang_9",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_14.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "west": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "0f727316-b556-4ca3-8799-981dae757421",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9"
+      ],
+      "north": [
+       "ad32ba1a-5b78-4286-835c-03cdfe170c87",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "0f727316-b556-4ca3-8799-981dae757421"
+      ],
+      "south": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706",
+       "e9d50ac6-f6f0-4f8f-9e06-05d8f76e0f2a",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_9",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 4
+     }
+    },
+    {
+     "id": "b5797a6b-0332-4c43-91f5-5bac95831603",
+     "name": "wang_7",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/tile_15.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "3e092bf8-1378-4dda-8866-30d9e719f0c4",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "west": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "d0527aea-d4d4-4271-aec8-c3e079e3760f",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5",
+       "ef2048c4-2763-4000-886d-3a5ebaa01706"
+      ],
+      "north": [
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "8ba7eb1f-1c20-4670-b443-364da695edba",
+       "1b0eafbf-2ca9-40ae-adf8-de0003c346f9",
+       "cd59f6f2-f01e-4054-81c6-327fd57c4226"
+      ],
+      "south": [
+       "f539dba1-88c0-45e8-b614-77b68afd9f2e",
+       "bfa4c836-c774-4a3c-8b7f-0741f1373bb2",
+       "b47b3821-9a97-43f6-bdfe-98841205a1e3",
+       "b4ee0e9d-7df4-4511-81fc-87e7f5624cf5"
+      ]
+     },
+     "description": "transparent background and pale grey gothic stone bricks with dark mortar - wang_7",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 2
+     }
+    }
+   ],
+   "tile_size": {
+    "width": 32,
+    "height": 32
+   },
+   "total_tiles": 16,
+   "tileset_type": "sidescroller",
+   "terrain_types": [
+    "central",
+    "background"
+   ],
+   "spritesheet_url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/567e0647-7aca-4704-85e7-da4a3e7f9125/spritesheet.png",
+   "spritesheet_grid": {
+    "cols": 4,
+    "rows": 4
+   },
+   "spritesheet_layout": "tileset15_4x4"
+  },
+  "tileset_name": "pale grey gothic stone bricks with dark mortar",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "e5d51913-e858-402b-9326-662054ccd76b",
+  "queue_position": 0,
+  "billing_charged": true,
+  "saved_to_database": true,
+  "tileset_description": "sidescroller: pale grey gothic stone bricks with dark mortar",
+  "generation_started_at": "2026-10-31T01:49:11.262788+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 1518,
+  "quantized_image_n_colors": 1518
+ }
+}
