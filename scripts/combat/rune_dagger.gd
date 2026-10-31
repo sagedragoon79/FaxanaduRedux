@@ -15,6 +15,8 @@ const DAMAGE := 6
 const SIZE := Vector2(10, 6)
 ## Seconds from its end until it is whole again at the thrower's side.
 const RETURN := 0.4
+## A strike on stone (pass 326): steel glancing off, not a shield's clank.
+const WALL_SOUND := "dagger_ping"
 const BLADE := Color("dfe6ee")
 const EDGE := Color("8a94a8")
 const HILT := Color("5a4028")
@@ -84,7 +86,7 @@ func _end(how: String) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position
 	if how == "wall":
-		Sfx.play("guard", 0.15, -8.0)
+		Sfx.play(WALL_SOUND, 0.15, -4.0)
 	if thrower != null and is_instance_valid(thrower):
 		thrower.dagger_spent()
 	queue_free()

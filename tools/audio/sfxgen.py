@@ -1255,6 +1255,18 @@ def main():
     out += knock
     save("dagger_hit", out, 0.5)
 
+    # A dagger that strikes stone (pass 326): it borrowed the shield's `guard`
+    # clank, so a throw at a wall sounded like a block. A glancing steel ping
+    # (two inharmonic partials, short) over a gritty tick of the point.
+    d = 0.14
+    n = int(RATE * d)
+    grit = highpass(noise(0.015), 3000) * env(int(RATE * 0.015), 0.0005, 2.0) * 0.6
+    ping = mix(osc(np.full(n, 2860.0), "sine"), osc(np.full(n, 4170.0), "sine") * 0.45) * env(n, 0.001, 3.2) * 0.55
+    out = np.zeros(n)
+    out[:len(grit)] += grit
+    out += ping
+    save("dagger_ping", out, 0.4)
+
     # The Dwarvish Broad Sword (pass 190), two-handed and 30% slower: its cuts
     # are a longer, lower rush of air with a weight under it, so the blade in
     # hand is heard. The heavy cut adds a deeper body.
