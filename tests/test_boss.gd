@@ -4279,3 +4279,67 @@ func test_every_guardians_reward_line_names_its_prize() -> void:
 		else:
 			check(reward.contains("no skill point"), "%s's Reward line says it gives no skill point (%s)" % [id, reward.strip_edges()])
 	check(seen == BossArena.BOSSES.size(), "every guardian's reward is read (%d of %d)" % [seen, BossArena.BOSSES.size()])
+
+
+## Pass 340: bible 8 told each guardian in words, but Rokusutahn's section
+## gave none of his wind-ups, his health or his second phase's mark, and no
+## test read a guardian's phase marks or wind-ups from the bible. Its numbers
+## table now gives each guardian's health, phase marks and named wind-ups; this
+## holds every row to the script, and every "Phase N (below ...)" line in a
+## guardian's own section to the same mark.
+func test_every_guardians_numbers_are_written_in_bible_8() -> void:
+	const GUARDIANS := {"Rokusutahn": "rokusutahn", "Zoradohna": "zoradohna", "Ripasheiku": "ripasheiku",
+		"Zorugeriru": "zorugeriru", "Pakukame": "pakukame", "Borabohra": "borabohra", "King Grieve": "king_grieve",
+		"Shadow Eura": "shadow_eura", "The Evil One's avatar": "evil_avatar", "The Evil One's veins": "evil_core",
+		"The Evil One's heart": "evil_heart", "The Foreman": "foreman", "The Marsh Hag Matriarch": "hag_matriarch",
+		"The Bark Knight Captain": "bark_captain", "The Clockwork Alpha": "clockwork_alpha", "The Drowned Warden": "drowned_warden"}
+	const SECTIONS := {"8.1": "rokusutahn", "8.2": "zoradohna", "8.3": "ripasheiku", "8.4": "zorugeriru",
+		"8.5": "pakukame", "8.6": "borabohra", "8.7": "king_grieve", "8.8": "shadow_eura"}
+	const WORDS := {"half": 50, "a quarter": 25, "a fifth": 20, "two thirds": 66, "a third": 33}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var eight := bible.get_slice("\n## 8. Bosses", 1).get_slice("\n## 9. ", 0)
+	var table := eight.get_slice("| Guardian | HP | Phases at | Wind-ups (s) |", 1).get_slice("\n\n", 0)
+	var consts := {}
+	for name: String in GUARDIANS:
+		consts[GUARDIANS[name]] = (load("res://scripts/bosses/%s.gd" % GUARDIANS[name]) as Script).get_script_constant_map()
+	# Every guardian script with phases has its row.
+	for f: String in DirAccess.get_files_at("res://scripts/bosses"):
+		if f.ends_with(".gd") and (load("res://scripts/bosses/" + f) as Script).get_script_constant_map().has("PHASES"):
+			check(f.trim_suffix(".gd") in GUARDIANS.values(), "bible 8's numbers table has a row for %s" % f)
+	for name: String in GUARDIANS:
+		var c: Dictionary = consts[GUARDIANS[name]]
+		var cells := table.get_slice("\n| %s | " % name, 1).get_slice("\n", 0).trim_suffix(" |").split(" | ")
+		check(cells.size() == 3, "bible 8's numbers table has a row for %s" % name)
+		if cells.size() != 3:
+			continue
+		var hp: String = str(c["MAX_HP"]) if c.has("MAX_HP") else "%d a vein" % c["VEIN_HP"]
+		check(cells[0] == hp, "%s's health: the bible says %s, the script %s" % [name, cells[0], hp])
+		var marks := []
+		for p: float in c["PHASES"]:
+			marks.append("%d%%" % roundi(p * 100.0))
+		check(cells[1] == ", ".join(marks), "%s's phase marks: the bible says %s, the script %s" % [name, cells[1], ", ".join(marks)])
+		var tells := []
+		for k: String in c:
+			# TELL_SEEN is how much of her a tell shows; a _P2 or _P3 tell is a
+			# phase's quickened one.
+			if (k.contains("TELL") and k != "TELL_SEEN" and not k.right(3).begins_with("_P")) or k == "WINDUP":
+				var v: float = c[k]
+				check(v >= Enemy.MIN_TELEGRAPH, "%s's %s is fair (%s s)" % [name, k, v])
+				if not String.num(v) in tells:
+					tells.append(String.num(v))
+		tells.sort_custom(func(a: String, b: String) -> bool: return float(a) < float(b))
+		check(cells[2] == ", ".join(tells), "%s's wind-ups: the bible says %s, the script %s" % [name, cells[2], ", ".join(tells)])
+	# Each guardian's own section names its phase marks as the script has them.
+	var re := RegEx.create_from_string("Phase (\\d)[^\\n(]{0,40}\\((?:pass \\d+, )?below ([^,)]+)")
+	var named := 0
+	for sec: String in SECTIONS:
+		var text := eight.get_slice("\n### %s " % sec, 1).get_slice("\n### ", 0)
+		var phases: Array = consts[SECTIONS[sec]]["PHASES"]
+		for m: RegExMatch in re.search_all(text):
+			var n := int(m.get_string(1))
+			var said := m.get_string(2).strip_edges()
+			var pct: int = WORDS[said] if WORDS.has(said) else said.trim_suffix("%").to_int()
+			named += 1
+			check(n >= 2 and n - 2 < phases.size() and absi(pct - roundi(phases[n - 2] * 100.0)) <= 1,
+				"%s says phase %d starts below %s, and the script at %s" % [sec, n, said, phases])
+	check(named >= 14, "the guardians' sections name their phase marks (%d)" % named)
