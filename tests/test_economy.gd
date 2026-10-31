@@ -816,6 +816,29 @@ func _peak(sound: String) -> float:
 		top = maxi(top, absi(bytes.decode_s16(i)))
 	return top / 32768.0
 
+
+## Bible 15.3 (pass 311): a resting drop checks for spikes once, as it settles,
+## not every frame. The check (pass 308) scans every child of the room, so with
+## the old per-frame call a spray of drops in a spiked room scanned the room
+## once a frame each for the whole 10 s they lay there.
+func test_a_resting_drop_checks_for_spikes_once() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 5, 19, "P")
+	put_tiles(rows, 2, 19, "^", 1, 1)
+	put_tiles(rows, 30, 19, "^", 8, 1)
+	var w := make_world({"test/town": room_text(["name: Town", "zone: test"], rows)}, "test/town")
+	await frames(3)
+	var drops: Array[Drop] = []
+	for i in 8:
+		drops.append(Drop.make(w.room, cell_feet(10 + i * 2, 19) + Vector2(0, -8), "bread"))
+	var spiked := Drop.make(w.room, cell_feet(33, 19) + Vector2(0, -8), "mana")
+	spiked.velocity = Vector2.ZERO
+	Drop.spike_checks = 0
+	await frames(120)
+	check(Drop.spike_checks == drops.size() + 1, "nine drops at rest for 2 s checked %d times, once each" % Drop.spike_checks)
+	check(spiked.global_position.x < 30 * 16 or spiked.global_position.x > 38 * 16, "and the one on spikes still steps off them (%.0f)" % spiked.global_position.x)
+	Drop.spike_checks = 0
+
 func test_the_guru_names_your_title_once() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(9, 19))
 	var p := w.player
@@ -2687,3 +2710,4 @@ func test_every_shelf_asks_the_shop_tables_price() -> void:
 			"Fire (1,200 g), Tilte (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
 			"| Cartographer | Eolis, Forepaw, Victim, Conflate, Daybreak, Dartmoor | each zone's chart (40 to 800 g"]:
 		check(table.contains(said), "the table says it: %s" % said)
+
