@@ -594,6 +594,31 @@ func test_an_old_save_gains_the_new_keys() -> void:
 	GameState.new_game()
 
 
+## Bible 15 (pass 317): a save from before the off hand (Sean, 2026-10-31) that
+## found the Rune Dagger and wears a shield would press Throw to nothing. The
+## next Continue says why, once; a newer save, or one with the hand free, is not told.
+func test_an_old_save_with_shield_and_dagger_is_told_of_the_off_hand() -> void:
+	var base := {"gold": 0, "save_room": "eolis/plaza", "save_pos": [100, 200]}
+	var told := func(version: int, shield: String) -> Array:
+		var src := base.duplicate(true)
+		src.version = version
+		src.abilities = {"rune_dagger": true}
+		src.equipment = {"blade": "short_sword", "shield": shield}
+		src.gear = ["short_sword", shield] if shield != "" else ["short_sword"]
+		GameState.data = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
+		return GameState.take_load_notice()
+	var notice: Array = told.call(1, "small_shield")
+	check(notice.size() == 2 and String(notice[1]).contains("Rune Dagger under Off Hand (Equipment)"), "an old save with a shield and the dagger is told where to free the hand (%s)" % [notice])
+	check(GameState.take_load_notice().is_empty() and not GameState.flag(GameState.OFFHAND_NOTICE), "once: taking the notice clears it")
+	check(String(GameState.data.equipment.shield) == "small_shield", "and the shield stays on: the choice is the player's")
+	check((told.call(1, "") as Array).is_empty(), "an old save with the hand already free is not told")
+	check((told.call(GameState.OFFHAND_VERSION, "small_shield") as Array).is_empty(), "nor a save written under the off-hand rule")
+	check(int(GameState.data.version) == GameState.VERSION, "and the save is brought up to this version")
+	var game := FileAccess.get_file_as_string("res://scripts/game.gd")
+	check(game.contains("GameState.take_load_notice()"), "Continue shows the notice")
+	GameState.new_game()
+
+
 # --- Damaged saves and settings (pass 109) -----------------------------------------
 
 const BAD_SLOT := 8

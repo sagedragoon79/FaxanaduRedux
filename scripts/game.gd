@@ -219,6 +219,9 @@ func _continue() -> void:
 		at = Vector2.INF
 	_start(room, at)
 	GameState.toast.emit("Welcome back. %s, rank %s." % [world.room.title, GameState.rank_name()])
+	var notice := GameState.take_load_notice()
+	if not notice.is_empty():
+		GameState.banner.emit(notice[0], notice[1])
 
 
 ## Builds the World in the viewport and hooks the UI to its player.

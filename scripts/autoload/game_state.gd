@@ -17,7 +17,14 @@ signal ending_started
 ## The most of a foe's sorcery a shield and helmet together turn (pass 225).
 const MAX_WARD := 0.6
 const SAVE_PATH := "user://save_%d.json"
-const VERSION := 1
+## 2 (pass 317): saves from before the off hand (Sean, 2026-10-31) are told of it.
+const VERSION := 2
+## The first save version written under the off-hand rule.
+const OFFHAND_VERSION := 2
+## Flag set on an older save that found the Rune Dagger and wears a shield:
+## the next Continue tells the player the shield now holds the throwing hand.
+const OFFHAND_NOTICE := "notice:offhand"
+const OFFHAND_NOTICE_TEXT := ["The Off Hand", "Your shield now holds the throwing hand. To throw, choose the Rune Dagger under Off Hand (Equipment)."]
 ## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
 const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_broad_sword"}
 ## Pickups a newer build moved: old id -> new id. A pickup's id is its room and
@@ -142,6 +149,15 @@ func is_collected(id: String) -> bool:
 
 func collect(id: String) -> void:
 	data.collected[id] = true
+
+
+## The notice a loaded save is owed (pass 317): [title, subtitle] for a banner,
+## or empty. It is given once: taking it clears it from the save.
+func take_load_notice() -> Array:
+	if not flag(OFFHAND_NOTICE):
+		return []
+	data.flags.erase(OFFHAND_NOTICE)
+	return OFFHAND_NOTICE_TEXT.duplicate()
 
 
 func flag(id: String) -> bool:
@@ -568,6 +584,12 @@ static func sanitize(src: Variant) -> Dictionary:
 	for k: Variant in src:
 		if k is String:
 			out[k] = _coerce(out[k], src[k]) if out.has(k) else src[k]
+	# A save from before the off hand (pass 317) that found the dagger and wears a
+	# shield: Throw would now do nothing, unexplained, so the next Continue says why.
+	var was: Variant = (src as Dictionary).get("version", 1)
+	if (int(was) if _is_number(was) else 1) < OFFHAND_VERSION and bool(out.abilities.get("rune_dagger", false)) \
+			and String(out.equipment.get("shield", "")) != "":
+		out.flags[OFFHAND_NOTICE] = true
 	out.version = VERSION
 	# Items renamed since a save was written keep their place and temper (pass 184).
 	for old: String in RENAMED_ITEMS:
