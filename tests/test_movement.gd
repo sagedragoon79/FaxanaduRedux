@@ -615,35 +615,10 @@ func test_every_movement_number_is_written_in_bible_6() -> void:
 			continue
 		count += 1
 		var f := float(t.get(prop.name))
-		if not _written(six, f):
+		if not written_in(six, f):
 			unwritten.append("%s %s" % [prop.name, String.num(f)])
 	check(count >= 50, "every exported movement number is read (%d)" % count)
 	check(unwritten.is_empty(), "every movement number is written in bible 6 (not: %s)" % [unwritten])
-
-
-## Whether `text` writes `f` as the bible does, standing alone (not inside a
-## longer number).
-func _written(text: String, f: float) -> bool:
-	var forms := [String.num(f), "%.2f" % f]
-	# A whole number, or a derived one (gravity from 2h/t²) the bible gives
-	# to the whole px.
-	var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) or absf(f) < 100.0 else [floori(f), roundi(f)]
-	for i: int in wholes:
-		forms.append(str(i))
-		if absi(i) >= 1000:
-			forms.append("%d,%03d" % [i / 1000, absi(i) % 1000])
-	if f > 0.0 and f < 1.0:
-		forms.append("%d ms" % roundi(f * 1000.0))
-		forms.append("%d%%" % roundi(f * 100.0))
-	for form: String in forms:
-		var at := text.find(form)
-		while at >= 0:
-			var before := text[at - 1] if at > 0 else " "
-			var after := text[at + form.length()] if at + form.length() < text.length() else " "
-			if not (before in "0123456789.,") and not (after in "0123456789") and not (after == "," and at + form.length() + 1 < text.length() and text[at + form.length() + 1] in "0123456789"):
-				return true
-			at = text.find(form, at + 1)
-	return false
 
 
 ## Pass 200: 6.1 and the core of 6.2 were only read back from the tuning by the
