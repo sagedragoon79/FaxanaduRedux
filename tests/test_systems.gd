@@ -787,6 +787,43 @@ func test_older_settings_load_without_errors() -> void:
 	_restore()
 
 
+## Pass 327: the runner's leak check compares every option, not a list kept
+## by hand (which the mercy assist of pass 325 had to be added to). Each static
+## var Settings keeps is in its snapshot, so a new option can't slip past it,
+## and a left-on option of any kind counts as a leak. A file from before the
+## [assist] section, or with a damaged value there, loads mercy off.
+func test_every_option_is_in_the_snapshot() -> void:
+	var src := FileAccess.get_file_as_string("res://scripts/data/settings.gd")
+	var snap := Settings.snapshot()
+	var missing := []
+	for line: String in src.split("\n"):
+		if line.begins_with("static var "):
+			var name := line.trim_prefix("static var ").get_slice(" ", 0).get_slice(":", 0)
+			if name != "path" and not snap.has(name):
+				missing.append(name)
+	check(missing.is_empty() and snap.size() >= 9, "every option is in Settings.snapshot() (missing: %s)" % [missing])
+	var script: GDScript = load("res://scripts/data/settings.gd")
+	for name: String in snap:
+		var was: Variant = script.get(name)
+		match typeof(was):
+			TYPE_BOOL: script.set(name, not was)
+			TYPE_INT: script.set(name, was + 1)
+			TYPE_DICTIONARY: script.set(name, {"jump": 4194326})
+		check((runner.call("_leaks") as Array).has("settings changed"), "a changed %s counts as a leak" % name)
+		script.set(name, was)
+	check((runner.call("_leaks") as Array).is_empty(), "and put back, nothing leaks")
+	expect_engine_errors()
+	Settings.path = TEMP_SETTINGS
+	var errors := ErrorCatcher.start()
+	_write_raw(TEMP_SETTINGS, "[feel]\nshake=1\n")
+	Settings.load_settings()
+	check(errors.stop().is_empty() and not Settings.mercy and Settings.shake == 1, "a file from before [assist] loads mercy off, with no error")
+	_write_raw(TEMP_SETTINGS, "[assist]\nmercy=5\n")
+	Settings.load_settings()
+	check(not Settings.mercy, "and a damaged mercy falls back to off")
+	_restore()
+
+
 ## Pass 138: a save from an older or newer build can name things this build
 ## doesn't have: a renamed skill node, a blade, a ring, a dye. Loading it,
 ## dressing the player, learning, unlearning and the dyer must all go on

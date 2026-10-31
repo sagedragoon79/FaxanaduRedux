@@ -22,6 +22,8 @@ var _passed := 0
 var _failed := 0
 var _failures: Array[String] = []
 var _filter := ""
+## Every option as a fresh reset() leaves it (pass 327), for the leak check.
+var _clean_settings := {}
 
 
 func _ready() -> void:
@@ -79,6 +81,7 @@ func _clean_slate() -> void:
 	Settings.keys = {}
 	Settings.path = TestSuite.SETTINGS_PATH
 	Settings.apply()
+	_clean_settings = Settings.snapshot()
 	Feel.hitstop_enabled = false
 	Feel.rumble_enabled = false
 	Feel.reset()
@@ -108,8 +111,7 @@ func _leaks() -> Array[String]:
 		out.append("a forced pose (%s)" % PlayerVisual.forced)
 	if not PlayerVisual.body_sets:
 		out.append("body sets off")
-	if Settings.path != TestSuite.SETTINGS_PATH or Settings.shake != 0 or Settings.flashes != 0 or not Settings.rumble or Settings.damage_numbers or Settings.mercy \
-			or Settings.music_volume != 8 or Settings.sound_volume != 8 or Settings.speed != 0 or not Settings.keys.is_empty():
+	if Settings.path != TestSuite.SETTINGS_PATH or Settings.snapshot() != _clean_settings:
 		out.append("settings changed")
 	if Drop.bread_chance != 0.0 or Drop.mana_chance != 0.0 or Drop.poison_chance != 0.0 or Drop.rare_chance != 0.0:
 		out.append("drop chances on")
