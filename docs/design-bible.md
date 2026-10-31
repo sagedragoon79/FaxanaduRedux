@@ -381,7 +381,9 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Small Shield | Guard halves damage (5.3) |
 | Studded Mail | 30% less damage taken |
 | Large Shield | Guard blocks 70% of a hit |
-| Elixir | Carry one; a fatal hit uses it and revives you in place at full health |
+| Elixir | Carry one; a fatal hit uses it and revives you in place at full health and full magic (pass 345) |
+
+**The Elixir (pass 345):** the original's manual says of it: "Medicine that will restore your magic and power." The remake's Elixir revived you at full health but left your magic where it was, so a mage who died empty rose empty, and nothing said the remake had dropped half the medicine. Now a drink fills both. What stays the remake's own: the original's Elixir waited in the inventory to be used, while the remake's is drunk by the fatal hit itself, and you carry only one, so it is a second life and never a heal you sip mid-fight (the flask is that, 5.1). Held by `test_elixir_revives_once_and_is_limited_to_one`, which also checks the bible quotes the manual.
 
 ### 5.3 Combat moves
 

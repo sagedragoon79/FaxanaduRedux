@@ -1034,8 +1034,14 @@ func test_elixir_revives_once_and_is_limited_to_one() -> void:
 	check(Shop.buy("apolune_items", 0, p) and p.elixirs == 1, "bought an Elixir")
 	check(Shop.status("apolune_items", 0, p) == "owned", "you can carry only one")
 	check(int(GameState.data.elixirs) == 1, "the Elixir is saved")
+	p.mp = 0.0
 	p.take_damage(p.max_hp + 50)
 	check(not p.dead and p.hp == p.max_hp and p.elixirs == 0, "a fatal hit drinks the Elixir and revives you (hp %d)" % p.hp)
+	# Pass 345: the manual's Elixir is "Medicine that will restore your magic
+	# and power", so the revive fills the magic too.
+	check(is_equal_approx(p.mp, p.max_mp), "and with full magic, as the original's manual says (mp %.0f of %.0f)" % [p.mp, p.max_mp])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("\"Medicine that will restore your magic and power.\"") and bible.contains("revives you in place at full health and full magic"), "5.2 quotes the original's Elixir beside the remake's")
 	check(p.invulnerable, "with a moment of safety")
 	Feel.reset()
 	await frames(150)

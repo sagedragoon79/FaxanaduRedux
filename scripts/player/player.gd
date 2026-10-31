@@ -1810,10 +1810,13 @@ func _tick_poison(delta: float) -> void:
 		GameState.toast.emit("The poison fades.")
 
 
-## Dying with an Elixir: it is used up and you rise where you fell, fully healed.
+## Dying with an Elixir: it is used up and you rise where you fell, fully
+## healed and with full magic, as the original's manual has it: "Medicine that
+## will restore your magic and power." (bible 5.2, pass 345)
 func _drink_elixir() -> void:
 	elixirs -= 1
 	hp = max_hp
+	mp = max_mp
 	_invuln_timer = hurt_invuln() * 2.0
 	velocity = Vector2(0, -180)
 	Feel.slowmo(0.4, 0.6)
