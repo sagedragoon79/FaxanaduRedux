@@ -1892,3 +1892,69 @@ func test_a_drop_never_rests_in_a_doorway() -> void:
 		p.input.jump_held = false
 		w.queue_free()
 		await frames(2)
+
+
+## Bible 5.2 (pass 315): the Hornet Gallery teaches the Rune Dagger, and since
+## Sean's off hand (2026-10-31) the dagger goes straight into a shield's hand when
+## found there. So every foe in the room must be in a dagger's reach from ground
+## you can stand on (no thorns): straight up for a hornet, along the floor for the
+## spitter. Each is thrown at for real from the nearest such spot.
+func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
+	var text := FileAccess.get_file_as_string("res://levels/trunk/hornet_gallery.room")
+	var grid: PackedStringArray = text.split("---\n")[1].strip_edges().split("\n")
+	var spots: Array[Vector2i] = []
+	for y in range(grid.size() - 1):
+		for x in range(grid[y].length()):
+			var c := grid[y][x]
+			var below := grid[y + 1][x]
+			if c in ".}T$" and below in "#-" and grid[y - 1][x] in ".}T$H" and grid[y - 2][x] in ".}T$H":
+				spots.append(Vector2i(x, y))
+	var foes := []
+	for y in grid.size():
+		for x in grid[y].length():
+			if grid[y][x] in "HT":
+				foes.append(Vector2i(x, y))
+	check(foes.size() == 4, "three hornets and a spitter (%s)" % [foes])
+	for foe_cell: Vector2i in foes:
+		var hornet := grid[foe_cell.y][foe_cell.x] == "H"
+		var w := make_world({}, "trunk/hornet_gallery")
+		var p := w.player
+		p.abilities["rune_dagger"] = true
+		GameState.data.equipment.shield = ""
+		await frames(3)
+		var foe: Enemy = null
+		for e: Node in runner.get_tree().get_nodes_in_group("enemy"):
+			if e is Enemy and w.room.cell_at((e as Enemy).center()) == foe_cell:
+				foe = e
+		check(foe != null, "the foe at %s stands in the room" % [foe_cell])
+		if foe == null:
+			w.queue_free()
+			await frames(2)
+			continue
+		var target := foe.center()
+		var best := Vector2i(-1, -1)
+		var best_d := INF
+		for s: Vector2i in spots:
+			var feet := cell_feet(s.x, s.y)
+			var d := INF
+			if hornet and absf(feet.x - target.x) <= 8.0 and target.y < feet.y:
+				d = (feet.y - 22.0) - target.y
+			elif not hornet and s.y == foe_cell.y and absf(feet.x - target.x) > 24.0:
+				d = absf(feet.x - target.x) - 10.0
+			if d < best_d:
+				best_d = d
+				best = s
+		check(best_d <= RuneDagger.RANGE, "a %s at %s is in the dagger's reach from safe ground (%.0f px from %s)" % ["hornet" if hornet else "spitter", foe_cell, best_d, best])
+		if best.x >= 0:
+			var hp0 := foe.hp
+			p.global_position = cell_feet(best.x, best.y)
+			p.velocity = Vector2.ZERO
+			p.facing = 1 if target.x > p.global_position.x else -1
+			await frames(2)
+			p.input.up = hornet
+			p.throw_dagger()
+			await frames(40)
+			p.input.up = false
+			check(foe.dead or foe.hp < hp0, "and a throw from there strikes it (hp %d of %d)" % [foe.hp, hp0])
+		w.queue_free()
+		await frames(2)
