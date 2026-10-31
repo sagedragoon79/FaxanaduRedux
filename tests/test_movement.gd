@@ -1673,3 +1673,48 @@ func test_a_poison_tick_never_touches_movement() -> void:
 			first = f
 			break
 	check(first == -1, "poisoned and well heroes move alike, frame for frame (first apart at %d)" % first)
+
+
+## Bible 6 (pass 320): a Rune Dagger throw never touches movement. Since Sean's
+## flick (2026-10-30) the throw plays a low ready crouch over the legs, but it is
+## drawn, not done: no stop, no slow, no nudge, no lost jump or wall slide. A
+## hero who throws on the run, at the top of a jump and in a wall slide moves
+## frame for frame with one who never throws.
+func test_a_dagger_throw_never_touches_movement() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 30, 4, "#", 3, 16)
+	var paths := []
+	var states := []
+	const AT := [6, 50, 100]
+	for thrower: bool in [false, true]:
+		var w := make_world({"test/a": room_text(["name: A", "zone: test"], rows)}, "test/a", cell_feet(18, 19))
+		var p := w.player
+		p.abilities.glove = true
+		p.abilities.rune_dagger = true
+		GameState.data.equipment.shield = ""
+		await frames(3)
+		var path: Array[Vector2] = []
+		var seen := {}
+		for f in 130:
+			var i := p.input
+			i.jump_pressed = f == 44
+			i.jump_held = f >= 44 and f < 64
+			i.move_x = 1
+			i.throw_pressed = thrower and f in AT
+			await frames(1)
+			path.append(p.global_position)
+			if thrower and f in AT:
+				seen[f] = "slide" if p.is_wall_sliding else ("air" if not p.is_on_floor() else "run")
+		paths.append(path)
+		states.append([p.throws, seen])
+		w.queue_free()
+		await frames(2)
+	var seen: Dictionary = states[1][1]
+	check(seen.get(6) == "run" and seen.get(50) == "air" and seen.get(100) == "slide", "throws go on the run, in a jump and in a wall slide (%s)" % seen)
+	check(int(states[1][0]) == AT.size() and int(states[0][0]) == 0, "and each one flies (%d thrown)" % states[1][0])
+	var first := -1
+	for f in paths[0].size():
+		if not (paths[0][f] as Vector2).is_equal_approx(paths[1][f]):
+			first = f
+			break
+	check(first == -1, "a thrower and a hero who never throws move alike, frame for frame (first apart at %d)" % first)
