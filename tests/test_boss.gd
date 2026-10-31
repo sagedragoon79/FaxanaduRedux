@@ -4234,3 +4234,48 @@ func _boss_target(boss: Variant, attempt: int) -> Vector2:
 	if "segments" in boss and not boss.segments.is_empty():
 		return boss.segments[attempt % boss.segments.size()].global_position
 	return boss.global_position
+
+
+## Pass 332: each guardian's Reward line in bible 8 (the Foreman's in 7) must
+## name what `BossArena.BOSSES` gives: its ring, key, blade, armor, ability or
+## stat item, and its skill point or "no skill point". King Grieve's, Borabohra's,
+## Shadow Eura's and the Evil One's lines left out the skill point every one of
+## them gives, which the banners have told since pass 220.
+func test_every_guardians_reward_line_names_its_prize() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	const HEADINGS := {"rokusutahn": "8.1", "zoradohna": "8.2", "ripasheiku": "8.3", "zorugeriru": "8.4",
+		"pakukame": "8.5", "borabohra": "8.6", "king_grieve": "8.7", "shadow_eura": "8.8",
+		"evil_avatar": "8.9", "evil_veins": "8.9", "evil_one": "8.9", "drowned_warden": "8.10"}
+	const PARAGRAPHS := {"bark_captain": "**The Bark Knight Captain (built pass 171).**",
+		"hag_matriarch": "**The Marsh Hag Matriarch (built pass 179).**",
+		"clockwork_alpha": "**The Clockwork Alpha (built pass 169).**",
+		"foreman": "Rock Golem (mini-boss: the Foreman"}
+	var seen := 0
+	for id: String in BossArena.BOSSES:
+		var spec: Dictionary = BossArena.BOSSES[id]
+		var text := ""
+		if HEADINGS.has(id):
+			text = bible.get_slice("\n### %s " % HEADINGS[id], 1).get_slice("\n### ", 0)
+		elif id == "foreman":
+			text = bible.get_slice(PARAGRAPHS[id], 1).get_slice("\n", 0)
+		elif PARAGRAPHS.has(id):
+			text = bible.get_slice(PARAGRAPHS[id], 1).get_slice("\n\n**", 0).get_slice("\n---", 0)
+		if not check(text.contains("Reward:"), "the bible gives %s a Reward line" % id):
+			continue
+		seen += 1
+		var reward := text.get_slice("Reward:", 1).get_slice("\n", 0)
+		var prizes := []
+		if spec.has("ring_name"):
+			prizes.append(spec.ring_name)
+		for key: String in ["key", "blade", "armor", "stat_item", "ability"]:
+			if spec.has(key):
+				prizes.append(spec.title)
+		if spec.get("mana_dew", false):
+			prizes.append("Mana Dew")
+		for prize: String in prizes:
+			check(reward.contains(prize), "%s's Reward line names the %s (%s)" % [id, prize, reward.strip_edges()])
+		if int(spec.get("skill_points", 0)) > 0:
+			check(reward.contains("skill point") and not reward.contains("no skill point"), "%s's Reward line names its skill point (%s)" % [id, reward.strip_edges()])
+		else:
+			check(reward.contains("no skill point"), "%s's Reward line says it gives no skill point (%s)" % [id, reward.strip_edges()])
+	check(seen == BossArena.BOSSES.size(), "every guardian's reward is read (%d of %d)" % [seen, BossArena.BOSSES.size()])
