@@ -857,6 +857,60 @@ func test_every_combat_number_is_written_in_bible_5_3() -> void:
 	check(rows == Spells.ORDER.size() and rows == Spells.DATA.size(), "a row for every spell (%d)" % rows)
 
 
+
+## Pass 346: the test above finds a number anywhere in 5.3, and rounds any
+## number under 100 to a whole one, so 1.35 passed on any "1" and the five
+## hit-stops on any "0": six numbers (the hit-stops, Executioner's 1.35, the
+## 1.2 s before you rise) were written nowhere in 5.3 and passed anyway. This
+## holds each number to its own row (or move) and to its exact form.
+func test_every_combat_number_is_written_in_its_own_row() -> void:
+	const HOME := {
+		"- **Slash:**": ["ground_combo_length", "air_combo_length"],
+		"- **Up-slash:**": ["up_slash_pop"],
+		"| Light hit / heavy third hit |": ["slash_damage", "heavy_damage"],
+		"| Combo window, cooldowns |": ["combo_window", "combo_cooldowns"],
+		"| Attack buffer |": ["attack_buffer"],
+		"| Throw buffer": ["throw_buffer"],
+		"| Hit-stop (6.7) |": ["hit_hitstop", "heavy_hitstop", "kill_hitstop", "hurt_hitstop", "death_hitstop"],
+		"| Parry window |": ["parry_window", "parry_hitstop", "parry_mp_gain"],
+		"| Guard (Small Shield) |": ["guard_reduction", "guard_mp_cost", "guard_move_multiplier"],
+		"| Knockback when hit |": ["hurt_knockback", "hurt_control_lock"],
+		"| Low health |": ["low_health", "heartbeat_interval"],
+		"| MP |": ["max_mp", "mp_regen_per_second", "mp_per_melee_hit"],
+		"| Red Potion |": ["flask_charges", "flask_heal", "drink_time"],
+		"| War Glove": ["war_glove_mult", "war_glove_time"],
+		"| Thrust (skill, 9) |": ["thrust_charge", "thrust_mult", "thrust_speed", "thrust_time", "thrust_cooldown"],
+		"| Executioner (skill, 9) |": ["executioner_mult"],
+		"| Relics": ["pendant_mult", "rod_deluge_mult"],
+		"| Death (5.4) |": ["death_gold_fraction", "respawn_delay"],
+		"| Spikes and thorns": ["hazard_damage"],
+		"| Casting": ["cast_cooldown"],
+	}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var sec := bible.get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
+	var c := CombatTuning.new()
+	var homed := {}
+	var astray := []
+	for label: String in HOME:
+		var at := sec.find("\n" + label)
+		if not check(at >= 0, "5.3 has its line %s" % label):
+			continue
+		var line := sec.substr(at + 1).get_slice("\n", 0)
+		for prop: String in HOME[label]:
+			homed[prop] = true
+			var v: Variant = c.get(prop)
+			var nums: Array = v if typeof(v) == TYPE_ARRAY else ([v.x, v.y] if typeof(v) == TYPE_VECTOR2 else [v])
+			for n: Variant in nums:
+				if not written_exactly_in(line, float(n)):
+					astray.append("%s %s not in %s" % [prop, String.num(float(n)), label])
+	check(astray.is_empty(), "every combat number is written in its own row of 5.3 (%s)" % [astray])
+	var unhomed := []
+	for prop: Dictionary in c.get_property_list():
+		if prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE and prop.type in [TYPE_FLOAT, TYPE_INT, TYPE_ARRAY, TYPE_VECTOR2] and not homed.has(prop.name):
+			unhomed.append(prop.name)
+	check(unhomed.is_empty(), "every combat number has a home row (%s)" % [unhomed])
+	check(not written_exactly_in("x1 and 0 s", 1.35) and written_exactly_in("x1.35", 1.35) and written_exactly_in("90 ms", 0.09), "and the strict reading takes no rounded form")
+
 ## Bible 5.3 (pass 282): spikes cost a mask (20) through no armor and set
 ## you back on safe ground; a spell can't be cast again within 0.35 s, and the
 ## press made too soon is spent, not saved.
