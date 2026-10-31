@@ -4159,3 +4159,78 @@ func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 	check(tells.size() >= 30, "the guardians show their tells (%d)" % tells.size())
 	check(silent.is_empty(), "every tell sounds as it starts: %s" % [silent])
 	check(unheard.is_empty(), "every tell a guardian's script names is heard, fought or driven: %s" % [unheard])
+
+
+## Bible 8 (pass 188, held since pass 316): the Rune Dagger "reaches every boss
+## that a blade does". With Sean's off hand it is a whole build's ranged tool, so
+## each guardian of the rush is thrown at in its own arena until a throw stings it.
+func test_the_rune_dagger_reaches_every_guardian() -> void:
+	const SKIP := {"evil_veins": "the veins are cut where they run, not thrown at", "evil_one": "the bound Heart takes only the Dragon Slayer"}
+	var missed := []
+	for pair: Array in BossRush.ORDER:
+		var id: String = pair[0]
+		if SKIP.has(id):
+			continue
+		GameState.new_game()
+		var w := make_world({}, pair[1])
+		var p := w.player
+		p.max_hp = 99999
+		p.hp = 99999
+		p.abilities["rune_dagger"] = true
+		GameState.data.equipment.shield = ""
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss: Variant = ar.boss
+		await _until(func() -> bool: return not (boss.state in ["intro", "dormant", "reveal"]), 600)
+		var floor_y := p.global_position.y
+		var hp0: int = boss.hp
+		var struck := false
+		for attempt in 24:
+			await frames(20)
+			if boss.dead or boss.hp < hp0:
+				struck = true
+				break
+			p.hp = 99999
+			p._invuln_timer = 2.0
+			if not p.dagger_ready():
+				continue
+			var target := _boss_target(boss, attempt)
+			# Stand where you can: under it if it is high, else a step to one side,
+			# and land before the throw.
+			var high := target.y < floor_y - 70.0
+			var side := -1.0 if attempt % 2 == 0 else 1.0
+			# A guardian below you (in the Wellspring's pool) is thrown at from the
+			# ground beside it every other pair of tries.
+			var x := target.x + (0.0 if high else side * 70.0)
+			var drop_y := floor_y
+			if target.y > floor_y and attempt % 4 >= 2:
+				drop_y = target.y - 40.0
+				while drop_y < target.y + 120.0 and not w.room.is_solid_at(Vector2(x, drop_y + 1.0)):
+					drop_y += 2.0
+			p.global_position = Vector2(x, drop_y)
+			p.velocity = Vector2.ZERO
+			await _until(func() -> bool: return p.is_on_floor(), 60)
+			target = _boss_target(boss, attempt)
+			high = target.y < p.global_position.y - 70.0
+			if high:
+				p.global_position.x = target.x
+			p.facing = 1 if target.x > p.global_position.x else -1
+			p.input.up = high
+			p.throw_dagger()
+			p.input.up = false
+		check(struck, "%s is stung by a thrown dagger (hp %d of %d)" % [id, boss.hp, hp0])
+		if not struck:
+			missed.append(id)
+		w.queue_free()
+		await frames(2)
+	check(missed.is_empty(), "the dagger reaches every guardian a blade does (missed: %s)" % [missed])
+
+
+func _boss_target(boss: Variant, attempt: int) -> Vector2:
+	if boss.has_method("center"):
+		return boss.center()
+	if "segments" in boss and not boss.segments.is_empty():
+		return boss.segments[attempt % boss.segments.size()].global_position
+	return boss.global_position
