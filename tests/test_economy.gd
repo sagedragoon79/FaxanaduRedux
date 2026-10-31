@@ -976,6 +976,14 @@ func test_a_shield_wards_a_foes_sorcery() -> void:
 	GameState.refresh_stats(p)
 	check_near(p.magic_ward, 0.2, 0.001, "a shield on the back of a two-hander wards nothing; the helmet still does")
 	GameState.data.equipment.blade = "short_sword"
+	GameState.data.equipment.shield = "magic_shield"
+	Menus.choose_equipment(Menus.OFFHAND_DAGGER, p)
+	check(GameState.offhand_free(), "the Rune Dagger chosen for the off hand takes the shield off")
+	check_near(p.magic_ward, 0.2, 0.001, "and with it the shield's ward: only the helmet's stays (pass 313)")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("the original had no thrown dagger, and its shield, once bought, was always on the arm and always resisting magic"),
+		"the bible says how the off hand departs from the original's shield")
+	GameState.data.equipment.blade = "short_sword"
 	GameState.data.equipment.helmet = ""
 	GameState.data.equipment.shield = "small_shield"
 	GameState.refresh_stats(p)
