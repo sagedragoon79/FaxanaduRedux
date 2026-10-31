@@ -2428,7 +2428,7 @@ func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> voi
 	var rows := Menus.equipment_rows()
 	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
 	check(labels.slice(0, 4) == ["Blades", "Short Sword", "Long Sword", "Dwarvish Broad Sword"], "the Equipment page lists blades by tier (%s)" % [labels])
-	check(labels.has("Shields") and labels.has("Small Shield"), "and the shields you have")
+	check(labels.has("Off Hand") and labels.has("Small Shield"), "and the shields you have, under the Off Hand")
 	check(rows[2].right == "Worn", "marking what you wear")
 	# A save keeps the gear, and an older save gets what it wore, renamed.
 	var src := GameState.fresh()

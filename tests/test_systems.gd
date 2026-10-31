@@ -937,11 +937,15 @@ func test_the_hand_dagger_is_the_short_sword_and_the_rune_dagger_is_found() -> v
 	var w := make_world({}, "eolis/market")
 	await frames(3)
 	var p := w.player
+	GameState.data.gear.append("small_shield")
+	GameState.wear("small_shield", p)
 	var pick := ItemPickup.new()
 	pick.kind = ItemPickup.KIND_BY_CHAR["}"]
 	w.room.add_child(pick)
 	pick.grant(p)
 	check(bool(p.abilities.get("rune_dagger", false)), "picked up, it is yours")
+	check(GameState.offhand_free() and not p.has_shield, "and it takes the off hand: the shield goes on your back")
+	GameState.data.gear.erase("small_shield")
 
 
 ## Pass 185: the Battle Helmet left the shield slot for its own. A save that
