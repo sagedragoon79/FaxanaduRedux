@@ -23,12 +23,13 @@ CLIPS = (("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.
          ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
          ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
          ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
-         ("drink.png", "drink"), ("cast.png", "cast"), ("throw.png", "throw"), ("throw_up.png", "throw_up"))
+         ("drink.png", "drink"), ("cast.png", "cast"), ("throw.png", "lthrow_l1"), ("throw_up.png", "lthrow_up_l1"))
 SETS = ("base", "leather", "studded", "plate", "battle", "battle_helm")
 
 # The bare elf and the armor tiers (character states of Sean's elf, design bible 13.5), each with
 # the cloak drawn in a key green the game dyes: clips made from the set's cloaked state, its state
-# holding the Short Sword (attacks) and holding the Mattock (pogo and swing).
+# holding the Short Sword (attacks and the left-hand Rune Dagger throw) and holding the Mattock
+# (pogo and swing).
 SHEETS = {"hero_" + s: {strip: f"hero/{s}_cloak/{clip}" for strip, clip in CLIPS} for s in SETS}
 # Each set's four attacks again with the other blades (Sean: swords are drawn into the attacks),
 # from its state holding that blade: sheet "hero_<set>_<blade>".
@@ -37,6 +38,9 @@ for _set in SETS:
         # The set's own idle too, as the importer's reference for scale (it never plays from here).
         SHEETS[f"hero_{_set}_{_blade}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"], **{
             f"{clip}.png": f"hero/{_set}_cloak/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
+        # The Rune Dagger flicked from the left hand, the blade kept in the right (Sean, 2026-10-30).
+        SHEETS[f"hero_{_set}_{_blade}"].update({"throw.png": f"hero/{_set}_cloak/{_blade}/lthrow_l1",
+                                                 "throw_up.png": f"hero/{_set}_cloak/{_blade}/lthrow_up_l1"})
 
 # Each set's block, from its state holding each shield up to guard (the shields are drawn in):
 # sheet "hero_<set>_<shield>", the block and the set's idle as the importer's reference.

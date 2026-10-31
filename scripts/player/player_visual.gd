@@ -26,8 +26,9 @@ const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
 ## its attacks again with every blade but the Short Sword, as the sheet
 ## "<set>_<suffix>" (hero_plate_long_sword). The Short Sword is the set's own.
 const BLADE_SHEETS := {"long_sword": "long_sword", "dwarvish_broad_sword": "broad_sword", "dragon_slayer": "dragon_slayer"}
-## The clips a blade sheet holds (its idle is only the importer's reference for scale).
-const BLADE_CLIPS := ["slash1", "slash2", "slash3", "slash_up"]
+## The clips a blade sheet holds: the attacks and the Rune Dagger flicked from the left
+## hand (its idle is only the importer's reference for scale).
+const BLADE_CLIPS := ["slash1", "slash2", "slash3", "slash_up", "throw", "throw_up"]
 ## Shields are drawn into the block pose the same way: "<set>_<shield>" holds the
 ## set's block with that shield up (hero_plate_large_shield). Without one the
 ## code-drawn shield is held over the clip.
