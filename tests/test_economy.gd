@@ -1580,14 +1580,21 @@ func test_bloodletting_heals_on_a_staggered_foe() -> void:
 	dwarf.set_physics_process(false)
 	p.hp = 50
 	p.facing = 1
+	Sfx.recent.clear()
 	p.input.attack_pressed = true
 	await frames(2)
 	check(p.hp == 50, "a hit on a foe on its feet heals nothing (%d)" % p.hp)
+	check(not Sfx.recent.has(Player.BLOODLET_SOUND), "and makes no Bloodletting sound")
 	await frames(30)
 	dwarf.stagger()
 	p.input.attack_pressed = true
 	await frames(2)
 	check(p.hp == 50 + Player.BLOODLETTING_HEAL, "a hit on a staggered foe heals 2 (%d)" % p.hp)
+	# Heard (pass 318): the heal had been silent, felt only on the masks.
+	check(Sfx.recent.has(Player.BLOODLET_SOUND), "and the heal is heard (%s)" % [Sfx.recent])
+	var heal := _peak(Player.BLOODLET_SOUND)
+	var blow := _peak("hit")
+	check(heal < blow * 0.6, "under the blow that earns it (peak %.2f against %.2f)" % [heal, blow])
 
 
 ## Thrust (pass 149, bible 9): the Blade branch's eighth node. Hold Attack

@@ -1442,6 +1442,20 @@ def main():
         out[i:] += osc(slide(f0, f1, ln / RATE, 0.6), "sine") * env(ln, 0.004, 2.0) * a
     save("poison_tick", out, 0.3)
 
+    # A Bloodletting heal (pass 318): a blow in a foe's opening giving health
+    # back. It was silent, so the skill was felt only as a number on the masks.
+    # A warm, quiet double pulse, like a heartbeat taking: two soft sine swells
+    # rising 180 to 260 Hz with a faint octave above, kept well under `hit`.
+    d = 0.24
+    n = int(RATE * d)
+    out = np.zeros(n)
+    for st, a in ((0.0, 0.7), (0.09, 0.5)):
+        i = int(RATE * st)
+        ln = n - i
+        out[i:] += osc(slide(180.0, 260.0, ln / RATE, 0.5), "sine") * env(ln, 0.012, 3.0) * a
+        out[i:] += osc(slide(360.0, 520.0, ln / RATE, 0.5), "sine") * env(ln, 0.012, 4.0) * a * 0.2
+    save("bloodlet", out, 0.3)
+
 
 if __name__ == "__main__":
     main()
