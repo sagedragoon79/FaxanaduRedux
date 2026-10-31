@@ -260,11 +260,13 @@ Every gate has a consistent, readable look so players remember it:
 |------|-------|-----|-----------|
 | Health (HP) | 5 masks of 20 HP (100) | 14 masks (280) | Life Fruit: 2 fruits = +1 mask (18 fruits: 13 in the rooms, one at each of the 4 grocers, 1 from the Clockwork Alpha) |
 | Magic (MP) | 60 | 220 | Mana Dew: each +10 (16 dews: 9 in the rooms, one at each of the 4 grocers, 3 from Ripasheiku, the Bark Knight Captain and the Marsh Hag Matriarch) |
-| Red Potion flask | 2 charges, heals 40 HP | 5 charges, heals 70 HP | Potion Shards (3 shards = +1 charge; 9 shards) and skill tree. Pass 243: the Trunk and the Tower had grown 18 shards, enough for 8 charges; nine (three in the Trunk, six in the Tower) became chests of gold at the same cells, so a save that took one finds the chest already open |
+| Red Potion flask | 2 charges, heals 40 HP | 6 charges, each still 40 HP | Potion Shards (3 shards = +1 charge; 9 shards) and Deep Pockets (+1). Pass 321: this row had said 5 charges healing 70 HP, though nothing ever raised the heal and the shards and Deep Pockets make 6. Pass 243: the Trunk and the Tower had grown 18 shards, enough for 8 charges; nine (three in the Trunk, six in the Tower) became chests of gold at the same cells, so a save that took one finds the chest already open |
 | Attack | Weapon base | | Weapons, smith upgrades, skill tree |
 | Defense | Armor base | | Armor, shields |
 
 HP is shown as masks (chunks), so damage is readable at a glance, while the math uses HP for fine tuning.
+
+**The Red Potion (deviation, pass 321):** the original's manual says of it: "It will completely restore the hero's power." Each potion was one item, bought at a shop and drunk whole. The remake's Red Potion is a flask of charges, each a fixed 40 HP that nothing raises, which a Guru's rest refills. A full heal on demand would make every fight up to the last mask safe and make the masks themselves meaningless; a fixed sip that takes 0.7 s and is lost to a blow keeps a drink a choice made in a lull, and the flask's growth (Potion Shards, Deep Pockets) is a reward for exploring that a stack of bought potions would not be. The full restore the original's potion gave is kept where it belongs: the Guru's rest and the Elixir.
 
 ### 5.2 Weapons and armor (Faxanadu tiers)
 

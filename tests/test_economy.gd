@@ -2210,6 +2210,15 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	# off enemy attacks; the remake's lingering poison and warded flask say so.
 	check(bible.contains("\"The hero's power will decrease by a fixed amount.\"") and bible.contains("from any enemy attack"), "7 quotes the original's Poison and Ointment beside the remake's")
 	check(Player.POISON_TIME > Player.POISON_TICK, "and the remake's poison lingers over ticks (%.0f s, a tick every %.0f s)" % [Player.POISON_TIME, Player.POISON_TICK])
+	# Pass 321: the manual's Red Potion restored the hero completely; the
+	# remake's flask sips a fixed amount, and the bible's row says what it reaches.
+	check(bible.contains("\"It will completely restore the hero's power.\""), "5.1 quotes the original's Red Potion beside the remake's flask")
+	var tuning := CombatTuning.new()
+	var fresh: Dictionary = GameState.fresh()
+	check(tuning.flask_heal < int(fresh.max_hp), "and a drink is no full restore, even at the start (%d of %d)" % [tuning.flask_heal, int(fresh.max_hp)])
+	var flask_row := bible.get_slice("| Red Potion flask |", 1).get_slice("\n", 0)
+	var most := int(fresh.flask_max) + 9 / 3 + 1
+	check(flask_row.contains("| %d charges, each still %d HP |" % [most, tuning.flask_heal]), "the flask's row says its most: %d charges of %d HP (%s)" % [most, tuning.flask_heal, flask_row.left(60)])
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 273: the original's Naga floats up and down over the ladders of the
