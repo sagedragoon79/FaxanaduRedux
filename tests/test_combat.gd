@@ -839,7 +839,7 @@ func test_every_combat_number_is_written_in_bible_5_3() -> void:
 				continue
 		for n: Variant in nums:
 			count += 1
-			if not written_in(sec, float(n)):
+			if not written_exactly_in(sec, float(n)):
 				unwritten.append("%s %s" % [prop.name, String.num(float(n))])
 	check(count >= 45, "every exported combat number is read (%d)" % count)
 	check(unwritten.is_empty(), "every combat number is written in bible 5.3 (not: %s)" % [unwritten])
@@ -853,7 +853,7 @@ func test_every_combat_number_is_written_in_bible_5_3() -> void:
 		var row := sec.substr(at + 1).get_slice("\n", 0)
 		for key: String in ["cost", "damage", "speed", "lift", "swarm_damage", "boss_damage"]:
 			if spell.has(key):
-				check(written_in(row, float(spell[key])), "%s's row writes its %s, %s (%s)" % [spell.name, key, String.num(float(spell[key])), row])
+				check(written_exactly_in(row, float(spell[key])), "%s's row writes its %s, %s (%s)" % [spell.name, key, String.num(float(spell[key])), row])
 	check(rows == Spells.ORDER.size() and rows == Spells.DATA.size(), "a row for every spell (%d)" % rows)
 
 

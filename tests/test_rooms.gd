@@ -2021,6 +2021,38 @@ func test_every_room_keeps_the_bibles_size() -> void:
 	check(rule.contains("%s are shorter than a screen" % ["none", "one", "two", "three"][mini(short, 3)]), "3.3 counts the trials shorter than a screen (%d)" % short)
 
 
+## Pass 347: 3.3's map line names each cartographer's charts and prices, but
+## no test read it, so a price changed in `data/shops.json` would leave the
+## bible quoting the old one. Every chart sold must be written there with its
+## price, and the count of towns with a cartographer must be the shops'.
+func test_the_bibles_chart_prices_are_the_shops() -> void:
+	const ZONE := {"chart_eolis": "Eolis", "chart_trunk": "Trunk Hollows", "chart_tower": "Tower",
+		"chart_mist": "Mist", "chart_branches": "Branches", "chart_daybreak": "Daybreak",
+		"chart_dartmoor": "Dartmoor", "chart_sunken": "Sunken Spring"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var line := bible.get_slice("### 3.3 Room and map rules", 1).get_slice("- **Map:**", 1).get_slice("\n", 0)
+	var shops := GameData.table("shops")
+	var sellers := 0
+	var unwritten := []
+	var sold := {}
+	for id: String in shops:
+		if not id.ends_with("_charts"):
+			continue
+		sellers += 1
+		for entry: Dictionary in shops[id].stock:
+			var item := String(entry.item)
+			if not check(ZONE.has(item), "%s sells a chart the test knows (%s)" % [id, item]):
+				continue
+			sold[item] = true
+			var re := RegEx.create_from_string("%s \\(?%s g" % [ZONE[item], _thousands(int(entry.price))])
+			if re.search(line) == null:
+				unwritten.append("%s %d g" % [ZONE[item], int(entry.price)])
+	check(unwritten.is_empty(), "3.3 writes every chart at its price (not: %s)" % [unwritten])
+	check(sold.size() == ZONE.size(), "every zone the test names has a chart for sale (%s)" % [sold.keys()])
+	var words: Array = ["none", "one", "two", "three", "four", "five", "six", "seven", "eight"]
+	check(line.contains("A cartographer in %s of the eight towns" % words[mini(sellers, 8)]), "3.3 counts the towns with a cartographer (%d)" % sellers)
+
+
 func test_every_zone_has_the_shrines_the_bible_counts() -> void:
 	const ZONES := {"Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
 		"Branches (Conflate)": "branches", "Branches (Daybreak)": "daybreak", "Dartmoor": "dartmoor",
@@ -2167,3 +2199,8 @@ func test_the_audio_numbers_are_written_in_bible_13_3() -> void:
 	check(audio.contains("peak at %s dBFS or over" % limit.call("CLIP")), "13.3 gives the clip limit (%s)" % limit.call("CLIP"))
 	check(audio.contains("strays more than %s dB from its group's median" % str(roundi(String(limit.call("SPREAD")).to_float()))), "13.3 gives the spread (%s)" % limit.call("SPREAD"))
 	check(audio.contains("`HEADROOM` (%s dB)" % limit.call("HEADROOM")), "13.3 gives the headroom (%s)" % limit.call("HEADROOM"))
+
+
+## 1500 -> "1,500", as the bible writes gold.
+func _thousands(n: int) -> String:
+	return "%d,%03d" % [n / 1000, n % 1000] if n >= 1000 else str(n)

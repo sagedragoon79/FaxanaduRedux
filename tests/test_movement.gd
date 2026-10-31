@@ -615,7 +615,7 @@ func test_every_movement_number_is_written_in_bible_6() -> void:
 			continue
 		count += 1
 		var f := float(t.get(prop.name))
-		if not written_in(six, f):
+		if not written_exactly_in(six, f):
 			unwritten.append("%s %s" % [prop.name, String.num(f)])
 	check(count >= 50, "every exported movement number is read (%d)" % count)
 	check(unwritten.is_empty(), "every movement number is written in bible 6 (not: %s)" % [unwritten])
@@ -1758,7 +1758,7 @@ func test_every_field_number_is_written_in_bible_6_14() -> void:
 		if not check(at >= 0, "6.14 names %s" % name):
 			continue
 		var row := table.substr(table.rfind("\n", at) + 1).get_slice("\n", 0)
-		check(written_in(row, float(fields[name])), "6.14's row writes %s, %s (%s)" % [name, String.num(fields[name]), row])
+		check(written_exactly_in(row, float(fields[name])), "6.14's row writes %s, %s (%s)" % [name, String.num(fields[name]), row])
 
 
 ## Pass 344: the check above finds a number anywhere in section 6, in any of
@@ -1788,12 +1788,11 @@ func test_every_movement_number_is_written_where_it_belongs() -> void:
 	}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var six := bible.get_slice("## 6. Movement", 1).get_slice("\n## 7. ", 0)
-	var passes := RegEx.create_from_string("(?i)pass(es)? \\d+((, | and | to |-)\\d+)*")
 	var t := MovementTuning.new()
 	var homed := {}
 	var astray := []
 	for sec: String in HOME:
-		var text := passes.sub(six.get_slice("\n### %s " % sec, 1).get_slice("\n### ", 0), "pass", true)
+		var text := six.get_slice("\n### %s " % sec, 1).get_slice("\n### ", 0)
 		# 6.7 is the juice list, full of numbers; its two tuning numbers have
 		# a line of their own.
 		if sec == "6.7":
@@ -1801,20 +1800,7 @@ func test_every_movement_number_is_written_where_it_belongs() -> void:
 		for prop: String in HOME[sec]:
 			homed[prop] = true
 			var f := float(t.get(prop))
-			var forms := [String.num(f), "%.2f" % f]
-			# A whole number, or a derived one (gravity from 2h/t²) to the px.
-			var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) else ([floori(f), roundi(f)] if absf(f) >= 100.0 else [])
-			for i: int in wholes:
-				forms.append(str(i))
-				if i >= 1000:
-					forms.append("%d,%03d" % [i / 1000, i % 1000])
-			if f > 0.0 and f < 1.0:
-				forms.append("%d ms" % roundi(f * 1000.0))
-				forms.append("%d%%" % roundi(f * 100.0))
-			var found := false
-			for form: String in forms:
-				var re := RegEx.create_from_string("(?<![\\d.,])%s(?![\\d])" % form.replace(".", "\\."))
-				found = found or re.search(text) != null
+			var found := written_exactly_in(text, f)
 			if not found:
 				astray.append("%s %s not in %s" % [prop, String.num(f), sec])
 	check(astray.is_empty(), "every movement number is written in its own subsection (%s)" % [astray])
