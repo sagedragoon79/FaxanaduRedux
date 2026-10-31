@@ -102,3 +102,32 @@ func cell_feet(x: int, y: int) -> Vector2:
 ## Center of tile (x, y).
 func cell_center(x: int, y: int) -> Vector2:
 	return Vector2(x * Room.TILE + 8, y * Room.TILE + 8)
+
+
+## Whether `text` writes `f` as the bible does, standing alone (not inside a
+## longer number). The bible tests in test_movement.gd (6) and
+## test_combat.gd (5.3) share it. A pass number ("pass 330") is not a
+## setting, so it never counts.
+func written_in(text: String, f: float) -> bool:
+	var passes := RegEx.create_from_string("(?i)pass(es)? \\d+((, | and | to |-)\\d+)*")
+	text = passes.sub(text, "pass", true)
+	var forms := [String.num(f), "%.2f" % f]
+	# A whole number, or a derived one (gravity from 2h/t²) the bible gives
+	# to the whole px.
+	var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) or absf(f) < 100.0 else [floori(f), roundi(f)]
+	for i: int in wholes:
+		forms.append(str(i))
+		if absi(i) >= 1000:
+			forms.append("%d,%03d" % [i / 1000, absi(i) % 1000])
+	if f > 0.0 and f < 1.0:
+		forms.append("%d ms" % roundi(f * 1000.0))
+		forms.append("%d%%" % roundi(f * 100.0))
+	for form: String in forms:
+		var at := text.find(form)
+		while at >= 0:
+			var before := text[at - 1] if at > 0 else " "
+			var after := text[at + form.length()] if at + form.length() < text.length() else " "
+			if not (before in "0123456789.,") and not (after in "0123456789") and not (after == "," and at + form.length() + 1 < text.length() and text[at + form.length() + 1] in "0123456789"):
+				return true
+			at = text.find(form, at + 1)
+	return false

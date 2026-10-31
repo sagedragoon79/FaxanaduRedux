@@ -812,6 +812,51 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check(Drop.MANA_GAIN == 12.0 and Drop.GLOVE_SHARE == 0.6, "a mana orb gives 12 MP; a rare drop is the War Glove 60% of the time (pass 290)")
 
 
+## Pass 330: the test above copies each number, so a tuning change made in
+## both the tuning and that test passed with the bible left behind, and four of
+## the five spells (Thunder, Fire, Tilte, Death) were only read back from
+## `Spells.DATA`. These read the bible: every combat number is written in 5.3,
+## and each spell's row names its own cost, damage and speed.
+func test_every_combat_number_is_written_in_bible_5_3() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var sec := bible.get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
+	var c := CombatTuning.new()
+	var unwritten := []
+	var count := 0
+	for prop: Dictionary in c.get_property_list():
+		if not (prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE):
+			continue
+		var v: Variant = c.get(prop.name)
+		var nums: Array = []
+		match typeof(v):
+			TYPE_INT, TYPE_FLOAT:
+				nums = [v]
+			TYPE_ARRAY:
+				nums = v
+			TYPE_VECTOR2:
+				nums = [v.x, v.y]
+			_:
+				continue
+		for n: Variant in nums:
+			count += 1
+			if not written_in(sec, float(n)):
+				unwritten.append("%s %s" % [prop.name, String.num(float(n))])
+	check(count >= 45, "every exported combat number is read (%d)" % count)
+	check(unwritten.is_empty(), "every combat number is written in bible 5.3 (not: %s)" % [unwritten])
+	var rows := 0
+	for id: String in Spells.ORDER:
+		var spell: Dictionary = Spells.DATA[id]
+		var at := sec.find("\n| %s |" % spell.name)
+		if not check(at >= 0, "5.3 has a row for %s" % spell.name):
+			continue
+		rows += 1
+		var row := sec.substr(at + 1).get_slice("\n", 0)
+		for key: String in ["cost", "damage", "speed", "lift", "swarm_damage", "boss_damage"]:
+			if spell.has(key):
+				check(written_in(row, float(spell[key])), "%s's row writes its %s, %s (%s)" % [spell.name, key, String.num(float(spell[key])), row])
+	check(rows == Spells.ORDER.size() and rows == Spells.DATA.size(), "a row for every spell (%d)" % rows)
+
+
 ## Bible 5.3 (pass 282): spikes cost a mask (20) through no armor and set
 ## you back on safe ground; a spell can't be cast again within 0.35 s, and the
 ## press made too soon is spent, not saved.
