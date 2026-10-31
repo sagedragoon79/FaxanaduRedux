@@ -210,7 +210,7 @@ var _dagger_back := 0.0
 var is_casting: bool:
 	get: return _cast_cooldown > combat.cast_cooldown - 0.2
 var is_hurt: bool:
-	get: return _invuln_timer > tuning.hurt_invuln - 0.25 and not dead
+	get: return _invuln_timer > hurt_invuln() - 0.25 and not dead
 
 var spawn_point := Vector2.ZERO
 var safe_position := Vector2.ZERO
@@ -553,6 +553,12 @@ func refresh_air_moves() -> void:
 
 
 ## Seconds of harm passing through you that a dash gives.
+## How long a hit leaves you unhurtable: the tuning's 0.8 s, doubled by the
+## mercy assist (Settings.mercy, bible 14).
+func hurt_invuln() -> float:
+	return tuning.hurt_invuln * (Settings.MERCY_MULT if Settings.mercy else 1.0)
+
+
 func dash_invuln() -> float:
 	return tuning.dash_invuln + (GRACE_INVULN if wanderers_grace else 0.0)
 
@@ -1659,7 +1665,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		# A Guru Trial (bible 3.1): a miss costs time, never health.
 		Sfx.play("hurt", 0.05, -4.0)
 		visual.flash_hurt()
-		_invuln_timer = tuning.hurt_invuln
+		_invuln_timer = hurt_invuln()
 		set_back()
 		return
 	if defense > 0.0:
@@ -1678,12 +1684,12 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		# (an Elixir still saves you first).
 		var world := get_tree().get_first_node_in_group("world") as World
 		if world != null:
-			_invuln_timer = tuning.hurt_invuln
+			_invuln_timer = hurt_invuln()
 			BossRush.fall(world, self)
 			return
 	hp -= amount
 	DamageNumber.spawn(get_parent(), global_position + Vector2(0, -44), amount, "hurt")
-	_invuln_timer = tuning.hurt_invuln
+	_invuln_timer = hurt_invuln()
 	if on_ladder:
 		# A blow knocks you off the rungs.
 		_leave_ladder()
@@ -1808,7 +1814,7 @@ func _tick_poison(delta: float) -> void:
 func _drink_elixir() -> void:
 	elixirs -= 1
 	hp = max_hp
-	_invuln_timer = tuning.hurt_invuln * 2.0
+	_invuln_timer = hurt_invuln() * 2.0
 	velocity = Vector2(0, -180)
 	Feel.slowmo(0.4, 0.6)
 	GameState.flash.emit(0.6)

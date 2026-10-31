@@ -662,6 +662,7 @@ const OPTIONS := [
 	["flashes", "Screen flashes", "The white flash on boss kills and the Elixir."],
 	["rumble", "Rumble", "Controller vibration."],
 	["numbers", "Damage numbers", "Show the damage each blow deals, over what it strikes."],
+	["mercy", "Assist: mercy", "After a hit, nothing can hurt you again for twice as long (1.6 s, not 0.8)."],
 	["music", "Music volume", ""],
 	["sound", "Sound volume", ""],
 	["speed", "Game speed", "Slow the whole game down if the action is too fast. Everything slows evenly."],
