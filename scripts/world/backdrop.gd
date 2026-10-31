@@ -5,6 +5,7 @@ extends Node2D
 ## the camera and repeating sideways.
 
 const DIR := "res://assets/bg/"
+const PAINTED_DIR := "res://assets/painted/"
 ## Layer suffix -> scroll speed relative to the camera.
 const LAYERS := {"far": Vector2(0.15, 0.1), "mid": Vector2(0.4, 0.3)}
 const SIZE := Vector2(640, 480)
@@ -12,20 +13,23 @@ const SIZE := Vector2(640, 480)
 const OFFSET := Vector2(0, -60)
 
 var zone := ""
+## Painterly scenery test: layers from assets/painted/ instead (see Room._apply_plate).
+var painted := false
 
 
 func _ready() -> void:
 	z_index = -50
 
 
-func set_zone(next: String) -> void:
-	if next == zone:
+func set_zone(next: String, paint := false) -> void:
+	if next == zone and paint == painted:
 		return
 	zone = next
+	painted = paint
 	for c in get_children():
 		c.queue_free()
 	for suffix: String in LAYERS:
-		var path := DIR + "%s_%s.png" % [zone, suffix]
+		var path := (PAINTED_DIR if painted else DIR) + "%s_%s.png" % [zone, suffix]
 		if not ResourceLoader.exists(path):
 			continue
 		var layer := Parallax2D.new()

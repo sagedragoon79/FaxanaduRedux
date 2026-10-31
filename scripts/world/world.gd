@@ -283,7 +283,7 @@ func _enter(room_id: String) -> void:
 		room.queue_free()
 	room = next
 	add_child(room)
-	backdrop.set_zone(room.zone)
+	backdrop.set_zone(room.zone, room.painted)
 	motes.set_zone(room.zone)
 	blossom.set_zone(room.zone if GameState.flag("cleared") else "")
 	Music.for_room(room)
