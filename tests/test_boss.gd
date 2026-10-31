@@ -3999,6 +3999,52 @@ func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
 		await frames(2)
 
 
+## Bible 8 (pass 314): with the Rune Dagger in the off hand (or a two-hander)
+## there is no parry, so every guardian whose opening is a parry has another.
+func test_every_guardian_opens_without_a_shield() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var at := bible.find("**The openings, as built (pass 163):**")
+	var parry_only := []
+	for line: String in bible.substr(at, 2500).split("\n"):
+		var cells := line.split("|")
+		if cells.size() != 4 or not line.begins_with("| ") or line.begins_with("| Boss") or line.begins_with("| ---"):
+			continue
+		var opening := cells[2].get_slice("(", 0).strip_edges()
+		if opening.contains("parry") and not opening.contains(" or ") and not opening.contains(", or"):
+			parry_only.append(cells[1].strip_edges())
+	check(parry_only.is_empty(), "no guardian opens only on a parry (%s)" % [parry_only])
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	const SPENT := {"shadow_eura": ["recover", "f_recover"], "evil_avatar": ["burst"]}
+	for id: String in SPENT:
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		await _until(func() -> bool: return not (boss.state in ["intro", "dormant", "reveal"]), 400)
+		for st: String in SPENT[id]:
+			boss.set_state(st)
+			check(boss.punishable(), "%s is open while spent (%s), no parry needed" % [id, st])
+		boss.set_state("walk" if id == "evil_avatar" else "mirror")
+		check(not boss.punishable(), "%s is shut again once it moves on (%s)" % [id, boss.state])
+		if id == "evil_avatar":
+			boss.set_state("burst")
+			check(boss._modify_damage(10, Vector2(-boss.facing, 0)) == 10, "the Evil One's plate is bare while it is spent")
+		w.queue_free()
+		await frames(2)
+
+
 ## Bible 13.3 (pass 102): every boss telegraph is heard as it starts. The scan in
 ## test_enemies reads set_state("x_tell") calls, but most guardians pick a move and
 ## enter it as set_state(pick + "_tell"), which the scan cannot read. So each

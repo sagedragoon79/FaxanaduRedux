@@ -126,8 +126,10 @@ func punishable() -> bool:
 	return open()
 
 
+## Reeling from a parry, or spent after its burst (pass 314), so a hero with no
+## shield (the Rune Dagger in hand, or a two-hander) has an opening too.
 func open() -> bool:
-	return state == "staggered"
+	return state in ["staggered", "burst"]
 
 
 func _modify_damage(damage: int, dir: Vector2) -> int:

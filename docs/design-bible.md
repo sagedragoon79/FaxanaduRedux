@@ -731,12 +731,14 @@ Each boss has: a pre-fight arena reveal, 2 or 3 phases, an ability it tests, a "
 | The Marsh Hag Matriarch | groping for her staff after a broken hex, or reeling from a parry |
 | The Clockwork Alpha | flipped by a parry, jammed in a wall, or stopped by the Hour Glass |
 | King Grieve | reeling from a parry, or fallen |
-| Shadow Eura | reeling from a parry |
+| Shadow Eura | reeling from a parry, or spent after a blow of its own (the cut from behind, or a free cut, heavy, cast or dash) |
 | The Drowned Warden | staggered, or exposed after a slam |
-| The Evil One, phase 1 | reeling from a parry |
+| The Evil One, phase 1 | reeling from a parry, or spent after its burst (the pull's end) |
 | The Evil One, phase 3 | bound by the root |
 
 Since pass 276 `test_every_opening_the_table_names_a_parry_for_opens_on_a_parry` holds the table to the fights: each guardian whose row names a parry is sent reeling in its own arena and must stand open, and the Foreman must not. Its row had said "or reeling from a parry" since pass 163, but its rock never reels (`Foreman.stagger` does nothing), so Executioner and Bloodletting had only the wall stun there all along.
+
+**An opening without a shield (pass 314).** Sean's off hand (5.2) makes the Rune Dagger and a shield a choice, and the two-handed Broad Sword already put the shield on your back. Shadow Eura and the Evil One's first phase opened only on a parry, so a hero with the dagger in hand never saw Executioner or Bloodletting (9) work in either fight, against "so the skill has a window in every fight". Each now also opens when spent after its own move: Shadow Eura for the 0.6 s after the cut from behind (`recover`) or any free blow, cast or dash (`f_recover`), and the Evil One for the 0.7 s after its pull ends in the burst (`burst`; its plate is bare then too, as when it reels). A decoy has no opening. Every row that names a parry must name another way in: `test_every_guardian_opens_without_a_shield`.
 
 The core (phase 2) has none: no blade reaches it, only the veins.
 
