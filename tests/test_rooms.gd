@@ -1986,3 +1986,63 @@ func test_the_bible_counts_each_zones_rooms() -> void:
 		check(said.get_slice(" ", 0).to_int() == n, "3.2 counts %s's rooms: \"%s\", and %s/ has %d" % [zone, said, folder, n])
 	check(folders.is_empty(), "every zone folder has its row in 3.2 (missing: %s)" % [folders])
 	check(bible.contains("**%d rooms** across 7 zones" % total), "3.1 counts the whole tree's rooms (%d)" % total)
+
+
+## Pass 331: bible 3.3 said rooms were whole screens, 1x1 to 4x3, and 2 to 3
+## shrines a zone. Neither was held, and the levels disagree with both: 14
+## rooms are a screen and a half wide, and the zones keep 1 to 5 shrines. The
+## bible now says what was built; these hold it to `levels/`.
+func test_every_room_keeps_the_bibles_size() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var rule := bible.get_slice("- **Room size:**", 1).get_slice("\n", 0)
+	check(rule.contains("at least one screen (40x23 tiles) and no more than 4x3 screens (160x68)"), "3.3 states the bounds as built")
+	var odd := []
+	var halves := 0
+	var count := 0
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if zone in ["gym", "trials"]:
+			continue
+		for f: String in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			count += 1
+			var size := _room_size("res://levels/%s/%s" % [zone, f])
+			if size.x < 40 or size.y < 23 or size.x > 160 or size.y > 68:
+				odd.append("%s/%s %dx%d" % [zone, f, size.x, size.y])
+			if size.x == 60:
+				halves += 1
+	check(count >= 100, "every map room is measured (%d)" % count)
+	check(odd.is_empty(), "every map room is one screen to 4x3 screens (not: %s)" % [odd])
+	check(rule.contains("%d are a screen and a half wide" % halves), "3.3 counts the screen-and-a-half rooms (%d)" % halves)
+	var short := 0
+	for f: String in DirAccess.get_files_at("res://levels/trials"):
+		if f.ends_with(".room") and _room_size("res://levels/trials/" + f).y < 23:
+			short += 1
+	check(rule.contains("%s are shorter than a screen" % ["none", "one", "two", "three"][mini(short, 3)]), "3.3 counts the trials shorter than a screen (%d)" % short)
+
+
+func test_every_zone_has_the_shrines_the_bible_counts() -> void:
+	const ZONES := {"Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
+		"Branches (Conflate)": "branches", "Branches (Daybreak)": "daybreak", "Dartmoor": "dartmoor",
+		"Sunken Spring": "sunken", "Zenis": "zenis", "Eolis": "eolis"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var rule := bible.get_slice("- **Save points:**", 1).get_slice("\n", 0).get_slice("**As built (pass 331):**", 1)
+	var total := 0
+	for zone: String in ZONES:
+		var folder: String = ZONES[zone]
+		var n := 0
+		for f: String in DirAccess.get_files_at("res://levels/" + folder):
+			if f.ends_with(".room"):
+				n += FileAccess.get_file_as_string("res://levels/%s/%s" % [folder, f]).get_slice("\n---\n", 1).count("S")
+		total += n
+		var said := rule.get_slice(zone + " ", 1).get_slice(" ", 0).trim_suffix(",")
+		check(said == ("none" if n == 0 else str(n)), "3.3 counts %s's shrines: \"%s\", and the rooms hold %d" % [zone, said, n])
+	check(total >= 20, "the tree has its shrines (%d)" % total)
+
+
+func _room_size(path: String) -> Vector2i:
+	var rows := FileAccess.get_file_as_string(path).get_slice("\n---\n", 1).split("\n", false)
+	var w := 0
+	for row: String in rows:
+		w = maxi(w, row.length())
+	return Vector2i(w, rows.size())
