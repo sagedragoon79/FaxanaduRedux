@@ -397,7 +397,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 - **Damage taken:** 0.8 s invulnerability, 0.15 s hit-stop, knockback, screen flash. The flash is a red glow at the screen's edge that fades in about 0.4 s; it never covers the middle, and the Flashes option scales it (built pass 98). Every hit yelps (`hurt`). A blow that costs a whole mask (20 HP) or more after armor adds a low body thud and a crunch of grit under it (`hurt_heavy`, pass 198). Since passes 194 and 196 the deep zones' foes and guardians land such blows through par armor while the Trunk's do not, so you hear the difference a zone makes, and whether your armor keeps up.
 - **Low health (built pass 98):** at one mask (20 HP) or less, a muffled heartbeat sounds every 0.85 s and the screen's edge pulses faintly red in time with it. It stops the moment you heal above a mask.
 
-**Starting combat values** (in `scripts/player/combat_tuning.gd`). Every row is held to this table by `test_the_starting_combat_values_match_bible_5_3` (pass 202; until then about a third of the rows were only read back from the tuning by the tests that played them), and each has a play test. Since pass 330 `test_every_combat_number_is_written_in_bible_5_3` also reads this section: every number in the tuning must be written here, and each spell's row must name its own cost, damage and speed from `scripts/combat/spells.gd`. Until then only Deluge had a row, and Thunder's, Fire's, Tilte's and Death's numbers were held by nothing but tests that read them back from the code:
+**Starting combat values** (in `scripts/player/combat_tuning.gd`). Every row is held to this table by `test_the_starting_combat_values_match_bible_5_3` (pass 202; until then about a third of the rows were only read back from the tuning by the tests that played them), and each has a play test. Since pass 330 `test_every_combat_number_is_written_in_bible_5_3` also reads this section: every number in the tuning must be written here, and each spell's row must name its own cost, damage and speed from `scripts/combat/spells.gd`. Until then only Deluge had a row, and Thunder's, Fire's, Tilte's and Death's numbers were held by nothing but tests that read them back from the code: Since pass 346 `test_every_combat_number_is_written_in_its_own_row` holds each number to its own row (or move) and its exact form: the looser reading rounded any number under 100 to a whole one, so the five hit-stops, Executioner's 1.35 and the 1.2 s before you rise passed on any "0" or "1" though 5.3 never wrote them. The Hit-stop and Executioner rows, and the wait in the Death row, are new.
 
 | Value | Setting |
 |-------|---------|
@@ -405,6 +405,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Combo window, cooldowns | 0.40 s to chain; 0.20 s, 0.20 s, 0.38 s after hits 1 to 3 |
 | Attack buffer | 0.15 s |
 | Throw buffer (pass 192) | 0.15 s: a Throw pressed while you can't throw yet (a swing or a dash still out, a drink, the Rune Dagger still reforming) goes the first frame you can |
+| Hit-stop (6.7) | 50 ms on a hit, 90 ms on a heavy hit, 80 ms on a kill, 150 ms when you are hit, 350 ms when you fall |
 | Parry window | 0.12 s from the Block press; 140 ms hit-stop, enemy staggered 1 s, +6 MP |
 | Guard (Small Shield) | 50% less damage, 8 MP per blocked hit, 40% walk speed; with less than 8 MP the guard breaks (pass 242) |
 | Knockback when hit | 160 px/s back, 220 px/s up, 0.18 s control lock |
@@ -418,9 +419,10 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Death | 40 MP, 36 damage to every foe the ring passes; a guardian takes 18 |
 | War Glove (rare drop, 7) | blade hits x1.5 for 15 s |
 | Thrust (skill, 9) | hold Attack 0.4 s, let go: heavy hit x1.5, a 320 px/s lunge for 0.16 s on the floor, 0.35 s cooldown |
+| Executioner (skill, 9) | melee blows on a guardian in its opening x1.35 |
 | Gold coins | Magnet after 0.4 s within 100 px |
 | Relics (pass 201, 5.2) | the Pendant: blade hits x1.1; the Magical Rod: Deluge x1.5 |
-| Death (5.4) | 60% of the purse dropped where you fell (on the last safe ground if that was not the room's own floor) |
+| Death (5.4) | 60% of the purse dropped where you fell (on the last safe ground if that was not the room's own floor); you rise at the last rest 1.2 s after you fall |
 | Spikes and thorns (pass 282) | 20 damage (one mask) before armor; you are set back on the last safe ground |
 | Casting (pass 282) | 0.35 s between casts; a press made sooner casts nothing and is not saved |
 | Bread / great loaf (pass 282, 7) | +15 HP / +40 HP (the loaf: a slain Naga's). A slain Bog Myconid always leaves bread (pass 289) |

@@ -104,6 +104,28 @@ func cell_center(x: int, y: int) -> Vector2:
 	return Vector2(x * Room.TILE + 8, y * Room.TILE + 8)
 
 
+## Like written_in, but strict (pass 346): a number under 100 that is not
+## whole counts only as itself (0.35, 35%, 350 ms), never rounded to a whole
+## one, so 1.35 is not found in a "1" and 0.09 not in a "0".
+func written_exactly_in(text: String, f: float) -> bool:
+	var passes := RegEx.create_from_string("(?i)pass(es)? \\d+((, | and | to |-)\\d+)*")
+	text = passes.sub(text, "pass", true)
+	var forms := [String.num(f), "%.2f" % f]
+	var wholes := [roundi(f)] if is_equal_approx(f, roundf(f)) else ([floori(f), roundi(f)] if absf(f) >= 100.0 else [])
+	for i: int in wholes:
+		forms.append(str(i))
+		if i >= 1000:
+			forms.append("%d,%03d" % [i / 1000, i % 1000])
+	if f > 0.0 and f < 1.0:
+		forms.append("%d ms" % roundi(f * 1000.0))
+		forms.append("%d%%" % roundi(f * 100.0))
+	for form: String in forms:
+		var re := RegEx.create_from_string("(?<![\\d.,])%s(?![\\d])" % form.replace(".", "\\."))
+		if re.search(text) != null:
+			return true
+	return false
+
+
 ## Whether `text` writes `f` as the bible does, standing alone (not inside a
 ## longer number). The bible tests in test_movement.gd (6) and
 ## test_combat.gd (5.3) share it. A pass number ("pass 330") is not a
