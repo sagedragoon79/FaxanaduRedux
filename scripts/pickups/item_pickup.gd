@@ -37,7 +37,7 @@ const INFO := {
 	"meteor_shard": {"title": "Meteor Shard", "text": "", "color": Color("e04aa8")},
 	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
 	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
-	"rune_dagger": {"title": "Rune Dagger", "text": "Press Throw (B) to throw it; Up throws it high. Its rune calls it back to your side.", "color": Color("7ff0e0")},
+	"rune_dagger": {"title": "Rune Dagger", "text": "Throw (B) flicks it from your off hand; Up throws it high. It takes the shield's hand: choose one on the Equipment page.", "color": Color("7ff0e0")},
 	"pendant": {"title": "Pendant", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
 	"magical_rod": {"title": "Magical Rod", "text": "Deluge's bolts strike half again as hard.", "color": Color("6ac8f0")},
 	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
@@ -76,6 +76,12 @@ func grant(p: Player) -> void:
 		p.abilities[kind] = true
 		if Spells.DATA.has(kind) and not p.abilities.get(p.equipped_spell, false):
 			p.equipped_spell = kind
+		if kind == "rune_dagger" and not GameState.offhand_free():
+			# It takes the off hand (Sean, 2026-10-31), so the room that teaches it
+			# can be played at once: the shield comes off, to be chosen again.
+			GameState.data.equipment.shield = ""
+			GameState.refresh_stats(p)
+			subtitle += " Your shield is on your back for now."
 	elif kind == "dragon_slayer":
 		# Found, not bought: it goes straight into your hand (design bible 5.2, A10).
 		p.abilities[kind] = true

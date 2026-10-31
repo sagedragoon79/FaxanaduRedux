@@ -1449,6 +1449,10 @@ func _try_throw(delta: float) -> void:
 	# you can.
 	if _throw_buffer_timer <= 0.0 or not abilities.get("rune_dagger", false):
 		return
+	if not GameState.offhand_free():
+		# The shield is on the throwing arm (the off hand holds one or the other).
+		_throw_buffer_timer = 0.0
+		return
 	if is_dashing or is_drinking or is_blocking or is_attacking or is_hurt or not dagger_ready():
 		return
 	_throw_buffer_timer = 0.0

@@ -1114,6 +1114,44 @@ func test_a_midair_up_slash_that_lands_holds_you_up() -> void:
 ## The Rune Dagger (pass 184, bible 5.2): thrown, it strikes the first foe in
 ## its path, breaks into rune light, and reforms at your hip RETURN later; only
 ## one flies at a time, it costs no magic, and Up throws it straight up.
+func test_the_off_hand_holds_a_shield_or_the_rune_dagger() -> void:
+	# Sean (2026-10-31): the dagger is thrown from the left hand, the shield's arm,
+	# so the off hand holds one or the other: a shield guards, the dagger flies.
+	var room := _arena_with("E", Vector2i(10, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	p.abilities["rune_dagger"] = true
+	GameState.data.gear.append("small_shield")
+	GameState.wear("small_shield", p)
+	await frames(6)
+	check(p.has_shield, "the Small Shield is on the off hand")
+	p.input.throw_pressed = true
+	await frames(2)
+	p.input.throw_pressed = false
+	check(p.rune_dagger == null, "so the Rune Dagger stays put")
+	GameState.capture(p)
+	var rows := Menus.equipment_rows()
+	var labels: Array = rows.map(func(r: Dictionary) -> String: return String(r.label))
+	var at := labels.find("Off Hand")
+	check(at >= 0 and labels.find("Rune Dagger") == at + 1, "the Equipment page offers the dagger first under the Off Hand (%s)" % [labels])
+	Menus.choose_equipment(Menus.OFFHAND_DAGGER, p)
+	check(GameState.offhand_free() and not p.has_shield, "choosing it takes the shield off")
+	var dagger_row: Dictionary = Menus.equipment_rows().filter(func(r: Dictionary) -> bool: return String(r.label) == "Rune Dagger")[0]
+	check(dagger_row.right == "Worn", "and the dagger reads as worn")
+	await frames(1)
+	p.input.throw_pressed = true
+	await frames(2)
+	p.input.throw_pressed = false
+	check(p.rune_dagger != null, "now Throw flicks it")
+	p.input.block_held = true
+	await frames(2)
+	p.input.block_held = false
+	check(not p.is_blocking, "and there is no guard")
+	for d in runner.get_tree().get_nodes_in_group("projectile"):
+		d.free()
+	GameState.data.gear.erase("small_shield")
+	GameState.data.abilities.rune_dagger = false
+
+
 func test_the_rune_dagger_flies_strikes_and_reforms_at_your_hip() -> void:
 	var room := _arena_with("E", Vector2i(10, 6))
 	var p := make_player(room, Vector2i(3, 6))

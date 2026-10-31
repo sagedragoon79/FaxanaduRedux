@@ -206,6 +206,13 @@ func wear(id: String, p: Player = null) -> void:
 		refresh_stats(p)
 
 
+## The off hand holds a shield or the Rune Dagger, not both (Sean, 2026-10-31): the
+## dagger is thrown from the left hand, the shield's arm. With no shield worn the
+## hand is free to throw it.
+func offhand_free() -> bool:
+	return String(data.equipment.get("shield", "")) == ""
+
+
 ## True when the blade in hand takes both hands (the Dwarvish Broad Sword):
 ## the shield stays on your back, and you can't guard or parry.
 func two_handed() -> bool:
