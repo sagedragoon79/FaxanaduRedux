@@ -366,6 +366,10 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(Forge.new(), pos)
 		"water_clock":
 			_spawn(WaterClock.new(), pos)
+		"drowned_statue":
+			_spawn(DrownedStatue.new(), pos)
+		"aqueduct_spill":
+			_spawn(AqueductSpill.new(), pos)
 		"zenis_gate":
 			_spawn(ZenisGate.new(), pos)
 		"trial_goal":

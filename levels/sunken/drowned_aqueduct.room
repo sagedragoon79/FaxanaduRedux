@@ -3,6 +3,7 @@ zone: sunken
 map: 61, -5
 sign: 72, 7, THE AQUEDUCT. The dwarves carried the spring up to their city through here. Now it carries the city down.
 chest_gold: 160
+prop: 40, 1, aqueduct_spill
 door: 1, sunken/spring_gate, 2
 door: 2, sunken/source_hall, 1
 ---

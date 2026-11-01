@@ -3,6 +3,7 @@ zone: sunken
 map: 60, -6
 sign: 32, 17, THE SUNKEN SPRING. Every spring of the Tree rose from here once. It has not seen the sky in an age.
 chest_gold: 120
+prop: 18, 42, drowned_statue
 door: 1, dartmoor/meteor_rise, 3
 door: 2, sunken/drowned_aqueduct, 1
 ---

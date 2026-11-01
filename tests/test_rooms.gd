@@ -2259,3 +2259,108 @@ func test_the_audio_numbers_are_written_in_bible_13_3() -> void:
 ## 1500 -> "1,500", as the bible writes gold.
 func _thousands(n: int) -> String:
 	return "%d,%03d" % [n / 1000, n % 1000] if n >= 1000 else str(n)
+
+
+## Bible 3.3 (pass 371): every zone has three landmark rooms a player can
+## navigate by. Each is held to its zone and to what marks it (a set-piece prop,
+## a guardian's arena, a town's houses, or a person who stands there), and the
+## bible's paragraph to the rooms' names.
+const LANDMARKS := {
+	"eolis": [["plaza", "prop:fountain"], ["king_hall", "npc:king"], ["east_gate", "prop:lift"]],
+	"trunk": [["taproot_vault", "prop:taproot"], ["spring_of_trunk", "prop:spring_trunk"], ["apolune", "town"]],
+	"tower": [["winch_hall", "prop:winch"], ["forepaw", "prop:forge"], ["smelter", "prop:crucible"]],
+	"mist": [["spring_of_mist", "prop:spring_mist"], ["victim", "town"], ["sunken_chapel", "boss:ripasheiku"]],
+	"branches": [["crown_leaf", "boss:pakukame"], ["thorn_yard", "boss:bark_captain"], ["conflate", "town"]],
+	"daybreak": [["sky_spring", "prop:spring_sky"], ["roost", "boss:borabohra"], ["daybreak", "town"]],
+	"dartmoor": [["throne_hall", "prop:water_clock"], ["zenis_gate", "prop:zenis_gate"], ["alpha_den", "boss:clockwork_alpha"]],
+	"sunken": [["spring_gate", "prop:drowned_statue"], ["drowned_aqueduct", "prop:aqueduct_spill"], ["wellspring", "boss:drowned_warden"]],
+	"zenis": [["heart", "boss:evil_one"], ["throne", "boss:evil_avatar"], ["veins", "boss:evil_veins"]],
+}
+
+
+func test_every_zone_has_its_three_landmarks() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var para := ""
+	for line in bible.split("\n"):
+		if line.begins_with("- **Landmarks:**"):
+			para = line
+	check(para.contains("**Every zone's three (pass 371):**"), "bible 3.3 names every zone's landmarks")
+	for zone: String in World.ZONES:
+		if zone in ["trials", "gym", "test"]:
+			continue
+		check(LANDMARKS.has(zone), "%s has its landmarks" % zone)
+	for zone: String in LANDMARKS:
+		var marks := {}
+		for entry: Array in LANDMARKS[zone]:
+			var id := "%s/%s" % [zone, entry[0]]
+			var text := FileAccess.get_file_as_string("res://levels/%s.room" % id)
+			var head := text.split("\n---")[0]
+			var name := ""
+			var has := {}
+			for line in head.split("\n"):
+				var kv := line.split(":", true, 1)
+				if kv.size() < 2:
+					continue
+				var v := kv[1].strip_edges()
+				match kv[0]:
+					"name":
+						name = v
+					"zone":
+						check(v == zone, "%s stands in %s" % [id, zone])
+					"boss":
+						has["boss:" + v] = true
+					"npc":
+						has["npc:" + v.split(",")[-1].strip_edges()] = true
+					"prop":
+						var kind := v.split(",")[-1].strip_edges()
+						has["prop:" + kind] = true
+						if kind == "house":
+							has["town"] = true
+			check(has.has(entry[1]), "%s is marked by its %s" % [id, entry[1]])
+			check(name != "" and para.contains(name.trim_prefix("The ")), "the bible names %s (%s)" % [id, name])
+			marks[entry[1]] = true
+		check(marks.size() == 3, "%s's three landmarks are each marked differently" % zone)
+
+
+## The Sunken Spring's two set pieces (pass 371) stand in open water: the
+## drowned king is not buried in the shaft's rock, and the aqueduct's fall
+## drops clear to the flood.
+func test_the_sunken_springs_set_pieces_stand_clear() -> void:
+	var w := make_world({}, "sunken/spring_gate")
+	var statue: DrownedStatue = null
+	for c in w.room.get_children():
+		if c is DrownedStatue:
+			statue = c
+	check(statue != null, "Spring Gate has its drowned king")
+	if statue != null:
+		var clear := true
+		var y := 2.0
+		while y < DrownedStatue.HEIGHT:
+			for x: float in [-DrownedStatue.HALF_WIDTH + 2.0, 0.0, DrownedStatue.HALF_WIDTH - 2.0]:
+				if w.room.is_solid_at(statue.position + Vector2(x, -y)):
+					clear = false
+			y += 8.0
+		check(clear, "he stands in open water, head to plinth")
+		check(w.room.is_solid_at(statue.position + Vector2(0, 4)), "on the shaft's floor")
+	w.free()
+	w = make_world({}, "sunken/drowned_aqueduct")
+	var spill: AqueductSpill = null
+	for c in w.room.get_children():
+		if c is AqueductSpill:
+			spill = c
+	check(spill != null, "the Drowned Aqueduct has its broken channel")
+	if spill != null:
+		check(w.room.is_solid_at(spill.position + Vector2(0, -4)), "it hangs under the ceiling")
+		var falls_clear := true
+		var y := 2.0
+		while y < AqueductSpill.FALL:
+			if w.room.is_solid_at(spill.position + Vector2(0, y)):
+				falls_clear = false
+			y += 4.0
+		check(falls_clear, "its fall drops clear")
+		var wet := false
+		for c in w.room.get_children():
+			if c is SwimWater and (c as SwimWater).has_point(spill.position + Vector2(0, AqueductSpill.FALL + 4.0)):
+				wet = true
+		check(wet, "into the flood")
+	w.free()
