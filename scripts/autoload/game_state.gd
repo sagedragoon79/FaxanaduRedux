@@ -25,6 +25,8 @@ const OFFHAND_VERSION := 2
 ## the next Continue tells the player the shield now holds the throwing hand.
 const OFFHAND_NOTICE := "notice:offhand"
 const OFFHAND_NOTICE_TEXT := ["The Off Hand", "Your shield now holds the throwing hand. To throw, choose the Rune Dagger under Off Hand (Equipment)."]
+## Save maps whose every entry is true or false (pass 351; `sanitize`).
+const BOOL_MAPS := ["abilities", "flags", "charts", "collected", "visited"]
 ## Item ids a newer build renamed: old id -> new id (sanitize carries a save over).
 const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_broad_sword"}
 ## Pickups a newer build moved: old id -> new id. A pickup's id is its room and
@@ -666,6 +668,14 @@ static func sanitize(src: Variant) -> Dictionary:
 		return v is Array and v.size() == 3 and v[0] is String and _is_number(v[1]) and _is_number(v[2]))
 	if not _is_point(out.save_pos):
 		out.save_pos = [0, 0]
+	# Yes-or-no maps (pass 351): the game reads each entry with bool(), which
+	# stops with a script error on a string, a list or null. A hand-edited
+	# "spring:sky": "yes" made the title's flask read as empty, and taking it up
+	# would have begun a new journey over the old one. Only true or false stays.
+	for map: String in BOOL_MAPS:
+		for k: Variant in out[map].keys():
+			if not (k is String and out[map][k] is bool):
+				out[map].erase(k)
 	# Keys are counts (the cards) or kept-for-good flags (the Lantern and Sky Keys).
 	for kind: Variant in out.keys.keys():
 		var v: Variant = out.keys[kind]
