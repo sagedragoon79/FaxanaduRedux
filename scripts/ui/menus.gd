@@ -330,8 +330,8 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			oint,
 			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have, and dye your cloak."},
 			{"label": "Inventory", "detail": "Your abilities, spells, relics, rings, keys and shards, and what each does."},
-			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
-			{"label": "Controls", "detail": "Rebind the keys and the pad."},
+			{"label": "Options", "detail": OPTIONS_DETAIL},
+			{"label": "Controls", "detail": CONTROLS_DETAIL},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
 		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else []) \
@@ -656,6 +656,13 @@ static func _room_title(tree: SceneTree) -> String:
 	var w := tree.get_first_node_in_group("world")
 	return String(w.get("room").title) if w != null and w.get("room") != null else "The World Tree"
 
+
+## What the Options row says of the page, on the pause menu and the title
+## (pass 381): every row of OPTIONS, the two volumes as one.
+const OPTIONS_DETAIL := "Screen shake, flashes, rumble, damage numbers, the mercy assist, volume and game speed."
+
+## And what the Controls row says: both pages rebind the pad as well (pass 365).
+const CONTROLS_DETAIL := "Rebind the keys and the pad."
 
 const OPTIONS := [
 	["shake", "Screen shake", "How hard the screen shakes on hits and slams."],

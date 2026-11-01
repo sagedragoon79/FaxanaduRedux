@@ -2251,6 +2251,47 @@ func test_the_bibles_saves_and_options_are_as_built() -> void:
 
 
 
+
+## Pass 381 (bible 14): the accessibility line's list of options was the pass
+## 09 interim's, without damage numbers or the mercy assist, and the title's
+## Options and Controls rows had drifted the same way. The bible lists the page
+## as built; this holds the rows, their order and their starting values to
+## Menus.OPTIONS and Settings, and both menus' Options and Controls lines.
+func test_the_options_page_is_the_one_the_bible_lists() -> void:
+	const COUNTS := {6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+	const NAMED := {"shake": "screen shake", "flashes": "flashes", "rumble": "rumble", "numbers": "damage numbers",
+		"mercy": "the mercy assist", "music": "volume", "sound": "volume", "speed": "game speed"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var line := bible.get_slice("*The Options page, as built (pass 381):* ", 1).get_slice(". ", 0)
+	check(line.begins_with("%s rows, in this order: " % COUNTS.get(Menus.OPTIONS.size(), "?")), "14 counts the page's rows (%d)" % Menus.OPTIONS.size())
+	# Each row by its label, in order, with its steps or its starting value.
+	var at := 0
+	for o: Array in Menus.OPTIONS:
+		var label: String = o[1]
+		var found := line.find(label, at)
+		check(found >= at, "14 lists %s, in order" % label)
+		at = maxi(at, found)
+	check(line.contains("Screen shake (%s)" % ", ".join(Settings.SHAKE_NAMES).to_lower()), "14 gives the shake steps")
+	check(line.contains("Screen flashes (%s)" % ", ".join(Settings.FLASH_NAMES).to_lower()), "14 gives the flash steps")
+	for k: Array in [["rumble", "Rumble"], ["numbers", "Damage numbers"], ["mercy", "Assist: mercy"]]:
+		check(line.contains("%s (%s to start)" % [k[1], Settings.value_text(k[0]).to_lower()]), "14 gives %s's start (%s)" % [k[1], Settings.value_text(k[0])])
+	check(Settings.music_volume == Settings.sound_volume and line.contains("Music volume and Sound volume (a bar of %d, at %d to start)" % [Settings.VOLUME_MAX, Settings.music_volume]),
+		"14 gives the volumes' bar and start (%d of %d)" % [Settings.music_volume, Settings.VOLUME_MAX])
+	check(line.contains("Game speed (%s to start)" % Settings.value_text("speed")), "14 gives the game speed's start (%s)" % Settings.value_text("speed"))
+	# What the menus say of the page names every row.
+	for o: Array in Menus.OPTIONS:
+		check(NAMED.has(o[0]) and Menus.OPTIONS_DETAIL.to_lower().contains(NAMED.get(o[0], "?")), "the Options row's line names %s (%s)" % [o[1], Menus.OPTIONS_DETAIL])
+	check(Menus.CONTROLS_DETAIL.contains("pad"), "the Controls row's line says the pad rebinds too")
+	# Both menus read those lines, not words of their own.
+	var re := RegEx.create_from_string("\\{\"label\": \"(Options|Controls)\", \"detail\": ([^}]*)\\}")
+	var rows := 0
+	for f: String in ["res://scripts/ui/menus.gd", "res://scripts/game.gd"]:
+		for m: RegExMatch in re.search_all(FileAccess.get_file_as_string(f)):
+			rows += 1
+			var want := "Menus.OPTIONS_DETAIL" if m.get_string(1) == "Options" else "Menus.CONTROLS_DETAIL"
+			check(m.get_string(2).strip_edges() in [want, want.trim_prefix("Menus.")], "%s's %s row reads %s (%s)" % [f.get_file(), m.get_string(1), want, m.get_string(2)])
+	check(rows == 4, "the pause menu and the title each have an Options and a Controls row (%d)" % rows)
+
 ## Sean (2026-10-31, bible 14): three save slots shown as three colored flasks,
 ## with no number or letter on any; a journey's details show when its flask is
 ## focused (Left/Right or the mouse). Choosing a full flask takes that journey
