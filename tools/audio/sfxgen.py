@@ -1500,6 +1500,39 @@ def main():
     out[i:] += osc(slide(2100, 2080, ln / RATE), "sine") * env(ln, 0.001, 3.5) * 0.3
     save("flask_pour", out, 0.6)
 
+    # Reading a lore tablet (pass 358). It had borrowed the door's creak, so
+    # every one of the signs sounded like a door. Now a hand brushes the grit
+    # off the carving, and the runes answer with a low, soft glow: two quiet
+    # stone-struck notes a fourth apart with a hollow hum under them.
+    d = 0.6
+    n = int(RATE * d)
+    t = t_axis(d)
+    bn = int(RATE * 0.16)
+    out = np.zeros(n)
+    out[:bn] += lowpass(highpass(noise(0.16), 1200), 4200) * env(bn, 0.03, 1.4) * 0.35
+    for st, f, a in ((0.1, 392.0, 0.45), (0.2, 523.3, 0.35)):
+        i = int(RATE * st)
+        ln = n - i
+        tone = osc(np.full(ln, f), "sine") + 0.3 * osc(np.full(ln, f * 2.76), "sine")
+        out[i:] += tone * env(ln, 0.004, 2.6) * a
+    out += lowpass(osc(np.full(n, 98.0), "tri"), 400) * np.sin(np.pi * t / d) * 0.2
+    save("tablet_read", out, 0.5)
+
+    # A ward that will not let you through (pass 358): the bound fog and the
+    # elven veil had borrowed the spell-fail fizzle when they turned you away,
+    # though a refusal is not a spell gone wrong (pass 122 gave the locks their
+    # own sound for the same reason). Now the ward pushes back: a soft low
+    # thrum that swells and is pressed down a step, with a breath of air.
+    d = 0.5
+    n = int(RATE * d)
+    t = t_axis(d)
+    swell = np.sin(np.pi * np.clip(t / d, 0, 1)) ** 1.5
+    body = osc(slide(220.0, 147.0, d, 0.6), "sine") + 0.4 * osc(slide(330.0, 220.0, d, 0.6), "tri")
+    wob = 1.0 + 0.35 * np.sin(2 * np.pi * 11.0 * t)
+    air = lowpass(highpass(noise(d), 300), 1600) * 0.25
+    out = (lowpass(body, 900) * wob + air) * swell
+    save("ward_refuse", out, 0.45)
+
 
 if __name__ == "__main__":
     main()
