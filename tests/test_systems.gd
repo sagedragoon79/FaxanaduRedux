@@ -2215,6 +2215,75 @@ func test_three_flasks_hold_three_journeys() -> void:
 
 
 
+## Pass 359 (bible 15.3): the title's real path through the flasks. The shelf
+## had been tested on its own, but never as the game drives it: Journeys row,
+## shelf, a journey taken up, the ending back to the title, and another flask
+## chosen on the same shelf. Each journey must rest in its own flask and never
+## spill into another, and each trip must leave one world, an unpaused tree and
+## one listener on each of the shelf's signals.
+func test_the_title_takes_journeys_up_and_back_in_their_own_flasks() -> void:
+	const SLOTS := [7, 8, 9]
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	Settings.path = TEMP_SETTINGS
+	var was := GameState.slot
+	GameState.new_game()
+	GameState.data.save_room = "zenis/heart"
+	GameState.data.gold = 500
+	check(GameState.save_game(8), "a journey rests in the middle flask")
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.picker.slots = SLOTS
+	var worlds := func() -> int:
+		var n := 0
+		for c in g.view.get_children():
+			if c is World and not c.is_queued_for_deletion():
+				n += 1
+		return n
+	for trip: int in 2:
+		# The title's first row opens the shelf.
+		check(g.menu.is_open and g.title_screen.visible, "trip %d: the title is up" % trip)
+		g.menu.cursor = 0
+		g.menu.confirm()
+		check(g.picker.is_open and not g.menu.is_open and runner.get_tree().paused, "trip %d: Journeys opens the shelf over a still world" % trip)
+		check(g.picker.chosen.get_connections().size() == 1 and g.picker.cancelled.get_connections().size() == 1, "trip %d: the shelf has one listener each (%d, %d)" % [trip, g.picker.chosen.get_connections().size(), g.picker.cancelled.get_connections().size()])
+		# First the full flask, then an empty one.
+		var pick := 1 if trip == 0 else 0
+		check(trip == 1 or g.picker.cursor == 1, "the shelf opens on the journey")
+		g.picker.cursor = pick
+		g.picker.confirm()
+		await frames(3)
+		check(worlds.call() == 1 and not runner.get_tree().paused and not g.title_screen.visible and not g.picker.is_open, "trip %d: one world, playing (%d worlds)" % [trip, worlds.call()])
+		check(GameState.slot == int(SLOTS[pick]), "trip %d: the journey is the chosen flask's (%d)" % [trip, GameState.slot])
+		if trip == 0:
+			check(int(GameState.data.gold) == 500 and String(g.world.room.id) == "zenis/heart", "the full flask's journey is taken up where it rested")
+			GameState.data.gold = 777
+		else:
+			check(int(GameState.data.gold) == 0 and String(g.world.room.id) == "eolis/west_gate", "the empty flask begins anew (%d gold)" % int(GameState.data.gold))
+			g.world.use_game_state = false
+		# The ending carries the hero back to the title, saving on the way.
+		GameState.begin_ending()
+		await frames(2)
+		g.ending.skip()
+		g.ending.tick(EndingScreen.THANKS_GRACE)
+		g.ending.advance()
+		await frames(3)
+		check(worlds.call() == 0 and g.world == null, "trip %d: back at the title, no world is left" % trip)
+	# Each journey kept to its own flask.
+	check(int(GameState.read_slot(8).get("gold", -1)) == 777, "the first journey saved to its own flask (%s)" % GameState.read_slot(8).get("gold", -1))
+	check(GameState.read_slot(7).is_empty() and GameState.read_slot(9).is_empty(), "and spilled into no other")
+	g.menu.close()
+	g.queue_free()
+	await frames(2)
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	GameState.slot = was
+	GameState.new_game()
+	_restore()
+
+
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
 ## as empty and taking it up would have begun a new journey over the old one.
