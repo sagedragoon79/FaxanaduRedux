@@ -280,6 +280,93 @@ func test_one_way_platform_and_drop_through() -> void:
 	check(p.global_position.y > platform_y + 20.0, "dropped through the platform (y %.1f)" % p.global_position.y)
 
 
+## Pass 368 (bible 6.1): a thumb pushing a stick sideways drifts a little up
+## or down, and past the 0.35 deadzone that drift read as Down or Up. A running
+## jump on a one-way platform dropped through it, an air slash became a pogo,
+## and a run past a door walked in. A stick now counts up or down only from
+## `stick_vertical_angle` off level; keys and the d-pad are always as pressed.
+func test_a_sideways_stick_drifting_down_is_not_down() -> void:
+	var t := MovementTuning.new()
+	check(t.stick_vertical_angle == 35.0, "the bible's angle (6.1)")
+	var input := PlayerInput.new()
+	_stick(25.0, -1.0)
+	input.poll(t)
+	check(Input.is_action_pressed("move_down") and input.move_x == 1 and not input.down,
+		"a stick 25 degrees under level runs and is not Down")
+	_stick(40.0, -1.0)
+	input.poll(t)
+	check(input.down and input.move_x == 1, "40 degrees under level is Down and right")
+	_stick(90.0, -1.0)
+	input.poll(t)
+	check(input.down, "straight down is Down")
+	_stick(25.0, 1.0)
+	input.poll(t)
+	check(not input.up and not input.up_pressed, "25 degrees over level is not Up")
+	_stick(60.0, 1.0)
+	input.poll(t)
+	check(input.up and input.up_pressed, "swung on to 60 degrees, Up is pressed as it starts to count")
+	input.poll(t)
+	check(input.up and not input.up_pressed, "and held, it is not pressed again")
+	input.clear()
+	input.poll(t)
+	check(input.up and not input.up_pressed, "nor after control comes back (a door, a dialog)")
+	_stick(0.0, 0.0)
+	for b: JoyButton in [JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_RIGHT]:
+		_pad(b, true)
+	input.poll(t)
+	check(input.down and input.move_x == 1, "the d-pad's diagonal is always Down and right")
+	for b: JoyButton in [JOY_BUTTON_DPAD_DOWN, JOY_BUTTON_DPAD_RIGHT]:
+		_pad(b, false)
+	# The real controller: a running jump off a one-way platform, thumb drifting.
+	for case: Array in [[25.0, false], [60.0, true]]:
+		var rows := ["########################################"]
+		for y in 8:
+			rows.append("#" + ".".repeat(38) + "#")
+		rows.append("#" + "-".repeat(38) + "#")
+		for y in 4:
+			rows.append("#" + ".".repeat(38) + "#")
+		rows.append("########################################")
+		var room := make_room(rows)
+		var p := make_player(room, Vector2i(4, 8))
+		await _settle(p)
+		var floor_y := p.global_position.y
+		p.input = PlayerInput.new()
+		_stick(case[0], -1.0)
+		await frames(6)
+		_pad(JOY_BUTTON_A, true)
+		await frames(1)
+		_pad(JOY_BUTTON_A, false)
+		await frames(12)
+		_stick(0.0, 0.0)
+		var dropped: bool = p.global_position.y > floor_y + 8.0
+		check(dropped == case[1], "%.0f degrees under level and Jump: %s (y %.0f from %.0f)" % [
+			case[0], "drops through" if case[1] else "jumps, never drops", p.global_position.y, floor_y])
+		room.queue_free()
+		await frames(1)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("| Stick angle (pass 368) |"), "bible 6.1 has the row")
+
+
+## Leans the left stick `degrees` from level, rightward; `up` 1 leans up, -1
+## down, 0 lets go.
+func _stick(degrees: float, up: float) -> void:
+	var v := Vector2(cos(deg_to_rad(degrees)), -up * sin(deg_to_rad(degrees))) if up != 0.0 else Vector2.ZERO
+	for a: Array in [[JOY_AXIS_LEFT_X, v.x], [JOY_AXIS_LEFT_Y, v.y]]:
+		var ev := InputEventJoypadMotion.new()
+		ev.axis = a[0]
+		ev.axis_value = a[1]
+		Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+
+
+func _pad(button: JoyButton, down: bool) -> void:
+	var ev := InputEventJoypadButton.new()
+	ev.button_index = button
+	ev.pressed = down
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+
+
 func _drift_room() -> Room:
 	var rows := ["##############################"]
 	for y in 28:
@@ -1770,7 +1857,7 @@ func test_every_field_number_is_written_in_bible_6_14() -> void:
 ## percent).
 func test_every_movement_number_is_written_where_it_belongs() -> void:
 	const HOME := {
-		"6.1": ["run_speed", "ground_accel", "ground_decel", "turn_multiplier", "walk_fraction", "walk_tilt", "run_tilt"],
+		"6.1": ["run_speed", "ground_accel", "ground_decel", "turn_multiplier", "walk_fraction", "walk_tilt", "run_tilt", "stick_vertical_angle"],
 		"6.2": ["jump_height", "jump_time_to_apex", "fall_gravity_multiplier", "jump_cut_multiplier", "apex_threshold",
 			"apex_gravity_multiplier", "max_fall_speed", "max_fast_fall_speed", "air_accel", "air_decel", "coyote_time",
 			"jump_buffer_time", "corner_correction_px", "ledge_correction_px", "head_correction_px", "gravity", "jump_velocity"],
