@@ -16,6 +16,10 @@ signal cancelled
 var slots: Array = [1, 2, 3]
 ## The three springs' colors: amber Trunk, pale Mist, blue Sky.
 const COLORS := [Color("e8a23c"), Color("8fd8c4"), Color("8fb4ff")]
+## Each spring's mark, etched on its flask's glass (pass 357), so the three are
+## told apart by shape as well as color: a leaf for the Trunk, a ripple of mist
+## for the Mist, a bolt for the Sky. A mark, never a number or a letter.
+const MARKS := ["leaf", "mist", "bolt"]
 const GLASS := Color(0.75, 0.82, 0.9, 0.55)
 const GLASS_DARK := Color(0.08, 0.07, 0.12, 0.8)
 const CORK := Color("8a5a32")
@@ -300,14 +304,20 @@ func _flask(i: int) -> void:
 			if by > level + 1:
 				draw_rect(Rect2(roundf(bx), roundf(by), 2, 2), Color(1, 1, 1, 0.55))
 	# The glass: an outline, a highlight, the lip. Each flask's glass keeps a
-	# hint of its spring's color, full or empty, so the three are told apart
-	# by color alone.
+	# hint of its spring's color, full or empty, and its spring's mark below,
+	# so the three are told apart by color or by shape.
 	var glass := GLASS.lerp(Color(color, GLASS.a), 0.35)
 	draw_arc(c, BODY_R, deg_to_rad(-62), deg_to_rad(242), 40, Color(glass, 0.9 if focused else 0.6), 2.0)
 	draw_line(Vector2(neck.position.x, neck.end.y - 2), neck.position, Color(glass, 0.9 if focused else 0.6), 2.0)
 	draw_line(Vector2(neck.end.x, neck.end.y - 2), Vector2(neck.end.x, neck.position.y), Color(glass, 0.9 if focused else 0.6), 2.0)
 	draw_rect(Rect2(neck.position.x - 3, neck.position.y - 3, neck.size.x + 6, 4), Color(glass, 0.9 if focused else 0.65))
 	draw_arc(c + Vector2(-7, -7), BODY_R * 0.55, deg_to_rad(190), deg_to_rad(250), 8, Color(1, 1, 1, 0.5), 2.0)
+	# The spring's mark, etched on the glass, full or empty.
+	for line: PackedVector2Array in mark(i):
+		var pts := PackedVector2Array()
+		for q in line:
+			pts.append(c + q)
+		draw_polyline(pts, Color(1, 1, 1, 0.85 if focused else 0.6) if full else Color(glass, 0.9 if focused else 0.7), 2.0)
 	if full:
 		# The cork, and a thread round the neck in the spring's color.
 		draw_rect(Rect2(c.x - 6, neck.position.y - 10, 12, 8), CORK)
@@ -316,6 +326,31 @@ func _flask(i: int) -> void:
 	else:
 		# An empty flask stands open, a little dust in its foot.
 		draw_rect(Rect2(c.x - 10, c.y + BODY_R - 5, 20, 2), Color(SOFT, 0.25))
+
+
+## Flask `i`'s spring mark as polylines around the middle of its body.
+static func mark(i: int) -> Array[PackedVector2Array]:
+	var out: Array[PackedVector2Array] = []
+	match String(MARKS[i % MARKS.size()]):
+		"leaf":
+			# A leaf with its midrib and stem, tilted.
+			var leaf := PackedVector2Array()
+			for k in 13:
+				var a := TAU * k / 12.0
+				leaf.append(Vector2(cos(a) * 8.0, sin(a) * 4.5).rotated(-0.6) + Vector2(1, -1))
+			out.append(leaf)
+			out.append(PackedVector2Array([Vector2(-9, 6), Vector2(-5, 3), Vector2(7, -5)]))
+		"mist":
+			# Three ripples of drifting mist.
+			for row in 3:
+				var wave := PackedVector2Array()
+				for k in 9:
+					wave.append(Vector2(-9 + k * 2.25 + row * 1.5, -6 + row * 6 + (2.0 if k % 2 == 0 else -1.0) * 0.8))
+				out.append(wave)
+		"bolt":
+			# Borabohra's lightning, as on the Sky gate.
+			out.append(PackedVector2Array([Vector2(3, -10), Vector2(-4, 0), Vector2(2, 0), Vector2(-3, 10)]))
+	return out
 
 
 ## The part of a circle below the line y = `level`, as a polygon.

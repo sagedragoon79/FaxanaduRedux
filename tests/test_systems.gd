@@ -2258,6 +2258,32 @@ func test_a_hand_edited_save_still_fills_its_flask() -> void:
 	GameState.delete_save(SLOT)
 
 
+## Pass 357 (bible 14, Accessibility): the options promise colorblind-safe
+## marks, but the three flasks were told apart by color alone, and amber, pale
+## green and pale blue are the colors a colorblind player confuses most. Each
+## flask now bears its spring's mark (a leaf, mist, a bolt) on its glass, full
+## or empty, and the marks differ in shape, not just in color.
+func test_the_flasks_are_told_apart_by_shape() -> void:
+	check(SlotPicker.MARKS.size() == SlotPicker.COLORS.size() and SlotPicker.MARKS.size() == 3, "three marks for three flasks")
+	var seen := {}
+	for i in 3:
+		var lines := SlotPicker.mark(i)
+		var count := 0
+		var box := Rect2()
+		for line: PackedVector2Array in lines:
+			count += line.size()
+			for q in line:
+				box = Rect2(q, Vector2.ZERO) if box.size == Vector2.ZERO and box.position == Vector2.ZERO else box.expand(q)
+		check(count >= 4, "flask %d (%s) has a mark drawn (%d points)" % [i, SlotPicker.MARKS[i], count])
+		check(maxf(box.size.x, box.size.y) >= 12.0 and minf(box.size.x, box.size.y) >= 6.0 and box.size.x <= SlotPicker.BODY_R * 1.6 and box.size.y <= SlotPicker.BODY_R * 1.6,
+			"and it fits the flask's body, big enough to read (%s)" % [box.size])
+		var shape := "%d/%s" % [lines.size(), str(lines.map(func(l: PackedVector2Array) -> int: return l.size()))]
+		check(not seen.has(shape), "flask %d's mark is its own shape (%s)" % [i, shape])
+		seen[shape] = true
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("Told apart by shape as well as color") and bible.contains("a leaf for the Trunk"), "bible 14 says how the flasks are told apart")
+
+
 ## Pass 350 (bible 13.3): the title's flasks borrowed the rest's chime, the
 ## rank's fanfare and the water's splash. Every cue the shelf plays, but the
 ## menu cursor's `blip`, must be its own: a file that exists, played by no
