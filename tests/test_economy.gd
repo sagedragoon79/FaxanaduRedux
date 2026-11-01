@@ -2290,6 +2290,35 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 	check(bible.contains("\"has 1.5 times the power of Deluge\"") and bible.contains("\"has four times the power of Deluge\"") and bible.contains("\"has six times the power of fire\""), "the bible quotes the original's spell powers")
 	check(int(Spells.DATA.fire.damage) * 2 == int(Spells.DATA.deluge.damage) * 3, "Fire keeps the original's 1.5 times Deluge (%d, %d)" % [Spells.DATA.fire.damage, Spells.DATA.deluge.damage])
 	check(int(Spells.DATA.death.damage) > int(Spells.DATA.fire.damage) and int(Spells.DATA.death.damage) > int(Spells.DATA.thunder.damage), "and Death still hits hardest")
+	# Pass 353: the original's Wing Boots and Mattock were spent; the remake
+	# keeps both for good, and the bible says why.
+	check(bible.contains("**The original's spent tools, kept for good (deviation, pass 353):**") and bible.contains("shorter the higher your rank")
+		and bible.contains("Each Mattock broke one blocked passage"), "the bible says the original's Boots and Mattock were spent, and why the remake keeps them")
+	check(abilities.get("boots") is bool and abilities.get("mattock") is bool, "a save keeps the Boots and the Mattock as yes-or-no")
+	var named := []
+	for id: String in items:
+		var title := String(items[id].get("name", items[id].get("title", ""))).to_lower()
+		if id.contains("boots") or id.contains("mattock") or title.contains("wing boots") or title.contains("mattock"):
+			named.append(id)
+	check(named.is_empty(), "and no item is sold or spent in their name (%s)" % [named])
+	var room := make_room(["##########", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "##########"])
+	var p := make_player(room, Vector2i(4, 7), {"boots": true, "mattock": true})
+	await frames(4)
+	for leap in 2:
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(6)
+		p.input.jump_pressed = true
+		await frames(1)
+		check(not p.has_double_jump, "leap %d: the Boots lift a second time in the air" % (leap + 1))
+		p.input.jump_pressed = false
+		p.input.jump_held = false
+		for i in 120:
+			await frames(1)
+			if p.is_on_floor():
+				break
+		await frames(2)
+		check(p.is_on_floor() and p.abilities.get("boots", false) and p.has_double_jump, "leap %d: and they are still worn, their lift back, after landing" % (leap + 1))
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 273: the original's Naga floats up and down over the ladders of the
