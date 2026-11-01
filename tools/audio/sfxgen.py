@@ -1533,6 +1533,20 @@ def main():
     out = (lowpass(body, 900) * wob + air) * swell
     save("ward_refuse", out, 0.45)
 
+    # A menu that says no (pass 366): a disabled row (a ware you can't afford,
+    # an Ointment you don't have), a pad button the Controls page keeps, and a
+    # map with no pin left had all borrowed the spell-fail fizzle, so a shop
+    # sounded like a failed cast. Now the menu answers in its own voice: the
+    # cursor's square blip, lower and dull, twice, falling a fourth.
+    d = 0.17
+    n = int(RATE * d)
+    out = np.zeros(n)
+    for st, f in ((0.0, 330.0), (0.085, 247.0)):
+        i = int(RATE * st)
+        ln = int(RATE * 0.07)
+        out[i:i + ln] += lowpass(osc(np.full(ln, f), "square", 0.35), 1400) * env(ln, 0.002, 1.6)
+    save("menu_refuse", out, 0.32)
+
 
 if __name__ == "__main__":
     main()

@@ -1340,7 +1340,7 @@ func test_map_pins_drop_and_lift_where_you_stand() -> void:
 		GameState.toggle_pin("eolis/market", Vector2(i * 100, 0))
 	check(GameState.toggle_pin("eolis/market", Vector2(5000, 0)) == "full", "pins are limited to %d" % GameState.MAX_PINS)
 	Sfx.recent.clear()
-	check(map.pin() == "full" and Sfx.recent == ["fizzle"], "a full map fizzles")
+	check(map.pin() == "full" and Sfx.recent == ["menu_refuse"], "a full map says no, as a menu does")
 	# The parchment (pass 128): the map unrolls and folds with its own sounds.
 	Sfx.recent.clear()
 	map.toggle()

@@ -156,6 +156,47 @@ func test_the_pad_can_be_rebound() -> void:
 	_restore()
 
 
+## Pass 366: a menu's refusal had borrowed the spell-fail fizzle, so a ware
+## you couldn't afford sounded like a cast short of MP. A menu now says no in
+## its own voice, and the fizzle is left to the spells and the Hour Glass.
+func test_a_menu_says_no_in_its_own_voice() -> void:
+	Settings.path = TEMP_SETTINGS
+	check(FileAccess.file_exists("res://assets/sfx/menu_refuse.wav"), "the refusal has a file")
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	var chosen := [false]
+	menu.open("Shop", "", func() -> Array: return [{"label": "Too dear", "enabled": false}, {"label": "Leave"}],
+		func(_i: int) -> void: chosen[0] = true)
+	Sfx.recent.clear()
+	menu.cursor = 0
+	menu.confirm()
+	check(not chosen[0] and Sfx.recent == ["menu_refuse"], "a row you can't choose says no, no fizzle (%s)" % [Sfx.recent])
+	menu.close()
+	check(Menus.open_controls(arena.get_tree(), func() -> void: menu.close()), "Controls opens")
+	menu.cursor = 0
+	menu.confirm()
+	Sfx.recent.clear()
+	_menu_pad(menu, JOY_BUTTON_LEFT_STICK)
+	check(Sfx.recent == ["menu_refuse"] and Controls.primary_button("hourglass") == JOY_BUTTON_LEFT_STICK,
+		"a pad button the page keeps says no as well (%s)" % [Sfx.recent])
+	menu.close()
+	menu.free()
+	# Who still fizzles: the hero's spells and the Hour Glass, and no menu.
+	var dirs: Array[String] = ["res://scripts"]
+	var fizzlers: Array[String] = []
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub: String in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f: String in DirAccess.get_files_at(d):
+			if f.ends_with(".gd") and FileAccess.get_file_as_string(d + "/" + f).contains("Sfx.play(\"fizzle\""):
+				fizzlers.append(f)
+	check(fizzlers == ["player.gd"], "only the hero's spells and glass fizzle (%s)" % [fizzlers])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("**A menu that says no (pass 366):**") and bible.contains("`menu_refuse`"), "bible 13.3 tells it")
+	_restore()
+
+
 func _press_pad(button: int, down: bool) -> void:
 	var ev := InputEventJoypadButton.new()
 	ev.button_index = button as JoyButton

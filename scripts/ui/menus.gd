@@ -731,7 +731,7 @@ static func open_controls(tree: SceneTree, back: Callable) -> bool:
 					if Settings.bind_button(Settings.REBINDABLE[i], b):
 						Sfx.play("blip", 0.0, -4.0)
 					else:
-						Sfx.play("fizzle", 0.0, -4.0)
+						Sfx.play("menu_refuse", 0.0, -4.0)
 						GameState.toast.emit("%s stays where it is." % Controls.PAD_NAMES.get(b, "That button"))
 		elif i == n:
 			Settings.reset_keys()
