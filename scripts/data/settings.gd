@@ -1,7 +1,7 @@
 class_name Settings
 extends RefCounted
 ## Player options (design bible 14, accessibility): screen shake, screen
-## flashes, rumble, damage numbers, the mercy assist, music and sound volume, game speed and keyboard bindings.
+## flashes, rumble, damage numbers, the mercy assist, music and sound volume, game speed, keyboard keys and pad buttons.
 ## Kept apart from save slots in user://settings.cfg. The game loads and
 ## applies them at start; tests never do, so they run on the defaults.
 
@@ -14,7 +14,7 @@ const SPEED_STEPS := [1.0, 0.9, 0.8, 0.7]
 const VOLUME_MAX := 10
 ## The mercy assist (bible 14, pass 325): a hit's invulnerability lasts this many times as long.
 const MERCY_MULT := 2.0
-## Keyboard actions the player may rebind (the pad keeps its layout).
+## Actions the player may rebind, by key and by pad button (pass 365).
 const REBINDABLE := ["move_left", "move_right", "move_up", "move_down", "jump", "attack", "dash", "block", "spell", "heal", "throw", "map"]
 const BUSES := ["Music", "Sfx"]
 
@@ -30,6 +30,8 @@ static var sound_volume := 8
 static var speed := 0          # index into SPEED_STEPS
 ## action -> physical keycode of its first key, for rebound actions only.
 static var keys := {}
+## action -> pad button index of its first button, for rebound actions only.
+static var buttons := {}
 ## Where load() and save() go (tests point it elsewhere).
 static var path := PATH
 
@@ -44,6 +46,7 @@ static func reset() -> void:
 	sound_volume = 8
 	speed = 0
 	keys = {}
+	buttons = {}
 
 
 ## Every option, by name (pass 327): what the test runner compares against a
@@ -52,7 +55,7 @@ static func reset() -> void:
 ## static vars to hold it.
 static func snapshot() -> Dictionary:
 	return {"shake": shake, "flashes": flashes, "rumble": rumble, "damage_numbers": damage_numbers, "mercy": mercy,
-		"music_volume": music_volume, "sound_volume": sound_volume, "speed": speed, "keys": keys.duplicate()}
+		"music_volume": music_volume, "sound_volume": sound_volume, "speed": speed, "keys": keys.duplicate(), "buttons": buttons.duplicate()}
 
 
 static func load_settings() -> void:
@@ -80,6 +83,9 @@ static func load_settings() -> void:
 		var key: Variant = cfg.get_value("keys", action, 0)
 		if key is int and key > 0:
 			keys[action] = key
+		var button: Variant = cfg.get_value("buttons", action, -1)
+		if button is int and button >= 0 and button < JOY_BUTTON_SDL_MAX:
+			buttons[action] = button
 
 
 ## A whole number in 0..count-1 from whatever the file held, else `default`.
@@ -101,6 +107,8 @@ static func save() -> void:
 	cfg.set_value("audio", "sound", sound_volume)
 	for action: String in keys:
 		cfg.set_value("keys", action, keys[action])
+	for action: String in buttons:
+		cfg.set_value("buttons", action, buttons[action])
 	GameState.write_safely(path, cfg.encode_to_text())
 
 
@@ -116,6 +124,8 @@ static func apply() -> void:
 	Controls.restore_defaults()
 	for action: String in keys:
 		Controls.rebind(action, keys[action])
+	for action: String in buttons:
+		Controls.rebind_button(action, buttons[action])
 
 
 ## Changes one option by `step` (wrapping lists, clamping volumes), applies and saves.
@@ -143,8 +153,32 @@ static func bind_key(action: String, keycode: int) -> void:
 	save()
 
 
+## Binds `action` to a pad button, swapping with any action that had it, then
+## applies and saves. An action with no button of its own (the heal, on a
+## trigger) may take only a free one, so no action is left without a button;
+## it returns false and changes nothing for a taken one. Nor does it take a
+## button from an action the page doesn't list (Start pauses, LS turns the Hour
+## Glass, RS changes spell), so none of those is ever lost from the pad.
+static func bind_button(action: String, button: int) -> bool:
+	var mine := Controls.primary_button(action)
+	for other: String in Controls.BINDINGS:
+		if not other in REBINDABLE and Controls.primary_button(other) == button:
+			return false
+	for other: String in REBINDABLE:
+		if other != action and Controls.primary_button(other) == button:
+			if mine < 0:
+				return false
+			buttons[other] = mine
+	buttons[action] = button
+	apply()
+	save()
+	return true
+
+
+## Puts every key and pad button back.
 static func reset_keys() -> void:
 	keys = {}
+	buttons = {}
 	apply()
 	save()
 
