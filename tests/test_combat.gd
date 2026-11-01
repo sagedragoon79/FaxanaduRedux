@@ -383,6 +383,67 @@ func test_thunder_bolt_strikes_a_foe() -> void:
 
 
 
+## Pass 362 (bible 5.3, Swing reach): how far a swing reaches was in no line
+## of the bible, and only the Broad Sword's growth was tested. Each blade's
+## reach and arc are held to 5.2, every swing's box to 5.3's row, measured from
+## the real swing, and a dummy at the edge of the Short Sword's reach is struck
+## while one a few px past it is missed.
+func test_every_swing_reaches_as_far_as_5_3_says() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var row := bible.get_slice("| Swing reach (pass 362) |", 1).get_slice("\n", 0)
+	check(row != "", "5.3 has its Swing reach row")
+	var blades_row := bible.get_slice("### 5.2 ", 1).get_slice("\n| Blade |", 1).get_slice("\n", 0)
+	var items := GameData.table("items")
+	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"]:
+		var cell := blades_row.get_slice("|", ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"].find(id))
+		var reach := int(items[id].get("reach", 0))
+		var arc := int(items[id].get("arc", 0))
+		check(cell.contains("reach %d" % reach) and (arc == 0 or cell.contains("arc %d" % arc)), "5.2 gives the %s's reach %d%s (%s)" % [id, reach, " and arc %d" % arc if arc else "", cell.strip_edges().left(80)])
+	var room := _arena_with(".", Vector2i(3, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	var front := Player.BODY_SIZE.x * 0.5
+	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"]:
+		GameState.data.equipment.blade = id
+		GameState.data.equipment.offhand = ""
+		GameState.refresh_stats(p)
+		var reach := float(items[id].get("reach", 0))
+		var arc := float(items[id].get("arc", 0))
+		for kind: String in ["side", "up", "thrust"]:
+			p.attack_kind = kind
+			var r := p._attack_rect()
+			var x0 := r.position.x - p.global_position.x
+			var feet := p.global_position.y
+			match kind:
+				"side":
+					check(x0 < front and is_equal_approx(r.end.x - p.global_position.x - front, 34.0 + reach) and is_equal_approx(r.size.y, 26.0 + arc), "%s: a slash cuts from inside the body to %s px past it, %s px tall (%s)" % [id, String.num(34.0 + reach), String.num(26.0 + arc), r])
+				"up":
+					check(r.size.is_equal_approx(Vector2(34, 36)) and is_equal_approx(feet - r.position.y - Player.BODY_SIZE.y, 32.0), "%s: an up-slash is 34 by 36 and reaches 32 px over the head (%s)" % [id, r])
+				"thrust":
+					check(is_equal_approx(x0, front) and is_equal_approx(r.size.x, 52.0 + reach) and is_equal_approx(r.size.y, 13.0 + arc * 0.5), "%s: a Thrust runs %s px from the body's edge, %s px tall (%s)" % [id, String.num(52.0 + reach), String.num(13.0 + arc * 0.5), r])
+	for n: float in [36, 26, 34, 32, 52, 13]:
+		check(written_exactly_in(row, n), "the row writes %s" % String.num(n))
+	check(row.contains("28x24") and bible.get_slice("### 6.6 ", 1).get_slice("\n### ", 0).contains("28x24") and Player.DOWN_STRIKE_SIZE == Vector2(28, 24), "and the down-strike is 6.6's 28x24")
+	# For real: the Short Sword strikes a dummy at the edge of its reach and
+	# misses one just past it.
+	GameState.data.equipment.blade = "short_sword"
+	GameState.refresh_stats(p)
+	for past: float in [-2.0, 2.0]:
+		var dummy := TrainingDummy.new()
+		room.add_child(dummy)
+		dummy.global_position = Vector2(p.global_position.x + front + 34.0 + 9.0 + past, p.global_position.y)
+		await frames(2)
+		p.facing = 1
+		p.input.attack_pressed = true
+		await frames(1)
+		p.input.attack_pressed = false
+		await frames(12)
+		var struck := dummy.hits_taken > 0
+		check(struck == (past < 0.0), "a dummy %s px %s the reach is %s" % [String.num(absf(past)), "inside" if past < 0.0 else "past", "struck" if struck else "missed"])
+		dummy.free()
+		await frames(30)
+
+
 func test_the_dwarvish_broad_sword_sweeps_wide_but_swings_slow() -> void:
 	var room := _arena_with("E", Vector2i(6, 6))
 	var p := make_player(room, Vector2i(3, 6))
