@@ -547,23 +547,41 @@ func has_save(which: int) -> bool:
 	return FileAccess.file_exists(path) or FileAccess.file_exists(path + ".bak")
 
 
-## Loads a slot, or its `.bak` if the file itself is damaged. On failure the
-## current data is left untouched.
-func load_game(from_slot: int) -> bool:
-	var path := SAVE_PATH % from_slot
-	var loaded := {}
+## What a slot holds, read whole and made safe (`sanitize`), from its `.bak`
+## if the file itself is damaged; {} when it holds nothing that can be read.
+## The title's flasks read it without loading (Sean, 2026-10-31). `warn` says
+## aloud when a file had to be passed over.
+static func read_slot(which: int, warn := false) -> Dictionary:
+	var path := SAVE_PATH % which
 	for p: String in [path, path + ".bak"]:
 		if not FileAccess.file_exists(p):
 			continue
 		# JSON.parse_string logs an engine error for a damaged file; the warning
 		# below says it plainly instead (pass 215).
 		var json := JSON.new()
-		loaded = sanitize(json.data if json.parse(FileAccess.get_file_as_string(p)) == OK else null)
+		var loaded := sanitize(json.data if json.parse(FileAccess.get_file_as_string(p)) == OK else null)
 		if not loaded.is_empty():
-			if p != path:
-				push_warning("Save slot %d was damaged; loaded its backup" % from_slot)
-			break
-		push_warning("%s is not a save" % p)
+			if p != path and warn:
+				push_warning("Save slot %d was damaged; loaded its backup" % which)
+			return loaded
+		if warn:
+			push_warning("%s is not a save" % p)
+	return {}
+
+
+## When a slot was last written (unix seconds), or 0 if it has never been.
+static func slot_time(which: int) -> int:
+	var path := SAVE_PATH % which
+	for p: String in [path, path + ".bak"]:
+		if FileAccess.file_exists(p):
+			return int(FileAccess.get_modified_time(p))
+	return 0
+
+
+## Loads a slot, or its `.bak` if the file itself is damaged. On failure the
+## current data is left untouched.
+func load_game(from_slot: int) -> bool:
+	var loaded := read_slot(from_slot, true)
 	if loaded.is_empty():
 		return false
 	data = loaded
