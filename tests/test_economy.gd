@@ -887,6 +887,46 @@ func test_king_gives_gold_once() -> void:
 	check(said.size() == 2 and said[0] == "King of Eolis", "he talks both times")
 
 
+## Pass 369 (bible 9): the original's title thresholds (Speed Demos Archive)
+## run from 1,000 to 45,000, and no title costs less than the one before it.
+## The remake's are scaled to its foes and keep that shape; the King gives his
+## purse once whatever you carry, where the original gave it only at 0 golds.
+func test_the_titles_climb_as_the_originals_do() -> void:
+	const ORIGINAL := [0, 1000, 2200, 3500, 4800, 6200, 8000, 10000, 12500, 15000, 18000, 22000, 26000, 30000, 35000, 45000]
+	check(GameState.RANK_XP.size() == ORIGINAL.size() and GameState.RANKS.size() == ORIGINAL.size(), "sixteen titles, as the original")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var note := bible.get_slice("**The titles' climb (deviation, pass 369):**", 1).get_slice("\n", 0)
+	check(note != "", "bible 9 has the note")
+	var unwritten := []
+	for list: Array in [ORIGINAL.slice(1), GameState.RANK_XP.slice(1)]:
+		for i in list.size():
+			var gap: int = list[i] - (0 if i == 0 else list[i - 1])
+			# The remake's own thresholds are the line above the note's.
+			for n: int in ([list[i], gap] if list[0] == ORIGINAL[1] else [gap]):
+				var text := String.num_int64(n)
+				if n >= 1000:
+					text = "%d,%03d" % [n / 1000, n % 1000]
+				if not note.contains(text):
+					unwritten.append(n)
+	check(unwritten.is_empty(), "the original's thresholds and both curves' steps are in the note (not: %s)" % [unwritten])
+	for list: Array in [ORIGINAL, GameState.RANK_XP]:
+		var climbs := true
+		for i in range(2, list.size()):
+			climbs = climbs and int(list[i]) - int(list[i - 1]) >= int(list[i - 1]) - int(list[i - 2])
+		check(climbs, "no title costs less than the one before it (%s)" % [list])
+	var last: int = GameState.RANK_XP[15] - GameState.RANK_XP[14]
+	var before: int = GameState.RANK_XP[14] - GameState.RANK_XP[13]
+	check(last < before * 2, "and Lord is no leap like the original's 10,000 (%d after %d)" % [last, before])
+	# The King's purse, to a hero who picked up a coin on the way in.
+	var w := make_world(_town({}, ["npc: 8, 19, king"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	await frames(3)
+	p.add_gold(5)
+	p.input.up_pressed = true
+	await frames(2)
+	check(p.gold == Npc.KING_GOLD + 5, "the King gives his 1,500 to a hero already holding 5 (%d)" % p.gold)
+
+
 func test_every_npc_and_shop_entry_is_valid() -> void:
 	var bad: Array[String] = []
 	for id: String in GameData.table("npcs"):
