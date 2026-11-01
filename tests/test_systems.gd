@@ -2104,15 +2104,16 @@ func test_the_mercy_assist_doubles_a_hits_grace() -> void:
 
 
 ## Pass 343: bible 14 promised three save slots, and the game has always kept
-## one (`Game.SAVE_SLOT`); its accessibility line names the options' steps
+## one (`Game.SAVE_SLOT`; three since Sean's flasks, `Game.SAVE_SLOTS`); its accessibility line names the options' steps
 ## (game speed 70 to 100% in tens, shake and flash names, the mercy assist's
 ## 0.8 s to 1.6 s). No test read any of it. These hold the line to the code,
 ## and the one slot's safe write and backup to what the bible now says.
 func test_the_bibles_saves_and_options_are_as_built() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var tech := bible.get_slice("## 14. Technical Architecture", 1).get_slice("\n## 15. ", 0)
-	var slot: int = (load("res://scripts/game.gd") as Script).get_script_constant_map()["SAVE_SLOT"]
-	check(tech.contains("a single save (`Game.SAVE_SLOT`, `%s`)" % (GameState.SAVE_PATH % slot)), "14 names the one save and its path (slot %d)" % slot)
+	var slots: Array = (load("res://scripts/game.gd") as Script).get_script_constant_map()["SAVE_SLOTS"]
+	check(slots == [1, 2, 3], "three journeys (Sean, 2026-10-31): %s" % [slots])
+	check(tech.contains("slots `Game.SAVE_SLOTS`, `%s` to `%s`" % [GameState.SAVE_PATH % slots[0], (GameState.SAVE_PATH % slots[-1]).get_file()]), "14 names the three saves and their paths")
 	# The safe write keeps the last good copy, and a damaged save falls back to it.
 	var path := "user://test_pass_343.json"
 	check(GameState.write_safely(path, "{\"a\": 1}") and GameState.write_safely(path, "{\"a\": 2}"), "a save writes twice")
@@ -2132,3 +2133,82 @@ func test_the_bibles_saves_and_options_are_as_built() -> void:
 	check(tech.contains("flashes (%s)" % ", ".join(Settings.FLASH_NAMES).to_lower()), "14 names the flash steps (%s)" % [Settings.FLASH_NAMES])
 	var invuln := MovementTuning.new().hurt_invuln
 	check(tech.contains("(%s s to %s s, `Settings.MERCY_MULT`" % [String.num(invuln), String.num(invuln * Settings.MERCY_MULT)]), "14 gives the mercy assist's grace (%s s, x%s)" % [invuln, Settings.MERCY_MULT])
+
+
+
+## Sean (2026-10-31, bible 14): three save slots shown as three colored flasks,
+## with no number or letter on any; a journey's details show when its flask is
+## focused (Left/Right or the mouse). Choosing a full flask takes that journey
+## up, an empty one begins anew in it, and Block then Jump pours one out.
+func test_three_flasks_hold_three_journeys() -> void:
+	const SLOTS := [7, 8, 9]
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	var was := GameState.slot
+	GameState.new_game()
+	GameState.data.save_room = "trunk/apolune"
+	GameState.data.rank = 4
+	GameState.data.gold = 1820
+	GameState.data.flags["spring:trunk"] = true
+	check(GameState.save_game(7), "a journey rests in the first flask")
+	GameState.new_game()
+	GameState.data.save_room = "mist/victim"
+	GameState.data.rank = 9
+	check(GameState.save_game(9), "and another in the third")
+	GameState.new_game()
+	GameState.slot = was
+	var picker := SlotPicker.new()
+	picker.slots = SLOTS
+	arena.add_child(picker)
+	picker.open()
+	check(picker.is_open and picker.saves.size() == 3, "three flasks on the shelf")
+	check(not picker.saves[0].is_empty() and picker.saves[1].is_empty() and not picker.saves[2].is_empty(), "two hold a journey, one stands empty")
+	check(picker.cursor in [0, 2], "the shelf opens on a journey (%d)" % picker.cursor)
+	picker.cursor = 0
+	var said := " / ".join(picker.details())
+	check(said.contains("Apolune") and said.contains("Trunk Hollows") and said.contains(GameState.RANKS[4]) and said.contains("1,820 gold") and said.contains("One spring of three flows"), "a full flask tells its journey (%s)" % said)
+	check(float(picker.saves[2].fill) > float(picker.saves[0].fill), "a higher rank fills its flask higher")
+	picker.cursor = 1
+	check(" ".join(picker.details()).begins_with("An empty flask."), "an empty one says so")
+	# No flask is named by a number or a letter: a slot's own number shows nowhere.
+	for i in 3:
+		picker.cursor = i
+		for line: String in picker.details():
+			check(not line.contains(str(SLOTS[i])) and not line.to_lower().contains("slot"), "flask %d's lines never name its slot (%s)" % [i, line])
+	picker.cursor = 2
+	picker.move(1)
+	check(picker.cursor == 0, "Right past the last flask wraps to the first")
+	# The mouse focuses the flask under it.
+	check(picker.flask_at(picker.flask_center(1)) == 1 and picker.flask_at(Vector2(4, 4)) == -1, "the mouse finds the flask under it")
+	# Choosing.
+	var got := []
+	picker.chosen.connect(func(slot: int, fresh: bool) -> void: got.append([slot, fresh]))
+	picker.cursor = 1
+	picker.confirm()
+	check(got == [[8, true]] and not picker.is_open, "an empty flask begins a new journey in its slot (%s)" % [got])
+	picker.open()
+	picker.cursor = 2
+	picker.confirm()
+	check(got.back() == [9, false], "a full one takes its journey up (%s)" % [got.back()])
+	# Pouring out: Block asks, Dash keeps it, Jump pours.
+	picker.open()
+	picker.cursor = 0
+	picker.pour()
+	check(picker.pouring and picker.details()[0].begins_with("Pour this journey out"), "Block on a full flask asks first")
+	picker.back()
+	check(not picker.pouring and picker.is_open and GameState.has_save(7), "Dash keeps it")
+	picker.pour()
+	picker.confirm()
+	check(not GameState.has_save(7) and picker.saves[0].is_empty() and picker.is_open, "Jump pours it out, and the flask stands empty")
+	picker.cursor = 1
+	picker.pour()
+	check(not picker.pouring, "an empty flask has nothing to pour")
+	# A damaged save reads as nothing, never as a broken flask.
+	var f := FileAccess.open(GameState.SAVE_PATH % 8, FileAccess.WRITE)
+	f.store_string("not a save")
+	f.close()
+	check(GameState.read_slot(8).is_empty() and SlotPicker.summary(GameState.read_slot(8)).is_empty(), "a damaged file is an empty flask")
+	picker.free()
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	GameState.slot = was

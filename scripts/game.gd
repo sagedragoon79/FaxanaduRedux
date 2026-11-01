@@ -12,7 +12,8 @@ extends Node2D
 ## With no options it shows the title menu (continue or new game).
 ##   --room=ID|PATH             start a fresh game in a room: an id like "eolis/plaza",
 ##                              "gym/gym" for the movement gym, or a .room path
-##   --continue                 load save slot 1 and skip the title
+##   --continue                 load the journey last rested in and skip the title
+##   --journeys                 with --title: open the three flasks (--cursor=N focuses one)
 ##   --shot=PATH                save a screenshot and quit
 ##   --shot-frames=N            frames to wait before the screenshot (default 30)
 ##   --shot-at=X,Y              place the player at tile X,Y first
@@ -58,7 +59,9 @@ extends Node2D
 ##   --secret                   with --ending: the secret ending (no deaths, the Battle Suit)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
-const SAVE_SLOT := 1
+## The three journeys' save slots (Sean, 2026-10-31; bible 14). The title shows
+## them as three flasks, never by number.
+const SAVE_SLOTS := [1, 2, 3]
 const BASE_SIZE := Vector2i(640, 360)
 const MARGIN := 1
 ## The title menu sits under the logo.
@@ -72,6 +75,7 @@ var dialog: DialogBox
 var map_screen: MapScreen
 var menu: ListMenu
 var title_screen: TitleScreen
+var picker: SlotPicker
 var ending: EndingScreen
 var fader: ColorRect
 var debug_hud: DebugHud
@@ -128,6 +132,9 @@ func _ready() -> void:
 	title_screen = TitleScreen.new()
 	title_screen.visible = false
 	ui.add_child(title_screen)
+	picker = SlotPicker.new()
+	picker.slots = SAVE_SLOTS
+	ui.add_child(picker)
 	menu = ListMenu.new()
 	ui.add_child(menu)
 	map_screen = MapScreen.new()
@@ -156,58 +163,93 @@ func _ready() -> void:
 		for flag: String in String(_args.get("flags", "")).split(",", false):
 			GameState.set_flag(flag)
 		_start(room_id, at)
-	elif _args.has("continue") and GameState.load_game(SAVE_SLOT):
+	elif _args.has("continue") and latest_slot() > 0 and GameState.load_game(latest_slot()):
 		_continue()
 	elif _args.has("shot") and not _args.has("title"):
 		GameState.new_game()
 		_start(NEW_GAME_ROOM)
 	else:
 		_title()
+		if _args.has("journeys"):
+			# Screenshots: the three flasks, one focused.
+			menu.close()
+			_journeys()
+			if _args.has("cursor"):
+				picker.cursor = clampi(int(_args["cursor"]), 0, SAVE_SLOTS.size() - 1)
 
 
-## Title menu: continue the save in slot 1, or start over.
+## The journey last rested in (the newest save), or 0 when no flask holds one.
+func latest_slot() -> int:
+	var best := 0
+	var newest := -1
+	for slot: int in SAVE_SLOTS:
+		var t := GameState.slot_time(slot)
+		if t > 0 and t >= newest and not GameState.read_slot(slot).is_empty():
+			newest = t
+			best = slot
+	return best
+
+
+## Title menu: the three journeys (as flasks), the options, or quit.
 func _title() -> void:
-	var has_save := GameState.has_save(SAVE_SLOT)
+	var any := false
+	for slot: int in SAVE_SLOTS:
+		any = any or GameState.has_save(slot)
 	title_screen.visible = true
 	menu.panel = TITLE_PANEL
 	Music.play("title")
 	var rows := func() -> Array:
 		return [
-			{"label": "Continue", "enabled": has_save, "detail": "Return to your last rest." if has_save else "No journey saved yet."},
-			{"label": "New game", "detail": "Begin at the West Gate of Eolis." + ("  Your old save is replaced when you next rest." if has_save else "")},
+			{"label": "Journeys", "detail": "Three flasks, a journey in each. Take one up, or begin anew in an empty one." if any else "Three empty flasks. Choose one to begin a journey."},
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
 			{"label": "Controls", "detail": "Rebind the keyboard."},
 			{"label": "Quit", "detail": ""},
 		]
 	var pick := func(i: int) -> void:
-		if i == 2:
-			Menus.open_options(get_tree(), _title)
-			return
-		if i == 3:
-			Menus.open_controls(get_tree(), _title)
-			return
-		menu.close()
-		title_screen.visible = false
-		menu.panel = ListMenu.PANEL
 		match i:
 			0:
-				if GameState.load_game(SAVE_SLOT):
-					_continue()
-				else:
-					# Nothing in the slot could be read (pass 109): start over rather than fail.
-					GameState.new_game()
-					GameState.slot = SAVE_SLOT
-					_start(NEW_GAME_ROOM)
-					GameState.toast.emit("The old journey could not be read. A new one begins.")
+				menu.close()
+				_journeys()
 			1:
-				GameState.new_game()
-				GameState.slot = SAVE_SLOT
-				_start(NEW_GAME_ROOM)
-				GameState.banner.emit("Eolis", "The root town")
-			4:
+				Menus.open_options(get_tree(), _title)
+			2:
+				Menus.open_controls(get_tree(), _title)
+			3:
 				get_tree().quit()
 	menu.open("A wanderer returns", "The World Tree's springs have run dry.", rows, pick)
-	menu.cursor = 0 if has_save else 1
+	menu.cursor = 0
+
+
+## The three flasks (bible 14): take a journey up, or begin one.
+func _journeys() -> void:
+	title_screen.visible = true
+	get_tree().paused = true
+	for c: Dictionary in picker.chosen.get_connections():
+		picker.chosen.disconnect(c.callable)
+	for c: Dictionary in picker.cancelled.get_connections():
+		picker.cancelled.disconnect(c.callable)
+	picker.chosen.connect(_take_up, CONNECT_ONE_SHOT)
+	picker.cancelled.connect(_title, CONNECT_ONE_SHOT)
+	picker.open()
+
+
+func _take_up(slot: int, fresh: bool) -> void:
+	if picker.cancelled.is_connected(_title):
+		picker.cancelled.disconnect(_title)
+	get_tree().paused = false
+	title_screen.visible = false
+	menu.panel = ListMenu.PANEL
+	if not fresh and GameState.load_game(slot):
+		_continue()
+		return
+	GameState.new_game()
+	GameState.slot = slot
+	_start(NEW_GAME_ROOM)
+	if fresh:
+		GameState.banner.emit("Eolis", "The root town")
+	else:
+		# Nothing in the flask could be read (pass 109): start over rather than fail.
+		GameState.toast.emit("The old journey could not be read. A new one begins.")
 
 
 func _continue() -> void:
