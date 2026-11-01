@@ -10,7 +10,7 @@ extends Control
 ##
 ## Optional hooks, cleared on each open(): `on_adjust(index, step)` runs on
 ## Left/Right (option values), `on_back` runs instead of closing on Dash (sub
-## menus), and `capture(event)` takes the next key press (rebinding).
+## menus), and `capture(event)` takes the next key or pad button press (rebinding).
 
 signal closed
 
@@ -141,7 +141,8 @@ func back() -> void:
 func _input(event: InputEvent) -> void:
 	if not is_open or not capture.is_valid():
 		return
-	if event is InputEventKey and event.pressed and not event.echo:
+	var key: bool = event is InputEventKey and event.pressed and not event.echo
+	if key or (event is InputEventJoypadButton and event.pressed):
 		get_viewport().set_input_as_handled()
 		var take := capture
 		capture = Callable()
@@ -219,7 +220,7 @@ func _draw() -> void:
 	PixelFont.draw_wrapped(self, box.position + Vector2(6, 12), detail, box.size.x - 12, 9, Color("c9b98f"), 1)
 	var foot: String = _footer.call() if _footer.is_valid() else ""
 	_text(Vector2(x, panel.end.y - 9), foot, 9, ACCENT)
-	var hint := "Press a key   Esc: cancel" if capture.is_valid() else ("Left/Right: change   Dash: back" if on_adjust.is_valid() else "Jump: choose   Dash: leave")
+	var hint := "Press a key or button   Esc or Start: cancel" if capture.is_valid() else ("Left/Right: change   Dash: back" if on_adjust.is_valid() else "Jump: choose   Dash: leave")
 	_text(Vector2(panel.end.x - 14 - PixelFont.width(hint, 8), panel.end.y - 9), hint, 8, DIM.lightened(0.2))
 
 

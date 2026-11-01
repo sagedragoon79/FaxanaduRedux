@@ -331,7 +331,7 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Equipment", "detail": "Swap between the blades, armor, shields and helmets you have, and dye your cloak."},
 			{"label": "Inventory", "detail": "Your abilities, spells, relics, rings, keys and shards, and what each does."},
 			{"label": "Options", "detail": "Screen shake, flashes, rumble, damage numbers, volume and game speed."},
-			{"label": "Controls", "detail": "Rebind the keyboard."},
+			{"label": "Controls", "detail": "Rebind the keys and the pad."},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
 		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else []) \
@@ -700,7 +700,8 @@ const ACTION_NAMES := {
 }
 
 
-## Keyboard rebinding: choose an action, then press its new key.
+## Rebinding (pass 365 added the pad): choose an action, then press its new
+## key or its new pad button.
 static func open_controls(tree: SceneTree, back: Callable) -> bool:
 	var menu := _menu(tree)
 	if menu == null:
@@ -709,24 +710,34 @@ static func open_controls(tree: SceneTree, back: Callable) -> bool:
 		var out := []
 		for action: String in Settings.REBINDABLE:
 			var listening := menu.capture.is_valid() and menu.rows.size() > out.size() and menu.cursor == out.size()
-			out.append({"label": ACTION_NAMES[action], "right": "..." if listening else Controls.key_name(action),
-				"detail": "Jump to rebind, then press the new key. A key taken from another action swaps with it."})
-		out.append({"label": "Reset to defaults", "detail": "Put every key back the way it was."})
-		out.append({"label": "Back", "detail": "The gamepad layout stays as it is."})
+			out.append({"label": ACTION_NAMES[action], "right": "..." if listening else "%s / %s" % [Controls.key_name(action), Controls.button_name(action)],
+				"detail": "Jump to rebind, then press the new key or pad button. One taken from another action swaps with it."})
+		out.append({"label": "Reset to defaults", "detail": "Put every key and pad button back the way it was."})
+		out.append({"label": "Back", "detail": "Start pauses on the pad, as Esc does on the keyboard."})
 		return out
 	var on_select := func(i: int) -> void:
 		var n := Settings.REBINDABLE.size()
 		if i < n:
-			menu.capture = func(event: InputEventKey) -> void:
-				if event.physical_keycode == KEY_ESCAPE:
-					return
-				Settings.bind_key(Settings.REBINDABLE[i], int(event.physical_keycode))
-				Sfx.play("blip", 0.0, -4.0)
+			menu.capture = func(event: InputEvent) -> void:
+				if event is InputEventKey:
+					if (event as InputEventKey).physical_keycode == KEY_ESCAPE:
+						return
+					Settings.bind_key(Settings.REBINDABLE[i], int((event as InputEventKey).physical_keycode))
+					Sfx.play("blip", 0.0, -4.0)
+				elif event is InputEventJoypadButton:
+					var b := int((event as InputEventJoypadButton).button_index)
+					if b == JOY_BUTTON_START:
+						return
+					if Settings.bind_button(Settings.REBINDABLE[i], b):
+						Sfx.play("blip", 0.0, -4.0)
+					else:
+						Sfx.play("fizzle", 0.0, -4.0)
+						GameState.toast.emit("%s stays where it is." % Controls.PAD_NAMES.get(b, "That button"))
 		elif i == n:
 			Settings.reset_keys()
-			GameState.toast.emit("Keys reset.")
+			GameState.toast.emit("Keys and buttons reset.")
 		else:
 			back.call()
-	menu.open("Controls", "Keyboard keys. Esc always pauses.", provider, on_select)
+	menu.open("Controls", "Keys and pad buttons. Esc and Start always pause.", provider, on_select)
 	menu.on_back = back
 	return true

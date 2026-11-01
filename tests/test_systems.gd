@@ -97,6 +97,80 @@ func test_rebinding_swaps_and_resets() -> void:
 	_restore()
 
 
+## Pass 365: bible 14 promises full remapping, and the pad had none; a player
+## on a gamepad was held to its layout. Each listed action now takes a pad
+## button as well as a key, and the real input then follows it.
+func test_the_pad_can_be_rebound() -> void:
+	Settings.path = TEMP_SETTINGS
+	check(Controls.button_name("jump") == "A" and Controls.button_name("attack") == "X" and Controls.button_name("heal") == "LT",
+		"the pad's defaults: Jump on A, Attack on X, the potion on the left trigger")
+	var jump_key := Controls.primary_key("jump")
+	check(Settings.bind_button("jump", JOY_BUTTON_Y), "Jump takes Y")
+	check(Controls.primary_button("jump") == JOY_BUTTON_Y and Controls.primary_button("spell") == JOY_BUTTON_A,
+		"and the spell, which had Y, swaps onto A")
+	check(Controls.primary_key("jump") == jump_key and Controls.key_name("jump") != "-", "Jump keeps its keys")
+	_press_pad(JOY_BUTTON_Y, true)
+	check(Input.is_action_pressed("jump") and not Input.is_action_pressed("spell"), "Y now jumps, and only jumps")
+	_press_pad(JOY_BUTTON_Y, false)
+	_press_pad(JOY_BUTTON_A, true)
+	check(Input.is_action_pressed("spell") and not Input.is_action_pressed("jump"), "A now casts")
+	_press_pad(JOY_BUTTON_A, false)
+	check(not Settings.bind_button("heal", JOY_BUTTON_A), "the potion, on a trigger, can't take a button another action needs")
+	check(Controls.primary_button("spell") == JOY_BUTTON_A and Controls.primary_button("heal") == -1, "and nothing moves")
+	check(Settings.bind_button("heal", JOY_BUTTON_PADDLE1) and Controls.button_name("heal") == "P1", "but it can take a free one")
+	for b: int in [JOY_BUTTON_START, JOY_BUTTON_LEFT_STICK, JOY_BUTTON_RIGHT_STICK]:
+		check(not Settings.bind_button("attack", b), "%s stays with the action the page doesn't list" % Controls.PAD_NAMES[b])
+	check(Controls.primary_button("pause") == JOY_BUTTON_START and Controls.primary_button("attack") == JOY_BUTTON_X, "Start still pauses")
+	Settings.load_settings()
+	Settings.apply()
+	check(Controls.primary_button("jump") == JOY_BUTTON_Y and Controls.primary_button("heal") == JOY_BUTTON_PADDLE1, "buttons survive a save and load")
+	var cfg := ConfigFile.new()
+	cfg.set_value("buttons", "jump", "yes")
+	cfg.set_value("buttons", "dash", 999)
+	cfg.set_value("buttons", "attack", JOY_BUTTON_Y)
+	GameState.write_safely(TEMP_SETTINGS, cfg.encode_to_text())
+	Settings.load_settings()
+	check(not Settings.buttons.has("jump") and not Settings.buttons.has("dash") and Settings.buttons.get("attack", -1) == JOY_BUTTON_Y,
+		"only a real button is read from the file")
+	Settings.reset_keys()
+	check(Controls.primary_button("jump") == JOY_BUTTON_A and Controls.primary_button("spell") == JOY_BUTTON_Y
+		and Controls.button_name("heal") == "LT", "reset puts the pad back")
+	# The Controls page, pressed from the pad.
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	check(Menus.open_controls(arena.get_tree(), func() -> void: menu.close()), "Controls opens")
+	check(menu.rows[0].right.ends_with(Controls.button_name("move_left")) and menu.rows[4].right.ends_with("A"), "each row shows its key and its button")
+	menu.cursor = 4
+	menu.confirm()
+	_menu_pad(menu, JOY_BUTTON_START)
+	check(Controls.primary_button("jump") == JOY_BUTTON_A and not menu.capture.is_valid(), "Start cancels and changes nothing")
+	menu.confirm()
+	_menu_pad(menu, JOY_BUTTON_RIGHT_SHOULDER)
+	check(Controls.primary_button("jump") == JOY_BUTTON_RIGHT_SHOULDER and Controls.primary_button("throw") == JOY_BUTTON_A,
+		"a pad button pressed on the page rebinds it")
+	check(menu.rows[4].right.ends_with("RB"), "and the row says so")
+	menu.close()
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("**The pad, rebound (pass 365):**"), "bible 14 tells the pad's rebinding")
+	_restore()
+
+
+func _press_pad(button: int, down: bool) -> void:
+	var ev := InputEventJoypadButton.new()
+	ev.button_index = button as JoyButton
+	ev.pressed = down
+	Input.parse_input_event(ev)
+	Input.flush_buffered_events()
+
+
+func _menu_pad(menu: ListMenu, button: int) -> void:
+	var ev := InputEventJoypadButton.new()
+	ev.button_index = button as JoyButton
+	ev.pressed = true
+	menu._input(ev)
+
+
 func _has_key(action: String, key: Key) -> bool:
 	for ev in InputMap.action_get_events(action):
 		if ev is InputEventKey and (ev as InputEventKey).physical_keycode == key:
