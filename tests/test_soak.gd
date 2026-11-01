@@ -1353,7 +1353,7 @@ func test_a_long_journey_through_the_whole_game_stays_lean() -> void:
 	var nodes1 := runner.get_tree().get_node_count()
 	GameState.delete_save(JOURNEY_SLOT)
 	for r: Dictionary in [first, second]:
-		print("  Journey: %d rooms, %d reloads, worst frame %.1f ms (%s), %d over 33 ms" % [r.rooms, r.reloads, r.worst / 1000.0, r.where, r.spikes])
+		print("  Journey: %d rooms, %d reloads, worst frame %.1f ms (%s), %d over 33 ms, host paused %d" % [r.rooms, r.reloads, r.worst / 1000.0, r.where, r.spikes, r.paused])
 	print("  Second lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
 	for r: Dictionary in [first, second]:
 		check(r.problems.is_empty(), "every rest continues where it was taken: %s" % [r.problems])
@@ -1392,8 +1392,8 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	var caught := errors.stop()
 	GameState.delete_save(JOURNEY_SLOT)
 	for r: Dictionary in [first, second]:
-		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still meteor %d, festival %d" % [
-			r.rooms, r.reloads, r.worst / 1000.0, r.where, r.bloomed, r.still, r.festival])
+		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still meteor %d, festival %d, host paused %d" % [
+			r.rooms, r.reloads, r.worst / 1000.0, r.where, r.bloomed, r.still, r.festival, r.paused])
 	print("  Retraced lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
 	check(caught.is_empty(), "no engine or script errors on the way: %s" % [caught.slice(0, 3)])
 	for r: Dictionary in [first, second]:
@@ -1451,7 +1451,7 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 	arena.add_child(menus)
 	_journey_buff(w)
 	await frames(10)
-	var r := {"rooms": 0, "reloads": 0, "worst": 0, "second": 0, "where": "", "spikes": 0, "problems": [],
+	var r := {"rooms": 0, "reloads": 0, "worst": 0, "second": 0, "where": "", "spikes": 0, "paused": 0, "problems": [],
 		"bloomed": 0, "still": 0, "festival": 0, "loads": []}
 	var visited := {w.room.id: true}
 	if postgame:
@@ -1472,8 +1472,12 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 			var t0 := Time.get_ticks_usec()
 			var sheets0 := Sheet._cache.size()
 			var sounds0 := Sfx.loads
+			var cpu0 := _cpu_usec()
+			var steal0 := _steal_usec()
 			await frames(1)
 			var dt := Time.get_ticks_usec() - t0
+			var cpu := _cpu_usec() - cpu0
+			var steal := _steal_usec() - steal0
 			# Play loads nothing from disk (pass 303): a sheet or sound first
 			# loaded mid-room is a hitch waiting to happen on a slower disk.
 			if w.room == before and f >= entered + 3 and (Sheet._cache.size() != sheets0 or Sfx.loads != sounds0):
@@ -1483,7 +1487,12 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 				entered = f
 				visited[w.room.id] = true
 			# The first frames in a room build it; judge play, not loading.
-			if f >= entered + 3:
+			# A frame the host took the machine for is not the game's (pass 367).
+			if f >= entered + 3 and dt >= FRAME_BUDGET and _host_paused(dt, cpu, steal):
+				r.paused += 1
+				print("    host paused %.1f ms in %s frame %d (main thread on CPU %.0f ms, host took %.0f ms)" % [
+					dt / 1000.0, w.room.id, f, cpu / 1000.0, steal / 1000.0])
+			elif f >= entered + 3:
 				if dt > r.worst:
 					r.second = r.worst
 					r.worst = dt
@@ -1492,7 +1501,7 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 					r.second = dt
 				if dt > 33_000:
 					r.spikes += 1
-					print("    spike %.1f ms in %s frame %d" % [dt / 1000.0, w.room.id, f])
+					print("    spike %.1f ms in %s frame %d (main thread on CPU %.0f ms)" % [dt / 1000.0, w.room.id, f, cpu / 1000.0])
 		if postgame:
 			_tally_bloom(w, r)
 		if w.player.dead:
@@ -1542,6 +1551,11 @@ func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eo
 ## the third after entry at 1 ms (median) and under 5 ms (max):
 ## the host pausing the process, not the game. So one frame per lap may pass
 ## 50 ms if it stays under 100 ms, and every other frame must stay under 50 ms.
+## Pass 367 caught the host at it: bursts of two or three frames of 50 to 100 ms
+## (passes 359 and 363) had the main thread off the CPU, and an empty loop
+## with no game in it met a 54.5 ms frame the same way while the VM's steal
+## counter ran. A frame over budget is set aside only on that evidence
+## (`_host_paused`); every other slow frame is judged as before.
 const FRAME_BUDGET := 50_000
 const LONE_FRAME_LIMIT := 100_000
 
@@ -1582,6 +1596,7 @@ func _merge(a: Dictionary, b: Dictionary) -> Dictionary:
 	var out := a.duplicate(true)
 	for k: String in ["rooms", "reloads", "spikes", "bloomed", "still", "festival"]:
 		out[k] = int(a[k]) + int(b[k])
+	out.paused = int(a.get("paused", 0)) + int(b.get("paused", 0))
 	if int(b.worst) > int(a.worst):
 		out.worst = b.worst
 		out.where = b.where
@@ -2066,3 +2081,62 @@ func test_walking_the_world_holds_its_memory() -> void:
 	check(peaks.max() < MEMORY_BUDGET, "the world stays under bible 14's 1.5 GB (peak %.0f MB)" % mb.call(peaks.max()))
 	check(peaks[2] - peaks[1] < MEMORY_DRIFT, "a third lap of every room needs no more memory than the second (%.1f MB, %.1f MB)" % [mb.call(peaks[1]), mb.call(peaks[2])])
 	check(absi(objects[2] - objects[1]) <= OBJECT_DRIFT, "and leaves as many live objects (%d, %d)" % [objects[1], objects[2]])
+
+
+## The main thread's own CPU time in microseconds (user + system), read from
+## /proc at the kernel's 10 ms tick; -1 where there is no /proc.
+static func _cpu_usec() -> int:
+	var f := FileAccess.open("/proc/self/task/%d/stat" % OS.get_process_id(), FileAccess.READ)
+	if f == null:
+		return -1
+	var line := f.get_line()
+	var rest := line.substr(line.rfind(")") + 2).split(" ")
+	if rest.size() < 13:
+		return -1
+	return (int(rest[11]) + int(rest[12])) * 10_000
+
+
+## CPU time the host took from this machine's virtual CPUs (all of them, the
+## "steal" column of /proc/stat) in microseconds; -1 where there is no /proc.
+static func _steal_usec() -> int:
+	var f := FileAccess.open("/proc/stat", FileAccess.READ)
+	if f == null:
+		return -1
+	var cols := f.get_line().split(" ", false)
+	if cols.size() < 9 or cols[0] != "cpu":
+		return -1
+	return int(cols[8]) * 10_000
+
+
+## Whether a frame of `dt` us was the host's pause and not the game's work
+## (pass 367): the main thread was on the CPU for under half of it, and the
+## host took CPU time from the VM while it ran. Without /proc (-1) nothing is
+## set aside, and a frame the game spent on the CPU is always judged.
+static func _host_paused(dt: int, cpu: int, steal: int) -> bool:
+	return cpu >= 0 and steal > 0 and cpu * 2 < dt
+
+
+## Pass 367: the soak's bursts of slow frames in full runs were the host
+## taking the VM. The test that sets them aside must tell a host pause from
+## a hitch, and the clocks it reads must be real.
+func test_a_host_pause_is_told_from_a_hitch() -> void:
+	check(_host_paused(60_000, 0, 30_000), "off the CPU while the host took time: the host's pause")
+	check(_host_paused(101_000, 10_000, 10_000), "a 101 ms frame with 10 ms on the CPU and the host stealing: the host's")
+	check(not _host_paused(60_000, 50_000, 30_000), "a frame the game spent on the CPU is the game's, steal or not")
+	check(not _host_paused(60_000, 30_000, 30_000), "half of it on the CPU is still the game's")
+	check(not _host_paused(60_000, 0, 0), "off the CPU with nothing stolen is a wait the game may own (a lock, a disk)")
+	check(not _host_paused(60_000, -1, -1) and not _host_paused(60_000, -1, 30_000), "without /proc nothing is set aside")
+	if OS.get_name() != "Linux":
+		return
+	var c0 := _cpu_usec()
+	var s0 := _steal_usec()
+	check(c0 >= 0 and s0 >= 0, "the main thread's CPU time and the host's steal read on Linux (%d, %d)" % [c0, s0])
+	var t0 := Time.get_ticks_usec()
+	var x := 0.0
+	while Time.get_ticks_usec() - t0 < 60_000:
+		x += sin(x + 1.0)
+	var busy := _cpu_usec() - c0
+	check(busy >= 30_000, "60 ms of work shows on the main thread's clock (%d us)" % busy)
+	check(_steal_usec() >= s0, "and steal only ever counts up")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("**The host's pause, told from a hitch (pass 367):**"), "bible 15.3 tells it")

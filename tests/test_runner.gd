@@ -22,6 +22,8 @@ var _passed := 0
 var _failed := 0
 var _failures: Array[String] = []
 var _filter := ""
+## --trace prints what is alive after each test (pass 367), to find a test that leaves things behind.
+var _trace := false
 ## Every option as a fresh reset() leaves it (pass 327), for the leak check.
 var _clean_settings := {}
 
@@ -31,6 +33,8 @@ func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--filter="):
 			_filter = arg.trim_prefix("--filter=")
+		elif arg == "--trace":
+			_trace = true
 	await get_tree().physics_frame
 	for suite_script: GDScript in SUITES:
 		var suite: TestSuite = suite_script.new()
@@ -64,6 +68,10 @@ func _ready() -> void:
 			arena.queue_free()
 			await get_tree().physics_frame
 			_clean_slate()
+			if _trace:
+				print("  TRACE objects %d nodes %d orphans %d resources %d" % [Performance.get_monitor(Performance.OBJECT_COUNT),
+					get_tree().get_node_count(), Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT),
+					Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)])
 	for suffix: String in ["", ".bak", ".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TestSuite.SETTINGS_PATH + suffix))
 	print("\n%d checks passed, %d failed" % [_passed, _failed])
