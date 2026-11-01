@@ -98,7 +98,7 @@ func confirm() -> void:
 	var row: Dictionary = rows[cursor]
 	if not row.get("enabled", true):
 		_flash = 0.25
-		Sfx.play("fizzle", 0.0)
+		Sfx.play("menu_refuse", 0.0, -4.0)
 		return
 	_on_select.call(cursor)
 	if is_open:

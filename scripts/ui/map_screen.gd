@@ -67,7 +67,7 @@ func pin() -> String:
 	if world == null or world.room == null or world.player == null:
 		return ""
 	var result := GameState.toggle_pin(world.room.id, world.player.global_position)
-	Sfx.play({"full": "fizzle", "placed": "pin"}.get(result, "pin_lift"), 0.04)
+	Sfx.play({"full": "menu_refuse", "placed": "pin"}.get(result, "pin_lift"), 0.04)
 	return result
 
 
