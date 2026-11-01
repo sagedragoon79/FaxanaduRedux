@@ -4379,6 +4379,11 @@ func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
 		await frames(10)
 		var done := [false]
 		boss.connect("defeated", func() -> void: done[0] = true)
+		# Pass 356: "a cinematic kill (slow-mo, white flash, shatter)": the
+		# screen flashes white as each one falls.
+		var flashed := [0.0]
+		var on_flash := func(s: float) -> void: flashed[0] = maxf(flashed[0], s)
+		GameState.flash.connect(on_flash)
 		if boss.has_method("die"):
 			boss.call("die")
 		else:
@@ -4393,6 +4398,8 @@ func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
 			await frames(1)
 			t += runner.get_physics_process_delta_time()
 		check(done[0], "%s falls and its arena hears it" % id)
+		GameState.flash.disconnect(on_flash)
+		check(flashed[0] >= Feel.BOSS_KILL_FLASH, "%s's kill flashes the screen white (%.2f)" % [id, flashed[0]])
 		times[id] = snappedf(t, 0.01)
 		Feel.reset()
 		w.queue_free()
