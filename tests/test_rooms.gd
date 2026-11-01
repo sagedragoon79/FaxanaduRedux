@@ -783,6 +783,52 @@ func test_autotiles_match_their_neighbours() -> void:
 	room.queue_free()
 
 
+
+## Pass 382 (bible 13.3): the Ambience and Footsteps lines named the Tower's
+## beds and the ground of five zones, and nothing said what the rest play or
+## stand on, nor which rooms name their own. The table gives every zone's
+## theme, bed and ground; the list names every room that overrides one.
+func test_every_zone_sounds_as_the_bible_says() -> void:
+	const NAMES := {"eolis": "Eolis", "trunk": "Trunk Hollows", "tower": "Tower of Trunk", "mist": "The Mist",
+		"branches": "Branches (Conflate)", "daybreak": "Branches (Daybreak)", "dartmoor": "Dartmoor",
+		"sunken": "Sunken Spring", "zenis": "Zenis", "trials": "Guru Trials"}
+	const COUNTS := {20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var note := bible.get_slice("- **Every zone's sound, as built (pass 382):**", 1).get_slice("\n- **", 0)
+	var table := note.get_slice("| Zone | Theme | Bed | Underfoot |", 1).get_slice("\n\n", 0)
+	var rest := note.get_slice("\n\n  ", 1)
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if zone in ["gym", "test"]:
+			continue
+		check(NAMES.has(zone), "the table has a row for %s" % zone)
+		var cells := table.get_slice("\n| %s | " % NAMES.get(zone, zone), 1).get_slice("\n", 0).trim_suffix(" |").split(" | ")
+		var want := "`%s` | `amb_%s` | %s" % [zone, zone, Room.ZONE_SURFACES.get(zone, "stone")]
+		check(" | ".join(cells) == want, "%s: the bible says %s, the game %s" % [zone, " | ".join(cells), want])
+		check(Music.path_for(zone) != "" and Music.path_for("amb_" + zone) != "", "%s has its theme and its bed in assets/music" % zone)
+	# Every room that names its own music, bed or ground is in the list, with it.
+	var rooms := 0
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		if zone in ["gym", "test"]:
+			continue
+		for f: String in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var r := Room.from_file("res://levels/%s/%s" % [zone, f])
+			var own := false
+			for key: String in ["music", "ambience", "surface"]:
+				if not r.header.has(key):
+					continue
+				own = true
+				var value := String(r.header[key])
+				var name := String(r.header.get("name", f)).trim_prefix("The ")
+				check(rest.contains(name) and rest.contains("`%s`" % value), "the list names %s's %s, %s" % [name, key, value])
+				if key != "surface" and value != "none":
+					check(Music.path_for(("amb_" if key == "ambience" else "") + value) != "", "%s's %s %s is in assets/music" % [name, key, value])
+			if own:
+				rooms += 1
+			r.free()
+	check(rest.begins_with("The Branches") and rest.contains("%s rooms name their own" % COUNTS.get(rooms, str(rooms))), "the bible counts the rooms that name their own (%d)" % rooms)
+
 func test_footsteps_follow_the_surface_underfoot() -> void:
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 20, 15, "-", 5)
