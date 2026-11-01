@@ -127,8 +127,18 @@ func details() -> Array:
 	var played := ("%d h %d min" % [hours, int(s.minutes) % 60]) if hours > 0 else "%d min" % int(s.minutes)
 	var springs: String = "No spring flows yet" if int(s.springs) == 0 else ("All three springs flow" if int(s.springs) == 3 else ["", "One spring of three flows", "Two springs of three flow"][int(s.springs)])
 	var gold := int(s.gold)
-	var coins := ("%d,%03d" % [gold / 1000, gold % 1000]) if gold >= 1000 else str(gold)
-	return ["Rested at %s" % where, "%s   %s gold   %s" % [s.rank, coins, played], springs]
+	return ["Rested at %s" % where, "%s   %s gold   %s" % [s.rank, grouped(gold), played], springs]
+
+
+## A whole number with a comma between each three digits: 1,234,567 (pass 351;
+## the shelf had written a million as 1000,000).
+static func grouped(n: int) -> String:
+	var digits := str(absi(n))
+	var out := ""
+	while digits.length() > 3:
+		out = "," + digits.right(3) + out
+		digits = digits.left(digits.length() - 3)
+	return ("-" if n < 0 else "") + digits + out
 
 
 func move(step: int) -> void:

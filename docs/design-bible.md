@@ -1794,6 +1794,7 @@ The loop runs as a scheduled routine once the repo exists, and Sean gets one sho
 - **Sanitizing.** Whatever loads is rebuilt on a new game's data (`GameState.sanitize`):
   - every key is present and has its own type, and a wrong type falls back to the default;
   - lists keep only well-formed entries (skills, rings, pins, Guru stops), and the save point and purse must be whole;
+  - maps read as yes or no (`GameState.BOOL_MAPS`: abilities, flags, charts, pickups taken, rooms visited) keep only true and false (pass 351). A hand-edited flag of "yes" had stopped the title's flask with a script error, so a full flask read as empty and taking it up began a new journey over the old one. `test_a_hand_edited_save_still_fills_its_flask`;
   - numbers are finite and never negative, and health, MP and flasks never fall below a new game's;
   - keys from a newer build are kept.
 - **Missing rooms.** A rest in a room this build lacks wakes you at the new-game spot.

@@ -2215,6 +2215,49 @@ func test_three_flasks_hold_three_journeys() -> void:
 
 
 
+## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
+## "yes" stopped the title's flask with a script error, so a full flask read
+## as empty and taking it up would have begun a new journey over the old one.
+## Every map the game reads as yes-or-no keeps only true and false, and the
+## flask's gold groups every three digits.
+func test_a_hand_edited_save_still_fills_its_flask() -> void:
+	const SLOT := 7
+	GameState.delete_save(SLOT)
+	var save := GameState.fresh()
+	save.save_room = "trunk/apolune"
+	save.rank = 3
+	save.gold = 1234567
+	save.flags = {"spring:trunk": true, "spring:mist": "yes", "spring:sky": null, "secret:x": [1], "king_gold": 2}
+	save.abilities["glove"] = "on"
+	save.abilities["wings"] = {}
+	save.charts = {"trunk": true, "mist": "true"}
+	save.collected = {"trunk/apolune:3,4": true, "trunk/apolune:5,6": null}
+	save.visited = {"trunk/apolune": true, "mist/victim": 1}
+	check(GameState.write_safely(GameState.SAVE_PATH % SLOT, JSON.stringify(save)), "the hand-edited save is written")
+	var read := GameState.read_slot(SLOT)
+	for map: String in GameState.BOOL_MAPS:
+		for k: Variant in read[map]:
+			check(read[map][k] is bool, "%s.%s is true or false (%s)" % [map, k, read[map][k]])
+	check(read.flags == {"spring:trunk": true}, "only the true flag stays (%s)" % [read.flags])
+	check(read.abilities.glove == false and not read.abilities.has("wings"), "a damaged ability is lost, an unknown one dropped")
+	check(read.charts == {"trunk": true} and read.collected.size() == 1 and read.visited.size() == 1, "charts, pickups and rooms keep only true")
+	var picker := SlotPicker.new()
+	picker.slots = [SLOT]
+	arena.add_child(picker)
+	picker.open()
+	check(not picker.saves[0].is_empty(), "the flask is full")
+	var said := " / ".join(picker.details())
+	check(said.contains("Apolune") and said.contains("1,234,567 gold") and said.contains("One spring of three flows"), "and tells its journey (%s)" % said)
+	var got := []
+	picker.chosen.connect(func(slot: int, fresh: bool) -> void: got.append([slot, fresh]))
+	picker.confirm()
+	check(got == [[SLOT, false]], "taking it up continues it, never begins anew (%s)" % [got])
+	for n: int in [0, 7, 999, 1000, 65536, 1000000, -2500]:
+		check(SlotPicker.grouped(n) == {0: "0", 7: "7", 999: "999", 1000: "1,000", 65536: "65,536", 1000000: "1,000,000", -2500: "-2,500"}[n], "%d is written %s" % [n, SlotPicker.grouped(n)])
+	picker.free()
+	GameState.delete_save(SLOT)
+
+
 ## Pass 350 (bible 13.3): the title's flasks borrowed the rest's chime, the
 ## rank's fanfare and the water's splash. Every cue the shelf plays, but the
 ## menu cursor's `blip`, must be its own: a file that exists, played by no
