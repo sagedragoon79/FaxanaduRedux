@@ -2528,3 +2528,59 @@ func _bracketed(text: String, opening: String) -> String:
 				return text.substr(at + opening.length(), i - at - opening.length())
 		i += 1
 	return ""
+
+
+## Pass 354 (bible 6.7 Flash, 7): a tell is a pose, a flash and a sound, and
+## since pass 161 the flash washes the foe's own silhouette white in pulses.
+## The Clockwork Hound, the Shade Knight, the Meteor Slug and the Spring Eel lit
+## only a part (eyes, blade point, cracks, lamp), so their tells never flashed
+## the way every other foe's did. Every foe's every tell now pulses white.
+func test_every_foes_tell_flashes_it_white() -> void:
+	var tell_re := RegEx.create_from_string("windup|tell|^wind$|^coil$|^rev$|^unfold$|^gather$|^swell$|^raise$|^charge$")
+	# A state set by name, or a Shade Knight's tell opened by `_open`.
+	var set_re := RegEx.create_from_string("(?:set_state|_open)\\(\"([a-z_0-9]+)\"")
+	var room := make_room(grid_rows(30, 14).map(func(r: Array) -> String: return "".join(PackedStringArray(r))))
+	var p := make_player(room, Vector2i(4, 10))
+	await frames(2)
+	var dark: Array[String] = []
+	var named: Array[String] = []
+	var seen := 0
+	for f in DirAccess.get_files_at("res://scripts/enemies"):
+		if not f.ends_with(".gd"):
+			continue
+		var script := load("res://scripts/enemies/" + f) as GDScript
+		if not script.can_instantiate():
+			continue
+		var probe: Object = script.new()
+		var foe := probe is Enemy
+		if probe is Node:
+			(probe as Node).free()
+		# A Meteor Seed is a crystal shard, not a body: its flicker is the
+		# shard itself going light and dark.
+		if not foe or f == "meteor_seed.gd":
+			continue
+		var tells := {}
+		for m in set_re.search_all(script.source_code):
+			# The Minecart Rider's charge is its run; its tell is the rev.
+			if tell_re.search(m.get_string(1)) != null and not (f == "minecart_rider.gd" and m.get_string(1) == "charge"):
+				tells[m.get_string(1)] = true
+		if tells.is_empty():
+			continue
+		for tell: String in tells:
+			var e: Enemy = script.new()
+			e.position = Vector2(16 * 16, 11 * 16)
+			room.add_child(e)
+			await frames(1)
+			e.set_physics_process(false)
+			e.set_state(tell)
+			e.state_time = 0.01
+			e.queue_redraw()
+			await frames(1)
+			seen += 1
+			named.append("%s %s" % [f.get_basename(), tell])
+			if not e.drawn_white():
+				dark.append("%s %s" % [f.get_basename(), tell])
+			e.free()
+	check(seen >= 27, "found the foes' tells (%d: %s)" % [seen, named])
+	check(dark.is_empty(), "every foe's tell washes it white (%s)" % [dark])
+	p.queue_free()
