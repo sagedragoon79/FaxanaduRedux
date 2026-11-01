@@ -4521,3 +4521,66 @@ func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
 		longest = maxf(longest, times[id])
 	check(shortest >= 1.0 and longest <= 2.7, "every guardian falls in 1 to 2.7 s (%.2f to %.2f)" % [shortest, longest])
 	check(said.contains("a dying window of %s to %s s" % [String.num(snappedf(shortest, 0.1)), String.num(snappedf(longest, 0.1))]), "8 gives the range as played, %.1f to %.1f s (%s)" % [shortest, longest, said.left(90)])
+
+
+## Bible 8 (pass 372): every fight opens with its reveal. The guardian shows
+## itself under its name card (its name and epithet, once), and for the
+## reveal's length (the bible's 1.2 to 2.4 s) neither strikes the hero at the
+## door nor can be struck: a blow on whatever the hero's blade could reach
+## (the guardian, or its segments where those are its only hitbox) does nothing.
+func test_every_guardian_opens_with_its_reveal() -> void:
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("**The reveal, held (pass 372):**") and bible.contains("from 1.2 s (Shadow Eura) to 2.4 s (Rokusutahn"), "bible 8 gives the reveal's length")
+	var shortest := INF
+	var longest := 0.0
+	for id: String in BossArena.BOSSES:
+		if not check(rooms.has(id), "%s has an arena" % id):
+			continue
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		await frames(5)
+		var cards: Array = []
+		var listen := func(title: String, text: String) -> void: cards.append([title, text])
+		GameState.banner.connect(listen)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		var boss := ar.boss
+		check(String(boss.get("state")) == "intro", "%s: the fight opens on its reveal" % id)
+		var hp0 := int(boss.get("hp"))
+		var targets: Array = []
+		for c in boss.find_children("*", "BossSegment", true, false):
+			if (c as BossSegment).boss == boss:
+				targets.append(c)
+		if targets.is_empty():
+			targets.append(boss)
+		var n := 0
+		while String(boss.get("state")) == "intro" and n < 600:
+			if n % 20 == 10:
+				for t: Node in targets:
+					t.take_hit(10, Vector2.RIGHT)
+			await frames(1)
+			n += 1
+		GameState.banner.disconnect(listen)
+		var seconds := n / 60.0
+		shortest = minf(shortest, seconds)
+		longest = maxf(longest, seconds)
+		check(cards.size() >= 1 and cards[0] == [String(boss.DISPLAY_NAME), String(boss.EPITHET)], "%s: under its name card (%s)" % [id, cards])
+		check(cards.size() == 1, "%s: shown once" % id)
+		check(seconds >= 1.2 - 0.05 and seconds <= 2.4 + 0.05, "%s: a reveal of %.2f s" % [id, seconds])
+		check(int(boss.get("hp")) == hp0, "%s: no blow lands during it (%d of %d)" % [id, int(boss.get("hp")), hp0])
+		check(w.player.hp == 99999, "%s: and it strikes no one at the door" % id)
+		Feel.reset()
+		w.queue_free()
+		await frames(2)
+	check(shortest >= 1.15 and shortest <= 1.25, "the shortest reveal is 1.2 s (%.2f)" % shortest)
+	check(longest >= 2.35 and longest <= 2.45, "the longest is 2.4 s (%.2f)" % longest)
