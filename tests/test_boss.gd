@@ -4345,6 +4345,116 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 	check(named >= 14, "the guardians' sections name their phase marks (%d)" % named)
 
 
+## Pass 364 (bible 8): "Health bars show phase markers." No test had ever
+## looked at the boss bar. In every guardian's own arena the HUD's bar must name
+## it, fill to its health and put a gold tick at each mark where a phase begins,
+## inside the bar. A blow drops the red at once while the pale trail catches up
+## at BOSS_TRAIL_SPEED, and in Shadow Eura's third phase the bar follows the
+## real one, never its false double.
+func test_every_guardians_bar_shows_its_phase_marks() -> void:
+	var rooms := {}
+	var w0 := make_world({}, "eolis/west_gate")
+	for id: String in w0.catalog:
+		var b := String(w0.catalog[id].get("boss", ""))
+		if b != "":
+			rooms[b] = id
+	w0.queue_free()
+	await frames(2)
+	for id: String in BossArena.BOSSES:
+		if not check(rooms.has(id), "%s has an arena" % id):
+			continue
+		GameState.new_game()
+		var w := make_world({}, rooms[id])
+		w.player.max_hp = 99999
+		w.player.hp = 99999
+		var hud := GameHud.new()
+		hud.player = w.player
+		arena.add_child(hud)
+		await frames(5)
+		var ar := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+		ar._start()
+		await frames(2)
+		var boss := ar.boss
+		await _until(func() -> bool: return not (String(boss.get("state")) in ["intro", "dormant", "reveal", "lurk", ""]), 600)
+		await frames(3)
+		var bar := hud.boss_bar()
+		if not check(not bar.is_empty() and bar.boss == boss, "%s: the bar is up for it" % id):
+			hud.queue_free()
+			w.queue_free()
+			await frames(2)
+			continue
+		check(bar.name == String(boss.DISPLAY_NAME) and bar.name != "", "%s: the bar names it (%s)" % [id, bar.name])
+		check(is_equal_approx(float(bar.fill), float(boss.health_fraction())) and float(bar.fill) > 0.0, "%s: and fills to its health (%.2f)" % [id, bar.fill])
+		var rect: Rect2 = bar.rect
+		var marks: Array = boss.PHASES
+		var ticks: Array = bar.ticks
+		var ok: bool = ticks.size() == marks.size() and marks.size() >= 1
+		for i in mini(ticks.size(), marks.size()):
+			ok = ok and float(marks[i]) > 0.0 and float(marks[i]) < 1.0 and is_equal_approx(float(ticks[i]), rect.position.x + roundf(rect.size.x * float(marks[i])))
+			ok = ok and float(ticks[i]) > rect.position.x and float(ticks[i]) < rect.end.x
+		check(ok, "%s: a tick at each phase mark, inside the bar (%s at %s)" % [id, ticks, marks])
+		hud.queue_free()
+		Feel.reset()
+		w.queue_free()
+		await frames(2)
+	# The trail, on the Foreman: the red drops at once, the pale catches up.
+	GameState.new_game()
+	var fw := make_world({}, rooms["foreman"])
+	fw.player.max_hp = 99999
+	fw.player.hp = 99999
+	var fh := GameHud.new()
+	fh.player = fw.player
+	arena.add_child(fh)
+	await frames(5)
+	var far := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+	far._start()
+	await frames(2)
+	var foreman := far.boss
+	await _until(func() -> bool: return not (String(foreman.get("state")) in ["intro", "dormant", "reveal", "lurk", ""]), 600)
+	await frames(3)
+	foreman.hp = int(foreman.hp) - int(foreman.MAX_HP * 0.3)
+	await frames(2)
+	var hit := fh.boss_bar()
+	check(float(hit.trail) > float(hit.fill) + 0.25, "a blow drops the red at once, the trail behind it (%.2f, %.2f)" % [hit.fill, hit.trail])
+	await frames(int(0.3 / GameHud.BOSS_TRAIL_SPEED * 60.0) + 10)
+	var later := fh.boss_bar()
+	check(is_equal_approx(float(later.trail), float(later.fill)), "and the trail catches up at %s of the bar a second (%.2f, %.2f)" % [String.num(GameHud.BOSS_TRAIL_SPEED), later.fill, later.trail])
+	fh.queue_free()
+	fw.queue_free()
+	await frames(2)
+	# Shadow Eura's third phase: the bar follows the real one.
+	GameState.new_game()
+	var ew := make_world({}, rooms["shadow_eura"])
+	ew.player.max_hp = 99999
+	ew.player.hp = 99999
+	var eh := GameHud.new()
+	eh.player = ew.player
+	arena.add_child(eh)
+	await frames(5)
+	var ear := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
+	ear._start()
+	await frames(2)
+	var eura := ear.boss as ShadowEura
+	await _until(func() -> bool: return not (eura.state in ["intro", "dormant", "reveal", "lurk", ""]), 600)
+	eura.phase = 2
+	eura.hp = int(eura.MAX_HP * 0.2) + 4
+	var split := false
+	for tries in 20:
+		eura.take_hit(10, Vector2.RIGHT)
+		await frames(15)
+		if is_instance_valid(eura.double):
+			split = true
+			break
+	check(split, "below a fifth the mirror splits")
+	if split:
+		await frames(5)
+		check(eh.boss_bar().get("boss") == eura and not eura.double.is_in_group("boss"), "and the bar follows the real one, not its double")
+	eh.queue_free()
+	Feel.reset()
+	ew.queue_free()
+	await frames(2)
+
+
 ## Pass 348: bible 8 (pass 239) says a guardian dies in "a dying window of 1.2
 ## to 2.5 s" before its arena opens, but no test timed one; each script keeps
 ## its own `DYING_TIME` (Rokusutahn none: his segments shatter one by one).
