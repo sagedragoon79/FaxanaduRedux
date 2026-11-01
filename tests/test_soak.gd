@@ -2140,3 +2140,52 @@ func test_a_host_pause_is_told_from_a_hitch() -> void:
 	check(_steal_usec() >= s0, "and steal only ever counts up")
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("**The host's pause, told from a hitch (pass 367):**"), "bible 15.3 tells it")
+
+
+## Pass 375: the minimap on a full map. With every room walked and every zone
+## charted it still costs little a frame: the rooms in view are kept until you
+## change rooms, walk a new one or buy a chart, and only the dot moves each
+## frame. A kept layout must be the same as a fresh one.
+func test_the_minimap_stays_cheap_on_a_full_map() -> void:
+	var w := make_world({}, "tower/winch_hall")
+	await frames(2)
+	for id: String in w.catalog:
+		if id != "tower/smelter":
+			GameState.visit(id)
+		GameState.data.charts[String(w.catalog[id].zone)] = true
+	var first := Minimap.layout(w)
+	check(not first.cached and first.rooms.size() >= 6, "a full map fills the window (%d rooms)" % first.rooms.size())
+	var again := Minimap.layout(w)
+	check(again.cached, "the next frame keeps it")
+	var ids := func(lay: Dictionary) -> Array: return lay.rooms.map(func(r: Dictionary) -> String: return "%s:%s:%s" % [r.id, r.how, r.rect])
+	w.remove_meta(Minimap.CACHE)
+	check(ids.call(again) == ids.call(Minimap.layout(w)), "and what it keeps is what a fresh look shows")
+	var dot: Vector2 = again.player
+	w.player.global_position.x += 10 * Room.TILE
+	var moved := Minimap.layout(w)
+	check(moved.cached and moved.player.x > dot.x, "the dot still moves every frame")
+	GameState.visit("tower/smelter")
+	check(not Minimap.layout(w).cached, "walking a new room looks again")
+	GameState.data.charts["test"] = true
+	check(not Minimap.layout(w).cached, "so does a chart")
+	GameState.data.charts.erase("test")
+	w.travel("tower/forepaw", cell_feet(30, 19))
+	await frames(2)
+	var there := Minimap.layout(w)
+	check(not there.cached and there.rooms.any(func(r: Dictionary) -> bool: return r.id == "tower/forepaw" and r.how == "here"), "and so does going through a door")
+	# The cost: a frame's minimap on a full map, as the HUD asks for it.
+	const FRAMES := 600
+	var t0 := Time.get_ticks_usec()
+	for i in FRAMES:
+		Minimap.layout(w)
+	var kept_us := float(Time.get_ticks_usec() - t0) / FRAMES
+	t0 = Time.get_ticks_usec()
+	for i in 60:
+		w.remove_meta(Minimap.CACHE)
+		Minimap.layout(w)
+	var fresh_us := float(Time.get_ticks_usec() - t0) / 60
+	print("  Minimap on a full map: %.1f us a frame kept, %.1f us looked afresh" % [kept_us, fresh_us])
+	check(kept_us < fresh_us * 0.5, "keeping the layout costs well under half a fresh look (%.1f against %.1f us)" % [kept_us, fresh_us])
+	check(kept_us < 100.0, "and under 0.1 ms a frame (%.1f us)" % kept_us)
+	w.queue_free()
+	await frames(2)
