@@ -1468,6 +1468,38 @@ def main():
         out[i:] += osc(slide(360.0, 520.0, ln / RATE, 0.5), "sine") * env(ln, 0.012, 4.0) * a * 0.2
     save("bloodlet", out, 0.3)
 
+    # The title's flasks (Sean, 2026-10-31; pass 350). They had borrowed the
+    # rank's fanfare, the rest's chime and the water's splash. Taking a flask
+    # down: a round cork pop with a little suck of air, then the glow inside
+    # swelling up a fifth, soft and warm.
+    d = 0.55
+    n = int(RATE * d)
+    out = np.zeros(n)
+    pn = int(RATE * 0.05)
+    out[:pn] += lowpass(osc(slide(300, 900, 0.05, 0.5), "sine"), 1800) * env(pn, 0.001, 2.2) * 0.7
+    out[:pn] += lowpass(highpass(noise(0.05), 500), 2500) * env(pn, 0.0005, 5.0) * 0.4
+    for st, f, a in ((0.08, 523.3, 0.35), (0.16, 784.0, 0.4)):
+        i = int(RATE * st)
+        ln = n - i
+        out[i:] += osc(np.full(ln, f), "sine") * env(ln, 0.03, 1.8) * a
+        out[i:] += osc(np.full(ln, f * 2.0), "sine") * env(ln, 0.03, 2.6) * a * 0.15
+    save("flask_uncork", out, 0.55)
+
+    # Pouring a journey out: liquid glugging out of the neck, slowing, and the
+    # empty glass ringing once, small and high.
+    d = 0.75
+    n = int(RATE * d)
+    t = t_axis(d)
+    rate = 14 - 8 * (t / d)
+    pops = (np.sin(2 * np.pi * np.cumsum(rate) / RATE) > 0.7).astype(float)
+    glug = lowpass(osc(slide(420, 160, d), "sine") * pops, 1100) * env(n, 0.02, 1.2) * 0.8
+    stream = lowpass(highpass(noise(d), 900), 3500) * np.clip(1.0 - t / 0.55, 0, 1) * 0.18
+    out = glug + stream
+    i = int(RATE * 0.58)
+    ln = n - i
+    out[i:] += osc(slide(2100, 2080, ln / RATE), "sine") * env(ln, 0.001, 3.5) * 0.3
+    save("flask_pour", out, 0.6)
+
 
 if __name__ == "__main__":
     main()

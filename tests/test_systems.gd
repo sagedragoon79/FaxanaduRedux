@@ -2212,3 +2212,33 @@ func test_three_flasks_hold_three_journeys() -> void:
 	for s: int in SLOTS:
 		GameState.delete_save(s)
 	GameState.slot = was
+
+
+
+## Pass 350 (bible 13.3): the title's flasks borrowed the rest's chime, the
+## rank's fanfare and the water's splash. Every cue the shelf plays, but the
+## menu cursor's `blip`, must be its own: a file that exists, played by no
+## other script.
+func test_the_flasks_sound_like_flasks() -> void:
+	var own := FileAccess.get_file_as_string("res://scripts/ui/slot_picker.gd")
+	var plays := RegEx.create_from_string("Sfx\\.play\\(\"([a-z_]+)\"")
+	var cues := {}
+	for m: RegExMatch in plays.search_all(own):
+		cues[m.get_string(1)] = true
+	check(cues.has("flask_uncork") and cues.has("flask_pour"), "the shelf uncorks and pours (%s)" % [cues.keys()])
+	var others := {}
+	var dirs: Array[String] = ["res://scripts"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub: String in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f: String in DirAccess.get_files_at(d):
+			if f.ends_with(".gd") and f != "slot_picker.gd":
+				for m: RegExMatch in plays.search_all(FileAccess.get_file_as_string(d + "/" + f)):
+					others[m.get_string(1)] = true
+	for cue: String in cues:
+		if cue == "blip":
+			check(others.has("blip"), "moving between flasks keeps the menu cursor's blip")
+			continue
+		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % cue), "%s has a file" % cue)
+		check(not others.has(cue), "%s is the shelf's own, played nowhere else" % cue)
