@@ -1988,6 +1988,61 @@ func test_the_bible_counts_each_zones_rooms() -> void:
 	check(bible.contains("**%d rooms** across 7 zones" % total), "3.1 counts the whole tree's rooms (%d)" % total)
 
 
+## Pass 363 (levels/README.md): the README's legend is the room builder's key,
+## but nothing held it to the rooms or the loader. The Evil One's light veins
+## (`x`) had been in the Veins since pass 82 with no row. Every character a room
+## grid uses has a legend row, and every row is one the loader places.
+func test_the_readme_legend_matches_the_rooms() -> void:
+	var readme := FileAccess.get_file_as_string("res://levels/README.md")
+	var legend := {}
+	var row_start := RegEx.create_from_string("(?m)^\\| (`[^|]*?`(?: `[^|]*?`|-`[^|]*?`)*) \\|")
+	for m: RegExMatch in row_start.search_all(readme.replace("\\|", "\u0001")):
+		var cell := m.get_string(1).replace("\u0001", "|")
+		var range_m := RegEx.create_from_string("^`(.)`-`(.)`$").search(cell)
+		if range_m:
+			for c in range(range_m.get_string(1).unicode_at(0), range_m.get_string(2).unicode_at(0) + 1):
+				legend[String.chr(c)] = true
+			continue
+		for part: RegExMatch in RegEx.create_from_string("`([^`]+)`").search_all(cell):
+			legend[part.get_string(1)] = true
+	check(legend.size() > 60, "the README has its legend (%d rows)" % legend.size())
+	var used := {}
+	var dirs: Array[String] = ["res://levels"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub: String in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f: String in DirAccess.get_files_at(d):
+			if not f.ends_with(".room"):
+				continue
+			var text := FileAccess.get_file_as_string(d + "/" + f)
+			var grid := text.get_slice("\n---\n", 1) if text.contains("\n---\n") else text
+			for ch in grid.replace("\n", "").replace("\r", ""):
+				if not used.has(ch):
+					used[ch] = d.trim_prefix("res://levels/") + "/" + f
+	var unwritten := []
+	for ch: String in used:
+		if not legend.has(ch):
+			unwritten.append("%s (%s)" % [ch, used[ch]])
+	check(unwritten.is_empty(), "every character the rooms use has a legend row (missing: %s)" % [unwritten])
+	# The loader's own cases, read from Room._place; the rest are placed by
+	# their own passes (doors by digit, the basin's stain, empty air).
+	var code := FileAccess.get_file_as_string("res://scripts/world/room.gd")
+	var body := code.get_slice("func _place(ch: String", 1).get_slice("\nfunc ", 0)
+	var placed := {".": true, "=": code.contains("!= \"=\"")}
+	for c in range(0x31, 0x3a):
+		placed[String.chr(c)] = true
+	for line: String in body.split("\n"):
+		if line.begins_with("\t\t") and not line.begins_with("\t\t\t") and line.strip_edges().ends_with(":"):
+			for q: RegExMatch in RegEx.create_from_string("\"((?:\\\\.|[^\"\\\\])+)\"").search_all(line):
+				placed[q.get_string(1).replace("\\\\", "\\").replace("\\\"", "\"")] = true
+	var unplaced := []
+	for ch: String in legend:
+		if not placed.get(ch, false):
+			unplaced.append(ch)
+	check(unplaced.is_empty(), "and every legend row is one the loader places (not placed: %s)" % [unplaced])
+
+
 ## Pass 331: bible 3.3 said rooms were whole screens, 1x1 to 4x3, and 2 to 3
 ## shrines a zone. Neither was held, and the levels disagree with both: 14
 ## rooms are a screen and a half wide, and the zones keep 1 to 5 shrines. The

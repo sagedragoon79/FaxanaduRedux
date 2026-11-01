@@ -93,6 +93,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `a` | Deep water (the Sunken Spring): the player swims while the middle of the body is in it (floats up, sinks holding Down, jump strokes up, and with the head out jumps clear). Not solid. Draw pools as whole blocks; the checker swims through water cells and jumps out from the surface |
 | `)` | Naga (the original's serpent: floats up and down its own column, most often over a ladder; level with it and in front, it flares its hood and hisses, then strikes straight out along that level. Placed at the middle of its swing, at the tile center) |
 | `l` | Spring Eel (the Sunken Spring), in a cell of water: it never leaves the water; it coils, then darts and bites |
+| `x` | Light vein (the Veins, the Evil One's second phase): a lit vein of meteor flesh feeding the core. One cut or pogo severs it, and the core's health is the veins still lit (bible 8) |
 | `+` | Heart seal (Zenis): living flesh across a passage, a wall to every blade but the Dragon Slayer, which tears it open for good |
 | `{` | The Death scroll (spell pickup, bible 4.1): a late secret |
 | `&` | The Dragon Slayer (bible A10): found, it goes straight into your hand. Unused since pass 217: King Grieve gives it up |
@@ -155,6 +156,9 @@ A pickup meant to open only after the Spring of Trunk (sap hardens into amber) g
 `AMBER_SECRETS` in `tests/test_reachability.gd`; the test then proves it is gated.
 
 Sap with open air beside it and more sap below draws as a pouring falls (Amber Falls).
+
+Every character a room's grid uses has a row in the legend above, and every legend row is one
+the room loader knows (`tests/test_rooms.gd`, `test_the_readme_legend_matches_the_rooms`, pass 363).
 
 Safe numbers for layouts (a little under the real movement): a standing jump clears 4 tiles
 up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles of headroom
