@@ -285,7 +285,7 @@ HP is shown as masks (chunks), so damage is readable at a glance, while the math
 
 | Slot | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
 |------|--------|--------|--------|--------|
-| Blade | Short Sword (start, fast, short; called the Hand Dagger before pass 184) | Long Sword (400 g) | Dwarvish Broad Sword (2,800 g, two-handed, slow, huge arc; built pass 93 as the Giant Blade, renamed pass 186: slash 17, heavy 32, reach 16) | Dragon Slayer (King Grieve's, given up when he falls, as in the original (pass 217); built pass 80: slash 18, heavy 30, reach 12) |
+| Blade | Short Sword (start, fast, short: slash 8, heavy 14, reach 0; called the Hand Dagger before pass 184) | Long Sword (400 g; slash 11, heavy 19, reach 8) | Dwarvish Broad Sword (2,800 g, two-handed, slow, huge arc; built pass 93 as the Giant Blade, renamed pass 186: slash 17, heavy 32, reach 16, arc 20) | Dragon Slayer (King Grieve's, given up when he falls, as in the original (pass 217); built pass 80: slash 18, heavy 30, reach 12) |
 | Armor | Leather (200 g) | Studded Mail (1,100 g) | Full Plate (4,200 g) | Battle Suit (secret: the Drowned Warden, 60% less damage) |
 | Shield | Small Shield (150 g; wards 20% of sorcery, pass 225) | Large Shield (900 g; wards 30%) | Magic Shield (3,600 g, reflects small projectiles on parry; wards 40%) | (none: the Battle Helmet has its own slot since pass 185) |
 | Helmet | Battle Helmet (secret: +1 mask, 10% less damage, wards 20% more sorcery) | | | |
@@ -407,6 +407,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Value | Setting |
 |-------|---------|
 | Light hit / heavy third hit | 8 / 14 damage (Short Sword) |
+| Swing reach (pass 362) | a slash cuts a box 36 px long and 26 px tall before you, from inside the body to 34 px past its front edge; an up-slash a box 34 px wide and 36 px tall, reaching 32 px over your head; a Thrust a point 52 px long and 13 px tall from the body's front edge. A blade's reach (5.2) lengthens a slash and a Thrust by that many px, and its arc heightens a slash by that many and a Thrust by half. The down-strike is 6.6's 28x24 |
 | Combo window, cooldowns | 0.40 s to chain; 0.20 s, 0.20 s, 0.38 s after hits 1 to 3 |
 | Attack buffer | 0.15 s |
 | Throw buffer (pass 192) | 0.15 s: a Throw pressed while you can't throw yet (a swing or a dash still out, a drink, the Rune Dagger still reforming) goes the first frame you can |
@@ -432,6 +433,8 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Casting (pass 282) | 0.35 s between casts; a press made sooner casts nothing and is not saved |
 | Bread / great loaf (pass 282, 7) | +15 HP / +40 HP (the loaf: a slain Naga's). A slain Bog Myconid always leaves bread (pass 289) |
 | Drops (pass 290, 7) | each kill rolls once: bread 8%, a mana orb 10% (+12 MP), poison 7% (Tower foes on, `poison_drops`; skull-marked, sickens you), a rare item 2.5% (the War Glove 60%, else an Ointment). A foe with a sure drop (the Naga, the Myconid) leaves it instead of rolling. Taking any drop shows a toast that says what it gave (pass 301: the mana orb was the only one that showed nothing, so its +12 MP was nowhere a player could read it) |
+
+**How far a swing reaches (pass 362):** every foe is placed and tuned against the reach of a swing, but no line of 5.3 gave it. The boxes were three constants in the player's code (`Player.SLASH_SIZE`, `UP_SLASH_SIZE`, `THRUST_LENGTH`), and the blades' reach in 5.2 named only the two later swords. Only one test touched any of it, a relative one: the Broad Sword's box grows by its reach and arc. The Swing reach row now gives every box, and `test_every_swing_reaches_as_far_as_5_3_says` holds each blade's reach and arc to 5.2. It swings each blade for real and measures the hit box against the row, then strikes a training dummy standing at the edge of the Short Sword's reach and misses one standing just past it.
 
 ### 5.4 Death and recovery
 
