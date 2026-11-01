@@ -1988,6 +1988,66 @@ func test_the_bible_counts_each_zones_rooms() -> void:
 	check(bible.contains("**%d rooms** across 7 zones" % total), "3.1 counts the whole tree's rooms (%d)" % total)
 
 
+
+## Pass 377 (bible 3.2, 5.2): the bible said only in passing which zones and
+## guardians are the original's and which the remake's own, and 5.2 gave the
+## Battle Suit "its place" from the original though it is won from the Drowned
+## Warden in the Sunken Spring, both the remake's own. The ledger in 3.2 names
+## every zone and guardian, whose it is, and what each guardian gives.
+func test_the_bible_says_whose_each_zone_and_guardian_is() -> void:
+	const ORIGINAL_ZONES := ["eolis", "trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]
+	const ORIGINAL_GUARDIANS := ["rokusutahn", "zoradohna", "ripasheiku", "zorugeriru", "pakukame", "borabohra",
+		"king_grieve", "shadow_eura", "evil_avatar", "evil_veins", "evil_one"]
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var ledger := bible.get_slice("**Whose is it (pass 377).**", 1).get_slice("\n\n`test_", 0)
+	check(ledger != "", "3.2 has the ledger")
+	var whose := {}
+	var prize := {}
+	for line: String in ledger.split("\n"):
+		if not line.begins_with("| ") or line.begins_with("| ---"):
+			continue
+		var cells := line.split("|")
+		for id: String in cells[2].split(","):
+			id = id.strip_edges().trim_prefix("`").trim_suffix("`")
+			whose[id] = cells[3].strip_edges()
+			if cells.size() > 5:
+				prize[id] = cells[4].strip_edges()
+	var original_zones := []
+	for zone: String in World.ZONES:
+		if zone in ["gym", "test"]:
+			continue
+		check(whose.has(zone), "the ledger has a row for the zone %s" % zone)
+		if whose.get(zone, "") == "the original's":
+			original_zones.append(zone)
+		else:
+			check(whose.get(zone, "") == "the remake's own", "%s is the original's or the remake's own" % zone)
+	check(original_zones == ORIGINAL_ZONES, "the original's zones are the eight (%s)" % [original_zones])
+	var original_guardians := []
+	var moved := []
+	for id: String in BossArena.BOSSES:
+		var reward: Dictionary = BossArena.BOSSES[id]
+		check(whose.has(id), "the ledger has a row for the guardian %s" % id)
+		if whose.get(id, "") == "the original's":
+			original_guardians.append(id)
+		else:
+			check(whose.get(id, "") == "the remake's own", "%s is the original's or the remake's own" % id)
+			for key: String in ["armor", "blade", "ability"]:
+				if reward.has(key):
+					moved.append(String(reward.title))
+		var said: String = prize.get(id, "")
+		for name_key: String in ["title", "ring_name"]:
+			var name: String = reward.get(name_key, "")
+			if name != "" and (reward.has("stat_item") or reward.has("armor") or reward.has("blade") \
+					or reward.has("ability") or reward.has("key") or name_key == "ring_name"):
+				check(said.contains(name), "the ledger names %s's prize, %s (it says \"%s\")" % [id, name, said])
+	check(original_guardians == ORIGINAL_GUARDIANS, "the original's guardians are the nine (%s)" % [original_guardians])
+	check(moved.has("Battle Suit") and moved.has("Mattock"), "the remake's own guardians move the Battle Suit and the Mattock (%s)" % [moved])
+	var kept := bible.get_slice("keep their place as well", 0)
+	kept = kept.substr(kept.rfind("("))
+	check(kept.contains("Long Sword"), "5.2 lists the gear that keeps the original's place")
+	for name: String in moved:
+		check(not kept.contains(name), "5.2 doesn't give %s the original's place: a guardian of the remake's own gives it" % name)
+
 ## Pass 363 (levels/README.md): the README's legend is the room builder's key,
 ## but nothing held it to the rooms or the loader. The Evil One's light veins
 ## (`x`) had been in the Veins since pass 82 with no row. Every character a room
