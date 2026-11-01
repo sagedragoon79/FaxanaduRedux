@@ -685,7 +685,7 @@ func _do_jump() -> void:
 	_end_dash_into_jump()
 	_consume_jump()
 	_jump_cut_available = true
-	visual.squash(Vector2(0.85, 1.2))
+	visual.squash_for("jump")
 	_spawn_dust(Vector2.ZERO, "jump")
 	Sfx.play("jump")
 	jumped.emit("ground")
@@ -705,7 +705,7 @@ func _do_wall_jump(side: int) -> void:
 	_jump_cut_available = true
 	has_double_jump = true
 	facing = away
-	visual.squash(Vector2(1.15, 0.9))
+	visual.squash_for("wall_jump")
 	_spawn_dust(Vector2(side * BODY_SIZE.x * 0.5, -BODY_SIZE.y * 0.5), "walljump")
 	Sfx.play("wall_jump")
 	jumped.emit("wall")
@@ -716,7 +716,7 @@ func _do_double_jump() -> void:
 	has_double_jump = false
 	_consume_jump()
 	_jump_cut_available = true
-	visual.squash(Vector2(0.8, 1.25))
+	visual.squash_for("double_jump")
 	_spawn_dust(Vector2(0, -4), "feathers")
 	Sfx.play("double_jump")
 	jumped.emit("double")
@@ -870,7 +870,7 @@ func _glide(delta: float, on_floor: bool, was_gliding: bool) -> bool:
 	is_gliding = true
 	if not was_gliding:
 		_glide_feather_timer = 0.0
-		visual.squash(Vector2(1.2, 0.88))
+		visual.squash_for("glide")
 		Sfx.play("glide", 0.05, -4.0)
 	# A fast fall brakes down to glide speed; a slow one falls into it.
 	var rate := tuning.glide_brake if velocity.y > tuning.glide_fall_speed else tuning.gravity * tuning.fall_gravity_multiplier
@@ -904,7 +904,7 @@ func _try_stroke() -> void:
 		return
 	_jump_buffer_timer = 0.0
 	velocity.y = minf(velocity.y, -tuning.swim_stroke)
-	visual.squash(Vector2(1.1, 0.9))
+	visual.squash_for("stroke")
 	Sfx.play("swim", 0.1)
 
 
@@ -942,7 +942,7 @@ func _try_dash(on_floor: bool) -> void:
 	_attack_timer = 0.0
 	is_wall_sliding = false
 	velocity = Vector2(_dash_dir * tuning.dash_speed, 0.0)
-	visual.squash(Vector2(1.3, 0.8))
+	visual.squash_for("dash")
 	_afterimage_timer = 0.0
 	# A kick of dust off the floor, or a puff of air in midair, thrown back.
 	_spawn_dust(Vector2(-_dash_dir * 6, -3 if on_floor else -14), "dash" if on_floor else "airdash")
@@ -1026,7 +1026,7 @@ func _try_attack(on_floor: bool) -> void:
 	fx.setup(attack_kind, facing, combo_index, is_heavy_swing, 1.0 + arc_bonus / SLASH_SIZE.y)
 	add_child(fx)
 	if is_heavy_swing:
-		visual.squash(Vector2(1.2, 0.9))
+		visual.squash_for("heavy")
 		velocity.x += facing * 60.0
 	Sfx.play(swing_sound(), 0.1)
 
@@ -1093,7 +1093,7 @@ func _thrust(on_floor: bool) -> void:
 	var fx := SlashFx.new()
 	fx.setup("thrust", facing, 0, true, 1.0 + reach_bonus / SLASH_SIZE.x)
 	add_child(fx)
-	visual.squash(Vector2(1.3, 0.85))
+	visual.squash_for("thrust")
 	Feel.add_trauma(0.08)
 	Sfx.play("thrust", 0.05)
 
@@ -1186,7 +1186,7 @@ func _pogo_bounce() -> void:
 	_refresh_air_moves()
 	_jump_cut_available = false
 	_coyote_timer = 0.0
-	visual.squash(Vector2(0.8, 1.2))
+	visual.squash_for("pogo")
 	_spawn_dust(Vector2(0, 8), "pogo")
 	Feel.hitstop(tuning.pogo_hitstop)
 	Feel.add_trauma(0.12)
@@ -1202,7 +1202,7 @@ func pod_launch() -> void:
 	_refresh_air_moves()
 	_jump_cut_available = false
 	_coyote_timer = 0.0
-	visual.squash(Vector2(0.75, 1.25))
+	visual.squash_for("pod")
 	_spawn_dust(Vector2(0, 0), "jump")
 	Feel.add_trauma(0.08)
 	Feel.rumble(0.3, 0.1, 0.08)
@@ -1311,7 +1311,7 @@ func _after_move(pre_velocity: Vector2, _delta: float) -> void:
 	if on_floor and not _was_on_floor:
 		var impact := maxf(_peak_fall_speed, pre_velocity.y)
 		var k := clampf(impact / tuning.max_fall_speed, 0.0, 1.0)
-		visual.squash(Vector2(1.0 + 0.25 * k, 1.0 - 0.2 * k))
+		visual.squash_for("land", k)
 		if impact > 120.0:
 			_spawn_dust(Vector2.ZERO, "land")
 			Sfx.play("land", 0.08, lerpf(-8.0, 0.0, k))
@@ -1477,7 +1477,7 @@ func throw_dagger() -> void:
 	d.global_position = global_position + Vector2(facing * 10, -22)
 	rune_dagger = d
 	throws += 1
-	visual.squash(Vector2(1.06, 0.97))
+	visual.squash_for("throw")
 	Sfx.play("dagger_throw")
 
 
@@ -1495,7 +1495,7 @@ func _try_cast() -> void:
 	for bolt in Spells.cast_all(equipped_spell, self):
 		get_parent().add_child(bolt)
 		bolt.global_position = global_position + Vector2(facing * 12, -24)
-	visual.squash(Vector2(1.1, 0.95))
+	visual.squash_for("cast")
 	Sfx.play("cast")
 
 
@@ -1598,7 +1598,7 @@ func receive_attack(damage: int, source: Node2D, parryable := true) -> String:
 		Feel.rumble(0.6, 0.2, 0.1)
 		Sfx.play("parry")
 		_spawn_dust(Vector2(facing * 12, -24), "parry")
-		visual.squash(Vector2(1.15, 0.9))
+		visual.squash_for("parry")
 		if source.has_method("stagger"):
 			# Feathers, gears and bolts turn back on their own.
 			source.stagger()

@@ -53,6 +53,90 @@ func _start_on_right_wall(abilities := {}) -> Player:
 
 
 
+## Pass 360 (bible 6.7): the squash and stretch line said "jump 0.85x1.2 for 3
+## frames" and named no other move; the shapes were bare numbers in the
+## player's code and no test held one. Each shape is written on the line, and
+## the moves set it for real: a jump, a double jump, a wall jump, a dash, a
+## landing from full speed (and less from a hop), each easing back at
+## SQUASH_RECOVERY, over half of the way in 3 frames.
+func test_every_squash_is_written_and_felt() -> void:
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Squash and stretch:**", 1).get_slice("\n- ", 0)
+	check(line != "", "6.7 has its squash and stretch line")
+	for move: String in PlayerVisual.SQUASH:
+		var v: Vector2 = PlayerVisual.SQUASH[move]
+		var written := "%sx%s" % [String.num(v.x, 2), String.num(v.y, 2)]
+		check(line.contains(written), "the line writes the %s's shape, %s" % [move, written])
+	check(written_exactly_in(line, PlayerVisual.SQUASH_RECOVERY), "and the rate it eases back, %s" % String.num(PlayerVisual.SQUASH_RECOVERY))
+	var code := FileAccess.get_file_as_string("res://scripts/player/player.gd")
+	check(not code.contains("visual.squash(Vector2"), "the player sets only the named shapes")
+	# How far a squash still is from the sprite's own shape, as a share of its
+	# move's shape (1 just set, 0 eased back), the same on both axes.
+	var share := func(p: Player, move: String) -> float:
+		var full: Vector2 = PlayerVisual.SQUASH[move] - Vector2.ONE
+		var now: Vector2 = p.visual.squash_scale - Vector2.ONE
+		var a := now.x / full.x
+		var b := now.y / full.y
+		return a if absf(a - b) < 0.02 else -1.0
+	var rows := []
+	for y in 24:
+		rows.append("#" + ("." if y < 21 else "#").repeat(38) + "#")
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(6, 20))
+	await frames(10)
+	# A jump: set on the frame of the jump, eased one frame at most.
+	p.input.jump_pressed = true
+	p.input.jump_held = true
+	await frames(1)
+	var s := float(share.call(p, "jump"))
+	check(s >= 0.75, "a jump stretches the sprite 0.85x1.2 (%.2f of it, %s)" % [s, p.visual.squash_scale])
+	await frames(3)
+	var later := float(share.call(p, "jump"))
+	check(later >= 0.0 and later < s * 0.5 + 0.01, "and over half of it eases back in 3 frames (%.2f)" % later)
+	await frames(8)
+	# A double jump at the top of the first.
+	p.input.jump_pressed = true
+	await frames(1)
+	check(float(share.call(p, "double_jump")) >= 0.75, "a double jump stretches it 0.8x1.25 (%s)" % p.visual.squash_scale)
+	p.input.jump_held = false
+	await frames(4)
+	# A dash.
+	p.input.move_x = 1
+	p.input.dash_pressed = true
+	await frames(1)
+	check(float(share.call(p, "dash")) >= 0.75, "a dash squashes it 1.3x0.8 (%s)" % p.visual.squash_scale)
+	p.input.move_x = 0
+	# Landing: a fall from high up lands as hard as a squash goes; a hop, less.
+	p.global_position = Vector2(20 * Room.TILE + 8, 2 * Room.TILE)
+	p.velocity = Vector2.ZERO
+	var landed := -1.0
+	for i in 120:
+		await frames(1)
+		if p.is_on_floor():
+			landed = float(share.call(p, "land"))
+			break
+	check(landed >= 0.75, "a fall at full speed lands 1.25x0.8 (%.2f of it)" % landed)
+	await frames(30)
+	p.input.jump_pressed = true
+	p.input.jump_held = false
+	await frames(2)
+	var hop := -1.0
+	for i in 60:
+		await frames(1)
+		if p.is_on_floor():
+			hop = float(share.call(p, "land"))
+			break
+	check(hop >= 0.0 and hop < landed * 0.6, "a hop lands softer (%.2f of it)" % hop)
+	room.queue_free()
+	await frames(1)
+	# A wall jump stretches across, the way it leaps.
+	var w := await _start_on_right_wall()
+	w.input.move_x = -1
+	w.input.jump_pressed = true
+	w.input.jump_held = true
+	await frames(1)
+	check(float(share.call(w, "wall_jump")) >= 0.75, "a wall jump stretches it across, 1.15x0.9 (%s)" % w.visual.squash_scale)
+
+
 ## Pass 238: a wall slide shed dust every 0.06 s and made no sound. The glove
 ## rasps as you catch the wall and every Player.WALL_SCRAPE after, and only
 ## while you slide: not without the Climbing Glove.

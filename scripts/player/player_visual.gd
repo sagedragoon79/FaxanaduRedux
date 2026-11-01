@@ -88,6 +88,18 @@ static var forced := ""
 static var body_sets := true
 
 var player: Player
+## Squash and stretch (design bible 6.7, pass 360): the shape each move sets
+## the sprite to (x across, y up), before it eases back. A landing's is the
+## hardest one, for a fall at full speed; a slower fall squashes less.
+const SQUASH := {
+	"jump": Vector2(0.85, 1.2), "double_jump": Vector2(0.8, 1.25), "wall_jump": Vector2(1.15, 0.9),
+	"land": Vector2(1.25, 0.8), "dash": Vector2(1.3, 0.8), "pogo": Vector2(0.8, 1.2), "pod": Vector2(0.75, 1.25),
+	"glide": Vector2(1.2, 0.88), "stroke": Vector2(1.1, 0.9), "heavy": Vector2(1.2, 0.9), "thrust": Vector2(1.3, 0.85),
+	"throw": Vector2(1.06, 0.97), "cast": Vector2(1.1, 0.95), "parry": Vector2(1.15, 0.9),
+}
+## How fast a squash eases back to the sprite's own shape, per second
+## (1 - e^(-16t): over half of it in 3 frames, nearly all in 0.2 s).
+const SQUASH_RECOVERY := 16.0
 var squash_scale := Vector2.ONE
 var pose := "idle"
 ## The animation playing, its time and the frame shown.
@@ -113,13 +125,19 @@ func squash(amount: Vector2) -> void:
 	squash_scale = amount
 
 
+## Sets one of the named shapes (SQUASH), `strength` of the way from the
+## sprite's own shape (a landing scales it by the fall).
+func squash_for(move: String, strength := 1.0) -> void:
+	squash(Vector2.ONE.lerp(SQUASH[move], clampf(strength, 0.0, 1.0)))
+
+
 func flash_hurt() -> void:
 	_blink_time = player.hurt_invuln()
 	_red_time = 0.12
 
 
 func _physics_process(delta: float) -> void:
-	squash_scale = squash_scale.lerp(Vector2.ONE, 1.0 - exp(-delta * 16.0))
+	squash_scale = squash_scale.lerp(Vector2.ONE, 1.0 - exp(-delta * SQUASH_RECOVERY))
 	scale = Vector2(look_dir(player) * squash_scale.x, squash_scale.y)
 	_blink_time -= delta
 	_red_time -= delta
