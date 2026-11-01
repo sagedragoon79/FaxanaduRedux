@@ -24,8 +24,13 @@ static func window(screen: Vector2) -> Rect2:
 ## map has it ("here", "visited" or "charted"), and the dot where you stand, all
 ## in window space (the window's top left is 0, 0). Your room's middle is the
 ## window's middle, so the map scrolls as you move from room to room.
+##
+## The rooms in view change only when you change rooms, walk a new one or buy
+## a chart, so they are worked out then and kept on the world (pass 375):
+## sweeping the whole catalog every frame cost about 0.2 ms on a full map.
+## Only the dot is worked out each frame. `cached` says which it was.
 static func layout(world: World) -> Dictionary:
-	var out := {"rooms": [], "player": Vector2.INF}
+	var out := {"rooms": [], "player": Vector2.INF, "cached": false}
 	if world == null or world.room == null:
 		return out
 	var here: Dictionary = world.catalog.get(world.room.id, {})
@@ -33,21 +38,32 @@ static func layout(world: World) -> Dictionary:
 		return out
 	var here_rect := _rect(here)
 	var origin := SIZE * 0.5 - here_rect.get_center()
-	var view := Rect2(Vector2.ZERO, SIZE)
-	for room_id: String in world.catalog:
-		var info: Dictionary = world.catalog[room_id]
-		var how := MapScreen.shown(room_id, info, world.room.id)
-		if how == "":
-			continue
-		var r := _rect(info)
-		r.position += origin
-		if not r.intersects(view):
-			continue
-		out.rooms.append({"id": room_id, "rect": r, "how": how, "info": info})
+	var key := "%s|%d|%d|%d" % [world.room.id, GameState.data.visited.size(), GameState.data.charts.size(), world.catalog.size()]
+	var kept: Dictionary = world.get_meta(CACHE, {})
+	if kept.get("key", "") == key:
+		out.rooms = kept.rooms
+		out.cached = true
+	else:
+		var view := Rect2(Vector2.ZERO, SIZE)
+		for room_id: String in world.catalog:
+			var info: Dictionary = world.catalog[room_id]
+			var how := MapScreen.shown(room_id, info, world.room.id)
+			if how == "":
+				continue
+			var r := _rect(info)
+			r.position += origin
+			if not r.intersects(view):
+				continue
+			out.rooms.append({"id": room_id, "rect": r, "how": how, "info": info})
+		world.set_meta(CACHE, {"key": key, "rooms": out.rooms})
 	if world.player != null:
 		var frac := world.player.global_position / (Vector2(here.size) * Room.TILE)
 		out.player = origin + here_rect.position + frac.clamp(Vector2.ZERO, Vector2.ONE) * here_rect.size
 	return out
+
+
+## The world's meta key the rooms in view are kept under.
+const CACHE := &"minimap_rooms"
 
 
 static func _rect(info: Dictionary) -> Rect2:
