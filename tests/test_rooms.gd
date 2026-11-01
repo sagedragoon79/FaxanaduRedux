@@ -2364,3 +2364,37 @@ func test_the_sunken_springs_set_pieces_stand_clear() -> void:
 				wet = true
 		check(wet, "into the flood")
 	w.free()
+
+
+## Bible 13.3 (pass 374): the Drowned Aqueduct's fall is heard near it. Its
+## pour loops, it is loudest where the water lands and fades with
+## distance, and it is silent across the room at the doors.
+func test_the_aqueducts_fall_is_heard_near_it() -> void:
+	var w := make_world({}, "sunken/drowned_aqueduct")
+	await frames(2)
+	var spill: AqueductSpill = null
+	for c in w.room.get_children():
+		if c is AqueductSpill:
+			spill = c
+	if not check(spill != null, "the aqueduct has its fall"):
+		w.queue_free()
+		return
+	var voice: AudioStreamPlayer = null
+	for c in spill.get_children():
+		if c is AudioStreamPlayer:
+			voice = c
+	var wav := voice.stream as AudioStreamWAV if voice != null else null
+	check(wav != null and voice.bus == "Sfx", "it has a voice on the sound bus")
+	if wav != null:
+		check(wav.loop_mode == AudioStreamWAV.LOOP_FORWARD and wav.loop_end > int(wav.mix_rate), "the pour loops (%d samples)" % wav.loop_end)
+	check(is_equal_approx(spill.heard_db(spill.foot()), AqueductSpill.LOUD), "loudest where the water lands")
+	var near := spill.heard_db(spill.foot() + Vector2(80, 0))
+	var far := spill.heard_db(spill.foot() + Vector2(240, 0))
+	check(near < AqueductSpill.LOUD and far < near and far > -INF, "fading with distance (%.1f, %.1f)" % [near, far])
+	check(spill.heard_db(spill.foot() + Vector2(AqueductSpill.HEAR, 0)) == -INF, "silent past its reach")
+	var at_door := spill.heard_db(Vector2(1.5 * Room.TILE, 18 * Room.TILE))
+	check(at_door == -INF, "nor at the west door")
+	check(spill.heard_db(Vector2(78.5 * Room.TILE, 18 * Room.TILE)) == -INF, "nor at the east door")
+	check(FileAccess.get_file_as_string("res://docs/design-bible.md").contains("**The fall you can hear (pass 374):**"), "13.3 says so")
+	w.queue_free()
+	await frames(2)
