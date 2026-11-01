@@ -143,7 +143,7 @@ func _draw() -> void:
 	for c: Array in [[-10, -8, 5, 1], [-6, -11, 1, 4], [-2, -9, 6, 1], [2, -13, 1, 4], [-4, -14, 4, 1], [4, -8, 4, 1]]:
 		_px(c[0], c[1] - (swell if c[1] < -10 else 0), c[2], c[3], MAGMA, glow + 0.3)
 	_px(-4, -12 - swell, 2, 2, MAGMA_CORE, glow)
-	wash(flashing())
+	wash(flashing() or (state == "swell" and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 
 

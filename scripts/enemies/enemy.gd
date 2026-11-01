@@ -72,6 +72,9 @@ var _stagger := 0.0
 var _respawn_timer := 0.0
 var _dissolver: Tween
 static var _wash_material: ShaderMaterial
+## Whether this foe last drew itself white without the wash: `draw_sheet` in
+## white, or a foe's own white overlay (`drawn_white`).
+var _sheet_white := false
 
 
 func _ready() -> void:
@@ -397,6 +400,12 @@ func washed() -> bool:
 	return _wash_material != null and material == _wash_material
 
 
+## True when this foe's last drawing went white, washed (`wash`) or drawn
+## from a sheet in white (`draw_sheet`): the hit flash and the tell's pulse.
+func drawn_white() -> bool:
+	return washed() or _sheet_white
+
+
 func telegraph_pulse() -> bool:
 	return int(state_time * 16.0) % 2 == 0
 
@@ -406,6 +415,7 @@ func telegraph_pulse() -> bool:
 ## Returns the frame drawn.
 func draw_sheet(sheet: String, anim: String, t: float, white := false, offset := Vector2.ZERO) -> int:
 	var f := Sheet.frame_at(sheet, anim, t)
+	_sheet_white = white
 	draw_set_transform(offset, 0.0, Vector2(facing, 1))
 	Sheet.draw(self, sheet, anim, f)
 	if white:

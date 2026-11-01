@@ -153,6 +153,7 @@ func _draw() -> void:
 	var reach := 6 if state == "lunge" else (2 if state == "windup" else 0)
 	_px(8 + lean, -2, 6 + reach, 3, OUTLINE, a)
 	_px(9 + lean, -1, 4 + reach, 1, BODY_LIGHT, a)
+	_sheet_white = white
 	if white:
 		for y in range(-21, 10):
 			_px(-_half_width(y) + lean, y, _half_width(y) * 2, 1, Color(1, 1, 1), 0.6 * maxf(a, 0.5))

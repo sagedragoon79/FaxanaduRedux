@@ -240,7 +240,7 @@ func _draw() -> void:
 	_px(shx + 2, shy + 10, 3, 4, GLOW, a * 0.7)
 	_px(shx + 1, shy + 9, 1, 2, GLOW, a * 0.7)
 	_px(shx + 5, shy + 9, 1, 2, GLOW, a * 0.7)
-	wash(flashing())
+	wash(flashing() or (telling and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 
 

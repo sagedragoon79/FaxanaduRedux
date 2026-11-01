@@ -199,7 +199,7 @@ func _draw() -> void:
 		for i in 4:
 			var a := TAU * i / 4.0 + 0.4
 			_px(roundi(cos(a) * 15.0), -9 + roundi(sin(a) * 9.0), 1, 1, Color(EYE_HOT, 0.8), 1.0)
-	wash(flashing())
+	wash(flashing() or (state == "wind" and telegraph_pulse()))
 	draw_set_transform(Vector2.ZERO)
 
 

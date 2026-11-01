@@ -151,7 +151,7 @@ func _floor_ahead() -> bool:
 func _draw() -> void:
 	var t := Time.get_ticks_msec() * 0.001
 	var glow := state == "windup" and telegraph_pulse()
-	var white := flashing()
+	var white := flashing() or glow
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
 	var step := roundf(sin(t * 7.0)) if state == "walk" and absf(velocity.x) > 1.0 else 0.0
 	# Legs: short and thick, in iron boots.
