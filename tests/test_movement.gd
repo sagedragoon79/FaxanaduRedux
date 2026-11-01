@@ -1809,3 +1809,48 @@ func test_every_movement_number_is_written_where_it_belongs() -> void:
 		if prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE and prop.type in [TYPE_FLOAT, TYPE_INT] and not homed.has(prop.name):
 			unhomed.append(prop.name)
 	check(unhomed.is_empty(), "every tuning number has a home subsection (%s)" % [unhomed])
+
+
+## Pass 352 (bible 6.7): the camera's and the shake's numbers were held only by
+## tests that copied them as literals, the look-down by none, and the follow
+## rate, focus point and shake reach by no text. Every number `GameCamera` and
+## `Feel` define is written on its own line of 6.7 (the render density in 12.1).
+func test_every_camera_number_is_written_on_its_line() -> void:
+	var feel: Script = load("res://scripts/autoload/feel.gd")
+	var home := {
+		"- **Camera:**": [GameCamera, ["DEADZONE", "LOOK_AHEAD", "LOOK_AHEAD_EASE", "LOOK_DOWN", "LOOK_DOWN_DELAY", "LOOK_UP",
+			"CLIMB_LEAD", "CLIMB_LEAD_EASE", "FOLLOW_SPEED", "FOCUS_OFFSET"]],
+		"- **Wide camera": [GameCamera, ["WIDE", "ZOOM_EASE"]],
+		"- **Screen shake:**": [feel, ["TRAUMA_DECAY", "MAX_SHAKE_OFFSET"]],
+		"- **Hit-stop:**": [feel, ["BOSS_KILL_HITSTOP", "BOSS_KILL_SLOWMO"]],
+		"### 12.1 ": [GameCamera, ["DETAIL"]],
+	}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var homed := {}
+	var astray := []
+	for line: String in home:
+		# The juice list's lines are 6.7's own; other sections have lines of
+		# the same name.
+		var within := bible if line.begins_with("###") else bible.get_slice("\n### 6.7 ", 1).get_slice("\n### ", 0)
+		var text := within.get_slice(line, 1)
+		text = text.get_slice("\n### ", 0) if line.begins_with("###") else text.get_slice("\n- ", 0)
+		check(text != "", "the bible has the line %s" % line)
+		var script: Script = home[line][0]
+		var consts := script.get_script_constant_map()
+		for name: String in home[line][1]:
+			homed[script.resource_path + name] = true
+			var v: Variant = consts[name]
+			# A pair is written as its two parts (16x24, 10 px across and 7 up
+			# or down); a part of 0 says nothing.
+			var parts: Array = [absf(v.x), absf(v.y)] if v is Vector2 else [float(v)]
+			for f: float in parts:
+				if f != 0.0 and not written_exactly_in(text, f):
+					astray.append("%s %s not on %s" % [name, String.num(f), line])
+	check(astray.is_empty(), "every camera and shake number is written on its own line (%s)" % [astray])
+	var unhomed := []
+	for script: Script in [GameCamera, feel]:
+		var consts := script.get_script_constant_map()
+		for name: String in consts:
+			if typeof(consts[name]) in [TYPE_FLOAT, TYPE_INT, TYPE_VECTOR2] and not homed.has(script.resource_path + name):
+				unhomed.append(name)
+	check(unhomed.is_empty(), "every camera and shake number has a line (%s)" % [unhomed])

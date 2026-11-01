@@ -3,7 +3,6 @@ extends Node
 ## Times here use real (unscaled) time so hit-stop can freeze the game clock.
 
 const MAX_SHAKE_OFFSET := Vector2(10.0, 7.0)
-const MAX_SHAKE_ROLL := 0.0
 const TRAUMA_DECAY := 1.5
 ## A boss kill (design bible 6.7): the game freezes this long, then runs in
 ## slow motion that ramps back up to full speed.
