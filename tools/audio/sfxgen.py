@@ -1547,6 +1547,25 @@ def main():
         out[i:i + ln] += lowpass(osc(np.full(ln, f), "square", 0.35), 1400) * env(ln, 0.002, 1.6)
     save("menu_refuse", out, 0.32)
 
+    # The broken aqueduct's fall (pass 374): the Drowned Aqueduct's waterfall
+    # was the one moving water with no voice. A seamless two-second loop the
+    # spill plays while you are near: a white hiss of falling water over a low
+    # churning roar where it lands, the roar swelling a little as the water
+    # gulps. The last half second is laid over the first, so it loops clean.
+    d = 2.0
+    tail = 0.5
+    n = int(RATE * d)
+    k = int(RATE * tail)
+    t = t_axis(d + tail)
+    hiss = lowpass(highpass(noise(d + tail), 900), 4200) * 0.55
+    roar = lowpass(highpass(noise(d + tail), 60), 380) * 1.6
+    gulp = 1.0 + 0.25 * np.sin(2 * np.pi * 1.5 * t) + 0.12 * np.sin(2 * np.pi * 3.5 * t + 1.0)
+    raw = hiss + roar * gulp
+    out = raw[:n].copy()
+    fade = np.linspace(0, 1, k)
+    out[:k] = out[:k] * fade + raw[n:n + k] * (1 - fade)
+    save("falls_pour", out, 0.3)
+
 
 if __name__ == "__main__":
     main()
