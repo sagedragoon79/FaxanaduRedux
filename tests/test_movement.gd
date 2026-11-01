@@ -1987,3 +1987,61 @@ func test_the_readmes_safe_jumps_are_real() -> void:
 		check(landed, "%d up with %d across: a standstill jump lands on the ledge (feet at %.0f, ledge at %d)" % [up, across, p.global_position.y, top * Room.TILE])
 		room.queue_free()
 		await frames(1)
+
+
+## Bible 6.8 (pass 376): swimming keeps the land's moves. Deep water hands back
+## a spent double jump and air dash; a dash under water runs at the land's dash
+## speed and holds its line (no float, no drag, no swim slowdown); a swing cuts
+## a foe in the water as on land. The one land move the water takes is the
+## Thrust's charge, a lunge along a floor that a swimmer has not got.
+func test_swimming_keeps_the_lands_moves() -> void:
+	var room := _pool_room()
+	var p := make_player(room, Vector2i(4, 14), {"boots": true, "stride": true})
+	await frames(30)
+	check(p.swimming, "in the pool")
+	p.has_double_jump = false
+	p.air_dash_charges = 0
+	await frames(1)
+	check(p.has_double_jump and p.air_dash_charges >= p.tuning.air_dash_charges, "the water hands back a spent double jump and air dash")
+	# A dash under water: the land's speed, and a level line.
+	p.facing = 1
+	var y0 := p.global_position.y
+	var x0 := p.global_position.x
+	p.input.dash_pressed = true
+	await frames(1)
+	p.input.dash_pressed = false
+	var fastest := 0.0
+	var drift := 0.0
+	var dashed := 0
+	for i in 12:
+		if p.is_dashing:
+			dashed += 1
+			fastest = maxf(fastest, absf(p.velocity.x))
+			drift = maxf(drift, absf(p.global_position.y - y0))
+		await frames(1)
+	check(dashed > 0, "a dash goes under water")
+	check_near(fastest, p.tuning.dash_speed, 1.0, "at the land's dash speed, not a swimmer's")
+	check(drift < 1.0, "and holds its line: the water neither floats nor sinks it (%.1f px)" % drift)
+	check(p.global_position.x - x0 >= p.tuning.dash_speed * p.tuning.dash_time * 0.9, "carrying the land's distance (%.0f px)" % (p.global_position.x - x0))
+	# A swing cuts a foe in the water.
+	p.global_position = Vector2(4 * Room.TILE + 8, 14 * Room.TILE)
+	p.velocity = Vector2.ZERO
+	await frames(20)
+	var dummy := TrainingDummy.new()
+	room.add_child(dummy)
+	dummy.global_position = p.global_position + Vector2(30, 0)
+	await frames(2)
+	p.facing = 1
+	p.input.attack_pressed = true
+	await frames(1)
+	p.input.attack_pressed = false
+	await frames(12)
+	check(p.swimming and dummy.hits_taken >= 1, "a swing cuts a foe in the water (%d)" % dummy.hits_taken)
+	# The Thrust does not charge while swimming.
+	p.thrust = true
+	p.input.attack_held = true
+	await frames(int(p.combat.thrust_charge * 60.0) + 20)
+	p.input.attack_held = false
+	check(p.attack_kind != "thrust", "the Thrust's charge, a lunge along a floor, is not taken in the water")
+	check(FileAccess.get_file_as_string("res://docs/design-bible.md").contains("`test_swimming_keeps_the_lands_moves`"), "6.8 names the test")
+	room.free()

@@ -613,7 +613,7 @@ Deep water (legend `a`) is a volume, not a surface: while the middle of the body
 | Stroke | a jump press under water sets vy = -230 px/s (weaker than a jump); no limit on strokes |
 | Jump out | with the head above the surface a jump press is a full ground jump (and swimming refreshes the double jump and air dash). The water counts as footing for coyote time, so the frames the bob lifts the body clear still jump out at once (pass 111) |
 | Across | 0.7x run speed |
-| Attacks, dash | work as on land; the dash ignores the water |
+| Attacks, dash | work as on land; the dash ignores the water: it runs at the land's 380 px/s for its 0.15 s and holds its line, neither floated nor slowed. The one land move the water takes is the Thrust's charge (9): it is a lunge along a floor, and a swimmer has none, so holding Attack under water swings and never glints. Held since pass 376 with the double jump and air dash the water hands back: `test_swimming_keeps_the_lands_moves` |
 | Breath | none: swimming is about routes and foes, not a timer |
 | Feel | a "dive" splash and spray when the body crosses the surface fast; a soft "swim" whoosh per stroke; the water is drawn over the bodies in it, translucent, with a rippling waterline, drifting caustics and bubbles |
 
