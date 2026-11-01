@@ -383,25 +383,44 @@ func _boss() -> Node:
 	return b if b != null and not b.is_queued_for_deletion() and b.state != "dead" else null
 
 
-## Boss health bar along the bottom, with a tick at each phase threshold.
-func _draw_boss() -> void:
+## How fast the pale trail behind the boss bar's red catches up a blow, as a
+## share of the bar each second (design bible 8, pass 364).
+const BOSS_TRAIL_SPEED := 0.5
+## The boss bar's width (world px).
+const BOSS_BAR_WIDTH := 320.0
+
+
+## The boss bar as drawn (design bible 8): the guardian's name, its bar, the
+## red fill (its health), the pale trail of a blow catching up behind it, and a
+## gold tick at each mark where a phase begins. Empty with no guardian up.
+func boss_bar() -> Dictionary:
 	var b := _boss()
 	if b == null:
+		return {}
+	var bar := Rect2((get_viewport_rect().size.x - BOSS_BAR_WIDTH) * 0.5, 340, BOSS_BAR_WIDTH, 6)
+	var ticks: Array[float] = []
+	for mark: float in b.PHASES:
+		ticks.append(bar.position.x + roundf(bar.size.x * mark))
+	return {"boss": b, "name": String(b.DISPLAY_NAME), "rect": bar, "fill": float(b.health_fraction()), "trail": _boss_shown, "ticks": ticks}
+
+
+## Boss health bar along the bottom, with a tick at each phase threshold.
+func _draw_boss() -> void:
+	var bar_info := boss_bar()
+	if bar_info.is_empty():
 		_boss_shown = 1.0
 		return
-	var frac: float = b.health_fraction()
-	_boss_shown = move_toward(_boss_shown, frac, get_process_delta_time() * 0.5)
+	var frac: float = bar_info.fill
+	_boss_shown = move_toward(_boss_shown, frac, get_process_delta_time() * BOSS_TRAIL_SPEED)
 	if _boss_shown < frac:
 		_boss_shown = frac
-	var w := 320.0
-	var bar := Rect2((get_viewport_rect().size.x - w) * 0.5, 340, w, 6)
-	PixelFont.draw(self, bar.position + Vector2(0, -4), b.DISPLAY_NAME, 10, MASK_FULL, OUTLINE)
+	var bar: Rect2 = bar_info.rect
+	PixelFont.draw(self, bar.position + Vector2(0, -4), bar_info.name, 10, MASK_FULL, OUTLINE)
 	draw_rect(bar.grow(1), OUTLINE)
 	draw_rect(bar, Color("3a1a22"))
 	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * _boss_shown), bar.size.y)), Color("f1ead2"))
 	draw_rect(Rect2(bar.position, Vector2(roundf(bar.size.x * frac), bar.size.y)), Color("d8443a"))
-	for mark: float in b.PHASES:
-		var x := bar.position.x + roundf(bar.size.x * mark)
+	for x: float in bar_info.ticks:
 		draw_rect(Rect2(x, bar.position.y - 2, 1, bar.size.y + 4), GOLD)
 
 
