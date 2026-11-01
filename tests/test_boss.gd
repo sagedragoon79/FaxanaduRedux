@@ -4298,7 +4298,7 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 	const WORDS := {"half": 50, "a quarter": 25, "a fifth": 20, "two thirds": 66, "a third": 33}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var eight := bible.get_slice("\n## 8. Bosses", 1).get_slice("\n## 9. ", 0)
-	var table := eight.get_slice("| Guardian | HP | Phases at | Wind-ups (s) |", 1).get_slice("\n\n", 0)
+	var table := eight.get_slice("| Guardian | HP | Phases at | Wind-ups (s) | Gold | XP |", 1).get_slice("\n\n", 0)
 	var consts := {}
 	for name: String in GUARDIANS:
 		consts[GUARDIANS[name]] = (load("res://scripts/bosses/%s.gd" % GUARDIANS[name]) as Script).get_script_constant_map()
@@ -4306,12 +4306,36 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 	for f: String in DirAccess.get_files_at("res://scripts/bosses"):
 		if f.ends_with(".gd") and (load("res://scripts/bosses/" + f) as Script).get_script_constant_map().has("PHASES"):
 			check(f.trim_suffix(".gd") in GUARDIANS.values(), "bible 8's numbers table has a row for %s" % f)
+	const OWN := ["foreman", "hag_matriarch", "bark_captain", "clockwork_alpha", "drowned_warden"]
+	var purses := []
+	var orig_xp := 0
+	var own_xp := 0
 	for name: String in GUARDIANS:
 		var c: Dictionary = consts[GUARDIANS[name]]
 		var cells := table.get_slice("\n| %s | " % name, 1).get_slice("\n", 0).trim_suffix(" |").split(" | ")
-		check(cells.size() == 3, "bible 8's numbers table has a row for %s" % name)
-		if cells.size() != 3:
+		check(cells.size() == 5, "bible 8's numbers table has a row for %s" % name)
+		if cells.size() != 5:
 			continue
+		# What it pays (pass 380): its purse before the arena's threat, and its
+		# experience. Rokusutahn, a Node2D, keeps both as constants.
+		var gold := ""
+		var xp := 0
+		if c.has("XP"):
+			gold = str(c["GOLD"])
+			xp = c["XP"]
+			purses.append_array([c["GOLD"], c["GOLD"]])
+		else:
+			var e: Enemy = load("res://scripts/bosses/%s.gd" % GUARDIANS[name]).new()
+			gold = "%d to %d" % [e.gold_min, e.gold_max]
+			xp = e.xp
+			purses.append_array([e.gold_min, e.gold_max])
+			e.free()
+		check(cells[3] == gold, "%s's gold: the bible says %s, the script %s" % [name, cells[3], gold])
+		check(cells[4] == str(xp), "%s's experience: the bible says %s, the script %d" % [name, cells[4], xp])
+		if GUARDIANS[name] in OWN:
+			own_xp += xp
+		else:
+			orig_xp += xp
 		var hp: String = str(c["MAX_HP"]) if c.has("MAX_HP") else "%d a vein" % c["VEIN_HP"]
 		check(cells[0] == hp, "%s's health: the bible says %s, the script %s" % [name, cells[0], hp])
 		var marks := []
@@ -4343,6 +4367,14 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 			check(n >= 2 and n - 2 < phases.size() and absi(pct - roundi(phases[n - 2] * 100.0)) <= 1,
 				"%s says phase %d starts below %s, and the script at %s" % [sec, n, said, phases])
 	check(named >= 14, "the guardians' sections name their phase marks (%d)" % named)
+	# The totals the note gives, and 10.1's purse range.
+	var note := eight.get_slice("**What a guardian pays (pass 380).**", 1).get_slice("\n\n", 0)
+	var lord: int = GameState.RANK_XP[GameState.RANK_XP.size() - 1]
+	var fmt := func(n: int) -> String: return String.num_int64(n) if n < 1000 else "%d,%03d" % [n / 1000, n % 1000]
+	check(note.contains("nine guardians give %s XP" % fmt.call(orig_xp)), "the note gives the original's nine guardians' experience (%d)" % orig_xp)
+	check(note.contains("five give %s more: %s in all" % [fmt.call(own_xp), fmt.call(orig_xp + own_xp)]), "and the remake's five (%d), %d in all" % [own_xp, orig_xp + own_xp])
+	check(note.contains("short of Lord's %s" % fmt.call(lord)) and orig_xp + own_xp < lord, "every guardian together falls short of Lord (%d of %d)" % [orig_xp + own_xp, lord])
+	check(bible.contains("A boss's purse (%d to %d g)" % [purses.min(), purses.max()]), "10.1 gives the guardians' purses as %d to %d g" % [purses.min(), purses.max()])
 
 
 ## Pass 364 (bible 8): "Health bars show phase markers." No test had ever
