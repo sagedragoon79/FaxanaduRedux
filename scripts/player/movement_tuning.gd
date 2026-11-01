@@ -14,6 +14,12 @@ extends Resource
 @export var walk_fraction := 0.4
 @export var walk_tilt := 0.45
 @export var run_tilt := 0.9
+## A stick reads up or down only this many degrees or more from level (pass
+## 368, bible 6.1): a thumb pushing sideways drifts a little up or down, and a
+## drift past the deadzone had made a running jump drop through a platform,
+## a slash a pogo, and a run past a door walk in. Keys and the d-pad, digital,
+## are always as pressed, diagonals too.
+@export var stick_vertical_angle := 35.0
 
 @export_group("Jump")
 @export var jump_height := 72.0

@@ -361,7 +361,7 @@ func _physics_process(delta: float) -> void:
 		if _dead_timer <= 0.0:
 			_respawn()
 		return
-	input.poll()
+	input.poll(tuning)
 	_tick_timers(delta)
 	mp = minf(mp + combat.mp_regen_per_second * delta, max_mp)
 

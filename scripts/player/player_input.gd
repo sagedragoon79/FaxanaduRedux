@@ -24,17 +24,27 @@ var spell_next_pressed := false
 var heal_pressed := false
 var hourglass_pressed := false
 var throw_pressed := false
+## Up was held last frame as a stick's sideways drift, too level to count.
+var _up_drifting := false
 
 
-func poll() -> void:
+## Reads this frame's intent. `tuning` gives the stick's vertical angle
+## (`MovementTuning.stick_vertical_angle`, pass 368); without it, 35 degrees.
+func poll(tuning: MovementTuning = null) -> void:
 	if scripted:
 		return
 	var axis := Input.get_axis("move_left", "move_right")
 	move_x = int(signf(axis))
 	tilt = absf(axis) if move_x != 0 else 1.0
-	up = Input.is_action_pressed("move_up")
-	up_pressed = Input.is_action_just_pressed("move_up")
-	down = Input.is_action_pressed("move_down")
+	var slope := tan(deg_to_rad(tuning.stick_vertical_angle if tuning != null else 35.0))
+	var held_up := Input.is_action_pressed("move_up")
+	up = held_up and vertical("move_up", slope)
+	# Up is pressed as it is pressed, or as a stick held from a sideways drift
+	# swings up far enough to count, so it still enters a door. Held through a
+	# door or a dialog it is not pressed again.
+	up_pressed = up and (Input.is_action_just_pressed("move_up") or _up_drifting)
+	_up_drifting = held_up and not up
+	down = Input.is_action_pressed("move_down") and vertical("move_down", slope)
 	jump_pressed = Input.is_action_just_pressed("jump")
 	jump_held = Input.is_action_pressed("jump")
 	attack_pressed = Input.is_action_just_pressed("attack")
@@ -47,6 +57,14 @@ func poll() -> void:
 	heal_pressed = Input.is_action_just_pressed("heal")
 	hourglass_pressed = Input.is_action_just_pressed("hourglass")
 	throw_pressed = Input.is_action_just_pressed("throw")
+
+
+## Whether `action` (up or down) leans far enough from level to count: its
+## strength is at least `slope` times the stronger of left and right. Keys and
+## the d-pad press at full strength, so a digital diagonal always counts.
+static func vertical(action: String, slope: float) -> bool:
+	var side := maxf(Input.get_action_raw_strength("move_left"), Input.get_action_raw_strength("move_right"))
+	return Input.get_action_raw_strength(action) >= side * slope
 
 
 ## Called by the player after it has consumed this frame. Scripted presses last one frame.
