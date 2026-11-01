@@ -145,10 +145,10 @@ func confirm() -> void:
 		GameState.delete_save(int(slots[cursor]))
 		pouring = false
 		refresh()
-		Sfx.play("splash", 0.0, -4.0)
+		Sfx.play("flask_pour", 0.0)
 		return
 	var fresh: bool = saves[cursor].is_empty()
-	Sfx.play("title" if fresh else "save", 0.0, -6.0)
+	Sfx.play("flask_uncork", 0.0)
 	var slot := int(slots[cursor])
 	close()
 	chosen.emit(slot, fresh)
