@@ -42,7 +42,7 @@ func _ready() -> void:
 
 
 func interact(_p: Player) -> void:
-	Sfx.play("door", 0.0, -4.0)
+	Sfx.play("tablet_read", 0.04)
 	if not variants.is_empty():
 		text = current_text()
 	GameState.say("", text.split("|"))

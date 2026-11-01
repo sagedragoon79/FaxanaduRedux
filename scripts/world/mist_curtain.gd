@@ -81,7 +81,7 @@ func _physics_process(delta: float) -> void:
 			for c in get_tree().get_nodes_in_group("mist_curtain"):
 				(c as MistCurtain)._told = true
 			GameState.toast.emit("Bound fog. Only a lantern's light will part it.")
-			Sfx.play("fizzle", 0.0)
+			Sfx.play("ward_refuse", 0.0)
 	elif d > 48.0:
 		_told = false
 

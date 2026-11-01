@@ -236,6 +236,63 @@ func test_bound_fog_parts_for_the_lantern_key() -> void:
 	check(not again.is_empty() and (again[0] as MistCurtain).parted, "back in the room, the fog is still parted")
 
 
+## Pass 358 (bible 13.3): a tablet read and a ward that turns you away each
+## have their own sound. The tablets had borrowed the door's creak and the fog
+## and the veil the spell-fail fizzle; a refusal is not a spell gone wrong.
+func test_tablets_and_wards_sound_like_themselves() -> void:
+	# The fog and the veil, refusing for real: once each, and never a fizzle.
+	for stop: Array in [["mist/lantern_landing", "mist_curtain", Vector2(0, 30)], ["branches/north_bough", "stride_veil", Vector2(0, 16)]]:
+		var w := make_world({}, stop[0], cell_feet(2, 2))
+		await frames(3)
+		var walls := runner.get_tree().get_nodes_in_group(stop[1])
+		check(not walls.is_empty(), "%s has its %s" % [stop[0], stop[1]])
+		if walls.is_empty():
+			w.queue_free()
+			await frames(2)
+			continue
+		Sfx.recent.clear()
+		w.player.teleport((walls[0] as Node2D).global_position + stop[2])
+		await frames(4)
+		check(Sfx.recent.count("ward_refuse") == 1 and not Sfx.recent.has("fizzle"), "the %s pushes back once, no fizzle (%s)" % [stop[1], Sfx.recent])
+		w.queue_free()
+		await frames(2)
+	# A tablet read for real.
+	var w2 := make_world({}, "mist/lantern_landing")
+	await frames(2)
+	var tablet: LoreTablet = null
+	for c in w2.room.get_children():
+		if c is LoreTablet:
+			tablet = c
+	check(tablet != null, "the landing has a tablet")
+	if tablet != null:
+		Sfx.recent.clear()
+		tablet.interact(w2.player)
+		check(Sfx.recent == ["tablet_read"], "reading a tablet is heard as stone and runes, not a door (%s)" % [Sfx.recent])
+	w2.queue_free()
+	await frames(2)
+	# Each is its own: no other script borrows them, and these three play neither cue they left.
+	var owners := {"tablet_read": ["lore_tablet.gd"], "ward_refuse": ["mist_curtain.gd", "stride_veil.gd"]}
+	var plays := RegEx.create_from_string("Sfx\\.play\\(\"([a-z_]+)\"")
+	var dirs: Array[String] = ["res://scripts"]
+	while not dirs.is_empty():
+		var d: String = dirs.pop_back()
+		for sub: String in DirAccess.get_directories_at(d):
+			dirs.append(d + "/" + sub)
+		for f: String in DirAccess.get_files_at(d):
+			if not f.ends_with(".gd"):
+				continue
+			for m: RegExMatch in plays.search_all(FileAccess.get_file_as_string(d + "/" + f)):
+				var cue := m.get_string(1)
+				if owners.has(cue):
+					check(f in owners[cue], "%s is played only by its own (%s)" % [cue, f])
+				if f == "lore_tablet.gd":
+					check(cue != "door", "a tablet does not creak like a door")
+				if f in ["mist_curtain.gd", "stride_veil.gd"]:
+					check(cue != "fizzle", "%s does not fizzle" % f)
+	for cue: String in owners:
+		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % cue), "%s has a file" % cue)
+
+
 ## Bible 4.1 (A3): the Wing Boots lie on a perch in Feather Hollow. Taking them
 ## grants the double jump, and the game remembers it.
 func test_wing_boots_grant_the_double_jump() -> void:

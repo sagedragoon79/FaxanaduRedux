@@ -57,7 +57,7 @@ func _physics_process(delta: float) -> void:
 			for v in get_tree().get_nodes_in_group("stride_veil"):
 				(v as StrideVeil)._told = true
 			GameState.toast.emit("An elven veil. Only a warden's stride passes it.")
-			Sfx.play("fizzle", 0.0)
+			Sfx.play("ward_refuse", 0.0)
 	elif d > 48.0:
 		_told = false
 
