@@ -423,6 +423,7 @@ You start with no shield: Block and parry come with the Small Shield, the first 
 | Fire | 20 MP, 18 damage in the burst, thrown at 170 px/s across and 150 px/s up |
 | Tilte | 22 MP, 14 damage, homing; with Tilte Swarm (9) three orbs of 10 for one cast's MP |
 | Death | 40 MP, 36 damage to every foe the ring passes; a guardian takes 18 |
+| Spell reach (pass 370) | how far each carries over open ground, cast standing: a Deluge bolt flies 1.2 s, about 355 px (22 tiles); a Thunder bolt only 0.7 s, about 260 px (16 tiles), the price of its speed, and leaps 72 px to a dead conduit; Fire bursts where it lands, about 113 px ahead on flat floor, striking all within 20 px (or in the air after 1.6 s); a Tilte orb lives 2.2 s, flies at 230 px/s and locks on the nearest foe within 240 px; Death's ring rolls out to 300 px over 0.45 s; the Rune Dagger (5.2) flies 160 px at 420 px/s and comes home |
 | War Glove (rare drop, 7) | blade hits x1.5 for 15 s |
 | Thrust (skill, 9) | hold Attack 0.4 s, let go: heavy hit x1.5, a 320 px/s lunge for 0.16 s on the floor, 0.35 s cooldown |
 | Executioner (skill, 9) | melee blows on a guardian in its opening x1.35 |

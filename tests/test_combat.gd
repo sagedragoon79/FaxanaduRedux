@@ -878,6 +878,60 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 ## the five spells (Thunder, Fire, Tilte, Death) were only read back from
 ## `Spells.DATA`. These read the bible: every combat number is written in 5.3,
 ## and each spell's row names its own cost, damage and speed.
+## Pass 370 (bible 5.3): every spell's row gave its cost, damage and speed,
+## but not how far it carries: a bolt's life was a constant in its own class,
+## and Thunder (0.7 s) reaches only about two thirds as far as Deluge (1.2 s).
+## Each is cast by the real player across an empty hall and measured.
+func test_every_spell_carries_as_far_as_5_3_says() -> void:
+	var rows := ["#".repeat(60)]
+	for y in 10:
+		rows.append("#" + ".".repeat(58) + "#")
+	rows.append("#".repeat(60))
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 9))
+	await frames(6)
+	var flown := {}
+	for id: String in ["deluge", "thunder", "fire", "tilte"]:
+		p.abilities[id] = true
+		p.equipped_spell = id
+		p.mp = p.combat.max_mp
+		p.input.spell_pressed = true
+		await frames(1)
+		var shots := runner.get_tree().get_nodes_in_group("projectile")
+		if not check(shots.size() == 1, "%s leaves the hand" % id):
+			continue
+		var shot: Node2D = shots[0]
+		var start := shot.global_position
+		var far := 0.0
+		var t := 0
+		while is_instance_valid(shot) and t < 400:
+			far = maxf(far, absf(shot.global_position.x - start.x))
+			await frames(1)
+			t += 1
+		flown[id] = [far, t / 60.0]
+		await frames(20)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var sec := bible.get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
+	var row := sec.get_slice("| Spell reach (pass 370) |", 1).get_slice("\n", 0)
+	if not check(row != "", "5.3 has the row"):
+		return
+	# What the row says each one does, measured.
+	for said: Array in [["deluge", 355.0, DelugeBolt.LIFE], ["thunder", 260.0, ThunderBolt.LIFE], ["fire", 113.0, -1.0]]:
+		var got: Array = flown.get(said[0], [0.0, 0.0])
+		check(absf(float(got[0]) - float(said[1])) <= 8.0, "%s carries about %d px (%.0f)" % [said[0], said[1], got[0]])
+		if float(said[2]) > 0.0:
+			check(absf(float(got[1]) - float(said[2])) <= 0.05, "for its %.1f s (%.2f)" % [said[2], got[1]])
+		check(written_exactly_in(row, float(said[1])), "the row writes %s's %d px" % [said[0], said[1]])
+	check(float(flown.thunder[0]) < float(flown.deluge[0]) * 0.8, "Thunder pays for its speed in reach")
+	# The numbers the classes keep.
+	var kept := {"Deluge's life": DelugeBolt.LIFE, "Thunder's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
+		"Fire's burst": Fireball.BURST, "Fire's life": Fireball.LIFE, "Tilte's life": TilteOrb.LIFE, "Tilte's speed": TilteOrb.SPEED,
+		"Tilte's seek": TilteOrb.SEEK, "Death's ring": DeathWave.RADIUS, "Death's roll": DeathWave.DURATION,
+		"the dagger's range": RuneDagger.RANGE, "the dagger's speed": RuneDagger.SPEED}
+	for what: String in kept:
+		check(written_exactly_in(row, float(kept[what])), "the row writes %s, %s" % [what, String.num(float(kept[what]))])
+
+
 func test_every_combat_number_is_written_in_bible_5_3() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var sec := bible.get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
