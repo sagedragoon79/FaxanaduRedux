@@ -1854,3 +1854,49 @@ func test_every_camera_number_is_written_on_its_line() -> void:
 			if typeof(consts[name]) in [TYPE_FLOAT, TYPE_INT, TYPE_VECTOR2] and not homed.has(script.resource_path + name):
 				unhomed.append(name)
 	check(unhomed.is_empty(), "every camera and shake number has a line (%s)" % [unhomed])
+
+
+## Pass 355 (levels/README.md): the README gives the room builder safe jumps,
+## "a little under the real movement", and pass 331 found its room sizes out
+## of date, but no test had ever made its jumps. Each one it names is read from
+## the text and made from a standstill with the real controller: a ledge `up`
+## rows above the floor whose near edge is `across` tiles from where you
+## stand, with the README's 3 tiles of headroom over the ledge.
+func test_the_readmes_safe_jumps_are_real() -> void:
+	var readme := FileAccess.get_file_as_string("res://levels/README.md")
+	var line := readme.get_slice("Safe numbers for layouts", 1).get_slice("Leave", 0).replace("\n", " ")
+	var re := RegEx.create_from_string("(\\d+) (?:tiles )?up with (\\d+) across")
+	var jumps := []
+	for m in re.search_all(line):
+		jumps.append([int(m.get_string(1)), int(m.get_string(2))])
+	check(jumps == [[4, 2], [3, 4], [2, 5]], "the README names three safe jumps (%s)" % [jumps])
+	var headroom := int(readme.get_slice("Leave ", 1).get_slice(" clear tiles of headroom", 0))
+	check(headroom == 3, "and 3 tiles of headroom (%d)" % headroom)
+	check(readme.contains("reachable from the floor go 4 rows above it") and [4, 2] in jumps, "a platform 4 rows up is one of them")
+	for j: Array in jumps:
+		var up: int = j[0]
+		var across: int = j[1]
+		# Floor top at row 16; you stand in column 3; the ledge's top is `up`
+		# rows higher, from column 3 + across to the far wall.
+		var rows := grid_rows(24, 19)
+		var top := 16 - up
+		put_tiles(rows, 3 + across, top, "#", 24 - 4 - across, up)
+		# The ceiling over the ledge sits `headroom` clear tiles above it.
+		put_tiles(rows, 3 + across, 0, "#", 24 - 4 - across, top - headroom)
+		var room := make_room(rows.map(func(r: Array) -> String: return "".join(PackedStringArray(r))))
+		var p := make_player(room, Vector2i(3, 15))
+		await frames(6)
+		p.input.move_x = 1
+		p.input.jump_pressed = true
+		p.input.jump_held = true
+		await frames(1)
+		p.input.jump_pressed = false
+		var landed := false
+		for i in 120:
+			await frames(1)
+			if p.is_on_floor() and p.velocity.y >= 0.0 and i > 4:
+				landed = absf(p.global_position.y - float(top * Room.TILE)) <= 1.0
+				break
+		check(landed, "%d up with %d across: a standstill jump lands on the ledge (feet at %.0f, ledge at %d)" % [up, across, p.global_position.y, top * Room.TILE])
+		room.queue_free()
+		await frames(1)
