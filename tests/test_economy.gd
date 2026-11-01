@@ -2319,6 +2319,33 @@ func test_the_faithfulness_checklist_is_all_here() -> void:
 				break
 		await frames(2)
 		check(p.is_on_floor() and p.abilities.get("boots", false) and p.has_double_jump, "leap %d: and they are still worn, their lift back, after landing" % (leap + 1))
+	# Pass 361: the original's Ointment ran out sooner the higher the title;
+	# the remake's lasts the same at every rank, rubbed on or put straight on.
+	check(bible.contains("**The Ointment lasts as long at every rank (deviation, pass 361):**") and bible.contains("ran out sooner the higher your title"), "the bible says the original's Ointment shrank with rank, and why the remake's doesn't")
+	var lasted := []
+	for rank: int in [0, GameState.RANKS.size() - 1]:
+		GameState.data.rank = rank
+		p.ointments = 1
+		check(p.use_ointment(), "rank %s: an Ointment is rubbed on" % GameState.RANKS[rank])
+		lasted.append(p.ointment_left)
+		await frames(Engine.physics_ticks_per_second * int(Player.OINTMENT_TIME) + 2)
+		check(p.ointment_left <= 0.0, "rank %s: and wears off after %s s" % [GameState.RANKS[rank], String.num(Player.OINTMENT_TIME)])
+		# From a full pouch it goes straight on, and lasts the same.
+		p.ointments = Shop.OINTMENT_MAX
+		var jar := Drop.new()
+		jar.kind = "ointment"
+		room.add_child(jar)
+		jar.global_position = p.global_position + Vector2(0, -4)
+		for i in 40:
+			await frames(1)
+			if p.ointment_left > 0.0:
+				break
+		lasted.append(p.ointment_left)
+		if is_instance_valid(jar):
+			jar.queue_free()
+		await frames(Engine.physics_ticks_per_second * int(Player.OINTMENT_TIME) + 2)
+	GameState.data.rank = 0
+	check(lasted.size() == 4 and lasted.all(func(t: float) -> bool: return absf(t - lasted[0]) <= 0.1 and t > Player.OINTMENT_TIME - 0.1), "at the first rank and at Lord, rubbed on or put straight on, it lasts the same %s s (%s)" % [String.num(Player.OINTMENT_TIME), lasted])
 	# Pass 257: the original's Pakukame looses Liliths three at a time.
 	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
 	# Pass 273: the original's Naga floats up and down over the ladders of the
