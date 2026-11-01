@@ -783,33 +783,35 @@ About 4 to 5 enemy families per zone plus variants (recolors with new behavior).
 
 **Every foe's numbers, as built (pass 338).** The zone table tells each foe's fight in words, and until pass 338 it gave a wind-up for 21 of the 25 foes and a health for 12. These are the scripts' own numbers, before the zone's threat (5.5) scales a blow: health, the touch of its body, its first wind-up and its main blow. `test_every_foes_numbers_are_written_in_bible_7` holds each row to its script, and every wind-up, health and touch the zone table names to the same script.
 
-| Foe | HP | Touch | Wind-up (s) | Blow |
-| --- | --- | --- | --- | --- |
-| Monodron | 24 | 20 | 0.4 | 20 (its hop) |
-| Hornet | 16 | 20 | 0.45 | 20 (its swoop) |
-| Rot Dwarf | 40 | 20 | 0.5 | 20 (its swing) |
-| Grub Lump | 18 | 14 | 0.45 | 16 (its drop) |
-| Sap Spitter | 20 | 12 | 0.55 | 12 (a sap glob) |
-| Iron Dwarf | 64 | 12 | 0.65 | 24 (the slam) |
-| Minecart Rider | 56 | 10 | 0.6 | 22 (the charge) |
-| Gear Bat | 22 | 12 | 0.5 | 14 (the gear) |
-| Naga | 22 | 8 | 0.5 | 16 (the bite) |
-| Lantern Ghost | 18 | 10 | 0.55 | 18 (the lunge) |
-| Bog Myconid | 26 | 10 | 0.6 | 8 (the spores, each 0.7 s) |
-| Drowned Dwarf | 46 | 10 | 0.6 | 18 (the anchor) |
-| Marsh Hag | 30 | 6 | 0.6 | 16 (the mud hand) |
-| Leaf Mantis | 30 | 10 | 0.5 | 16 (the slash) |
-| Bark Knight | 54 | 10 | 0.6 | 16 (the thrust) |
-| Seed Bomber | 28 | 8 | 0.5 | 10 (a seed) |
-| Lilith | 20 | 8 | 0.4 | 8 (the dive) |
-| Storm Harpy | 30 | 12 | 0.55 | 8 (each feather) |
-| Thunder Beetle | 44 | 12 | 0.6 | 14 (the ring) |
-| Spire Sentinel | 40 | 8 | 0.6 | 16 (the slam) |
-| Crystal Dwarf | 48 | 14 | 0.6 | 16 (the fist) |
-| Shade Knight | 56 | 12 | 0.55 | 18 (the thrust) |
-| Clockwork Hound | 44 | 10 | 0.45 | 14 (the bite) |
-| Meteor Slug | 40 | 10 | 0.6 | 12 (a gobbet) |
-| Spring Eel | 30 | 8 | 0.5 | 14 (the bite) |
+**What a foe pays (pass 378).** The table gave what each foe costs you and not what it pays. Its purse and its experience lived only in the scripts (`gold_min`, `gold_max`, `xp`), though the gold sheet (10) and the ranks (9) are built on them: 9 said only that "starting enemies give 5 XP (Rot Dwarf 12)". The Gold and XP columns are the scripts' own. A foe's gold is then multiplied by its zone's threat (5.5) as it dies, so the gold sheet's ranges are these times the threat; its experience is not, so a Monodron pays 5 XP in the Trunk and in Zenis alike. Corruption (8.9's Zenis remixes) doubles both. The test holds both columns to the scripts, and a real kill to them: a slain foe adds its XP and sprays its gold times its room's threat.
+
+| Foe | HP | Touch | Wind-up (s) | Blow | Gold | XP |
+| --- | --- | --- | --- | --- | --- | --- |
+| Monodron | 24 | 20 | 0.4 | 20 (its hop) | 3 to 6 | 5 |
+| Hornet | 16 | 20 | 0.45 | 20 (its swoop) | 2 to 4 | 5 |
+| Rot Dwarf | 40 | 20 | 0.5 | 20 (its swing) | 5 to 9 | 12 |
+| Grub Lump | 18 | 14 | 0.45 | 16 (its drop) | 2 to 4 | 5 |
+| Sap Spitter | 20 | 12 | 0.55 | 12 (a sap glob) | 2 to 5 | 6 |
+| Iron Dwarf | 64 | 12 | 0.65 | 24 (the slam) | 7 to 12 | 18 |
+| Minecart Rider | 56 | 10 | 0.6 | 22 (the charge) | 8 to 14 | 20 |
+| Gear Bat | 22 | 12 | 0.5 | 14 (the gear) | 4 to 7 | 9 |
+| Naga | 22 | 8 | 0.5 | 16 (the bite) | 3 to 5 | 6 |
+| Lantern Ghost | 18 | 10 | 0.55 | 18 (the lunge) | 3 to 6 | 7 |
+| Bog Myconid | 26 | 10 | 0.6 | 8 (the spores, each 0.7 s) | 3 to 7 | 8 |
+| Drowned Dwarf | 46 | 10 | 0.6 | 18 (the anchor) | 7 to 11 | 18 |
+| Marsh Hag | 30 | 6 | 0.6 | 16 (the mud hand) | 8 to 12 | 18 |
+| Leaf Mantis | 30 | 10 | 0.5 | 16 (the slash) | 4 to 8 | 9 |
+| Bark Knight | 54 | 10 | 0.6 | 16 (the thrust) | 8 to 12 | 20 |
+| Seed Bomber | 28 | 8 | 0.5 | 10 (a seed) | 6 to 10 | 14 |
+| Lilith | 20 | 8 | 0.4 | 8 (the dive) | 1 to 2 | 3 |
+| Storm Harpy | 30 | 12 | 0.55 | 8 (each feather) | 6 to 12 | 16 |
+| Thunder Beetle | 44 | 12 | 0.6 | 14 (the ring) | 6 to 12 | 14 |
+| Spire Sentinel | 40 | 8 | 0.6 | 16 (the slam) | 10 to 16 | 20 |
+| Crystal Dwarf | 48 | 14 | 0.6 | 16 (the fist) | 9 to 15 | 24 |
+| Shade Knight | 56 | 12 | 0.55 | 18 (the thrust) | 10 to 16 | 28 |
+| Clockwork Hound | 44 | 10 | 0.45 | 14 (the bite) | 8 to 14 | 22 |
+| Meteor Slug | 40 | 10 | 0.6 | 12 (a gobbet) | 8 to 12 | 20 |
+| Spring Eel | 30 | 8 | 0.5 | 14 (the bite) | 6 to 10 | 16 |
 
 Every enemy has: a readable telegraph (minimum 0.35 s wind-up with a pose, a flash and a sound, section 13.3; every named wind-up of every foe and guardian, and every phase-quickened tell, is held to it as a whole by `test_every_wind_up_in_the_game_is_fair` since pass 234. The one shorter warning, a crystal spike's 0.18 s floor glow, only marks where a spike will rise after its caster's full tell). **Every tell flashes the foe white (pass 354):** the flash in a tell is the 6.7 wash, the foe's own silhouette pulsing white. Five foes lit only a part: the Clockwork Hound its eyes, the Shade Knight his blade's point, the Crystal Dwarf his fist, the Meteor Slug its cracks and the Spring Eel its lamp. Their tells never flashed the way the other twenty did, so a player who had learned the pulse read them late. Each keeps its own glow and now pulses white with it. A Meteor Seed is a crystal shard with no body, so its flicker is its flash. `test_every_foes_tell_flashes_it_white` sets each foe into each tell and checks that it draws white (`Enemy.drawn_white`), a hurt reaction, a death animation with a dissolve, and drops (gold, MP orbs, rare items). Besides gold, about 1 kill in 12 leaves **bread** (heals 15, the original's staple) and 1 in 10 a **mana orb** (+12 MP); both wait on the floor for 10 s. (Deviation, pass 297: the original's manual names only "food and money" from foes, with the rare items below. The mana orb is the remake's: magic here pays for every spell you cast (5.2), and the orb keeps a fight's magic coming between Gurus as bread keeps its health.) From the Tower of Trunk on, some enemies (Iron Dwarf, Gear Bat) leave Faxanadu's **Poison** about 1 kill in 14: a violet skull flask that is a hazard to step around while collecting. Walking over it poisons you for 8 s, costing 2 health a second but never the last point; your health masks and sprite turn green. Bread, resting at a shrine or Guru, or dying cures it, and an Ointment keeps it off. (Deviation, pass 305: the manual's Poison is one bite: "The hero's power will decrease by a fixed amount." The remake spreads it over 8 s, 16 health at most in the Tower and never the last point, so it reads as a sickness that bread can still settle, not a fine taken before you see it. The manual's Ointment protects the hero "from any enemy attack", and poison is no attack; that it keeps poison off too is the remake's.) **Poison bites as hard as the room's foes (pass 306):** poison is a foe's leaving, so each tick is scaled by the room's threat (5.5) as a blow is: 2 a second in the Tower, 3 in the Mist, the Branches and Daybreak, 4 in Dartmoor, the Sunken Spring and Zenis, where every foe drops it. A fixed 16 health was under 6% of a late hero's 280 while every blow beside it doubled, a flask not worth stepping around. It still never takes the last point, and an Ointment rubbed on mid-poison stops the rest of it (`test_poison_bites_as_hard_as_the_rooms_foes`).
 

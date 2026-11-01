@@ -2462,7 +2462,7 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var seven := bible.get_slice("\n## 7. Enemies", 1).get_slice("\n## 8. ", 0)
 	var zones := seven.get_slice("| Zone | Enemies |", 1).get_slice("\n\n", 0)
-	var table := seven.get_slice("| Foe | HP | Touch | Wind-up (s) | Blow |", 1).get_slice("\n\n", 0)
+	var table := seven.get_slice("| Foe | HP | Touch | Wind-up (s) | Blow | Gold | XP |", 1).get_slice("\n\n", 0)
 	# Every foe in scripts/enemies has a row (the Meteor Seed is a dying foe's
 	# burst, 8.9, not a foe).
 	for f: String in DirAccess.get_files_at("res://scripts/enemies"):
@@ -2483,12 +2483,16 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 		var touch: int = e.contact_damage if e.contact_damage > 0 else consts.get("CONTACT", consts.get("TOUCH_DAMAGE", 0))
 		var row := table.get_slice("\n| %s | " % foe, 1).get_slice("\n", 0)
 		var cells := row.split(" | ")
-		check(cells.size() == 4, "bible 7's numbers table has a row for the %s" % foe)
-		if cells.size() == 4:
+		check(cells.size() == 6, "bible 7's numbers table has a row for the %s" % foe)
+		if cells.size() == 6:
 			check(int(cells[0]) == e.max_hp, "%s's health: the bible says %s, the script %d" % [foe, cells[0], e.max_hp])
 			check(int(cells[1]) == touch, "%s's touch: the bible says %s, the script %d" % [foe, cells[1], touch])
 			check(is_equal_approx(float(cells[2]), tell), "%s's wind-up: the bible says %s, the script %s" % [foe, cells[2], tell])
 			check(cells[3].begins_with("%d (" % blow), "%s's blow: the bible says %s, the script %d" % [foe, cells[3], blow])
+			# What it pays (pass 378): its purse before the zone's threat, and
+			# its experience, which no threat scales.
+			check(cells[4] == "%d to %d" % [e.gold_min, e.gold_max], "%s's gold: the bible says %s, the script %d to %d" % [foe, cells[4], e.gold_min, e.gold_max])
+			check(int(cells[5]) == e.xp and e.xp > 0, "%s's experience: the bible says %s, the script %d" % [foe, cells[5], e.xp])
 		check(tell >= Enemy.MIN_TELEGRAPH, "%s's wind-up is fair" % foe)
 		# The zone table's own words, between the foe's name and its closing
 		# bracket, name the same wind-up and any health or touch they give.
@@ -2503,6 +2507,38 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 		for m: RegExMatch in re.search_all(words):
 			check(int(m.get_string(1)) == touch, "the zone table gives the %s a touch of %s, the script %d" % [foe, m.get_string(1), touch])
 		e.free()
+	# Bible 9's word on the first foes' experience is the scripts'.
+	var mono := Monodron.new()
+	var rot := RotDwarf.new()
+	check(bible.contains("Starting enemies give %d XP (Rot Dwarf %d)" % [mono.xp, rot.xp]), "bible 9 gives the first foes' experience (%d, Rot Dwarf %d)" % [mono.xp, rot.xp])
+	mono.free()
+	rot.free()
+	# A real kill pays what the row says: its experience as written, and its
+	# gold times its room's threat (a Dartmoor room, threat 2).
+	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(WIDE)))
+	arena.add_child(room)
+	var p := make_player(room, Vector2i(3, 6))
+	p.max_hp = 9999
+	p.hp = 9999
+	check(room.threat() == 2.0, "a Dartmoor room's threat is 2")
+	var rare := Drop.rare_chance
+	Drop.rare_chance = 0.0
+	for i in 6:
+		var foe := Monodron.new()
+		foe.position = cell_feet(20, 6)
+		room.add_child(foe)
+		await frames(2)
+		var xp: int = GameState.data.xp
+		foe.take_hit(foe.hp, Vector2.RIGHT)
+		await frames(2)
+		var gold := 0
+		for n in room.get_children():
+			if n is Coin:
+				gold += (n as Coin).value
+				n.free()
+		check(int(GameState.data.xp) - xp == foe.xp, "a slain Monodron pays its %d XP, unscaled (got %d)" % [foe.xp, int(GameState.data.xp) - xp])
+		check(gold >= foe.gold_min * 2 and gold <= foe.gold_max * 2, "and %d to %d gold at threat 2 (got %d)" % [foe.gold_min * 2, foe.gold_max * 2, gold])
+	Drop.rare_chance = rare
 
 
 ## The text after `opening` up to its matching closing bracket (brackets in
