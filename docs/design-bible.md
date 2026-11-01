@@ -1662,6 +1662,22 @@ All weapons, armor, shields, rings, keys, spells, consumables, shards, abilities
 - **Headroom for the loudest cues (pass 270):** the hero's hurt sat 8.9 dB over the effects' median and the cut landing (`hit`) 8.0 over, so a single new quiet sound nudging the median tipped the mix check red (it did in pass 262). `levels.py` now asks every sound effect to keep `HEADROOM` (1.5 dB) inside the 9 dB spread. `sfxgen.py` saves `hurt` at gain 0.42 (was 0.6) and `hit` at 0.62 (was 0.8), about 12.5 dB RMS each, 6 over the median, and `Sfx.LIFT` plays them back 3.1 and 2.2 dB up on top of any caller's offset, so in game they are exactly as loud as before. A cue that must play louder than the mix allows is saved quieter and lifted the same way. Test: `test_the_loudest_cues_are_lifted_in_game_not_in_the_file`; the `mix` CI job holds the headroom.
 - **Ambience:** one bed per zone (wind, drips, creaking wood, storm), and a room can name another (`ambience:`). In the Tower, the halls hum with machinery (amb_tower), the Old Flue and the Rafters howl with wind, a rattling shutter and creaking beams (amb_heights), and the Deep Workings drip, with carts rumbling through the rock and far-off picks (amb_mine). The Guru Trials' mantra-space has its own theme and bed (`trials`, `amb_trials`, pass 116). A boss rush plays the same theme in the arenas between fights (pass 157).
 - **Footsteps:** each step plays the sound of the ground underfoot (`Room.surface_at`): stone in Eolis, moss on the Trunk's living wood, iron on the Tower's plates, hollow planks on every one-way platform, and a squelch in sap. A room can name another surface with `surface:`. A landing layers the surface step under the land thud, louder the harder the fall. Since pass 181 the Mist's marsh is mud (`step_mud`: a wet slap as the boot goes in and a small suction pop as it pulls free), where it had borrowed the Trunk's moss; its towns' boardwalks stay plank, and the four rooms the dwarves built (the Scorched Hall, the Dry Cistern, the Sunken Chapel and the Spring of Mist) are stone. The Matriarch's Mire is mud.
+- **Every zone's sound, as built (pass 382):** the Ambience and Footsteps lines above name the Tower's beds and the ground of five zones, and never say what the rest play or stand on. Each zone plays its own theme (`Music.for_room`: the zone's id, or a room's `music:`), its own bed (`amb_` and the zone's id, or a room's `ambience:`) and its own ground (`Room.ZONE_SURFACES`, or a room's `surface:`):
+
+| Zone | Theme | Bed | Underfoot |
+| --- | --- | --- | --- |
+| Eolis | `eolis` | `amb_eolis` | stone |
+| Trunk Hollows | `trunk` | `amb_trunk` | moss |
+| Tower of Trunk | `tower` | `amb_tower` | iron |
+| The Mist | `mist` | `amb_mist` | mud |
+| Branches (Conflate) | `branches` | `amb_branches` | plank |
+| Branches (Daybreak) | `daybreak` | `amb_daybreak` | stone |
+| Dartmoor | `dartmoor` | `amb_dartmoor` | stone |
+| Sunken Spring | `sunken` | `amb_sunken` | stone |
+| Zenis | `zenis` | `amb_zenis` | moss |
+| Guru Trials | `trials` | `amb_trials` | stone |
+
+  The Branches are walked on the elves' plank roads and boughs, and Zenis on the meteor's soft, grown stone, which takes the Trunk's moss step. Twenty-two rooms name their own. Music: Forepaw `forepaw`, Victim `victim`, Mascon `mascon`, Conflate `conflate`, Daybreak `daybreak_town`, Eolis of Old `old_eolis`, and Apolune `eolis`: since pass 05 the first town past Eolis has played Eolis's theme, the one town with no song of its own. Beds: the Old Flue, the Rafters, the Bell Loft and the Crown Lookout `heights`, the Deep Workings (Mine Mouth, Mine Shaft, Mine Vault, Rail Gallery, Sorting Floor, Smelter and Slag Heap) `mine`, and Eolis of Old `none` (a sealed chamber, silent but for its theme). Ground: Victim and Mascon `plank`, the Mist's four dwarf-built rooms (the Scorched Hall, the Dry Cistern, the Sunken Chapel and the Spring of Mist) `stone`, and Daybreak `stone` (its zone's own). `test_every_zone_sounds_as_the_bible_says` holds each row to the code and `assets/music/`, and the list of rooms to every `music:`, `ambience:` and `surface:` line in `levels/`.
 
 ---
 
