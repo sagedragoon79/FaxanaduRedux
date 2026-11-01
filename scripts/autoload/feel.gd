@@ -8,6 +8,9 @@ const TRAUMA_DECAY := 1.5
 ## slow motion that ramps back up to full speed.
 const BOSS_KILL_HITSTOP := 0.35
 const BOSS_KILL_SLOWMO := 0.3
+## The white flash every guardian's kill throws over the screen (design bible
+## 8, pass 356), scaled by the flashes option like every flash.
+const BOSS_KILL_FLASH := 1.0
 
 ## Settings (the options menu sets these through Settings).
 var hitstop_enabled := true
@@ -68,6 +71,7 @@ func slowmo(scale: float, seconds: float) -> void:
 ## A boss's death blow: the 350 ms freeze, then slow motion easing back up to
 ## full speed over `seconds` of real time.
 func boss_kill(seconds: float) -> void:
+	GameState.flash.emit(BOSS_KILL_FLASH)
 	hitstop(BOSS_KILL_HITSTOP)
 	slowmo(BOSS_KILL_SLOWMO, BOSS_KILL_HITSTOP + seconds)
 	_slowmo_scale = _base_scale

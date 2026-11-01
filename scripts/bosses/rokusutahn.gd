@@ -516,7 +516,6 @@ func _die() -> void:
 	Feel.boss_kill(1.4)
 	Feel.add_trauma(1.0)
 	Feel.rumble(1.0, 1.0, 0.8)
-	GameState.flash.emit(1.0)
 	Sfx.play("roar", 0.0, 4.0)
 	_shatter_index = 0
 	_shatter_timer = 0.25

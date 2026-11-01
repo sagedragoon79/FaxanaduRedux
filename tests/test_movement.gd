@@ -1822,7 +1822,7 @@ func test_every_camera_number_is_written_on_its_line() -> void:
 			"CLIMB_LEAD", "CLIMB_LEAD_EASE", "FOLLOW_SPEED", "FOCUS_OFFSET"]],
 		"- **Wide camera": [GameCamera, ["WIDE", "ZOOM_EASE"]],
 		"- **Screen shake:**": [feel, ["TRAUMA_DECAY", "MAX_SHAKE_OFFSET"]],
-		"- **Hit-stop:**": [feel, ["BOSS_KILL_HITSTOP", "BOSS_KILL_SLOWMO"]],
+		"- **Hit-stop:**": [feel, ["BOSS_KILL_HITSTOP", "BOSS_KILL_SLOWMO", "BOSS_KILL_FLASH"]],
 		"### 12.1 ": [GameCamera, ["DETAIL"]],
 	}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
