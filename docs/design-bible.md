@@ -861,24 +861,26 @@ The core (phase 2) has none: no blade reaches it, only the veins.
 
 **Every guardian's numbers, as built (pass 340).** Each guardian below is told in words. Until pass 340 Rokusutahn's section gave none of his three wind-ups, his health or the mark where his second phase starts, and Pakukame's gave no mark for its third. No test read a guardian's phase marks or wind-ups from the bible. This table gives each guardian's health, the health marks where its phases begin (its `PHASES`) and every named wind-up in its script, before a phase quickens them. `test_every_guardians_numbers_are_written_in_bible_8` holds each row to its script, and each "Phase N (below ...)" line in a guardian's own section to the same mark.
 
-| Guardian | HP | Phases at | Wind-ups (s) |
-| --- | --- | --- | --- |
-| Rokusutahn | 600 | 60%, 30% | 0.8, 0.9 |
-| Zoradohna | 260 | 65%, 30% | 0.7, 0.8 |
-| Ripasheiku | 260 | 66%, 30% | 0.55, 0.6, 0.65 |
-| Zorugeriru | 300 | 60%, 30% | 0.6, 0.7 |
-| Pakukame | 260 | 50%, 25% | 0.5, 0.55, 0.6, 0.7 |
-| Borabohra | 320 | 50%, 25% | 0.6, 0.65, 0.8 |
-| King Grieve | 320 | 50%, 20% | 0.4, 0.45, 0.5, 0.6 |
-| Shadow Eura | 320 | 50%, 20% | 0.4, 0.45, 0.5 |
-| The Evil One's avatar | 360 | 50% | 0.5, 0.55, 0.6 |
-| The Evil One's veins | 10 a vein | 50% | 0.6 |
-| The Evil One's heart | 300 | 66%, 33% | 0.5, 0.6 |
-| The Foreman | 220 | 50% | 0.6, 0.75, 0.85 |
-| The Marsh Hag Matriarch | 230 | 50% | 0.5, 0.7, 0.8 |
-| The Bark Knight Captain | 240 | 50% | 0.65, 0.7 |
-| The Clockwork Alpha | 260 | 50% | 0.6, 0.7, 0.8 |
-| The Drowned Warden | 680 | 66%, 33% | 0.45, 0.6, 0.7 |
+**What a guardian pays (pass 380).** As with the foes (7, pass 378), the table gave what a fight costs and not what it pays: each guardian's purse and experience lived only in its script (`gold_min`, `gold_max`, `xp`; Rokusutahn's `GOLD` and `XP`). The Gold and XP columns are the scripts' own, before the arena's threat scales the purse (10.1). Rokusutahn's purse is a set 120, the others a range. The original's nine guardians give 4,090 XP between them, the Evil One's three parts 1,900 of it, and the remake's own five give 1,100 more: 5,190 in all, short of Lord's 5,500 (9), so the last titles are the foes' to give. A boss rush pays none of it (pass 260). `test_every_guardians_numbers_are_written_in_bible_8` holds both columns to the scripts, these totals, and 10.1's purse range (60 to 500 g) to the smallest and largest purse.
+
+| Guardian | HP | Phases at | Wind-ups (s) | Gold | XP |
+| --- | --- | --- | --- | --- | --- |
+| Rokusutahn | 600 | 60%, 30% | 0.8, 0.9 | 120 | 200 |
+| Zoradohna | 260 | 65%, 30% | 0.7, 0.8 | 120 to 160 | 300 |
+| Ripasheiku | 260 | 66%, 30% | 0.55, 0.6, 0.65 | 70 to 90 | 160 |
+| Zorugeriru | 300 | 60%, 30% | 0.6, 0.7 | 80 to 100 | 200 |
+| Pakukame | 260 | 50%, 25% | 0.5, 0.55, 0.6, 0.7 | 120 to 160 | 220 |
+| Borabohra | 320 | 50%, 25% | 0.6, 0.65, 0.8 | 150 to 200 | 260 |
+| King Grieve | 320 | 50%, 20% | 0.4, 0.45, 0.5, 0.6 | 120 to 160 | 400 |
+| Shadow Eura | 320 | 50%, 20% | 0.4, 0.45, 0.5 | 140 to 180 | 450 |
+| The Evil One's avatar | 360 | 50% | 0.5, 0.55, 0.6 | 120 to 160 | 400 |
+| The Evil One's veins | 10 a vein | 50% | 0.6 | 150 to 200 | 500 |
+| The Evil One's heart | 300 | 66%, 33% | 0.5, 0.6 | 400 to 500 | 1000 |
+| The Foreman | 220 | 50% | 0.6, 0.75, 0.85 | 60 to 80 | 120 |
+| The Marsh Hag Matriarch | 230 | 50% | 0.5, 0.7, 0.8 | 60 to 80 | 120 |
+| The Bark Knight Captain | 240 | 50% | 0.65, 0.7 | 60 to 80 | 120 |
+| The Clockwork Alpha | 260 | 50% | 0.6, 0.7, 0.8 | 70 to 90 | 140 |
+| The Drowned Warden | 680 | 66%, 33% | 0.45, 0.6, 0.7 | 200 to 260 | 600 |
 
 ### 8.1 Rokusutahn, the Root-Gnawer (Trunk Hollows)
 - **Concept:** A colossal armored grub that has been chewing the Tree's taproot dry. Its segments are plated in bark; its face is a wheel of mandibles.
