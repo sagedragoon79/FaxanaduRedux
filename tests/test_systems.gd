@@ -2495,3 +2495,65 @@ func test_the_flasks_sound_like_flasks() -> void:
 			continue
 		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % cue), "%s has a file" % cue)
 		check(not others.has(cue), "%s is the shelf's own, played nowhere else" % cue)
+
+
+## Bible 12's UI list (pass 373): the minimap. A window in the HUD's top right
+## shows the map around you at half scale: your room in the middle, a room you
+## walked beside it, a charted room dimmed, nothing you have neither walked nor
+## charted, nothing beyond the window, and a dot where you stand. It hides
+## while the map, a menu or a dialog is open, and in a Trial.
+func test_the_minimap_shows_the_map_around_you() -> void:
+	var w := make_world({}, "tower/forepaw")
+	await frames(3)
+	GameState.visit("tower/forepaw_lift")
+	var lay := Minimap.layout(w)
+	var by := {}
+	for r: Dictionary in lay.rooms:
+		by[r.id] = r
+	check(by.has("tower/forepaw") and by["tower/forepaw"].how == "here", "your room is on it")
+	var here: Rect2 = by["tower/forepaw"].rect if by.has("tower/forepaw") else Rect2()
+	check(here.get_center().is_equal_approx(Minimap.SIZE * 0.5), "in the middle of the window (%s)" % here)
+	check(is_equal_approx(here.size.x, MapScreen.room_rect(w.catalog["tower/forepaw"]).size.x * Minimap.SCALE), "at half the map's scale")
+	check(by.has("tower/forepaw_lift") and by["tower/forepaw_lift"].how == "visited", "a room you walked beside it")
+	check(not by.has("tower/mine_mouth"), "a room you never walked or charted is not")
+	check(not by.has("eolis/plaza"), "nor is anything beyond the window")
+	GameState.data.charts["tower"] = true
+	lay = Minimap.layout(w)
+	var charted: Array = lay.rooms.filter(func(r: Dictionary) -> bool: return r.id == "tower/mine_mouth")
+	check(charted.size() == 1 and charted[0].how == "charted", "a charted room shows, dimmed")
+	check(here.has_point(lay.player), "the dot stands in your room (%s)" % lay.player)
+	var x0: float = lay.player.x
+	w.player.global_position.x += 20 * Room.TILE
+	check(Minimap.layout(w).player.x > x0, "and moves with you")
+	var win := Minimap.window(Vector2(640, 360))
+	check(win.end.x == 640 - Minimap.MARGIN and win.position.y == Minimap.MARGIN and win.size == Minimap.SIZE, "the window sits in the top right corner (%s)" % win)
+	# What hides it: the map, a menu, a dialog beside the HUD, and a Trial.
+	var layer := Node.new()
+	arena.add_child(layer)
+	var hud := GameHud.new()
+	hud.player = w.player
+	var map := MapScreen.new()
+	var menu := ListMenu.new()
+	var dialog := DialogBox.new()
+	for n: Node in [hud, map, menu, dialog]:
+		layer.add_child(n)
+	await frames(1)
+	check(Minimap.showing(hud), "it shows while you play")
+	map.is_open = true
+	check(not Minimap.showing(hud), "not under the full map")
+	map.is_open = false
+	menu.is_open = true
+	check(not Minimap.showing(hud), "nor under a menu")
+	menu.is_open = false
+	dialog.is_open = true
+	check(not Minimap.showing(hud), "nor under a dialog")
+	dialog.is_open = false
+	Trials.run = {"id": "edges", "time": 0.0}
+	check(not Minimap.showing(hud), "nor in a Trial, whose clock holds the top")
+	Trials.run = {}
+	check(Minimap.showing(hud), "and comes back after")
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("**The minimap (pass 373):**"), "bible 12 says how it is built")
+	layer.queue_free()
+	w.queue_free()
+	await frames(2)

@@ -117,6 +117,7 @@ func _draw() -> void:
 		_draw_glass(origin + Vector2(row_w - 8, 27))
 	_draw_ointment(origin + Vector2(0, 42))
 	_draw_glove(origin + Vector2(48, 42))
+	_draw_minimap()
 	_draw_boss()
 	_draw_trial()
 	_draw_messages()
@@ -127,6 +128,14 @@ func _draw() -> void:
 
 ## A Guru Trial's name and clock, top center, while one is under way; or the
 ## boss rush's count and clock.
+## The minimap in the top right corner (pass 373), while nothing covers it.
+func _draw_minimap() -> void:
+	var world := get_tree().get_first_node_in_group("world") as World
+	if world == null or not Minimap.showing(self):
+		return
+	Minimap.draw(self, Minimap.window(get_viewport_rect().size), world, _pulse_t)
+
+
 func _draw_trial() -> void:
 	if BossRush.active():
 		_draw_rush()
