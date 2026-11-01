@@ -1413,6 +1413,46 @@ func test_every_large_zone_hides_a_room() -> void:
 	w.free()
 
 
+
+## Pass 379 (bible 11): "at least 3 secrets per zone room-cluster, about 70
+## total" was the plan's and nothing counted it. Counted as the completion card
+## counts (hidden rooms and catalogued treasures), every zone's row is the
+## rooms', every zone but Zenis holds three, and the total is the rooms'.
+func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
+	const NAMES := {"eolis": "Eolis", "trunk": "Trunk Hollows", "tower": "Tower of Trunk", "mist": "The Mist",
+		"branches": "Branches (Conflate)", "daybreak": "Branches (Daybreak)", "dartmoor": "Dartmoor",
+		"sunken": "Sunken Spring", "zenis": "Zenis"}
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var note := bible.get_slice("**Secrets per zone, as built (pass 379).**", 1)
+	var table := note.get_slice("| Zone | Rooms | Hidden rooms | Treasures | In all |", 1).get_slice("\n\n", 0)
+	check(table != "", "bible 11 has the secrets-per-zone table")
+	var w := World.new()
+	w.build_catalog()
+	var count := {}
+	for id: String in w.catalog:
+		var info: Dictionary = w.catalog[id]
+		var c: Array = count.get(info.zone, [0, 0, 0])
+		c[0] += 1
+		c[1] += 1 if info.secret else 0
+		c[2] += (info.treasures as Array).size()
+		count[info.zone] = c
+	w.free()
+	var hidden := 0
+	var treasures := 0
+	for zone: String in count:
+		check(NAMES.has(zone), "the table names the zone %s" % zone)
+		var c: Array = count[zone]
+		hidden += c[1]
+		treasures += c[2]
+		var row := table.get_slice("\n| %s | " % NAMES.get(zone, zone), 1).get_slice("\n", 0)
+		var said := row.trim_suffix(" |").split(" | ")
+		var want := "%d | %d | %d | %d" % [c[0], c[1], c[2], c[1] + c[2]]
+		check(" | ".join(said) == want, "%s: the bible says %s, the rooms %s" % [zone, " | ".join(said), want])
+		if zone != "zenis":
+			check(c[1] + c[2] >= 3, "%s holds at least three secrets (%d)" % [zone, c[1] + c[2]])
+	check(note.get_slice("\n\n", 0).contains("**%d hidden rooms and %d treasures, %d in all**" % [hidden, treasures, hidden + treasures]),
+		"bible 11 gives the world's total (%d hidden rooms, %d treasures)" % [hidden, treasures])
+
 ## Pass 135: the Mattock breaks cracked stone, and every large zone the player
 ## walks with it in hand keeps something behind some. Zenis, the last climb,
 ## holds no side treasure at all by design.

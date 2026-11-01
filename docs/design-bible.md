@@ -1354,6 +1354,20 @@ Once the Tree blooms they have other words. (Deviation: no ale is sold, and the 
 
 Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
+**Secrets per zone, as built (pass 379).** The target above was the plan's, and nothing counted it. Counted the way the completion card counts (below): a hidden room is a room with a `secret:` cover, and a treasure is any item or chest the map's catalog lists for a room (`World.catalog`, the `treasures` Treasure Sense marks). Some of those treasures sit in plain sight; the rest lie behind cracked stone, fake walls, card doors and hard climbs. The world holds **12 hidden rooms and 128 treasures, 140 in all**: twice the plan's "about 70". Every zone but Zenis holds at least three. Zenis holds two by design, its hidden pocket in the Threshold with the Battle Helmet in it: it is the last climb, and it keeps no side treasure in its rooms (pass 135). The Sunken Spring hides no room, but its four rooms hold five finds. The Guru Trials are off the map and hold one Mantra Shard each, rung from the bell (3.2). `test_every_zone_holds_the_secrets_the_bible_counts` holds every row to the rooms.
+
+| Zone | Rooms | Hidden rooms | Treasures | In all |
+| --- | --- | --- | --- | --- |
+| Eolis | 7 | 2 | 4 | 6 |
+| Trunk Hollows | 28 | 2 | 25 | 27 |
+| Tower of Trunk | 26 | 2 | 31 | 33 |
+| The Mist | 14 | 1 | 21 | 22 |
+| Branches (Conflate) | 10 | 1 | 16 | 17 |
+| Branches (Daybreak) | 9 | 1 | 10 | 11 |
+| Dartmoor | 14 | 2 | 15 | 17 |
+| Sunken Spring | 4 | 0 | 5 | 5 |
+| Zenis | 8 | 1 | 1 | 2 |
+
 **Hidden rooms in every zone (pass 131):** the Mist, the Branches and Daybreak, 29 rooms between them, had hidden no room at all; their secrets were chests in plain sight. Each now hides one behind a fake wall at floor level, where a curious player walks into the stone: in the Veiled Rise, the hollow corner block west of the Drowned Dwarf (500 g); in the Sunlit Bough, the hollow foot of the west buttress (600 g); and in the Broken Shrine, a cell in the cliff east of the shrine (700 g). The Black Onyx shows each seam on the way back. `test_every_large_zone_hides_a_room` holds every zone of five rooms or more to at least one hidden room.
 
 **Cracked-stone caches (pass 135):** after the Tower, only one room in Dartmoor asked for the Mattock again, so it stopped mattering once its own zone was done, and Eolis never asked for it at all. Four caches now sit behind cracked stone, each with its prize in plain sight through the gap: in the West Gate, beside where a new game starts, a Life Fruit in a niche in the town wall (the first thing the game shows you that you can't have yet); in the Scorched Hall (the Mist), a Mana Dew beside the shelf's Life Fruit; in the North Bough (the Branches), a Mana Dew in a niche on the west wall; and in the Spire Foot (Daybreak), a Mantra Shard hollowed into the west block. That brings Mana Dew to the table's 9, Life Fruit to 13 and cracked stone to 13 rooms. `test_every_large_zone_hides_something_behind_cracked_stone` keeps every zone of five rooms or more (but Zenis, which holds no side treasure) asking for the Mattock, and the reachability checker keeps the West Gate's fruit shut until the Mattock is found.
