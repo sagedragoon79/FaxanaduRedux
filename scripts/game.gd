@@ -201,8 +201,8 @@ func _title() -> void:
 	var rows := func() -> Array:
 		return [
 			{"label": "Journeys", "detail": "Three flasks, a journey in each. Take one up, or begin anew in an empty one." if any else "Three empty flasks. Choose one to begin a journey."},
-			{"label": "Options", "detail": "Screen shake, flashes, rumble, volume and game speed."},
-			{"label": "Controls", "detail": "Rebind the keyboard."},
+			{"label": "Options", "detail": Menus.OPTIONS_DETAIL},
+			{"label": "Controls", "detail": Menus.CONTROLS_DETAIL},
 			{"label": "Quit", "detail": ""},
 		]
 	var pick := func(i: int) -> void:
