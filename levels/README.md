@@ -122,7 +122,11 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 A room's id is its path under `levels/` without `.room`, e.g. `eolis/gate`. The file's
 directory is its zone folder; set `zone:` to match (it picks the map color and the area name).
 
-Rooms are whole screens: 40 tiles wide and 23 tall per screen (two screens tall is 45).
+Rooms are at least one screen and at most 4x3 screens (design bible 3.3, pass 331): a screen
+is 40 tiles wide and 23 tall (two screens tall is 45, three 68). Most rooms are whole screens,
+but a hall or arena may be a screen and a half wide (60 tiles), and the Heart Gate is 56; the
+camera stops at a room's edges, so a part screen only means the camera travels less.
+`tests/test_rooms.gd` (`test_every_room_keeps_the_bibles_size`) holds the bounds.
 `map: x, y` places the room's top-left corner on the map grid, counted in screens.
 
 Mark a door with a digit, repeated over every cell of the opening, and add a `door:` line.
@@ -155,6 +159,8 @@ Sap with open air beside it and more sap below draws as a pouring falls (Amber F
 Safe numbers for layouts (a little under the real movement): a standing jump clears 4 tiles
 up with 2 across, 3 up with 4 across, or 2 up with 5 across. Leave 3 clear tiles of headroom
 for the body. Platforms that should be reachable from the floor go 4 rows above it.
+`tests/test_movement.gd` (`test_the_readmes_safe_jumps_are_real`, pass 355) reads these
+numbers here and makes each jump with the real controller, from a standstill.
 A slope (`/`, `\`) starts on open floor at its low side and meets ground at its high side;
 stack them diagonally for a taller ramp, with ground under each. Walkers turn at a ramp.
 - Moving a pickup (any item, chest or shard) changes its id, which is its room and cell. Add
