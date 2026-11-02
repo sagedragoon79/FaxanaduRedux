@@ -30,6 +30,11 @@ var recent: Array[String] = []
 ## runner fails any test that adds to this.
 var missing: Array[String] = []
 
+## Every name asked for since the game started (pass 390), never cleared. The
+## test runner reads it after a whole run: a sound file that no moment of the
+## suite plays is either dead weight or a sound no test hears.
+var heard := {}
+
 var _players: Array[AudioStreamPlayer] = []
 var _streams := {}
 ## When each voice's sound ends (ms, real time, as the mixer plays it).
@@ -64,6 +69,7 @@ func load_all() -> void:
 ## Plays a sound by name with a little random pitch so repeats don't sound robotic.
 func play(sound: String, pitch_jitter := 0.06, volume_offset_db := 0.0) -> void:
 	recent.append(sound)
+	heard[sound] = true
 	if recent.size() > 32:
 		recent.remove_at(0)
 	var stream := _get_stream(sound)

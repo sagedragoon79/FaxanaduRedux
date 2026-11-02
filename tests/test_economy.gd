@@ -1308,6 +1308,16 @@ func test_the_forepaw_forge_rings_and_throws_sparks() -> void:
 	check(not forge.sparks.is_empty(), "each strike throws sparks")
 	forge._process(0.6)
 	check(forge.sparks.is_empty(), "and the sparks die away")
+	# The ring carries a little way (Forge.HEAR), then is gone (pass 390).
+	var anvil := forge.global_position + Forge.ANVIL
+	w.player.global_position = anvil + Vector2(Forge.HEAR - 40.0, 0)
+	Sfx.recent.clear()
+	forge.strike()
+	check(Sfx.recent.has("anvil"), "the anvil rings in the ear of a hero beside it (%s)" % [Sfx.recent])
+	w.player.global_position = anvil + Vector2(Forge.HEAR + 40.0, 0)
+	Sfx.recent.clear()
+	forge.strike()
+	check(not Sfx.recent.has("anvil"), "and is not heard past %d px" % int(Forge.HEAR))
 
 
 func test_the_great_winch_turns_once_forepaw_is_free() -> void:
