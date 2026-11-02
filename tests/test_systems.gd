@@ -2641,3 +2641,71 @@ func test_the_bibles_architecture_is_as_built() -> void:
 	check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus" and sec.contains("the project's default, Forward+"), "the renderer is Forward+, as 14 says")
 	check(FileAccess.get_file_as_string("res://tools/screenshot.sh").contains("--rendering-driver opengl3"), "and the screenshots draw on the Compatibility renderer")
 	check(sec.contains("`tests/test_runner.gd`") and not DirAccess.dir_exists_absolute("res://addons/gut"), "the tests run on the project's own runner, not GUT")
+
+
+## Pass 397: the menus, driven by the real controller. A ListMenu and the
+## save flasks read their buttons in _process (`Input.is_action_just_pressed`),
+## and every menu test called move, adjust, confirm and back directly, so a
+## menu that read the wrong action, or never read one, passed. This presses the
+## buttons through `Input` itself.
+func _tap(action: String) -> void:
+	Input.action_press(action)
+	await frames(2)
+	Input.action_release(action)
+	await frames(2)
+
+
+func test_the_menus_answer_the_real_controller() -> void:
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	var chose: Array[int] = []
+	var nudged: Array[int] = []
+	menu.open("TEST", "", func() -> Array: return [{"label": "one"}, {"label": "two"}, {"label": "three"}], func(i: int) -> void: chose.append(i))
+	menu.on_adjust = func(_i: int, step: int) -> void: nudged.append(step)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_down")
+	check(menu.cursor == 1, "Down moves the cursor down a row (%d)" % menu.cursor)
+	await _tap("move_up")
+	await _tap("move_up")
+	check(menu.cursor == 2, "Up moves it up, and wraps past the top (%d)" % menu.cursor)
+	await _tap("move_right")
+	await _tap("move_left")
+	check(nudged == [1, -1], "Right and Left change the row's value (%s)" % [nudged])
+	await _tap("jump")
+	await _tap("attack")
+	check(chose == [2, 2], "Jump and Attack each choose the row (%s)" % [chose])
+	await _tap("dash")
+	check(not menu.is_open and not arena.get_tree().paused, "Dash backs out and the game runs again")
+	for action: String in ["block", "pause"]:
+		menu.open("TEST", "", func() -> Array: return [{"label": "one"}], func(_i: int) -> void: pass)
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		await _tap(action)
+		check(not menu.is_open, "%s backs out too" % action.capitalize())
+	menu.free()
+	# The three flasks: Left and Right walk the shelf, Jump takes one up, Dash puts it back.
+	for slot: int in [97, 98, 99]:
+		GameState.delete_save(slot)
+	var picker := SlotPicker.new()
+	picker.slots = [97, 98, 99]
+	arena.add_child(picker)
+	var taken: Array = []
+	picker.chosen.connect(func(slot: int, fresh: bool) -> void: taken.append([slot, fresh]))
+	var gone := [false]
+	picker.cancelled.connect(func() -> void: gone[0] = true)
+	picker.open()
+	check(picker.cursor == 0, "an empty shelf opens on the first flask")
+	await frames(int(SlotPicker.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_right")
+	await _tap("move_right")
+	check(picker.cursor == 2, "Right walks the shelf (%d)" % picker.cursor)
+	await _tap("move_left")
+	check(picker.cursor == 1, "Left walks it back (%d)" % picker.cursor)
+	await _tap("jump")
+	check(taken == [[98, true]] and not picker.is_open, "Jump uncorks the focused empty flask for a new journey (%s)" % [taken])
+	picker.open()
+	await frames(int(SlotPicker.INPUT_GRACE * 60.0) + 2)
+	await _tap("dash")
+	check(gone[0] and not picker.is_open, "Dash puts the shelf away")
+	picker.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_menus_answer_the_real_controller`"), "bible 14 names the test")
