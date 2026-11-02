@@ -2595,6 +2595,20 @@ func test_the_rename_list_finds_every_name_it_keeps() -> void:
 	for id: String in Spells.DATA:
 		check(String(Spells.DATA[id].name) in list.spells, "the spell %s is on the list" % Spells.DATA[id].name)
 	check(list.ranks == GameState.RANKS, "the sixteen ranks are on the list, in order")
+	# The original's foes (pass 393): every foe whose script says it is the
+	# original's has its name on the list, and every listed foe is a foe.
+	var foes_seen := {}
+	for f: String in DirAccess.get_files_at("res://scripts/enemies"):
+		if f.get_extension() != "gd":
+			continue
+		var src := FileAccess.get_file_as_string("res://scripts/enemies".path_join(f))
+		var cls := src.get_slice("class_name ", 1).get_slice("\n", 0).strip_edges()
+		var named: Array = list.foes.filter(func(n: String) -> bool: return cls.ends_with(n))
+		if src.contains("the original"):
+			check(not named.is_empty(), "%s, which its script calls the original's, is on the list" % cls)
+		for n: String in named:
+			foes_seen[n] = true
+	check(foes_seen.size() == list.foes.size(), "every listed foe is a foe in scripts/enemies (%s)" % [foes_seen.keys()])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**IP note:**", 1).get_slice("\n", 0)
 	check(note.contains("`data/original_names.json`") and not note.contains("(all names live in a single"), "bible 1's IP note names the rename list")
 	check(note.contains("%d names" % names.size()), "and says how many names it holds (%d)" % names.size())

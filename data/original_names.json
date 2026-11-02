@@ -4,6 +4,7 @@
 	"places": ["World Tree", "Eolis", "Apolune", "Forepaw", "Mascon", "Victim", "Conflate", "Daybreak", "Dartmoor", "Zenis", "Trunk", "Mist", "Branches"],
 	"people": ["Grieve"],
 	"guardians": ["Rokusutahn", "Zoradohna", "Ripasheiku", "Zorugeriru", "Pakukame", "Borabohra", "King Grieve", "Shadow Eura", "Evil One"],
+	"foes": ["Monodron", "Myconid", "Naga", "Lilith"],
 	"things": ["Elf Ring", "Ruby Ring", "Dworf Ring", "Demon Ring", "Dragon Slayer", "Long Sword", "Leather Armor", "Studded Mail", "Full Plate", "Battle Suit", "Small Shield", "Large Shield", "Magic Shield", "Battle Helmet", "Jack Key", "Queen Key", "King Key", "Ace Key", "Joker Key", "Wing Boots", "Mattock", "Elixir", "Red Potion", "Hour Glass", "Ointment", "Pendant", "Black Onyx", "Magical Rod", "Poison"],
 	"spells": ["Deluge", "Thunder", "Fire", "Death", "Tilte"],
 	"ranks": ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior", "Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"]
