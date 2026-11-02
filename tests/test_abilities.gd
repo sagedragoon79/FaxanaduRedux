@@ -1396,3 +1396,32 @@ func test_pogo_numbers_match_the_bible() -> void:
 	check_near(await _pogo_speed(false), t.pogo_bounce, 0.5, "a pogo bounces at 380 px/s")
 	check_near(Feel.last_hitstop, 0.045, 0.0001, "with a 45 ms hit-stop")
 	check_near(await _pogo_speed(true), t.pogo_bounce_held, 0.5, "holding Jump bounces at 420 px/s")
+
+
+## Pass 388 (bible 8.5): Pakukame tests the air dash, so the Windloft's east
+## door to the Crown-Leaf stands behind an elven veil. With the real controller
+## from the Windloft's floor: walking east without the Stride stops at the veil,
+## and with it a dash passes the veil and the door leads on to the Bloom.
+func test_the_windloft_veil_keeps_the_bloom_for_the_stride() -> void:
+	for stride: bool in [false, true]:
+		var w := make_world({}, "branches/windloft", cell_feet(30, 19))
+		var p := w.player
+		p.abilities["stride"] = stride
+		await frames(3)
+		p.input.move_x = 1
+		var dashed := false
+		for i in 150:
+			p.input.dash_pressed = false
+			if stride and not dashed and p.is_on_floor() and p.global_position.x >= 33.0 * Room.TILE:
+				p.input.dash_pressed = true
+				dashed = true
+			await frames(1)
+			if w.room.id != "branches/windloft":
+				break
+		if stride:
+			check(w.room.id == "branches/crown_leaf", "with the Stride a dash passes the veil and the door leads to the Crown-Leaf (%s)" % w.room.id)
+		else:
+			check(w.room.id == "branches/windloft" and p.global_position.x < 36.0 * Room.TILE,
+				"without the Stride the veil stops you short of the door (x %.0f)" % p.global_position.x)
+		w.queue_free()
+		await frames(1)
