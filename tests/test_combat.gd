@@ -2024,3 +2024,66 @@ func test_every_combat_button_answers_on_its_frame() -> void:
 	room.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("`test_every_combat_button_answers_on_its_frame`"), "5.3 names the test")
+
+
+
+## Pass 402: the fight's timing windows, through the real controller. Pass 386
+## pressed each combat button through `Input`, but the two windows that decide
+## whether a second swing chains (the attack buffer, 0.15 s, and the combo
+## window, 0.40 s) were only ever held with a scripted intent. Swings once for
+## real, then presses Attack again `after` steps later (counted from the first
+## step that shows the swing). Returns [the highest combo index reached, the
+## step the second swing came on, counted from the same start, or -1].
+func _real_second_press(after: int) -> Array:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6))
+	await frames(6)
+	p.input = PlayerInput.new()
+	Input.action_press("attack")
+	var start := -1
+	for i in 10:
+		await frames(1)
+		if p.combo_index == 1:
+			start = Engine.get_physics_frames()
+			break
+	Input.action_release("attack")
+	while Engine.get_physics_frames() < start + after - 1:
+		await frames(1)
+	Input.action_press("attack")
+	var best := 1
+	var came := -1
+	for i in 40:
+		await frames(1)
+		if i == 1:
+			Input.action_release("attack")
+		if p.combo_index == 2 and came < 0:
+			came = Engine.get_physics_frames() - start
+		best = maxi(best, p.combo_index)
+	release_for_real(["attack"])
+	room.free()
+	return [best, came]
+
+
+func test_the_combo_windows_hold_through_the_real_controller() -> void:
+	var c := CombatTuning.new()
+	var cool := int(roundf(c.combo_cooldowns[0] * 60.0))
+	var buffer := int(roundf(c.attack_buffer * 60.0))
+	var window := int(roundf(c.combo_window * 60.0))
+	# The buffer: a press inside the last 0.15 s of the cooldown is held and
+	# swings on the step the cooldown ends; one before that is dropped.
+	var edge := cool - buffer
+	var lands: Array[int] = []
+	for k in range(edge, cool):
+		var got: Array = await _real_second_press(k)
+		check(got[0] == 2, "pressed %d steps into the 12-step cooldown, it is buffered (%s)" % [k, got])
+		lands.append(got[1])
+	check(lands.all(func(f: int) -> bool: return f == lands[0]), "and every buffered press swings on the same step, the one the cooldown ends (%s)" % [lands])
+	var early: Array = await _real_second_press(edge - 1)
+	check(early[0] == 1, "pressed %d steps in, before the buffer opens, it is dropped (%s)" % [edge - 1, early])
+	# The combo window: a press up to 0.40 s after the swing chains; later restarts.
+	var late_in: Array = await _real_second_press(window - 1)
+	check(late_in[0] == 2, "pressed %d steps after the swing, inside 0.40 s, it chains (%s)" % [window - 1, late_in])
+	var too_late: Array = await _real_second_press(window)
+	check(too_late[0] == 1, "pressed %d steps after, it starts the combo over (%s)" % [window, too_late])
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("The combo's windows, pressed (pass 402)"), "bible 5.3 says so")
