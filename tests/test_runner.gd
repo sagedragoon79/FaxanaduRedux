@@ -28,6 +28,8 @@ var _trace := false
 var _clean_settings := {}
 ## Every save file in user:// and its hash when the test began (pass 399).
 var _clean_saves := {}
+## The flask every test starts on (pass 407): the game's own default.
+const CLEAN_SLOT := 1
 ## The least play, in minutes of game time, a whole run's soaks may cover
 ## (pass 383, design bible 15.3). A full run plays about 50; a soak cut short
 ## or dropped fails the run instead of quietly shrinking it.
@@ -149,6 +151,9 @@ func _clean_slate() -> void:
 	# A menu left open leaves the game paused, and the next test's world
 	# would stand still (pass 399).
 	get_tree().paused = false
+	# Every test begins on the first flask (pass 407), so a test that writes
+	# a save without choosing a test slot is caught by the save check below.
+	GameState.slot = CLEAN_SLOT
 	_clean_saves = saves_on_disk()
 	# A button pressed through the real controller (press_for_real, pass 386)
 	# stays down until released, and the next test's hero would read it.
@@ -181,6 +186,8 @@ func _leaks() -> Array[String]:
 		out.append("feel or volume changed")
 	if get_tree().paused:
 		out.append("the game left paused")
+	if GameState.slot != CLEAN_SLOT:
+		out.append("save slot left on %d" % GameState.slot)
 	var changed := changed_saves()
 	if not changed.is_empty():
 		out.append("saves changed (%s)" % ", ".join(changed))
