@@ -2846,3 +2846,53 @@ func test_the_map_answers_its_buttons() -> void:
 	map.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 14. ", 1).get_slice("\n## 15. ", 0)
 	check(note.contains("`test_the_map_answers_its_buttons`"), "bible 14 names the test")
+
+
+## Pass 406 (bible 13.3): rests and pins, heard through the buttons. The shrine's
+## save chime was only heard by the "every sound" gate, never by a test of its
+## own, and the map's pin sounds (`pin`, `pin_lift`, and `menu_refuse` when the
+## map holds all it can) were never listened for. Up at a shrine and Jump on the
+## open map are pressed here with the real controller, and each is heard.
+func test_rests_and_pins_are_heard_through_the_buttons() -> void:
+	var was := GameState.slot
+	GameState.slot = 9
+	var w := make_world({}, "eolis/market")
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var shrine := SaveShrine.new()
+	w.room.add_child(shrine)
+	shrine.global_position = p.global_position
+	await frames(2)
+	p.hp = 1
+	Sfx.recent.clear()
+	Input.action_press("move_up")
+	await frames(3)
+	Input.action_release("move_up")
+	await frames(1)
+	check(p.hp == p.max_hp and GameState.has_save(9), "Up at a shrine rests and saves")
+	check(Sfx.recent.count("save") == 1, "with the save chime, once (%s)" % [Sfx.recent])
+	shrine.free()
+	GameState.delete_save(9)
+	GameState.slot = was
+	var map := MapScreen.new()
+	map.world = w
+	arena.add_child(map)
+	await frames(1)
+	await _send_action("map")
+	Sfx.recent.clear()
+	await _send_action("jump")
+	check(Sfx.recent == (["pin"] as Array[String]), "Jump on the map drops a pin with a tap (%s)" % [Sfx.recent])
+	Sfx.recent.clear()
+	await _send_action("jump")
+	check(Sfx.recent == (["pin_lift"] as Array[String]), "and Jump again lifts it with its own sound (%s)" % [Sfx.recent])
+	for i in GameState.MAX_PINS:
+		GameState.data.pins.append(["eolis/gate", 8 + i * 40, 8])
+	Sfx.recent.clear()
+	await _send_action("jump")
+	check(GameState.data.pins.size() == GameState.MAX_PINS and Sfx.recent == (["menu_refuse"] as Array[String]), "a full map refuses one more pin, and says so (%s)" % [Sfx.recent])
+	GameState.data.pins.clear()
+	await _send_action("map")
+	map.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 13. ", 1).get_slice("\n## 14. ", 0)
+	check(note.contains("`test_rests_and_pins_are_heard_through_the_buttons`"), "bible 13 names the test")
