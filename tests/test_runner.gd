@@ -139,6 +139,10 @@ func _clean_slate() -> void:
 	BossRush.run = {}
 	PlayerVisual.forced = ""
 	PlayerVisual.body_sets = true
+	# A button pressed through the real controller (press_for_real, pass 386)
+	# stays down until released, and the next test's hero would read it.
+	for a in held_actions():
+		Input.action_release(a)
 
 
 ## Global state a test left changed (pass 231). Statics outlive the test that
@@ -159,8 +163,20 @@ func _leaks() -> Array[String]:
 		out.append("settings changed")
 	if Drop.bread_chance != 0.0 or Drop.mana_chance != 0.0 or Drop.poison_chance != 0.0 or Drop.rare_chance != 0.0:
 		out.append("drop chances on")
+	var held := held_actions()
+	if not held.is_empty():
+		out.append("buttons held (%s)" % ", ".join(held))
 	if Feel.hitstop_enabled or Feel.rumble_enabled or Feel.game_speed != 1.0 or Feel.shake_scale != 1.0 or Sfx.volume_db != -80.0:
 		out.append("feel or volume changed")
+	return out
+
+
+## Input actions the real controller holds down now (pass 391).
+func held_actions() -> PackedStringArray:
+	var out := PackedStringArray()
+	for a: StringName in InputMap.get_actions():
+		if not String(a).begins_with("ui_") and Input.is_action_pressed(a):
+			out.append(String(a))
 	return out
 
 

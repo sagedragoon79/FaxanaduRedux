@@ -31,8 +31,14 @@ func test_every_test_starts_from_a_clean_slate() -> void:
 	TimeStop.start()
 	var leaks: Array = runner.call("_leaks")
 	check(leaks.has("settings changed") and leaks.has("time stopped"), "a changed option and stopped time count as leaks (%s)" % [leaks])
+	# A button left down through the real controller is a leak too (pass 391).
+	Input.action_press("jump")
+	Input.action_press("attack")
+	leaks = runner.call("_leaks")
+	check(leaks.has("buttons held (jump, attack)") or leaks.has("buttons held (attack, jump)"), "a button left held counts as a leak (%s)" % [leaks])
 	runner.call("_clean_slate")
 	check((runner.call("_leaks") as Array).is_empty(), "and the slate wipes them")
+	check(not Input.is_action_pressed("jump") and not Input.is_action_pressed("attack"), "the buttons are let go")
 
 func test_settings_save_load_and_apply() -> void:
 	Settings.path = TEMP_SETTINGS
