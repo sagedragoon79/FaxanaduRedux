@@ -2709,3 +2709,68 @@ func test_the_menus_answer_the_real_controller() -> void:
 	picker.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_the_menus_answer_the_real_controller`"), "bible 14 names the test")
+
+
+## Pass 398: each press of the real controller in a menu is heard as the
+## bible says (13.3): the cursor blips, a value blips, a row you can't choose
+## says no, backing out is quiet; on the shelf of flasks a step blips, Block
+## asks with a blip, Jump pours one out or uncorks one.
+func test_every_press_in_a_menu_is_heard() -> void:
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	menu.open("TEST", "", func() -> Array: return [{"label": "one"}, {"label": "two", "enabled": false}], func(_i: int) -> void: pass)
+	menu.on_adjust = func(_i: int, _step: int) -> void: pass
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var heard := func(action: String) -> Array[String]:
+		Sfx.recent.clear()
+		await _tap(action)
+		return Sfx.recent.duplicate()
+	for action: String in ["move_down", "move_up"]:
+		var got: Array[String] = await heard.call(action)
+		check(got == ["blip"], "%s moves the cursor with a blip (%s)" % [action, got])
+	for action: String in ["move_right", "move_left"]:
+		var got: Array[String] = await heard.call(action)
+		check(got == ["blip"], "%s changes a value with a blip (%s)" % [action, got])
+	await _tap("move_down")
+	for action: String in ["jump", "attack"]:
+		var got: Array[String] = await heard.call(action)
+		check(got == ["menu_refuse"], "%s on a row you can't choose says no (%s)" % [action, got])
+	var right: Array[String] = await heard.call("move_right")
+	check(right.is_empty(), "a row you can't choose has no value to change, and is quiet (%s)" % [right])
+	var left: Array[String] = await heard.call("dash")
+	check(left.is_empty() and not menu.is_open, "backing out is quiet (%s)" % [left])
+	menu.free()
+	# The shelf: one full flask and two empty ones.
+	for slot: int in [97, 98, 99]:
+		GameState.delete_save(slot)
+	var was := GameState.slot
+	GameState.new_game()
+	GameState.data.save_room = "trunk/apolune"
+	check(GameState.save_game(97), "a journey rests in the first flask")
+	GameState.new_game()
+	GameState.slot = was
+	var picker := SlotPicker.new()
+	picker.slots = [97, 98, 99]
+	arena.add_child(picker)
+	picker.open()
+	picker.cursor = 0
+	await frames(int(SlotPicker.INPUT_GRACE * 60.0) + 2)
+	for action: String in ["move_right", "move_left"]:
+		var got: Array[String] = await heard.call(action)
+		check(got == ["blip"], "%s steps along the shelf with a blip (%s)" % [action, got])
+	var ask: Array[String] = await heard.call("block")
+	check(ask == ["blip"] and picker.pouring, "Block on a full flask asks with a blip (%s)" % [ask])
+	var keep: Array[String] = await heard.call("dash")
+	check(keep.is_empty() and not picker.pouring and GameState.has_save(97), "Dash keeps it, quietly (%s)" % [keep])
+	await _tap("block")
+	var pour: Array[String] = await heard.call("jump")
+	check(pour == ["flask_pour"] and not GameState.has_save(97), "Jump pours it out, glugging (%s)" % [pour])
+	var none: Array[String] = await heard.call("block")
+	check(none.is_empty() and not picker.pouring, "an empty flask has nothing to pour, and is quiet (%s)" % [none])
+	var uncork: Array[String] = await heard.call("jump")
+	check(uncork == ["flask_uncork"] and not picker.is_open, "Jump uncorks an empty flask for a new journey (%s)" % [uncork])
+	picker.free()
+	for slot: int in [97, 98, 99]:
+		GameState.delete_save(slot)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_every_press_in_a_menu_is_heard`"), "bible 13.3 names the test")
