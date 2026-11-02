@@ -2053,6 +2053,74 @@ func test_swimming_keeps_the_lands_moves() -> void:
 ## `Input` and `PlayerInput.poll` to the move was never timed. Each move here is
 ## pressed through `Input` itself (the real controller, not a scripted intent)
 ## and must answer in the first physics step that sees the press.
+## Pass 392: the held buttons, through the real controller. Pass 384 timed
+## every press, but the moves that read a button held or let go (the jump cut,
+## a tap's short hop, the apex hang, the fast fall) were only ever scripted.
+## A release is seen in the step it is made, so each answers on that step.
+func test_every_held_button_answers_on_its_frame() -> void:
+	var t := MovementTuning.new()
+	var g := t.gravity / 60.0
+	# Letting go of Jump on the way up keeps 0.45 of the rise, in the step it is let go.
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 11))
+	await _settle(p)
+	await press_for_real(p, ["jump"])
+	await frames(2)
+	var before := p.velocity.y
+	check(before < -250.0 and Input.is_action_pressed("jump"), "rising fast with Jump held (%.0f)" % before)
+	release_for_real(["jump"])
+	await frames(1)
+	check_near(p.velocity.y, before * t.jump_cut_multiplier + g, 0.5, "the release cuts the rise on its frame")
+	room.free()
+	# A tap: pressed and let go at once, a short hop of about 18 px.
+	room = make_room(FLAT)
+	p = make_player(room, Vector2i(10, 11))
+	await _settle(p)
+	var start_y := p.global_position.y
+	var min_y := start_y
+	await press_for_real(p, ["jump"])
+	release_for_real(["jump"])
+	for i in 40:
+		await frames(1)
+		min_y = minf(min_y, p.global_position.y)
+	var h := start_y - min_y
+	check(h > 10.0 and h < 26.0, "a tap hops about 18 px (%.1f)" % h)
+	room.free()
+	# Held over the top, Jump halves gravity while |vy| < 40 px/s.
+	room = make_room(FLAT)
+	p = make_player(room, Vector2i(10, 11))
+	await _settle(p)
+	await press_for_real(p, ["jump"])
+	var hang := 0.0
+	for i in 40:
+		var vy := p.velocity.y
+		await frames(1)
+		if absf(vy) < t.apex_threshold - g and absf(p.velocity.y) < t.apex_threshold and not p.is_on_floor():
+			hang = p.velocity.y - vy
+			break
+	check_near(hang, g * t.apex_gravity_multiplier, 0.5, "held Jump hangs at the apex at half gravity (%.2f)" % hang)
+	release_for_real(["jump"])
+	room.free()
+	# Down held through a fall tops out at 620 px/s, and let go, falls back to 520.
+	room = make_room(LEDGE)
+	p = make_player(room, Vector2i(10, 1), {"glove": false})
+	p.input = PlayerInput.new()
+	Input.action_press("move_down")
+	var top := 0.0
+	for i in 40:
+		await frames(1)
+		top = maxf(top, p.velocity.y)
+		if top >= t.max_fast_fall_speed:
+			break
+	check_near(top, t.max_fast_fall_speed, 0.01, "Down held falls at 620 px/s")
+	release_for_real(["move_down"])
+	await frames(1)
+	check_near(p.velocity.y, t.max_fall_speed, 0.01, "let go, the fall drops back to 520 px/s on its frame")
+	room.free()
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("`test_every_held_button_answers_on_its_frame`"), "6.7's Input line names the test")
+
+
 func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 	var t := MovementTuning.new()
 	var grav := t.gravity / 60.0
