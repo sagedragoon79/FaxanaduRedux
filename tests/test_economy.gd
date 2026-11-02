@@ -866,6 +866,32 @@ func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	check(GameState.mantra() == m, "the same journey gives the same mantra")
 	GameState.data.gold = int(GameState.data.gold) + 1
 	check(GameState.mantra() != m, "any change to the journey changes it")
+	# Pass 401: the old password, recited where the original recited it. Resting
+	# with a Guru saves and tells you the journey's mantra; a shrine saves quietly.
+	const SLOT := 9
+	var was := GameState.slot
+	GameState.slot = SLOT
+	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(9, 19))
+	await frames(2)
+	var guru: Npc = _find(w.room, Npc)
+	var toasts: Array[String] = []
+	var hear := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(hear)
+	guru.rest(w.player)
+	var said := GameState.mantra()
+	check(toasts.size() == 1 and toasts[0] == "Rested. Your mantra is: " + said, "the Guru's rest recites the journey's mantra (%s)" % [toasts])
+	check(GameState.has_save(SLOT), "and saves the journey it names")
+	var shrine := SaveShrine.new()
+	w.room.add_child(shrine)
+	shrine.global_position = w.player.global_position
+	toasts.clear()
+	shrine.interact(w.player)
+	check(toasts.size() == 1 and not toasts[0].contains("mantra"), "a shrine saves without one: the mantra is the Guru's (%s)" % [toasts])
+	GameState.toast.disconnect(hear)
+	GameState.delete_save(SLOT)
+	GameState.slot = was
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_guru_gives_a_mantra_for_the_journey` rests with a Guru"), "11 names the test")
 
 
 # --- NPCs ----------------------------------------------------------------------------
