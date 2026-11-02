@@ -2189,3 +2189,20 @@ func test_the_minimap_stays_cheap_on_a_full_map() -> void:
 	check(kept_us < 100.0, "and under 0.1 ms a frame (%.1f us)" % kept_us)
 	w.queue_free()
 	await frames(2)
+
+
+## Pass 383 (bible 15.3): the rubric's Stability row asks for a 2-hour soak, and
+## nothing had counted how much play the soaks give. The runner now counts it
+## (about 50 minutes a full run) and fails an unfiltered run under its floor;
+## this holds the floor to the bible's line.
+func test_the_soak_floor_is_the_one_the_bible_gives() -> void:
+	var floor_minutes: int = (load("res://tests/test_runner.gd") as Script).get_script_constant_map()["SOAK_FLOOR_MINUTES"]
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var note := bible.get_slice("**How long the soaks play (pass 383", 1).get_slice("\n\n", 0)
+	check(note.contains("less than `SOAK_FLOOR_MINUTES` (%d) fails" % floor_minutes), "15.3 gives the soaks' floor (%d minutes)" % floor_minutes)
+	check(floor_minutes >= 30, "the floor keeps the soaks at half an hour or more (%d)" % floor_minutes)
+	var soaks := 0
+	for m: Dictionary in get_method_list():
+		if String(m.name).begins_with("test_"):
+			soaks += 1
+	check(note.contains("A full run's %d soaks" % soaks), "15.3 counts the soaks (%d)" % soaks)

@@ -26,6 +26,13 @@ var _filter := ""
 var _trace := false
 ## Every option as a fresh reset() leaves it (pass 327), for the leak check.
 var _clean_settings := {}
+## The least play, in minutes of game time, a whole run's soaks may cover
+## (pass 383, design bible 15.3). A full run plays about 50; a soak cut short
+## or dropped fails the run instead of quietly shrinking it.
+const SOAK_FLOOR_MINUTES := 45
+## Physics frames played by the soaks (test_soak.gd), and how many ran (pass 383).
+var _soak_frames := 0
+var _soak_tests := 0
 
 
 func _ready() -> void:
@@ -51,7 +58,11 @@ func _ready() -> void:
 			Sfx.missing.clear()
 			suite.allows_engine_errors = false
 			var errors := ErrorCatcher.start(false)
+			var frame0 := Engine.get_physics_frames()
 			await Callable(suite, name).call()
+			if suite_script.resource_path.ends_with("test_soak.gd"):
+				_soak_frames += Engine.get_physics_frames() - frame0
+				_soak_tests += 1
 			# An engine error the game carries on past is still a bug (pass 215).
 			var logged := errors.stop()
 			if not logged.is_empty() and not suite.allows_engine_errors:
@@ -74,6 +85,11 @@ func _ready() -> void:
 					Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)])
 	for suffix: String in ["", ".bak", ".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TestSuite.SETTINGS_PATH + suffix))
+	if _soak_tests > 0:
+		print("\nSoak: %d tests played %.1f minutes of the game (%d physics frames)" % [_soak_tests, _soak_frames / 3600.0, _soak_frames])
+	if _filter == "":
+		record("soak time", _soak_frames >= SOAK_FLOOR_MINUTES * 3600,
+			"a whole run's soaks play at least %d minutes of the game (%.1f)" % [SOAK_FLOOR_MINUTES, _soak_frames / 3600.0])
 	print("\n%d checks passed, %d failed" % [_passed, _failed])
 	for f in _failures:
 		print("  - " + f)
