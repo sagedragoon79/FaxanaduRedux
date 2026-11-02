@@ -4616,3 +4616,58 @@ func test_every_guardian_opens_with_its_reveal() -> void:
 		await frames(2)
 	check(shortest >= 1.15 and shortest <= 1.25, "the shortest reveal is 1.2 s (%.2f)" % shortest)
 	check(longest >= 2.35 and longest <= 2.45, "the longest is 2.4 s (%.2f)" % longest)
+
+
+## Pass 396 (bible 8): the walk from a rest to a fight is paid on every retry,
+## so every guardian's arena is at most one door from a Meditation Shrine or a
+## Guru's room. The Evil One's veins and heart, the final climb past the
+## throne's shrine, are the written exceptions.
+func test_every_guardian_is_a_door_from_a_rest() -> void:
+	const FAR := {"evil_veins": 2, "evil_one": 3}
+	var doors := {}
+	var rests: Array[String] = []
+	var arenas := {}
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for f: String in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var id := "%s/%s" % [zone, f.get_basename()]
+			var text := FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])
+			var head := text.get_slice("\n---\n", 0)
+			doors[id] = []
+			var rest := text.get_slice("\n---\n", 1).contains("S")
+			for line: String in head.split("\n"):
+				if line.begins_with("door:"):
+					doors[id].append(line.get_slice(",", 1).strip_edges())
+				elif line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "guru":
+					rest = true
+				elif line.begins_with("boss:"):
+					arenas[id] = line.trim_prefix("boss:").strip_edges()
+			if rest:
+				rests.append(id)
+	var dist := {}
+	var queue: Array[String] = []
+	for r: String in rests:
+		dist[r] = 0
+		queue.append(r)
+	while not queue.is_empty():
+		var id: String = queue.pop_front()
+		for to: String in doors[id]:
+			if doors.has(to) and not dist.has(to):
+				dist[to] = int(dist[id]) + 1
+				queue.append(to)
+			# Doors lead back, so the graph is walked both ways.
+		for other: String in doors:
+			if not dist.has(other) and id in doors[other]:
+				dist[other] = int(dist[id]) + 1
+				queue.append(other)
+	check(arenas.size() == 16, "sixteen guardians have arenas (%d)" % arenas.size())
+	for id: String in arenas:
+		var boss: String = arenas[id]
+		var limit := int(FAR.get(boss, 1))
+		check(int(dist.get(id, 99)) <= limit, "%s's arena (%s) is %d doors from a rest, at most %d" % [boss, id, int(dist.get(id, 99)), limit])
+	for boss: String in FAR:
+		var id: String = arenas.find_key(boss)
+		check(int(dist.get(id, 0)) == FAR[boss], "%s is the %d-door exception 8 names" % [boss, FAR[boss]])
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**A rest at every guardian's door (pass 396).**", 1).get_slice("\n\n", 0)
+	check(note.contains("`test_every_guardian_is_a_door_from_a_rest`") and note.contains("(2 and 3 doors)"), "bible 8 names the rule, its exceptions and the test")
