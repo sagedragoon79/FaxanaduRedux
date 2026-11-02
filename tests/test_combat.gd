@@ -1440,8 +1440,16 @@ func test_the_dagger_the_broad_sword_and_the_equipment_page_have_voices() -> voi
 	p.input.attack_pressed = true
 	await frames(2)
 	check(Sfx.recent.has("broad_slash") and not Sfx.recent.has("slash"), "the Broad Sword's cut is its own (%s)" % [Sfx.recent])
-	p.is_heavy_swing = true
-	check(p.swing_sound() == "broad_heavy", "and so is its heavy cut")
+	# Its heavy cut, the combo's last on the ground, is heard for real (pass 390).
+	await frames(40)
+	Sfx.recent.clear()
+	var heard := false
+	for i in 120:
+		p.input.attack_pressed = true
+		await frames(1)
+		heard = heard or Sfx.recent.has("broad_heavy")
+	p.input.attack_pressed = false
+	check(heard, "and so is its heavy cut, swung (%s)" % [Sfx.recent])
 	for sound: String in ["dagger_hit", "broad_slash", "broad_heavy", "sheathe", "gear_on"]:
 		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
 	check(Menus.equipment_sound("long_sword") == "sheathe", "a blade taken in hand slides from its sheath")

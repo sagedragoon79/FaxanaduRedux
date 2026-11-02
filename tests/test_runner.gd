@@ -90,10 +90,30 @@ func _ready() -> void:
 	if _filter == "":
 		record("soak time", _soak_frames >= SOAK_FLOOR_MINUTES * 3600,
 			"a whole run's soaks play at least %d minutes of the game (%.1f)" % [SOAK_FLOOR_MINUTES, _soak_frames / 3600.0])
+	if _filter == "":
+		var unheard := unheard_sounds()
+		record("every sound heard", unheard.is_empty(),
+			"a whole run plays every sound in assets/sfx at least once (not heard: %s)" % [unheard])
 	print("\n%d checks passed, %d failed" % [_passed, _failed])
 	for f in _failures:
 		print("  - " + f)
 	get_tree().quit(1 if _failed > 0 else 0)
+
+
+## Sounds a prop plays on a voice of its own, not through Sfx, each with the
+## test that hears it.
+const OWN_VOICE := {"falls_pour": "test_the_aqueducts_fall_is_heard_near_it (AqueductSpill loops it)"}
+
+
+## Sound files no test has played since the run began (pass 390, bible 13.3).
+func unheard_sounds() -> Array[String]:
+	var out: Array[String] = []
+	for f in DirAccess.get_files_at(Sfx.SFX_DIR):
+		var file := f.trim_suffix(".remap").trim_suffix(".import")
+		var sound := file.get_basename()
+		if file.ends_with(".wav") and not Sfx.heard.has(sound) and not OWN_VOICE.has(sound) and not out.has(sound):
+			out.append(sound)
+	return out
 
 
 ## The state every test starts from: default options (their file kept apart

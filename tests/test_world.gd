@@ -123,6 +123,25 @@ func test_gym_enemies_stay_put() -> void:
 			"%s stays near its post (home %s, now %s)" % [e.get_script().get_global_name(), e.home, e.global_position])
 
 
+## Pass 390: a door that fades is heard. Tests skip fades (`World.instant`), so
+## no whole run had ever played the door's creak: a door into another zone fades
+## out on it, and the creak plays once, as the fade begins.
+func test_a_door_that_fades_is_heard() -> void:
+	var w := make_world({}, "eolis/east_gate")
+	w.fader = ColorRect.new()
+	w.fader.color = Color(0, 0, 0, 0)
+	w.add_child(w.fader)
+	w.instant = false
+	await frames(2)
+	check(w.transition_kind(w.room.doors[2]) == "fade", "the East Gate's door into the Trunk fades")
+	Sfx.recent.clear()
+	w.use_door(2)
+	await frames(int((World.FADE_OUT + World.FADE_IN) * 60.0) + 10)
+	check(w.room.id == "trunk/entrance", "and leads into the Trunk")
+	check(Sfx.recent.count("door") == 1, "the door creaks once as the fade begins (%s)" % [Sfx.recent])
+	check(not w.busy and is_equal_approx(w.fader.color.a, 0.0), "and the fade clears")
+
+
 func test_arriving_through_a_door_clears_cracked_stone_in_the_way() -> void:
 	# The Forepaw Stair can be entered from its far side (a test, a later shortcut);
 	# coming back must not leave the player inside Winch Hall's cracked wall.
