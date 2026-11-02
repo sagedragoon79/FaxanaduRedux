@@ -2606,3 +2606,68 @@ func _read_texts(dir: String, out: Dictionary) -> void:
 	for f: String in DirAccess.get_files_at(dir):
 		if f.get_extension() in ["gd", "json", "room"]:
 			out[dir.path_join(f)] = FileAccess.get_file_as_string(dir.path_join(f))
+
+
+## Pass 387 (bible 3.1): the overview's diagram was the plan's. It had the
+## Tower meet Mascon, Conflate the Canopy Spires and the Spires Dartmoor, and
+## said each zone looped back on earlier ones through shortcuts; no test read
+## it. The zones meet in one chain, a pair at one doorway each. This holds 3.1's
+## doorway table to the rooms' doors both ways, and its count of loops in each
+## zone (links between its rooms, less the rooms a tree would need).
+func test_the_zones_meet_as_the_bible_draws() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	var crossings := {}
+	var links := {}
+	var rooms := {}
+	for id: String in w.catalog:
+		var zone := String(w.catalog[id].zone)
+		if zone in ["gym", "test", ""]:
+			continue
+		rooms[zone] = int(rooms.get(zone, 0)) + 1
+		for n: int in w.catalog[id].doors:
+			var to := String(w.catalog[id].doors[n].target)
+			if not w.catalog.has(to) or to == id:
+				continue
+			var other := String(w.catalog[to].zone)
+			var pair := [id, to]
+			pair.sort()
+			if other == zone:
+				if not links.has(zone):
+					links[zone] = {}
+				links[zone]["%s|%s" % pair] = true
+			else:
+				var zones := [zone, other]
+				zones.sort()
+				crossings["%s, %s" % zones] = "%s / %s" % pair
+	w.queue_free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var section := bible.get_slice("**How the zones meet, as built (pass 387).**", 1).get_slice("\n### 3.2 ", 0)
+	var written := {}
+	for line: String in section.split("\n"):
+		var cells := line.split("|")
+		if cells.size() == 4 and cells[1].strip_edges() not in ["Zones", "---"]:
+			# Each pair as the rooms give it: the zones and the rooms in order.
+			var zs := Array(cells[1].strip_edges().split(", "))
+			zs.sort()
+			var rs := Array(cells[2].replace("`", "").split(" / ")).map(func(r: String) -> String: return r.strip_edges())
+			rs.sort()
+			written["%s, %s" % zs] = "%s / %s" % rs
+	check(written.size() == 8, "3.1's table has the eight doorways (%d)" % written.size())
+	for pair: String in crossings:
+		check(written.get(pair, "") == crossings[pair], "%s meet at %s, as 3.1 says (it says %s)" % [pair, crossings[pair], written.get(pair, "nothing")])
+	for pair: String in written:
+		check(crossings.has(pair), "the doorway 3.1 gives for %s is in the rooms" % pair)
+	var loops := {}
+	for zone: String in rooms:
+		if zone == "trials":
+			continue
+		loops[zone] = Dictionary(links.get(zone, {})).size() - (int(rooms[zone]) - 1)
+	check(loops.trunk == 8 and section.contains("Trunk Hollows has 8 loops (%d links among %d rooms)" % [links.trunk.size(), rooms.trunk]),
+		"Trunk Hollows loops %d times, as 3.1 says" % loops.trunk)
+	check(loops.tower == 4 and section.contains("the Tower of Trunk 4 (%d among %d)" % [links.tower.size(), rooms.tower]),
+		"the Tower loops %d times, as 3.1 says" % loops.tower)
+	for zone: String in loops:
+		if zone not in ["trunk", "tower"]:
+			check(loops[zone] == 0, "%s's rooms form a tree, as 3.1 says (%d loops)" % [zone, loops[zone]])
+	for id: String in ["tower/foot", "tower/forepaw", "eolis/east_gate"]:
+		check(LiftCage.STOPS.any(func(s: Array) -> bool: return s[0] == id), "the Forepaw lift stops at %s, a way back that is not a door" % id)

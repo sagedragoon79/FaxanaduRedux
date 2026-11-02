@@ -45,25 +45,43 @@ This is the single source of truth for the remake. Every thread that builds code
 
 ### 3.1 Overview
 
-The world is one vertical map: **the World Tree**, **126 rooms** across 7 zones plus 2 optional areas (the plan said about 190; see below). The player climbs upward overall, but each zone sprawls horizontally and loops back on earlier zones through shortcuts.
+The world is one vertical map: **the World Tree**, **126 rooms** across 7 zones plus 2 optional areas (the plan said about 190; see below). The player climbs upward overall, and each zone sprawls horizontally. (The plan said each zone also looped back on earlier zones through shortcuts; as built, the zones meet in one chain, below.)
 
 ```
-                          [7 ZENIS - the Meteor Fortress]
-                                       |
-                 [6 DARTMOOR - drowned dwarf capital]----(Sunken Spring, optional)
-                          /                    \
-        [5 BRANCHES - Daybreak]          [5b Canopy Spires]
-                  |                             |
-        [4 BRANCHES - Conflate] ---------------+
-                  |
-   [3 MIST - Victim] ---- [3b Mist Marsh - Mascon]
-                  |                   |
-   [2 TOWER OF TRUNK - Forepaw] ------+
-                  |
-   [1 TRUNK HOLLOWS - Apolune]
-                  |
-           [0 EOLIS - hub town] ---- (Guru Trials, optional, unlocks over time)
+            [7 ZENIS - the Meteor Fortress]
+                         |  Threshold / Zenis Gate
+            [6 DARTMOOR - drowned dwarf capital] ---- (Sunken Spring, optional:
+                         |                             Meteor Rise / Spring Gate)
+                         |  Upper Stair / Spring of Sky
+            [5 DAYBREAK and the Canopy Spires]
+                         |  Storm Ledge / Crown-Leaf
+            [4 BRANCHES - Conflate]
+                         |  Windward Climb / Spring of Mist
+            [3 MIST - Victim and Mascon]
+                         |  Fog Cut / Smelter
+            [2 TOWER OF TRUNK - Forepaw] . . . (the Forepaw lift) . . .
+                         |  Tower Foot / Spring of Trunk                .
+            [1 TRUNK HOLLOWS - Apolune]                                 .
+                         |  Hollow Mouth / East Gate                    .
+            [0 EOLIS - hub town] . . . . . . . . . . . . . . . . . . . .
+                 (Guru Trials, optional, through the Guru)
 ```
+
+**How the zones meet, as built (pass 387).** The plan's diagram had the Tower meet Mascon, Conflate meet the Canopy Spires, and the Spires meet Dartmoor, and said each zone looped back on earlier ones through shortcuts. The game was built otherwise: the zones meet in a single chain, each pair at exactly one doorway, and no door joins two zones that are not neighbours. Mascon and the Canopy Spires are parts of their zones (the Mist and Daybreak), not zones of their own. The ways back that skip the chain are not doors: the Forepaw lift (the Tower Foot, Forepaw and a cage at Eolis's East Gate, 4.4), the Mantra Path between Gurus (3.3), and the Guru's road to the Trials.
+
+| Zones | Doorway (room / room) |
+| --- | --- |
+| eolis, trunk | `eolis/east_gate` / `trunk/entrance` |
+| trunk, tower | `trunk/spring_of_trunk` / `tower/foot` |
+| tower, mist | `tower/smelter` / `mist/fog_cut` |
+| mist, branches | `mist/spring_of_mist` / `branches/windward_climb` |
+| branches, daybreak | `branches/crown_leaf` / `daybreak/storm_ledge` |
+| daybreak, dartmoor | `daybreak/sky_spring` / `dartmoor/upper_stair` |
+| dartmoor, sunken | `dartmoor/meteor_rise` / `sunken/spring_gate` |
+| dartmoor, zenis | `dartmoor/zenis_gate` / `zenis/threshold` |
+
+Inside the zones, only the first two loop: a room there can be reached by more than one way. Trunk Hollows has 8 loops (35 links among 28 rooms) and the Tower of Trunk 4 (29 among 26). In Eolis and every zone from the Mist up, the rooms form a tree: one way into each, so the way back is the way you came, a lift, or the Mantra Path. `test_the_zones_meet_as_the_bible_draws` holds the table and these counts to the rooms' doors.
+
 
 ### 3.2 Zones
 
