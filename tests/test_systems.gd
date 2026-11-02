@@ -2795,3 +2795,54 @@ func test_every_press_in_a_menu_is_heard() -> void:
 		GameState.delete_save(slot)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_every_press_in_a_menu_is_heard`"), "bible 13.3 names the test")
+
+
+func _send_action(action: String) -> void:
+	var down := InputEventAction.new()
+	down.action = action
+	down.pressed = true
+	Input.parse_input_event(down)
+	Input.flush_buffered_events()
+	await frames(1)
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	Input.flush_buffered_events()
+	await frames(1)
+
+
+## Pass 405 (bible 3.3, 14): the map by the real buttons. The map reads its
+## buttons as input events (`_unhandled_input`), and every map test called
+## `toggle` and `pin` straight, so the buttons a player presses (Map to open
+## and close, Jump to pin, Pause to close) were never sent. Each goes through
+## the engine's input here as an action event.
+func test_the_map_answers_its_buttons() -> void:
+	var w := make_world({}, "eolis/market")
+	await frames(2)
+	var map := MapScreen.new()
+	map.world = w
+	arena.add_child(map)
+	await frames(1)
+	Sfx.recent.clear()
+	await _send_action("map")
+	check(map.is_open and arena.get_tree().paused and Sfx.recent.has("map_open"), "Map opens it, pausing the game, with a rustle (%s)" % [Sfx.recent])
+	await _send_action("jump")
+	check(GameState.data.pins.size() == 1 and String(GameState.data.pins[0][0]) == "eolis/market", "Jump drops a pin where you stand (%s)" % [GameState.data.pins])
+	await _send_action("jump")
+	check(GameState.data.pins.is_empty(), "and Jump again lifts it")
+	await _send_action("map")
+	check(not map.is_open and not arena.get_tree().paused and Sfx.recent.has("map_close"), "Map closes it and the game runs on (%s)" % [Sfx.recent])
+	await _send_action("jump")
+	check(GameState.data.pins.is_empty(), "with the map shut, Jump drops no pin")
+	await _send_action("map")
+	await _send_action("pause")
+	check(not map.is_open and not arena.get_tree().paused, "Pause closes it too")
+	# A dead or frozen hero cannot open it.
+	w.player.frozen = true
+	await _send_action("map")
+	check(not map.is_open and not arena.get_tree().paused, "a frozen hero cannot open it")
+	w.player.frozen = false
+	map.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 14. ", 1).get_slice("\n## 15. ", 0)
+	check(note.contains("`test_the_map_answers_its_buttons`"), "bible 14 names the test")
