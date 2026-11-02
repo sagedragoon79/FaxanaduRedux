@@ -1948,6 +1948,39 @@ func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
 ## casts, Next Spell turns to the next spell, Red Potion starts the drink, the
 ## Hour Glass stops time, Throw lets the Rune Dagger fly, and letting go of an
 ## Attack held past the charge lunges into a Thrust.
+## Pass 394: the guard, held and let go through the real controller. Pass 386
+## timed the press of Block (the parry window opening), but the guard itself is
+## read from Block held (`block_held`): it stands for as long as the button is
+## down, at guard speed, drops in the step it is let go, and a broken guard
+## stays down until the button is let go and pressed again (5.3, pass 242).
+func test_the_guard_stands_while_block_is_held() -> void:
+	var c := CombatTuning.new()
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(9, 6))
+	await frames(6)
+	check(p.has_shield, "the hero carries a shield")
+	await press_for_real(p, ["block"])
+	await frames(int(c.parry_window * 60.0) + 30)
+	check(p.is_blocking and p._parry_timer <= 0.0, "held past the parry window, the guard still stands")
+	release_for_real(["block"])
+	await frames(1)
+	check(not p.is_blocking, "let go, the guard drops in the step the release lands in")
+	await press_for_real(p, ["block"])
+	check(p.is_blocking, "pressed again, it is back up")
+	p.guard_broken = true
+	await frames(10)
+	check(not p.is_blocking, "a broken guard stays down while Block is still held")
+	release_for_real(["block"])
+	await frames(1)
+	check(not p.guard_broken, "letting go mends it")
+	await press_for_real(p, ["block"])
+	check(p.is_blocking, "and the next press raises the shield again")
+	release_for_real(["block"])
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("`test_the_guard_stands_while_block_is_held`"), "5.3 names the test")
+
+
 func test_every_combat_button_answers_on_its_frame() -> void:
 	var c := CombatTuning.new()
 	for button: String in ["block", "spell", "spell_next", "heal", "hourglass", "throw"]:
