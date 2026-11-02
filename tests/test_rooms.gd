@@ -2544,3 +2544,65 @@ func test_the_aqueducts_fall_is_heard_near_it() -> void:
 	check(FileAccess.get_file_as_string("res://docs/design-bible.md").contains("**The fall you can hear (pass 374):**"), "13.3 says so")
 	w.queue_free()
 	await frames(2)
+
+
+## Pass 385 (bible 1, the IP note): the bible said every name lives "in a single
+## localization table" so a rename for a public release would be trivial. No
+## such table was ever built: Eolis alone is written in 26 files, in dialog,
+## signs, rooms and code. The rename list is `data/original_names.json`, the
+## original's names the remake keeps. Every one must be written somewhere in
+## the game (a whole word), and the list must hold every name the bible's
+## ledgers and the game's own tables say is the original's: the eight zones,
+## the nine guardians, the five spells and the sixteen ranks.
+func test_the_rename_list_finds_every_name_it_keeps() -> void:
+	var list: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/original_names.json"))
+	var names: Array[String] = []
+	for group: String in list:
+		if group != "_about":
+			for n: String in list[group]:
+				names.append(n)
+	var texts := {}
+	for root: String in ["res://data", "res://levels", "res://scripts"]:
+		_read_texts(root, texts)
+	texts.erase("res://data/original_names.json")
+	check(texts.size() > 300, "the game's own text is read (%d files)" % texts.size())
+	var files_per := {}
+	var everywhere := {}
+	for n: String in names:
+		var re := RegEx.create_from_string("\\b%s\\b" % n)
+		var hits := 0
+		for path: String in texts:
+			if re.search(texts[path]) != null:
+				hits += 1
+				everywhere[path] = true
+		files_per[n] = hits
+		check(hits > 0, "%s is written somewhere in the game" % n)
+	print("  Rename list: %d names in %d files; %s" % [names.size(), everywhere.size(),
+		", ".join(names.map(func(n: String) -> String: return "%s %d" % [n, files_per[n]]))])
+	# The original's zones (3.2's ledger): each one's name holds a listed place.
+	for zone: String in ["eolis", "trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]:
+		var zone_name: String = World.ZONES[zone].name
+		check(list.places.any(func(p: String) -> bool: return zone_name.contains(p)), "the original's zone %s is on the list" % zone_name)
+	# The original's guardians: each row of 3.2's ledger marked the original's.
+	var ledger := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**Whose is it (pass 377).**", 1).get_slice("\n\n`test_", 0)
+	var rows := 0
+	for line: String in ledger.split("\n"):
+		var cells := line.split("|")
+		if cells.size() > 5 and cells[3].strip_edges() == "the original's":
+			rows += 1
+			check(list.guardians.any(func(g: String) -> bool: return cells[1].contains(g)), "the original's guardian %s is on the list" % cells[1].strip_edges())
+	check(rows == 9, "the ledger's nine guardians are the original's (%d)" % rows)
+	for id: String in Spells.DATA:
+		check(String(Spells.DATA[id].name) in list.spells, "the spell %s is on the list" % Spells.DATA[id].name)
+	check(list.ranks == GameState.RANKS, "the sixteen ranks are on the list, in order")
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**IP note:**", 1).get_slice("\n", 0)
+	check(note.contains("`data/original_names.json`") and not note.contains("(all names live in a single"), "bible 1's IP note names the rename list")
+	check(note.contains("%d names" % names.size()), "and says how many names it holds (%d)" % names.size())
+
+
+func _read_texts(dir: String, out: Dictionary) -> void:
+	for sub: String in DirAccess.get_directories_at(dir):
+		_read_texts(dir.path_join(sub), out)
+	for f: String in DirAccess.get_files_at(dir):
+		if f.get_extension() in ["gd", "json", "room"]:
+			out[dir.path_join(f)] = FileAccess.get_file_as_string(dir.path_join(f))

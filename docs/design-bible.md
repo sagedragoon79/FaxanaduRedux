@@ -22,7 +22,7 @@ This is the single source of truth for the remake. Every thread that builds code
 
 **Target experience:** 10 to 12 hours for the main path, about 16 hours for 100%. Desktop first (Windows, Linux, macOS) with full gamepad support; Steam Deck verified as a stretch goal.
 
-**IP note:** Faxanadu belongs to Konami (via Hudson Soft). Nothing is ripped from the original: all sprites, music and text are new. Names and structure are kept as a fan remake. If Sean ever wants a public commercial release, we rename people and places in one pass (all names live in a single localization table to make that trivial).
+**IP note:** Faxanadu belongs to Konami (via Hudson Soft). Nothing is ripped from the original: all sprites, music and text are new. Names and structure are kept as a fan remake. If Sean ever wants a public commercial release, we rename people and places in one pass, going down the rename list, `data/original_names.json`: the original's 74 names the remake keeps (its title, 13 places, King Grieve, the nine guardians, 29 things, the five spells and the sixteen ranks). Until pass 385 this note said all names lived "in a single localization table". None was ever built: the names are written into dialog, signs, rooms and code, Eolis alone in 25 files and the list's names in 182 in all, so a rename is a search and replace over a known list rather than an edit to one table. `test_the_rename_list_finds_every_name_it_keeps` (test_rooms) finds every name written in the game as a whole word, prints how many files hold each, and holds the list to 3.2's ledgers (the eight zones and nine guardians that are the original's), the spells and `GameState.RANKS`.
 
 ---
 
