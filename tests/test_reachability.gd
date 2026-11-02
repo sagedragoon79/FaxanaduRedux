@@ -41,8 +41,10 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
 	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 ## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
-## Sky Steps, bible 3.2). The Stride test checks them.
-const STRIDE_ROOMS := ["daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
+## Sky Steps, bible 3.2). The Stride test checks them. Since pass 388 the
+## Windloft's veil bars the Crown-Leaf, so Pakukame's arena and the way on to
+## Daybreak (the Storm Ledge and the Sky Steps) need it too (bible 8.5).
+const STRIDE_ROOMS := ["branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps", "daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
 ## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
 const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 
@@ -751,3 +753,40 @@ func test_the_proving_scar_asks_for_every_ability() -> void:
 		var kit := SCAR_KIT.duplicate()
 		kit.erase(ability)
 		check(not _scar_crossed(kit), "without %s it can't" % ability)
+
+
+
+
+## Pass 388 (bible 8): "each boss has ... an ability it tests", and each of the
+## original's guardians names the one it tests. A fight can only test what the
+## map makes you hold by the time you reach it. With what the critical path
+## (4.2) gives before each, the arena must be out of reach without the ability
+## it tests and in reach with it. Pakukame "tests air dash", but the Windloft let
+## you walk past the Stride hung in its air and on to the Crown-Leaf; an elven
+## veil now bars the Windloft's east door, so the Bloom is met with the Stride.
+func test_every_guardian_is_met_with_the_ability_it_tests() -> void:
+	var act := ["glove", "amber", "mattock", "winch", "boots", "lantern", "deluge", "spring_mist", "stride", "fire", "thunder", "sky_spring", "sky_key", "hourglass"]
+	# Guardian, arena, the ability its fight tests, the bible's words for it.
+	var fights := [
+		["Rokusutahn", "trunk/root_chamber", "glove", "**Tests:** wall jumping"],
+		["Zoradohna", "tower/forepaw_lift", "mattock", "**Tests:** pogo"],
+		["Zorugeriru", "mist/spring_of_mist", "deluge", "**Tests:** Deluge"],
+		["Pakukame", "branches/crown_leaf", "stride", "**Tests:** air dash"],
+		["Borabohra", "daybreak/roost", "thunder", "**Tests:** Thunder"],
+		["King Grieve", "dartmoor/throne_hall", "hourglass", "**Tests:** Hour Glass"],
+	]
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var texts := _texts()
+	for f: Array in fights:
+		check(bible.contains(f[3]), "bible 8 says %s %s" % [f[0], f[3]])
+		var kit := {}
+		for a: String in act.slice(0, act.find(f[2])):
+			kit[a] = true
+		var bare := Reach.new(texts, kit, true)
+		var without := _rooms_reached(bare.reachable(bare.spot_of(START_ROOM, "P")))
+		kit[f[2]] = true
+		var reach := Reach.new(texts, kit, true)
+		var with := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
+		check(not without.has(f[1]) and with.has(f[1]), "%s's arena (%s) needs %s, the ability its fight tests (without: %s, with: %s)" % [
+			f[0], f[1], f[2], without.has(f[1]), with.has(f[1])])
+	check(bible.contains("`test_every_guardian_is_met_with_the_ability_it_tests`"), "bible 8 names the test")
