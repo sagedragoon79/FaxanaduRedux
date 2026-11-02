@@ -82,6 +82,22 @@ The world is one vertical map: **the World Tree**, **126 rooms** across 7 zones 
 
 Inside the zones, only the first two loop: a room there can be reached by more than one way. Trunk Hollows has 8 loops (35 links among 28 rooms) and the Tower of Trunk 4 (29 among 26). In Eolis and every zone from the Mist up, the rooms form a tree: one way into each, so the way back is the way you came, a lift, or the Mantra Path. `test_the_zones_meet_as_the_bible_draws` holds the table and these counts to the rooms' doors.
 
+**No shortcut loops from the Mist up: decided (pass 395).** Pass 387 left open whether the zones that form a tree should gain shortcut loops, as the plan wanted. They will not, for now. A loop pays when the way back is long and dangerous, and three things already keep it short: no room is more than 4 doors from a save (3 where foes hit at double, 3.3), the Mantra Path carries you from any Guru to any other once a spring runs clean, and the zones are small (4 to 14 rooms). The rooms that touch on the map without a door were looked at, and none makes a good loop. The Mascon and Dry Cistern pair and the Drowned Nave and Drowned Market pair are already 2 doors apart. The Spring of Mist sits over the Matriarch's Mire, and both are boss arenas that seal. The Upper Stair sits over the Meteor Rise (11 doors apart), but a door there would let the player drop past King Grieve. The cost of a dead end is the walk back to a Guru, so that walk is now written down and held. The table gives each zone's room farthest from a Guru's room, counted in doors walked (the Forepaw lift aside). A room that makes a walk longer has to change this table.
+
+| Zone | Farthest from a Guru | Doors |
+| --- | --- | --- |
+| eolis | `eolis/east_gate` | 3 |
+| trunk | `trunk/dwarf_larder`, `trunk/heartwood_rise`, `trunk/sapwell_deeps`, `trunk/spring_of_trunk`, `trunk/taproot_vault` | 6 |
+| tower | `tower/foreman_hall` | 8 |
+| mist | `mist/drowned_stair`, `mist/fog_cut` | 5 |
+| branches | `branches/sunlit_bough`, `branches/windward_climb` | 4 |
+| daybreak | `daybreak/sky_spring`, `daybreak/storm_ledge` | 4 |
+| dartmoor | `dartmoor/gate_hall` | 6 |
+| sunken | `sunken/wellspring` | 8 |
+| zenis | `zenis/heart` | 13 |
+
+Two long walks are by design. The Tower's Foreman Hall is 8 doors out, but the Tower loops 4 times and the Forepaw lift runs from its foot. The Wellspring is the end of an optional zone, and the walk back from the Drowned Warden is a victory lap. Zenis is the last climb, and there is no going back from the Heart. Dartmoor's Guru stands in the Drowned Market only once King Grieve falls, so before that its rooms count on shrines (3.3). `test_the_walk_back_to_a_guru_is_as_3_1_says`.
+
 
 ### 3.2 Zones
 

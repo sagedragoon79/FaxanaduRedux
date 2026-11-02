@@ -2628,6 +2628,58 @@ func _read_texts(dir: String, out: Dictionary) -> void:
 ## it. The zones meet in one chain, a pair at one doorway each. This holds 3.1's
 ## doorway table to the rooms' doors both ways, and its count of loops in each
 ## zone (links between its rooms, less the rooms a tree would need).
+## Pass 395 (bible 3.1): the zones from the Mist up stay trees, so a dead end
+## costs the walk back to a Guru. Each zone's farthest room from a Guru's room,
+## in doors walked, is written in 3.1 and held to the rooms.
+func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
+	var w := make_world({}, "eolis/west_gate")
+	var gurus: Array[String] = []
+	for id: String in w.catalog:
+		var head := FileAccess.get_file_as_string("res://levels/%s.room" % id).get_slice("\n---\n", 0)
+		for line: String in head.split("\n"):
+			if line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "guru":
+				gurus.append(id)
+				break
+	check(gurus.size() == 8, "eight rooms hold a Guru (%s)" % [gurus])
+	var dist := {}
+	var queue: Array[String] = []
+	for g: String in gurus:
+		dist[g] = 0
+		queue.append(g)
+	while not queue.is_empty():
+		var id: String = queue.pop_front()
+		for n: int in w.catalog[id].doors:
+			var to := String(w.catalog[id].doors[n].target)
+			if w.catalog.has(to) and not dist.has(to):
+				dist[to] = int(dist[id]) + 1
+				queue.append(to)
+	var far := {}
+	for id: String in w.catalog:
+		var zone := String(w.catalog[id].zone)
+		if zone in ["gym", "test", "trials", ""]:
+			continue
+		var d := int(dist.get(id, 99))
+		if d > int(far.get(zone, [-1])[0]):
+			far[zone] = [d, [id]]
+		elif d == int(far[zone][0]):
+			far[zone][1].append(id)
+	w.queue_free()
+	var section := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**No shortcut loops from the Mist up: decided (pass 395).**", 1).get_slice("\n### 3.2 ", 0)
+	var written := {}
+	for line: String in section.split("\n"):
+		var cells := line.split("|")
+		if cells.size() == 5 and cells[1].strip_edges() not in ["Zone", "---"]:
+			var ids := Array(cells[2].replace("`", "").split(",")).map(func(r: String) -> String: return r.strip_edges())
+			ids.sort()
+			written[cells[1].strip_edges()] = [int(cells[3]), ids]
+	check(written.size() == far.size(), "3.1 gives every zone's walk back (%d of %d)" % [written.size(), far.size()])
+	for zone: String in far:
+		var rooms: Array = far[zone][1]
+		rooms.sort()
+		check(written.has(zone) and written[zone][0] == far[zone][0] and written[zone][1] == rooms,
+			"%s's farthest rooms from a Guru are %s, %d doors, as 3.1 says (%s)" % [zone, rooms, far[zone][0], written.get(zone, "nothing")])
+
+
 func test_the_zones_meet_as_the_bible_draws() -> void:
 	var w := make_world({}, "eolis/west_gate")
 	var crossings := {}
