@@ -1292,6 +1292,93 @@ const LADDERS := [
 ]
 
 
+## Pass 408 (bible 6.7): the moves that read Down or Up as held, through the
+## real controller. Passes 384 to 400 pressed each move through `Input`, but a
+## drop through a one-way floor (Down held, Jump pressed), a ladder (Up or
+## Down held at its rungs) and a pogo (Down held, Attack pressed above spikes)
+## were only ever scripted. Each needs two buttons read together, held and
+## pressed, and is played here with `Input` alone.
+func test_drops_ladders_and_pogo_through_the_real_controller() -> void:
+	var t := MovementTuning.new()
+	# Down held, then Jump: through the one-way floor, not up from it.
+	var room := make_room([
+		"##########",
+		"#........#",
+		"#........#",
+		"#........#",
+		"#........#",
+		"#.------.#",
+		"#........#",
+		"#........#",
+		"#........#",
+		"##########",
+	])
+	var p := make_player(room, Vector2i(4, 4))
+	p.input = PlayerInput.new()
+	await _settle(p)
+	var platform_y := 5 * Room.TILE
+	check(p.is_on_floor() and absf(p.global_position.y - platform_y) < 1.5, "standing on the one-way floor")
+	Input.action_press("move_down")
+	await frames(4)
+	check(p.is_on_floor(), "Down alone does not drop through")
+	await press_for_real(p, ["jump"])
+	var rose := p.velocity.y < 0.0
+	release_for_real(["jump", "move_down"])
+	await frames(20)
+	check(not rose and p.global_position.y > platform_y + 20.0, "Down held with Jump drops through it (y %.1f)" % p.global_position.y)
+	room.free()
+	# Up held at a ladder climbs it; let go, you hang; Jump lets go.
+	room = make_room(LADDERS)
+	p = make_player(room, Vector2i(9, 10))
+	p.input = PlayerInput.new()
+	await frames(3)
+	p.global_position.x = 9.5 * 16.0 + 5.0
+	Input.action_press("move_up")
+	await frames(2)
+	check(p.on_ladder, "Up held at a ladder takes hold")
+	await frames(10)
+	check(p.on_ladder and is_equal_approx(p.velocity.y, -t.ladder_speed), "and climbs at ladder speed (vy %.0f)" % p.velocity.y)
+	release_for_real(["move_up"])
+	await frames(1)
+	var y := p.global_position.y
+	await frames(20)
+	check(p.on_ladder and absf(p.global_position.y - y) < 0.5, "let go of Up, you hang")
+	Input.action_press("move_down")
+	await frames(3)
+	check(p.on_ladder and is_equal_approx(p.velocity.y, t.ladder_speed), "Down held climbs back down (vy %.0f)" % p.velocity.y)
+	release_for_real(["move_down"])
+	await press_for_real(p, ["jump"])
+	check(not p.on_ladder, "Jump lets go of the ladder")
+	release_for_real(["jump"])
+	room.free()
+	# Down held and Attack over spikes: a pogo, with no hurt.
+	var spikes := ["####################"]
+	for i in 9:
+		spikes.append("#..................#")
+	spikes.append("#..^^^^^^^^^^^^^^..#")
+	spikes.append("####################")
+	room = make_room(spikes)
+	p = make_player(room, Vector2i(9, 3), {"boots": true})
+	p.input = PlayerInput.new()
+	Input.action_press("move_down")
+	var bounced := false
+	var struck := false
+	for i in 90:
+		if not struck and p.velocity.y > 0.0 and p.global_position.y > 11 * 16 - 9 - 28.0:
+			Input.action_press("attack")
+			struck = true
+		await frames(1)
+		if p.velocity.y < -300.0:
+			bounced = true
+			break
+	release_for_real(["move_down", "attack"])
+	check(bounced, "Down held and Attack over the spikes bounces off them")
+	check(p.hp == p.max_hp, "and takes no hurt (hp %d)" % p.hp)
+	room.free()
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("`test_drops_ladders_and_pogo_through_the_real_controller`"), "6.7's Input line names the test")
+
+
 func test_ladders_climb_hang_and_step_off_the_top() -> void:
 	var room := make_room(LADDERS)
 	var p := make_player(room, Vector2i(9, 10))
