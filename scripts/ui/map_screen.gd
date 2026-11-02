@@ -200,7 +200,7 @@ func _draw() -> void:
 	_text(Vector2(20, 40), status, 9, DIM)
 	# The legend, laid out right to left from measured widths: swatch, label, gap.
 	var legend := [["Map: Tab", Color.TRANSPARENT, Vector2.ZERO], ["You", PLAYER, Vector2(2, 2)],
-		["Shrine", SHRINE, Vector2(3, 4)], ["Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], PIN, Vector2(3, 3)]]
+		["Rest", SHRINE, Vector2(3, 4)], ["Pin: Jump (%d/%d)" % [GameState.data.pins.size(), GameState.MAX_PINS], PIN, Vector2(3, 3)]]
 	legend.insert(3, ["Locked door", LOCK, Vector2(3, 5)])
 	if GameState.has_skill("treasure_sense"):
 		legend.insert(3, ["Treasure", TREASURE, Vector2(3, 3)])
