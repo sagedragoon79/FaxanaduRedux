@@ -1665,11 +1665,14 @@ func _boss_rooms() -> Dictionary:
 
 
 const BOSS_AUDIT_FRAMES := 900
+## A fight's 99th-percentile frame budget, in microseconds (bible 15.3's 60 fps).
+const BOSS_FRAME_BUDGET := 16_600
 
 
 func test_every_boss_fight_holds_the_frame_budget() -> void:
 	var report: Array[String] = []
 	var problems: Array[String] = []
+	var paused := 0
 	var wavs := Array(DirAccess.get_files_at(Sfx.SFX_DIR)).filter(func(f: String) -> bool: return f.ends_with(".wav"))
 	check(Sfx.loads >= wavs.size() and wavs.size() > 80, "every sound loaded with the game (%d of %d)" % [Sfx.loads, wavs.size()])
 	var rooms := _boss_rooms()
@@ -1703,17 +1706,26 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 			if f % 300 == 299 and is_instance_valid(boss) and boss.has_method("take_hit") and boss.hp > 50:
 				boss.take_hit(int(boss.max_hp * 0.2), Vector2.RIGHT)
 			var t0 := Time.get_ticks_usec()
+			var cpu0 := _cpu_usec()
+			var steal0 := _steal_usec()
 			await frames(1)
 			var dt := Time.get_ticks_usec() - t0
+			peak = maxi(peak, _count_nodes(w))
+			# A frame the host took the machine for is not the fight's (pass 384,
+			# as the journeys' since pass 367).
+			if dt >= BOSS_FRAME_BUDGET and _host_paused(dt, _cpu_usec() - cpu0, _steal_usec() - steal0):
+				paused += 1
+				continue
 			times.append(dt)
 			total += dt
-			peak = maxi(peak, _count_nodes(w))
 		times.sort()
-		var avg := total / 1000.0 / BOSS_AUDIT_FRAMES
-		var p99 := times[int(BOSS_AUDIT_FRAMES * 0.99)] / 1000.0
+		var avg := total / 1000.0 / maxi(times.size(), 1)
+		var p99 := times[int(times.size() * 0.99)] / 1000.0
 		report.append("%s %.2f/%.2f ms" % [id.get_file(), avg, p99])
-		if avg > 8.0 or p99 > 16.6:
+		if avg > 8.0 or p99 > BOSS_FRAME_BUDGET / 1000.0:
 			problems.append("%s: average %.2f ms, 99th percentile %.2f ms" % [id, avg, p99])
+		if times.size() < BOSS_AUDIT_FRAMES * 0.9:
+			problems.append("%s: the host took %d of %d frames, too many to judge the fight" % [id, BOSS_AUDIT_FRAMES - times.size(), BOSS_AUDIT_FRAMES])
 		if Sheet._cache.size() != sheets or Sfx.loads != loads:
 			problems.append("%s: loaded %d sheets and %d sounds mid-fight" % [id, Sheet._cache.size() - sheets, Sfx.loads - loads])
 		if peak >= start_nodes + 40:
@@ -1721,7 +1733,7 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 		w.queue_free()
 		await frames(2)
 	TimeStop.reset()
-	print("  Boss frames (average/99th): %s" % ", ".join(report))
+	print("  Boss frames (average/99th): %s; %d frames the host paused set aside" % [", ".join(report), paused])
 	check(report.size() == rooms.size() and rooms.size() == BossArena.BOSSES.size(), "every boss fight ran (%d of %d arenas)" % [report.size(), rooms.size()])
 	check(problems.is_empty(), "every fight holds the budget and loads nothing mid-fight: %s" % [problems])
 
