@@ -4671,3 +4671,63 @@ func test_every_guardian_is_a_door_from_a_rest() -> void:
 		check(int(dist.get(id, 0)) == FAR[boss], "%s is the %d-door exception 8 names" % [boss, FAR[boss]])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**A rest at every guardian's door (pass 396).**", 1).get_slice("\n\n", 0)
 	check(note.contains("`test_every_guardian_is_a_door_from_a_rest`") and note.contains("(2 and 3 doors)"), "bible 8 names the rule, its exceptions and the test")
+
+
+## Pass 404 (bible 8): a guardian fought through the real controller. Every
+## boss test scripts the hero's intent or calls the boss's own hit, so the
+## path from a pad to a fight (walking in, the doors sealing behind, a door
+## that will not let you leave, the blow that ends it, the doors opening and
+## the ring) was never driven by the buttons a player presses. The Root
+## Chamber, the first guardian, is fought here with `Input` alone.
+func test_a_guardian_falls_to_the_real_controller() -> void:
+	var was := GameState.slot
+	GameState.slot = 9
+	var w := make_world({}, ARENA_ROOM)
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var arena := _arena(w)
+	Input.action_press("move_right")
+	var woke := await _until(func() -> bool: return arena.fighting, 240)
+	Input.action_release("move_right")
+	check(woke and arena.seals.size() == 2, "walking in holding Right wakes Rokusutahn and seals both doors")
+	var boss: Rokusutahn = get_tree_boss()
+	# Holding Left into the sealed way in does not leave the room.
+	p.teleport(cell_feet(2, 19))
+	Input.action_press("move_left")
+	await frames(40)
+	Input.action_release("move_left")
+	check(w.room.id == ARENA_ROOM and p.global_position.x > 8.0, "Left into the sealed door goes nowhere (%s)" % w.room.id)
+	# A stuck lunge leaves the tail by the wall; the last blow is a real swing.
+	p.teleport(cell_feet(4, 13))
+	await frames(2)
+	boss._start_lunge(Rokusutahn.FLOOR_LANE, true)
+	var stuck := await _until(func() -> bool: return boss.state == "stuck", 300)
+	check(stuck, "the lunge bites into the wall and leaves its tail out")
+	boss.hp = 1
+	var tail := boss.tail_position()
+	p.teleport(Vector2(tail.x - 22.0, cell_feet(4, 19).y))
+	Input.action_press("move_right")
+	await frames(2)
+	Input.action_release("move_right")
+	await frames(2)
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	var fell := await _until(func() -> bool: return boss.dead, 30)
+	check(fell, "an Attack pressed by the tail lands the last blow (hp %d, state %s)" % [boss.hp, boss.state])
+	var gone := await _until(func() -> bool: return boss.state == "dead", 900)
+	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
+	check(gone and opened, "it shatters and the doors open again")
+	check(GameState.data.rings.has("elf") and GameState.flag("boss:rokusutahn"), "the Elf Ring is won")
+	# And the way on, high in the east wall, is walked through with Right held.
+	var exit: Rect2i = w.catalog[ARENA_ROOM].doors[2].rect
+	p.teleport(cell_feet(exit.position.x - 1, exit.end.y - 1))
+	Input.action_press("move_right")
+	var left := await _until(func() -> bool: return w.room.id != ARENA_ROOM, 600)
+	Input.action_release("move_right")
+	check(left and w.room.id == "trunk/spring_of_trunk", "Right walks out through the opened door to the spring (%s)" % w.room.id)
+	GameState.delete_save(9)
+	GameState.slot = was
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
+	check(note.contains("`test_a_guardian_falls_to_the_real_controller`"), "bible 8 names the test")
