@@ -2737,3 +2737,47 @@ func test_the_zones_meet_as_the_bible_draws() -> void:
 			check(loops[zone] == 0, "%s's rooms form a tree, as 3.1 says (%d loops)" % [zone, loops[zone]])
 	for id: String in ["tower/foot", "tower/forepaw", "eolis/east_gate"]:
 		check(LiftCage.STOPS.any(func(s: Array) -> bool: return s[0] == id), "the Forepaw lift stops at %s, a way back that is not a door" % id)
+
+
+## Pass 403 (bible 3.3): the map marked every Meditation Shrine but not a single
+## Guru, though each town's Guru rests and saves as a shrine does. A player
+## looking for the nearest rest saw none in Eolis, Apolune or any town. The
+## catalog now lists a Guru's cell with the shrines, so the map and the
+## minimap mark both, and every rest in the world shows.
+func test_the_map_marks_every_rest() -> void:
+	var w := World.new()
+	arena.add_child(w)
+	w.build_catalog()
+	var missing: Array[String] = []
+	var gurus := 0
+	for zone in DirAccess.get_directories_at("res://levels"):
+		if zone == "gym" or zone == "trials":
+			continue
+		for f in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			var id := zone + "/" + f.get_basename()
+			var parsed := Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]))
+			var rests: Array[Vector2i] = []
+			for y in parsed.grid.size():
+				for x in String(parsed.grid[y]).length():
+					if String(parsed.grid[y])[x] == "S":
+						rests.append(Vector2i(x, y))
+			for spec: String in parsed.lists.get("npc", []):
+				var np := spec.split(",")
+				if String(GameData.npc(np[2].strip_edges()).get("role", "")) == "guru":
+					rests.append(Vector2i(int(np[0]), int(np[1])))
+					gurus += 1
+			var shown: Array = w.catalog.get(id, {}).get("shrines", [])
+			for cell: Vector2i in rests:
+				if not shown.has(cell):
+					missing.append("%s %s" % [id, cell])
+			if shown.size() != rests.size():
+				missing.append("%s marks %d of %d" % [id, shown.size(), rests.size()])
+	check(gurus >= 8, "the eight towns' Gurus are counted (%d)" % gurus)
+	check(missing.is_empty(), "every shrine and every Guru is marked on the map (missing: %s)" % [missing])
+	check(not (w.catalog["eolis/guru_temple"].shrines as Array).is_empty(), "Eolis, which has no shrine, shows its Guru's rest")
+	w.free()
+	check(FileAccess.get_file_as_string("res://scripts/ui/map_screen.gd").contains("[\"Rest\", SHRINE"), "the legend calls the mark a rest")
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 3.3 ", 1).get_slice("\n### ", 0)
+	check(note.contains("`test_the_map_marks_every_rest`"), "3.3 names the test")

@@ -51,6 +51,8 @@ var instant := false
 var use_game_state := true
 ## Room id -> {name, zone, map: Vector2i, screens: Vector2i, size: Vector2i,
 ## doors: {n: {rect: Rect2i, edge, target, target_door}}, shrines: [Vector2i]}.
+## `shrines` is every place to rest and save: each Meditation Shrine and each
+## Guru (pass 403), so the map shows a town's rest as it shows a shrine.
 var catalog := {}
 ## Room id -> room text. Tests register rooms here instead of writing files.
 var texts := {}
@@ -198,6 +200,12 @@ func _catalog_room(room_id: String, text: String) -> void:
 		var pr := spec.split(",")
 		if pr.size() == 3 and pr[2].strip_edges() in Room.FOUND_PROPS:
 			treasures.append("%s:%d,%d" % [room_id, int(pr[0]), int(pr[1])])
+	# A Guru rests and saves as a shrine does (design bible 3.3), so the map
+	# marks where he stands too (pass 403).
+	for spec: String in parsed.lists.get("npc", []):
+		var np := spec.split(",")
+		if np.size() >= 3 and String(GameData.npc(np[2].strip_edges()).get("role", "")) == "guru":
+			shrines.append(Vector2i(int(np[0]), int(np[1])))
 	for y in grid.size():
 		for x in grid[y].length():
 			if grid[y][x] == "S":
