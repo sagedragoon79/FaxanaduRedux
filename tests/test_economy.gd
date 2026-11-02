@@ -894,6 +894,59 @@ func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	check(bible.contains("`test_the_guru_gives_a_mantra_for_the_journey` rests with a Guru"), "11 names the test")
 
 
+## Pass 409 (bible 11): the original's two first meetings, by the buttons. The
+## King's 1,500 gold and the Guru's rest with its mantra were held by scripted
+## intents and direct calls (`guru.rest`, pass 401); a player meets them with
+## Up, and chooses the Guru's rest from his menu with Jump. Both are played
+## here with the real controller.
+func test_the_king_and_the_guru_answer_the_real_controller() -> void:
+	var w := make_world(_town({}, ["npc: 8, 19, king"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var gold := p.gold
+	await _tap_for_real("move_up")
+	check(p.gold == gold + Npc.KING_GOLD and GameState.flag("king_gold"), "Up at the King takes his 1,500 gold (%d)" % p.gold)
+	await _tap_for_real("move_up")
+	check(p.gold == gold + Npc.KING_GOLD, "and Up again gives no more")
+	w.queue_free()
+	await frames(1)
+	# The Guru: Up opens his menu, Jump on "Rest and save" rests and recites the mantra.
+	var was := GameState.slot
+	GameState.slot = 9
+	w = make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(8, 19))
+	p = w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	p.hp = 1
+	var toasts: Array[String] = []
+	var hear := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(hear)
+	await _tap_for_real("move_up")
+	check(menu.is_open and arena.get_tree().paused, "Up at the Guru opens his menu")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	Sfx.recent.clear()
+	await _tap_for_real("jump")
+	GameState.toast.disconnect(hear)
+	check(not menu.is_open and not arena.get_tree().paused, "Jump on Rest and save closes it")
+	check(p.hp == p.max_hp and GameState.has_save(9) and Sfx.recent.has("save"), "and rests, saves and chimes (%s)" % [Sfx.recent])
+	check(toasts.size() == 1 and toasts[0] == "Rested. Your mantra is: " + GameState.mantra(), "and recites the journey's mantra (%s)" % [toasts])
+	menu.free()
+	GameState.delete_save(9)
+	GameState.slot = was
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_king_and_the_guru_answer_the_real_controller`"), "11 names the test")
+
+
+func _tap_for_real(action: String) -> void:
+	Input.action_press(action)
+	await frames(2)
+	Input.action_release(action)
+	await frames(2)
+
+
 # --- NPCs ----------------------------------------------------------------------------
 
 func test_king_gives_gold_once() -> void:
