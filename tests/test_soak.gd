@@ -1293,6 +1293,7 @@ func _ride_door(w: World, id: String, n: int, side: int, wait := 0) -> String:
 ## Rests at every shrine in the game, then loads that save into a fresh world
 ## the way Continue does: you wake in the shrine's room, standing, out of the walls.
 func test_every_shrine_saves_and_continues_where_you_rested() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "eolis/west_gate")
 	await frames(2)
 	const SLOT := 9
@@ -1326,6 +1327,8 @@ func test_every_shrine_saves_and_continues_where_you_rested() -> void:
 	GameState.delete_save(SLOT)
 	check(shrines >= 15, "rested at every shrine (%d)" % shrines)
 	check(problems.is_empty(), "every shrine's save continues where you rested: %s" % [problems])
+	GameState.slot = slot_was
+
 
 
 
@@ -1342,6 +1345,7 @@ const POSTGAME_DOORS := 100
 ## twice: the first lap may fill caches, the second must leave nothing behind
 ## (live objects, orphan nodes), and no frame of play may spike far past budget.
 func test_a_long_journey_through_the_whole_game_stays_lean() -> void:
+	var slot_was := GameState.slot
 	GameState.slot = JOURNEY_SLOT
 	var first: Dictionary = await _journey(1987)
 	var obj0 := Performance.get_monitor(Performance.OBJECT_COUNT)
@@ -1364,12 +1368,15 @@ func test_a_long_journey_through_the_whole_game_stays_lean() -> void:
 	check(nodes1 <= nodes0, "and the tree is no bigger (%d -> %d)" % [nodes0, nodes1])
 	for r: Dictionary in [first, second]:
 		_check_frames(r)
+	GameState.slot = slot_was
+
 
 
 ## The same journey on a save that has seen the ending (pass 144): every boss
 ## beaten, the Tree in bloom (its blossom layer and the post-game music) and
 ## Wanderer's Grace feeding the air dashes on every kill. Two laps: the second must leave nothing behind and log no errors.
 func test_a_journey_after_the_end_stays_lean() -> void:
+	var slot_was := GameState.slot
 	GameState.slot = JOURNEY_SLOT
 	var errors := ErrorCatcher.start()
 	# Each lap walks out of Eolis and, separately, out of the dead meteor.
@@ -1406,6 +1413,8 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	check(obj1 - obj0 < 50, "a retraced lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
 	check(nodes1 <= nodes0, "and the tree is no bigger (%d -> %d)" % [nodes0, nodes1])
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 ## A boss fight starts mid-play, so its arena loads the boss's sheet and music
@@ -1743,6 +1752,7 @@ func test_every_boss_fight_holds_the_frame_budget() -> void:
 ## room: the doors stand open, no fight starts, and its prize isn't given twice.
 ## Every guardian the arena knows has exactly one room, so none is unreachable.
 func test_every_beaten_guardian_stays_beaten_through_a_save() -> void:
+	var slot_was := GameState.slot
 	var rooms := _boss_rooms()
 	await frames(1)
 	var homes := {}
@@ -1804,6 +1814,8 @@ func test_every_beaten_guardian_stays_beaten_through_a_save() -> void:
 	GameState.new_game()
 	check(won == rooms.size() - 1, "won and continued in every arena but the last (%d)" % won)
 	check(problems.is_empty(), "every beaten guardian stays beaten and pays once: %s" % [problems])
+	GameState.slot = slot_was
+
 
 
 ## What a guardian's win leaves on the save.

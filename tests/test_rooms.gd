@@ -81,6 +81,7 @@ func test_inner_door_needs_up() -> void:
 # --- Saving, death, purse ------------------------------------------------------------
 
 func test_shrine_saves_and_round_trips() -> void:
+	var slot_was := GameState.slot
 	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
 	GameState.slot = SAVE_SLOT
 	await frames(5)
@@ -98,12 +99,15 @@ func test_shrine_saves_and_round_trips() -> void:
 	check(GameState.is_visited("test/a"), "visited rooms survive the round trip")
 	GameState.delete_save(SAVE_SLOT)
 	check(not GameState.has_save(SAVE_SLOT), "save deleted")
+	GameState.slot = slot_was
+
 
 
 ## Bible 5.4 (pass 250): the purse you drop on dying is in the save, and comes
 ## back with it. The save had kept it as "value" while loading asked for "gold",
 ## so every purse was thrown away the moment a save was loaded.
 func test_a_dropped_purse_survives_a_save_and_load() -> void:
+	var slot_was := GameState.slot
 	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
 	GameState.slot = SAVE_SLOT
 	await frames(5)
@@ -132,9 +136,12 @@ func test_a_dropped_purse_survives_a_save_and_load() -> void:
 	var bags := w.room.get_children().filter(func(c: Node) -> bool: return c is GoldPurse)
 	check(bags.size() == 1 and bags[0].value == 60, "the loaded world lays it where you fell (%d)" % bags.size())
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 func test_act_one_state_survives_a_save_round_trip() -> void:
+	var slot_was := GameState.slot
 	GameState.slot = SAVE_SLOT
 	GameState.set_flag("spring:trunk")
 	GameState.set_flag("boss:zoradohna")
@@ -156,12 +163,15 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
 	check(GameState.has_ability("mattock"), "the Mattock survives")
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 ## Pass 120: what passes 113 to 119 added comes back after a save: the card
 ## keys and the Joker, the Battle Helmet and its mask, a trial's best, the
 ## card vaults opened. A damaged key entry is dropped, never a crash.
 func test_late_additions_survive_a_save_round_trip() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "zenis/threshold")
 	var p := w.player
 	await frames(2)
@@ -187,11 +197,14 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	var bad := GameState.sanitize({"save_room": "eolis/plaza", "keys": {"jack": "two", "queen": -3, "king": [1], "ace": 1, "sky": true}})
 	check(bad.keys == {"ace": 1, "sky": true}, "a damaged key entry is dropped (%s)" % [bad.keys])
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 ## Act II (the Mist): every world change made there comes back after a save,
 ## and the rooms rebuild in their changed state.
 func test_act_two_state_survives_a_save_round_trip() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "mist/lantern_landing")
 	GameState.slot = SAVE_SLOT
 	for f: String in ["boss:ripasheiku", "boss:zorugeriru", "spring:mist", "curtain:mist/lantern_landing",
@@ -227,11 +240,14 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 	await frames(2)
 	check(w.room.is_one_way_at(Vector2(17 * Room.TILE + 4, 20 * Room.TILE + 4)), "the drowned boardwalks stay risen")
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 ## Act II (the Branches): the Elven Stride, Conflate's charts, Pakukame's fall
 ## and the skills bought with its point all come back after a save.
 func test_branches_state_survives_a_save_round_trip() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "branches/windloft")
 	GameState.slot = SAVE_SLOT
 	await frames(2)
@@ -265,11 +281,14 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 	await frames(2)
 	check(_arena_quiet(w), "and Pakukame doesn't come back")
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 ## Daybreak: rest at the Broken Shrine with the Life Fruit taken and the Sky
 ## Steps chest opened; the save brings it all back, and the rooms rebuild that way.
 func test_daybreak_state_survives_a_save_round_trip() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "daybreak/sky_steps")
 	GameState.slot = SAVE_SLOT
 	w.player.abilities["stride"] = true
@@ -317,6 +336,8 @@ func test_daybreak_state_survives_a_save_round_trip() -> void:
 			open = not (c as Chest).is_in_group("interactable")
 	check(open, "and the chest stays open")
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 func _arena_quiet(w: World) -> bool:
@@ -324,6 +345,7 @@ func _arena_quiet(w: World) -> bool:
 
 
 func test_death_respawns_at_last_shrine_and_purse_persists() -> void:
+	var slot_was := GameState.slot
 	var w := make_world(_rooms(), "test/a", cell_feet(10, 19))
 	GameState.slot = SAVE_SLOT
 	await frames(5)
@@ -348,6 +370,8 @@ func test_death_respawns_at_last_shrine_and_purse_persists() -> void:
 			purses += 1
 	check(purses == 1, "the purse is waiting in room B")
 	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = slot_was
+
 
 
 # --- Pickups ---------------------------------------------------------------------

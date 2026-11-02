@@ -57,8 +57,18 @@ func test_every_test_starts_from_a_clean_slate() -> void:
 	arena.get_tree().paused = true
 	runner.call("_clean_slate")
 	check(not arena.get_tree().paused, "and the slate unpauses it")
+	# Pass 407: a test slot left chosen is a leak too. Later tests would save
+	# there, past the check that guards the player's flasks.
+	var slot_was := GameState.slot
+	GameState.slot = 9
+	leaks = runner.call("_leaks")
+	check(leaks.has("save slot left on 9"), "a save slot left changed counts as a leak (%s)" % [leaks])
+	runner.call("_clean_slate")
+	check(GameState.slot == 1 and (runner.call("_leaks") as Array).is_empty(), "and the slate puts the first flask back")
+	GameState.slot = slot_was
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("Saves and pauses left behind (pass 399)"), "bible 15.3 says so")
+	check(note.contains("A save slot left behind (pass 407)"), "and the slot (pass 407)")
 
 func test_settings_save_load_and_apply() -> void:
 	Settings.path = TEMP_SETTINGS
@@ -545,6 +555,7 @@ func test_the_game_plays_the_ending_then_returns_to_the_title() -> void:
 
 ## Bible 11: the secret ending counts every death of the run.
 func test_deaths_are_counted_and_kept_in_the_save() -> void:
+	var slot_was := GameState.slot
 	var w := make_world({}, "eolis/west_gate")
 	await frames(3)
 	check(int(GameState.data.deaths) == 0, "a new game starts with no deaths")
@@ -559,6 +570,8 @@ func test_deaths_are_counted_and_kept_in_the_save() -> void:
 	GameState.load_game(SLOT)
 	check(int(GameState.data.deaths) == 1, "and loading the save brings it back")
 	GameState.delete_save(SLOT)
+	GameState.slot = slot_was
+
 
 
 func test_the_secret_ending_needs_no_deaths_and_the_battle_suit() -> void:
@@ -619,6 +632,7 @@ func test_the_game_plays_the_secret_ending_for_a_flawless_run() -> void:
 ## exactly through save_game and load_game (JSON makes whole numbers floats, so
 ## numbers compare by value), and a fresh world must hand it to the player.
 func test_every_save_field_survives_a_round_trip() -> void:
+	var slot_was := GameState.slot
 	const ROUND_SLOT := 7
 	GameState.new_game()
 	var d := GameState.data
@@ -692,6 +706,8 @@ func test_every_save_field_survives_a_round_trip() -> void:
 	await frames(1)
 	GameState.delete_save(ROUND_SLOT)
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 ## Equal by value: numbers ignore int and float, containers compare deeply.
@@ -718,6 +734,7 @@ func _same(a: Variant, b: Variant) -> bool:
 ## A save from an older build lacks keys added since: loading it fills them
 ## with their new-game values and keeps what it has.
 func test_an_old_save_gains_the_new_keys() -> void:
+	var slot_was := GameState.slot
 	const OLD_SLOT := 6
 	var old := {"version": 1, "gold": 300, "abilities": {"glove": true}, "save_room": "eolis/plaza", "save_pos": [100, 200]}
 	var f := FileAccess.open(GameState.SAVE_PATH % OLD_SLOT, FileAccess.WRITE)
@@ -734,6 +751,8 @@ func test_an_old_save_gains_the_new_keys() -> void:
 	check(missing.is_empty() and d.pins == [] and int(d.deaths) == 0, "every newer key is there, at its new-game value (missing %s)" % [missing])
 	GameState.delete_save(OLD_SLOT)
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 ## Bible 15 (pass 317): a save from before the off hand (Sean, 2026-10-31) that
@@ -786,6 +805,7 @@ func test_a_damaged_save_is_refused_and_leaves_the_game_alone() -> void:
 
 
 func test_wrong_types_in_a_save_fall_back_to_their_defaults() -> void:
+	var slot_was := GameState.slot
 	GameState.delete_save(BAD_SLOT)
 	var bad := {"save_room": "eolis/plaza", "abilities": ["glove"], "gold": "lots", "max_hp": -5, "xp": INF,
 		"equipment": {"blade": 3, "armor": "leather_armor"}, "skills": ["keen_edge", 7], "rings": "elf",
@@ -806,9 +826,12 @@ func test_wrong_types_in_a_save_fall_back_to_their_defaults() -> void:
 	check(int(d.get("future_key", 0)) == 12 and int(d.version) == GameState.VERSION, "a newer build's keys are kept")
 	GameState.delete_save(BAD_SLOT)
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 func test_a_damaged_save_falls_back_to_its_backup() -> void:
+	var slot_was := GameState.slot
 	GameState.delete_save(BAD_SLOT)
 	GameState.new_game()
 	GameState.data.save_room = "eolis/plaza"
@@ -826,9 +849,12 @@ func test_a_damaged_save_falls_back_to_its_backup() -> void:
 	GameState.delete_save(BAD_SLOT)
 	check(not GameState.has_save(BAD_SLOT) and not FileAccess.file_exists(path + ".bak"), "deleting a save takes its backup too")
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 func test_a_failed_write_keeps_the_last_good_save() -> void:
+	var slot_was := GameState.slot
 	GameState.delete_save(BAD_SLOT)
 	GameState.new_game()
 	GameState.data.save_room = "eolis/plaza"
@@ -845,6 +871,8 @@ func test_a_failed_write_keeps_the_last_good_save() -> void:
 	DirAccess.remove_absolute(tmp)
 	GameState.delete_save(BAD_SLOT)
 	GameState.new_game()
+	GameState.slot = slot_was
+
 
 
 ## Pass 255: a rest that can't write its save (a full or read-only disk)
