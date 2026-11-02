@@ -2598,3 +2598,40 @@ func test_the_minimap_shows_the_map_around_you() -> void:
 	layer.queue_free()
 	w.queue_free()
 	await frames(2)
+
+
+## Pass 389 (bible 14): the architecture section was the plan's. It named five
+## autoloads that were never built (SaveSystem, EventBus, AudioDirector,
+## InputRouter, RoomManager), a `scenes/` folder per player, foe, boss, room and
+## screen, `.tres` resources, a `room_loader.gd`, YAML headers, a world graph
+## file and GUT tests, and no test read it. Every path section 14 names must now
+## exist, its autoloads must be the project's own, and its renderer line must
+## be the project's.
+func test_the_bibles_architecture_is_as_built() -> void:
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	var sec := bible.get_slice("## 14. Technical Architecture", 1).get_slice("\n## 15. ", 0)
+	check(sec != "", "the bible has section 14")
+	var re := RegEx.create_from_string("`([^`\\s]+/[^`\\s]*)`")
+	var named := 0
+	for m: RegExMatch in re.search_all(sec):
+		var path := m.get_string(1)
+		if path.begins_with("user://") or path.begins_with("/mnt/"):
+			continue
+		named += 1
+		var at := "res://" + path.replace("<zone>", "eolis").replace("<room>", "west_gate")
+		check(FileAccess.file_exists(at) or DirAccess.dir_exists_absolute(at.trim_suffix("/")), "section 14 names %s, and it exists" % path)
+	check(named >= 25, "section 14 names the project's paths (%d)" % named)
+	var autoloads: Array[String] = []
+	for prop: Dictionary in ProjectSettings.get_property_list():
+		var key := String(prop.name)
+		if key.begins_with("autoload/"):
+			autoloads.append(key.trim_prefix("autoload/"))
+	var line := sec.get_slice("  - `scripts/autoload/`:", 1).get_slice("\n", 0)
+	check(line.contains("%s autoloads" % ["zero", "one", "two", "three", "four", "five", "six", "seven"][autoloads.size()]), "14 counts the project's %d autoloads" % autoloads.size())
+	for a: String in autoloads:
+		check(line.contains("`%s`" % a), "14 names the autoload %s" % a)
+	for gone: String in ["SaveSystem", "EventBus", "AudioDirector", "InputRouter", "RoomManager"]:
+		check(not autoloads.has(gone) and not line.contains(gone), "%s, the plan's, is neither built nor listed as built" % gone)
+	check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus" and sec.contains("the project's default, Forward+"), "the renderer is Forward+, as 14 says")
+	check(FileAccess.get_file_as_string("res://tools/screenshot.sh").contains("--rendering-driver opengl3"), "and the screenshots draw on the Compatibility renderer")
+	check(sec.contains("`tests/test_runner.gd`") and not DirAccess.dir_exists_absolute("res://addons/gut"), "the tests run on the project's own runner, not GUT")
