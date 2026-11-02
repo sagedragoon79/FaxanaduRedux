@@ -1,0 +1,10 @@
+{
+	"_about": "The original Faxanadu's names the remake keeps (design bible 1, the IP note; pass 385). A rename for a public release goes down this list. Each name is spelled here as the game writes it; test_rooms.gd's test_the_rename_list_finds_every_name_it_keeps finds every file it is written in.",
+	"title": ["Faxanadu"],
+	"places": ["World Tree", "Eolis", "Apolune", "Forepaw", "Mascon", "Victim", "Conflate", "Daybreak", "Dartmoor", "Zenis", "Trunk", "Mist", "Branches"],
+	"people": ["Grieve"],
+	"guardians": ["Rokusutahn", "Zoradohna", "Ripasheiku", "Zorugeriru", "Pakukame", "Borabohra", "King Grieve", "Shadow Eura", "Evil One"],
+	"things": ["Elf Ring", "Ruby Ring", "Dworf Ring", "Demon Ring", "Dragon Slayer", "Long Sword", "Leather Armor", "Studded Mail", "Full Plate", "Battle Suit", "Small Shield", "Large Shield", "Magic Shield", "Battle Helmet", "Jack Key", "Queen Key", "King Key", "Ace Key", "Joker Key", "Wing Boots", "Mattock", "Elixir", "Red Potion", "Hour Glass", "Ointment", "Pendant", "Black Onyx", "Magical Rod", "Poison"],
+	"spells": ["Deluge", "Thunder", "Fire", "Death", "Tilte"],
+	"ranks": ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior", "Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"]
+}
