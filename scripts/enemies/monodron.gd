@@ -1,6 +1,7 @@
 class_name Monodron
 extends Enemy
-## One-eyed hopper from the Trunk Hollows. Crouches (telegraph), then hops at you.
+## One-eyed hopper from the Trunk Hollows, the original's Monodron. Crouches
+## (telegraph), then hops at you.
 
 const SIGHT := Vector2(170, 90)
 const WINDUP := 0.4
