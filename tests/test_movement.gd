@@ -2191,3 +2191,69 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("`test_every_move_answers_on_the_frame_it_is_pressed`"), "6.7's Input line names the test")
 
+
+
+## Pass 400: the timing windows, through the real controller. Coyote time and
+## the jump buffer were held to the frame (0.10 s is 6 frames, 0.12 s is 7) only
+## with a scripted intent, which the next step reads. A button pressed through
+## `Input` is first seen a step after it goes down (`press_for_real`), so each
+## press here goes down a step earlier and must be seen on the step it
+## stands for: the windows are counted from the step the game sees the press.
+func _real_jump_after_ledge(k: int) -> bool:
+	var room := make_room(LEDGE)
+	var p := make_player(room, Vector2i(2, 3), {"boots": false, "glove": false})
+	await _settle(p)
+	p.input = PlayerInput.new()
+	Input.action_press("move_right")
+	for i in 60:
+		await frames(1)
+		if not p.is_on_floor():
+			break
+	await frames(k - 2)
+	Input.action_press("jump")
+	await frames(1)
+	var seen := Input.is_action_just_pressed("jump")
+	await frames(1)
+	var jumped := seen and p.velocity.y < -300.0
+	release_for_real(["move_right", "jump"])
+	room.free()
+	return jumped
+
+
+func _real_buffered_landing(early: int, land: int) -> bool:
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 4), {"boots": false})
+	p.input = PlayerInput.new()
+	var jumped := false
+	for i in land + 4:
+		if i == land - early - 1:
+			Input.action_press("jump")
+		await frames(1)
+		if p.velocity.y < -300.0:
+			jumped = true
+			break
+	release_for_real(["jump"])
+	room.free()
+	return jumped
+
+
+func test_the_timing_windows_hold_through_the_real_controller() -> void:
+	var last := 0
+	for k in range(4, 10):
+		if await _real_jump_after_ledge(k):
+			last = k
+	check(last == 6, "pressed for real, the last frame a ledge jump counts is the 6th, 0.10 s (got %d)" % last)
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(10, 4), {"boots": false})
+	var land := 0
+	for i in 90:
+		await frames(1)
+		if p.is_on_floor():
+			land = i + 1
+			break
+	room.free()
+	check(await _real_buffered_landing(7, land), "pressed for real 7 frames (0.117 s) before landing, it jumps")
+	check(await _real_buffered_landing(1, land), "and 1 frame before")
+	check(not await _real_buffered_landing(8, land), "8 frames (0.133 s) before is dropped")
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("Timing windows, too (pass 400)"), "bible 6.7's Input line says so")
