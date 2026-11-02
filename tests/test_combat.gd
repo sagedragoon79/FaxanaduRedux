@@ -1931,3 +1931,55 @@ func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
 	check(found.is_empty(), "every guardian's brood perishes with it (%s)" % [found])
 	for f in ["pakukame", "hag_matriarch", "clockwork_alpha"]:
 		check(FileAccess.get_file_as_string("res://scripts/bosses/%s.gd" % f).contains(".perish()"), "%s's brood perishes with it" % f)
+
+
+## Pass 386 (bible 5.3; 6.7's Input line): pass 384 timed the moves through the
+## real controller, but the fight's own buttons were still only ever scripted.
+## Each is pressed through `Input` here and must answer on the first physics
+## step that sees it: Block raises the guard and opens the parry window, Spell
+## casts, Next Spell turns to the next spell, Red Potion starts the drink, the
+## Hour Glass stops time, Throw lets the Rune Dagger fly, and letting go of an
+## Attack held past the charge lunges into a Thrust.
+func test_every_combat_button_answers_on_its_frame() -> void:
+	var c := CombatTuning.new()
+	for button: String in ["block", "spell", "spell_next", "heal", "hourglass", "throw"]:
+		var room := make_room(ARENA)
+		var p := make_player(room, Vector2i(9, 6))
+		p.abilities["rune_dagger"] = true
+		p.hp = 50
+		await frames(6)
+		var mp0 := p.mp
+		await press_for_real(p, [button])
+		match button:
+			"block":
+				check(p.is_blocking and p._parry_timer > c.parry_window - 0.02, "Block guards and opens the parry window on its frame (%.2f s)" % p._parry_timer)
+			"spell":
+				check(mp0 - p.mp > p.spell_cost("deluge") - 0.5 and _find(room, DelugeBolt) != null,
+					"Spell casts on its frame (MP %.1f -> %.1f)" % [mp0, p.mp])
+			"spell_next":
+				check(p.equipped_spell == "thunder", "Next Spell turns from Deluge to Thunder on its frame (%s)" % p.equipped_spell)
+			"heal":
+				check(p.is_drinking, "Red Potion starts the drink on its frame")
+			"hourglass":
+				check(TimeStop.active(), "the Hour Glass stops time on its frame")
+			"throw":
+				check(is_instance_valid(p.rune_dagger), "Throw lets the Rune Dagger fly on its frame")
+		release_for_real([button])
+		TimeStop.reset()
+		room.free()
+	# The Thrust: Attack held past the charge, then let go.
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(9, 6))
+	p.thrust = true
+	await frames(6)
+	await press_for_real(p, ["attack"])
+	await frames(int(c.thrust_charge * 60.0) + 30)
+	check(p.thrust_ready() and p.attack_kind != "thrust", "held past %.1f s the charge is full, and nothing lunges yet" % c.thrust_charge)
+	# A held button is read as held or not (`attack_held`), not as just
+	# pressed, so a release made inside step f is seen by step f itself.
+	Input.action_release("attack")
+	await frames(1)
+	check(p.attack_kind == "thrust", "letting go lunges in the step the release lands in (%s)" % p.attack_kind)
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("`test_every_combat_button_answers_on_its_frame`"), "5.3 names the test")

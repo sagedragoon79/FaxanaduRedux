@@ -2061,7 +2061,7 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 		var room := make_room(FLAT)
 		var p := make_player(room, Vector2i(10, 11))
 		await _settle(p)
-		await _press_for_real(p, move[0])
+		await press_for_real(p, move[0])
 		match String(move[1]):
 			"jump":
 				check(p.velocity.y < -t.jump_velocity + grav + 1.0, "a jump leaves the floor on its frame (vy %.0f)" % p.velocity.y)
@@ -2069,7 +2069,7 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 				check(p.is_dashing and absf(p.velocity.x) == t.dash_speed, "a dash runs at %.0f px/s on its frame (%.0f)" % [t.dash_speed, p.velocity.x])
 			_:
 				check(p.is_attacking and p.attack_kind == move[1], "%s swings a %s slash on its frame (%s)" % [" + ".join(move[0]), move[1], p.attack_kind])
-		_release_for_real(move[0])
+		release_for_real(move[0])
 		room.free()
 	# In the air, rising from a jump: a double jump, an air dash and a down-strike.
 	for move: Array in [[["jump"], "double"], [["dash"], "air dash"], [["move_down", "attack"], "down"]]:
@@ -2080,7 +2080,7 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 		p.input.jump_held = true
 		await frames(12)
 		check(not p.is_on_floor() and p.has_double_jump, "in the air with the double jump unspent")
-		await _press_for_real(p, move[0])
+		await press_for_real(p, move[0])
 		match String(move[1]):
 			"double":
 				check(not p.has_double_jump and p.velocity.y < -t.double_jump_velocity + grav + 1.0,
@@ -2090,7 +2090,7 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 					"an air dash goes level on its frame (%s)" % p.velocity)
 			_:
 				check(p.is_attacking and p.attack_kind == "down", "Down + Attack strikes down on its frame (%s)" % p.attack_kind)
-		_release_for_real(move[0])
+		release_for_real(move[0])
 		room.free()
 	# On a wall with the Climbing Glove: a jump away from it.
 	var wall_rows := ["################"]
@@ -2102,18 +2102,18 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 	w.input.move_x = 1
 	await frames(20)
 	check(w.is_wall_sliding, "sliding down the right wall")
-	await _press_for_real(w, ["move_left", "jump"])
+	await press_for_real(w, ["move_left", "jump"])
 	check(absf(w.velocity.x + t.wall_jump_x) < 1.0 and w.velocity.y < -340.0, "a wall jump leaps off on its frame (%s)" % w.velocity)
-	_release_for_real(["move_left", "jump"])
+	release_for_real(["move_left", "jump"])
 	room_w.free()
 	# Deep in the water: a stroke up.
 	var pool := _pool_room()
 	var s := make_player(pool, Vector2i(6, 16))
 	await frames(4)
 	check(s.swimming, "swimming deep in the pool")
-	await _press_for_real(s, ["jump"])
+	await press_for_real(s, ["jump"])
 	check(absf(s.velocity.y + t.swim_stroke) < 30.0, "a stroke goes on its frame (vy %.0f)" % s.velocity.y)
-	_release_for_real(["jump"])
+	release_for_real(["jump"])
 	pool.free()
 	# The clock the frames run on.
 	check(ProjectSettings.get_setting("physics/common/physics_ticks_per_second") == 60, "physics runs at 60 steps a second")
@@ -2122,26 +2122,4 @@ func test_every_move_answers_on_the_frame_it_is_pressed() -> void:
 	check(ProjectSettings.get_setting("display/window/vsync/vsync_mode") == DisplayServer.VSYNC_ENABLED, "which follows the display's vsync")
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("`test_every_move_answers_on_the_frame_it_is_pressed`"), "6.7's Input line names the test")
-
-
-## Swaps in the real controller, presses `actions` through `Input`, and lets
-## the first physics step that begins after the press run. The test resumes
-## inside a step (step f, at its `physics_frame`), and a press made there
-## counts from the next one, as a button read between steps does: `Input` sees
-## it as just pressed in step f + 1. So the move must show once step f + 1 has
-## run, when the test resumes at f + 2.
-func _press_for_real(p: Player, actions: Array) -> void:
-	p.input = PlayerInput.new()
-	var f := Engine.get_physics_frames()
-	for a: String in actions:
-		Input.action_press(a)
-	await frames(1)
-	check(Engine.get_physics_frames() == f + 1 and Input.is_action_just_pressed(actions[-1]),
-		"step f + 1 is the one that sees %s pressed" % actions[-1])
-	await frames(1)
-
-
-func _release_for_real(actions: Array) -> void:
-	for a: String in actions:
-		Input.action_release(a)
 

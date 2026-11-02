@@ -128,3 +128,25 @@ func written_exactly_in(text: String, f: float) -> bool:
 		if re.search(text) != null:
 			return true
 	return false
+
+
+## (pass 384, shared since 386) Swaps in the real controller, presses `actions` through `Input`, and lets
+## the first physics step that begins after the press run. The test resumes
+## inside a step (step f, at its `physics_frame`), and a press made there
+## counts from the next one, as a button read between steps does: `Input` sees
+## it as just pressed in step f + 1. So the move must show once step f + 1 has
+## run, when the test resumes at f + 2.
+func press_for_real(p: Player, actions: Array) -> void:
+	p.input = PlayerInput.new()
+	var f := Engine.get_physics_frames()
+	for a: String in actions:
+		Input.action_press(a)
+	await frames(1)
+	check(Engine.get_physics_frames() == f + 1 and Input.is_action_just_pressed(actions[-1]),
+		"step f + 1 is the one that sees %s pressed" % actions[-1])
+	await frames(1)
+
+
+func release_for_real(actions: Array) -> void:
+	for a: String in actions:
+		Input.action_release(a)
