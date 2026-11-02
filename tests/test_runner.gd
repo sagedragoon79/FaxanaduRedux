@@ -26,6 +26,8 @@ var _filter := ""
 var _trace := false
 ## Every option as a fresh reset() leaves it (pass 327), for the leak check.
 var _clean_settings := {}
+## Every save file in user:// and its hash when the test began (pass 399).
+var _clean_saves := {}
 ## The least play, in minutes of game time, a whole run's soaks may cover
 ## (pass 383, design bible 15.3). A full run plays about 50; a soak cut short
 ## or dropped fails the run instead of quietly shrinking it.
@@ -75,6 +77,11 @@ func _ready() -> void:
 			var leaks := _leaks()
 			if not leaks.is_empty():
 				record(name, false, "left global state changed: %s" % [leaks])
+			# A save the test made and left is swept away, so it can't leak into the
+			# next test or the next run; one that was there before is never touched.
+			for f: String in changed_saves():
+				if not _clean_saves.has(f):
+					DirAccess.remove_absolute(ProjectSettings.globalize_path("user://" + f))
 			print("%s %s" % ["PASS" if _failed == before else "FAIL", name])
 			arena.queue_free()
 			await get_tree().physics_frame
@@ -139,6 +146,10 @@ func _clean_slate() -> void:
 	BossRush.run = {}
 	PlayerVisual.forced = ""
 	PlayerVisual.body_sets = true
+	# A menu left open leaves the game paused, and the next test's world
+	# would stand still (pass 399).
+	get_tree().paused = false
+	_clean_saves = saves_on_disk()
 	# A button pressed through the real controller (press_for_real, pass 386)
 	# stays down until released, and the next test's hero would read it.
 	for a in held_actions():
@@ -168,6 +179,37 @@ func _leaks() -> Array[String]:
 		out.append("buttons held (%s)" % ", ".join(held))
 	if Feel.hitstop_enabled or Feel.rumble_enabled or Feel.game_speed != 1.0 or Feel.shake_scale != 1.0 or Sfx.volume_db != -80.0:
 		out.append("feel or volume changed")
+	if get_tree().paused:
+		out.append("the game left paused")
+	var changed := changed_saves()
+	if not changed.is_empty():
+		out.append("saves changed (%s)" % ", ".join(changed))
+	return out
+
+
+## The save files in user:// (journeys, their backups, half-written ones),
+## each with its MD5 (pass 399). The suite shares user:// with the game, so a
+## test that writes or pours out a flask the player owns (slots 1 to 3) would
+## take a real journey; every test must leave the files as it found them.
+func saves_on_disk() -> Dictionary:
+	var out := {}
+	for f: String in DirAccess.get_files_at("user://"):
+		if f.begins_with("save_"):
+			out[f] = FileAccess.get_md5("user://" + f)
+	return out
+
+
+## Save files a test wrote, changed or removed since it began, sorted.
+func changed_saves() -> PackedStringArray:
+	var now := saves_on_disk()
+	var out := PackedStringArray()
+	for f: String in now:
+		if _clean_saves.get(f, "") != now[f]:
+			out.append(f)
+	for f: String in _clean_saves:
+		if not now.has(f):
+			out.append(f)
+	out.sort()
 	return out
 
 
