@@ -39,6 +39,26 @@ func test_every_test_starts_from_a_clean_slate() -> void:
 	runner.call("_clean_slate")
 	check((runner.call("_leaks") as Array).is_empty(), "and the slate wipes them")
 	check(not Input.is_action_pressed("jump") and not Input.is_action_pressed("attack"), "the buttons are let go")
+	# A save a test leaves behind, or a game it leaves paused, is a leak too (pass 399).
+	const SLOT := 96
+	GameState.delete_save(SLOT)
+	runner.call("_clean_slate")
+	var was := GameState.slot
+	check(GameState.save_game(SLOT), "a test may write a save of its own")
+	GameState.slot = was
+	leaks = runner.call("_leaks")
+	check(leaks.has("saves changed (save_%d.json)" % SLOT), "a save left on disk counts as a leak (%s)" % [leaks])
+	GameState.delete_save(SLOT)
+	check((runner.call("_leaks") as Array).is_empty(), "and pouring it out again puts things back")
+	arena.get_tree().paused = true
+	leaks = runner.call("_leaks")
+	arena.get_tree().paused = false
+	check(leaks.has("the game left paused"), "a game left paused counts as a leak (%s)" % [leaks])
+	arena.get_tree().paused = true
+	runner.call("_clean_slate")
+	check(not arena.get_tree().paused, "and the slate unpauses it")
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("Saves and pauses left behind (pass 399)"), "bible 15.3 says so")
 
 func test_settings_save_load_and_apply() -> void:
 	Settings.path = TEMP_SETTINGS
@@ -538,6 +558,7 @@ func test_deaths_are_counted_and_kept_in_the_save() -> void:
 	check(int(GameState.data.deaths) == 0, "a new game clears the count")
 	GameState.load_game(SLOT)
 	check(int(GameState.data.deaths) == 1, "and loading the save brings it back")
+	GameState.delete_save(SLOT)
 
 
 func test_the_secret_ending_needs_no_deaths_and_the_battle_suit() -> void:
