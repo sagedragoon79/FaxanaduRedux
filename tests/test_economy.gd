@@ -3300,3 +3300,24 @@ func test_each_market_keeper_stands_before_their_shop() -> void:
 		var shop: String = shops[keeper]
 		check(shop in SetPiece.NAMES and Sheet.exists(shop), "%s is a packed set piece" % shop)
 		check(shop_at.get(shop, -1) == keeper_at.get(keeper, -2), "%s stands before %s" % [keeper, shop])
+
+
+## Bible 13.6: a set piece's building stays still; only its fire, smoke and lamps move.
+func test_a_set_pieces_fire_and_smoke_move_while_the_building_stays_still() -> void:
+	for name: String in SetPiece.EFFECTS:
+		check(name in SetPiece.NAMES, "%s has living parts and is a set piece" % name)
+		for e: Dictionary in SetPiece.EFFECTS[name]:
+			check(String(e.kind) in ["fire", "smoke", "lamp"], "%s: %s is a kind the piece draws" % [name, e.kind])
+	var piece := SetPiece.new()
+	piece.sheet = "shop_arms"
+	arena.add_child(piece)
+	check(piece.get_node_or_null("Glow") != null, "the smithy's forge glows")
+	check(Sheet.get_sheet("shop_arms").animations.idle.seq.size() == 1, "and the building is one still frame")
+	var lo := 9.0
+	var hi := 0.0
+	for i in 60:
+		var f := SetPiece.flicker(i * 0.05, 3.0)
+		lo = minf(lo, f)
+		hi = maxf(hi, f)
+	check(lo >= 0.5 and hi <= 1.0 and hi - lo > 0.2, "the fire flickers (%.2f to %.2f)" % [lo, hi])
+	piece.queue_free()
