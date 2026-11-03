@@ -674,6 +674,58 @@ func test_tablet_opens_dialog() -> void:
 	check(got.size() == 1 and got[0].size() == 2, "reading a tablet opens a two-page dialog")
 
 
+## Pass 431: a sign read and put away with the buttons. Pass 430 found the
+## press that closes a menu read again by the hero; the dialog box does not
+## pause the game but freezes the hero, so it needed its own look. A tablet
+## is read with a real Up, and the box put away with each of its buttons,
+## held: Jump must not jump, Attack must not swing, and Up must not read the
+## tablet straight back open. A fresh Up reads it again.
+func test_a_sign_is_read_and_put_away_with_the_buttons() -> void:
+	var rooms := _rooms()
+	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, Hi\n---")
+	var w := make_world(rooms, "test/a", cell_feet(8, 19))
+	var box := DialogBox.new()
+	arena.add_child(box)
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(5)
+	for button: String in ["jump", "attack", "move_up"]:
+		Input.action_press("move_up")
+		await frames(2)
+		Input.action_release("move_up")
+		await frames(2)
+		check(box.is_open and p.frozen, "%s: Up reads the tablet, and the hero waits" % button)
+		await frames(int(DialogBox.INPUT_GRACE * 60.0) + 10)
+		var at := p.global_position
+		Sfx.recent.clear()
+		Input.action_press(button)
+		var moved := false
+		var reopened := false
+		var closed := false
+		for i in 20:
+			await frames(1)
+			closed = closed or not box.is_open
+			if closed and box.is_open:
+				reopened = true
+			if p.velocity.length() > 1.0 or p.is_attacking:
+				moved = true
+		Input.action_release(button)
+		await frames(2)
+		check(closed and not reopened and not box.is_open and not p.frozen, "%s puts the box away and it stays away" % button)
+		check(not moved and p.global_position.distance_to(at) < 1.0 and not Sfx.recent.has("jump") and not Sfx.recent.has("slash"),
+			"and the hero does not move on it (%s, %s)" % [p.global_position - at, Sfx.recent])
+		await frames(5)
+	Input.action_press("move_up")
+	await frames(2)
+	Input.action_release("move_up")
+	await frames(2)
+	check(box.is_open, "a fresh Up reads it again")
+	box.close()
+	box.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_sign_is_read_and_put_away_with_the_buttons`"), "the bible names the test")
+
+
 ## Pass 251: a sign says what the world has become. Lines on one cell are one
 ## tablet, and it reads the first whose flags hold at the moment it is read.
 func test_a_tablet_reads_what_the_world_has_become() -> void:

@@ -267,6 +267,8 @@ var _control_lock_timer := 0.0
 var _woken := false
 ## The physics frame of the hero's last step (pass 430).
 var _last_step := -1
+## True while the hero is frozen or dead, until the first step back (pass 431).
+var _held_still := false
 var _control_blend_timer := 0.0
 var _jump_cut_available := false
 var _dash_timer := 0.0
@@ -361,15 +363,17 @@ func _physics_process(delta: float) -> void:
 	_last_step = Engine.get_physics_frames()
 	if frozen:
 		input.clear()
+		_held_still = true
 		return
 	if dead:
 		_dead_timer -= delta
 		input.clear()
+		_held_still = true
 		if _dead_timer <= 0.0:
 			_respawn()
 		return
 	input.poll(tuning)
-	if not _woken or missed:
+	if not _woken or missed or _held_still:
 		# A press already under way when the hero woke is not the hero's (pass
 		# 429): the Jump that takes a journey up from the title is read by the
 		# shelf, and seen again here it buffered a jump for the first landing.
@@ -377,8 +381,12 @@ func _physics_process(delta: float) -> void:
 		# Attack or Dash that closes a menu reached the hero's next step too
 		# whenever no physics step fell between the press and the close (most
 		# frames on a display faster than 60 Hz), and the hero jumped, swung
-		# or dashed out of the menu.
+		# or dashed out of the menu. Nor one that ends a frozen spell (pass
+		# 431): the Jump, Attack or Up that puts a dialog away is read by the
+		# box in the same frame, and the hero jumped, swung, or read the sign
+		# straight back open. Deaths hold the hero the same way.
 		_woken = true
+		_held_still = false
 		if not input.scripted:
 			input.drop_presses()
 	_tick_timers(delta)
