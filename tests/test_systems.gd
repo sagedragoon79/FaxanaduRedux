@@ -2771,6 +2771,56 @@ func test_the_menus_answer_the_real_controller() -> void:
 	check(note.contains("`test_the_menus_answer_the_real_controller`"), "bible 14 names the test")
 
 
+## Pass 421: the pause menu by the buttons. Pass 397 drove a bare ListMenu
+## with real taps and pass 413 a shop, but no test had pressed Pause in play:
+## the game's own `_check_pause` and the pause menu's rows were only reached by
+## calling `Menus.open_pause`. Here the whole game runs, Pause opens the menu
+## over a frozen world, Down and Jump rub on an Ointment from it (bible 10.2,
+## "rubbed on from the pause menu"), a second Pause finds that row refused
+## while one is on, and Dash backs out to play.
+func test_the_pause_menu_answers_the_real_controller() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	await frames(5)
+	var p: Player = g.player
+	p.ointments = 1
+	var menu: ListMenu = g.menu
+	check(not menu.is_open and not arena.get_tree().paused, "playing, with no menu up")
+	await _tap("pause")
+	check(menu.is_open and menu.title == "Paused" and arena.get_tree().paused, "Pause opens the pause menu over a frozen world")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	check(menu.cursor == 0, "on Resume")
+	await _tap("move_down")
+	check(String(menu.rows[menu.cursor].label) == "Use Ointment", "Down to Use Ointment (%s)" % menu.rows[menu.cursor].label)
+	Sfx.recent.clear()
+	await _tap("jump")
+	check(p.ointments == 0 and p.ointment_left > Player.OINTMENT_TIME - 1.0, "Jump rubs it on: none left, %d s of safety" % int(Player.OINTMENT_TIME))
+	check(Sfx.recent.has("heal") and not menu.is_open and not arena.get_tree().paused, "with its shimmer, and play goes on (%s)" % [Sfx.recent])
+	await frames(5)
+	await _tap("pause")
+	check(menu.is_open, "Pause opens it again")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_down")
+	Sfx.recent.clear()
+	await _tap("jump")
+	check(menu.is_open and Sfx.recent == (["menu_refuse"] as Array[String]), "with one already on, Jump on the row says no (%s)" % [Sfx.recent])
+	await _tap("dash")
+	check(not menu.is_open and not arena.get_tree().paused, "Dash backs out and the game runs on")
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("The pause menu by the buttons (pass 421)"), "the bible says so")
+
+
 ## Pass 398: each press of the real controller in a menu is heard as the
 ## bible says (13.3): the cursor blips, a value blips, a row you can't choose
 ## says no, backing out is quiet; on the shelf of flasks a step blips, Block
