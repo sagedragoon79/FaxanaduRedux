@@ -219,6 +219,9 @@ var safe_position := Vector2.ZERO
 var respawn_handler: Callable
 ## While frozen (room transitions, dialog, menus) the controller does nothing.
 var frozen := false
+## Set by a screen that read this frame's press (the dialog box, pass 431):
+## the hero's next step drops its presses, so the press is not read twice.
+var drop_next_presses := false
 ## A drag in px/s that something outside the player applies this frame (a
 ## boss's web line reeling you in). Moves the body directly, so it works
 ## against any input; a dash breaks it. Cleared every frame.
@@ -267,8 +270,6 @@ var _control_lock_timer := 0.0
 var _woken := false
 ## The physics frame of the hero's last step (pass 430).
 var _last_step := -1
-## True while the hero is frozen or dead, until the first step back (pass 431).
-var _held_still := false
 var _control_blend_timer := 0.0
 var _jump_cut_available := false
 var _dash_timer := 0.0
@@ -363,17 +364,15 @@ func _physics_process(delta: float) -> void:
 	_last_step = Engine.get_physics_frames()
 	if frozen:
 		input.clear()
-		_held_still = true
 		return
 	if dead:
 		_dead_timer -= delta
 		input.clear()
-		_held_still = true
 		if _dead_timer <= 0.0:
 			_respawn()
 		return
 	input.poll(tuning)
-	if not _woken or missed or _held_still:
+	if not _woken or missed or drop_next_presses:
 		# A press already under way when the hero woke is not the hero's (pass
 		# 429): the Jump that takes a journey up from the title is read by the
 		# shelf, and seen again here it buffered a jump for the first landing.
@@ -381,12 +380,12 @@ func _physics_process(delta: float) -> void:
 		# Attack or Dash that closes a menu reached the hero's next step too
 		# whenever no physics step fell between the press and the close (most
 		# frames on a display faster than 60 Hz), and the hero jumped, swung
-		# or dashed out of the menu. Nor one that ends a frozen spell (pass
-		# 431): the Jump, Attack or Up that puts a dialog away is read by the
-		# box in the same frame, and the hero jumped, swung, or read the sign
-		# straight back open. Deaths hold the hero the same way.
+		# or dashed out of the menu. Nor the one that puts a dialog away
+		# (pass 431), which the box has read: it asks for this. A hold with
+		# nothing to read a press (a door's scroll, a respawn) keeps the
+		# player's next press (pass 432).
 		_woken = true
-		_held_still = false
+		drop_next_presses = false
 		if not input.scripted:
 			input.drop_presses()
 	_tick_timers(delta)

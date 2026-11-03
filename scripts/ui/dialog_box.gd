@@ -73,6 +73,8 @@ func _set_frozen(on: bool) -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null:
 		p.frozen = on
+		# The press that put the box away is the box's, not the hero's (pass 431).
+		p.drop_next_presses = not on
 
 
 func _process(delta: float) -> void:
