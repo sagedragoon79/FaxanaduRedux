@@ -2427,6 +2427,56 @@ func test_running_sliding_and_gliding_through_the_real_controller() -> void:
 ## for real, but the rest of the water (Down held to sink, letting go to float
 ## back up, a direction held to swim across, and Right and Jump at the surface
 ## to climb out onto the bank) was only ever driven by a scripted intent.
+## Pass 432 (bible 6.7): a press the player means is never swallowed.
+## Passes 429 to 431 drop the presses of the hero's first step back after
+## waking, a pause, or a dialog, because a menu or the box had already read
+## them. But the hero is also held still with no screen to read a press: a
+## door's scroll or fade freezes them, and so does dying. A Jump pressed in the
+## very frame such a hold ends belongs to the player, and must jump. Here the
+## hold ends and Jump is pressed in the same frame, with nothing between: once
+## as a door would end it (frozen), once on the respawn after a fall.
+func test_a_jump_pressed_as_a_hold_ends_is_kept() -> void:
+	var room := make_room([
+		"##########",
+		"#........#",
+		"#........#",
+		"#........#",
+		"#........#",
+		"##########",
+	])
+	var p := make_player(room, Vector2i(4, 4))
+	p.input = PlayerInput.new()
+	await _settle(p)
+	# A door's hold: frozen for the scroll, let go, and Jump pressed at once.
+	p.frozen = true
+	await frames(10)
+	# As a door ends its hold: in a frame's process, after its physics step,
+	# the way a dialog box reads the press that puts it away.
+	await runner.get_tree().process_frame
+	Input.action_press("jump")
+	p.frozen = false
+	await frames(3)
+	check(p.velocity.y < 0.0, "Jump pressed as a door lets the hero go jumps (%.0f)" % p.velocity.y)
+	release_for_real(["jump"])
+	await _settle(p)
+	# Dying: the fall, the wait, and Jump pressed the moment the hero is back.
+	p.take_damage(p.hp + 10)
+	check(p.dead, "a blow fells the hero")
+	var back := false
+	for i in 240:
+		await runner.get_tree().process_frame
+		if not p.dead:
+			back = true
+			break
+	Input.action_press("jump")
+	await frames(3)
+	check(back and p.velocity.y < 0.0, "Jump pressed as the hero rises again jumps (%.0f)" % p.velocity.y)
+	release_for_real(["jump"])
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_jump_pressed_as_a_hold_ends_is_kept`"), "6.7 names the test")
+
+
 func test_swimming_through_the_real_controller() -> void:
 	var t := MovementTuning.new()
 	var room := _pool_room()
