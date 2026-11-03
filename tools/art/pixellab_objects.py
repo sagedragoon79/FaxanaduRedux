@@ -32,6 +32,11 @@ OBJECTS = {
         ("two_thirds", "two_thirds", 8),
         ("full", "full", 10),
     ]),
+    # Market Row's four shops, each behind its keeper (scripts/world/set_piece.gd).
+    "shop_arms": ("art/pixellab/eolis/shops", [("idle", "arms", 1)]),
+    "shop_sundries": ("art/pixellab/eolis/shops", [("idle", "sundries", 1)]),
+    "shop_dyeworks": ("art/pixellab/eolis/shops", [("idle", "dyeworks", 1)]),
+    "shop_cartographer": ("art/pixellab/eolis/shops", [("idle", "cartographer", 1)]),
 }
 PAD = 2
 # Pixel-art sheets keep a limited palette (bible 12.2; test_sheets_use_the_master_palette).

@@ -389,7 +389,12 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			cage.room_id = id
 			_spawn(cage, pos)
 		_:
-			push_warning("Unknown prop in %s: %s" % [id, kind])
+			if kind in SetPiece.NAMES:
+				var piece := SetPiece.new()
+				piece.sheet = kind
+				_spawn(piece, pos)
+			else:
+				push_warning("Unknown prop in %s: %s" % [id, kind])
 
 
 ## A guardian tears the floor (Rokusutahn's phase 3, the Bloom's bites): removes

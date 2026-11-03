@@ -1846,6 +1846,8 @@ state, cropped to one shared box with the origin at its bottom center, from sour
 The first is **the Fountain of Eolis**: dry, then one state per restored spring (a trickle, a steady fall, full and
 glowing), the last three animated. `Fountain` shows the state for the springs restored and keeps its code drawing only
 as a fallback.
+Market Row's four shops (Eolis Arms, Ilse's Dyeworks, Eolis Sundries and the Cartographer's house) are
+`SetPiece`s, room props named in `SetPiece.NAMES`, each standing behind its keeper.
 
 ## 14. Technical Architecture (Godot)
 
