@@ -2344,3 +2344,80 @@ func test_the_timing_windows_hold_through_the_real_controller() -> void:
 	check(not await _real_buffered_landing(8, land), "8 frames (0.133 s) before is dropped")
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("Timing windows, too (pass 400)"), "bible 6.7's Input line says so")
+
+
+## Pass 416: running, wall sliding and gliding, through the real controller.
+## Passes 384 to 408 pressed every jump, dash, drop and climb for real, but the
+## moves that read a direction or Jump held over many frames (the run and its
+## turn, the slide down a wall and its short stick, Feather Fall's glide) were
+## only ever driven by a scripted intent.
+func test_running_sliding_and_gliding_through_the_real_controller() -> void:
+	var t := MovementTuning.new()
+	# Right held runs up to 165 px/s within 7 frames; Left held turns at 1.6x the brake.
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(3, 11))
+	await _settle(p)
+	await press_for_real(p, ["move_right"])
+	var to_max := -1
+	for i in 30:
+		if to_max < 0 and is_equal_approx(p.velocity.x, t.run_speed):
+			to_max = i + 3
+		await frames(1)
+	check(to_max > 0 and to_max <= 7, "Right held runs at %.0f px/s within 7 frames (got %d)" % [t.run_speed, to_max])
+	var before := p.velocity.x
+	release_for_real(["move_right"])
+	Input.action_press("move_left")
+	await frames(1)
+	var turn_brake := before - p.velocity.x
+	check_near(turn_brake, t.ground_decel * t.turn_multiplier / 60.0, 0.5, "Left held turns at 1.6x the brake (%.1f a frame)" % turn_brake)
+	release_for_real(["move_left"])
+	var stop := 0
+	while absf(p.velocity.x) > 0.0 and stop < 30:
+		await frames(1)
+		stop += 1
+	check(stop <= 5, "let go, the run stops within 5 frames (got %d)" % stop)
+	room.free()
+	# Right held against a wall slides down it at 90 px/s; Left sticks for 0.08 s first.
+	var wall_rows := ["################"]
+	for y in 18:
+		wall_rows.append("#..............#")
+	wall_rows.append("################")
+	room = make_room(wall_rows)
+	p = make_player(room, Vector2i(14, 4))
+	await press_for_real(p, ["move_right"])
+	await frames(30)
+	check(p.is_wall_sliding and is_equal_approx(p.velocity.y, t.wall_slide_speed),
+		"Right held into a wall slides at %.0f px/s (%s, vy %.0f)" % [t.wall_slide_speed, p.is_wall_sliding, p.velocity.y])
+	release_for_real(["move_right"])
+	Input.action_press("move_left")
+	var stuck := 0
+	for i in 20:
+		await frames(1)
+		if not p.is_wall_sliding:
+			break
+		stuck += 1
+	var stick_frames := roundi(t.wall_stick_time * 60.0)
+	check(stuck >= stick_frames - 1 and stuck <= stick_frames + 1,
+		"Left held, the hero sticks about %d frames before letting go (got %d)" % [stick_frames, stuck])
+	release_for_real(["move_left"])
+	room.free()
+	# Jump held after the double jump glides at 60 px/s; let go, it falls.
+	var tall := ["################"]
+	for y in 40:
+		tall.append("#..............#")
+	tall.append("################")
+	room = make_room(tall)
+	p = make_player(room, Vector2i(7, 5), {"boots": true})
+	p.feather_fall = true
+	await frames(2)
+	await press_for_real(p, ["jump"])
+	check(not p.has_double_jump, "Jump in the air spends the double jump")
+	await frames(60)
+	check(p.is_gliding and is_equal_approx(p.velocity.y, t.glide_fall_speed),
+		"Jump held after it glides at %.0f px/s (%s, vy %.0f)" % [t.glide_fall_speed, p.is_gliding, p.velocity.y])
+	release_for_real(["jump"])
+	await frames(5)
+	check(not p.is_gliding and p.velocity.y > t.glide_fall_speed, "let go, the hero falls (vy %.0f)" % p.velocity.y)
+	room.free()
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("Running, sliding and gliding, too (pass 416)"), "bible 6.7's Input line says so")
