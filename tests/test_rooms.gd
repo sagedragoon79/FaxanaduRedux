@@ -780,6 +780,105 @@ func test_a_sign_is_read_safely_beside_a_foe() -> void:
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_sign_is_read_safely_beside_a_foe`"), "the bible names the test")
 
+## Pass 440: a press buffered as a sign is read. Jump, Dash, Attack and Throw
+## wait in a buffer for their moment (6.7), and a sign read with Up freezes
+## the hero. Pressed in the same frame as the Up, the other press went into
+## its buffer before the sign opened, and once the sign was put away the hero
+## leapt, dashed or swung with no press of their own. Up and each button
+## pressed together for real at a tablet: the sign opens, and put away, the
+## hero stands still. A fresh press afterwards is the hero's. A shop (a pause)
+## and an inner door (a hold) are tried the same way.
+func test_a_press_made_with_the_up_that_reads_a_sign_is_dropped() -> void:
+	for button: String in ["jump", "attack", "dash"]:
+		var rooms := _rooms()
+		rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, Hi\n---")
+		var w := make_world(rooms, "test/a", cell_feet(8, 19))
+		var box := DialogBox.new()
+		arena.add_child(box)
+		var p := w.player
+		p.abilities["stride"] = true
+		p.input = PlayerInput.new()
+		await frames(5)
+		Input.action_press("move_up")
+		Input.action_press(button)
+		await frames(2)
+		Input.action_release("move_up")
+		Input.action_release(button)
+		check(box.is_open and p.frozen, "%s with Up: the sign opens" % button.capitalize())
+		await frames(int(DialogBox.INPUT_GRACE * 60.0) + 4)
+		var at := p.global_position
+		Input.action_press("move_up")
+		await runner.get_tree().process_frame
+		await runner.get_tree().process_frame
+		Input.action_release("move_up")
+		var moved := false
+		for i in 20:
+			await frames(1)
+			if p.velocity.length() > 1.0 or p.is_attacking or p.is_dashing:
+				moved = true
+		check(not box.is_open and not moved and p.global_position.distance_to(at) < 1.0,
+			"and put away, the %s pressed with the Up does not fire (%s)" % [button, p.global_position - at])
+		Input.action_press(button)
+		var fresh := false
+		for i in 4:
+			await frames(1)
+			fresh = fresh or p.velocity.y < -1.0 or p.is_attacking or p.is_dashing
+		Input.action_release(button)
+		check(fresh, "a fresh %s afterwards is the hero's" % button.capitalize())
+		box.free()
+		w.free()
+		await frames(2)
+	# A shop pauses the game without freezing the hero.
+	var rooms := _rooms()
+	rooms["test/a"] = rooms["test/a"].replace("---", "npc: 8, 19, arms_dealer\n---")
+	var sw := make_world(rooms, "test/a", cell_feet(8, 19))
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	var sp := sw.player
+	sp.input = PlayerInput.new()
+	await frames(5)
+	Input.action_press("move_up")
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("move_up")
+	Input.action_release("jump")
+	check(menu.is_open and arena.get_tree().paused and not sp.frozen, "Jump with Up at the arms dealer: his shop opens")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 4)
+	menu.close()
+	var leapt := false
+	for i in 20:
+		await frames(1)
+		leapt = leapt or sp.velocity.y < -1.0
+	check(not menu.is_open and not leapt, "and with the shop left, the Jump pressed with the Up does not fire")
+	menu.free()
+	sw.free()
+	await frames(2)
+	# An inner door freezes the hero through its fade, without a pause.
+	for button: String in ["jump", "attack"]:
+		var w := make_world(_rooms(), "test/b", cell_feet(30, 19))
+		var p := w.player
+		p.input = PlayerInput.new()
+		await frames(10)
+		Input.action_press("move_up")
+		Input.action_press(button)
+		await frames(2)
+		Input.action_release("move_up")
+		Input.action_release(button)
+		var arrived := false
+		var moved := false
+		for i in 60:
+			await frames(1)
+			if w.room.id == "test/c" and not p.frozen:
+				arrived = true
+			if arrived and (p.velocity.y < -1.0 or p.is_attacking):
+				moved = true
+		check(arrived and not moved, "%s with Up at an inner door: through it, and the %s does not fire on arrival" % [button.capitalize(), button])
+		w.free()
+		await frames(2)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1)
+	check(note.contains("`test_a_press_made_with_the_up_that_reads_a_sign_is_dropped`"), "6.7 names the test")
+
+
 
 ## Pass 251: a sign says what the world has become. Lines on one cell are one
 ## tablet, and it reads the first whose flags hold at the moment it is read.
