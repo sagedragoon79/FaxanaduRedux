@@ -4779,3 +4779,55 @@ func test_a_guardian_falls_to_the_real_controller() -> void:
 	GameState.slot = was
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
 	check(note.contains("`test_a_guardian_falls_to_the_real_controller`"), "bible 8 names the test")
+
+
+## Pass 420: the Foreman's rock, by the buttons. Bible 4 and 8: its rock
+## halves every blow except one from above. Until now the halving was held by
+## calling `take_hit` with a direction, and no pogo had ever landed on a
+## guardian's head through the real controller. Here an Attack pressed for
+## real beside it is halved, and Down + Attack pressed for real as the hero
+## falls onto its helm lands in full and bounces him back up.
+func test_the_foremans_rock_answers_the_real_controller() -> void:
+	# Mid-hall, clear of the two one-way ledges overhead.
+	var r := await _foreman_world(Vector2i(20, 19))
+	var w: World = r[0]
+	var f: Foreman = r[1]
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(2)
+	var full := roundi(p.slash_damage * p.melee_mult)
+	var halved := maxi(1, roundi(full * Foreman.ARMOR))
+	# Beside it, facing it, a slash pressed for real.
+	p.teleport(Vector2(f.global_position.x - 30.0, f.global_position.y))
+	p.facing = 1
+	await frames(3)
+	var hp0 := f.hp
+	await press_for_real(p, ["attack"])
+	release_for_real(["attack"])
+	await frames(10)
+	check(hp0 - f.hp == halved, "a slash pressed for real at its side is halved by the rock (%d of %d)" % [hp0 - f.hp, full])
+	# Over its helm, Down + Attack pressed for real as the hero falls.
+	await frames(int(p.tuning.attack_cooldown * 60.0) + 10)
+	# The down-strike is the Mattock's (it is won here, so a revisit has it).
+	p.abilities["mattock"] = true
+	p.teleport(Vector2(f.global_position.x, f.global_position.y - 120.0))
+	p.velocity = Vector2.ZERO
+	hp0 = f.hp
+	var pogo := roundi(p.slash_damage * p.melee_mult * p.down_strike_mult)
+	# Down is held through the fall; Attack goes down as the helm comes near.
+	Input.action_press("move_down")
+	var pressed := false
+	var bounced := false
+	for i in 90:
+		if not pressed and p.global_position.y > f.global_position.y - f.body_size.y - 40.0:
+			Input.action_press("attack")
+			pressed = true
+		await frames(1)
+		if f.hp < hp0 and p.velocity.y < -200.0:
+			bounced = true
+			break
+	release_for_real(["move_down", "attack"])
+	check(bounced, "Down + Attack pressed for real drops onto its helm and bounces the hero up")
+	check(hp0 - f.hp == pogo, "and the pogo from above lands in full (%d of %d)" % [hp0 - f.hp, pogo])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("The rock by the buttons (pass 420)"), "bible 8 says so")
