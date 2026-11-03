@@ -263,6 +263,8 @@ var _wall_coyote_timer := 0.0
 var _last_wall_dir := 0
 var _wall_stick_timer := 0.0
 var _control_lock_timer := 0.0
+## False until the hero's first physics step (pass 429).
+var _woken := false
 var _control_blend_timer := 0.0
 var _jump_cut_available := false
 var _dash_timer := 0.0
@@ -362,6 +364,13 @@ func _physics_process(delta: float) -> void:
 			_respawn()
 		return
 	input.poll(tuning)
+	if not _woken:
+		# A press already under way when the hero woke is not the hero's (pass
+		# 429): the Jump that takes a journey up from the title is read by the
+		# shelf, and seen again here it buffered a jump for the first landing.
+		_woken = true
+		if not input.scripted:
+			input.drop_presses()
 	_tick_timers(delta)
 	mp = minf(mp + combat.mp_regen_per_second * delta, max_mp)
 

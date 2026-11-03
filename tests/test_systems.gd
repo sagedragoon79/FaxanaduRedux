@@ -2518,6 +2518,73 @@ func test_the_title_takes_journeys_up_and_back_in_their_own_flasks() -> void:
 	_restore()
 
 
+## Pass 429: a journey taken up with the buttons. Pass 359 walked the title's
+## real path through the flasks, but with `confirm()`; pass 397 tapped a bare
+## shelf. No test had pressed the buttons from the title into a saved journey,
+## so the press that takes a flask up was never seen reaching the world: Jump
+## chooses the flask while the tree is paused, and if that press were read
+## again by the hero's first step, a journey would begin with a jump. Here
+## Jump on Journeys opens the shelf on the full flask, Jump held takes it up,
+## and the hero wakes where they rested, standing, and does not jump until
+## Jump is let go and pressed again.
+func test_a_journey_is_taken_up_with_the_buttons() -> void:
+	const SLOTS := [7, 8, 9]
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	Settings.path = TEMP_SETTINGS
+	var was := GameState.slot
+	# Where a hero stands in the West Gate, to rest there.
+	var w := make_world({}, "eolis/west_gate")
+	await frames(30)
+	var rest := w.player.global_position
+	check(w.player.is_on_floor(), "the West Gate has footing to rest on")
+	w.queue_free()
+	await frames(2)
+	GameState.new_game()
+	GameState.data.save_room = "eolis/west_gate"
+	GameState.data.save_pos = [rest.x, rest.y]
+	GameState.data.gold = 500
+	check(GameState.save_game(8), "a journey rests in the middle flask")
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.picker.slots = SLOTS
+	check(g.menu.is_open and g.title_screen.visible, "the game opens on the title")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("jump")
+	check(g.picker.is_open and g.picker.cursor == 1, "Jump on Journeys opens the shelf on the full flask (%d)" % g.picker.cursor)
+	await frames(int(SlotPicker.INPUT_GRACE * 60.0) + 2)
+	Input.action_press("jump")
+	var rose := false
+	for i in 20:
+		await frames(1)
+		if g.world != null and g.player != null and g.player.velocity.y < -1.0:
+			rose = true
+	check(g.world != null and not g.picker.is_open and not arena.get_tree().paused, "Jump takes the journey up and play begins")
+	check(GameState.slot == 8 and int(GameState.data.gold) == 500 and String(g.world.room.id) == "eolis/west_gate",
+		"it is the middle flask's journey, where it rested (slot %d, %d gold)" % [GameState.slot, int(GameState.data.gold)])
+	var p: Player = g.player
+	check(not rose and p.is_on_floor() and p.global_position.distance_to(rest) < 2.0,
+		"the hero wakes standing where they rested, and the press that chose the flask is no jump (%s)" % p.global_position)
+	Input.action_release("jump")
+	await frames(2)
+	Input.action_press("jump")
+	await frames(3)
+	check(p.velocity.y < 0.0, "a fresh press jumps (%.0f)" % p.velocity.y)
+	Input.action_release("jump")
+	g.world.use_game_state = false
+	g.queue_free()
+	await frames(2)
+	for s: int in SLOTS:
+		GameState.delete_save(s)
+	GameState.slot = was
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_journey_is_taken_up_with_the_buttons`"), "bible 14 names the test")
+
+
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
 ## as empty and taking it up would have begun a new journey over the old one.

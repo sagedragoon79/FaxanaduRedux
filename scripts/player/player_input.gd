@@ -70,16 +70,21 @@ static func vertical(action: String, slope: float) -> bool:
 ## Called by the player after it has consumed this frame. Scripted presses last one frame.
 func end_frame() -> void:
 	if scripted:
-		up_pressed = false
-		jump_pressed = false
-		attack_pressed = false
-		dash_pressed = false
-		block_pressed = false
-		spell_pressed = false
-		spell_next_pressed = false
-		heal_pressed = false
-		hourglass_pressed = false
-		throw_pressed = false
+		drop_presses()
+
+
+## Forgets this frame's presses; held buttons stay held.
+func drop_presses() -> void:
+	up_pressed = false
+	jump_pressed = false
+	attack_pressed = false
+	dash_pressed = false
+	block_pressed = false
+	spell_pressed = false
+	spell_next_pressed = false
+	heal_pressed = false
+	hourglass_pressed = false
+	throw_pressed = false
 
 
 ## Clears everything (used when control is taken away, e.g. on death).
