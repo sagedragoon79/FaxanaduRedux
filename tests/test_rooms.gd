@@ -725,11 +725,14 @@ func test_a_sign_is_read_and_put_away_with_the_buttons() -> void:
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_sign_is_read_and_put_away_with_the_buttons`"), "the bible names the test")
 
-## Pass 435: a sign read beside a foe. The dialog box freezes the hero but not
+## Pass 435: a sign read beside a foe. The dialog box froze the hero but not
 ## the world (pass 431), so a foe walking up while a tablet was read struck a
-## reader who could not move. A Rot Dwarf stands near a tablet: Up read for
-## real holds the box open through his blows, and the hero takes none. Put
-## away with Attack, the hero is fair game again and the next blow lands.
+## reader who could not move. Pass 435 kept a frozen hero from harm, which
+## pass 436 found made a tablet read as a blow came down a dodge for any blow,
+## guardians' included (thirteen arenas hold tablets). The box now pauses the
+## world as a menu does. A Rot Dwarf winds up beside a tablet, and Up reads it
+## for real five steps before his blade lands: the dwarf holds still for five
+## seconds and nothing lands. Put away with Attack, the same blow lands.
 func test_a_sign_is_read_safely_beside_a_foe() -> void:
 	var rooms := _rooms({Vector2i(11, 19): "D"})
 	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, Hi\n---")
@@ -745,33 +748,37 @@ func test_a_sign_is_read_safely_beside_a_foe() -> void:
 			dwarf = c
 	check(dwarf != null, "a Rot Dwarf stands by the tablet")
 	await frames(5)
-	Input.action_press("move_up")
-	await frames(2)
-	Input.action_release("move_up")
-	await frames(2)
-	check(box.is_open and p.frozen, "Up reads the tablet, and the hero waits")
-	var swung := 0
-	var was := ""
-	for i in 300:
-		await frames(1)
-		if dwarf.state == "swing" and was != "swing":
-			swung += 1
-		was = dwarf.state
-	check(swung >= 2, "the dwarf swings at the reader (%d blows)" % swung)
-	check(p.hp == 60 and box.is_open, "and none lands while the box is open (HP %d)" % p.hp)
-	Input.action_press("attack")
-	await frames(2)
-	Input.action_release("attack")
-	check(not box.is_open and not p.frozen, "Attack puts the box away")
-	var hurt := false
 	for i in 240:
+		if dwarf.state == "windup" and dwarf.state_time >= RotDwarf.WINDUP - 6.0 / 60.0:
+			break
 		await frames(1)
-		hurt = hurt or p.hp < 60
-	check(hurt, "and with the box away the dwarf's blow lands again (HP %d)" % p.hp)
+	check(dwarf.state == "windup", "the dwarf winds up at the hero by the tablet")
+	Input.action_press("move_up")
+	for i in 3:
+		if box.is_open:
+			break
+		await frames(1)
+	Input.action_release("move_up")
+	check(box.is_open and p.frozen and arena.get_tree().paused, "Up reads the tablet as the blow comes down, and the world holds")
+	var held := dwarf.state_time
+	for i in 300:
+		await runner.get_tree().process_frame
+	check(dwarf.state == "windup" and is_equal_approx(dwarf.state_time, held), "the dwarf holds still while the tablet is read (%s, %.3f s)" % [dwarf.state, dwarf.state_time])
+	check(p.hp == 60 and box.is_open, "and nothing lands while the box is open (HP %d)" % p.hp)
+	Input.action_press("attack")
+	await runner.get_tree().process_frame
+	await runner.get_tree().process_frame
+	Input.action_release("attack")
+	check(not box.is_open and not p.frozen and not arena.get_tree().paused, "Attack puts the box away and the world goes on")
+	var landed := -1
+	for i in 30:
+		await frames(1)
+		if landed < 0 and p.hp < 60:
+			landed = i
+	check(landed >= 0, "the blow the tablet was read under still lands (step %d, HP %d)" % [landed, p.hp])
 	box.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_sign_is_read_safely_beside_a_foe`"), "the bible names the test")
-
 
 
 ## Pass 251: a sign says what the world has become. Lines on one cell are one
