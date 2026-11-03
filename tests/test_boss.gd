@@ -280,6 +280,56 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 	check(w.room.is_solid_at(sap_at) and not w.room.is_sap_at(sap_at), "the sap is solid amber now")
 
 
+func test_a_spring_answers_the_real_controller() -> void:
+	# Bible 4.4: the springs are the original's fountains. Every spring test set
+	# a scripted Up, which lasts one step; here the real Up is held for many.
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 3, 19, "P")
+	var rooms := {"test/spring": room_text(["name: Spring", "zone: mist", "prop: 8, 19, spring_mist"], rows)}
+	var w := make_world(rooms, "test/spring", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var banners: Array[String] = []
+	var hear := func(title: String, _text: String) -> void: banners.append(title)
+	GameState.banner.connect(hear)
+	Sfx.recent.clear()
+	# Zorugeriru still coils around it: Up does nothing.
+	Input.action_press("move_up")
+	await frames(3)
+	Input.action_release("move_up")
+	await frames(2)
+	check(not GameState.flag("spring:mist") and banners.is_empty() and not Sfx.recent.has("secret"),
+		"Up at the Spring of Mist while Zorugeriru lives does nothing (%s)" % [banners])
+	GameState.set_flag("boss:zorugeriru")
+	await frames(2)
+	# Up pressed in the air is no use, and held down to the landing it is not pressed again.
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("jump")
+	await _until(func() -> bool: return not p.is_on_floor() and p.velocity.y > -60.0, 60)
+	Input.action_press("move_up")
+	await _until(func() -> bool: return p.is_on_floor(), 90)
+	await frames(6)
+	check(not GameState.flag("spring:mist") and banners.is_empty(),
+		"Up pressed in the air and held to the landing does not restore it")
+	Input.action_release("move_up")
+	await frames(2)
+	# On the ground, one real tap restores it: the flag, the fountain, the banner and the chime.
+	Input.action_press("move_up")
+	await frames(2)
+	Input.action_release("move_up")
+	await frames(2)
+	check(GameState.flag("spring:mist") and Fountain.level() == 1, "a tap of Up on the ground restores it and fills a third of the fountain")
+	check(banners == ["Spring of Mist restored"] and Sfx.recent.has("secret"), "with one banner and the chime (%s, %s)" % [banners, Sfx.recent])
+	Input.action_press("move_up")
+	await frames(3)
+	Input.action_release("move_up")
+	await frames(2)
+	GameState.banner.disconnect(hear)
+	check(banners.size() == 1, "and Up again announces nothing more (%s)" % [banners])
+
+
 func test_music_follows_rooms_and_bosses() -> void:
 	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "victim", "mascon", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one", "sunken", "amb_sunken", "warden"]:
 		var stream := Music.stream_for(name)
