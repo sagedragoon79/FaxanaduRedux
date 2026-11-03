@@ -33,6 +33,39 @@ func test_buying_a_blade_changes_damage() -> void:
 	check(not Shop.buy("eolis_arms", 1, p) and p.gold == 100, "failed purchase costs nothing")
 
 
+## Pass 413 (bible 10): a shop by the buttons. Every shop test called
+## `Shop.buy` or the menu's choose function itself, so the way a player shops
+## (Up at the shopkeeper, Down to a row, Jump to buy, Dash to leave) was never
+## played. The Eolis arms dealer is visited here with the real controller.
+func test_a_shop_answers_the_real_controller() -> void:
+	var w := make_world(_town({}, ["npc: 8, 19, arms_dealer"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	p.gold = 500
+	await _tap_for_real("move_up")
+	check(menu.is_open and arena.get_tree().paused, "Up at the arms dealer opens his shop")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var shelf := Shop.shelf("eolis_arms")
+	check(shelf[menu.cursor] == 0, "on the Long Sword's row")
+	Sfx.recent.clear()
+	await _tap_for_real("jump")
+	check(p.gold == 100 and GameState.data.equipment.blade == "long_sword", "Jump buys it: 400 paid and the sword in hand (%d, %s)" % [p.gold, GameState.data.equipment.blade])
+	check(Sfx.recent.has("coin") and menu.is_open, "with the coin's clink, and the shop stays open (%s)" % [Sfx.recent])
+	await _tap_for_real("move_down")
+	check(Shop.status("eolis_arms", shelf[menu.cursor], p) == "gold", "Down to the armor he can't afford")
+	Sfx.recent.clear()
+	await _tap_for_real("jump")
+	check(p.gold == 100 and Sfx.recent == (["menu_refuse"] as Array[String]), "Jump on it buys nothing and says no (%d, %s)" % [p.gold, Sfx.recent])
+	await _tap_for_real("dash")
+	check(not menu.is_open and not arena.get_tree().paused, "Dash leaves the shop and the game runs on")
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_a_shop_answers_the_real_controller`"), "the bible names the test")
+
+
 func test_once_only_stock_sells_out() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
