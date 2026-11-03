@@ -194,8 +194,11 @@ var is_drinking: bool:
 	get: return _drink_timer > 0.0
 var has_double_jump := true
 var air_dash_charges := 1
+## A frozen hero (a dialog, a door, a fade) can't move, so nothing hurts them
+## (pass 435): the world runs on while a sign is read, and a foe or a hazard
+## beside it struck a reader who could not get away.
 var invulnerable: bool:
-	get: return _invuln_timer > 0.0 or _ointment_timer > 0.0
+	get: return frozen or _invuln_timer > 0.0 or _ointment_timer > 0.0
 ## Seconds of Ointment left (0 when none is on).
 var ointment_left: float:
 	get: return maxf(_ointment_timer, 0.0)
