@@ -3284,3 +3284,19 @@ func test_the_gold_sheet_counts_the_rooms() -> void:
 ## A whole number with its thousands grouped, as the bible writes gold.
 func _grouped(n: int) -> String:
 	return str(n) if n < 1000 else "%d,%03d" % [n / 1000, n % 1000]
+
+
+## Bible 13.6: Sean's PixelLab shops stand behind their keepers on Market Row.
+func test_each_market_keeper_stands_before_their_shop() -> void:
+	var market: Dictionary = _all_rooms()["eolis/market"]
+	var keeper_at := {}
+	for spec: String in market.lists.get("npc", []):
+		keeper_at[spec.get_slice(",", 2).strip_edges()] = int(spec.get_slice(",", 0))
+	var shop_at := {}
+	for spec: String in market.lists.get("prop", []):
+		shop_at[spec.get_slice(",", 2).strip_edges()] = int(spec.get_slice(",", 0))
+	var shops := {"arms_dealer": "shop_arms", "merchant": "shop_sundries", "eolis_dyer": "shop_dyeworks", "eolis_cartographer": "shop_cartographer"}
+	for keeper: String in shops:
+		var shop: String = shops[keeper]
+		check(shop in SetPiece.NAMES and Sheet.exists(shop), "%s is a packed set piece" % shop)
+		check(shop_at.get(shop, -1) == keeper_at.get(keeper, -2), "%s stands before %s" % [keeper, shop])

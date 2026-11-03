@@ -1,0 +1,26 @@
+{
+ "cell": [
+  178,
+  162
+ ],
+ "origin": [
+  89,
+  162
+ ],
+ "columns": 1,
+ "density": 2,
+ "own_palette": true,
+ "animations": {
+  "idle": {
+   "row": 0,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 1,
+   "loop": true
+  }
+ }
+}
