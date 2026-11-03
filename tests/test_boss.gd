@@ -2156,6 +2156,51 @@ func test_king_grieve_is_parried_through_the_real_controller() -> void:
 	check(bible.contains("`test_king_grieve_is_parried_through_the_real_controller`"), "bible 8 names the test")
 
 
+## Pass 428 (bible 8): a guardian's blow dodged with the buttons. The parry
+## above is the one boss defence ever played through `Input`; a jump over a
+## low blow, the oldest dodge there is, never was. King Grieve's combo is a
+## tall chop (54 px) and then a low, wide sweep (64 px, 22 px high). Standing
+## 62 px off, the chop falls short and the sweep finds you; Jump pressed for
+## real during the sweep's wind-up carries you over it. Returns [the damage
+## the chop did, the damage the sweep did]. `jump_left` is how many steps of
+## the wind-up are left when Jump is pressed (-1 = never).
+func _real_jump_over_the_sweep(jump_left: int) -> Array:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: KingGrieve = setup[2]
+	var p := w.player
+	p.input = PlayerInput.new()
+	p.teleport(Vector2(b.global_position.x - 62.0, b.floor_y()))
+	await frames(2)
+	await _until(func() -> bool: return b.state == "chop_tell", 200)
+	var hp := p.hp
+	await _until(func() -> bool: return b.state == "sweep_tell", 60)
+	var chop := hp - p.hp
+	hp = p.hp
+	if jump_left >= 0:
+		var press_at := b.tell(KingGrieve.SWEEP_TELL) - jump_left / 60.0
+		await _until(func() -> bool: return b.state != "sweep_tell" or b.state_time >= press_at, 60)
+		Input.action_press("jump")
+	await _until(func() -> bool: return b.state != "sweep_tell" and b.state != "sweep", 60)
+	release_for_real(["jump"])
+	var sweep := hp - p.hp
+	w.queue_free()
+	await frames(1)
+	return [chop, sweep]
+
+
+func test_king_grieves_sweep_is_jumped_through_the_real_controller() -> void:
+	var still: Array = await _real_jump_over_the_sweep(-1)
+	check(still[0] == 0, "62 px off, the chop falls short (%d)" % still[0])
+	check(still[1] > 0, "and the low sweep finds a player standing still (%d)" % still[1])
+	var jumped: Array = await _real_jump_over_the_sweep(6)
+	check(jumped[0] == 0 and jumped[1] == 0, "Jump pressed in the sweep's wind-up carries you over it (%s)" % [jumped])
+	var late: Array = await _real_jump_over_the_sweep(-12)
+	check(late[1] == still[1], "pressed once the axe is already sweeping, it is too late (%d)" % late[1])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_king_grieves_sweep_is_jumped_through_the_real_controller`"), "bible 8 names the test")
+
+
 func test_king_grieve_takes_the_throne_below_half_and_falls_to_a_crown_blow() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
