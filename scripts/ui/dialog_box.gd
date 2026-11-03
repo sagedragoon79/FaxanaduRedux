@@ -24,6 +24,8 @@ var shown := 0.0
 var is_open := false
 
 var _grace := 0.0
+## The box paused the game when it opened, so it lets it go when it closes.
+var _paused_it := false
 
 
 func _ready() -> void:
@@ -41,6 +43,13 @@ func open(who: String, lines: Array) -> void:
 	pages = lines
 	page = 0
 	shown = 0.0
+	# The world holds still while you read (pass 436), as it does under a menu:
+	# a foe or a guardian beside a tablet could otherwise go on fighting a
+	# reader who can't move, or, with the reader kept from harm, a tablet
+	# read as a blow came down was a dodge for any blow in the game.
+	if not is_open and not get_tree().paused:
+		get_tree().paused = true
+		_paused_it = true
 	is_open = true
 	visible = true
 	_grace = INPUT_GRACE
@@ -65,6 +74,9 @@ func advance() -> void:
 func close() -> void:
 	is_open = false
 	visible = false
+	if _paused_it:
+		get_tree().paused = false
+		_paused_it = false
 	_set_frozen(false)
 	closed.emit()
 
