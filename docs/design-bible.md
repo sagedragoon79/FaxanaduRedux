@@ -1186,7 +1186,7 @@ The core (phase 2) has none: no blade reaches it, only the veins.
        (Eolis, the Trunk, the Tower, the Mist, the Branches, Daybreak, Dartmoor, the Crown), the springs running
        clear in the trunk, branches and leaves thickening, the sky warming from night to dawn. It ends on the
        crown in leaf where the meteor was, with the sun coming up. The credits rise over the trunk.
-    3. **Thanks**: "Thank you for playing", the completion card (section 11, pass 106), your rank and time played; a press returns to the title.
+    3. **Thanks**: "Thank you for playing", the completion card (section 11, pass 106), your rank and time played; a press returns to the title. **The time played is time in play (pass 437):** the flask's details (14) and this card show the time played, and until pass 437 it counted every second the game was open after a journey began, paused or not: a pause menu left open overnight showed as hours played. It now stops while the game is paused (a menu, the map, a sign being read, the flask shelf). `test_the_time_played_stops_while_the_game_is_paused` opens the pause menu with the real Pause and reads a sign, three seconds each, and neither adds to the time; three seconds of play add three.
 
     Jump or attack turns an epilogue card early and holds the climb at 4x; pause skips to the thanks card,
     which ignores presses for its first second. The save is written with the cleared flag (save room and

@@ -72,7 +72,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	play_time += delta
+	# The time played is time in play (pass 437): a pause menu left open, the
+	# map, a sign being read or the flask shelf stops the clock, as the game
+	# does. This node runs while paused, so until then all of it counted.
+	if not get_tree().paused:
+		play_time += delta
 
 
 static func fresh() -> Dictionary:
