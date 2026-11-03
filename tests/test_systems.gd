@@ -76,8 +76,20 @@ func test_every_test_starts_from_a_clean_slate() -> void:
 	runner.call("_clean_slate")
 	check(GameState.data == GameState.fresh(), "and the slate starts a fresh journey (gold %s, gear %s)" % [GameState.data.gold, GameState.data.gear])
 	check(GameState.active and (runner.call("_leaks") as Array).is_empty(), "with kills recorded again")
+	# Pass 423: and in silence. A track left playing would make the next
+	# test's "plays its music" check pass with no play at all.
+	Music.play("boss", 0.0)
+	Music.ambience("amb_trunk", 0.0)
+	Music.intensify(2)
+	runner.call("_clean_slate")
+	check(Music.track == "" and Music.ambience_track == "" and Music.intensity == 0,
+		"and the slate hushes the music (%s, %s, %d)" % [Music.track, Music.ambience_track, Music.intensity])
+	Music.play("boss", 0.0)
+	check(Music.track == "boss", "so the next play of a track is a real change")
+	runner.call("_clean_slate")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("A journey left behind (pass 415)"), "bible 15.3 names the fresh journey")
+	check(note.contains("Music left playing (pass 423)"), "and the silence (pass 423)")
 	check(note.contains("Saves and pauses left behind (pass 399)"), "bible 15.3 says so")
 	check(note.contains("A save slot left behind (pass 407)"), "and the slot (pass 407)")
 
