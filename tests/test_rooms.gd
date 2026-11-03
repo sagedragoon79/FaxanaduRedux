@@ -725,6 +725,54 @@ func test_a_sign_is_read_and_put_away_with_the_buttons() -> void:
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_sign_is_read_and_put_away_with_the_buttons`"), "the bible names the test")
 
+## Pass 435: a sign read beside a foe. The dialog box freezes the hero but not
+## the world (pass 431), so a foe walking up while a tablet was read struck a
+## reader who could not move. A Rot Dwarf stands near a tablet: Up read for
+## real holds the box open through his blows, and the hero takes none. Put
+## away with Attack, the hero is fair game again and the next blow lands.
+func test_a_sign_is_read_safely_beside_a_foe() -> void:
+	var rooms := _rooms({Vector2i(11, 19): "D"})
+	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, Hi\n---")
+	var w := make_world(rooms, "test/a", cell_feet(8, 19))
+	var box := DialogBox.new()
+	arena.add_child(box)
+	var p := w.player
+	p.input = PlayerInput.new()
+	p.hp = 60
+	var dwarf: RotDwarf = null
+	for c in w.room.get_children():
+		if c is RotDwarf:
+			dwarf = c
+	check(dwarf != null, "a Rot Dwarf stands by the tablet")
+	await frames(5)
+	Input.action_press("move_up")
+	await frames(2)
+	Input.action_release("move_up")
+	await frames(2)
+	check(box.is_open and p.frozen, "Up reads the tablet, and the hero waits")
+	var swung := 0
+	var was := ""
+	for i in 300:
+		await frames(1)
+		if dwarf.state == "swing" and was != "swing":
+			swung += 1
+		was = dwarf.state
+	check(swung >= 2, "the dwarf swings at the reader (%d blows)" % swung)
+	check(p.hp == 60 and box.is_open, "and none lands while the box is open (HP %d)" % p.hp)
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	check(not box.is_open and not p.frozen, "Attack puts the box away")
+	var hurt := false
+	for i in 240:
+		await frames(1)
+		hurt = hurt or p.hp < 60
+	check(hurt, "and with the box away the dwarf's blow lands again (HP %d)" % p.hp)
+	box.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_sign_is_read_safely_beside_a_foe`"), "the bible names the test")
+
+
 
 ## Pass 251: a sign says what the world has become. Lines on one cell are one
 ## tablet, and it reads the first whose flags hold at the moment it is read.
