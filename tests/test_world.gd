@@ -108,6 +108,98 @@ func test_cracked_wall_needs_mattock() -> void:
 	check(intact < 3, "slash with the Mattock breaks cracked stone")
 
 
+## Pass 427: cracked stone, through the real controller. The two tests above
+## break it with a scripted intent that lasts one step; every large zone hides
+## something behind it (pass 135). Here the buttons do it: Attack held with no
+## Mattock leaves the wall whole, and gaining the Mattock with Attack still
+## held breaks nothing (a held button is not pressed again); a fresh tap does.
+## Down held alone lands on a cracked floor and leaves it; Down held with a
+## tap of Attack on the way down breaks it, and you fall through.
+func test_cracked_stone_answers_the_real_controller() -> void:
+	var room := make_room([
+		"##########",
+		"#........#",
+		"#........#",
+		"#....C...#",
+		"#....C...#",
+		"#....C...#",
+		"##########",
+	])
+	var p := make_player(room, Vector2i(4, 5), {"mattock": false})
+	p.input = PlayerInput.new()
+	await frames(6)
+	await press_for_real(p, ["move_right"])
+	release_for_real(["move_right"])
+	await frames(2)
+	check(p.facing == 1, "Right turns you to the wall")
+	Sfx.recent.clear()
+	Input.action_press("attack")
+	await frames(12)
+	check(_whole(room) == 3 and not Sfx.recent.has("break"), "Attack with no Mattock leaves the wall whole")
+	p.abilities["mattock"] = true
+	await frames(30)
+	check(_whole(room) == 3, "gaining the Mattock with Attack still held breaks nothing")
+	Input.action_release("attack")
+	await frames(2)
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	await frames(10)
+	check(_whole(room) < 3 and Sfx.recent.has("break"), "a fresh tap breaks the cracked stone, heard (%d whole)" % _whole(room))
+	room.free()
+	# The floor: Down alone lands on it; Down with a tap of Attack breaks it.
+	room = make_room([
+		"##########",
+		"#........#",
+		"#........#",
+		"#........#",
+		"#........#",
+		"#........#",
+		"####CC####",
+		"#........#",
+		"##########",
+	])
+	p = make_player(room, Vector2i(4, 1), {"mattock": true})
+	p.position.x = 5 * Room.TILE
+	p.input = PlayerInput.new()
+	Input.action_press("move_down")
+	for i in 60:
+		await frames(1)
+		if p.is_on_floor():
+			break
+	await frames(6)
+	check(p.is_on_floor() and p.global_position.y <= 6 * Room.TILE + 1.0 and _whole(room) == 2,
+		"Down held alone lands on the cracked floor and leaves it (y %.1f)" % p.global_position.y)
+	Input.action_release("move_down")
+	await frames(2)
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("jump")
+	await frames(2)
+	var floor_y := 6 * Room.TILE
+	for i in 90:
+		await frames(1)
+		if p.velocity.y > 0.0 and p.global_position.y > floor_y - 28.0:
+			break
+	Input.action_press("move_down")
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	await frames(30)
+	Input.action_release("move_down")
+	check(_whole(room) < 2 and p.global_position.y > 7 * Room.TILE,
+		"Down with a tap of Attack on the way down breaks it and you fall through (y %.1f)" % p.global_position.y)
+	room.free()
+
+
+func _whole(room: Room) -> int:
+	var n := 0
+	for c in room.get_children():
+		if c is CrackedBlock and c.visible:
+			n += 1
+	return n
+
+
 func test_gym_enemies_stay_put() -> void:
 	var room := Room.from_file("res://levels/gym/gym.room")
 	arena.add_child(room)
