@@ -364,6 +364,9 @@ func _physics_process(delta: float) -> void:
 	_last_step = Engine.get_physics_frames()
 	if frozen:
 		input.clear()
+		# A hold (a door's scroll, a dialog) spends a Thrust's charge (pass
+		# 434): the Attack let go during it lunged as the hold ended.
+		_thrust_charge = 0.0
 		return
 	if dead:
 		_dead_timer -= delta
@@ -388,6 +391,10 @@ func _physics_process(delta: float) -> void:
 		drop_next_presses = false
 		if not input.scripted:
 			input.drop_presses()
+		# Nor is an Attack let go while paused a Thrust's release (pass 434).
+		# Still held, the charge is kept and the player's own release lunges.
+		if not input.attack_held:
+			_thrust_charge = 0.0
 	_tick_timers(delta)
 	mp = minf(mp + combat.mp_regen_per_second * delta, max_mp)
 

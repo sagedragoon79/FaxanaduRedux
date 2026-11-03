@@ -2236,6 +2236,57 @@ func test_every_combat_button_answers_on_its_frame() -> void:
 	check(note.contains("`test_every_combat_button_answers_on_its_frame`"), "5.3 names the test")
 
 
+## Pass 434: a Thrust's charge across a pause or a hold. Pass 386 let go of a
+## charged Attack in play, but a player often opens the pause menu, takes a
+## door or reads a sign with the charge full. The Attack let go meanwhile was
+## seen as a release as play went on, and the hero lunged out of the menu, out
+## of the door's scroll or out of the dialog. `how` is "pause" (the tree is
+## paused, as by a menu), "hold" (the hero is frozen, as by a door or a dialog)
+## or "held" (paused with Attack kept down, then let go in play). Returns
+## whether the hero thrust in the 6 steps after play went on.
+func _thrust_across(how: String) -> bool:
+	var c := CombatTuning.new()
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(9, 6))
+	p.thrust = true
+	await frames(6)
+	await press_for_real(p, ["attack"])
+	await frames(int(c.thrust_charge * 60.0) + 30)
+	check(p.thrust_ready() and p.attack_kind != "thrust", "%s: the charge is full and nothing lunges yet" % how)
+	if how == "hold":
+		p.frozen = true
+	else:
+		runner.get_tree().paused = true
+	# Let go in the frame after the game stops, as a player does.
+	await runner.get_tree().process_frame
+	if how != "held":
+		Input.action_release("attack")
+	for i in 10:
+		await runner.get_tree().process_frame
+	if how == "hold":
+		p.frozen = false
+	else:
+		runner.get_tree().paused = false
+	if how == "held":
+		await frames(2)
+		Input.action_release("attack")
+	var thrust := false
+	for i in 6:
+		await frames(1)
+		thrust = thrust or p.attack_kind == "thrust"
+	Input.action_release("attack")
+	room.free()
+	return thrust
+
+
+func test_a_thrust_is_not_let_go_by_a_pause_or_a_hold() -> void:
+	check(not await _thrust_across("pause"), "Attack let go in the pause menu does not lunge as play goes on")
+	check(not await _thrust_across("hold"), "Attack let go through a door's scroll or a dialog does not lunge after it")
+	check(await _thrust_across("held"), "Attack held through the pause keeps the charge, and letting go in play lunges")
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("`test_a_thrust_is_not_let_go_by_a_pause_or_a_hold`"), "5.3 names the test")
+
+
 
 ## Pass 402: the fight's timing windows, through the real controller. Pass 386
 ## pressed each combat button through `Input`, but the two windows that decide
