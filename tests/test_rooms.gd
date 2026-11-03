@@ -78,6 +78,61 @@ func test_inner_door_needs_up() -> void:
 	check(w.room.id == "test/b", "and back again")
 
 
+## Pass 411 (bible 3.3): the doors by the buttons. Every door test drove a
+## scripted intent (`move_x`, `up_pressed`), which lasts one step. A real Up is
+## held for many steps, and `PlayerInput` makes a held Up count as one press
+## only, so a hero arriving through an inner door with Up still down does not
+## walk straight back out. That rule, and each door itself, is played here
+## with the real controller.
+func test_the_doors_answer_the_real_controller() -> void:
+	var w := make_world(_rooms(), "test/a", cell_feet(35, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(5)
+	Input.action_press("move_right")
+	var moved := false
+	for i in 60:
+		await frames(1)
+		if w.room.id == "test/b":
+			moved = true
+			break
+	Input.action_release("move_right")
+	check(moved and w.player.global_position.x < 120.0, "holding Right walks through the side door into B (in %s)" % w.room.id)
+	Input.action_press("move_left")
+	moved = false
+	for i in 60:
+		await frames(1)
+		if w.room.id == "test/a":
+			moved = true
+			break
+	Input.action_release("move_left")
+	check(moved, "and holding Left walks back to A")
+	await frames(2)
+	# The inner door: standing in it does nothing, Up goes through.
+	w.queue_free()
+	await frames(1)
+	w = make_world(_rooms(), "test/b", cell_feet(30, 19))
+	p = w.player
+	p.input = PlayerInput.new()
+	await frames(10)
+	check(w.room.id == "test/b", "standing in the inner doorway does nothing")
+	Input.action_press("move_up")
+	await frames(3)
+	check(w.room.id == "test/c", "pressing Up goes through (in %s)" % w.room.id)
+	# Up still held: one press is one door, so the hero stays in C.
+	await frames(30)
+	check(w.room.id == "test/c", "Up held on arriving does not go back out (in %s)" % w.room.id)
+	Input.action_release("move_up")
+	await frames(2)
+	Input.action_press("move_up")
+	await frames(3)
+	Input.action_release("move_up")
+	await frames(1)
+	check(w.room.id == "test/b", "let go and pressed again, it goes back (in %s)" % w.room.id)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_doors_answer_the_real_controller`"), "bible 3.3 names the test")
+
+
 # --- Saving, death, purse ------------------------------------------------------------
 
 func test_shrine_saves_and_round_trips() -> void:
