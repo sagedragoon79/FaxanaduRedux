@@ -2585,6 +2585,59 @@ func test_a_journey_is_taken_up_with_the_buttons() -> void:
 	check(note.contains("`test_a_journey_is_taken_up_with_the_buttons`"), "bible 14 names the test")
 
 
+## Pass 430 (bible 13.3): a menu closed by its button is heard as the menu,
+## never as the hero. Pass 429 found the press that takes a journey up read a
+## second time by the hero. The pause menu is closed by the same buttons the
+## hero moves with: Jump or Attack on Resume, Dash or Block or Pause to back
+## out. Each is tapped and held in play: the menu goes, its own sound plays,
+## and the hero neither jumps, swings nor dashes (no jump, dash or slash heard,
+## nothing moved) until the button is let go and pressed again.
+func test_a_menu_closed_by_its_button_is_not_heard_as_the_hero() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	var p: Player = g.player
+	p.abilities["stride"] = true
+	await frames(30)
+	var menu: ListMenu = g.menu
+	for button: String in ["jump", "attack", "dash", "block", "pause"]:
+		await _tap("pause")
+		check(menu.is_open and menu.title == "Paused", "%s: Pause opens the menu" % button)
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		var at := p.global_position
+		Sfx.recent.clear()
+		Input.action_press(button)
+		var moved := false
+		for i in 20:
+			await frames(1)
+			if p.velocity.length() > 1.0 or p.is_attacking or p.is_dashing:
+				moved = true
+		var heard := Sfx.recent.duplicate()
+		Input.action_release(button)
+		await frames(2)
+		check(not menu.is_open and not arena.get_tree().paused, "%s closes the menu and play goes on" % button.capitalize())
+		check(not moved and p.global_position.distance_to(at) < 1.0, "%s, held, is not read again by the hero (%s)" % [button.capitalize(), p.global_position - at])
+		check(not heard.has("jump") and not heard.has("dash") and not heard.has("slash") and not heard.has("swing"),
+			"and nothing of the hero is heard (%s)" % [heard])
+		await frames(10)
+	Input.action_press("jump")
+	await frames(3)
+	check(p.velocity.y < 0.0, "a fresh Jump in play jumps (%.0f)" % p.velocity.y)
+	Input.action_release("jump")
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_menu_closed_by_its_button_is_not_heard_as_the_hero`"), "bible 13.3 names the test")
+
+
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
 ## as empty and taking it up would have begun a new journey over the old one.

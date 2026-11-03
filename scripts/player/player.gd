@@ -265,6 +265,8 @@ var _wall_stick_timer := 0.0
 var _control_lock_timer := 0.0
 ## False until the hero's first physics step (pass 429).
 var _woken := false
+## The physics frame of the hero's last step (pass 430).
+var _last_step := -1
 var _control_blend_timer := 0.0
 var _jump_cut_available := false
 var _dash_timer := 0.0
@@ -354,6 +356,9 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Steps missed while the game was paused (a menu, the map, a dialog).
+	var missed := _last_step >= 0 and Engine.get_physics_frames() - _last_step > 1
+	_last_step = Engine.get_physics_frames()
 	if frozen:
 		input.clear()
 		return
@@ -364,10 +369,15 @@ func _physics_process(delta: float) -> void:
 			_respawn()
 		return
 	input.poll(tuning)
-	if not _woken:
+	if not _woken or missed:
 		# A press already under way when the hero woke is not the hero's (pass
 		# 429): the Jump that takes a journey up from the title is read by the
 		# shelf, and seen again here it buffered a jump for the first landing.
+		# Nor is one made while the game was paused (pass 430): the Jump,
+		# Attack or Dash that closes a menu reached the hero's next step too
+		# whenever no physics step fell between the press and the close (most
+		# frames on a display faster than 60 Hz), and the hero jumped, swung
+		# or dashed out of the menu.
 		_woken = true
 		if not input.scripted:
 			input.drop_presses()
