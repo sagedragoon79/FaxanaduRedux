@@ -1848,6 +1848,12 @@ glowing), the last three animated. `Fountain` shows the state for the springs re
 as a fallback.
 Market Row's four shops (Eolis Arms, Ilse's Dyeworks, Eolis Sundries and the Cartographer's house) are
 `SetPiece`s, room props named in `SetPiece.NAMES`, each standing behind its keeper.
+**Eolis's ground** is Sean's town-ground tileset for the edges only (the flagstone lip, the rims), built by
+`tools/art/pixellab_tileset.py` from its 16 corner tiles into the 47 blob tiles with their insides cleared; the inside
+of every wall is one seamless 128 px PixelLab texture (stone carved into roots, moss in the cracks,
+`assets/tiles/eolis_fill.png`) drawn by `GroundFill` behind the tiles by world position, so a wall no longer repeats
+every tile (Sean, 2026-11-03: the tileset "looks very basic" next to the objects). Interior depth still darkens, as a
+veil over the fill. One-way planks are Sean's ledge. `tilegen.PIXELLAB_SETS` names the zones built this way.
 
 ## 14. Technical Architecture (Godot)
 

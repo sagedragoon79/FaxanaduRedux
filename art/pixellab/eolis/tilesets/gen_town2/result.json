@@ -1,0 +1,1161 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "c8c317c8-03e7-436a-aa82-536fa9754261",
+ "status": "completed",
+ "created_at": "2026-11-03T19:56:54.260447+00:00",
+ "last_response": {
+  "seed": 963783705,
+  "type": "done",
+  "usage": {
+   "seconds": 37.252102851867676
+  },
+  "action": "tiles",
+  "status": "completed",
+  "progress": 0.5581395348837209,
+  "tileset_id": "e0cb1c91-ac7e-462b-b9d8-01180961f141",
+  "frame_index": 0,
+  "request_type": "tileset",
+  "tileset_data": {
+   "tiles": [
+    {
+     "id": "911cd214-94a9-4cd0-9ca4-cdc8f4d12ec3",
+     "name": "wang_13",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_0.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58"
+      ],
+      "west": [
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "north": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1"
+      ],
+      "south": [
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_13",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 4
+     }
+    },
+    {
+     "id": "e20dfbf7-7b0c-4a8c-9e8a-597698398e7c",
+     "name": "wang_10",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_1.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "west": [
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "north": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1"
+      ],
+      "south": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_10",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 2
+     }
+    },
+    {
+     "id": "2909234b-c62e-45fe-97f1-23de98a4ba0f",
+     "name": "wang_4",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_2.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "west": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "north": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2"
+      ],
+      "south": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_4",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 4
+     }
+    },
+    {
+     "id": "0f810ad6-56b1-4981-ba27-2c79720b5d94",
+     "name": "wang_12",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_3.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58"
+      ],
+      "west": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "north": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "south": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_12",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 5,
+      "row": 3
+     }
+    },
+    {
+     "id": "18bdb282-c54f-4745-ae0a-f09fef1a5b42",
+     "name": "wang_6",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_4.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58"
+      ],
+      "west": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621"
+      ],
+      "north": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "south": [
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_6",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 5
+     }
+    },
+    {
+     "id": "fbf607b3-1b95-4613-81c6-25f109b531ff",
+     "name": "wang_8",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_5.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc"
+      ],
+      "west": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ],
+      "north": [
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "south": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_8",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 3
+     }
+    },
+    {
+     "id": "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+     "name": "wang_0",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_6.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc"
+      ],
+      "west": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621"
+      ],
+      "north": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2"
+      ],
+      "south": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_0",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 6
+     }
+    },
+    {
+     "id": "8f77c110-a165-4824-8dac-c966cfbabb10",
+     "name": "wang_1",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_7.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58"
+      ],
+      "west": [
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ],
+      "north": [
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1"
+      ],
+      "south": [
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_1",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 1
+     }
+    },
+    {
+     "id": "df82d919-bd68-4dd2-a8ae-4b40356ae198",
+     "name": "wang_11",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_8.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "west": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ],
+      "north": [
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "south": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_11",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 2
+     }
+    },
+    {
+     "id": "c1f6cd1c-d574-4e73-886a-dc3f9439d8ba",
+     "name": "wang_3",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_9.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "west": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621"
+      ],
+      "north": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2"
+      ],
+      "south": [
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_3",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 1
+     }
+    },
+    {
+     "id": "1f26a013-d0c1-42c1-8fab-aa10de0fea92",
+     "name": "wang_2",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_10.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc"
+      ],
+      "west": [
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "north": [
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "south": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_2",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 1
+     }
+    },
+    {
+     "id": "a17a5f48-3ed0-4134-800b-1abafa56373e",
+     "name": "wang_5",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_11.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc"
+      ],
+      "west": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "north": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2"
+      ],
+      "south": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_5",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 2
+     }
+    },
+    {
+     "id": "27fd681f-8d21-4487-8832-a0c05e3a5e26",
+     "name": "wang_15",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_12.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "west": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "north": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "south": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_15",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 2
+     }
+    },
+    {
+     "id": "d2d6a3ef-38b3-4b42-9329-3af195ea14b3",
+     "name": "wang_14",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_13.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "west": [
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "north": [
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "544218d7-3bf1-4b7d-9eda-51cf57f76e43",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ],
+      "south": [
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "9644510b-96a3-4412-a766-931ea597cafc",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "0dcaadeb-58a8-4bd0-8964-7d07dde7c3cd"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_14",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 3
+     }
+    },
+    {
+     "id": "0430f174-9b8c-4b88-99f1-ef9c980aa9d2",
+     "name": "wang_9",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_14.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "west": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee"
+      ],
+      "north": [
+       "de3f94f8-9b58-4e6b-b99d-4217f17bf796",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "053c2112-7ca5-478f-8afb-a8c63ea942b1"
+      ],
+      "south": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621",
+       "894bfdac-ac3f-4976-9b86-d89bffa7db58",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_9",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 4
+     }
+    },
+    {
+     "id": "84909f7f-9cc6-4b94-8955-5285375b3681",
+     "name": "wang_7",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/tile_15.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "7ba9abe2-db98-492c-9d9e-05018f65c5f2",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "west": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "a4d51c03-429b-4042-8976-881dce3c4c99",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5",
+       "46578bf4-8120-4f34-a695-19f0cd3bf621"
+      ],
+      "north": [
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "0b5e808d-3446-43de-945a-6c77376c5614",
+       "3b7807d1-d1ed-432b-82e6-c620314ab3ee",
+       "68b4679b-0ed0-4690-8ca7-dde13cb7c8f2"
+      ],
+      "south": [
+       "c1adb9c7-f0fc-4baa-8198-25c774bdbd87",
+       "11127b85-88ed-4da1-a6b5-8bc4ffaa5d7c",
+       "ad4b94e1-e60a-442d-8596-eefc5660a1ed",
+       "e262d589-8d96-42dd-bacf-5be981c87fb5"
+      ]
+     },
+     "description": "transparent background and rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_7",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 2
+     }
+    }
+   ],
+   "tile_size": {
+    "width": 32,
+    "height": 32
+   },
+   "total_tiles": 16,
+   "tileset_type": "sidescroller",
+   "terrain_types": [
+    "central",
+    "background"
+   ],
+   "spritesheet_url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/e0cb1c91-ac7e-462b-b9d8-01180961f141/spritesheet.png",
+   "spritesheet_grid": {
+    "cols": 4,
+    "rows": 4
+   },
+   "spritesheet_layout": "tileset15_4x4"
+  },
+  "tileset_name": "rough grey-violet fieldstone masonry with deep",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 3
+  },
+  "generation_id": "1192ab79-a9c4-4e05-833b-5448c1644cd6",
+  "queue_position": 0,
+  "billing_charged": true,
+  "saved_to_database": true,
+  "tileset_description": "sidescroller: rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette",
+  "generation_started_at": "2026-11-03T19:57:05.356157+00:00",
+  "estimated_wait_seconds": 0,
+  "original_image_n_colors": 175,
+  "quantized_image_n_colors": 47
+ }
+}

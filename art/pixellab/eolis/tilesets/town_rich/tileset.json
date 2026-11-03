@@ -1,0 +1,8 @@
+{
+ "terrain_prompts": {
+  "lower": "rough grey-violet fieldstone masonry with deep dark mortar, warm brown earth and thin tree roots threading between the stones, olive moss tints, worn and old, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette",
+  "upper": "thick olive-green moss cushion with small leaves, tiny white flowers and grass tufts spilling over the top edge"
+ },
+ "transition_size": 0.0,
+ "id": "e0cb1c91-ac7e-462b-b9d8-01180961f141"
+}

@@ -149,4 +149,5 @@ static func layer(zone := "", with_collision := true) -> TileMapLayer:
 	var l := TileMapLayer.new()
 	l.tile_set = build(zone, with_collision)
 	l.scale = Vector2.ONE / DENSITY
+	GroundFill.attach(l, zone)
 	return l

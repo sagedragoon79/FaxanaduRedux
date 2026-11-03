@@ -2960,3 +2960,20 @@ func test_the_map_marks_every_rest() -> void:
 	check(FileAccess.get_file_as_string("res://scripts/ui/map_screen.gd").contains("[\"Rest\", SHRINE"), "the legend calls the mark a rest")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 3.3 ", 1).get_slice("\n### ", 0)
 	check(note.contains("`test_the_map_marks_every_rest`"), "3.3 names the test")
+
+
+## Bible 13.6: Eolis's walls are filled from one large texture, not one tile repeated.
+func test_eolis_walls_fill_from_one_large_texture() -> void:
+	check(ResourceLoader.exists(GroundFill.path("eolis")), "Eolis has a fill texture")
+	var tex: Texture2D = load(GroundFill.path("eolis"))
+	check(tex.get_width() >= 4 * TilesetFactory.TILE * TilesetFactory.DENSITY, "it spans at least four tiles")
+	var room := Room.from_text("name: T\nzone: eolis\n---\n" + "\n".join(PackedStringArray(["##########", "#........#", "#........#", "##########", "##########"])), "t/fill")
+	arena.add_child(room)
+	var fill := room.tiles.get_node_or_null("GroundFill") as GroundFill
+	check(fill != null and fill.show_behind_parent, "the ground layer draws it behind its edges")
+	var deep := room.tiles.get_cell_atlas_coords(Vector2i(4, 4))
+	check(TilesetFactory.is_ground(deep), "a buried cell is ground, so the fill shows there")
+	room.queue_free()
+	var gym := make_room(["####", "####"])
+	check(gym.tiles.get_node_or_null("GroundFill") == null, "a zone without a texture keeps its painted tiles")
+	gym.queue_free()
