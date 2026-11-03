@@ -1,0 +1,79 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 15.0
+ },
+ "id": "78307419-3fb5-4bee-a80a-2dd4ae349064",
+ "status": "completed",
+ "created_at": "2026-11-03T19:59:50.950408+00:00",
+ "last_response": {
+  "seed": 715762693,
+  "type": "done",
+  "action": "Touching up pixels",
+  "tile_id": "ae1ba3a6-d16f-4d2e-bfdf-dac014215f44",
+  "progress": 0.85,
+  "tile_name": "1). seamless wall texture of old grey-violet elven",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 15
+  },
+  "generation_id": "cf1501f3-5c46-476d-af3a-1576c5c37746",
+  "usage_cost_usd": 0.115,
+  "billing_charged": true,
+  "tile_description": "1). seamless wall texture of old grey-violet elven stone masonry built into a giant tree root, irregular worn blocks with deep dark mortar, thin brown roots threading between the stones, olive moss in the cracks, hand-crafted pixel art, muted earthy palette, deep violet shadows 2). seamless wall texture of the same stone masonry, with a thick gnarled root crossing it diagonally and moss patches 3). seamless wall texture of the same stone masonry, a few cracked blocks and small ferns in the mortar 4). seamless texture of gnarled giant tree root bark, deep twisting grain, olive moss in the cracks, dark brown and olive",
+  "saved_to_database": true,
+  "generation_started_at": "2026-11-03T19:59:53.191041+00:00",
+  "original_image_n_colors": 103,
+  "experiment_art_direction": {
+   "side": [
+    "#6F5A4D",
+    "#534237",
+    "#3D302A"
+   ],
+   "palette": [
+    {
+     "hex": "#B0A8C0",
+     "role": "surface 0"
+    },
+    {
+     "hex": "#958CAB",
+     "role": "surface 1"
+    },
+    {
+     "hex": "#7A7091",
+     "role": "surface 2"
+    },
+    {
+     "hex": "#5F5675",
+     "role": "surface 3"
+    },
+    {
+     "hex": "#463E57",
+     "role": "surface 4"
+    },
+    {
+     "hex": "#6F5A4D",
+     "role": "side 0"
+    },
+    {
+     "hex": "#534237",
+     "role": "side 1"
+    },
+    {
+     "hex": "#3D302A",
+     "role": "side 2"
+    }
+   ],
+   "surface": [
+    "#B0A8C0",
+    "#958CAB",
+    "#7A7091",
+    "#5F5675",
+    "#463E57"
+   ],
+   "art_direction": "The elven stone masonry features a muted grey-violet palette, emphasizing the ancient, magic-infused nature of the structure. Highlights on the stone are subtly warm, while shadows lean into deep violets to suggest depth and age. The tree root bark uses a rich dark brown and olive green, highlighting its organic, gnarled texture with deep recesses, contrasting the structured stone."
+  },
+  "quantized_image_n_colors": 50
+ }
+}

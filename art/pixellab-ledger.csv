@@ -1155,3 +1155,11 @@ date,endpoint,out_dir,cost,result,notes
 2026-10-31,characters/animations,hero/battle_helm_cloak/dragon_slayer/lthrow_l1,1.0 generations,"done c50df433-a1d9-4b66-ae96-d6b458e632e0, 9 image(s)",battle_helm_cloak_dragon_slayer_lthrow_l1
 2026-10-31,characters/animations,hero/battle_helm_cloak/dragon_slayer/lthrow_up_l1,1.0 generations,"done 49935f41-4a8c-4656-9e72-6391cb0ac5fa, 9 image(s)",battle_helm_cloak_dragon_slayer_lthrow_up_l1
 2026-10-31,characters/animations,hero/battle_helm_cloak/lthrow_l1,1.0 generations,"done e3d5534b-0cfb-4185-9f78-5cfec826ed49, 9 image(s)",battle_helm_cloak_short_sword_lthrow_l1
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_root,?,queued d426d497-4a9e-43a3-a285-227a5c92fa68,Eolis root wall matched to Sean's shops
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_town,?,queued 1549aa7c-2cb5-4632-8089-2bea6657ee5b,Eolis town ground matched to Sean's shops
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_root,1.0 generations,"done d426d497-4a9e-43a3-a285-227a5c92fa68, 0 image(s)",Eolis root wall matched to Sean's shops
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_town,2.0 generations,"done 1549aa7c-2cb5-4632-8089-2bea6657ee5b, 0 image(s)",Eolis town ground matched to Sean's shops
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_town2,?,queued c8c317c8-03e7-436a-aa82-536fa9754261,"Eolis town ground, richer prompt, no refs"
+2026-11-03,create-tileset-sidescroller,eolis/tilesets/gen_town2,3.0 generations,"done c8c317c8-03e7-436a-aa82-536fa9754261, 0 image(s)","Eolis town ground, richer prompt, no refs"
+2026-11-03,create-tiles-pro,eolis/textures/wall1,?,queued 78307419-3fb5-4bee-a80a-2dd4ae349064,"Eolis wall textures, 128 px, for wall interiors"
+2026-11-03,create-tiles-pro,eolis/textures/wall1,15.0 generations,"done 78307419-3fb5-4bee-a80a-2dd4ae349064, 0 image(s)","Eolis wall textures, 128 px, for wall interiors"

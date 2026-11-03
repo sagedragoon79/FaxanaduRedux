@@ -1,0 +1,1158 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "d426d497-4a9e-43a3-a285-227a5c92fa68",
+ "status": "completed",
+ "created_at": "2026-11-03T19:53:30.029671+00:00",
+ "last_response": {
+  "seed": 1698884976,
+  "type": "done",
+  "usage": {
+   "seconds": 25.940613269805908
+  },
+  "status": "completed",
+  "progress": 0.6023255813953489,
+  "tileset_id": "1af21cd4-5c27-40df-908c-47a0e52c6a39",
+  "frame_index": 0,
+  "request_type": "tileset",
+  "tileset_data": {
+   "tiles": [
+    {
+     "id": "8fc86f41-1b8f-4587-9a34-fdf65b5a20c0",
+     "name": "wang_13",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_0.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63140caa-c0cc-467e-90ed-9639fabdc592"
+      ],
+      "west": [
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "north": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea"
+      ],
+      "south": [
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_13",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 4
+     }
+    },
+    {
+     "id": "9f0505c4-6c3c-4651-898c-6e81c614abc8",
+     "name": "wang_10",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_1.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "west": [
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "north": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea"
+      ],
+      "south": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_10",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 2
+     }
+    },
+    {
+     "id": "ad52ce25-c219-49b1-9d94-76416f181a7d",
+     "name": "wang_4",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_2.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "west": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "north": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096"
+      ],
+      "south": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_4",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 4
+     }
+    },
+    {
+     "id": "322be1ad-fad4-43e7-a84d-cc10f6b702c9",
+     "name": "wang_12",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_3.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63140caa-c0cc-467e-90ed-9639fabdc592"
+      ],
+      "west": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "north": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "south": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_12",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 5,
+      "row": 3
+     }
+    },
+    {
+     "id": "f7ff3c04-bfa5-4797-8213-f873c7b039eb",
+     "name": "wang_6",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_4.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63140caa-c0cc-467e-90ed-9639fabdc592"
+      ],
+      "west": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53"
+      ],
+      "north": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "south": [
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_6",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 5
+     }
+    },
+    {
+     "id": "36fae4c8-1052-4589-b1df-da42c5f8c555",
+     "name": "wang_8",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_5.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7"
+      ],
+      "west": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ],
+      "north": [
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "south": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_8",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 6,
+      "row": 3
+     }
+    },
+    {
+     "id": "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+     "name": "wang_0",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_6.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7"
+      ],
+      "west": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53"
+      ],
+      "north": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096"
+      ],
+      "south": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_0",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 6
+     }
+    },
+    {
+     "id": "5d9a41da-47ef-4444-ad29-3b666de52faf",
+     "name": "wang_1",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_7.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63140caa-c0cc-467e-90ed-9639fabdc592"
+      ],
+      "west": [
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ],
+      "north": [
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea"
+      ],
+      "south": [
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_1",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 1
+     }
+    },
+    {
+     "id": "f1197ab3-55ae-4d8a-ba1e-7b7a2eebfcbd",
+     "name": "wang_11",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_8.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "west": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ],
+      "north": [
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "south": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_11",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 2
+     }
+    },
+    {
+     "id": "9719429e-b9c7-4fc4-9bfe-08567d266469",
+     "name": "wang_3",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_9.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "west": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53"
+      ],
+      "north": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096"
+      ],
+      "south": [
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_3",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 1
+     }
+    },
+    {
+     "id": "fcc7fa8a-e162-41bf-92ae-da75e05529a8",
+     "name": "wang_2",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_10.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "lower",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7"
+      ],
+      "west": [
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "north": [
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "south": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_2",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 3,
+      "row": 1
+     }
+    },
+    {
+     "id": "d08d1234-9b76-4369-8305-2c0602abb937",
+     "name": "wang_5",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_11.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7"
+      ],
+      "west": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "north": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096"
+      ],
+      "south": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_5",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 1,
+      "row": 2
+     }
+    },
+    {
+     "id": "e1657960-3f90-4b01-951f-cf32dc6d4f47",
+     "name": "wang_15",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_12.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "west": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "north": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "south": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_15",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 2,
+      "row": 2
+     }
+    },
+    {
+     "id": "7bd5a37f-92d5-482e-a873-a14d76784f18",
+     "name": "wang_14",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_13.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "upper",
+      "SE": "lower",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "west": [
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "north": [
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "bb8781ef-8b3f-4c85-a225-f0b354c40399",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ],
+      "south": [
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "6180aa12-b275-499d-a1f0-11c187ec42f7",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "63b7d877-5715-450e-b308-7c095c87b908"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_14",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 3
+     }
+    },
+    {
+     "id": "a596723d-0b2b-45d7-ab38-ea17e008684c",
+     "name": "wang_9",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_14.png"
+     },
+     "corners": {
+      "NE": "lower",
+      "NW": "upper",
+      "SE": "upper",
+      "SW": "lower"
+     },
+     "connections": {
+      "east": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "west": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f"
+      ],
+      "north": [
+       "615df4ed-e797-4d1d-80e4-9bb8383c2413",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "31af82ab-6f80-47f6-8473-4cd7520ba5ea"
+      ],
+      "south": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53",
+       "63140caa-c0cc-467e-90ed-9639fabdc592",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_9",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       1,
+       0,
+       255
+      ],
+      "row_2": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 4
+     }
+    },
+    {
+     "id": "c3dce6c3-a529-49ce-a2eb-86b2c0da9b03",
+     "name": "wang_7",
+     "image": {
+      "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/tile_15.png"
+     },
+     "corners": {
+      "NE": "upper",
+      "NW": "lower",
+      "SE": "upper",
+      "SW": "upper"
+     },
+     "connections": {
+      "east": [
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "b3fbf934-1d6c-4bff-86a6-e7b5e53b2096",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "west": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "6b3f0e24-9c80-4092-81de-bd60a84ff831",
+       "2dd2a664-29a4-4506-b943-09b5548b503e",
+       "e4cf8cb2-3eb3-4f39-8e18-4f93d6cf9a53"
+      ],
+      "north": [
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "94a38685-d2c6-4085-bffc-a6eadda50d76",
+       "f05240e2-f6d5-4663-9740-d3210d753c9f",
+       "1b0f1a69-4987-453c-b7d3-3fd4d9829162"
+      ],
+      "south": [
+       "5b5bc0a7-a675-4f49-8ee5-e14b7bf938ac",
+       "4627e667-46c2-4af4-bec5-326fd6b2ac1b",
+       "2ff3e55f-59c1-499c-aacd-75b730f34672",
+       "2dd2a664-29a4-4506-b943-09b5548b503e"
+      ]
+     },
+     "description": "transparent background and gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette - wang_7",
+     "pattern_4x4": {
+      "row_0": [
+       255,
+       255,
+       255,
+       255
+      ],
+      "row_1": [
+       255,
+       0,
+       1,
+       255
+      ],
+      "row_2": [
+       255,
+       1,
+       1,
+       255
+      ],
+      "row_3": [
+       255,
+       255,
+       255,
+       255
+      ]
+     },
+     "original_position": {
+      "col": 4,
+      "row": 2
+     }
+    }
+   ],
+   "tile_size": {
+    "width": 32,
+    "height": 32
+   },
+   "total_tiles": 16,
+   "tileset_type": "sidescroller",
+   "terrain_types": [
+    "central",
+    "background"
+   ],
+   "spritesheet_url": "https://backblaze.pixellab.ai/file/pixellab-tiles/ba149b34-c2af-4153-a797-fffbb7d80131/1af21cd4-5c27-40df-908c-47a0e52c6a39/spritesheet.png",
+   "spritesheet_grid": {
+    "cols": 4,
+    "rows": 4
+   },
+   "spritesheet_layout": "tileset15_4x4"
+  },
+  "tileset_name": "gnarled giant tree root bark, deep twisting",
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "464e57bd-0bab-4255-a6ae-a137f277553f",
+  "queue_position": 0,
+  "billing_charged": true,
+  "saved_to_database": true,
+  "tileset_description": "sidescroller: gnarled giant tree root bark, deep twisting vertical grain, olive moss in the cracks, dark brown and olive, hand-crafted pixel art, warm lamplight from upper left, deep violet shadows, muted earthy palette",
+  "generation_started_at": "2026-11-03T19:53:35.223612+00:00",
+  "estimated_wait_seconds": 0
+ }
+}

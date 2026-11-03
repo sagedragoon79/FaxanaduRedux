@@ -569,7 +569,27 @@ def paint_slope(img, ox, oy, zone, rising_east, seed):
                 img.putpixel((ox + x, oy + drop - k), out)
 
 
+# Zones built from Sean's PixelLab work (design bible 13.6) instead of painted here:
+# a side-scroller tileset for the edges, a seamless fill texture for wall interiors
+# (copied to assets/tiles/<zone>_fill.png for GroundFill) and a one-way ledge piece.
+PIXELLAB_SETS = {
+    "eolis": {
+        "set": "eolis/tilesets/town_ground",
+        "fill": ROOT / "art/pixellab/eolis/textures/wall1/tile_4.png",
+        "ledge": ROOT / "art/pixellab/eolis/ledge/mid.png",
+    },
+}
+
+
 def build_tileset(zone):
+    if zone in PIXELLAB_SETS:
+        import shutil
+        import pixellab_tileset
+        cfg = PIXELLAB_SETS[zone]
+        TILES.mkdir(parents=True, exist_ok=True)
+        pixellab_tileset.atlas(cfg["set"], cfg["fill"], TILES / f"{zone}.png", cfg["ledge"])
+        shutil.copy(cfg["fill"], TILES / f"{zone}_fill.png")
+        return
     masks = blob_masks()
     assert len(masks) == 47
     img = Image.new("RGBA", (T * COLS, T * 7), CLEAR)
