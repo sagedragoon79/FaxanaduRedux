@@ -2184,3 +2184,61 @@ func test_the_combo_windows_hold_through_the_real_controller() -> void:
 	check(too_late[0] == 1, "pressed %d steps after, it starts the combo over (%s)" % [window, too_late])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("The combo's windows, pressed (pass 402)"), "bible 5.3 says so")
+
+
+## Pass 418: an ordinary foe parried through the real controller. Pass 412
+## parried King Grieve by the buttons, and 386 and 394 pressed and held Block
+## on an empty floor, but the parry window against an ordinary foe (0.12 s,
+## 6 MP, the stagger) and the held guard's halved blow were only ever scripted.
+## Block goes down for real so that the game sees it `frames_before` steps
+## before the Rot Dwarf's blade lands. Returns [staggered, hp lost, mp gained].
+func _real_block_against_the_dwarf(frames_before: int, hold: bool) -> Array:
+	var a := _dwarf_arena()
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	p.input = PlayerInput.new()
+	p.has_shield = true
+	p.mp = 20.0
+	# Input pressed in step f is first seen in step f + 1.
+	await _wait_for_swing(dwarf, frames_before + 1)
+	Input.action_press("block")
+	await frames(1)
+	if not hold:
+		await frames(1)
+		Input.action_release("block")
+	var staggered := false
+	for i in frames_before + 10:
+		await frames(1)
+		staggered = staggered or dwarf.is_staggered()
+	var out := [staggered, p.max_hp - p.hp, p.mp - 20.0]
+	release_for_real(["block"])
+	(a[0] as Node).queue_free()
+	await frames(2)
+	return out
+
+
+
+func test_an_ordinary_foe_is_parried_through_the_real_controller() -> void:
+	var c := CombatTuning.new()
+	var last := 0
+	var at_edge: Array = []
+	var too_soon: Array = []
+	for fb in range(5, 11):
+		var r: Array = await _real_block_against_the_dwarf(fb, false)
+		if r[0]:
+			last = fb
+			at_edge = r
+		elif too_soon.is_empty():
+			too_soon = r
+	var window := floori(c.parry_window * 60.0)
+	check(last == window, "pressed for real, the last step a parry counts is the %dth before the blow, %.2f s (got %d)" % [window, c.parry_window, last])
+	check(not at_edge.is_empty() and at_edge[1] == 0 and at_edge[2] >= c.parry_mp_gain,
+		"there the Rot Dwarf reels, the blow does nothing and the parry pays %d MP (%s)" % [c.parry_mp_gain, at_edge])
+	check(not too_soon.is_empty() and too_soon[1] == RotDwarf.SWING_DAMAGE,
+		"a step sooner the whole blow lands (%s)" % [too_soon])
+	var held: Array = await _real_block_against_the_dwarf(20, true)
+	var guarded := int(round(RotDwarf.SWING_DAMAGE * (1.0 - c.guard_reduction)))
+	check(not held[0] and held[1] == guarded and held[2] < 0.0,
+		"Block held from long before guards: no reel, the blow halved to %d, and MP paid (%s)" % [guarded, held])
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("An ordinary foe parried with the buttons (pass 418)"), "5.3 says so")
