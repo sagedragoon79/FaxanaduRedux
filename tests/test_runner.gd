@@ -37,6 +37,7 @@ const SOAK_FLOOR_MINUTES := 45
 ## Physics frames played by the soaks (test_soak.gd), and how many ran (pass 383).
 var _soak_frames := 0
 var _journeys_wiped := 0
+var _music_hushed := 0
 var _soak_tests := 0
 
 
@@ -79,6 +80,8 @@ func _ready() -> void:
 			# back what it changed, and the slate is wiped clean either way.
 			if GameState.data != GameState.fresh():
 				_journeys_wiped += 1
+			if Music.track != "" or Music.ambience_track != "" or Music.intensity != 0:
+				_music_hushed += 1
 			var leaks := _leaks()
 			if not leaks.is_empty():
 				record(name, false, "left global state changed: %s" % [leaks])
@@ -98,6 +101,7 @@ func _ready() -> void:
 	for suffix: String in ["", ".bak", ".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TestSuite.SETTINGS_PATH + suffix))
 	print("\nJourneys wiped: %d tests left GameState.data changed, and the next began fresh (pass 415)" % _journeys_wiped)
+	print("Music hushed: %d tests left a track, an ambience or a phase lift playing, and the next began in silence (pass 423)" % _music_hushed)
 	if _soak_tests > 0:
 		print("\nSoak: %d tests played %.1f minutes of the game (%d physics frames)" % [_soak_tests, _soak_frames / 3600.0, _soak_frames])
 	if _filter == "":
@@ -163,6 +167,12 @@ func _clean_slate() -> void:
 	# or blade the last test obtained would ride into the next one.
 	GameState.new_game()
 	GameState.active = true
+	# And in silence (pass 423). Music.play does nothing when asked for the
+	# track already playing, so a track the last test left would let a check
+	# that a fight, a zone or the ending "plays its music" pass with no play.
+	Music.play("", 0.0)
+	Music.ambience("", 0.0)
+	Music.intensity = 0
 	_clean_saves = saves_on_disk()
 	# A button pressed through the real controller (press_for_real, pass 386)
 	# stays down until released, and the next test's hero would read it.
