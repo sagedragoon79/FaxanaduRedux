@@ -2058,6 +2058,54 @@ func test_king_grieve_chops_then_sweeps_and_a_parry_opens_him() -> void:
 	check(hp0 - b.hp == 10, "and open to every blow (%d)" % (hp0 - b.hp))
 
 
+## Pass 412 (bible 8): a guardian parried with the buttons. Every boss parry
+## test called `stagger()` itself, so the path a player takes (Block pressed
+## through `Input` in the moments before the axe falls, the blow caught in the
+## parry window, the guardian thrown reeling) was never played. King Grieve's
+## chop is parried here with the real controller; Block pressed at the start
+## of his wind-up, too early for the window, only guards the blow.
+func _real_block_against_the_chop(frames_before: int) -> Array:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: KingGrieve = setup[2]
+	var p := w.player
+	GameState.obtain_gear("small_shield", p)
+	p.input = PlayerInput.new()
+	p.teleport(Vector2(b.global_position.x - 40.0, b.floor_y()))
+	p.facing = 1
+	await frames(2)
+	await _until(func() -> bool: return b.state == "chop_tell", 200)
+	var press_at := b.tell(KingGrieve.CHOP_TELL) - frames_before / 60.0
+	await _until(func() -> bool: return b.state != "chop_tell" or b.state_time >= press_at, 120)
+	var hp := p.hp
+	Sfx.recent.clear()
+	Input.action_press("block")
+	var opened := false
+	for i in 40:
+		await frames(1)
+		if b.open():
+			opened = true
+			break
+	var heard := Sfx.recent.has("parry")
+	release_for_real(["block"])
+	var took := hp - p.hp
+	w.queue_free()
+	await frames(1)
+	return [opened, took, heard]
+
+
+func test_king_grieve_is_parried_through_the_real_controller() -> void:
+	var c := CombatTuning.new()
+	var late: Array = await _real_block_against_the_chop(3)
+	check(late[0] and late[2], "Block pressed just before the axe falls parries it, and he reels (%s)" % [late])
+	check(late[1] == 0, "and the chop does no harm (%d)" % late[1])
+	var early: Array = await _real_block_against_the_chop(int(KingGrieve.CHOP_TELL * 60.0) - 2)
+	check(not early[0] and not early[2], "pressed at the start of the wind-up, past the %.2f s window by the blow, it does not parry (%s)" % [c.parry_window, early])
+	check(early[1] > 0 and early[1] <= ceili(40 * (1.0 - c.guard_reduction)), "the shield still held up guards half the chop (%d)" % early[1])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_king_grieve_is_parried_through_the_real_controller`"), "bible 8 names the test")
+
+
 func test_king_grieve_takes_the_throne_below_half_and_falls_to_a_crown_blow() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
