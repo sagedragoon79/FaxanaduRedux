@@ -34,11 +34,25 @@ OBJECTS = {
     ]),
 }
 PAD = 2
+# Pixel-art sheets keep a limited palette (bible 12.2; test_sheets_use_the_master_palette).
+MAX_COLORS = 96
 
 
 def frames_of(src: Path) -> list[Image.Image]:
     files = sorted(src.glob("f*.png")) or [src / "base.png"]
     return [Image.open(f).convert("RGBA") for f in files]
+
+
+def limit_palette(sheet: Image.Image) -> Image.Image:
+    """One shared palette of at most MAX_COLORS for every state and frame."""
+    alpha = sheet.getchannel("A")
+    rgb = Image.new("RGB", sheet.size, (0, 0, 0))
+    rgb.paste(sheet.convert("RGB"), mask=alpha)
+    # One slot goes to the black under the transparent pixels.
+    q = rgb.quantize(colors=MAX_COLORS - 1, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    out = q.convert("RGBA")
+    out.putalpha(alpha)
+    return out
 
 
 def pack(name: str, src_dir: str, states: list) -> None:
@@ -63,6 +77,7 @@ def pack(name: str, src_dir: str, states: list) -> None:
             "row": r, "frames": [{} for _ in fs], "seq": list(range(len(fs))),
             "fps": fps, "loop": True,
         }
+    sheet = limit_palette(sheet)
     mask = Image.new("RGBA", sheet.size)
     mask.putalpha(sheet.getchannel("A").point(lambda a: 255 if a > 0 else 0))
     mask = Image.composite(Image.new("RGBA", sheet.size, (255, 255, 255, 255)), mask, mask)
