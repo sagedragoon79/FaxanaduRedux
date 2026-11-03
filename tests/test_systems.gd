@@ -2637,6 +2637,52 @@ func test_a_menu_closed_by_its_button_is_not_heard_as_the_hero() -> void:
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_menu_closed_by_its_button_is_not_heard_as_the_hero`"), "bible 13.3 names the test")
 
+## Pass 437: the time played is time in play. GameState runs while the game is
+## paused, and it counted every second: a pause menu left open overnight
+## showed on the flask and at the ending as hours played. The real Pause
+## opens the menu, and three seconds there leave the clock where it was; a
+## sign read for three seconds does the same; three seconds of play count.
+func test_the_time_played_stops_while_the_game_is_paused() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	await frames(30)
+	var menu: ListMenu = g.menu
+	await _tap("pause")
+	check(menu.is_open and arena.get_tree().paused, "Pause opens the menu and the game holds")
+	var t0 := GameState.play_time
+	for i in 180:
+		await runner.get_tree().process_frame
+	check(is_equal_approx(GameState.play_time, t0), "three seconds in the pause menu add nothing to the time played (%.2f s)" % (GameState.play_time - t0))
+	menu.close()
+	await frames(2)
+	GameState.say("", ["A long sign."])
+	await frames(1)
+	check(g.dialog.is_open and arena.get_tree().paused, "a sign holds the game")
+	t0 = GameState.play_time
+	for i in 180:
+		await runner.get_tree().process_frame
+	check(is_equal_approx(GameState.play_time, t0), "three seconds reading add nothing either (%.2f s)" % (GameState.play_time - t0))
+	g.dialog.close()
+	await frames(2)
+	t0 = GameState.play_time
+	await frames(180)
+	var played := GameState.play_time - t0
+	check(not arena.get_tree().paused and absf(played - 3.0) < 0.1, "three seconds of play count as three (%.2f s)" % played)
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_time_played_stops_while_the_game_is_paused`"), "the bible names the test")
+
+
 
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
