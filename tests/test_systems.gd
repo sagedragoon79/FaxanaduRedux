@@ -2683,6 +2683,94 @@ func test_the_time_played_stops_while_the_game_is_paused() -> void:
 	check(note.contains("`test_the_time_played_stops_while_the_game_is_paused`"), "the bible names the test")
 
 
+## Pass 439: a sign and the other screens, one at a time. Since pass 436 a
+## sign pauses the game as the pause menu and the map do, so three screens
+## now hold the same pause, and each lets it go as it closes. A press that
+## reached two of them at once, or a screen opened over another, would leave
+## the game paused with nothing open, or running under a screen still up.
+## The whole game, a hero at the East Gate's tablet and the real buttons:
+## Up and Pause pressed in the same frame open the sign alone; Map and Pause
+## do nothing while it is open; put away, the game runs. Then the pause menu,
+## with Up pressed at the tablet under it: no sign, and closed, the game runs.
+## Presses Attack until the box is put away (the East Gate's tablet has two
+## pages, each typed out before it turns).
+func _put_away(box: DialogBox) -> void:
+	for i in 12:
+		if not box.is_open:
+			return
+		await _tap("attack")
+		await frames(int(DialogBox.INPUT_GRACE * 60.0) + 1)
+
+
+func test_a_sign_and_the_pause_menu_take_turns() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/east_gate")
+	g.world.use_game_state = false
+	var p: Player = g.player
+	p.global_position = cell_feet(12, 19)
+	p.velocity = Vector2.ZERO
+	await frames(20)
+	var menu: ListMenu = g.menu
+	var tree := arena.get_tree()
+	# Up alone reads the tablet; Map and Pause open nothing over it.
+	await _tap("move_up")
+	check(g.dialog.is_open and tree.paused, "Up reads the tablet and the game holds")
+	await frames(int(DialogBox.INPUT_GRACE * 60.0) + 2)
+	await _send_action("map")
+	await _tap("pause")
+	check(g.dialog.is_open and not menu.is_open and not g.map_screen.is_open and tree.paused, "while it is open, Map and Pause open nothing over it")
+	await _put_away(g.dialog)
+	check(not g.dialog.is_open and not menu.is_open and not tree.paused and not p.frozen, "put away, nothing is open and the game runs")
+	await frames(10)
+	# Up and Pause in one frame: one screen opens, and closing it leaves none.
+	for when in ["after the step", "before the step"]:
+		if when == "before the step":
+			await runner.get_tree().process_frame
+		Input.action_press("move_up")
+		Input.action_press("pause")
+		await frames(2)
+		Input.action_release("move_up")
+		Input.action_release("pause")
+		await frames(1)
+		check(g.dialog.is_open != menu.is_open and tree.paused, "%s: Up and Pause in one frame open one screen (sign %s, menu %s)" % [when, g.dialog.is_open, menu.is_open])
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 4)
+		if menu.is_open:
+			await _tap("pause")
+		else:
+			await _put_away(g.dialog)
+		for i in 3:
+			await runner.get_tree().process_frame
+		await frames(5)
+		check(not g.dialog.is_open and not menu.is_open and not tree.paused and not p.frozen, "%s: closed, nothing is open and the game runs" % when)
+		await frames(10)
+	await frames(10)
+	await _tap("pause")
+	check(menu.is_open and tree.paused, "Pause opens the menu")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	Input.action_press("move_up")
+	await frames(3)
+	Input.action_release("move_up")
+	await frames(2)
+	check(menu.is_open and not g.dialog.is_open, "Up at the tablet under the menu reads nothing")
+	await _tap("pause")
+	await frames(2)
+	check(not menu.is_open and not g.dialog.is_open and not tree.paused, "Pause closes the menu, and the game runs with no sign up")
+	await frames(10)
+	check(not g.dialog.is_open and not tree.paused, "and none opens after it")
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_sign_and_the_pause_menu_take_turns`"), "the bible names the test")
+
+
 
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
