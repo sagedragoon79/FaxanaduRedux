@@ -1500,6 +1500,56 @@ func test_a_throw_pressed_a_moment_early_still_goes() -> void:
 	check(not is_instance_valid(p.rune_dagger), "a press long before it is whole is dropped")
 
 
+## Pass 410 (bible 5.3): the Rune Dagger by the buttons. Pass 386 found that
+## Throw lets it fly on its frame, but its aim (Up held throws it straight up),
+## its buffer (a press in the last moments of a swing goes as the swing ends)
+## and Sean's off-hand rule (a shield on the arm leaves nothing to throw) were
+## only ever scripted. Each is played here with the real controller.
+func test_the_rune_dagger_answers_the_real_controller() -> void:
+	var c := CombatTuning.new()
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})
+	p.input = PlayerInput.new()
+	var shield_was := String(GameState.data.equipment.get("shield", ""))
+	GameState.data.equipment.shield = ""
+	await frames(6)
+	await press_for_real(p, ["throw"])
+	check(is_instance_valid(p.rune_dagger) and p.rune_dagger.dir == Vector2.RIGHT, "Throw hurls it the way you face")
+	release_for_real(["throw"])
+	while not p.dagger_ready():
+		await frames(1)
+	# Up held: straight up.
+	await press_for_real(p, ["move_up", "throw"])
+	check(is_instance_valid(p.rune_dagger) and p.rune_dagger.dir == Vector2.UP, "with Up held it goes straight up")
+	release_for_real(["move_up", "throw"])
+	while not p.dagger_ready():
+		await frames(1)
+	# Pressed in the last moments of a swing, it goes as the swing ends.
+	await press_for_real(p, ["attack"])
+	release_for_real(["attack"])
+	check(p.is_attacking and p._attack_timer < c.throw_buffer, "mid-swing, inside its last %.2f s" % c.throw_buffer)
+	await press_for_real(p, ["throw"])
+	release_for_real(["throw"])
+	check(p.is_attacking and not is_instance_valid(p.rune_dagger), "no throw while the swing is still out")
+	var waited := 0
+	while not is_instance_valid(p.rune_dagger) and waited < 20:
+		await frames(1)
+		waited += 1
+	check(is_instance_valid(p.rune_dagger), "the buffered press goes as the swing ends (%d frames later)" % waited)
+	while not p.dagger_ready():
+		await frames(1)
+	# A shield on the arm: Throw does nothing (Sean's rule, pass 313).
+	GameState.data.equipment.shield = "small_shield"
+	await press_for_real(p, ["throw"])
+	release_for_real(["throw"])
+	await frames(4)
+	check(not is_instance_valid(p.rune_dagger) and runner.get_tree().get_nodes_in_group("projectile").is_empty(), "with a shield on the arm, Throw does nothing")
+	GameState.data.equipment.shield = shield_was
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("`test_the_rune_dagger_answers_the_real_controller`"), "5.3 names the test")
+
+
 func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})
