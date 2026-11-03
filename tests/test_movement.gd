@@ -2421,3 +2421,57 @@ func test_running_sliding_and_gliding_through_the_real_controller() -> void:
 	room.free()
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("Running, sliding and gliding, too (pass 416)"), "bible 6.7's Input line says so")
+
+
+## Pass 424: swimming, through the real controller. Pass 384 pressed a stroke
+## for real, but the rest of the water (Down held to sink, letting go to float
+## back up, a direction held to swim across, and Right and Jump at the surface
+## to climb out onto the bank) was only ever driven by a scripted intent.
+func test_swimming_through_the_real_controller() -> void:
+	var t := MovementTuning.new()
+	var room := _pool_room()
+	var p := make_player(room, Vector2i(6, 16))
+	p.input = PlayerInput.new()
+	var surface := 8.0 * Room.TILE
+	for i in 240:
+		await frames(1)
+	check(p.swimming and absf(p.body_rect().get_center().y - surface) < 6.0, "with nothing held the hero floats up to the surface")
+	# Down held sinks at swim_sink, no faster.
+	Input.action_press("move_down")
+	var fastest := 0.0
+	for i in 60:
+		await frames(1)
+		fastest = maxf(fastest, p.velocity.y)
+	check(p.global_position.y > surface + 3.0 * Room.TILE and is_equal_approx(fastest, t.swim_sink),
+		"Down held sinks at %.0f px/s (%.0f, feet at %.0f)" % [t.swim_sink, fastest, p.global_position.y])
+	release_for_real(["move_down"])
+	for i in 30:
+		await frames(1)
+	check(is_equal_approx(p.velocity.y, -t.swim_float), "let go, the hero floats back up at %.0f px/s (%.0f)" % [t.swim_float, p.velocity.y])
+	# Right held swims across at 0.7 of a run.
+	Input.action_press("move_right")
+	var top := 0.0
+	for i in 40:
+		await frames(1)
+		top = maxf(top, absf(p.velocity.x))
+	release_for_real(["move_right"])
+	check_near(top, t.run_speed * t.swim_speed_multiplier, 0.5, "Right held swims at 0.7 of a run (%.1f)" % top)
+	# At the surface by the bank, Right and Jump held climb out onto it.
+	p.global_position = Vector2(15 * Room.TILE + 8, surface + 20.0)
+	p.velocity = Vector2.ZERO
+	for i in 60:
+		await frames(1)
+	Input.action_press("move_right")
+	Input.action_press("jump")
+	var out := false
+	for i in 90:
+		await frames(1)
+		if p.is_on_floor() and not p.swimming:
+			out = true
+			break
+	release_for_real(["move_right", "jump"])
+	check(out and p.global_position.x > 17 * Room.TILE and p.global_position.y <= surface + 0.5,
+		"Right and Jump held at the surface climb out onto the bank (%s)" % p.global_position)
+	room.free()
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("Swimming, too (pass 424)"), "bible 6.7's Input line says so")
