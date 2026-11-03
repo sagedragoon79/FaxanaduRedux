@@ -1837,6 +1837,16 @@ Sean asked for the hero and his gear to be made in PixelLab, quality first. The 
 - **Run speed:** each set's run plays at the frame rate its stride needs for the planted foot to keep pace with the
   ground at the run speed (165 px/s, section 6): 25 to 36 fps, from the foot's backward travel per cycle.
 
+### 13.6 Sean's PixelLab scenery (2026-11-03)
+
+Sean makes Eolis's tilesets and set pieces himself in the PixelLab app (palette Resurrect 64, 32 x 32 tiles, objects
+at most 256 x 256), from the prompts in the project files (`eolis-prompts/`). Set pieces are drawn at the hero's 2x
+density. `tools/art/pixellab_objects.py` packs an object's states into a `Sheet` (`assets/sprites/<name>`), one row per
+state, cropped to one shared box with the origin at its bottom center, from sources in `art/pixellab/<dir>/<state>/`.
+The first is **the Fountain of Eolis**: dry, then one state per restored spring (a trickle, a steady fall, full and
+glowing), the last three animated. `Fountain` shows the state for the springs restored and keeps its code drawing only
+as a fallback.
+
 ## 14. Technical Architecture (Godot)
 
 - **Engine:** Godot 4.7.2 stable (pinned in CI and `tools/godot-version.txt`). GDScript with static typing.

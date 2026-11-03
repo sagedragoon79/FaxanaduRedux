@@ -2,6 +2,8 @@ class_name Fountain
 extends Node2D
 ## The Fountain of Eolis: its water level shows how many of the three springs
 ## are restored (design bible 4.4). The origin is the bottom center.
+## Drawn from Sean's PixelLab sheet (one state per spring, packed by
+## tools/art/pixellab_objects.py); the code drawing below is the fallback.
 
 const SPRINGS := ["trunk", "mist", "sky"]
 const WIDTH := 140.0
@@ -11,6 +13,9 @@ const STONE_LIGHT := Color("c9c4d6")
 const WATER := Color(0.49, 0.77, 0.94, 0.85)
 const WATER_LIGHT := Color("d8f1ff")
 const DRY := Color("5a4a3a")
+## The sheet's animation for each fountain level.
+const STATES := ["dry", "third", "two_thirds", "full"]
+const SHEET := "fountain"
 
 var _t := 0.0
 
@@ -32,7 +37,15 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 
+## The sheet animation for the current level.
+static func state() -> String:
+	return STATES[level()]
+
+
 func _draw() -> void:
+	if Sheet.exists(SHEET):
+		Sheet.draw(self, SHEET, state(), Sheet.frame_at(SHEET, state(), _t))
+		return
 	var w := WIDTH
 	var fill := level() / 3.0
 	# Basin wall and bed.

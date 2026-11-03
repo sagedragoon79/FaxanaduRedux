@@ -1,0 +1,66 @@
+{
+ "id": "9daf6b1e-9f26-4261-98b8-851008bf1a6d",
+ "name": "Elven Fountain - Eolis",
+ "state_name": "Fountain-2/3 Restored",
+ "prompt": " an elven stone fountain carved from a living root, with a round basin and a tall central spire shaped like a sapling, a leaf-shaped spout and vine carvings on the rim.",
+ "size": {
+  "width": 256,
+  "height": 192
+ },
+ "directions": 1,
+ "created_at": "2026-11-03T18:23:26.538636+00:00",
+ "view": "side",
+ "rotation_urls": {
+  "south": null,
+  "west": null,
+  "east": null,
+  "north": null,
+  "south-east": null,
+  "south-west": null,
+  "north-east": null,
+  "north-west": null
+ },
+ "storage_urls": {
+  "unknown": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/rotations/unknown.png"
+ },
+ "frame_urls": null,
+ "style_settings": {
+  "state_source": {
+   "id": "1bdab044-8f2d-4729-93b3-08d67b67ec54",
+   "edit_description": "Make it look half way restored and a slight trickle of water coming from the spout that runs down into the basis which is about 1/3 full."
+  },
+  "no_background": true
+ },
+ "tags": [],
+ "status": "completed",
+ "group_id": "ad6b8b66-0b64-4678-acd8-7464a6e37c7e",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": [
+  {
+   "animation_group_id": "6c3ac2e4-9498-42de-b4ab-5f28707cdbe0",
+   "display_name": null,
+   "description": "Slight trickling of water cascading from the spout into the lower basin. No water escapes or spills on the floor.",
+   "frame_count": 9,
+   "directions": [
+    {
+     "direction": "unknown",
+     "storage_urls": {
+      "frames": [
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/0.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/1.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/2.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/3.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/4.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/5.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/6.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/7.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/9daf6b1e-9f26-4261-98b8-851008bf1a6d/animations/591f717e-a9cc-4bab-8458-f41f1871ee6c/unknown/8.png"
+      ]
+     },
+     "created_at": "2026-11-03T18:33:46.076127+00:00"
+    }
+   ]
+  }
+ ]
+}

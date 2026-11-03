@@ -276,6 +276,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 	await frames(2)
 	check(GameState.flag("spring:trunk"), "pressing Up restores the spring")
 	check(Fountain.level() == 1, "the fountain is a third full")
+	check(Fountain.state() == "third", "and shows its third-full state")
 	w._enter("test/spring")
 	check(w.room.is_solid_at(sap_at) and not w.room.is_sap_at(sap_at), "the sap is solid amber now")
 
@@ -4926,3 +4927,13 @@ func test_the_foremans_rock_answers_the_real_controller() -> void:
 	check(hp0 - f.hp == pogo, "and the pogo from above lands in full (%d of %d)" % [hp0 - f.hp, pogo])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("The rock by the buttons (pass 420)"), "bible 8 says so")
+
+
+func test_the_fountain_sheet_has_a_state_for_each_spring() -> void:
+	# Sean's PixelLab fountain: dry, then one state per restored spring.
+	check(Fountain.STATES.size() == Fountain.SPRINGS.size() + 1, "one state per spring, plus dry")
+	check(Sheet.exists(Fountain.SHEET), "the fountain sheet is packed")
+	for s: String in Fountain.STATES:
+		check(Sheet.has_anim(Fountain.SHEET, s), "the sheet has the %s state" % s)
+	check(Sheet.get_sheet(Fountain.SHEET).density == 2.0, "drawn at the hero's 2x density")
+	check(Fountain.state() == "dry", "a new game starts dry")
