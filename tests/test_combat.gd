@@ -2192,15 +2192,18 @@ func test_the_combo_windows_hold_through_the_real_controller() -> void:
 ## 6 MP, the stagger) and the held guard's halved blow were only ever scripted.
 ## Block goes down for real so that the game sees it `frames_before` steps
 ## before the Rot Dwarf's blade lands. Returns [staggered, hp lost, mp gained].
-func _real_block_against_the_dwarf(frames_before: int, hold: bool) -> Array:
+## Pass 422: the fourth entry is what the fight sounded like from the press on.
+func _real_block_against_the_dwarf(frames_before: int, hold: bool, mp := 20.0) -> Array:
 	var a := _dwarf_arena()
 	var p: Player = a[1]
 	var dwarf: RotDwarf = a[2]
 	p.input = PlayerInput.new()
 	p.has_shield = true
-	p.mp = 20.0
-	# Input pressed in step f is first seen in step f + 1.
+	# Input pressed in step f is first seen in step f + 1. MP is set as the
+	# button goes down, so the wait's regeneration cannot top it up.
 	await _wait_for_swing(dwarf, frames_before + 1)
+	p.mp = mp
+	Sfx.recent.clear()
 	Input.action_press("block")
 	await frames(1)
 	if not hold:
@@ -2210,7 +2213,11 @@ func _real_block_against_the_dwarf(frames_before: int, hold: bool) -> Array:
 	for i in frames_before + 10:
 		await frames(1)
 		staggered = staggered or dwarf.is_staggered()
-	var out := [staggered, p.max_hp - p.hp, p.mp - 20.0]
+	var heard: Array[String] = []
+	for sound: String in Sfx.recent:
+		if sound in ["parry", "guard", Player.GUARD_BREAK_SOUND, "hurt"]:
+			heard.append(sound)
+	var out := [staggered, p.max_hp - p.hp, p.mp - mp, heard]
 	release_for_real(["block"])
 	(a[0] as Node).queue_free()
 	await frames(2)
@@ -2242,3 +2249,26 @@ func test_an_ordinary_foe_is_parried_through_the_real_controller() -> void:
 		"Block held from long before guards: no reel, the blow halved to %d, and MP paid (%s)" % [guarded, held])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("An ordinary foe parried with the buttons (pass 418)"), "5.3 says so")
+
+
+
+## Pass 422: the fight, heard through the buttons (bible 13.3). Pass 418 pressed
+## Block for real against the Rot Dwarf and read the blow's outcome; each
+## outcome has its own sound, and those were only heard with a scripted guard.
+## Here each is heard once and alone: a parry rings, a press a step too soon
+## lets the blow land with the hurt cry, a held guard thuds, and a held guard
+## with too little MP breaks with its own crack and the blow lands whole.
+func test_the_fight_is_heard_through_the_buttons() -> void:
+	var c := CombatTuning.new()
+	var window := floori(c.parry_window * 60.0)
+	var parried: Array = await _real_block_against_the_dwarf(window, false)
+	check(parried[3] == ["parry"], "a parry pressed for real rings once, and nothing else is heard (%s)" % [parried[3]])
+	var soon: Array = await _real_block_against_the_dwarf(window + 1, false)
+	check(soon[3] == ["hurt"], "a step too soon, the blow lands with the hurt cry alone (%s)" % [soon[3]])
+	var held: Array = await _real_block_against_the_dwarf(20, true)
+	check(held[3] == ["guard", "hurt"], "Block held guards with its thud, then the halved blow's cry (%s)" % [held[3]])
+	var broke: Array = await _real_block_against_the_dwarf(20, true, c.guard_mp_cost - 1.0)
+	check(broke[3] == [Player.GUARD_BREAK_SOUND, "hurt"] and broke[1] == RotDwarf.SWING_DAMAGE,
+		"held with too little MP, the guard cracks and the whole blow lands (%s, %d)" % [broke[3], broke[1]])
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("The fight, heard through the buttons (pass 422)"), "bible 13.3 says so")
