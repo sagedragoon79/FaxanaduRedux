@@ -126,6 +126,47 @@ func test_jack_door_needs_a_key_and_stays_open() -> void:
 	check(_find(w.room, KeyDoor) == null, "opened doors stay open")
 
 
+## Pass 417: a card door by the buttons. The original's key doors open when
+## you walk into one holding its key, and until now every door test walked by
+## a scripted intent. Here Right is held for real: a Queen door stops the hero
+## and rattles once however long he leans on it, a Jack Key does nothing to it,
+## stepping back and leaning again rattles again, and the Queen Key opens it on
+## the touch so the held Right walks straight through.
+func test_a_card_door_answers_the_real_controller() -> void:
+	var rooms := _town({Vector2i(12, 19): "J"}, ["lock: 12, 19, queen"])
+	var w := make_world(rooms, "test/town", cell_feet(9, 19))
+	var p := w.player
+	var door := _find(w.room, KeyDoor) as KeyDoor
+	await frames(3)
+	GameState.add_key("jack")
+	Sfx.recent.clear()
+	await press_for_real(p, ["move_right"])
+	await frames(60)
+	check(p.global_position.x < 12 * 16 and is_instance_valid(door) and not door.is_queued_for_deletion(),
+		"Right held, a Queen door stops the hero holding a Jack Key (x %.0f)" % p.global_position.x)
+	check(Sfx.recent.count("door_locked") == 1, "and rattles once however long he leans (%s)" % [Sfx.recent])
+	check(GameState.key_count("jack") == 1, "the Jack Key is not spent")
+	release_for_real(["move_right"])
+	Input.action_press("move_left")
+	await frames(20)
+	release_for_real(["move_left"])
+	await frames(10)
+	Sfx.recent.clear()
+	Input.action_press("move_right")
+	await frames(40)
+	check(Sfx.recent.count("door_locked") == 1, "stepping back and leaning again rattles again (%s)" % [Sfx.recent])
+	Sfx.recent.clear()
+	GameState.add_key("queen")
+	await frames(40)
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "with the Queen Key, the held Right opens it")
+	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door_locked"), "the key turns, no rattle (%s)" % [Sfx.recent])
+	check(p.global_position.x > 13 * 16, "and walks straight through (x %.0f)" % p.global_position.x)
+	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Queen Key is spent")
+	release_for_real(["move_right"])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("A card door by the buttons (pass 417)"), "bible 4.5 says so")
+
+
 func test_card_doors_take_only_their_own_key() -> void:
 	# A `lock:` line turns a J into a Queen door; a `chest:` line sets one chest's gold.
 	var rooms := _town({Vector2i(12, 19): "J", Vector2i(14, 19): "$"}, ["lock: 12, 19, queen", "chest: 14, 19, 900"])
