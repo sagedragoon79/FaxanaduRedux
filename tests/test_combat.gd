@@ -825,6 +825,56 @@ func test_being_hit_matches_the_bible() -> void:
 	check(p._invuln_timer <= 0.0, "and open again by 0.85 s (0.8 s of i-frames)")
 
 
+## Pass 426: being hit, through the real controller. The test above takes the
+## blow standing still; a player is usually holding a direction and often
+## mid-drink. Here Heal is pressed for real, Right is held toward the dwarf,
+## and his swing lands: the drink is spoiled with its charge kept, the blow
+## knocks you back against the held Right for the whole control lock, and the
+## same held Right (never pressed again) steers you once the lock is over.
+func test_being_hit_answers_the_real_controller() -> void:
+	var a := _dwarf_arena()
+	var room: Room = a[0]
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	p.input = PlayerInput.new()
+	p.hp = 50
+	var charges := p.flask_charges
+	await _wait_for_swing(dwarf, 10)
+	Input.action_press("heal")
+	await frames(2)
+	Input.action_release("heal")
+	check(p.is_drinking, "Heal starts the drink")
+	Input.action_press("move_right")
+	var hit := false
+	for i in 20:
+		await frames(1)
+		if p.hp < 50:
+			hit = true
+			break
+	check(hit, "the swing lands while Right is held")
+	check(not p.is_drinking and p.flask_charges == charges and p.hp < 50,
+		"the blow spoils the drink and keeps its charge (%d of %d, hp %d)" % [p.flask_charges, charges, p.hp])
+	check(p.velocity.x < 0.0, "and knocks you back against the held Right (%.0f)" % p.velocity.x)
+	var held_back := true
+	var steps := 0
+	while p._control_lock_timer > 0.0 and steps < 60:
+		if p.velocity.x >= 0.0:
+			held_back = false
+		await frames(1)
+		steps += 1
+	check(held_back and steps >= 8, "Right can't turn the knockback for the whole lock (%d steps)" % steps)
+	var steered := false
+	for i in 40:
+		await frames(1)
+		if p.velocity.x > 0.0:
+			steered = true
+			break
+	check(steered, "and once the lock is over the same held Right steers you again, never pressed twice")
+	check(p.invulnerable, "while the i-frames still run")
+	release_for_real(["move_right"])
+	room.free()
+
+
 ## Pass 202: bible 5.3's "Starting combat values" table says tests assert it,
 ## but a third of its rows were only read back from the tuning by the play
 ## tests (or by none), so a changed number moved its test with it. This holds
