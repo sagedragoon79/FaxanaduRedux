@@ -220,7 +220,15 @@ var safe_position := Vector2.ZERO
 ## uses it to return the player to the last save shrine, in any room).
 var respawn_handler: Callable
 ## While frozen (room transitions, dialog, menus) the controller does nothing.
-var frozen := false
+var frozen := false:
+	set(on):
+		if on and not frozen:
+			# A hold forgets every buffered press (pass 440): Up and Jump pressed
+			# together at a sign or an inner door put the Jump in its buffer
+			# before the hold began, and it leapt as the hold ended. Set here,
+			# not in the frozen step, since a hold may end before a step runs.
+			forget_buffers()
+		frozen = on
 ## Set by a screen that read this frame's press (the dialog box, pass 431):
 ## the hero's next step drops its presses, so the press is not read twice.
 var drop_next_presses := false
@@ -397,6 +405,9 @@ func _physics_process(delta: float) -> void:
 		# Still held, the charge is kept and the player's own release lunges.
 		if not input.attack_held:
 			_thrust_charge = 0.0
+		# A press buffered before a pause (Up and Jump at a shopkeeper, whose
+		# shop pauses the game) is the same (pass 440).
+		forget_buffers()
 	_tick_timers(delta)
 	mp = minf(mp + combat.mp_regen_per_second * delta, max_mp)
 
@@ -1961,12 +1972,18 @@ func can_reach(node: Node2D) -> bool:
 ## and the ledge's grace, would fire on arrival with no press of your own.
 func set_back() -> void:
 	teleport(safe_position)
+	forget_buffers()
+	_coyote_timer = 0.0
+	_wall_coyote_timer = 0.0
+
+
+## Drops every buffered press (a jump, dash, swing or throw waiting for its
+## moment), so a press made before a hold or a pause can't fire after it.
+func forget_buffers() -> void:
 	_jump_buffer_timer = 0.0
 	_dash_buffer_timer = 0.0
 	_attack_buffer_timer = 0.0
 	_throw_buffer_timer = 0.0
-	_coyote_timer = 0.0
-	_wall_coyote_timer = 0.0
 
 
 func teleport(pos: Vector2) -> void:
