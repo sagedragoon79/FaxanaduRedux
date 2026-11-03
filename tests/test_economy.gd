@@ -1384,6 +1384,43 @@ func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
 	check(w.room.id == "tower/forepaw", "and back up again")
 
 
+## Pass 419: the lift by the buttons. Bible 3's elevator back to Eolis was
+## only ever run by calling the cage's `interact` and the menu's `confirm`
+## from the test. Here Up is pressed at the cage for real: while Zoradohna
+## holds Forepaw it hangs still and opens nothing; once she falls, Up opens
+## the stops, Down moves to the Tower Foot, and Jump rides there.
+func test_the_lift_answers_the_real_controller() -> void:
+	var w := make_world({}, "eolis/east_gate")
+	var p := w.player
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(2)
+	var gate: LiftCage = _find(w.room, LiftCage)
+	p.teleport(Vector2(gate.global_position.x, gate.global_position.y))
+	p.input = PlayerInput.new()
+	await frames(10)
+	check(p.is_on_floor() and absf(p.global_position.x - gate.global_position.x) < 8.0, "standing in the cage")
+	await _tap_for_real("move_up")
+	await frames(3)
+	check(w.room.id == "eolis/east_gate" and not menu.is_open, "Up while Forepaw is held: the cage hangs still")
+	GameState.set_flag("boss:zoradohna")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap_for_real("move_up")
+	check(menu.is_open and menu.title == "Forepaw Lift" and arena.get_tree().paused, "once she falls, Up opens the lift's stops")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var at := func() -> String: return String(menu.rows[menu.cursor].label)
+	check(at.call() == "Forepaw", "on Forepaw first (%s)" % at.call())
+	await _tap_for_real("move_down")
+	check(at.call() == "Tower Foot", "Down moves to the Tower Foot (%s)" % at.call())
+	await _tap_for_real("jump")
+	await frames(3)
+	check(w.room.id == "tower/foot" and not menu.is_open and not arena.get_tree().paused, "Jump rides there and the game runs on (in %s)" % w.room.id)
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("The lift by the buttons (pass 419)"), "the bible says so")
+
+
 func test_the_lift_runs_down_the_trunk_to_eolis() -> void:
 	# Bible 3: the elevator shortcut back to Eolis. The cage offers its other stops.
 	var w := make_world({}, "eolis/east_gate")
