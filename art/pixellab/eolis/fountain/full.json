@@ -1,0 +1,66 @@
+{
+ "id": "5c0a2255-0bab-4786-9070-7b6352c620e2",
+ "name": "Elven Fountain - Eolis",
+ "state_name": "The fountain is full",
+ "prompt": " an elven stone fountain carved from a living root, with a round basin and a tall central spire shaped like a sapling, a leaf-shaped spout and vine carvings on the rim.",
+ "size": {
+  "width": 256,
+  "height": 192
+ },
+ "directions": 1,
+ "created_at": "2026-11-03T18:25:02.346747+00:00",
+ "view": "side",
+ "rotation_urls": {
+  "south": null,
+  "west": null,
+  "east": null,
+  "north": null,
+  "south-east": null,
+  "south-west": null,
+  "north-east": null,
+  "north-west": null
+ },
+ "storage_urls": {
+  "unknown": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/rotations/unknown.png"
+ },
+ "frame_urls": null,
+ "style_settings": {
+  "state_source": {
+   "id": "1bdab044-8f2d-4729-93b3-08d67b67ec54",
+   "edit_description": "The fountain is fully restored with glowing blue-green water flowing into the basin. No water escapes the fountain or splashes onto the floor."
+  },
+  "no_background": true
+ },
+ "tags": [],
+ "status": "completed",
+ "group_id": "ad6b8b66-0b64-4678-acd8-7464a6e37c7e",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": [
+  {
+   "animation_group_id": "d7bbc327-d9a1-479a-92b5-87600a2dc188",
+   "display_name": null,
+   "description": "Beautiful flowing fountain. A slight magical twinkle to the water.",
+   "frame_count": 9,
+   "directions": [
+    {
+     "direction": "unknown",
+     "storage_urls": {
+      "frames": [
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/0.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/1.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/2.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/3.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/4.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/5.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/6.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/7.png",
+       "https://backblaze.pixellab.ai/file/pixellab-characters/objects/ba149b34-c2af-4153-a797-fffbb7d80131/5c0a2255-0bab-4786-9070-7b6352c620e2/animations/6327617e-2c8e-4b02-9f9d-0f63d6ddac85/unknown/8.png"
+      ]
+     },
+     "created_at": "2026-11-03T18:30:58.133349+00:00"
+    }
+   ]
+  }
+ ]
+}
