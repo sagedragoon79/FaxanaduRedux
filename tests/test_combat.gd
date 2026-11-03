@@ -1550,6 +1550,53 @@ func test_the_rune_dagger_answers_the_real_controller() -> void:
 	check(note.contains("`test_the_rune_dagger_answers_the_real_controller`"), "5.3 names the test")
 
 
+## Pass 414 (bible 13.3): the two ready chimes, heard on time. The Thrust
+## plays `thrust_ready` the moment Attack held fills its charge, and the Rune
+## Dagger plays `dagger_return` as it reforms at your hip. Each tells a player
+## a move is ready again without looking, and neither was ever listened for:
+## a chime early, late, twice or not at all would have passed every test.
+## Both are played here through the real controller.
+func test_the_ready_chimes_ring_when_the_move_is_ready() -> void:
+	var c := CombatTuning.new()
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(9, 6), {"rune_dagger": true})
+	p.thrust = true
+	p.input = PlayerInput.new()
+	await frames(6)
+	Sfx.recent.clear()
+	await press_for_real(p, ["attack"])
+	var rang_at := -1.0
+	var rings := 0
+	for i in int(c.thrust_charge * 60.0) + 30:
+		await frames(1)
+		if Sfx.recent.has("thrust_ready"):
+			rings += Sfx.recent.count("thrust_ready")
+			if rang_at < 0.0:
+				rang_at = p._thrust_charge
+			Sfx.recent.clear()
+	check(rings == 1, "Attack held past the charge chimes once (%d)" % rings)
+	check(rang_at >= c.thrust_charge and rang_at < c.thrust_charge + 0.02 and p.thrust_ready(), "on the frame the charge fills (%.3f s of %.2f)" % [rang_at, c.thrust_charge])
+	release_for_real(["attack"])
+	await frames(40)
+	# The dagger: thrown at the wall, it chimes as it reforms, once.
+	Sfx.recent.clear()
+	await press_for_real(p, ["throw"])
+	release_for_real(["throw"])
+	var back_ready := false
+	rings = 0
+	for i in 120:
+		await frames(1)
+		if Sfx.recent.has("dagger_return"):
+			rings += Sfx.recent.count("dagger_return")
+			back_ready = back_ready or p.dagger_ready()
+			Sfx.recent.clear()
+	check(rings == 1 and back_ready, "the Rune Dagger chimes once, as it is back at your hip (%d)" % rings)
+	check(FileAccess.file_exists("res://assets/sfx/thrust_ready.wav") and FileAccess.file_exists("res://assets/sfx/dagger_return.wav"), "both chimes have files")
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 13.3 ", 1).get_slice("\n### 13.4 ", 0)
+	check(note.contains("`test_the_ready_chimes_ring_when_the_move_is_ready`"), "13.3 names the test")
+
+
 func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6), {"rune_dagger": true})
