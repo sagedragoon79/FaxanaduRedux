@@ -66,7 +66,18 @@ func test_every_test_starts_from_a_clean_slate() -> void:
 	runner.call("_clean_slate")
 	check(GameState.slot == 1 and (runner.call("_leaks") as Array).is_empty(), "and the slate puts the first flask back")
 	GameState.slot = slot_was
+	# Pass 415: the journey itself starts fresh. A shield, a blade, gold or a
+	# key one test obtained must not reach the next test's bare hero.
+	GameState.obtain_gear("small_shield", null)
+	GameState.data.gold = 777
+	GameState.active = false
+	leaks = runner.call("_leaks")
+	check(leaks.has("the gym's no-record mode left on"), "the gym's no-record mode left on counts as a leak (%s)" % [leaks])
+	runner.call("_clean_slate")
+	check(GameState.data == GameState.fresh(), "and the slate starts a fresh journey (gold %s, gear %s)" % [GameState.data.gold, GameState.data.gear])
+	check(GameState.active and (runner.call("_leaks") as Array).is_empty(), "with kills recorded again")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("A journey left behind (pass 415)"), "bible 15.3 names the fresh journey")
 	check(note.contains("Saves and pauses left behind (pass 399)"), "bible 15.3 says so")
 	check(note.contains("A save slot left behind (pass 407)"), "and the slot (pass 407)")
 

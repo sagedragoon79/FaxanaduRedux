@@ -36,6 +36,7 @@ const CLEAN_SLOT := 1
 const SOAK_FLOOR_MINUTES := 45
 ## Physics frames played by the soaks (test_soak.gd), and how many ran (pass 383).
 var _soak_frames := 0
+var _journeys_wiped := 0
 var _soak_tests := 0
 
 
@@ -76,6 +77,8 @@ func _ready() -> void:
 				record(name, false, "played sounds that do not exist: %s" % [Sfx.missing])
 			# Statics outlive the test that set them (pass 231): a test must put
 			# back what it changed, and the slate is wiped clean either way.
+			if GameState.data != GameState.fresh():
+				_journeys_wiped += 1
 			var leaks := _leaks()
 			if not leaks.is_empty():
 				record(name, false, "left global state changed: %s" % [leaks])
@@ -94,6 +97,7 @@ func _ready() -> void:
 					Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)])
 	for suffix: String in ["", ".bak", ".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(TestSuite.SETTINGS_PATH + suffix))
+	print("\nJourneys wiped: %d tests left GameState.data changed, and the next began fresh (pass 415)" % _journeys_wiped)
 	if _soak_tests > 0:
 		print("\nSoak: %d tests played %.1f minutes of the game (%d physics frames)" % [_soak_tests, _soak_frames / 3600.0, _soak_frames])
 	if _filter == "":
@@ -154,6 +158,11 @@ func _clean_slate() -> void:
 	# Every test begins on the first flask (pass 407), so a test that writes
 	# a save without choosing a test slot is caught by the save check below.
 	GameState.slot = CLEAN_SLOT
+	# Every test begins a fresh journey (pass 415). A bare hero (make_player,
+	# no World) reads his gear, gold and keys from GameState.data, so a shield
+	# or blade the last test obtained would ride into the next one.
+	GameState.new_game()
+	GameState.active = true
 	_clean_saves = saves_on_disk()
 	# A button pressed through the real controller (press_for_real, pass 386)
 	# stays down until released, and the next test's hero would read it.
@@ -188,6 +197,8 @@ func _leaks() -> Array[String]:
 		out.append("the game left paused")
 	if GameState.slot != CLEAN_SLOT:
 		out.append("save slot left on %d" % GameState.slot)
+	if not GameState.active:
+		out.append("the gym's no-record mode left on")
 	var changed := changed_saves()
 	if not changed.is_empty():
 		out.append("saves changed (%s)" % ", ".join(changed))
