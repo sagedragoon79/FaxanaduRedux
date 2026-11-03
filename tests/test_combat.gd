@@ -875,6 +875,69 @@ func test_being_hit_answers_the_real_controller() -> void:
 	room.free()
 
 
+## Pass 433 (bible 5.2): the original's Elixir, in a real fight. The Elixir
+## test lands its fatal blow with `take_damage` on a hero standing still; here
+## the hero walks into the Rot Dwarf with Right held on the real controller,
+## near death, and his swing is the fatal blow. The Elixir is drunk by the hit
+## itself: the hero rises at full health and magic with the burn's words, its
+## doubled grace outlasts the dwarf's next swing, and with no Elixir left the
+## same swing, met the same way, fells them.
+func test_the_elixir_saves_a_real_fight() -> void:
+	var a := _dwarf_arena()
+	var room: Room = a[0]
+	var p: Player = a[1]
+	var dwarf: RotDwarf = a[2]
+	p.input = PlayerInput.new()
+	p.elixirs = 1
+	p.mp = 0.0
+	p.hp = 5
+	var toasts: Array[String] = []
+	var hear := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(hear)
+	await _wait_for_swing(dwarf, 10)
+	Input.action_press("move_right")
+	var hit := false
+	for i in 20:
+		await frames(1)
+		if p.hp != 5:
+			hit = true
+			break
+	check(hit and not p.dead and p.hp == p.max_hp and p.elixirs == 0, "the fatal swing drinks the Elixir: up again at full health (%d of %d)" % [p.hp, p.max_hp])
+	check(is_equal_approx(p.mp, p.max_mp) and p.velocity.y < 0.0, "full magic, and rising (%.0f mp, %.0f)" % [p.mp, p.velocity.y])
+	check(toasts.has("The Elixir burns. You rise again."), "with the burn's words (%s)" % [toasts])
+	var taken := false
+	for i in 90:
+		await frames(1)
+		if p.hp < p.max_hp:
+			taken = true
+	check(not taken and p.global_position.x > dwarf.global_position.x,
+		"its grace carries the hero, Right still held, past the dwarf untouched (%.0f, dwarf %.0f)" % [p.global_position.x, dwarf.global_position.x])
+	Input.action_release("move_right")
+	GameState.toast.disconnect(hear)
+	room.free()
+	Feel.reset()
+	# No Elixir: the same swing, met the same way, fells the hero.
+	a = _dwarf_arena()
+	room = a[0]
+	p = a[1]
+	dwarf = a[2]
+	p.input = PlayerInput.new()
+	p.hp = 5
+	await _wait_for_swing(dwarf, 10)
+	Input.action_press("move_right")
+	var fell := false
+	for i in 20:
+		await frames(1)
+		if p.dead:
+			fell = true
+			break
+	Input.action_release("move_right")
+	check(fell and p.elixirs == 0, "with no Elixir, the same swing fells the hero")
+	room.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_elixir_saves_a_real_fight`"), "5.2 names the test")
+
+
 ## Pass 202: bible 5.3's "Starting combat values" table says tests assert it,
 ## but a third of its rows were only read back from the tuning by the play
 ## tests (or by none), so a changed number moved its test with it. This holds
