@@ -1378,6 +1378,101 @@ func test_drops_ladders_and_pogo_through_the_real_controller() -> void:
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("`test_drops_ladders_and_pogo_through_the_real_controller`"), "6.7's Input line names the test")
 
+## Pass 438: the moves heard through the buttons. Bible 6.7 promises distinct
+## jump, double jump, wall jump, dash, pogo and land sounds, and pass 422 heard
+## the fight through the real controller, but the moves' own sounds were only
+## ever heard under a scripted intent. Each is pressed through `Input` here and
+## must be heard once, alone, in the step that makes the move (a landing
+## layers the surface's step under its thud, 6.7's layered footsteps).
+func _heard(sound: String) -> int:
+	return Sfx.recent.count(sound)
+
+
+func test_the_moves_are_heard_through_the_buttons() -> void:
+	var moves := ["jump", "double_jump", "wall_jump", "dash", "pogo", "land"]
+	var room := make_room(FLAT)
+	var p := make_player(room, Vector2i(6, 11), {"boots": true, "stride": true, "glove": true})
+	await _settle(p)
+	# Jump, then Jump again in the air.
+	Sfx.recent.clear()
+	await press_for_real(p, ["jump"])
+	check(Sfx.recent == ["jump"], "Jump is heard once, alone, as the hero leaves the floor (%s)" % [Sfx.recent])
+	await frames(10)
+	release_for_real(["jump"])
+	await frames(2)
+	Sfx.recent.clear()
+	await press_for_real(p, ["jump"])
+	check(Sfx.recent == ["double_jump"], "Jump in the air is the double jump's own sound (%s)" % [Sfx.recent])
+	release_for_real(["jump"])
+	Sfx.recent.clear()
+	var landed := false
+	for i in 120:
+		await frames(1)
+		if p.is_on_floor():
+			landed = true
+			break
+	check(landed and _heard("land") == 1, "coming down is heard once, as the hero lands (%s)" % [Sfx.recent])
+	check(Sfx.recent.filter(func(s: String) -> bool: return s != "land" and not s.begins_with("step")).is_empty(),
+		"with nothing but the surface's step under it (%s)" % [Sfx.recent])
+	await frames(20)
+	# Dash along the floor.
+	Sfx.recent.clear()
+	await press_for_real(p, ["dash"])
+	release_for_real(["dash"])
+	check(_heard("dash") == 1 and not Sfx.recent.has("jump"), "Dash is heard once, on its press (%s)" % [Sfx.recent])
+	await frames(30)
+	room.free()
+	# Wall jump: up against the left wall, Left held, Jump.
+	room = make_room(FLAT)
+	p = make_player(room, Vector2i(2, 11), {"boots": true, "glove": true})
+	await _settle(p)
+	await press_for_real(p, ["jump", "move_left"])
+	release_for_real(["jump"])
+	var sliding := false
+	for i in 60:
+		await frames(1)
+		if p.wall_dir != 0 and not p.is_on_floor() and p.velocity.y > 0.0:
+			sliding = true
+			break
+	check(sliding, "held Left, the hero slides on the wall")
+	Sfx.recent.clear()
+	Input.action_press("jump")
+	await frames(2)
+	release_for_real(["jump", "move_left"])
+	check(Sfx.recent == ["wall_jump"], "Jump off the wall is the wall jump's own sound, once (%s)" % [Sfx.recent])
+	await frames(40)
+	room.free()
+	# Pogo: Down held and Attack over spikes.
+	var spikes := ["####################"]
+	for i in 9:
+		spikes.append("#..................#")
+	spikes.append("#..^^^^^^^^^^^^^^..#")
+	spikes.append("####################")
+	room = make_room(spikes)
+	p = make_player(room, Vector2i(9, 3), {"boots": true})
+	p.input = PlayerInput.new()
+	Input.action_press("move_down")
+	var struck := false
+	var at := -1
+	Sfx.recent.clear()
+	for i in 90:
+		if not struck and p.velocity.y > 0.0 and p.global_position.y > 11 * 16 - 9 - 28.0:
+			Input.action_press("attack")
+			struck = true
+			Sfx.recent.clear()
+		await frames(1)
+		if p.velocity.y < -300.0:
+			at = i
+			break
+	release_for_real(["move_down", "attack"])
+	check(at >= 0 and _heard("pogo") == 1 and not Sfx.recent.has("hurt"), "the pogo off the spikes is heard once, with no hurt (%s)" % [Sfx.recent])
+	room.free()
+	for m: String in moves:
+		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % m), "%s has a sound of its own" % m)
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1)
+	check(line.contains("`test_the_moves_are_heard_through_the_buttons`"), "6.7 names the test")
+
+
 
 func test_ladders_climb_hang_and_step_off_the_top() -> void:
 	var room := make_room(LADDERS)
