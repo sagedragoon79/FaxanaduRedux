@@ -9,7 +9,7 @@ World (last audited in pass 451).
 The scheduled leads were mostly proved already. A card door was walked into with the real Right
 (pass 417), a shop was bought from with the real buttons (pass 413), an inner door was entered with the
 real Jump and Attack (test_rooms), and ladders and drops were climbed through the real controller
-(test_movement). The King's purse was given only to a scripted Up. The original's opening was never
+(test_movement). The King's purse had been taken with the real Up on its own (pass 409; corrected in pass 460, which first said only a scripted Up had). The original's opening was never
 played as a new player meets it, one step after another: the King's gold, then the Merchant's Jack
 Key, then the Jack door. That run crosses a dialog, a shop menu and a door, each of which takes and
 gives back the controls.
