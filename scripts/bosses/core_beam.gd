@@ -1,9 +1,9 @@
 class_name CoreBeam
 extends Node2D
-## A beam the meteor's core fires down the Veins at you (the Evil One, phase 2,
+## A beam the Everbloom's core fires down the Veins at you (the Everbloom, phase 2,
 ## design bible 8.9). A thin flickering line marks where it will strike for
 ## `tell` seconds (never under Enemy.MIN_TELEGRAPH), then a lance of light burns
-## along it for FIRE seconds. Unparryable: get out of the line. The Hour Glass
+## along it for FIRE seconds. Unparryable: get out of the line. The Stillstone
 ## holds it, line and all. The origin is where it is fired from.
 
 const FIRE := 0.35

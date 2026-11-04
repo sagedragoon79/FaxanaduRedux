@@ -1,6 +1,6 @@
 class_name HydraFlood
 extends Node2D
-## The flood in Zorugeriru's last phase (bible 8.4): the spring bursts and the
+## The flood in the Haar Wyrm's last phase (bible 8.4): the spring bursts and the
 ## arena fills to the tanks' rims. Feet under the water burn with cold mist;
 ## the rafts, the tank walls and the floating debris stand clear of it.
 

@@ -2,7 +2,7 @@ class_name Waterfall
 extends Node2D
 ## Time-locked water (design bible 4.5, A8; legend `f`, a rectangle of cells).
 ## Flowing, it beats down on anything in it: no jumping or climbing up through
-## it. While the Hour Glass holds time still, the water stands frozen in the
+## it. While the Stillstone holds time still, the water stands frozen in the
 ## air, its droplets set into footholds every STEP rows up from the bottom, so a
 ## quick climber can go up it like a stair before time runs on.
 

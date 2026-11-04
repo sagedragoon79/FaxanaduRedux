@@ -21,7 +21,7 @@ Every category apart from Art was tied at 98.75. Movement weighs the most (20), 
 The trial's other settings:
 
 - `Trials.LIST` gives it a description, a mantra time of 10 s and the dye **Plummet Umber** (`a8703a`).
-- Ilse keeps a place for the dye before the Lord's Gold.
+- Ilse keeps a place for the dye before the Crown Gold.
 
 All six trials are now built.
 

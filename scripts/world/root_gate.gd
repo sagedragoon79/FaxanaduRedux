@@ -1,6 +1,6 @@
 class_name RootGate
 extends StaticBody2D
-## One tile of a root-gate (design bible 3, Trunk Hollows): living roots grown
+## One tile of a root-gate (design bible 3, Heartwood): living roots grown
 ## across a passage. They are solid until the room's Root Heart is struck, then
 ## draw back into the ceiling and stay open (remembered per room). Room legend
 ## `R`; a gate is usually a column of three.

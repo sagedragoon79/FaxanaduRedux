@@ -1,6 +1,6 @@
 class_name Hornet
 extends Enemy
-## A Trunk Hollows hornet. Hovers, buzzes in place (telegraph), then swoops at
+## A Heartwood hornet. Hovers, buzzes in place (telegraph), then swoops at
 ## where you were, and flies back to its post.
 
 const SIGHT := 180.0

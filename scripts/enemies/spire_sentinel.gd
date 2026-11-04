@@ -1,6 +1,6 @@
 class_name SpireSentinel
 extends Enemy
-## A Spire Sentinel of Daybreak (design bible 7): a knight of pale shrine stone
+## A Spire Sentinel of Carillon (design bible 7): a knight of pale shrine stone
 ## the elves set to guard their stairs, helmed and holding a halberd, with the
 ## Sky Key's gold lightning cut into its breastplate. It is stone while you watch
 ## it: it never moves while you face it, and blows clink off it. Turn your back

@@ -2,7 +2,7 @@ class_name FlueDamper
 extends StaticBody2D
 ## One tile of the iron damper that seals the Old Flue (room legend `Q`, a row
 ## of three is usual): riveted louvers shut flat across a shaft. Its chain runs
-## up to the great winch in Winch Hall; once Zoradohna falls and the winch
+## up to the great winch in Winch Hall; once Durgan falls and the winch
 ## turns again (design bible 4.4), the louvers stand open and the flue can be
 ## climbed. Drawn at 2x render density: `_px` takes half-pixels.
 

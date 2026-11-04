@@ -1,7 +1,7 @@
 class_name GameHud
 extends Control
 ## In-game HUD drawn in code at the 640x360 base resolution: health masks,
-## magic bar, Red Potion charges and gold. Rendered at native resolution
+## magic bar, Sapflask charges and gold. Rendered at native resolution
 ## (outside the pixel-art viewport) so it stays sharp.
 
 const MASK_HP := 20
@@ -106,7 +106,7 @@ func _draw() -> void:
 		_draw_mask(origin + Vector2(mask_x, 0), widths[i] < 12.0, fill)
 		mask_x += widths[i] + 2.0
 	_draw_mp(Rect2(origin + Vector2(0, 18), Vector2(bar_w, 5)))
-	# Red Potion charges.
+	# Sapflask charges.
 	for i in player.flask_max:
 		_draw_flask(origin + Vector2(i * 9, 28), i < player.flask_charges)
 	# Gold.
@@ -126,7 +126,7 @@ func _draw() -> void:
 		draw_rect(get_viewport_rect(), Color(1, 1, 1, minf(_flash, 1.0)))
 
 
-## A Guru Trial's name and clock, top center, while one is under way; or the
+## A Ringreader Trial's name and clock, top center, while one is under way; or the
 ## boss rush's count and clock.
 ## The minimap in the top right corner (pass 373), while nothing covers it.
 func _draw_minimap() -> void:
@@ -298,7 +298,7 @@ func _draw_mp(bar: Rect2) -> void:
 	draw_colored_polygon(PackedVector2Array([g + Vector2(0, -3), g + Vector2(0, 0), g + Vector2(-2.5, 0)]), gem.lightened(0.45))
 
 
-## One Red Potion charge: a round flask with a cork, full or empty glass.
+## One Sapflask charge: a round flask with a cork, full or empty glass.
 func _draw_flask(at: Vector2, full: bool) -> void:
 	var c := at + Vector2(3.5, 6)
 	draw_circle(c, 4.0, OUTLINE)
@@ -326,7 +326,7 @@ func _glass_shown() -> bool:
 	return player.abilities.get("hourglass", false)
 
 
-## The Hour Glass once owned: full and bright when it can be turned, sand
+## The Stillstone once owned: full and bright when it can be turned, sand
 ## pouring while time is stopped, the top bulb refilling as it runs back.
 func _draw_glass(at: Vector2) -> void:
 	var can_turn := TimeStop.ready_to_turn()
@@ -354,7 +354,7 @@ func _ointment_shown() -> bool:
 	return player.ointments > 0 or player.ointment_left > 0.0
 
 
-## Ointments carried (a small jar and a count), and the time left on one in use.
+## Barkbalms carried (a small jar and a count), and the time left on one in use.
 func _draw_ointment(at: Vector2) -> void:
 	var left := player.ointment_left
 	if player.ointments <= 0 and left <= 0.0:

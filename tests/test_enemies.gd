@@ -33,7 +33,7 @@ func test_monodron_telegraphs_then_hops_toward_player() -> void:
 	var p := make_player(room, Vector2i(5, 6))
 	p.max_hp = 9999
 	p.hp = 9999
-	var m: Monodron = _find(room, Monodron)
+	var m: Blinkhop = _find(room, Blinkhop)
 	var x0 := m.global_position.x
 	var windup_frames := 0
 	var hopped := false
@@ -338,7 +338,7 @@ func test_rot_dwarf_turns_to_face_player_behind() -> void:
 
 func test_enemies_respawn_when_configured() -> void:
 	var room := _room_with({Vector2i(12, 6): "M"})
-	var m: Monodron = _find(room, Monodron)
+	var m: Blinkhop = _find(room, Blinkhop)
 	m.respawn_time = 0.5
 	await frames(2)
 	m.take_hit(999, Vector2(1, 0))
@@ -388,7 +388,7 @@ func test_lantern_ghost_shows_only_near_light_and_lunges_through_walls() -> void
 	check(g.seen > 0.8 or g.state == "fade", "near the player it shows (%.2f, %s)" % [g.seen, g.state])
 
 
-## Bible 7: the Bog Myconid swells with glowing gills (a telegraph that lights
+## Bible 7: the Bog Puffcap swells with glowing gills (a telegraph that lights
 ## the fog), bursts into a spore cloud that stings and can't be parried, and is soft
 ## while spent.
 func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
@@ -396,7 +396,7 @@ func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
 	var p := make_player(room, Vector2i(18, 6))
 	p.max_hp = 9999
 	p.hp = 9999
-	var m: BogMyconid = _find(room, BogMyconid)
+	var m: BogPuffcap = _find(room, BogPuffcap)
 	var windup_frames := 0
 	var lit := true
 	var cloud: SporeCloud = null
@@ -671,7 +671,7 @@ func test_the_magic_shield_flings_a_sap_glob_back() -> void:
 	var g := SapGlob.new()
 	g.room = room
 	var lost := await _parry_shot(p, room, g)
-	check(lost == 0 and not is_instance_valid(g), "the Magic Shield catches a sap glob, which no other shield can parry")
+	check(lost == 0 and not is_instance_valid(g), "the Warding Shield catches a sap glob, which no other shield can parry")
 	var shot := _reflected(room)
 	check(shot != null and shot.velocity.x > 0.0, "and flings it back the way you face")
 	var hp := t.hp
@@ -690,7 +690,7 @@ func test_other_shields_cannot_catch_a_sap_glob() -> void:
 	p.facing = 1
 	await frames(3)
 	var lost := await _parry_shot(p, room, SapGlob.new())
-	check(lost > 0, "without the Magic Shield, a parry can't stop sap (%d lost)" % lost)
+	check(lost > 0, "without the Warding Shield, a parry can't stop sap (%d lost)" % lost)
 	check(_reflected(room) == null, "and nothing flies back")
 
 
@@ -705,7 +705,7 @@ func test_the_magic_shield_turns_seeds_into_shots() -> void:
 	p.reflects = true
 	lost = await _parry_shot(p, room, SeedShot.new())
 	var shot := _reflected(room)
-	check(lost == 0 and shot != null, "the Magic Shield sends it back as a shot of light")
+	check(lost == 0 and shot != null, "the Warding Shield sends it back as a shot of light")
 	check(shot != null and shot.tint == Color("7cbf52"), "glowing with the seed's green")
 
 
@@ -905,13 +905,13 @@ func test_shade_knight_thrusts_then_cuts_and_a_parry_breaks_him() -> void:
 	check(k.is_staggered() and not k.guarding(), "and he reels, shield wide")
 
 
-## Bible 7: the Meteor Slug swells (the tell), then heaves three burning globs.
+## Bible 7: the Glass Slug swells (the tell), then heaves three burning globs.
 func test_meteor_slug_swells_then_heaves_three_globs() -> void:
 	var room := _room_with({Vector2i(20, 6): "s"})
 	var p := make_player(room, Vector2i(10, 6))
 	p.max_hp = 9999
 	p.hp = 9999
-	var s: MeteorSlug = _find(room, MeteorSlug)
+	var s: GlassSlug = _find(room, GlassSlug)
 	var swell := 0
 	var globs := 0
 	for i in 150:
@@ -922,7 +922,7 @@ func test_meteor_slug_swells_then_heaves_three_globs() -> void:
 		if globs > 0:
 			break
 	check(swell / 60.0 >= Enemy.MIN_TELEGRAPH, "the swell is telegraphed (%d frames)" % swell)
-	check(globs == MeteorSlug.GLOBS, "then three globs fly (%d)" % globs)
+	check(globs == GlassSlug.GLOBS, "then three globs fly (%d)" % globs)
 	var hp := p.hp
 	var embers := false
 	for i in 90:
@@ -936,11 +936,11 @@ func test_meteor_slug_swells_then_heaves_three_globs() -> void:
 func test_meteor_slug_shell_turns_blows_from_above() -> void:
 	var room := _room_with({Vector2i(20, 6): "s"})
 	make_player(room, Vector2i(3, 6))
-	var s: MeteorSlug = _find(room, MeteorSlug)
+	var s: GlassSlug = _find(room, GlassSlug)
 	await frames(3)
 	var hp0 := s.hp
 	s.take_hit(10, Vector2(0, 1))
-	check(s.hp == hp0, "a pogo glances off the meteor shell")
+	check(s.hp == hp0, "a pogo glances off the Everbloom shell")
 	s.take_hit(10, Vector2(1, 0))
 	check(hp0 - s.hp == 10, "a blow to its soft side lands (%d)" % (hp0 - s.hp))
 	s.set_state("recover")
@@ -1030,26 +1030,26 @@ func test_clockwork_hound_stops_dead_in_stopped_time() -> void:
 	check(h.global_position != at, "and leaps on when time runs")
 
 
-## Bible 8.9: everything in Zenis is a corrupted remix: tougher, richer, crystal grown through it.
+## Bible 8.9: everything in the Evercrown is a corrupted remix: tougher, richer, crystal grown through it.
 func test_zenis_foes_are_corrupted_with_meteor_crystal() -> void:
 	var rows := _room_rows({Vector2i(5, 6): "s", Vector2i(12, 6): "q", Vector2i(20, 6): "e"})
 	var plain := Room.from_text("\n".join(PackedStringArray(rows)))
 	arena.add_child(plain)
-	var slug: MeteorSlug = _find(plain, MeteorSlug)
-	check(not slug.corrupted, "outside Zenis a slug is only a slug")
+	var slug: GlassSlug = _find(plain, GlassSlug)
+	check(not slug.corrupted, "outside the Evercrown a slug is only a slug")
 	var base_hp := slug.max_hp
 	plain.queue_free()
 	await frames(1)
 	var room := Room.from_text("zone: zenis\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(room)
 	var foes := room.get_children().filter(func(c: Node) -> bool: return c is Enemy)
-	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "in Zenis every foe is corrupted")
-	var cslug: MeteorSlug = _find(room, MeteorSlug)
+	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "in the Evercrown every foe is corrupted")
+	var cslug: GlassSlug = _find(room, GlassSlug)
 	check(cslug.max_hp == ceili(base_hp * Enemy.CORRUPT_HP) and cslug.hp == cslug.max_hp, "and tougher (%d vs %d)" % [cslug.max_hp, base_hp])
-	check(cslug.get_children().any(func(c: Node) -> bool: return c is CorruptionGrowth), "with the meteor's crystal grown through it")
+	check(cslug.get_children().any(func(c: Node) -> bool: return c is CorruptionGrowth), "with the Everbloom's crystal grown through it")
 	var off := Room.from_text("zone: zenis\ncorrupted: false\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(off)
-	check(not (_find(off, MeteorSlug) as Enemy).corrupted, "a room can say otherwise")
+	check(not (_find(off, GlassSlug) as Enemy).corrupted, "a room can say otherwise")
 	await frames(30)
 	check(not cslug.dead, "and the corrupted foes live and move (%s)" % cslug.state)
 
@@ -1058,11 +1058,11 @@ func test_zenis_foes_are_corrupted_with_meteor_crystal() -> void:
 func test_a_corrupted_foe_leaves_a_seed_that_bursts() -> void:
 	var room := Room.from_text("corrupted: true\n---\n" + "\n".join(PackedStringArray(_room_rows({Vector2i(14, 6): "M"}))))
 	arena.add_child(room)
-	# Close enough for the burst to reach, too far for the Monodron to touch first.
+	# Close enough for the burst to reach, too far for the Blinkhop to touch first.
 	var p := make_player(room, Vector2i(16, 6))
 	p.max_hp = 9999
 	p.hp = 9999
-	var m: Monodron = _find(room, Monodron)
+	var m: Blinkhop = _find(room, Blinkhop)
 	await frames(2)
 	m.take_hit(999, Vector2(1, 0))
 	await frames(2)
@@ -1448,7 +1448,7 @@ func test_bark_knight_bark_guards_until_stripped_and_regrows_as_he_uproots() -> 
 	check(k.bark == BarkKnight.BARK, "a plate grows back as he pulls free (%d)" % k.bark)
 
 
-## Pass 177: Fire catches living bark. A fireball's burst burns the whole coat
+## Pass 177: Kindle catches living bark. A fireball's burst burns the whole coat
 ## off at once and lands in full on the heartwood beneath.
 func test_a_thrown_dagger_splits_no_bark_and_breaks_no_hex() -> void:
 	var room := _room_with({Vector2i(22, 6): "!"})
@@ -1868,7 +1868,7 @@ func test_the_marsh_hag_backs_away_when_you_close_in() -> void:
 	room.free()
 
 
-## Pass 120: every enemy shot and ground hazard the Hour Glass should hold
+## Pass 120: every enemy shot and ground hazard the Stillstone should hold
 ## checks it, the Marsh Hag's hex among them (it was missed in pass 119).
 func test_every_enemy_shot_honours_the_hour_glass() -> void:
 	var missing: Array[String] = []
@@ -1883,7 +1883,7 @@ func test_every_enemy_shot_honours_the_hour_glass() -> void:
 				if not text.contains("TimeStop.active()"):
 					missing.append(f)
 	check(shots >= 8, "found the enemy shots (%d)" % shots)
-	check(missing.is_empty(), "each one stops for the Hour Glass: %s" % [missing])
+	check(missing.is_empty(), "each one stops for the Stillstone: %s" % [missing])
 	# And the hex itself: a hand that rises while time is stopped waits for it.
 	var room := _hag_room({Vector2i(30, 8): "?"})
 	var p := make_player(room, Vector2i(20, 8))
@@ -2028,7 +2028,7 @@ func test_spire_sentinel_slams_and_cracks_open() -> void:
 func test_a_defeated_enemy_dissolves_then_is_gone() -> void:
 	var room := _room_with({Vector2i(12, 6): "M"})
 	var p := make_player(room, Vector2i(5, 6))
-	var m: Monodron = _find(room, Monodron)
+	var m: Blinkhop = _find(room, Blinkhop)
 	await frames(2)
 	m.take_hit(999, Vector2(1, 0))
 	check(m.dead and m.dissolving() and m.visible, "it is still there, breaking up")
@@ -2063,7 +2063,7 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		# The Bloom and its brood (pass 262).
 		"lilith": ["lilith_screech", "lilith_dive"],
 		"pakukame": ["bloom_brood", "brood_loose"],
-		# The original's Naga (pass 273).
+		# The source game's Silt Adder (pass 273).
 		"naga": ["naga_hiss", "naga_strike"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
@@ -2088,19 +2088,19 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 			check(who == [foe], "%s is played by the %s alone, or its kin (%s)" % [sound, foe, played.get(sound, [])])
 
 
-## Pass 161 (bible 7, "Zenis: remixes of every family"): the meteor holds a
-## corrupted remix of foes from every zone of the climb, not only Dartmoor's.
-## Each Zenis room is loaded for real: every foe in it is corrupted, and the
-## families found cover the Trunk, the Tower, the Mist, the Branches, Daybreak
-## and Dartmoor.
+## Pass 161 (bible 7, "the Evercrown: remixes of every family"): the Everbloom holds a
+## corrupted remix of foes from every zone of the climb, not only Vorrhallow's.
+## Each the Evercrown room is loaded for real: every foe in it is corrupted, and the
+## families found cover the Heartwood, the Tower, the Haar, the High Boughs, Carillon
+## and Vorrhallow.
 func test_zenis_holds_a_remix_of_every_zones_foes() -> void:
 	var homes := {
-		"trunk": ["RotDwarf", "Monodron", "GrubLump", "SapSpitter"],
+		"trunk": ["RotDwarf", "Blinkhop", "GrubLump", "SapSpitter"],
 		"tower": ["IronDwarf", "GearBat", "MinecartRider"],
-		"mist": ["LanternGhost", "BogMyconid", "DrownedDwarf", "MarshHag"],
+		"mist": ["LanternGhost", "BogPuffcap", "DrownedDwarf", "MarshHag"],
 		"branches": ["LeafMantis", "BarkKnight", "SeedBomber"],
 		"daybreak": ["StormHarpy", "ThunderBeetle", "SpireSentinel"],
-		"dartmoor": ["CrystalDwarf", "ClockworkHound", "ShadeKnight", "MeteorSlug"],
+		"dartmoor": ["CrystalDwarf", "ClockworkHound", "ShadeKnight", "GlassSlug"],
 	}
 	var found := {}
 	var total := 0
@@ -2117,8 +2117,8 @@ func test_zenis_holds_a_remix_of_every_zones_foes() -> void:
 	await frames(1)
 	for zone: String in homes:
 		var hit: Array = homes[zone].filter(func(n: String) -> bool: return found.has(n))
-		check(not hit.is_empty(), "Zenis remixes the %s's foes (%s)" % [zone, hit])
-	check(found.size() >= 12, "a dozen families or more in the meteor (%d: %s)" % [found.size(), found.keys()])
+		check(not hit.is_empty(), "the Evercrown remixes the %s's foes (%s)" % [zone, hit])
+	check(found.size() >= 12, "a dozen families or more in the Everbloom (%d: %s)" % [found.size(), found.keys()])
 
 
 ## The hurt flash and the tells wash a code-drawn foe's own silhouette white
@@ -2196,16 +2196,16 @@ func test_every_wind_up_in_the_game_is_fair() -> void:
 	avatar.phase = 2
 	var heart := EvilHeart.new()
 	heart.phase = 3
-	var king := KingGrieve.new()
+	var king := ThaneVorrund.new()
 	king.phase = 3
 	check(avatar.tell(EvilAvatar.RAIN_TELL) >= Enemy.MIN_TELEGRAPH, "the Avatar raises its arm first (%.2f s)" % avatar.tell(EvilAvatar.RAIN_TELL))
 	check(heart.tell() >= Enemy.MIN_TELEGRAPH, "crystal gathers under the Heart first (%.2f s)" % heart.tell())
-	check(king.tell(KingGrieve.BURST_TELL) >= Enemy.MIN_TELEGRAPH, "King Grieve raises the axe first (%.2f s)" % king.tell(KingGrieve.BURST_TELL))
+	check(king.tell(ThaneVorrund.BURST_TELL) >= Enemy.MIN_TELEGRAPH, "Thane Vorrund raises the axe first (%.2f s)" % king.tell(ThaneVorrund.BURST_TELL))
 	for n: Node in [avatar, heart, king]:
 		n.free()
 
 
-## Pass 273 (bible 7): the original's Naga, a serpent that floats up and down,
+## Pass 273 (bible 7): the source game's Silt Adder, a serpent that floats up and down,
 ## most often over the ladders. It keeps its column while it swings; level
 ## with it and in front, it hoods and hisses for at least the telegraph, then
 ## strikes straight out along that level, and glides back to its column.
@@ -2217,8 +2217,8 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 	var row: String = rows[6]
 	rows[6] = row.substr(0, 22) + ")" + row.substr(23)
 	var room := make_room(rows)
-	var n: Naga = _find(room, Naga)
-	check(n != null, "the legend ) lays a Naga")
+	var n: SiltAdder = _find(room, SiltAdder)
+	check(n != null, "the legend ) lays a Silt Adder")
 	if n == null:
 		return
 	# Far off, out of its sight: it floats its swing and keeps its column.
@@ -2229,13 +2229,13 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 	var low := -INF
 	var drift := 0.0
 	var coiled := false
-	for i in int(Naga.SWING_TIME * 60.0) + 10:
+	for i in int(SiltAdder.SWING_TIME * 60.0) + 10:
 		await frames(1)
 		top = minf(top, n.global_position.y)
 		low = maxf(low, n.global_position.y)
 		drift = maxf(drift, absf(n.global_position.x - n.home.x))
 		coiled = coiled or n.state == "coil"
-	check(low - top >= Naga.SWING * 1.5, "it floats up and down its column (%.0f px)" % (low - top))
+	check(low - top >= SiltAdder.SWING * 1.5, "it floats up and down its column (%.0f px)" % (low - top))
 	check(drift < 1.0 and not coiled, "and keeps to it with no one level in sight (drift %.1f)" % drift)
 	# Level with it and in front, six tiles off: it hoods, hisses, strikes along that level.
 	p.teleport(Vector2(16 * Room.TILE + 8, 13 * Room.TILE))
@@ -2276,15 +2276,15 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 	check(not coiled, "and never strikes at one above its swing")
 
 
-## Pass 274 (bible 5.3, "Parry: enemy staggered"): the Naga's strike was its
+## Pass 274 (bible 5.3, "Parry: enemy staggered"): the Silt Adder's strike was its
 ## body's touch, which no shield can meet, while every other telegraphed bite
 ## and slash in the game (the Spring Eel's, the Hound's, the Mantis's) is a
 ## blow a parry turns. Now the strike is a bite: a parry takes no harm and
 ## sets the serpent reeling, and an unmet bite lands whole. Its floating body
 ## only scrapes. The hero stands on the floor here, as in the rooms: the first
-## cut ended a strike on any touch of its long body with the floor, so a Naga
+## cut ended a strike on any touch of its long body with the floor, so a Silt Adder
 ## level with a hero on the ground never reached them.
-## Bible 7 (pass 281): as in the original, a slain Naga always leaves the
+## Bible 7 (pass 281): as in the source game, a slain Silt Adder always leaves the
 ## largest bread there is, a great loaf, and eating it heals LOAF_HEAL.
 func test_a_slain_naga_leaves_a_great_loaf() -> void:
 	var rows: Array = ["##############################"]
@@ -2298,7 +2298,7 @@ func test_a_slain_naga_leaves_a_great_loaf() -> void:
 	Drop.bread_chance = 0.0
 	Drop.mana_chance = 0.0
 	Drop.rare_chance = 0.0
-	var n := Naga.new()
+	var n := SiltAdder.new()
 	room.add_child(n)
 	n.global_position = cell_feet(20, 9)
 	n.home = n.global_position
@@ -2323,7 +2323,7 @@ func test_a_slain_naga_leaves_a_great_loaf() -> void:
 	room.free()
 
 
-## Pass 289: as in the original, a slain Myconid always leaves bread, even
+## Pass 289: as in the source game, a slain Puffcap always leaves bread, even
 ## with every drop chance at zero, and eating it heals a bread's worth.
 func test_a_slain_myconid_leaves_bread() -> void:
 	var room := make_room(["##############################", "#............................#", "#............................#", "#............................#", "#............................#", "##############################"])
@@ -2333,7 +2333,7 @@ func test_a_slain_myconid_leaves_bread() -> void:
 	Drop.bread_chance = 0.0
 	Drop.mana_chance = 0.0
 	Drop.rare_chance = 0.0
-	var m := BogMyconid.new()
+	var m := BogPuffcap.new()
 	room.add_child(m)
 	m.global_position = cell_feet(20, 4)
 	await frames(2)
@@ -2368,11 +2368,11 @@ func test_the_nagas_bite_can_be_parried() -> void:
 	p.has_shield = true
 	await frames(10)
 	var feet := p.global_position
-	var n := Naga.new()
+	var n := SiltAdder.new()
 	room.add_child(n)
 	n.global_position = feet + Vector2(44, -20)
 	n.home = n.global_position
-	check(n.contact_damage == Naga.TOUCH_DAMAGE and Naga.TOUCH_DAMAGE < Naga.BITE_DAMAGE, "its body only scrapes (%d), the bite is the harm (%d)" % [Naga.TOUCH_DAMAGE, Naga.BITE_DAMAGE])
+	check(n.contact_damage == SiltAdder.TOUCH_DAMAGE and SiltAdder.TOUCH_DAMAGE < SiltAdder.BITE_DAMAGE, "its body only scrapes (%d), the bite is the harm (%d)" % [SiltAdder.TOUCH_DAMAGE, SiltAdder.BITE_DAMAGE])
 	var meet := func(parry: bool) -> int:
 		p.global_position = feet
 		p.facing = 1
@@ -2399,10 +2399,10 @@ func test_the_nagas_bite_can_be_parried() -> void:
 	await frames(90)
 	check(not n.is_staggered() and n.state != "stagger", "then it gathers itself (%s)" % n.state)
 	took = await meet.call(false)
-	check(took == Naga.BITE_DAMAGE, "unmet, the bite lands whole (%d)" % took)
+	check(took == SiltAdder.BITE_DAMAGE, "unmet, the bite lands whole (%d)" % took)
 
 
-## Pass 337 (bible 4.1, the Hour Glass deviation): the original's glass "can
+## Pass 337 (bible 4.1, the Stillstone deviation): the source game's glass "can
 ## stop the movement of the enemy for a fixed period of time". The remake's
 ## stops what foes loose and time-locked water, and only clockwork foes stop
 ## dead; the rest go on, so a turn of the glass is a tool, not a pause.
@@ -2422,7 +2422,7 @@ func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
 	check(hound.global_position.distance_to(h0) < 0.5, "the clockwork hound stops dead (%.1f px)" % hound.global_position.distance_to(h0))
 	TimeStop.reset()
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("\"It can stop the movement of the enemy for a fixed period of time.\"") and p.hp > 0, "bible 4.1 quotes the original's glass")
+	check(bible.contains("**The Stillstone (deviation, pass 337):**") and p.hp > 0, "bible 4.1 says why the Stillstone lets foes go on")
 
 
 ## Pass 338: bible 7's zone table gave a wind-up for 21 of the 25 foes and a
@@ -2433,7 +2433,7 @@ func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
 func test_every_foes_numbers_are_written_in_bible_7() -> void:
 	# Foe: [script, wind-up constant, blow: [script, constant] or "contact"].
 	const FOES := {
-		"Monodron": ["monodron", "WINDUP", "contact"],
+		"Blinkhop": ["monodron", "WINDUP", "contact"],
 		"Hornet": ["hornet", "WINDUP", "contact"],
 		"Rot Dwarf": ["rot_dwarf", "WINDUP", ["rot_dwarf", "SWING_DAMAGE"]],
 		"Grub Lump": ["grub_lump", "WINDUP", ["grub_lump", "DROP_DAMAGE"]],
@@ -2441,29 +2441,29 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 		"Iron Dwarf": ["iron_dwarf", "WINDUP", ["iron_dwarf", "SLAM_DAMAGE"]],
 		"Minecart Rider": ["minecart_rider", "REV", ["minecart_rider", "CHARGE_CONTACT"]],
 		"Gear Bat": ["gear_bat", "WINDUP", ["gear_blade", "DAMAGE"]],
-		"Naga": ["naga", "WINDUP", ["naga", "BITE_DAMAGE"]],
+		"Silt Adder": ["naga", "WINDUP", ["naga", "BITE_DAMAGE"]],
 		"Lantern Ghost": ["lantern_ghost", "WINDUP", ["lantern_ghost", "LUNGE_DAMAGE"]],
-		"Bog Myconid": ["bog_myconid", "WINDUP", ["spore_cloud", "DAMAGE"]],
+		"Bog Puffcap": ["bog_myconid", "WINDUP", ["spore_cloud", "DAMAGE"]],
 		"Drowned Dwarf": ["drowned_dwarf", "HEAVE", ["drowned_dwarf", "SLAM_DAMAGE"]],
 		"Marsh Hag": ["marsh_hag", "HEX", ["mire_grasp", "DAMAGE"]],
 		"Leaf Mantis": ["leaf_mantis", "UNFOLD", ["leaf_mantis", "SLASH_DAMAGE"]],
 		"Bark Knight": ["bark_knight", "BRACE", ["bark_knight", "THRUST_DAMAGE"]],
 		"Seed Bomber": ["seed_bomber", "WINDUP", ["bomber_seed", "DAMAGE"]],
-		"Lilith": ["lilith", "WINDUP", ["lilith", "TOUCH_DAMAGE"]],
+		"Mothling": ["lilith", "WINDUP", ["lilith", "TOUCH_DAMAGE"]],
 		"Storm Harpy": ["storm_harpy", "WINDUP", ["harpy_feather", "DAMAGE"]],
 		"Thunder Beetle": ["thunder_beetle", "CHARGE", ["thunder_beetle", "DISCHARGE_DAMAGE"]],
 		"Spire Sentinel": ["spire_sentinel", "RAISE", ["spire_sentinel", "SLAM_DAMAGE"]],
 		"Crystal Dwarf": ["crystal_dwarf", "WINDUP", ["crystal_dwarf", "FIST_DAMAGE"]],
 		"Shade Knight": ["shade_knight", "THRUST_TELL", ["shade_knight", "THRUST_DAMAGE"]],
 		"Clockwork Hound": ["clockwork_hound", "WIND", ["clockwork_hound", "BITE_DAMAGE"]],
-		"Meteor Slug": ["meteor_slug", "SWELL", ["meteor_glob", "DAMAGE"]],
+		"Glass Slug": ["meteor_slug", "SWELL", ["meteor_glob", "DAMAGE"]],
 		"Spring Eel": ["spring_eel", "COIL", ["spring_eel", "BITE"]],
 	}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var seven := bible.get_slice("\n## 7. Enemies", 1).get_slice("\n## 8. ", 0)
 	var zones := seven.get_slice("| Zone | Enemies |", 1).get_slice("\n\n", 0)
 	var table := seven.get_slice("| Foe | HP | Touch | Wind-up (s) | Blow | Gold | XP |", 1).get_slice("\n\n", 0)
-	# Every foe in scripts/enemies has a row (the Meteor Seed is a dying foe's
+	# Every foe in scripts/enemies has a row (the Stillglass Seed is a dying foe's
 	# burst, 8.9, not a foe).
 	for f: String in DirAccess.get_files_at("res://scripts/enemies"):
 		if not f.ends_with(".gd") or f in ["enemy.gd", "meteor_seed.gd"]:
@@ -2508,23 +2508,23 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 			check(int(m.get_string(1)) == touch, "the zone table gives the %s a touch of %s, the script %d" % [foe, m.get_string(1), touch])
 		e.free()
 	# Bible 9's word on the first foes' experience is the scripts'.
-	var mono := Monodron.new()
+	var mono := Blinkhop.new()
 	var rot := RotDwarf.new()
 	check(bible.contains("Starting enemies give %d XP (Rot Dwarf %d)" % [mono.xp, rot.xp]), "bible 9 gives the first foes' experience (%d, Rot Dwarf %d)" % [mono.xp, rot.xp])
 	mono.free()
 	rot.free()
 	# A real kill pays what the row says: its experience as written, and its
-	# gold times its room's threat (a Dartmoor room, threat 2).
+	# gold times its room's threat (a Vorrhallow room, threat 2).
 	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(WIDE)))
 	arena.add_child(room)
 	var p := make_player(room, Vector2i(3, 6))
 	p.max_hp = 9999
 	p.hp = 9999
-	check(room.threat() == 2.0, "a Dartmoor room's threat is 2")
+	check(room.threat() == 2.0, "a Vorrhallow room's threat is 2")
 	var rare := Drop.rare_chance
 	Drop.rare_chance = 0.0
 	for i in 6:
-		var foe := Monodron.new()
+		var foe := Blinkhop.new()
 		foe.position = cell_feet(20, 6)
 		room.add_child(foe)
 		await frames(2)
@@ -2536,7 +2536,7 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 			if n is Coin:
 				gold += (n as Coin).value
 				n.free()
-		check(int(GameState.data.xp) - xp == foe.xp, "a slain Monodron pays its %d XP, unscaled (got %d)" % [foe.xp, int(GameState.data.xp) - xp])
+		check(int(GameState.data.xp) - xp == foe.xp, "a slain Blinkhop pays its %d XP, unscaled (got %d)" % [foe.xp, int(GameState.data.xp) - xp])
 		check(gold >= foe.gold_min * 2 and gold <= foe.gold_max * 2, "and %d to %d gold at threat 2 (got %d)" % [foe.gold_min * 2, foe.gold_max * 2, gold])
 	Drop.rare_chance = rare
 
@@ -2568,7 +2568,7 @@ func _bracketed(text: String, opening: String) -> String:
 
 ## Pass 354 (bible 6.7 Flash, 7): a tell is a pose, a flash and a sound, and
 ## since pass 161 the flash washes the foe's own silhouette white in pulses.
-## The Clockwork Hound, the Shade Knight, the Meteor Slug and the Spring Eel lit
+## The Clockwork Hound, the Shade Knight, the Glass Slug and the Spring Eel lit
 ## only a part (eyes, blade point, cracks, lamp), so their tells never flashed
 ## the way every other foe's did. Every foe's every tell now pulses white.
 func test_every_foes_tell_flashes_it_white() -> void:
@@ -2591,7 +2591,7 @@ func test_every_foes_tell_flashes_it_white() -> void:
 		var foe := probe is Enemy
 		if probe is Node:
 			(probe as Node).free()
-		# A Meteor Seed is a crystal shard, not a body: its flicker is the
+		# A Stillglass Seed is a crystal shard, not a body: its flicker is the
 		# shard itself going light and dark.
 		if not foe or f == "meteor_seed.gd":
 			continue

@@ -1,6 +1,6 @@
 class_name GravityDrift
 extends Node2D
-## A pocket where the meteor's pull is wrong (Zenis, design bible 8.9; legend
+## A pocket where the Everbloom's pull is wrong (the Evercrown, design bible 8.9; legend
 ## `v`, a rectangle of cells). Inside it the player weighs a fraction of what
 ## they should: they fall slowly, and a jump carries them about two and a half
 ## times as high, up ledges no jump could reach. Leave the pocket mid-flight

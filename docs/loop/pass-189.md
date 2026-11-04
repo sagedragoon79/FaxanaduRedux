@@ -17,7 +17,7 @@ Systems' last pass (180) was the oldest apart from Art, so pass 189 takes System
 - `Menus.blade_numbers(id)` gives a blade's cut and heavy damage (tempers in), its extra reach and how much slower it swings. For example, the Broad Sword shows "Cuts 17, heavy 32, reach +16, 30% slower."
   - It is added to each blade's detail on the Equipment page and on a shop's shelf.
 - The Equipment page ends with a **Cloak** section:
-  - `Menus.cloak_dyes` lists Warden Green, the dyes in your save, and the Lord's Gold once the flag `lord` is set.
+  - `Menus.cloak_dyes` lists Warden Green, the dyes in your save, and the Crown Gold once the flag `lord` is set.
   - `Menus.choose_equipment` puts gear on or off as before, and puts on a dye you have.
 - `GameData.items_of_kind(kind)` lists item ids of one kind in table order.
 - Shorter texts that fit the box:
@@ -37,7 +37,7 @@ Systems' last pass (180) was the oldest apart from Art, so pass 189 takes System
 - `test_economy.gd`, `test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak` (new) checks:
   - the numbers of the Short Sword and the Broad Sword, and of a tempered Long Sword;
   - that every dye is on Ilse's shelf;
-  - the Cloak section's dyes for a new game, then with dyes bought and won and the Lord's Gold;
+  - the Cloak section's dyes for a new game, then with dyes bought and won and the Crown Gold;
   - the worn mark, and a blade row's numbers;
   - that every detail fits three lines with all gear owned;
   - that choosing a dye wears it away from the Dyeworks, but not one you don't have.

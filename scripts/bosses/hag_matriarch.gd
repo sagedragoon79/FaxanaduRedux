@@ -1,8 +1,8 @@
 class_name HagMatriarch
 extends Enemy
-## The Marsh Hag Matriarch (design bible 7 and 8): the oldest of the Mist's
-## hags, mother of all of them, grown huge and bent in her mire east of Mascon.
-## The mini-boss of the Mist (room header `boss: hag_matriarch`).
+## The Marsh Hag Matriarch (design bible 7 and 8): the oldest of the Haar's
+## hags, mother of all of them, grown huge and bent in her mire east of Polesend.
+## The mini-boss of the Haar (room header `boss: hag_matriarch`).
 ##
 ## She fights as her daughters do, from a distance and through the fog, with a
 ## great marsh-wisp in her staff to show where she is:

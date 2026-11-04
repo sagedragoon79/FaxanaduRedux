@@ -3,7 +3,7 @@ zone: tower
 map: 17, -7
 ambience: heights
 chest_gold: 250
-sign: 20, 19, From the crown of the tower: the Tree's limbs, and east of them a sea of fog.|The dwarves watched for the Mist from here. It has been rising.
+sign: 20, 19, From the crown of the tower: the Tree's limbs, and east of them a sea of fog.|The dwarves watched for the Haar from here. It has been rising.
 door: 1, tower/bell_loft, 1
 door: 2, tower/rafters, 3
 ---

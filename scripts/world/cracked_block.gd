@@ -1,6 +1,6 @@
 class_name CrackedBlock
 extends StaticBody2D
-## Cracked stone that the Mattock breaks. Rebuilds itself in the gym so the
+## Cracked stone that the Delver's Pick breaks. Rebuilds itself in the gym so the
 ## test routes stay repeatable.
 
 const RESPAWN_TIME := 4.0

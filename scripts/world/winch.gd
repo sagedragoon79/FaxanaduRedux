@@ -2,8 +2,8 @@ class_name Winch
 extends Node2D
 ## The great winch of Winch Hall (room prop `winch`), a Tower landmark: a
 ## toothed iron wheel and a rope drum in an A-frame, its rope running up out of
-## sight toward Forepaw. It has stood still since the dwarves went quiet; once
-## Zoradohna falls and the dwarves are free, it turns again, slowly, and the
+## sight toward Kettleforge. It has stood still since the dwarves went quiet; once
+## Durgan falls and the dwarves are free, it turns again, slowly, and the
 ## rope crawls. Scenery only, drawn at 2x density. The origin is the bottom
 ## center (it stands on the floor or a ledge).
 

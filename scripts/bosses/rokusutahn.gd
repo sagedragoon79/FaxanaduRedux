@@ -1,6 +1,6 @@
-class_name Rokusutahn
+class_name Gnarlmaw
 extends Node2D
-## Rokusutahn, the Root-Gnawer (design bible 8.1): a colossal bark-plated grub.
+## Gnarlmaw, the Root-Gnawer (design bible 8.1): a colossal bark-plated grub.
 ##
 ## The body is a chain of BossSegment hitboxes on a "rail", a straight line
 ## with a start point and a direction: the head sits `_head_s` pixels along it
@@ -25,7 +25,7 @@ extends Node2D
 signal defeated
 signal phase_changed(phase: int)
 
-const DISPLAY_NAME := "Rokusutahn"
+const DISPLAY_NAME := "Gnarlmaw"
 const EPITHET := "the Root-Gnawer"
 const MAX_HP := 600
 ## Health fractions where phases 2 and 3 begin (shown on the health bar).

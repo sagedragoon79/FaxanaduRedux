@@ -1,8 +1,8 @@
-name: The Heart of the Meteor
+name: The Heart of the Bloom
 zone: zenis
 map: 72, -13
 boss: evil_one
-sign: 3, 20, The Tree has followed you here. When its roots hold the heart down, cut with the Dragon Slayer.
+sign: 3, 20, The Tree has followed you here. When its roots hold the heart down, cut with the Severance.
 door: 1, zenis/veins, 2
 ---
 ############################################################

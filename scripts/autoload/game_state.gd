@@ -11,7 +11,7 @@ signal toast(text: String)
 signal flash(strength: float)
 ## Asks the HUD to show a dialog box; it freezes the player until closed.
 signal dialog_requested(speaker: String, pages: Array)
-## The Evil One is dead: the game shows the ending (EndingScreen).
+## The Everbloom is dead: the game shows the ending (EndingScreen).
 signal ending_started
 
 ## The most of a foe's sorcery a shield and helmet together turn (pass 225).
@@ -41,9 +41,9 @@ const MOVED_PICKUPS := {
 ## The equipment slots, in the order the Equipment page lists them.
 const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]
 
-## The original's 16 ranks. Each rank after Novice gives a skill point.
-const RANKS := ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
-	"Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"]
+## The 16 ranks, named for a tree's growth. Each rank after Seedling gives a skill point.
+const RANKS := ["Seedling", "Sprout", "Sapling", "Thornling", "Barkskin", "Wayfarer", "Ranger", "Bough-Guard",
+	"Leafblade", "Heartwood", "Rootwarden", "Stormbough", "Oakheart", "Crownward", "Elder", "Ylden's Own"]
 ## Damage each smith temper adds to a blade (design bible 5.2).
 const TEMPER_BONUS := 0.15
 const RANK_XP := [0, 40, 100, 180, 300, 460, 660, 900, 1200, 1560, 2000, 2500, 3100, 3800, 4600, 5500]
@@ -91,7 +91,7 @@ static func fresh() -> Dictionary:
 		"gold": 0,
 		"xp": 0,
 		"rank": 0,
-		## The highest rank a Guru has named you by (Faxanadu's title ceremony).
+		## The highest rank a Ringreader has named you by (Yldenfall's title ceremony).
 		"named_rank": 0,
 		"skill_points": 0,
 		"skills": [],
@@ -103,15 +103,15 @@ static func fresh() -> Dictionary:
 		"rings": [],
 		"potion_shards": 0,
 		"mantra_shards": 0,
-		## Meteor Shards carried: the Forepaw smith folds one into each second temper.
+		## Stillglass Shards carried: the Kettleforge smith folds one into each second temper.
 		"meteor_shards": 0,
-		## Elixirs carried (at most Shop.ELIXIR_MAX): one revives the player in place on death.
+		## Amber Draughts carried (at most Shop.ELIXIR_MAX): one revives the player in place on death.
 		"elixirs": 0,
-		## Ointments carried (at most Shop.OINTMENT_MAX).
+		## Barkbalms carried (at most Shop.OINTMENT_MAX).
 		"ointments": 0,
 		"collected": {},
 		"visited": {},
-		## Room id -> [x, y] of each Guru you have spoken to: the Mantra Path's stops.
+		## Room id -> [x, y] of each Ringreader you have spoken to: the Grain Road's stops.
 		"gurus": {},
 		## Zones whose outline the Cartographer sold you (zone -> true): the map shows their unseen rooms dimmed.
 		"charts": {},
@@ -126,7 +126,7 @@ static func fresh() -> Dictionary:
 		"clears": 0,
 		## Times you have fallen this run (the secret ending wants none).
 		"deaths": 0,
-		## Guru Trials cleared: trial id -> best time in seconds (Trials).
+		## Inner Rings cleared: trial id -> best time in seconds (Trials).
 		"trials": {},
 		## Cloak dyes bought at Ilse's Dyeworks (pass 136), and the one worn ("" is Warden Green).
 		"dyes": [],
@@ -186,7 +186,7 @@ func hair() -> String:
 	return id if PlayerVisual.HAIR.has(id) else "violet"
 
 
-## Gives a dye won rather than bought (a Guru Trial's mantra time, pass 164):
+## Gives a dye won rather than bought (a Ringreader Trial's ring time, pass 164):
 ## it goes on the cloak, and its flag puts it on Ilse's shelf to wear again.
 func earn_dye(id: String) -> void:
 	var owned: Array = data.get("dyes", [])
@@ -242,12 +242,12 @@ func two_handed() -> bool:
 
 
 ## Whether this save owns a dye. Warden Green is the cloak you start in, and
-## the Lord's Gold is given, not sold.
+## the Crown Gold is given, not sold.
 func owns_dye(id: String) -> bool:
 	return id == "warden_dye" or id == "lord_dye" or Array(data.get("dyes", [])).has(id)
 
 
-## The Evil One is dead: mark the save cleared and start the ending.
+## The Everbloom is dead: mark the save cleared and start the ending.
 func begin_ending() -> void:
 	set_flag("cleared")
 	if secret_ending():
@@ -257,8 +257,8 @@ func begin_ending() -> void:
 
 
 ## Seconds played on this save, counting the time since the last save.
-## The secret ending (design bible 11): the Evil One reached without a single
-## death, wearing the Drowned Warden's Battle Suit.
+## The secret ending (design bible 11): the Everbloom reached without a single
+## death, wearing the Drowned Warden's Elven Plate.
 func secret_ending() -> bool:
 	return int(data.get("deaths", 0)) == 0 and String(data.equipment.get("armor", "")) == "battle_suit"
 
@@ -291,7 +291,7 @@ func toggle_pin(room_id: String, pos: Vector2) -> String:
 	return "placed"
 
 
-## The Mantra Path (design bible 3.3): Guru-to-Guru travel, open once any
+## The Grain Road (design bible 3.3): Ringreader-to-Ringreader travel, open once any
 ## spring flows again.
 func mantra_path_open() -> bool:
 	for k: String in data.flags:
@@ -304,7 +304,7 @@ func meet_guru(room_id: String, pos: Vector2) -> void:
 	data.gurus[room_id] = [pos.x, pos.y]
 
 
-## The Gurus you could walk the Mantra Path to from `here` (room ids, sorted).
+## The Ringreaders you could walk the Grain Road to from `here` (room ids, sorted).
 func mantra_stops(here: String) -> Array:
 	var out := []
 	for k: String in data.gurus:
@@ -326,9 +326,9 @@ func has_skill(id: String) -> bool:
 	return id in data.skills
 
 
-## The Guru's "mantra" for the journey so far: a nod to Faxanadu's password
-## saves (design bible 11, easter eggs). It is never typed back in; saving is
-## automatic. The same progress always gives the same mantra.
+## The mark a Ringreader carves for the journey so far: sixteen letters cut
+## into the wood (design bible 11, easter eggs). It is never typed back in; saving is
+## automatic. The same progress always gives the same ring.
 func mantra() -> String:
 	var rooms: Array = data.get("visited", {}).keys()
 	rooms.sort()
@@ -349,7 +349,7 @@ func rank_name() -> String:
 	return RANKS[int(data.rank)]
 
 
-## XP needed for the next rank, or -1 at Lord.
+## XP needed for the next rank, or -1 at Ylden's Own.
 func next_rank_xp() -> int:
 	var r := int(data.rank)
 	return RANK_XP[r + 1] if r + 1 < RANK_XP.size() else -1
@@ -362,22 +362,22 @@ func add_xp(amount: int) -> void:
 	while int(data.rank) + 1 < RANK_XP.size() and int(data.xp) >= RANK_XP[int(data.rank) + 1]:
 		data.rank = int(data.rank) + 1
 		data.skill_points = int(data.skill_points) + 1
-		banner.emit("Rank up: " + rank_name(), "You gain a skill point. Seek a Guru to be named and taught.")
+		banner.emit("Rank up: " + rank_name(), "You gain a skill point. Seek a Ringreader to be named and taught.")
 		Sfx.play("rank", 0.0)
 
 
-## The title you have earned but no Guru has named yet ("" if none).
+## The title you have earned but no Ringreader has named yet ("" if none).
 func unnamed_title() -> String:
 	return rank_name() if int(data.rank) > int(data.get("named_rank", 0)) else ""
 
 
-## A Guru names you by your current rank. Returns the title.
+## A Ringreader names you by your current rank. Returns the title.
 func name_title() -> String:
 	data.named_rank = int(data.rank)
 	return rank_name()
 
 
-## How many times the Forepaw smith has tempered blade `blade_id` (0 to 2).
+## How many times the Kettleforge smith has tempered blade `blade_id` (0 to 2).
 func temper_level(blade_id: String) -> int:
 	return int(data.get("tempers", {}).get(blade_id, 0))
 
@@ -424,8 +424,8 @@ func refresh_stats(p: Player) -> void:
 	p.reach_bonus = float(blade.reach)
 	p.arc_bonus = float(blade.get("arc", 0.0))
 	p.swing_mult = float(blade.get("swing", 1.0))
-	# Armor and helmet stack by what each lets through (bible 5.2): Battle Suit
-	# (60%) under the Battle Helmet (10%) lets 0.4 x 0.9 = 36% through.
+	# Armor and helmet stack by what each lets through (bible 5.2): Elven Plate
+	# (60%) under the Elven Helm (10%) lets 0.4 x 0.9 = 36% through.
 	var helmet := GameData.item(String(eq.get("helmet", "")))
 	p.defense = 1.0 - (1.0 - float(GameData.item(eq.armor).get("defense", 0.0))) * (1.0 - float(helmet.get("defense", 0.0)))
 	p.has_shield = eq.shield != "" and not bool(blade.get("two_handed", false))
@@ -457,7 +457,7 @@ func refresh_stats(p: Player) -> void:
 	p.tilte_swarm = has_skill("tilte_swarm")
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
-	# The Battle Helmet is worth one mask on top (bible 5.2).
+	# The Elven Helm is worth one mask on top (bible 5.2).
 	p.max_hp = int(data.max_hp) + (RESILIENCE_HP if has_skill("resilience") else 0) + int(helmet.get("hp", 0))
 	p.max_mp = float(data.max_mp) + (20.0 if has_skill("clear_mind") else 0.0)
 	p.flask_max = int(data.flask_max) + (1 if has_skill("deep_pockets") else 0)
@@ -478,7 +478,7 @@ func capture(p: Player) -> void:
 	data.ointments = p.ointments
 
 
-## Applies a permanent stat item (Life Fruit, Mana Dew, a Potion, Mantra or Meteor Shard) and
+## Applies a permanent stat item (Life Fruit, Mana Dew, a Potion, Ring or Stillglass Shard) and
 ## returns the line to show under its name.
 func grant_stat_item(kind: String, p: Player) -> String:
 	match kind:
@@ -499,18 +499,18 @@ func grant_stat_item(kind: String, p: Player) -> String:
 				data.flask_max = int(data.flask_max) + 1
 				refresh_stats(p)
 				p.flask_charges = p.flask_max
-				return "Three shards fuse. Your flask holds one more Red Potion."
+				return "Three shards fuse. Your flask holds one more Sapflask."
 			return "%d of 3. Three fuse into a new potion charge." % (n % 3)
 		"mantra_shard":
 			data.mantra_shards = int(data.mantra_shards) + 1
 			var n := int(data.mantra_shards)
 			if n % 3 == 0:
 				data.skill_points = int(data.skill_points) + 1
-				return "The mantra is whole. You gain a skill point."
-			return "%d of 3. Three complete a mantra." % (n % 3)
+				return "The ring is whole. You gain a skill point."
+			return "%d of 3. Three complete a ring." % (n % 3)
 		"meteor_shard":
 			data.meteor_shards = int(data.meteor_shards) + 1
-			return "You carry %d. The Forepaw smith folds one into a second temper." % int(data.meteor_shards)
+			return "You carry %d. The Kettleforge smith folds one into a second temper." % int(data.meteor_shards)
 	return ""
 
 
@@ -528,6 +528,30 @@ func save_game(to_slot := -1) -> bool:
 ## text goes to a temp file first and is read back, then the old file becomes
 ## the `.bak` and the temp file takes its place. A failed write leaves the last
 ## good file as it was.
+## The game was renamed in pass 461, and Godot keeps a game's saves in a folder
+## named for it. On the first start under the new name, copy the saves and
+## settings over from the old folder (its name is in data/rename_map.json), so
+## no journey is lost. Never overwrites a file the new folder already has.
+## Returns how many files it copied. The game calls it at start; tests don't.
+static func bring_old_saves(user_dir := OS.get_user_data_dir()) -> int:
+	var map: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/rename_map.json"))
+	if not map is Dictionary or not String(map.get("user_dir_before", "")):
+		return 0
+	var old_dir := user_dir.get_base_dir().path_join(String(map.user_dir_before))
+	if old_dir == user_dir or not DirAccess.dir_exists_absolute(old_dir):
+		return 0
+	var copied := 0
+	for file: String in DirAccess.get_files_at(old_dir):
+		if not (file.begins_with("save_") or file.begins_with("settings")):
+			continue
+		var to := user_dir.path_join(file)
+		if FileAccess.file_exists(to):
+			continue
+		if DirAccess.copy_absolute(old_dir.path_join(file), to) == OK:
+			copied += 1
+	return copied
+
+
 static func write_safely(path: String, text: String) -> bool:
 	var tmp := path + ".tmp"
 	var f := FileAccess.open(tmp, FileAccess.WRITE)
@@ -628,15 +652,15 @@ static func sanitize(src: Variant) -> Dictionary:
 		if out.collected.has(old):
 			out.collected[MOVED_PICKUPS[old]] = true
 			out.collected.erase(old)
-	# King Grieve has given up the Dragon Slayer since pass 217; before, it lay
+	# Thane Vorrund has given up the Severance since pass 217; before, it lay
 	# on the Heart Gate's altar, which is now bare. A save past him that never
 	# took it from the altar gets it in hand, so the heart can still be cut.
 	if bool(out.flags.get("boss:king_grieve", false)) and not bool(out.abilities.get("dragon_slayer", false)):
 		out.abilities.dragon_slayer = true
 		out.equipment.blade = "dragon_slayer"
-	# The Battle Helmet left the shield slot for its own (pass 185). It had
-	# guarded and turned shots like the Magic Shield, and with it on every
-	# shield showed as owned, so the hand it held gets the Magic Shield.
+	# The Elven Helm left the shield slot for its own (pass 185). It had
+	# guarded and turned shots like the Warding Shield, and with it on every
+	# shield showed as owned, so the hand it held gets the Warding Shield.
 	if String(out.equipment.get("shield", "")) == "battle_helmet":
 		out.equipment.helmet = "battle_helmet"
 		out.equipment.shield = "magic_shield"
@@ -658,7 +682,7 @@ static func sanitize(src: Variant) -> Dictionary:
 	if not gear.has("short_sword"):
 		gear.push_front("short_sword")
 	out.gear = gear
-	# The Dragon Slayer is both an ability (the reach checker's gate) and gear;
+	# The Severance is both an ability (the reach checker's gate) and gear;
 	# a save holds both or neither (pass 221).
 	if gear.has("dragon_slayer") or bool(out.abilities.get("dragon_slayer", false)):
 		out.abilities.dragon_slayer = true

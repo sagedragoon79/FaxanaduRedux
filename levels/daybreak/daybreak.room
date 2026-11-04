@@ -1,9 +1,9 @@
-name: Daybreak
+name: Carillon
 zone: daybreak
 map: 54, -11
 music: daybreak_town
 surface: stone
-sign: 4, 19, DAYBREAK, the bell town, last of the sky isles. Its bells rang with the storm.|Now they only ring when the wind remembers.
+sign: 4, 19, CARILLON, the bell town, last of the sky isles. Its bells rang with the storm.|Now they only ring when the wind remembers.
 npc: 9, 19, guru
 prop: 16, 19, house
 npc: 22, 19, daybreak_armorer

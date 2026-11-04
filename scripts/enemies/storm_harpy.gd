@@ -1,6 +1,6 @@
 class_name StormHarpy
 extends Enemy
-## A Storm Harpy of Daybreak (design bible 7): a winged hunter of the Spires,
+## A Storm Harpy of Carillon (design bible 7): a winged hunter of the Spires,
 ## storm-grey and violet with gold talons. She keeps above you and to one side,
 ## out of reach of a plain slash. Her tell: she rears back and spreads her
 ## wings wide with a screech, then flings a fan of three feathers at you. A

@@ -45,8 +45,8 @@ extends Resource
 @export var heartbeat_interval := 0.85
 ## Threat (design bible 5.5, pass 194): every blow a foe, a boss (pass 196) or
 ## their shots land is multiplied by its zone's threat, so the deep zones hit as
-## hard against the armor you will have by then as the Trunk does against
-## Leather. Zones not listed (Eolis, the gym, the trials) stay at 1.
+## hard against the armor you will have by then as the Heartwood does against
+## Leather. Zones not listed (Hearthroot, the gym, the trials) stay at 1.
 const ZONE_THREAT := {
 	"trunk": 1.0, "tower": 1.0, "mist": 1.4, "branches": 1.5,
 	"daybreak": 1.6, "dartmoor": 2.0, "sunken": 2.0, "zenis": 2.0,
@@ -58,7 +58,7 @@ const ZONE_THREAT := {
 @export var mp_per_melee_hit := 4.0
 @export var cast_cooldown := 0.35
 
-@export_group("Red Potion")
+@export_group("Sapflask")
 @export var flask_charges := 2
 @export var flask_heal := 40
 @export var drink_time := 0.7
@@ -86,11 +86,11 @@ const ZONE_THREAT := {
 @export var war_glove_time := 15.0
 
 @export_group("Relics")
-## The original's Pendant and Magical Rod (design bible 5.2, pass 201), found
-## once and kept: every blade hit, and every Deluge bolt, lands this much more.
+## The original's Acorn Charm and Briar Wand (design bible 5.2, pass 201), found
+## once and kept: every blade hit, and every Torrent bolt, lands this much more.
 @export var pendant_mult := 1.1
 @export var rod_deluge_mult := 1.5
 
-@export_group("Death")
+@export_group("Wither")
 @export var death_gold_fraction := 0.6
 @export var respawn_delay := 1.2

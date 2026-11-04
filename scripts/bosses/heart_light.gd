@@ -1,8 +1,8 @@
 class_name HeartLight
 extends Node2D
-## A spring's stolen light, caught in a dead socket of the meteor's heart (the
-## Evil One, phase 3, design bible 8.9). Each third of the core's life cut away
-## with the Dragon Slayer frees one: the socket fills with spring water's blue
+## A spring's stolen light, caught in a dead socket of the Everbloom's heart (the
+## Everbloom, phase 3, design bible 8.9). Each third of the core's life cut away
+## with the Severance frees one: the socket fills with spring water's blue
 ## light and a shaft of it pours down. The origin is the socket's centre.
 
 const STONE := Color("2a1e3a")

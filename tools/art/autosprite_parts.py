@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turns an Autosprite still into the frames of a rigged part (design bible 13.2).
 
-A boss part like Rokusutahn's bark plate or tail needs a second look for a state rather
+A boss part like Gnarlmaw's bark plate or tail needs a second look for a state rather
 than an animation: the plate cracked while he is staggered, the tail glowing when it is
 open to hits. One pro still per part is cheaper than a clip, and the state frames are
 drawn over it here. The output is an ordinary source sheet for autosprite_import.py.

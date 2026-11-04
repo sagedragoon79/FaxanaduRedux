@@ -1,6 +1,6 @@
 class_name SapClump
 extends Node2D
-## A clump of sap Rokusutahn shakes loose from the ceiling (phase 2). A drip
+## A clump of sap Gnarlmaw shakes loose from the ceiling (phase 2). A drip
 ## swells on the ceiling first (the telegraph), then the clump falls. It hurts
 ## on contact; where it lands it hardens into a SapMound, a temporary platform.
 
@@ -27,7 +27,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass, dripping or falling
+		return  # held still by the Stillstone, dripping or falling
 	_t += delta
 	if not _falling:
 		if _t >= TELL:

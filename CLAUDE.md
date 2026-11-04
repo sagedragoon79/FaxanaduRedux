@@ -1,9 +1,15 @@
-# Faxanadu Redux: notes for agents
+# Yldenfall: notes for agents
 
 Sean (the owner) wants to be hands-off. Make design decisions yourself, consistent with
 `docs/design-bible.md`, which is the source of truth. If you deviate from it, update the
 bible in the same pull request and say why. Keep the Claude Doc version in sync when the
 bible changes substantially (link in the project memory).
+
+## Names
+
+Yldenfall is an original game (design bible 1 and 2). It began as a remake of another game, and every
+name from that game was retired in pass 461: `data/rename_map.json` lists each with its new name, and
+`test_no_retired_name_is_left` fails if one comes back. Give anything new a name of its own.
 
 ## Engine and commands
 

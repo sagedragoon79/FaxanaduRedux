@@ -26,16 +26,16 @@ const TOP_ARRIVE_FALL := 120.0
 const FALL_RESCUE := 64.0
 
 const ZONES := {
-	"eolis": {"name": "Eolis", "color": Color("c9a25a")},
-	"trunk": {"name": "Trunk Hollows", "color": Color("6fb0a0")},
-	"tower": {"name": "Tower of Trunk", "color": Color("c8784a")},
-	"mist": {"name": "The Mist", "color": Color("8fa596")},
-	"branches": {"name": "Branches", "color": Color("8cc070")},
-	"daybreak": {"name": "Daybreak", "color": Color("a58cd0")},
-	"dartmoor": {"name": "Dartmoor", "color": Color("4a9aa8")},
-	"zenis": {"name": "Zenis", "color": Color("8a3a5a")},
+	"eolis": {"name": "Hearthroot", "color": Color("c9a25a")},
+	"trunk": {"name": "Heartwood", "color": Color("6fb0a0")},
+	"tower": {"name": "Hollin Tower", "color": Color("c8784a")},
+	"mist": {"name": "The Haar", "color": Color("8fa596")},
+	"branches": {"name": "High Boughs", "color": Color("8cc070")},
+	"daybreak": {"name": "Storm Spires", "color": Color("a58cd0")},
+	"dartmoor": {"name": "Vorrhallow", "color": Color("4a9aa8")},
+	"zenis": {"name": "The Evercrown", "color": Color("8a3a5a")},
 	"sunken": {"name": "Sunken Spring", "color": Color("3a8a9a")},
-	"trials": {"name": "Mantra-Space", "color": Color("b8b4ac")},
+	"trials": {"name": "Inner Rings", "color": Color("b8b4ac")},
 	"gym": {"name": "Movement Gym", "color": Color("8d84a3")},
 	"test": {"name": "Test Rooms", "color": Color("8d84a3")},
 }
@@ -52,7 +52,7 @@ var use_game_state := true
 ## Room id -> {name, zone, map: Vector2i, screens: Vector2i, size: Vector2i,
 ## doors: {n: {rect: Rect2i, edge, target, target_door}}, shrines: [Vector2i]}.
 ## `shrines` is every place to rest and save: each Meditation Shrine and each
-## Guru (pass 403), so the map shows a town's rest as it shows a shrine.
+## Ringreader (pass 403), so the map shows a town's rest as it shows a shrine.
 var catalog := {}
 ## Room id -> room text. Tests register rooms here instead of writing files.
 var texts := {}
@@ -62,10 +62,10 @@ var view_size := Vector2(640, 360)
 var busy := false
 var backdrop: Backdrop
 var motes: Motes
-## Blossom drifting through the Tree once the Evil One is dead (Motes.BLOSSOM).
+## Blossom drifting through the Tree once the Everbloom is dead (Motes.BLOSSOM).
 var blossom: Motes
 var fog: Fog
-## The NES look over a `retro: true` room (Eolis of Old, design bible 11).
+## The NES look over a `retro: true` room (Old Hearthroot, design bible 11).
 var retro: RetroFilter
 
 var _ignored_door := 0
@@ -119,7 +119,7 @@ func build_catalog() -> void:
 	var dir := DirAccess.open("res://levels")
 	if dir != null:
 		for zone_dir in dir.get_directories():
-			# The gym and the Guru Trials' mantra-space are off the map.
+			# The gym and the Inner Rings' inner rings are off the map.
 			if zone_dir in OFF_MAP:
 				continue
 			var sub := DirAccess.open("res://levels/" + zone_dir)
@@ -131,7 +131,7 @@ func build_catalog() -> void:
 		_catalog_room(room_id, texts[room_id])
 
 
-## A parsed room's key doors, `{cell, kind, id}`: each `J` is a Jack door unless a
+## A parsed room's key doors, `{cell, kind, id}`: each `J` is a Copper door unless a
 ## `lock:` line names its card, and each `g` is the Sky Gate.
 static func locks_in(room_id: String, parsed: Dictionary) -> Array[Dictionary]:
 	var kinds := {}
@@ -194,13 +194,13 @@ func _catalog_room(room_id: String, text: String) -> void:
 	var dews := 0
 	var mantras := 0
 	var locks := locks_in(room_id, parsed)
-	# Finds laid by a `prop:` line count too (pass 187): the Battle Helmet and the
-	# Joker Key, under the id Room gives them (the prop's own cell).
+	# Finds laid by a `prop:` line count too (pass 187): the Elven Helm and the
+	# Glass Key, under the id Room gives them (the prop's own cell).
 	for spec: String in parsed.lists.get("prop", []):
 		var pr := spec.split(",")
 		if pr.size() == 3 and pr[2].strip_edges() in Room.FOUND_PROPS:
 			treasures.append("%s:%d,%d" % [room_id, int(pr[0]), int(pr[1])])
-	# A Guru rests and saves as a shrine does (design bible 3.3), so the map
+	# A Ringreader rests and saves as a shrine does (design bible 3.3), so the map
 	# marks where he stands too (pass 403).
 	for spec: String in parsed.lists.get("npc", []):
 		var np := spec.split(",")
@@ -231,7 +231,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 		## How many of those are Life Fruits and Mana Dews (the Journey page counts them).
 		"fruits": fruits,
 		"dews": dews,
-		## And Mantra Shards (the Journey page counts the skill points they make).
+		## And Grain Shards (the Journey page counts the skill points they make).
 		"mantras": mantras,
 		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
 		"secret": not parsed.lists.get("secret", []).is_empty(),
@@ -378,7 +378,7 @@ func use_door(n: int) -> void:
 	busy = false
 
 
-## Moves the player to `pos` in room `room_id` (the Forepaw lift), with a fade.
+## Moves the player to `pos` in room `room_id` (the Kettleforge lift), with a fade.
 func travel(room_id: String, pos: Vector2) -> void:
 	if busy or not has_room(room_id):
 		return
@@ -568,7 +568,7 @@ func _respawn_player() -> void:
 			pos = Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1]))
 	# A fight lost in the room you rest in starts over (bible 8, pass 452):
 	# the room is built afresh, so the guardian is whole and the doors open.
-	# Shadow Eura's own gate has a shrine; until now you rose beside her
+	# the Likeness's own gate has a shrine; until now you rose beside her
 	# still sealed in, her wounds kept, mid-swing.
 	if target != room.id or _fight_under_way():
 		_enter(target)

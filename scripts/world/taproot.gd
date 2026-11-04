@@ -1,8 +1,8 @@
 class_name Taproot
 extends Node2D
-## The World Tree's taproot (Taproot Vault, a Trunk Hollows landmark): a vast
+## The Ylden's taproot (Taproot Vault, a Heartwood landmark): a vast
 ## root running from the ceiling into the floor, gnawed half through by
-## Rokusutahn, oozing sap from the bites. Once the Spring of Trunk is restored
+## Gnarlmaw, oozing sap from the bites. Once the Heartwood Spring is restored
 ## the sap in it runs again: amber veins pulse up the root and the bites close
 ## over with fresh wood. Scenery only. The origin is the bottom center.
 

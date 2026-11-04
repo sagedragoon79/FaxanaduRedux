@@ -1,6 +1,6 @@
 class_name SapSpitter
 extends Enemy
-## A Trunk Hollows turret rooted in the floor (design bible 7). When you come
+## A Heartwood turret rooted in the floor (design bible 7). When you come
 ## near, its amber sac swells and glows (the telegraph), then it lobs a glob of
 ## sap in an arc at where you stand. The glob hurts, and where it lands it
 ## leaves a puddle of sap that slows you until it dries.

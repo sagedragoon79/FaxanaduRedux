@@ -47,7 +47,7 @@ func test_sheet_covers_every_pose() -> void:
 		"the sheet is big enough for every row")
 
 
-## Pass 185: the hero's sheet is bare-headed and the Battle Helmet is its own
+## Pass 185: the hero's sheet is bare-headed and the Elven Helm is its own
 ## layer, so every frame marks the crown of the head (found in the pixels on
 ## import), and the sheet's pixels really are there.
 func test_every_hero_frame_marks_the_crown_for_the_helmet() -> void:
@@ -132,7 +132,7 @@ func test_cast_has_sheets() -> void:
 		if not Sheet.exists("npc_" + npc_id):
 			missing.append("npc_" + npc_id)
 	check(missing.is_empty(), "every enemy state and every person has a sheet (missing %s)" % [missing])
-	check(Sheet.info("monodron", "idle", 0).has("eye"), "the Monodron's frames mark its eye for the pupil")
+	check(Sheet.info("monodron", "idle", 0).has("eye"), "the Blinkhop's frames mark its eye for the pupil")
 	check(Sheet.info("sap_spitter", "windup", 1).has("mouth"), "the Sap Spitter's frames mark its mouth for the glob")
 
 
@@ -233,7 +233,7 @@ func test_a_worn_blade_swings_from_its_own_clips() -> void:
 	check(p.visual.sheet == "hero_plate" and p.visual.anim == "idle", "idle is the set's own (%s %s)" % [p.visual.sheet, p.visual.anim])
 	p.input.attack_pressed = true
 	await frames(2)
-	check(p.visual.anim == "slash1" and p.visual.sheet == "hero_plate_long_sword", "the Long Sword swings from its clips (%s %s)" % [p.visual.sheet, p.visual.anim])
+	check(p.visual.anim == "slash1" and p.visual.sheet == "hero_plate_long_sword", "the Wayfarer's Sword swings from its clips (%s %s)" % [p.visual.sheet, p.visual.anim])
 	await frames(40)
 	GameState.data.equipment["blade"] = "short_sword"
 	p.input.attack_pressed = true
@@ -300,7 +300,7 @@ func test_a_rune_dagger_throw_plays_its_flick() -> void:
 	GameState.data.equipment["blade"] = "long_sword"
 	p.throw_dagger()
 	await frames(2)
-	check(p.visual.anim == "throw" and p.visual.sheet == "hero_plate_long_sword", "with the Long Sword kept in hand (%s %s)" % [p.visual.sheet, p.visual.anim])
+	check(p.visual.anim == "throw" and p.visual.sheet == "hero_plate_long_sword", "with the Wayfarer's Sword kept in hand (%s %s)" % [p.visual.sheet, p.visual.anim])
 	GameState.data.equipment["blade"] = held
 	await frames(30)
 	check(p.visual.anim == "idle", "and gives way to the idle when done (%s)" % p.visual.anim)
@@ -352,7 +352,7 @@ func test_armor_picks_its_body_set() -> void:
 				if not solid:
 					bad.append("%s:%s:%d crown %s" % [sheet, anim, i, f.head])
 	check(bad.is_empty(), "every armor has idle, walk and run with hand, neck, head (on the crown) and back points (%s)" % [bad])
-	# The Battle Helmet is cut from the PixelLab helmed elf, a little wider than the head at the 2x density.
+	# The Elven Helm is cut from the PixelLab helmed elf, a little wider than the head at the 2x density.
 	var helm := PlayerVisual.HELMET.get_size()
 	check(helm.x >= 16 and helm.x <= 26 and helm.y >= 16 and helm.y <= 28, "the helmet layer is a head-sized sprite (%s)" % helm)
 	var room := make_room(ARENA)
@@ -365,7 +365,7 @@ func test_armor_picks_its_body_set() -> void:
 	check(head[1] < -38 and head[1] > -50 and hand[1] < -14 and hand[1] > -32, "the head is up top and the hand at the hip (%s, %s)" % [head, hand])
 	GameState.data.equipment.armor = "full_plate"
 	await frames(2)
-	check(p.visual.sheet == "hero_plate", "Full Plate swaps the body (%s)" % p.visual.sheet)
+	check(p.visual.sheet == "hero_plate", "Knight's Plate swaps the body (%s)" % p.visual.sheet)
 	p.input.move_x = 1
 	await frames(12)
 	check(p.visual.anim == "run" and p.visual.sheet == "hero_plate", "and runs in it (%s %s)" % [p.visual.anim, p.visual.sheet])
@@ -375,16 +375,16 @@ func test_armor_picks_its_body_set() -> void:
 	await frames(4)
 	check(p.visual.anim == "block" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
 	p.input.block_held = false
-	# The Battle Suit worn with the Battle Helmet has a body of its own, drawn helmed.
+	# The Elven Plate worn with the Elven Helm has a body of its own, drawn helmed.
 	GameState.data.equipment.armor = "battle_suit"
 	GameState.data.equipment.helmet = "battle_helmet"
 	p.input.jump_pressed = false
 	p.input.jump_held = false
 	await frames(90)
-	check(p.visual.sheet == "hero_battle_helm", "Battle Suit and Battle Helmet: the helmed body (%s %s)" % [p.visual.anim, p.visual.sheet])
+	check(p.visual.sheet == "hero_battle_helm", "Elven Plate and Elven Helm: the helmed body (%s %s)" % [p.visual.anim, p.visual.sheet])
 	GameState.data.equipment.helmet = ""
 	await frames(2)
-	check(p.visual.sheet == "hero_battle", "the helmet off: the bare-headed Battle Suit (%s)" % p.visual.sheet)
+	check(p.visual.sheet == "hero_battle", "the helmet off: the bare-headed Elven Plate (%s)" % p.visual.sheet)
 	GameState.data.equipment.armor = ""
 
 
@@ -424,12 +424,12 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	GameState.data.equipment["armor"] = ""
 
 
-## The PixelLab hero (design bible 13.5): the Mattock is drawn on a pogo,
+## The PixelLab hero (design bible 13.5): the Delver's Pick is drawn on a pogo,
 ## its iron head reaching under the feet into the strike's hitbox, and the blow
 ## plays out over the bounce (a pogo ends the attack the frame it lands).
 func test_the_mattock_pogo_reaches_under_the_feet_and_plays_out() -> void:
 	var s := Sheet.get_sheet("hero_base")
-	check(Sheet.has_anim("hero_base", "strike_down"), "the base hero has a Mattock pogo")
+	check(Sheet.has_anim("hero_base", "strike_down"), "the base hero has a Delver's Pick pogo")
 	var img := (s.tex as Texture2D).get_image()
 	var cell: Vector2 = s.cell
 	var origin: Vector2 = s.origin
@@ -441,7 +441,7 @@ func test_the_mattock_pogo_reaches_under_the_feet_and_plays_out() -> void:
 			for x in range(int(cell.x)):
 				if img.get_pixel(int(i * cell.x) + x, int(a.row * cell.y) + y).a > 0.5:
 					deepest = maxf(deepest, (y - origin.y) / den)
-	check(deepest >= 8.0 and deepest <= 24.0, "the Mattock's head reaches under the feet, into the hitbox (%.1f px)" % deepest)
+	check(deepest >= 8.0 and deepest <= 24.0, "the Delver's Pick's head reaches under the feet, into the hitbox (%.1f px)" % deepest)
 	GameState.new_game()
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(5, 2))

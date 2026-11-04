@@ -553,7 +553,7 @@ func test_the_spring_of_sky_turns_the_wind() -> void:
 			w = c
 	check(w != null and w.dir() == 1, "a `>` current blows east")
 	GameState.set_flag("spring:sky")
-	check(w.dir() == -1, "once the Spring of Sky is restored it blows west")
+	check(w.dir() == -1, "once the Sky Spring is restored it blows west")
 	var p := make_player(room, Vector2i(8, 9))
 	p.global_position = Vector2(30 * Room.TILE, 8 * Room.TILE + 4)
 	await frames(2)
@@ -1795,8 +1795,8 @@ func test_head_correction_slides_a_dash_into_a_tunnel() -> void:
 
 
 ## Pass 264 (bible 6.5): what the feet kick up takes the ground's look, as the
-## steps take its sound. A landing on stone puffs pale dust, in the Mist's marsh
-## it flings dark mud, and in Dartmoor's standing water it throws spray that
+## steps take its sound. A landing on stone puffs pale dust, in the Haar's marsh
+## it flings dark mud, and in Vorrhallow's standing water it throws spray that
 ## falls back. The run, the jump and a dash along the floor do the same.
 func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 	var landing := func(room: Room) -> Dust:
@@ -1854,7 +1854,7 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 	GameState.data.flags.erase(Tide.DRAIN_FLAG)
 
 
-## Pass 272: bible 4.4 says Dartmoor's standing water (pass 259) is not deep
+## Pass 272: bible 4.4 says Vorrhallow's standing water (pass 259) is not deep
 ## enough to swim, and that it neither slows you nor hides a hazard. Nothing
 ## held that: a tide cell that read as swimming water, or a drag on the wade,
 ## would have passed every test. Here, in the Flooded Hall's water: the run

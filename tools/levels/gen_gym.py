@@ -36,7 +36,7 @@ label(40, 34, "Pogo the spikes (attack+down in air)")
 rect(64, 42, 70, 44, '.')
 for x in range(66, 69): g[40][x] = 'C'; g[41][x] = 'C'
 g[44][69] = 'E'
-label(62, 35, "Mattock: break cracked stone")
+label(62, 35, "Delver's Pick: break cracked stone")
 # Cracked wall
 for y in range(36, 40): g[y][74] = 'C'
 # Wall-jump shaft: left wall cols 80-81 rows 20..35, right wall 86-87 rows 20..39
@@ -81,7 +81,7 @@ label(157, 26, "Ladder: Up/Down climb, Jump leaves")
 g[39][118] = 'M'
 g[33][132] = 'H'
 g[39][152] = 'D'
-label(112, 36, "Combat: combo X X X, parry V, Deluge F, potion Q")
+label(112, 36, "Combat: combo X X X, parry V, Torrent F, potion Q")
 
 rows = ["".join(r) for r in g]
 hdr = ["name: Movement Gym", "zone: gym", "music: none", "enemy_respawn: 5"] + labels + ["---"]

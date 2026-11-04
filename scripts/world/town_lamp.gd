@@ -1,6 +1,6 @@
 class_name TownLamp
 extends Node2D
-## A lamp post in a town of the Mist (Victim, design bible 3.2): a weathered
+## A lamp post in a town of the Haar (Lampwick, design bible 3.2): a weathered
 ## post with a lantern hung from an arm. Its flame burns a pocket out of the fog
 ## (group "light"), so the town is a string of warm pockets in the murk. Scenery
 ## only. The origin is the lantern's flame; the post runs down to the floor.

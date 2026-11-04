@@ -5,33 +5,33 @@ extends TestSuite
 
 const START_ROOM := "eolis/west_gate"
 const PICKUPS := "GXOdhnzLWF*$SN&{(}"
-## Secrets that only open once the Spring of Trunk hardens the sap (bible 4.4):
+## Secrets that only open once the Heartwood Spring hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["trunk/amber_falls", 31, 13]]
-## Caches behind cracked stone outside the Mattock rooms (pass 135): the town
-## shows you one from the first step, and only the Mattock opens it.
+## Caches behind cracked stone outside the Delver's Pick rooms (pass 135): the town
+## shows you one from the first step, and only the Delver's Pick opens it.
 const MATTOCK_SECRETS := [["eolis/west_gate", 2, 19]]
-## Pickups only a second jump reaches, once the Wing Boots are found (bible 4.1, A3).
+## Pickups only a second jump reaches, once the Featherstep Boots are found (bible 4.1, A3).
 ## The Sky Steps' purse sits on the climb's first island, a boots leap up from the
 ## one below (pass 211: it had been listed as the Stride's). Pass 219 raised the
 ## island a row: at four rows a plain jump landed on it (test_abilities.gd).
 const BOOT_SECRETS := [["mist/feather_hollow", 18, 6], ["daybreak/sky_steps", 6, 19]]
 ## Pickups only an air dash reaches, once the Elven Stride is found (bible 4.1, A5),
-## even with the Wing Boots, which always come first: behind an elven veil (pass 216;
+## even with the Featherstep Boots, which always come first: behind an elven veil (pass 216;
 ## the gap of pass 211 was crossed by a real jump).
 const STRIDE_SECRETS := [["branches/north_bough", 2, 6]]
-## Critical-path pickups only the Wing Boots' second jump reaches (pass 232):
+## Critical-path pickups only the Featherstep Boots' second jump reaches (pass 232):
 ## the Elven Stride hangs in the Windloft's open air, nine rows over the floor and
 ## far from any wall, so the Boots must come before the Stride.
 const BOOT_GATES := [["branches/windloft", 24, 11]]
-## Pickups only the Branches' wind reaches once the Spring of Sky turns it
+## Pickups only the High Boughs' wind reaches once the Sky Spring turns it
 ## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
 const WIND_SECRETS := [["branches/thicket_road", 38, 8]]
-## Pickups behind bramble, which only the Fire spell burns away (bible 4.5).
+## Pickups behind bramble, which only the Kindle spell burns away (bible 4.5).
 const FIRE_SECRETS := [["daybreak/daybreak", 76, 19]]
-## Rooms beyond cracked stone, open only once the Foreman gives up the Mattock,
-## or above the flue damper, open once Zoradohna falls (the "winch" ability),
-## and the Mist, reached by the ore road east of the Deep Workings (its rooms
+## Rooms beyond cracked stone, open only once the Foreman gives up the Delver's Pick,
+## or above the flue damper, open once Durgan falls (the "winch" ability),
+## and the Haar, reached by the ore road east of the Deep Workings (its rooms
 ## past the bound fog also need the Lantern Key: the "lantern" ability).
 const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair", "tower/forepaw_gate", "tower/forepaw_lift", "tower/forepaw", "tower/ore_vault",
 	"tower/mine_mouth", "tower/mine_shaft", "tower/rail_gallery", "tower/mine_vault", "tower/smelter", "tower/sorting_floor", "tower/slag_heap",
@@ -40,19 +40,19 @@ const MATTOCK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/forepaw_stair"
 	"mist/spring_of_mist", "branches/windward_climb", "branches/sunlit_bough", "branches/leaf_landing", "branches/thicket_road", "branches/canopy_bridge", "branches/conflate", "branches/thorn_yard",
 	"branches/north_bough", "branches/windloft", "branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps",
 	"daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot", "daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
-## Rooms past an air-dash gap: open only with the Elven Stride (above Daybreak's
+## Rooms past an air-dash gap: open only with the Elven Stride (above Carillon's
 ## Sky Steps, bible 3.2). The Stride test checks them. Since pass 388 the
-## Windloft's veil bars the Crown-Leaf, so Pakukame's arena and the way on to
-## Daybreak (the Storm Ledge and the Sky Steps) need it too (bible 8.5).
+## Windloft's veil bars the Crown-Leaf, so Snapcrown's arena and the way on to
+## Carillon (the Storm Ledge and the Sky Steps) need it too (bible 8.5).
 const STRIDE_ROOMS := ["branches/crown_leaf", "daybreak/storm_ledge", "daybreak/sky_steps", "daybreak/broken_shrine", "daybreak/fallen_bridge", "daybreak/daybreak", "daybreak/spire_foot"]
-## Rooms past a conduit gate: open only once Thunder wakes the conduits (bible 4.1, A6).
+## Rooms past a conduit gate: open only once Stormcall wakes the conduits (bible 4.1, A6).
 const THUNDER_ROOMS := ["daybreak/spire_stair", "daybreak/roost", "daybreak/sky_spring", "dartmoor/upper_stair", "dartmoor/gate_hall", "dartmoor/flooded_hall", "dartmoor/sunken_stair", "dartmoor/onyx_crypt", "dartmoor/drowned_nave", "dartmoor/waterfall_stair", "dartmoor/drowned_market", "dartmoor/kings_stair", "dartmoor/kings_kennels", "dartmoor/alpha_den", "dartmoor/throne_hall", "dartmoor/meteor_rise", "dartmoor/zenis_gate", "zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate", "zenis/proving_scar", "zenis/throne", "zenis/veins", "zenis/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 
 
 func _texts() -> Dictionary:
 	var out := {}
 	for zone: String in DirAccess.get_directories_at("res://levels"):
-		# The trials are entered through the Guru's menu, not doors: tested on their own.
+		# The trials are entered through the Ringreader's menu, not doors: tested on their own.
 		if zone in World.OFF_MAP:
 			continue
 		for file: String in DirAccess.get_files_at("res://levels/" + zone):
@@ -107,7 +107,7 @@ func test_glove_reachable_without_abilities() -> void:
 	check(glove, "the Climbing Glove can be reached with no abilities")
 	var rooms := _rooms_reached(nodes)
 	check(not rooms.has("trunk/root_chamber"), "the boss is behind the glove gate")
-	check(rooms.has("eolis/king_hall") and rooms.has("eolis/guru_temple") and rooms.has("eolis/market"), "all of Eolis is open from the start")
+	check(rooms.has("eolis/king_hall") and rooms.has("eolis/guru_temple") and rooms.has("eolis/market"), "all of Hearthroot is open from the start")
 
 
 func test_no_soft_locks_before_the_glove() -> void:
@@ -135,7 +135,7 @@ func test_with_glove_everything_is_reachable() -> void:
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
 	var opened := MATTOCK_ROOMS.filter(func(id: String) -> bool: return rooms.has(id))
-	check(opened.is_empty(), "the cracked stone keeps the Mattock rooms shut: %s" % [opened])
+	check(opened.is_empty(), "the cracked stone keeps the Delver's Pick rooms shut: %s" % [opened])
 
 
 func test_amber_secrets_need_the_spring() -> void:
@@ -152,7 +152,7 @@ func test_mattock_secrets_need_the_mattock() -> void:
 	var dug_nodes := dug.reachable(dug.spot_of(START_ROOM, "P"))
 	for s: Array in MATTOCK_SECRETS:
 		check(not reach.touchable(nodes, s[0], s[1], s[2]), "%s waits behind cracked stone" % [s])
-		check(dug.touchable(dug_nodes, s[0], s[1], s[2]), "%s opens to the Mattock" % [s])
+		check(dug.touchable(dug_nodes, s[0], s[1], s[2]), "%s opens to the Delver's Pick" % [s])
 
 
 func test_no_soft_locks_with_glove() -> void:
@@ -163,7 +163,7 @@ func test_no_soft_locks_with_glove() -> void:
 
 
 func test_amber_keeps_everything_reachable() -> void:
-	# After the Spring of Trunk, sap is solid amber: nothing may be cut off.
+	# After the Heartwood Spring, sap is solid amber: nothing may be cut off.
 	var reach := Reach.new(_texts(), {"glove": true, "amber": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
@@ -177,8 +177,8 @@ func test_amber_keeps_everything_reachable() -> void:
 
 
 func test_with_the_mattock_everything_is_reachable() -> void:
-	# The Act I set: glove, Mattock (from the Foreman), keys, the Spring restored,
-	# Zoradohna beaten (the winch opens the flue damper) and Ripasheiku's Lantern Key.
+	# The Act I set: glove, Delver's Pick (from the Foreman), keys, the Spring restored,
+	# Durgan beaten (the winch opens the flue damper) and Gloamweaver's Lantern Key.
 	var reach := Reach.new(_texts(), {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
@@ -186,16 +186,16 @@ func test_with_the_mattock_everything_is_reachable() -> void:
 	for id: String in reach.rooms:
 		if not rooms.has(id) and not STRIDE_ROOMS.has(id) and not THUNDER_ROOMS.has(id):
 			missing_rooms.append(id)
-	check(missing_rooms.is_empty(), "with the Mattock every room is reachable: missing %s" % [missing_rooms])
+	check(missing_rooms.is_empty(), "with the Delver's Pick every room is reachable: missing %s" % [missing_rooms])
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "but not the sky islands past the air-dash gaps")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not BOOT_GATES.has([p[0], p[2], p[3]]) \
 				and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
-	check(missing.is_empty(), "with the Mattock every pickup is reachable: missing %s" % [missing])
+	check(missing.is_empty(), "with the Delver's Pick every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
-	check(stuck.is_empty(), "with the Mattock, no soft-locks: %s" % [stuck.slice(0, 6)])
+	check(stuck.is_empty(), "with the Delver's Pick, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_bound_fog_holds_until_the_lantern_key() -> void:
@@ -210,13 +210,13 @@ func test_bound_fog_holds_until_the_lantern_key() -> void:
 	var open := Reach.new(_texts(), set, true)
 	var opened := _rooms_reached(open.reachable(open.spot_of(START_ROOM, "P")))
 	check(opened.has("mist/veiled_rise") and opened.has("mist/victim_causeway"), "with the Lantern Key the shaft climbs to the causeway")
-	check(not rooms.has("mist/victim") and opened.has("mist/victim"), "and on past the Feather Hollow to Victim")
+	check(not rooms.has("mist/victim") and opened.has("mist/victim"), "and on past the Feather Hollow to Lampwick")
 
 
 func test_mascon_lies_across_the_black_water() -> void:
-	# Pass 148: Mascon lies under the Scorched Hall, down a ladder shaft and
-	# across the black water. Before the Spring of Mist its drowned boardwalks
-	# are nothing to stand on: only pogoing along the spikes with the Mattock and
+	# Pass 148: Polesend lies under the Scorched Hall, down a ladder shaft and
+	# across the black water. Before the Haar Spring its drowned boardwalks
+	# are nothing to stand on: only pogoing along the spikes with the Delver's Pick and
 	# climbing the far side with the Glove gets you over (a skill route, like the
 	# Storm Ledge's). Once the spring flows they rise and the town is a walk.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
@@ -236,13 +236,13 @@ func test_mascon_lies_across_the_black_water() -> void:
 			people += 1
 			check(dry.touchable(before, "mist/mascon", int(parts[0]), int(parts[1])) and wet.touchable(after, "mist/mascon", int(parts[0]), int(parts[1])),
 				"%s can be reached, before the spring and after" % parts[2].strip_edges())
-	check(people >= 4, "Mascon has its people (%d)" % people)
+	check(people >= 4, "Polesend has its people (%d)" % people)
 
 
 func test_the_pendant_and_the_rod_can_be_reached() -> void:
-	# Pass 201: the original's two relics, laid by `prop:` lines: the Pendant
-	# on the Matriarch's floor, the Rod on Conflate's high plank by the ladder.
-	# The Mist's set reaches both (the sweeps check them too since pass 203).
+	# Pass 201: the source game's two relics, laid by `prop:` lines: the Acorn Charm
+	# on the Matriarch's floor, the Rod on Sylvarre's high plank by the ladder.
+	# The Haar's set reaches both (the sweeps check them too since pass 203).
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
 	var reach := Reach.new(_texts(), set, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
@@ -254,7 +254,7 @@ func test_the_pendant_and_the_rod_can_be_reached() -> void:
 
 
 func test_everyone_in_victim_can_be_reached() -> void:
-	# Pass 145: Victim, the Mist's lamp town, is reached by the Feather Hollow's
+	# Pass 145: Lampwick, the Haar's lamp town, is reached by the Feather Hollow's
 	# west shelf with no more than the Lantern Key, and every person in it can be
 	# spoken to, the fogwalker on his loft too.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
@@ -266,18 +266,18 @@ func test_everyone_in_victim_can_be_reached() -> void:
 			var parts := line.substr(4).split(",")
 			people += 1
 			check(reach.touchable(nodes, "mist/victim", int(parts[0]), int(parts[1])), "%s can be reached" % parts[2].strip_edges())
-	check(people >= 5, "Victim has its people (%d)" % people)
+	check(people >= 5, "Lampwick has its people (%d)" % people)
 
 
 func test_wing_boots_reach_the_high_perch() -> void:
-	# Bible 4.1 (A3): the Wing Boots wait in Feather Hollow, reachable without
+	# Bible 4.1 (A3): the Featherstep Boots wait in Feather Hollow, reachable without
 	# them; the Life Fruit on the perch above is six rows up, past any single jump.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true}
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
-	check(bare.touchable(nodes, "mist/feather_hollow", 30, 15), "the Wing Boots can be reached without them")
+	check(bare.touchable(nodes, "mist/feather_hollow", 30, 15), "the Featherstep Boots can be reached without them")
 	for s: Array in BOOT_SECRETS + BOOT_GATES:
-		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Wing Boots" % [s])
+		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Featherstep Boots" % [s])
 	set["boots"] = true
 	var reach := Reach.new(_texts(), set, true)
 	var with_boots := reach.reachable(reach.spot_of(START_ROOM, "P"))
@@ -286,24 +286,24 @@ func test_wing_boots_reach_the_high_perch() -> void:
 		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) \
 				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
-	check(missing.is_empty(), "with the Wing Boots every pickup is reachable: missing %s" % [missing])
+	check(missing.is_empty(), "with the Featherstep Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
-	check(stuck.is_empty(), "with the Wing Boots, no soft-locks: %s" % [stuck.slice(0, 6)])
+	check(stuck.is_empty(), "with the Featherstep Boots, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_fire_seal_and_dry_basin_hold_until_deluge() -> void:
-	# Bible 4.1 (A4) and 4.5: the Deluge scroll lies on the Marsh Road before
+	# Bible 4.1 (A4) and 4.5: the Torrent scroll lies on the Marsh Road before
 	# the fire seal, and the seal keeps the Scorched Hall shut until water douses it.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true}
 	var dry := Reach.new(_texts(), set, true)
 	var nodes := dry.reachable(dry.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
-	check(rooms.has("mist/marsh_road") and dry.touchable(nodes, "mist/marsh_road", 21, 14), "the Deluge scroll can be reached without it")
+	check(rooms.has("mist/marsh_road") and dry.touchable(nodes, "mist/marsh_road", 21, 14), "the Torrent scroll can be reached without it")
 	check(not rooms.has("mist/scorched_hall"), "but the fire seal keeps the Scorched Hall shut")
 	set["deluge"] = true
 	var wet := Reach.new(_texts(), set, true)
 	var wet_nodes := wet.reachable(wet.spot_of(START_ROOM, "P"))
-	check(_rooms_reached(wet_nodes).has("mist/scorched_hall"), "with Deluge the road east opens")
+	check(_rooms_reached(wet_nodes).has("mist/scorched_hall"), "with Torrent the road east opens")
 	check(wet.touchable(wet_nodes, "mist/dry_cistern", 18, 7), "and the raft floats up to the cistern shelf")
 
 
@@ -323,7 +323,7 @@ func test_checker_floats_the_basin_raft_only_with_deluge() -> void:
 		var dry := Reach.new(texts, kit)
 		check(not dry.touchable(dry.reachable(dry.spot_of("t/tank", "P")), "t/tank", 18, 7), "the shelf is out of reach while the tank is dry (%s)" % [kit.keys()])
 	var wet := Reach.new(texts, {"glove": true, "deluge": true})
-	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Deluge the raft floats up to it")
+	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Torrent the raft floats up to it")
 
 
 func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
@@ -342,7 +342,7 @@ func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
 
 
 func test_checker_stands_on_hidden_planks_without_the_onyx() -> void:
-	# Hidden planks are always there; the Black Onyx only shows them.
+	# Hidden planks are always there; the Seer's Lens only shows them.
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
 	put_tiles(rows, 8, 20, ".", 22, 2)
@@ -356,7 +356,7 @@ func test_checker_stands_on_hidden_planks_without_the_onyx() -> void:
 
 func test_checker_climbs_falling_water_only_with_the_hour_glass() -> void:
 	# A shaft full of falling water, a fruit at its top: it beats you back down
-	# until the Hour Glass freezes it into footholds (bible A8).
+	# until the Stillstone freezes it into footholds (bible A8).
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 0, 4, "#", 40, 16)
 	put_tiles(rows, 1, 17, ".", 12, 3)
@@ -373,7 +373,7 @@ func test_checker_climbs_falling_water_only_with_the_hour_glass() -> void:
 
 func test_checker_rides_bounce_pods() -> void:
 	# A ledge seven tiles up: out of a plain jump's reach, but for the pod. (The
-	# Wing Boots' second jump reaches seven since pass 235.)
+	# Featherstep Boots' second jump reaches seven since pass 235.)
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
 	put_tiles(rows, 14, 13, "#", 25, 1)
@@ -414,7 +414,7 @@ func test_checker_rides_wind_currents_downwind_only() -> void:
 
 
 func test_the_turned_wind_reaches_the_thicket_niche() -> void:
-	# Bible 6.9: the Spring of Sky turns the Branches' wind, and the Thicket
+	# Bible 6.9: the Sky Spring turns the High Boughs' wind, and the Thicket
 	# Road's current then carries you west into the elves' wind-niche.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
 		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true, "dragon_slayer": true}
@@ -442,21 +442,21 @@ func test_checker_pogoes_across_spikes_with_the_mattock() -> void:
 	put_tiles(rows, 34, 19, "L")
 	var texts := {"t/pit": room_text(["name: Pit"], rows)}
 	var bare := Reach.new(texts, {"glove": true})
-	check(not bare.touchable(bare.reachable(bare.spot_of("t/pit", "P")), "t/pit", 34, 19), "the spike floor can't be crossed without the Mattock")
+	check(not bare.touchable(bare.reachable(bare.spot_of("t/pit", "P")), "t/pit", 34, 19), "the spike floor can't be crossed without the Delver's Pick")
 	var pogo := Reach.new(texts, {"glove": true, "mattock": true})
 	check(pogo.touchable(pogo.reachable(pogo.spot_of("t/pit", "P")), "t/pit", 34, 19), "with it, the player pogoes across")
 
 
 func test_the_old_flue_skips_the_tower_once_the_winch_turns() -> void:
-	# Bible 4.3: after Zoradohna, a wall-jump climb from the Tower Foot over the
-	# Rafters reaches the Deep Workings without the lift or Forepaw.
+	# Bible 4.3: after Durgan, a wall-jump climb from the Tower Foot over the
+	# Rafters reaches the Deep Workings without the lift or Kettleforge.
 	var texts := _texts()
 	var skip := {}
 	for id: String in texts:
 		if id.begins_with("tower/") and id not in ["tower/forepaw", "tower/forepaw_lift", "tower/mine_mouth", "tower/winch_hall"]:
 			skip[id] = texts[id]
 	var shut := Reach.new(skip, {"glove": true, "mattock": true})
-	check(not _rooms_reached(shut.reachable(_foot_spot(shut))).has("tower/rafters"), "the damper keeps the flue shut before Zoradohna falls")
+	check(not _rooms_reached(shut.reachable(_foot_spot(shut))).has("tower/rafters"), "the damper keeps the flue shut before Durgan falls")
 	var open := Reach.new(skip, {"glove": true, "mattock": true, "winch": true})
 	var reached := _rooms_reached(open.reachable(_foot_spot(open)))
 	check(reached.has("tower/rafters") and reached.has("tower/rail_gallery"), "with the winch turning, the flue climbs to the Deep Workings: %s" % [reached.keys()])
@@ -486,7 +486,7 @@ func test_checker_respects_walls() -> void:
 
 
 func test_checker_wont_climb_through_thorns() -> void:
-	# The same wall faced with thorn bulbs (Daybreak's crystal-thorned cliffs):
+	# The same wall faced with thorn bulbs (Carillon's crystal-thorned cliffs):
 	# the glove can't cling through them.
 	var rows := grid_rows(30, 23)
 	put_tiles(rows, 3, 19, "P")
@@ -536,14 +536,14 @@ func test_every_room_boots_and_the_player_lands() -> void:
 func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	# Bible 4.1 (A5): the Elven Stride waits in the Windloft, reachable without
 	# it; the cache across the north bough's gap needs an air dash.
-	# The Wing Boots always come before it (the Mist before the Branches), so a
+	# The Featherstep Boots always come before it (the Haar before the High Boughs), so a
 	# Stride secret must hold against a double jump too (pass 211).
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "boots": true}
 	var bare := Reach.new(_texts(), set, true)
 	var nodes := bare.reachable(bare.spot_of(START_ROOM, "P"))
 	check(bare.touchable(nodes, "branches/windloft", 24, 11), "the Elven Stride can be reached without it")
 	for s: Array in STRIDE_SECRETS:
-		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride, even with the Wing Boots" % [s])
+		check(not bare.touchable(nodes, s[0], s[1], s[2]), "%s is out of reach without the Stride, even with the Featherstep Boots" % [s])
 	set["stride"] = true
 	var reach := Reach.new(_texts(), set, true)
 	var strided := reach.reachable(reach.spot_of(START_ROOM, "P"))
@@ -555,9 +555,9 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
 	var rooms := _rooms_reached(strided)
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return rooms.has(id)), "and the Stride reaches the sky islands")
-	# Daybreak's spell gates (bible 4.5), checked on the same flood to keep the suite quick.
+	# Carillon's spell gates (bible 4.5), checked on the same flood to keep the suite quick.
 	check(reach.touchable(strided, "daybreak/daybreak", 66, 13), "the bell-ringer on the gallery can be reached")
-	check(reach.touchable(strided, "daybreak/spire_foot", 16, 19), "the Thunder scroll can be reached without it")
+	check(reach.touchable(strided, "daybreak/spire_foot", 16, 19), "the Stormcall scroll can be reached without it")
 	for s: Array in FIRE_SECRETS:
 		check(not reach.touchable(strided, s[0], s[1], s[2]), "%s is out of reach behind the bramble" % [s])
 	check(THUNDER_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "the conduit gate keeps the Spire Stair shut")
@@ -566,7 +566,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 
 
 func test_fire_and_thunder_open_the_daybreak_gates() -> void:
-	# Bible 4.5: bramble holds until Fire, conduit gates until Thunder. The
+	# Bible 4.5: bramble holds until Kindle, conduit gates until Stormcall. The
 	# without-spell side is checked in the Stride test's flood.
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
 		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "dragon_slayer": true, "boots": true}
@@ -575,15 +575,15 @@ func test_fire_and_thunder_open_the_daybreak_gates() -> void:
 	for s: Array in FIRE_SECRETS:
 		check(reach.touchable(lit, s[0], s[1], s[2]), "%s is reachable once the bramble burns" % [s])
 	var opened := _rooms_reached(lit)
-	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Thunder the Spire Stair opens, and with the Sky Key the stair down to Dartmoor")
+	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Stormcall the Spire Stair opens, and with the Sky Key the stair down to Vorrhallow")
 	check(reach.touchable(lit, "daybreak/spire_stair", 24, 8), "and its top landing's chest can be reached")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if THUNDER_ROOMS.has(p[0]) and not reach.touchable(lit, p[0], p[2], p[3]):
 			missing.append(p)
-	check(missing.is_empty(), "every pickup past the conduit gate (Dartmoor too, with the Hour Glass) is reachable: missing %s" % [missing])
+	check(missing.is_empty(), "every pickup past the conduit gate (Vorrhallow too, with the Stillstone) is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(lit, _save_spots(reach))
-	check(stuck.is_empty(), "with Fire and Thunder, no soft-locks: %s" % [stuck.slice(0, 6)])
+	check(stuck.is_empty(), "with Kindle and Stormcall, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_dartmoors_upper_gate_needs_the_sky_key() -> void:
@@ -598,7 +598,7 @@ func test_the_throne_lies_behind_the_flesh_only_the_dragon_slayer_cuts() -> void
 		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
 	var reach := Reach.new(_texts(), set, true)
 	var rooms := _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
-	check(rooms.has("zenis/heart_gate") and not rooms.has("zenis/throne"), "without the Dragon Slayer the flesh holds the throne shut")
+	check(rooms.has("zenis/heart_gate") and not rooms.has("zenis/throne"), "without the Severance the flesh holds the throne shut")
 	set["dragon_slayer"] = true
 	reach = Reach.new(_texts(), set, true)
 	rooms = _rooms_reached(reach.reachable(reach.spot_of(START_ROOM, "P")))
@@ -632,7 +632,7 @@ func test_checker_swims_through_deep_water() -> void:
 
 func test_the_sunken_spring_lies_under_the_last_stone_of_the_rise() -> void:
 	var texts := _texts()
-	check(Reach.new(texts, {}).solid("dartmoor/meteor_rise", 14, 60), "the cracked stone holds without the Mattock")
+	check(Reach.new(texts, {}).solid("dartmoor/meteor_rise", 14, 60), "the cracked stone holds without the Delver's Pick")
 	check(not Reach.new(texts, {"mattock": true}).solid("dartmoor/meteor_rise", 14, 60), "and breaks with it")
 	var set := {"glove": true, "mattock": true, "amber": true, "winch": true, "lantern": true, "deluge": true, "stride": true,
 		"fire": true, "thunder": true, "sky_key": true, "hourglass": true, "boots": true}
@@ -642,10 +642,10 @@ func test_the_sunken_spring_lies_under_the_last_stone_of_the_rise() -> void:
 		"down through it, every room of the Sunken Spring is in reach")
 
 
-## The Guru Trials (bible 3.1) are entered through the Guru, not by doors: each
+## The Inner Rings (bible 3.1) are entered through the Ringreader, not by doors: each
 ## built trial's bell can be reached from its start with only the abilities it
 ## needs (the Climbing Glove for the first two, which open after the first
-## spring; the Mattock too for Thorns), and no spot the trial can put you on is
+## spring; the Delver's Pick too for Thorns), and no spot the trial can put you on is
 ## cut off from the bell.
 func test_every_guru_trial_can_be_cleared_with_the_glove() -> void:
 	for t: Dictionary in Trials.built():
@@ -761,19 +761,19 @@ func test_the_proving_scar_asks_for_every_ability() -> void:
 ## original's guardians names the one it tests. A fight can only test what the
 ## map makes you hold by the time you reach it. With what the critical path
 ## (4.2) gives before each, the arena must be out of reach without the ability
-## it tests and in reach with it. Pakukame "tests air dash", but the Windloft let
+## it tests and in reach with it. Snapcrown "tests air dash", but the Windloft let
 ## you walk past the Stride hung in its air and on to the Crown-Leaf; an elven
 ## veil now bars the Windloft's east door, so the Bloom is met with the Stride.
 func test_every_guardian_is_met_with_the_ability_it_tests() -> void:
 	var act := ["glove", "amber", "mattock", "winch", "boots", "lantern", "deluge", "spring_mist", "stride", "fire", "thunder", "sky_spring", "sky_key", "hourglass"]
 	# Guardian, arena, the ability its fight tests, the bible's words for it.
 	var fights := [
-		["Rokusutahn", "trunk/root_chamber", "glove", "**Tests:** wall jumping"],
-		["Zoradohna", "tower/forepaw_lift", "mattock", "**Tests:** pogo"],
-		["Zorugeriru", "mist/spring_of_mist", "deluge", "**Tests:** Deluge"],
-		["Pakukame", "branches/crown_leaf", "stride", "**Tests:** air dash"],
-		["Borabohra", "daybreak/roost", "thunder", "**Tests:** Thunder"],
-		["King Grieve", "dartmoor/throne_hall", "hourglass", "**Tests:** Hour Glass"],
+		["Gnarlmaw", "trunk/root_chamber", "glove", "**Tests:** wall jumping"],
+		["Durgan", "tower/forepaw_lift", "mattock", "**Tests:** pogo"],
+		["The Haar Wyrm", "mist/spring_of_mist", "deluge", "**Tests:** Torrent"],
+		["Snapcrown", "branches/crown_leaf", "stride", "**Tests:** air dash"],
+		["Skyrend", "daybreak/roost", "thunder", "**Tests:** Stormcall"],
+		["Thane Vorrund", "dartmoor/throne_hall", "hourglass", "**Tests:** Stillstone"],
 	]
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var texts := _texts()

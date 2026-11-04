@@ -257,8 +257,8 @@ def main():
     save("whir", lowpass(spin, slide(900, 3200, d)) * np.minimum(1.0, t / 0.35), 0.4)
 
 
-    # The Guru names your title: a short heraldic fanfare, square lead over a
-    # triangle bass, ending on a held major chord (Faxanadu's rank-up jingle).
+    # The Ringreader names your title: a short heraldic fanfare, square lead over a
+    # triangle bass, ending on a held major chord (Yldenfall's rank-up jingle).
     beat = 0.11
     lead = [(523, 1), (523, 1), (523, 1), (659, 3), (587, 1), (659, 1), (784, 6)]
     bass = [(131, 3), (165, 3), (196, 6)]
@@ -283,7 +283,7 @@ def main():
         chord[chord_start:] += osc(np.full(seg, float(f)), "square", 0.5) * env(seg, 0.01, 1.2) * 0.3
     save("title", lowpass(mix(a, b * 0.8, chord), 5000), 0.55)
 
-    # The Forepaw smith's hammer on the anvil: a bright, inharmonic ring.
+    # The Kettleforge smith's hammer on the anvil: a bright, inharmonic ring.
     d = 0.5
     partials = [(880, 1.0, 2.0), (2380, 0.5, 3.0), (3960, 0.3, 4.0), (5470, 0.15, 5.0)]
     ring = mix(*[osc(np.full(int(RATE * d), float(f)), "sine") * env(int(RATE * d), 0.001, k) * g for f, g, k in partials])
@@ -346,7 +346,7 @@ def main():
     breath = lowpass(highpass(noise(d), 900), 3000) * 0.35
     save("wail", mix(moan, breath) * env(n, 0.12, 1.2), 0.45)
 
-    # Ripasheiku (bible 8.3). A web strand shot from the vault: an elastic zip
+    # Gloamweaver (bible 8.3). A web strand shot from the vault: an elastic zip
     # that rises and snaps tight.
     d = 0.28
     n = int(RATE * d)
@@ -411,7 +411,7 @@ def main():
     save("veil", mix(rush, ring), 0.5)
 
 
-    # A Bog Myconid swelling: a wet, rising creak, like a bladder filling.
+    # A Bog Puffcap swelling: a wet, rising creak, like a bladder filling.
     d = 0.55
     n = int(RATE * d)
     creak = lowpass(osc(slide(90, 210, d, 0.7), "square", 0.3), 900) * 0.5
@@ -425,14 +425,14 @@ def main():
     hiss = lowpass(highpass(noise(d), 1800), 6000) * env(n, 0.02, 1.6) * 0.5
     save("spore", mix(pop, hiss), 0.55)
 
-    # A fire seal doused by Deluge: a sharp splash and a long hiss of steam.
+    # A fire seal doused by Torrent: a sharp splash and a long hiss of steam.
     d = 0.9
     n = int(RATE * d)
     slap = lowpass(noise(0.05), 2500) * env(int(RATE * 0.05), 0.001, 2.0)
     steam = highpass(lowpass(noise(d), slide(7000, 2500, d, 0.7)), 1200) * env(n, 0.03, 1.2) * 0.6
     save("douse", mix(slap, steam), 0.55)
 
-    # Zorugeriru's bite: a deep growl that snaps shut on a hard bone clack.
+    # the Haar Wyrm's bite: a deep growl that snaps shut on a hard bone clack.
     d = 0.45
     n = int(RATE * d)
     growl = lowpass(osc(slide(70, 120, d, 0.5), "square", 0.4), 600) * env(n, 0.05, 1.2) * 0.6
@@ -516,7 +516,7 @@ def main():
     thud = osc(slide(110, 50, d, 0.7), "sine") * env(n, 0.002, 2.2) * 0.5
     save("fire_burst", mix(whump, pops, thud), 0.6)
 
-    # A Tilte orb striking: a glassy two-note chime over a soft breathy puff.
+    # A Wisplight orb striking: a glassy two-note chime over a soft breathy puff.
     d = 0.45
     n = int(RATE * d)
     chime = (osc(np.full(n, 1318.0), "sine") + osc(np.full(n, 1976.0), "sine") * 0.6) * env(n, 0.002, 2.4) * 0.5
@@ -603,7 +603,7 @@ def main():
         whip[start:start + m] += part[: n - start]
     save("feather", whip, 0.5)
 
-    # The Hour Glass turned: a deep clock tick, a reversed shimmer drawn in, and
+    # The Stillstone turned: a deep clock tick, a reversed shimmer drawn in, and
     # a glassy chime that hangs while time holds.
     d = 1.1
     n = int(RATE * d)
@@ -863,7 +863,7 @@ def main():
     croak = lowpass(osc(slide(240, 140, d), "saw", 0.4), 900) * (np.sin(2 * np.pi * 34 * t_axis(d)) > 0).astype(float) * env(n, 0.05, 1.0) * 0.5
     save("hag_fumble", mix(clack, croak), 0.55)
 
-    # The Guru Trials (pass 116). Carried into the mantra-space: a shimmer
+    # The Inner Rings (pass 116). Carried into the inner rings: a shimmer
     # rising through a fifth, like the room drawing a breath.
     d = 0.6
     n = int(RATE * d)
@@ -898,7 +898,7 @@ def main():
     save("trial_record", out, 0.38)
 
     # The boss rush (pass 157). The bronze bell of the trials, rung for the
-    # rush's turns. A boss down, and the mantra mends you: the bell struck
+    # rush's turns. A boss down, and the ring mends you: the bell struck
     # soft, with a warm swell rising a fourth under it.
     def bell(f0, d, decays=1.0):
         n = int(RATE * d)
@@ -934,7 +934,7 @@ def main():
     sink = lowpass(osc(slide(98, 70, d), "saw", 0.5), 400) * env(n, 0.02, 1.6) * 0.35
     save("rush_fall", mix(toll, sink), 0.55)
 
-    # A mantra dye won (pass 164): the cloak takes the trial's color. Cloth
+    # A ring dye won (pass 164): the cloak takes the trial's color. Cloth
     # swept open (a breathy swish rising), and over it the trial bell struck
     # high and light, three quick notes falling into a held chord like dye
     # running through the weave.
@@ -1334,7 +1334,7 @@ def main():
         out[s0:s0 + tn] += timp * (1.0 if k == 3 else 0.5)
     save("boss_won", out, 0.6)
 
-    # Wading Dartmoor's standing water (pass 262): the shin pushing water
+    # Wading Vorrhallow's standing water (pass 262): the shin pushing water
     # aside in a slosh, and a couple of drips falling back off the boot.
     d = 0.24
     n = int(RATE * d)
@@ -1347,7 +1347,7 @@ def main():
         out[int(RATE * at):int(RATE * at) + dn] += drip
     save("step_wade", out, 0.5)
 
-    # A Lilith's tell (pass 262): a thin shriek rising through the beat of
+    # A Mothling's tell (pass 262): a thin shriek rising through the beat of
     # its wings, before the dive.
     d = 0.4
     n = int(RATE * d)
@@ -1388,7 +1388,7 @@ def main():
     out[:pn] += pop * 0.5
     save("brood_loose", out, 0.55)
 
-    # A Naga's tell (pass 273): a long rasping hiss swelling as the hood
+    # A Silt Adder's tell (pass 273): a long rasping hiss swelling as the hood
     # flares, with the dry rattle of scales drawn back.
     d = 0.5
     n = int(RATE * d)
@@ -1534,7 +1534,7 @@ def main():
     save("ward_refuse", out, 0.45)
 
     # A menu that says no (pass 366): a disabled row (a ware you can't afford,
-    # an Ointment you don't have), a pad button the Controls page keeps, and a
+    # an Barkbalm you don't have), a pad button the Controls page keeps, and a
     # map with no pin left had all borrowed the spell-fail fizzle, so a shop
     # sounded like a failed cast. Now the menu answers in its own voice: the
     # cursor's square blip, lower and dull, twice, falling a fourth.

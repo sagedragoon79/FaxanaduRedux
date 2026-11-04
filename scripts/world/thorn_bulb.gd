@@ -1,6 +1,6 @@
 class_name ThornBulb
 extends Area2D
-## A glowing thorn pod: dangerous to touch, the main pogo target for Mattock routes.
+## A glowing thorn pod: dangerous to touch, the main pogo target for Delver's Pick routes.
 
 const POD := Color("c8323a")
 const GLOW := Color("ff7a6a")

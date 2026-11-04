@@ -1,7 +1,7 @@
-class_name Zorugeriru
+class_name HaarWyrm
 extends Enemy
-## Zorugeriru, the Mist Hydra (design bible 8.4): a three-headed serpent of fog
-## and bone coiled around the Spring of Mist. Only the head that is solid at the
+## the Haar Wyrm, the Haar Wyrm (design bible 8.4): a three-headed serpent of fog
+## and bone coiled around the Haar Spring. Only the head that is solid at the
 ## moment can be hurt; the others are fog the blade passes through.
 ##
 ## Phase 1: the heads take turns being solid. The solid one sinks low and bites
@@ -9,7 +9,7 @@ extends Enemy
 ## breathes a bank of fog that rolls along the floor (jump it, or get up on the
 ## tank walls).
 ## Phase 2 (below 60%): all three turn to mist and keep breathing. A fourth head
-## hides in the coil, and shows only once all three tanks are full: Deluge each
+## hides in the coil, and shows only once all three tanks are full: Torrent each
 ## one and its raft floats up, the high ground to reach it from. The dry tanks
 ## shimmer, and each full one douses the head above it: it sags, dims and stops
 ## breathing, so the player sees each tank count (playtest).
@@ -21,8 +21,8 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Zorugeriru"
-const EPITHET := "The Mist Hydra"
+const DISPLAY_NAME := "The Haar Wyrm"
+const EPITHET := "Three Heads of Fog"
 const MAX_HP := 300
 const PHASES := [0.6, 0.3]
 ## The three lanes' x, from the coil's centre (over the three tanks).
@@ -56,7 +56,7 @@ const FAST := 0.75
 const DOUSED_SAG := 44.0
 ## Phase 2: the hint repeats if the tanks are still dry after this long.
 const HINT_EVERY := 14.0
-const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Deluge."
+const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Torrent."
 const INTRO_TIME := 1.6
 const DYING_TIME := 1.6
 
@@ -315,7 +315,7 @@ func _fight(delta: float) -> void:
 				if not basin.filled:
 					dry += 1
 			if dry > 0:
-				GameState.toast.emit("%d dry tank%s still shimmer below. Deluge fills them." % [dry, "" if dry == 1 else "s"])
+				GameState.toast.emit("%d dry tank%s still shimmer below. Torrent fills them." % [dry, "" if dry == 1 else "s"])
 		var h4 := heads[3]
 		if h4.coiled and tanks_full():
 			h4.coiled = false
@@ -587,7 +587,7 @@ func _draw_head(h: HydraHead, t: float, fade: float) -> void:
 	else:
 		_px(4, -8, 5, 3, eye, maxf(a, 0.6) if h.solid else a)
 	if h.mode in ["breath_tell", "breath"]:
-		# Mist welling at the jaws.
+		# Haar welling at the jaws.
 		draw_circle(Vector2(12, 4 + g * 0.5), 5.0 + sin(t * 20.0), Color(MIST, 0.7 * fade))
 	if white:
 		_px(-16, -12, 24, 22, Color.WHITE, 0.6 * maxf(a, 0.5))

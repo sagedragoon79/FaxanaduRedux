@@ -1,7 +1,7 @@
 class_name BossLantern
 extends BossSegment
-## A soul-lantern hung on Ripasheiku's legs: a hitbox the boss moves, and a
-## light (group "light") that clears the Mist's fog around it until it breaks.
+## A soul-lantern hung on Gloamweaver's legs: a hitbox the boss moves, and a
+## light (group "light") that clears the Haar's fog around it until it breaks.
 
 ## How far its glow clears the fog (see Fog).
 var light_radius := 70.0

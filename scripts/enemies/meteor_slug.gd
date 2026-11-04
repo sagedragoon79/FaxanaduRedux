@@ -1,10 +1,10 @@
-class_name MeteorSlug
+class_name GlassSlug
 extends Enemy
-## A Meteor Slug of Dartmoor (design bible 7): a great grey slug that has
-## grown a shell of meteor-rock, molten in its cracks. It creeps along the
+## A Glass Slug of Vorrhallow (design bible 7): a great grey slug that has
+## grown a shell of stillglass-rock, molten in its cracks. It creeps along the
 ## floor. When you come near, its shell swells and glows (the telegraph), then
 ## it heaves three gobbets of molten rock at you in high arcs: they burn on
-## contact and leave embers where they land. The Hour Glass holds them in the
+## contact and leave embers where they land. The Stillstone holds them in the
 ## air. The shell turns blows from above; its soft sides take everything.
 ## Legend `s`.
 
@@ -44,7 +44,7 @@ func _init() -> void:
 
 
 func _modify_damage(damage: int, dir: Vector2) -> int:
-	# The meteor shell on its back turns anything coming down on it.
+	# The stillglass shell on its back turns anything coming down on it.
 	return 0 if dir.y > 0.0 and state != "recover" else damage
 
 
@@ -129,7 +129,7 @@ func _draw() -> void:
 	_px(15 + creep, -15, 1, 6, OUTLINE, 1.0)
 	_px(11 + creep, -18, 3, 3, EYE, 1.0)
 	_px(14 + creep, -17, 3, 3, EYE, 1.0)
-	# The meteor shell: a lumpy dome of dark rock, molten in its cracks.
+	# The stillglass shell: a lumpy dome of dark rock, molten in its cracks.
 	var sh := 10 + swell
 	for r in sh:
 		var k := float(r) / sh

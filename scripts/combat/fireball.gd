@@ -1,6 +1,6 @@
 class_name Fireball
 extends Node2D
-## The Fire spell (design bible 4.1, a supporting spell): a ball of flame thrown in an arc. It bursts
+## The Kindle spell (design bible 4.1, a supporting spell): a ball of flame thrown in an arc. It bursts
 ## on whatever it meets, a wall, a floor or a foe, scorching every foe in the
 ## burst and setting anything in the "fire_target" group alight (bramble walls).
 ## A foe in living bark (Bark Knight, Bark Knight Captain) loses all its bark to it.

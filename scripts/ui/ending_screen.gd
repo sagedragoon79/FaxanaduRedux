@@ -1,19 +1,19 @@
 class_name EndingScreen
 extends Control
-## The ending (design bible 8.9, Reward). It plays once the heart of the meteor
+## The ending (design bible 8.9, Reward). It plays once the heart of the Everbloom
 ## is dead, in three parts:
 ##
-## 1. **Epilogue**: the World Tree stands against the night with the dead
-##    meteor at its crown. The meteor's light drains away, the three springs
+## 1. **Epilogue**: The Ylden stands against the night with the dead
+##    stillglass at its crown. The stillglass's light drains away, the three springs
 ##    in the trunk light one by one, and four cards tell what happened.
-## 2. **Credits**: the view climbs the Tree from Eolis at its roots, past every
+## 2. **Credits**: the view climbs the Tree from Hearthroot at its roots, past every
 ##    zone, to the crown at dawn, while the credits rise over it.
 ## 3. **Thanks**: the completion card (pass 106): how much of the world you saw
 ##    (Completion.tally: rooms, hidden rooms, treasures, bosses and their
 ##    average as one percent), then your rank, time, deaths and clears, until
 ##    you press a button. The rows count up as the card fades in.
 ##
-## The secret ending (design bible 11: no deaths and the Battle Suit) adds three
+## The secret ending (design bible 11: no deaths and the Elven Plate) adds three
 ## epilogue cards: the Sunken Spring wakes under the roots, its water climbs the
 ## whole trunk and the crown flowers. Its thanks card says so.
 ##
@@ -24,22 +24,22 @@ extends Control
 signal finished
 
 const EPILOGUE := [
-	"The heart of the meteor is dead.",
-	"Its light drains out of Zenis like a fever breaking.",
-	"Down the trunk, the springs run clear again.",
-	"And in Eolis, the fountain fills.",
+	"Severance parts the Everbloom from the Tree.",
+	"Its glass goes dark from crown to root, like a fever breaking.",
+	"For the first time in nine years, the leaves fall.",
+	"And in Hearthroot, the fountain fills.",
 ]
 ## The secret ending's cards, after the others.
 const SECRET_EPILOGUE := [
-	"Far under Dartmoor, the Sunken Spring wakes.",
+	"Far under Vorrhallow, the Sunken Spring wakes.",
 	"Its water climbs the whole Tree, root to crown.",
 	"No one saw you fall. The Tree remembers that.",
 ]
-## The last cards, after any others: as in Faxanadu's ending, the town would
-## thank you, and the wanderer walks on (pass 167).
+## The last cards, after any others: the town would thank you, and the
+## wanderer walks on (pass 167).
 const FAREWELL := [
-	"In Eolis, the King waits by the full fountain to thank you.",
-	"But the wanderer is already on the east road, walking on.",
+	"In Hearthroot, the Leaffall festival waits to thank the stranger.",
+	"But the wanderer is already on the east road, a leaf in his hand.",
 ]
 ## How fast the wanderer walks off under the farewell (px/s), and how fast the
 ## run cycle plays to make a walk of it.
@@ -48,9 +48,9 @@ const WALK_RATE := 0.6
 ## Seconds each epilogue card shows (fading in and out).
 const CARD_TIME := 4.0
 const CREDITS := [
-	["FAXANADU REDUX", 2],
+	["YLDENFALL REDUX", 2],
 	["", 0],
-	["A remake of Faxanadu", 1],
+	["A remake of Yldenfall", 1],
 	["Hudson Soft, 1987", 1],
 	["", 0],
 	["Direction", 0],
@@ -78,8 +78,8 @@ const LINE_GAP := 22.0
 const CROWN := CLIMB + 60.0
 ## The zones you pass, by how far up the climb they are (0 = the roots).
 const ZONES := [
-	["Eolis", 0.0], ["The Trunk", 0.13], ["The Tower", 0.26], ["The Mist", 0.38],
-	["The Branches", 0.5], ["Daybreak", 0.63], ["Dartmoor", 0.75], ["The Crown", 0.9],
+	["Hearthroot", 0.0], ["The Heartwood", 0.13], ["The Tower", 0.26], ["The Haar", 0.38],
+	["The High Boughs", 0.5], ["Carillon", 0.63], ["Vorrhallow", 0.75], ["The Crown", 0.9],
 ]
 ## Seconds before the thanks card takes a press (so a held button doesn't skip it).
 const THANKS_GRACE := 1.0
@@ -113,7 +113,7 @@ var card := 0
 var rank := ""
 var seconds := 0.0
 var fast := false
-## The secret ending (no deaths, the Battle Suit), and the deaths shown on the thanks card.
+## The secret ending (no deaths, the Elven Plate), and the deaths shown on the thanks card.
 var secret := false
 var deaths := 0
 ## Completion.tally of the save (empty: the card shows only rank, time and deaths).
@@ -232,7 +232,7 @@ func _centered(y: float, text: String, size: int, color: Color) -> void:
 	PixelFont.draw(self, Vector2(roundf(320.0 - w * 0.5), y), text, size, color, OUTLINE)
 
 
-# --- The epilogue: the Tree at night, the meteor dying at its crown ------------------
+# --- The epilogue: the Tree at night, the Everbloom dying at its crown ------------------
 
 func _draw_epilogue() -> void:
 	draw_rect(Rect2(0, 0, 640, 360), NIGHT)
@@ -253,7 +253,7 @@ func _draw_epilogue() -> void:
 	for i in 9:
 		var c := Vector2(320 + (i - 4) * 36, 90 + absf(i - 4) * 10)
 		draw_circle(c, 34.0, Color(LEAF, 0.85).darkened(0.5 - k * 0.3))
-	# The meteor at the crown: its cyan light gutters out over the first two cards.
+	# The stillglass at the crown: its cyan light gutters out over the first two cards.
 	var m := clampf(1.0 - t / (CARD_TIME * 2.0), 0.0, 1.0)
 	if m > 0.0:
 		draw_circle(Vector2(320, 70), 22.0, Color(DUSK, 1.0))
@@ -348,7 +348,7 @@ func _draw_climb() -> void:
 		draw_circle(Vector2(470, 120 - sun * 40.0), 20.0, Color(Color("fff0c0"), sun))
 	# Screen y of a height h up the Tree (the view's bottom edge is at `climb`).
 	var bottom := climb
-	# The ground and the houses of Eolis at the roots.
+	# The ground and the houses of Hearthroot at the roots.
 	var ground_y := 360.0 + bottom - 40.0
 	if ground_y < 400.0:
 		draw_rect(Rect2(0, ground_y, 640, 400), BARK_DARK.darkened(0.3))
@@ -372,7 +372,7 @@ func _draw_climb() -> void:
 			if band % 11 == 3:
 				draw_rect(Rect2(320 - hw * 0.4 + sin(band) * hw * 0.3, y, 10, step), BARK_LIGHT)
 		y += step
-	# Branches every so often, alternating sides, with leaves; thicker leaves up high.
+	# High Boughs every so often, alternating sides, with leaves; thicker leaves up high.
 	var first := int(floor(bottom / 260.0))
 	for b in range(first, first + 3):
 		var h := b * 260.0 + 120.0
@@ -388,7 +388,7 @@ func _draw_climb() -> void:
 		for i in 5:
 			draw_circle(tip + Vector2(side * (i - 2) * 22.0, -10.0 + sin(i * 1.7) * 12.0), 20.0 * leafy, LEAF)
 			draw_circle(tip + Vector2(side * (i - 2) * 22.0 - 4.0, -14.0 + sin(i * 1.7) * 12.0), 9.0 * leafy, LEAF_LIGHT)
-	# The crown: a spread of leaves where the meteor was.
+	# The crown: a spread of leaves where the Everbloom was.
 	var cy := 360.0 - (CROWN - bottom) - 40.0
 	if cy > -80.0 and cy < 440.0:
 		for layer in 2:
@@ -396,7 +396,7 @@ func _draw_climb() -> void:
 				var c := Vector2(320 + (i - 5) * 40.0, cy - 10.0 + absf(i - 5) * 8.0 - layer * 26.0)
 				draw_circle(c, 34.0 - layer * 6.0, LEAF.lerp(LEAF_LIGHT, layer * 0.4))
 				draw_circle(c + Vector2(-8, -10), 10.0, Color(LEAF_LIGHT, 0.6))
-	# The springs in the trunk, running clear, at the Trunk, the Mist and Daybreak.
+	# The springs in the trunk, running clear, at the Heartwood, the Haar and Carillon.
 	for f in [0.13, 0.38, 0.63]:
 		var h: float = f * CLIMB
 		var sy := 360.0 - (h - bottom) - 40.0
@@ -465,7 +465,7 @@ func _draw_thanks() -> void:
 		y += 16.0
 	if secret:
 		_centered(y + 6.0, "The Source runs again.", 12, Color(WATER_LIGHT, a))
-		_centered(y + 22.0, "A flawless climb, in the Warden's Battle Suit.", 12, Color(GOLD, a))
+		_centered(y + 22.0, "A flawless climb, in the Warden's Elven Plate.", 12, Color(GOLD, a))
 	if t >= THANKS_GRACE:
 		_centered(334.0, "Press jump to return to the title", 12, Color(SUB, 0.5 + 0.5 * sin(t * 3.0)))
 

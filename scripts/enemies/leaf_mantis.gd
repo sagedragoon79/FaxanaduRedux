@@ -1,7 +1,7 @@
 class_name LeafMantis
 extends Enemy
-## A Leaf Mantis of the Branches (design bible 7): a mantis the green of the
-## World Tree's leaves, folded up on a bough so it looks like one more leaf
+## A Leaf Mantis of the High Boughs (design bible 7): a mantis the green of the
+## Ylden's leaves, folded up on a bough so it looks like one more leaf
 ## cluster. It does not hurt to touch while it hides. Come near and it rears up
 ## and spreads its scythe arms (the telegraph), then lunges along the bough and
 ## slashes. A lunge that misses leaves it overreached, arms low: strike it then

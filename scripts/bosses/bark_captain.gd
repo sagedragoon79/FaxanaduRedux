@@ -1,8 +1,8 @@
 class_name BarkCaptain
 extends Enemy
 ## The Bark Knight Captain (design bible 7 and 8): the first knight the World
-## Tree grew, older than Conflate, still keeping the watch it was grown for.
-## The mini-boss of the Branches, in the Thorn Yard east of Conflate (room
+## Tree grew, older than Sylvarre, still keeping the watch it was grown for.
+## The mini-boss of the High Boughs, in the Thorn Yard east of Sylvarre (room
 ## header `boss: bark_captain`).
 ##
 ## He is a Bark Knight grown half again as tall, with the same guard:
@@ -165,7 +165,7 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return ceili(damage * GUARD)
 
 
-## Fire burns his whole bark coat off at once (pass 177), as it does his
+## Kindle burns his whole bark coat off at once (pass 177), as it does his
 ## knights'; a plate still regrows each time he pulls free.
 func burn_bark() -> void:
 	if bark <= 0 or dead or state in ["dormant", "intro", "dying"]:

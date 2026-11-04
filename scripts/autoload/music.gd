@@ -136,9 +136,9 @@ func for_room(room: Room, fade := FADE) -> void:
 	ambience(after_the_end(restored("amb_" + room.header.get("ambience", room.zone))), fade)
 
 
-## The track a room's music or bed becomes once the Evil One is dead and the
-## Tree blooms (`cleared`, design bible 4.4): Eolis plays its festival, and the
-## dead meteor goes still, with no heartbeat (pass 143).
+## The track a room's music or bed becomes once the Everbloom is dead and the
+## Tree blooms (`cleared`, design bible 4.4): Hearthroot plays its festival, and the
+## dead stillglass goes still, with no heartbeat (pass 143).
 static func after_the_end(track: String) -> String:
 	if GameState.flag("cleared"):
 		return String(AFTER_THE_END.get(track, track))
@@ -156,8 +156,8 @@ const RESTORED := {
 
 
 ## The track a zone's music or bed becomes once its spring is restored: the
-## Trunk opens up over the amber, the Mist is heard through half the fog, and
-## the storm over Daybreak breaks.
+## Heartwood opens up over the amber, the Haar is heard through half the fog, and
+## the storm over Carillon breaks.
 static func restored(track: String) -> String:
 	if RESTORED.has(track) and GameState.flag(String(RESTORED[track][0])):
 		return String(RESTORED[track][1])

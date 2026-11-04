@@ -1,6 +1,6 @@
 class_name Forge
 extends Node2D
-## The Forepaw forge (room prop `forge`): a brick hearth under an iron hood,
+## The Kettleforge forge (room prop `forge`): a brick hearth under an iron hood,
 ## coals that breathe with the bellows, and an anvil the smith rings every
 ## couple of seconds, throwing sparks. Scenery only, drawn at 2x density
 ## (half-pixel detail). The origin is the bottom center of the hearth.

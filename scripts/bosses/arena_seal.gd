@@ -1,7 +1,7 @@
 class_name ArenaSeal
 extends StaticBody2D
 ## A wall of thick roots that grows across a doorway while a boss is alive and
-## pulls back when it falls; in the Tower of Trunk, an iron portcullis that
+## pulls back when it falls; in the Hollin Tower, an iron portcullis that
 ## drops and winches back up. Its origin is the top-left of the blocked area.
 
 const ROOT := Color("5e3b22")

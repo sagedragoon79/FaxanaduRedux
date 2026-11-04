@@ -5,7 +5,7 @@ extends RefCounted
 ## shows what the full map shows (rooms you have walked, dimmed rooms a chart
 ## gives you, your room pulsing, shrines, still-shut key doors, and a blinking
 ## dot where you stand) so you can keep your bearings without opening the map.
-## It hides while the full map, a menu or a dialog is up, and in the Guru Trials
+## It hides while the full map, a menu or a dialog is up, and in the Inner Rings
 ## and the Boss Rush, whose clocks hold the top of the screen.
 
 ## The window's size in HUD pixels, and its gap from the screen's corner.

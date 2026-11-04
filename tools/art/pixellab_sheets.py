@@ -28,7 +28,7 @@ SETS = ("base", "leather", "studded", "plate", "battle", "battle_helm")
 
 # The bare elf and the armor tiers (character states of Sean's elf, design bible 13.5), each with
 # the cloak drawn in a key green the game dyes: clips made from the set's cloaked state, its state
-# holding the Short Sword (attacks and the left-hand Rune Dagger throw) and holding the Mattock
+# holding the Short Sword (attacks and the left-hand Rune Dagger throw) and holding the Delver's Pick
 # (pogo and swing).
 SHEETS = {"hero_" + s: {strip: f"hero/{s}_cloak/{clip}" for strip, clip in CLIPS} for s in SETS}
 # Each set's four attacks again with the other blades (Sean: swords are drawn into the attacks),
@@ -56,7 +56,7 @@ SHEETS["hero_plate"].update({"run.png": "hero/plate_cloak/run_r1", "walk.png": "
 SHEETS["hero_studded"]["walk.png"] = "hero/studded_cloak/walk_r2"
 SHEETS["hero_battle_helm"].update({"walk.png": "hero/battle_helm_cloak/walk_r2", "slash2.png": "hero/battle_helm_cloak/slash2_r1"})
 SHEETS["hero_battle_helm_dragon_slayer"]["slash1.png"] = "hero/battle_helm_cloak/dragon_slayer/slash1_r1"
-# The Large Shield again on every set but the base, to match its crimson face and silver rim
+# The Kite Shield again on every set but the base, to match its crimson face and silver rim
 # (the first takes drew it plain steel or dark), and blocks whose cloak dropped out.
 for _set in ("leather", "studded", "plate", "battle", "battle_helm"):
     SHEETS[f"hero_{_set}_large_shield"]["block.png"] = f"hero/{_set}_cloak/large_shield/block_r1"

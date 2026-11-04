@@ -1,7 +1,7 @@
 class_name ItemPickup
 extends Node2D
 ## A permanent item lying in the world: an ability, Life Fruit, Mana Dew, a
-## Potion Shard, a Mantra Shard or a Meteor Shard. Touch it to take it; it never comes back.
+## Potion Shard, a Grain Shard or a Stillglass Shard. Touch it to take it; it never comes back.
 
 const KIND_BY_CHAR := {
 	"G": "glove",
@@ -23,24 +23,24 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
-	"deluge": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
-	"death": {"title": "Death", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
-	"thunder": {"title": "Thunder", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
+	"deluge": {"title": "Torrent", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"death": {"title": "Wither", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
+	"thunder": {"title": "Stormcall", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
-	"hourglass": {"title": "Hour Glass", "text": "Press Hour Glass (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
-	"onyx": {"title": "Black Onyx", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
-	"boots": {"title": "Wing Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
+	"hourglass": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
+	"onyx": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
+	"boots": {"title": "Featherstep Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
-	"mantra_shard": {"title": "Mantra Shard", "text": "", "color": Color("b58cff")},
-	"meteor_shard": {"title": "Meteor Shard", "text": "", "color": Color("e04aa8")},
-	"battle_helmet": {"title": "Battle Helmet", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
-	"joker_key": {"title": "Joker Key", "text": "Opens the Joker door. There is only one.", "color": Color("9a6ad8")},
+	"mantra_shard": {"title": "Grain Shard", "text": "", "color": Color("b58cff")},
+	"meteor_shard": {"title": "Stillglass Shard", "text": "", "color": Color("e04aa8")},
+	"battle_helmet": {"title": "Elven Helm", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
+	"joker_key": {"title": "Glass Key", "text": "Opens the Glass door. There is only one.", "color": Color("9a6ad8")},
 	"rune_dagger": {"title": "Rune Dagger", "text": "Throw (B) flicks it from your off hand; Up throws it high. It takes the shield's hand: choose one on the Equipment page.", "color": Color("7ff0e0")},
-	"pendant": {"title": "Pendant", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
-	"magical_rod": {"title": "Magical Rod", "text": "Deluge's bolts strike half again as hard.", "color": Color("6ac8f0")},
-	"dragon_slayer": {"title": "Dragon Slayer", "text": "The only blade that can wound the Evil One. Meteor flesh parts before it.", "color": Color("8af0e8")},
+	"pendant": {"title": "Acorn Charm", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
+	"magical_rod": {"title": "Briar Wand", "text": "Torrent's bolts strike half again as hard.", "color": Color("6ac8f0")},
+	"dragon_slayer": {"title": "Severance", "text": "The only blade that can wound the Everbloom. Stillglass flesh parts before it.", "color": Color("8af0e8")},
 }
 
 ## Kinds that grant an ability rather than a stat.
@@ -48,7 +48,7 @@ const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "ho
 
 var kind := "life_fruit"
 var pickup_id := ""
-## Abilities glow through the Mist's fog (group "light") so they are never missed.
+## Abilities glow through the Haar's fog (group "light") so they are never missed.
 var light_radius := 44.0
 
 var _t := 0.0
@@ -231,7 +231,7 @@ func _draw() -> void:
 			_hp(o, -5, 12 - bot_h, 10, bot_h, c)
 			_hp(o, -5, -11, 2, 4, Color("ffffff"))
 		"dragon_slayer":
-			# A long blade of pale meteor steel, point down, a cyan light running
+			# A long blade of pale stillglass steel, point down, a cyan light running
 			# up its fuller; a dragon's-wing guard in gold and a dark grip.
 			var run := fmod(_t * 0.8, 1.0)
 			_poly(o, [Vector2(-3, -6), Vector2(3, -6), Vector2(3, 18), Vector2(0, 24), Vector2(-3, 18)], Color("120f19"), 2.0)
@@ -284,7 +284,7 @@ func _draw() -> void:
 			_hp(o, -5, 0, 2, 5, Color("e8f8ff"))
 			_hp(o, -3, -6, 2, 3, Color("e8f8ff"))
 		"potion_shard":
-			# A curved shard of a Red Potion flask, a bead of potion still in it.
+			# A curved shard of a Sapflask flask, a bead of potion still in it.
 			var shard := [Vector2(-4, -15), Vector2(7, -7), Vector2(5, 11), Vector2(-2, 13), Vector2(-8, 5)]
 			_poly(o, shard, Color("120f19"), 2.0)
 			_poly(o, shard, Color("c9c4d6"))
@@ -304,8 +304,8 @@ func _draw() -> void:
 			_poly(o, [Vector2(0, -17), Vector2(mid, -2), Vector2(-wx, -2)], light)
 			_hp(o, -2, -9, 2, 5, Color("efe4ff"))
 		"meteor_shard":
-			# A splinter of the meteor: three jagged magenta spurs from a black rock
-			# heel, a cyan light beating in the crack between them like Zenis's heart.
+			# A splinter of the Everbloom: three jagged magenta spurs from a black rock
+			# heel, a cyan light beating in the crack between them like the Evercrown's heart.
 			var beat := 0.5 + 0.5 * sin(_t * 5.0)
 			var rock := [Vector2(-9, 8), Vector2(-5, 13), Vector2(6, 13), Vector2(10, 7), Vector2(2, 4)]
 			_poly(o, rock, Color("120f19"), 2.0)

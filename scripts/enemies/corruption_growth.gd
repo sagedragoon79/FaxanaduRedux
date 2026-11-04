@@ -1,16 +1,16 @@
 class_name CorruptionGrowth
 extends Node2D
-## The meteor crystal grown through a corrupted foe of Zenis (design bible 8.9),
+## The stillglass grown through a corrupted foe of the Evercrown (design bible 8.9),
 ## drawn over whatever the foe draws: shards jutting from its back, glowing
 ## veins and a cyan eye that opens on its flank. It follows the foe's facing and
-## pulses with the meteor's heartbeat. A child of the Enemy.
+## pulses with the Everbloom's heartbeat. A child of the Enemy.
 
 const SHARD := Color("4ae0d8")
 const SHARD_LIGHT := Color("b8fff4")
 const SHARD_DARK := Color("1a6a78")
 const VEIN := Color("d03050")
 const OUTLINE := Color("13101f")
-## The meteor's heartbeat (beats per second), shared with the Zenis theme's tempo.
+## The stillglass's heartbeat (beats per second), shared with the Evercrown theme's tempo.
 const BEAT := 1.25
 
 var _t := 0.0

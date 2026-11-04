@@ -1,6 +1,6 @@
-class_name Pakukame
+class_name Snapcrown
 extends Enemy
-## Pakukame, the Devouring Bloom (design bible 8.5): a carnivorous flower the
+## Snapcrown, the Devouring Bloom (design bible 8.5): a carnivorous flower the
 ## size of a house, rooted in the middle of the crown-leaf, its head a
 ## turtle-shell bulb that snaps shut. Code-drawn at 2x.
 ##
@@ -16,7 +16,7 @@ extends Enemy
 ## and every other bite tears a chunk out of the leaf where it lands, leaving a
 ## thorny gap to stride or bounce over.
 ## - Brood (from phase 2, far, with none of its brood left): the petals flare
-##   wide (tell) and loose three Liliths, as the original's Pakukame did. It
+##   wide (tell) and loose three Mothlings, as the original's Snapcrown did. It
 ##   broods again only once all three are struck down, and they die with it.
 ## Phase 3 (below a quarter): it tears its root out of the leaf (tell), and the
 ## crown-leaf, cut loose, falls through the sky (LeafFall: wind rushing up, and
@@ -26,7 +26,7 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Pakukame"
+const DISPLAY_NAME := "Snapcrown"
 const EPITHET := "the Devouring Bloom"
 const MAX_HP := 260
 const PHASES := [0.5, 0.25]
@@ -55,7 +55,7 @@ const WHIP_REACH := 170.0
 const SPIT_TELL := 0.5
 const SPIT_FLIGHT := 0.8
 const BROOD_TELL := 0.7
-## Liliths loosed at a time.
+## Mothlings loosed at a time.
 const BROOD := 3
 ## Moves between broods, once the last brood is gone.
 const BROOD_EVERY := 3
@@ -107,8 +107,8 @@ var _root_to := 0.0
 ## Phase 3: torn out of the leaf and chasing.
 var uprooted := false
 var leaf_fall: LeafFall
-## The Liliths it has loosed.
-var brood: Array[Lilith] = []
+## The Mothlings it has loosed.
+var brood: Array[Mothling] = []
 ## Moves since the last brood (the first far move of phase 2 broods at once).
 var _since_brood := BROOD_EVERY
 
@@ -432,7 +432,7 @@ func _spit() -> void:
 	Sfx.play("web_shoot", 0.1, -2.0)
 
 
-## The Liliths of its brood still flying.
+## The Mothlings of its brood still flying.
 func brood_alive() -> int:
 	var n := 0
 	for l in brood:
@@ -441,7 +441,7 @@ func brood_alive() -> int:
 	return n
 
 
-## Looses three Liliths out of the petals, fanning up and out.
+## Looses three Mothlings out of the petals, fanning up and out.
 func _loose_brood() -> void:
 	var room := get_parent()
 	if room == null:
@@ -450,7 +450,7 @@ func _loose_brood() -> void:
 	var p := player()
 	var px := p.global_position.x if p != null else global_position.x
 	for i in BROOD:
-		var l := Lilith.new()
+		var l := Mothling.new()
 		l.slot = i
 		l.side = 1 if (i % 2 == 0) == (px < global_position.x) else -1
 		l.velocity = Vector2((i - 1) * 90.0, -140.0)

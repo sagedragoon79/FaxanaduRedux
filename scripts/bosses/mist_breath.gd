@@ -1,6 +1,6 @@
 class_name MistBreath
 extends Node2D
-## A breath of mist from one of Zorugeriru's heads: a low bank of fog that rolls
+## A breath of mist from one of the Haar Wyrm's heads: a low bank of fog that rolls
 ## along the ground (or the flood's surface) from where the head breathed it.
 ## It hurts once and can't be parried; jump it, or stand on high ground.
 
@@ -32,7 +32,7 @@ func rect() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_time += delta
 	global_position.x += dir * SPEED * delta
 	global_position.y = ground_y

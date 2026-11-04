@@ -28,9 +28,9 @@ const WASH_SHADER := preload("res://shaders/wash.gdshader")
 ## May this enemy leave poison (Drop.poison_chance)? The Tower and beyond.
 @export var poison_drops := false
 ## A drop this foe always leaves instead of rolling for one (Drop kinds; the
-## Naga's great loaf, pass 281). Empty: it rolls, as every foe did.
+## Silt Adder's great loaf, pass 281). Empty: it rolls, as every foe did.
 @export var sure_drop := ""
-## Grown through with meteor crystal (Zenis, design bible 8.9): tougher, richer,
+## Grown through with stillglass (the Evercrown, design bible 8.9): tougher, richer,
 ## and it leaves a MeteorSeed that bursts where it dies. Set before it enters the tree.
 @export var corrupted := false
 
@@ -149,7 +149,7 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 
-## A foe knocked through a gap in its room's floor (a Tower shaft, the Trunk's
+## A foe knocked through a gap in its room's floor (a Tower shaft, the Heartwood's
 ## drops) falls to its death (pass 291). It used to fall on below the room for
 ## good, its gold, drop and experience lost with it. Now it dies as it leaves,
 ## and its coins and drop come to rest at the gap's edge (Drop.keep_in_room).

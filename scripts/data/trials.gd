@@ -1,35 +1,35 @@
 class_name Trials
 extends RefCounted
-## The Guru Trials (design bible 3.1 and 10): pure platforming courses in the
-## mantra-space, an abstract monochrome place the Guru of the Temple of Mantras
+## The Inner Rings (design bible 3.1 and 10): pure platforming courses in the
+## inner rings, an abstract monochrome place the Ringreader of the Hall of Rings
 ## opens for you. They unlock two by two as the springs are restored. A trial
 ## runs on a clock from the moment you arrive; hazards there cost time, never
 ## health (they set you back on your last footing). Reach the bell at the far
-## end to clear it: the first clear gives a Mantra Shard, and every clear keeps
+## end to clear it: the first clear gives a Grain Shard, and every clear keeps
 ## your best time (`GameState.data.trials`, trial id -> seconds). Leave from the
-## pause menu at any time; you return a step from the Guru either way.
+## pause menu at any time; you return a step from the Ringreader either way.
 
 ## In order. `springs`: how many springs must flow before the trial opens.
-## `mantra`: the mantra time (seconds); ring the bell within it and the trial
+## `ring`: the ring time (seconds); ring the bell within it and the trial
 ## dyes your cloak (`dye`, pass 164), worn again for nothing at Ilse's.
 ## `needs`: the abilities its course is built for (the Glove if not given);
 ## by its springs every one of them is in hand. A trial whose room isn't
 ## built yet isn't offered.
 const LIST := [
-	{"id": "walls", "mantra": 12, "dye": "slate_dye", "name": "Mantra of Walls", "room": "trials/walls", "springs": 1,
+	{"id": "walls", "mantra": 12, "dye": "slate_dye", "name": "Ring of Walls", "room": "trials/walls", "springs": 1,
 		"desc": "Three pillars over spikes, thorned on their far sides. Climb each from the ledge at its foot."},
-	{"id": "edges", "mantra": 14, "dye": "coral_dye", "name": "Mantra of Edges", "room": "trials/edges", "springs": 1,
+	{"id": "edges", "mantra": 14, "dye": "coral_dye", "name": "Ring of Edges", "room": "trials/edges", "springs": 1,
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
-	{"id": "thorns", "mantra": 15, "dye": "thorn_dye", "name": "Mantra of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
+	{"id": "thorns", "mantra": 15, "dye": "thorn_dye", "name": "Ring of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
 		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
-	{"id": "winds", "mantra": 14, "dye": "jade_dye", "name": "Mantra of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
+	{"id": "winds", "mantra": 14, "dye": "jade_dye", "name": "Ring of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
 		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
-	{"id": "stillness", "mantra": 32, "dye": "frost_dye", "name": "Mantra of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
+	{"id": "stillness", "mantra": 32, "dye": "frost_dye", "name": "Ring of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
 		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
-	{"id": "falling", "mantra": 10, "dye": "plummet_dye", "name": "Mantra of Falling", "room": "trials/falling", "springs": 3,
+	{"id": "falling", "mantra": 10, "dye": "plummet_dye", "name": "Ring of Falling", "room": "trials/falling", "springs": 3,
 		"desc": "Ledges falling away, planks to let go of, and a needle of thorns. Steer every fall."},
 ]
-## Where the trials are opened from: the Guru's menu offers them only here.
+## Where the trials are opened from: the Ringreader's menu offers them only here.
 const TEMPLE := "eolis/guru_temple"
 
 ## The trial under way: {"id", "time", "back_room", "back_pos"}, or empty.
@@ -61,7 +61,7 @@ static func is_open(t: Dictionary) -> bool:
 
 
 ## The names of what the course is built for that you don't yet have (pass 160:
-## the springs can flow before the Wing Boots are found). The Guru keeps such a
+## the springs can flow before the Featherstep Boots are found). The Ringreader keeps such a
 ## trial sealed and says what it wants.
 static func missing(t: Dictionary) -> Array[String]:
 	var out: Array[String] = []

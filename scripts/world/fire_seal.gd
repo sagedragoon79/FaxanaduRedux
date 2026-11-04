@@ -2,8 +2,8 @@ class_name FireSeal
 extends StaticBody2D
 ## One tile of a fire seal (room legend `Z`, a column of three is usual, bible
 ## 4.5): red runic flames that block like a wall and burn whoever touches them.
-## A Deluge bolt (group "water_target") douses every seal in the room for good,
-## in a hiss of steam. The flames light the Mist's fog (group "light").
+## A Torrent bolt (group "water_target") douses every seal in the room for good,
+## in a hiss of steam. The flames light the Haar's fog (group "light").
 ## Drawn at 2x render density: `_px` takes half-pixels.
 
 ## Damage for touching the flames, and how often they can burn you.
@@ -43,7 +43,7 @@ func _ready() -> void:
 		_go_out(true)
 
 
-## A Deluge bolt struck this tile: every seal in the room goes out and stays out.
+## A Torrent bolt struck this tile: every seal in the room goes out and stays out.
 func douse() -> void:
 	if doused:
 		return

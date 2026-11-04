@@ -1,19 +1,19 @@
 class_name WindCurrent
 extends Node2D
-## A wind current across the Branches' open sky (design bible 6.9; legend `>`
+## A wind current across the High Boughs' open sky (design bible 6.9; legend `>`
 ## for a current blowing east and `<` west, a rectangle of cells). In the air
 ## with the middle of the body inside it, the player is carried along: the run
 ## target shifts by wind_speed with the wind (no headway against it) and the
 ## current bears them level. On a floor you brace and it doesn't move you; hold
-## Down to drop out. Once the Spring of Sky is restored (`spring:sky`) the storm
-## breaks and every current in the Branches blows the other way.
+## Down to drop out. Once the Sky Spring is restored (`spring:sky`) the storm
+## breaks and every current in the High Boughs blows the other way.
 ## Drawn as streaks of air and drifting leaves racing along the band.
 
 const FLAG := "spring:sky"
 const STREAK := Color("f4fbff")
 const EDGE := Color("4a86b8")
 const LEAF := Color("7cbf52")
-## The mantra-space has no leaves: pale flecks of the void ride its winds.
+## The inner rings has no leaves: pale flecks of the void ride its winds.
 const FLECK := Color("c9c6d6")
 
 ## The current's cells (tiles).
@@ -24,8 +24,8 @@ var drawn_dir := 1
 var _t := 0.0
 
 
-## The way it blows now: reversed once the storm over Daybreak breaks. The
-## mantra-space has no weather: a trial's winds blow as drawn (pass 160).
+## The way it blows now: reversed once the storm over Carillon breaks. The
+## inner rings has no weather: a trial's winds blow as drawn (pass 160).
 func dir() -> int:
 	var room := get_parent() as Room
 	if room != null and room.zone == "trials":

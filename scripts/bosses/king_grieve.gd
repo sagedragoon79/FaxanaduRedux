@@ -1,9 +1,9 @@
-class_name KingGrieve
+class_name ThaneVorrund
 extends Enemy
-## King Grieve, the Drowned Sovereign (design bible 8.7): the dwarf king who
-## bargained with the meteor to save his people. Regal, tragic, half of him
+## Thane Vorrund, the Unweeping (design bible 8.7): the dwarf king who
+## bargained with the Everbloom to save his people. Regal, tragic, half of him
 ## grown over with magenta crystal, a great-axe in his hands. The boss of
-## Dartmoor, in his flooded throne hall.
+## Vorrhallow, in his flooded throne hall.
 ##
 ## Phase 1, the duel: he walks you down and swings heavy two-blow combos, a
 ## chop (the axe raised overhead, its edge glinting) then a low sweep. Both can
@@ -15,14 +15,14 @@ extends Enemy
 ## and wards himself in crystal, untouchable from the sides; crystal thorns line
 ## the dais. From the throne he calls crystal shards up out of the floor, nearest
 ## the dais first. Each glows before it bursts out and shoots up to the vault.
-## Hold them in the air with the Hour Glass and they are a stair up to his
+## Hold them in the air with the Stillstone and they are a stair up to his
 ## crown: strike down on it and he is thrown from the dais, open, to duel again
 ## until he climbs back. From the throne he also calls his household guard: a
 ## Shade Knight rises out of the flood at the far end of the hall (twice in a
 ## fight at most, and never while one stands). His guard will not serve the
-## meteor, and goes down with him.
+## stillglass, and goes down with him.
 ##
-## Phase 3 (below a fifth), the meteor takes him: his body cracks open, the
+## Phase 3 (below a fifth), the Everbloom takes him: his body cracks open, the
 ## crystal blazing through, and he comes down off the throne for good. Frantic
 ## now, he walks you down faster, his tells shorter (never under
 ## MIN_TELEGRAPH), and every combo ends with the axe driven into the floor and
@@ -31,8 +31,8 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "King Grieve"
-const EPITHET := "the Drowned Sovereign"
+const DISPLAY_NAME := "Thane Vorrund"
+const EPITHET := "the Unweeping"
 const MAX_HP := 320
 const PHASES := [0.5, 0.2]
 const WALK_SPEED := 40.0
@@ -51,7 +51,7 @@ const BURST_TELL := 0.45
 const SPIKES := 6
 const SPIKE_GAP := 22.0
 const SPIKE_STEP := 0.08
-## The meteor taking him: he roars and cracks, untouchable, this long.
+## The stillglass taking him: he roars and cracks, untouchable, this long.
 const POSSESSED := 1.4
 const STRIKE_TIME := 0.16
 const CHOP_DAMAGE := 20
@@ -164,7 +164,7 @@ func tell(base: float) -> float:
 	return maxf(Enemy.MIN_TELEGRAPH, base * k)
 
 
-## Cracked open by the meteor: phase 3.
+## Cracked open by the Everbloom: phase 3.
 func cracked() -> bool:
 	return phase == 3
 
@@ -375,7 +375,7 @@ func _to_throne() -> void:
 	_leap_to(Vector2(dais.get_center().x, dais.position.y))
 
 
-## The meteor takes him: wherever he is, he roars, cracks open and comes down
+## The stillglass takes him: wherever he is, he roars, cracks open and comes down
 ## to the hall floor, never to go back to the throne.
 func _possess() -> void:
 	phase = 3
@@ -460,7 +460,7 @@ func _call_guard() -> void:
 	Sfx.play("splash", 0.05, -2.0)
 
 
-## His guard will not serve the meteor, nor outlive him: it goes down with
+## His guard will not serve the Everbloom, nor outlive him: it goes down with
 ## him, paying nothing (pass 266).
 func _dismiss_guard() -> void:
 	if guard_stands():
@@ -557,7 +557,7 @@ func _draw() -> void:
 	_px(bx - 2, by - 2, 30, 7, OUTLINE, 1.0)
 	_px(bx - 1, by - 1, 28, 5, MANTLE, 1.0)
 	_px(bx - 1, by + 3, 28, 1, GOLD, 1.0)
-	# His crystal half: the back of him grown over with meteor crystal.
+	# His crystal half: the back of him grown over with stillglass.
 	for c: Array in [[-14, -6, 6, 12], [-16, 2, 5, 10], [-12, 10, 5, 8], [-17, -12, 4, 7]]:
 		_px(bx + 13 + c[0] - 1, by + 8 + c[1] - 1, c[2] + 2, c[3] + 2, OUTLINE, 1.0)
 		_px(bx + 13 + c[0], by + 8 + c[1], c[2], c[3], CRYSTAL, 1.0)
@@ -584,7 +584,7 @@ func _draw() -> void:
 		var k := 0.5 + 0.5 * absf(sin(state_time * 18.0))
 		_px(hx - 6, hy - 16, 26, 12, Color(CRYSTAL, 0.3 * k), 1.0)
 	if cracked():
-		# The meteor through him: cracks of crystal light across robe and face.
+		# The stillglass through him: cracks of crystal light across robe and face.
 		var k := 0.6 + 0.4 * absf(sin(t * (14.0 if state == "possessed" else 6.0)))
 		for c: Array in [[2, 6, 1, 6], [3, 11, 4, 1], [6, 12, 1, 7], [-4, 16, 6, 1], [-4, 17, 1, 9], [10, 20, 1, 6], [8, 25, 4, 1]]:
 			_px(bx + 8 + c[0], by + c[1], c[2], c[3], Color(CRYSTAL_LIGHT, k), 1.0)

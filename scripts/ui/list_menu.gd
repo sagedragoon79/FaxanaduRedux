@@ -1,7 +1,7 @@
 class_name ListMenu
 extends Control
 ## A centered panel with a title, a list of rows and a description of the
-## selected row. Shops, the Guru and the skill tree all use it. The game is
+## selected row. Shops, the Ringreader and the skill tree all use it. The game is
 ## paused while it is open.
 ##
 ## Rows come from a provider callable (so they refresh after each choice):

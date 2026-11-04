@@ -1,10 +1,10 @@
 class_name MeteorSeed
 extends Enemy
-## What a corrupted foe of Zenis leaves when it dies (design bible 8.9): the
-## shard of meteor crystal that was growing in it hangs in the air, swells and
+## What a corrupted foe of the Evercrown leaves when it dies (design bible 8.9): the
+## shard of stillglass that was growing in it hangs in the air, swells and
 ## flickers for TELL seconds, then bursts in a ring of cyan light that hurts
 ## anything inside it. Unparryable. Strike it first (a slash or a pogo) and it
-## cracks harmlessly, so pressing on is safer than backing off. The Hour Glass
+## cracks harmlessly, so pressing on is safer than backing off. The Stillstone
 ## holds it still. The origin is the seed's centre.
 
 const TELL := 0.7

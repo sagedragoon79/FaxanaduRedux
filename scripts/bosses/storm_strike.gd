@@ -1,6 +1,6 @@
 class_name StormStrike
 extends Node2D
-## One bolt of Borabohra's phase-2 storm (design bible 8.6). It marks its spot
+## One bolt of Skyrend's phase-2 storm (design bible 8.6). It marks its spot
 ## for TELL seconds (a flickering thread of light from the sky and a glow where it
 ## will land), then strikes the column for DAMAGE, unparryable. A dead conduit
 ## under the bolt wakes, so the storm can do some of your work for you.
@@ -31,7 +31,7 @@ func strike_rect() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	if not _struck and _t >= TELL:
 		_strike()

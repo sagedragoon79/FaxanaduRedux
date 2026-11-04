@@ -1,6 +1,6 @@
 class_name SlashFx
 extends Node2D
-## The smear arc for a sword swing or Mattock down-strike. Follows the player.
+## The smear arc for a sword swing or Delver's Pick down-strike. Follows the player.
 
 const LIFE := 0.12
 const COLOR := Color("f6eed2")

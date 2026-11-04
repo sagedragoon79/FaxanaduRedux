@@ -1,7 +1,7 @@
 class_name Conduit
 extends Node2D
 ## A dead lightning conduit (room legend `c`, design bible 4.5): a copper coil
-## on a stone plinth, a dim blue spark at its crown. A Thunder bolt that passes
+## on a stone plinth, a dim blue spark at its crown. A Stormcall bolt that passes
 ## near leaps to it (group "conductor") and wakes it for good: the coil glows,
 ## arcs crawl up it, and it lights the fog. Once every conduit in the room is
 ## awake, the room's conduit gates slide open (flag "conduits:<room id>").
@@ -39,7 +39,7 @@ func spark_point() -> Vector2:
 	return global_position + Vector2(0, -28)
 
 
-## A Thunder bolt woke it.
+## A Stormcall bolt woke it.
 func power() -> void:
 	if powered:
 		return
@@ -58,7 +58,7 @@ func power() -> void:
 		(g as ConduitGate).open(false)
 
 
-## The charge drains away (Borabohra's conduits after it takes off again).
+## The charge drains away (Skyrend's conduits after it takes off again).
 func reset() -> void:
 	powered = false
 	light_radius = 0.0

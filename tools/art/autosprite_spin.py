@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turns one Autosprite still into a spin cycle for a rigged part (design bible 13.2).
 
-Rokusutahn's head is a grinding wheel of mandibles: rather than spend clip credits on a
+Gnarlmaw's head is a grinding wheel of mandibles: rather than spend clip credits on a
 spin, the still's outer ring is rotated in steps through a full turn while the hub (the
 throat and its eyes) stays put. Rotating at full source resolution and letting the import
 scale it down keeps the pixels clean. The output is an ordinary source sheet for

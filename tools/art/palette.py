@@ -15,14 +15,14 @@ OUT = Path(__file__).resolve().parents[2] / "art" / "palette"
 
 # (name, base hue in degrees, saturation)
 RAMPS = [
-    ("night", 255, 0.30),   # outlines, deep shadows, Zenis
-    ("stone", 250, 0.14),   # masonry, Eolis, Dartmoor
-    ("bark", 28, 0.45),     # wood, leather, Trunk
+    ("night", 255, 0.30),   # outlines, deep shadows, the Evercrown
+    ("stone", 250, 0.14),   # masonry, Hearthroot, Vorrhallow
+    ("bark", 28, 0.45),     # wood, leather, Heartwood
     ("leaf", 105, 0.45),    # foliage, the hero's tunic
-    ("sky", 205, 0.45),     # sky, water, Branches
+    ("sky", 205, 0.45),     # sky, water, High Boughs
     ("ember", 8, 0.62),     # scarf, thorns, fire, blood
     ("gold", 45, 0.70),     # sap, lanterns, gold, UI
-    ("crystal", 300, 0.45), # meteor crystal, magic
+    ("crystal", 300, 0.45), # stillglass, magic
 ]
 
 
@@ -45,7 +45,7 @@ def main():
     for name, hue, sat in RAMPS:
         for i in range(8):
             colors.append((f"{name}-{i}", shade(hue, sat, i)))
-    lines = ["GIMP Palette", "Name: Faxanadu Redux Master", "Columns: 8", "#"]
+    lines = ["GIMP Palette", "Name: Yldenfall Master", "Columns: 8", "#"]
     for name, (r, g, b) in colors:
         lines.append(f"{r:3d} {g:3d} {b:3d}\t{name}")
     (OUT / "master.gpl").write_text("\n".join(lines) + "\n")

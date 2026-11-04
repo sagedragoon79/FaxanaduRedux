@@ -1,5 +1,5 @@
 shader_type canvas_item;
-// Eolis of Old (design bible 11, pass 152): the screen as a cartridge drew it.
+// Old Hearthroot (design bible 11, pass 152): the screen as a cartridge drew it.
 // Everything drawn below this layer is read back, cut into blocks of `block`
 // world pixels, framed 4:3 like a television of the day, and each block is
 // matched to the nearest colour of the NES's own palette (the 2C02's 55

@@ -1,7 +1,7 @@
 class_name Motes
 extends Node2D
 ## The particle layer in front of a room (design bible 12.5): spores rising in
-## the Trunk, dust drifting down in Eolis. Motes live in screen space around
+## the Heartwood, dust drifting down in Hearthroot. Motes live in screen space around
 ## the camera and wrap at its edges, and some sit at a deeper parallax than
 ## others, so the air has depth without spawning or freeing anything.
 
@@ -15,22 +15,22 @@ const ZONES := {
 	"tower": [34, Color("f0a050"), Vector2(-2, -12), 3.0, 0.15],
 	"mist": [40, Color("b8c8b0"), Vector2(6, 1), 9.0, 0.12],
 	"branches": [30, Color("d8f0a0"), Vector2(14, 3), 6.0, 0.1],
-	# Daybreak: rain driven hard on the storm wind.
+	# Carillon: rain driven hard on the storm wind.
 	"daybreak": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
-	# Dartmoor: motes of meteor crystal dust hanging over the drowned halls.
+	# Vorrhallow: motes of stillglass dust hanging over the drowned halls.
 	"dartmoor": [36, Color("e0a0f0"), Vector2(2, -5), 5.0, 0.15],
-	# Zenis: cyan spores drifting up out of the meteor's flesh.
+	# the Evercrown: cyan spores drifting up out of the Everbloom's flesh.
 	"zenis": [32, Color("70e8f0"), Vector2(0, -9), 6.0, 0.18],
 	# The Sunken Spring: specks of the spring's light rising through the dark.
 	"sunken": [28, Color("a0f0e8"), Vector2(0, -6), 4.0, 0.12],
-	# The mantra-space: pale flecks hanging almost still.
+	# The inner rings: pale flecks hanging almost still.
 	"trials": [24, Color("e8e4dc"), Vector2(0, -2), 8.0, 0.1],
 }
 
 ## Zones whose air settles once a flag is set: flag -> share of motes left.
-## The Spring of Sky breaks the storm, so Daybreak's rain thins to a drizzle;
-## with the Evil One dead (`cleared`) the meteor's dust settles out of Dartmoor
-## and its spores out of Zenis (design bible 4.4).
+## The Sky Spring breaks the storm, so Carillon's rain thins to a drizzle;
+## with the Everbloom dead (`cleared`) the Everbloom's dust settles out of Vorrhallow
+## and its spores out of the Evercrown (design bible 4.4).
 const SETTLES := {
 	"daybreak": ["spring:sky", 0.3],
 	"dartmoor": ["cleared", 0.35],

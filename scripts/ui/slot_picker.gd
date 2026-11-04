@@ -14,11 +14,11 @@ signal cancelled
 
 ## The save slots behind the three flasks; tests point them elsewhere.
 var slots: Array = [1, 2, 3]
-## The three springs' colors: amber Trunk, pale Mist, blue Sky.
+## The three springs' colors: amber Heartwood, pale Haar, blue Sky.
 const COLORS := [Color("e8a23c"), Color("8fd8c4"), Color("8fb4ff")]
 ## Each spring's mark, etched on its flask's glass (pass 357), so the three are
-## told apart by shape as well as color: a leaf for the Trunk, a ripple of mist
-## for the Mist, a bolt for the Sky. A mark, never a number or a letter.
+## told apart by shape as well as color: a leaf for the Heartwood, a ripple of mist
+## for the Haar, a bolt for the Sky. A mark, never a number or a letter.
 const MARKS := ["leaf", "mist", "bolt"]
 const GLASS := Color(0.75, 0.82, 0.9, 0.55)
 const GLASS_DARK := Color(0.08, 0.07, 0.12, 0.8)
@@ -125,7 +125,7 @@ func details() -> Array:
 	if pouring:
 		return ["Pour this journey out?", "It cannot be gathered up again."]
 	if s.is_empty():
-		return ["An empty flask.", "Choose it to begin a new journey at the West Gate of Eolis."]
+		return ["An empty flask.", "Choose it to begin a new journey at the West Gate of Hearthroot."]
 	var where := String(s.room) if String(s.zone) == "" or String(s.zone) == String(s.room) else "%s, %s" % [s.room, s.zone]
 	var hours := int(s.minutes) / 60
 	var played := ("%d h %d min" % [hours, int(s.minutes) % 60]) if hours > 0 else "%d min" % int(s.minutes)
@@ -348,7 +348,7 @@ static func mark(i: int) -> Array[PackedVector2Array]:
 					wave.append(Vector2(-9 + k * 2.25 + row * 1.5, -6 + row * 6 + (2.0 if k % 2 == 0 else -1.0) * 0.8))
 				out.append(wave)
 		"bolt":
-			# Borabohra's lightning, as on the Sky gate.
+			# Skyrend's lightning, as on the Sky gate.
 			out.append(PackedVector2Array([Vector2(3, -10), Vector2(-4, 0), Vector2(2, 0), Vector2(-3, 10)]))
 	return out
 

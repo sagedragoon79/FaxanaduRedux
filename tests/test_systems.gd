@@ -1,5 +1,5 @@
 extends TestSuite
-## Options, key rebinding, the pause menu and the Ointment (design bible 10.2, 14).
+## Options, key rebinding, the pause menu and the Barkbalm (design bible 10.2, 14).
 
 const TEMP_SETTINGS := "user://test_settings.cfg"
 
@@ -217,7 +217,7 @@ func test_the_pad_can_be_rebound() -> void:
 
 ## Pass 366: a menu's refusal had borrowed the spell-fail fizzle, so a ware
 ## you couldn't afford sounded like a cast short of MP. A menu now says no in
-## its own voice, and the fizzle is left to the spells and the Hour Glass.
+## its own voice, and the fizzle is left to the spells and the Stillstone.
 func test_a_menu_says_no_in_its_own_voice() -> void:
 	Settings.path = TEMP_SETTINGS
 	check(FileAccess.file_exists("res://assets/sfx/menu_refuse.wav"), "the refusal has a file")
@@ -240,7 +240,7 @@ func test_a_menu_says_no_in_its_own_voice() -> void:
 		"a pad button the page keeps says no as well (%s)" % [Sfx.recent])
 	menu.close()
 	menu.free()
-	# Who still fizzles: the hero's spells and the Hour Glass, and no menu.
+	# Who still fizzles: the hero's spells and the Stillstone, and no menu.
 	var dirs: Array[String] = ["res://scripts"]
 	var fizzlers: Array[String] = []
 	while not dirs.is_empty():
@@ -299,11 +299,11 @@ func test_ointment_is_bought_used_and_wears_off() -> void:
 	p.gold = 2000
 	var shop := "eolis_items"
 	var index := 3
-	check(GameData.item(GameData.shop(shop).stock[index].item).kind == "ointment", "Eolis sells Ointment")
+	check(GameData.item(GameData.shop(shop).stock[index].item).kind == "ointment", "Hearthroot sells Barkbalm")
 	for i in Shop.OINTMENT_MAX:
 		Shop.buy(shop, index, p)
 	check(p.ointments == Shop.OINTMENT_MAX and Shop.status(shop, index, p) == "full", "you can carry %d" % Shop.OINTMENT_MAX)
-	check(int(GameState.data.ointments) == Shop.OINTMENT_MAX, "Ointments are saved")
+	check(int(GameState.data.ointments) == Shop.OINTMENT_MAX, "Barkbalms are saved")
 	check(p.use_ointment() and p.ointments == Shop.OINTMENT_MAX - 1, "rubbing one on uses it")
 	check(not p.use_ointment(), "only one at a time")
 	var hp := p.hp
@@ -325,7 +325,7 @@ func test_pause_menu_and_its_sub_menus() -> void:
 	var quit := [false]
 	check(Menus.open_pause(arena.get_tree(), p, func() -> void: quit[0] = true), "the pause menu opens")
 	check(menu.title == "Paused" and arena.get_tree().paused, "and pauses the game")
-	check(not menu.rows[1].enabled, "no Ointment to use yet")
+	check(not menu.rows[1].enabled, "no Barkbalm to use yet")
 	menu.cursor = 2
 	menu.confirm()
 	check(menu.title == "Equipment" and menu.rows[0].get("header", false) and menu.rows[1].label == "Short Sword", "Equipment lists your gear by slot")
@@ -383,15 +383,15 @@ func test_the_inventory_page_lists_what_you_have_found() -> void:
 	GameState.data.potion_shards = 4
 	GameState.data.meteor_shards = 1
 	var rows := Menus.inventory_rows(p)
-	check(labels.call() == ["Abilities", "Climbing Glove", "Mattock", "Spells", "Deluge", "Fire", "Relics", "Pendant",
-		"Rings, 2 of 4", "Elf Ring", "Dworf Ring", "Keys", "Jack Key", "Lantern Key", "Shards", "Potion Shards", "Meteor Shards"],
+	check(labels.call() == ["Abilities", "Climbing Glove", "Delver's Pick", "Spells", "Torrent", "Kindle", "Relics", "Acorn Charm",
+		"Rings, 2 of 4", "Thaw Seed", "Fall Seed", "Keys", "Copper Key", "Lantern Key", "Shards", "Potion Shards", "Stillglass Shards"],
 		"each find under its group, in order (%s)" % [labels.call()])
 	var by := {}
 	for r: Dictionary in rows:
 		by[r.label] = r
-	check(by["Fire"].right == "Ready" and by["Deluge"].right == "", "the readied spell is marked")
-	check(String(by["Fire"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Fire"].detail)
-	check(by["Jack Key"].right == "x2" and by["Lantern Key"].right == "x1", "keys show how many you carry")
+	check(by["Kindle"].right == "Ready" and by["Torrent"].right == "", "the readied spell is marked")
+	check(String(by["Kindle"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Kindle"].detail)
+	check(by["Copper Key"].right == "x2" and by["Lantern Key"].right == "x1", "keys show how many you carry")
 	check(by["Potion Shards"].right == "1 of 3", "shards count toward their next whole")
 	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")
 	check(blank.is_empty(), "every find says what it does (%s)" % [blank])
@@ -402,7 +402,7 @@ func test_the_inventory_page_lists_what_you_have_found() -> void:
 	for g: Array in Menus.INVENTORY_GROUPS:
 		for id: String in g[1]:
 			p.abilities[id] = true
-	GameState.data.rings = Array(ZenisGate.RINGS)
+	GameState.data.rings = Array(CrownGate.RINGS)
 	for k: String in Menus.KEY_ORDER:
 		GameState.add_key(k)
 	GameState.data.mantra_shards = 2
@@ -433,7 +433,7 @@ func test_pixel_font_covers_ascii_and_scales_by_whole_numbers() -> void:
 	check(f.get_height(h * 3) == h * 3, "and three times as tall at 3x")
 	var scales := [8, 10, 12, 14, 18, 22, 44].map(func(s: int) -> int: return PixelFont.scale_for(s))
 	check(scales == [1, 1, 1, 1, 2, 2, 4], "requested sizes snap to whole scales (%s)" % [scales])
-	var lines := PixelFont.wrap_lines("The Spring of Mist has dried, and the dwarves of Forepaw quake.", 120.0, 10)
+	var lines := PixelFont.wrap_lines("The Haar Spring has dried, and the dwarves of Kettleforge quake.", 120.0, 10)
 	var widest := 0.0
 	for l in lines:
 		widest = maxf(widest, PixelFont.width(l, 10))
@@ -478,7 +478,7 @@ func test_no_sound_starts_without_a_sound_device() -> void:
 func test_the_ending_tells_climbs_and_thanks() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
-	e.start("Hero", 3725.0)
+	e.start("Heartwood", 3725.0)
 	check(e.phase == "epilogue" and e.card == 0, "the ending opens on its first card")
 	e.tick(EndingScreen.CARD_TIME + 0.1)
 	check(e.card == 1, "the cards turn on their own")
@@ -506,16 +506,16 @@ func test_the_ending_tells_climbs_and_thanks() -> void:
 	e.queue_free()
 
 
-## Faxanadu's ending (pass 167): the town would thank you, and the wanderer
+## Yldenfall's ending (pass 167): the town would thank you, and the wanderer
 ## walks on. The last two cards say so while the hero walks off east.
 func test_the_ending_closes_on_the_wanderer_walking_on() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
 	for secret: bool in [false, true]:
-		e.start("Hero", 0.0, secret, 0)
+		e.start("Heartwood", 0.0, secret, 0)
 		var n := e.cards().size()
 		check(e.cards().slice(n - 2) == EndingScreen.FAREWELL, "the farewell closes the epilogue (secret %s)" % secret)
-		check(String(EndingScreen.FAREWELL[0]).contains("King") and String(EndingScreen.FAREWELL[1]).contains("walking on"), "the King's thanks, then the road")
+		check(String(EndingScreen.FAREWELL[0]).contains("Leaffall") and String(EndingScreen.FAREWELL[1]).contains("east road"), "the Leaffall's thanks, then the road")
 		e.tick(e.farewell_start() - 0.5)
 		check(e.wanderer_x() < 0.0, "no one walks before the farewell")
 		e.tick(0.6)
@@ -534,11 +534,11 @@ func test_the_ending_closes_on_the_wanderer_walking_on() -> void:
 func test_pause_skips_the_ending_to_the_thanks_card() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
-	e.start("Hero", 0.0)
+	e.start("Heartwood", 0.0)
 	e.tick(1.0)
 	e.skip()
 	check(e.phase == "thanks", "from the epilogue")
-	e.start("Hero", 0.0)
+	e.start("Heartwood", 0.0)
 	e.tick(e.cards().size() * EndingScreen.CARD_TIME + 1.0)
 	check(e.phase == "credits", "the climb has begun")
 	e.skip()
@@ -560,7 +560,7 @@ func test_the_game_plays_the_ending_then_returns_to_the_title() -> void:
 	await frames(5)
 	GameState.begin_ending()
 	await frames(2)
-	check(g.ending.visible and g.ending.phase == "epilogue", "the Evil One's death plays the ending")
+	check(g.ending.visible and g.ending.phase == "epilogue", "the Everbloom's death plays the ending")
 	check(runner.get_tree().paused, "over a frozen world")
 	check(Music.track == "ending", "to its own music (%s)" % Music.track)
 	g.ending.skip()
@@ -601,7 +601,7 @@ func test_the_secret_ending_needs_no_deaths_and_the_battle_suit() -> void:
 	GameState.new_game()
 	check(not GameState.secret_ending(), "no deaths alone is not enough")
 	GameState.data.equipment.armor = "battle_suit"
-	check(GameState.secret_ending(), "no deaths in the Battle Suit is the secret ending")
+	check(GameState.secret_ending(), "no deaths in the Elven Plate is the secret ending")
 	GameState.data.deaths = 1
 	check(not GameState.secret_ending(), "one death and it is gone")
 	GameState.data.deaths = 0
@@ -613,10 +613,10 @@ func test_the_secret_ending_needs_no_deaths_and_the_battle_suit() -> void:
 func test_the_secret_ending_adds_the_sources_cards() -> void:
 	var e := EndingScreen.new()
 	arena.add_child(e)
-	e.start("Lord", 0.0, false, 3)
+	e.start("Ylden's Own", 0.0, false, 3)
 	e.tick((EndingScreen.EPILOGUE.size() + EndingScreen.FAREWELL.size()) * EndingScreen.CARD_TIME + 0.1)
 	check(e.phase == "credits", "the plain ending climbs after its four cards and the farewell")
-	e.start("Lord", 0.0, true, 0)
+	e.start("Ylden's Own", 0.0, true, 0)
 	check(e.cards().size() == EndingScreen.EPILOGUE.size() + EndingScreen.SECRET_EPILOGUE.size() + EndingScreen.FAREWELL.size(), "the secret ending has more cards")
 	e.tick(EndingScreen.EPILOGUE.size() * EndingScreen.CARD_TIME + 0.1)
 	check(e.phase == "epilogue" and e.cards()[e.card] == EndingScreen.SECRET_EPILOGUE[0], "after the four, the Sunken Spring wakes")
@@ -641,7 +641,7 @@ func test_the_game_plays_the_secret_ending_for_a_flawless_run() -> void:
 	GameState.data.equipment.armor = "battle_suit"
 	GameState.begin_ending()
 	await frames(2)
-	check(g.ending.visible and g.ending.secret and g.ending.deaths == 0, "no deaths in the Battle Suit plays the secret ending")
+	check(g.ending.visible and g.ending.secret and g.ending.deaths == 0, "no deaths in the Elven Plate plays the secret ending")
 	g.ending.skip()
 	g.ending.tick(EndingScreen.THANKS_GRACE)
 	g.ending.advance()
@@ -900,7 +900,7 @@ func test_a_failed_write_keeps_the_last_good_save() -> void:
 
 ## Pass 255: a rest that can't write its save (a full or read-only disk)
 ## said "Progress saved." all the same, so a player could quit trusting a save
-## that never happened. A shrine and a Guru now say so when the write fails.
+## that never happened. A shrine and a Ringreader now say so when the write fails.
 func test_a_rest_that_cannot_save_says_so() -> void:
 	GameState.delete_save(BAD_SLOT)
 	var w := make_world({}, "eolis/guru_temple")
@@ -925,11 +925,11 @@ func test_a_rest_that_cannot_save_says_so() -> void:
 	w.room.add_child(guru)
 	toasts.clear()
 	guru.rest(w.player)
-	check(toasts == [SaveShrine.NOT_SAVED], "and so does a Guru's rest (%s)" % [toasts])
+	check(toasts == [SaveShrine.NOT_SAVED], "and so does a Ringreader's rest (%s)" % [toasts])
 	DirAccess.remove_absolute(tmp)
 	toasts.clear()
 	guru.rest(w.player)
-	check(toasts.size() == 1 and toasts[0].begins_with("Rested. Your mantra is: "), "once the disk takes it again, the Guru names your mantra (%s)" % [toasts])
+	check(toasts.size() == 1 and toasts[0].begins_with("Rested. Your mark in the wood: "), "once the disk takes it again, the Ringreader names your ring (%s)" % [toasts])
 	GameState.toast.disconnect(listen)
 	GameState.slot = old_slot
 	GameState.delete_save(BAD_SLOT)
@@ -1079,7 +1079,7 @@ func test_a_save_with_gear_in_the_wrong_slots_plays_on() -> void:
 	check(p.max_hp > 0 and p.defense == 0.0 and not p.has_shield, "and plays as nothing worn (defense %.2f)" % p.defense)
 	var rows := Menus.equipment_rows()
 	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
-	check(not labels.has("Lord's Gold") and labels.has("Mantra Slate"), "the Cloak lists the dyes the save owns, not gear-list strays (%s)" % [labels])
+	check(not labels.has("Crown Gold") and labels.has("Grain Slate"), "the Cloak lists the dyes the save owns, not gear-list strays (%s)" % [labels])
 	for row: Dictionary in rows:
 		if row.has("id"):
 			Menus.choose_equipment(String(row.id), p)
@@ -1110,7 +1110,7 @@ func test_a_moved_pickup_stays_taken() -> void:
 	check(GameState.sanitize(JSON.parse_string(JSON.stringify(src))).collected.is_empty(), "a save that took none takes none")
 
 
-## Pass 217: King Grieve gives up the Dragon Slayer, and the Heart Gate's
+## Pass 217: Thane Vorrund gives up the Severance, and the Heart Gate's
 ## altar is bare. A save past him that never took the sword from the altar
 ## gets it in hand; one that took it keeps the blade it holds; one before him
 ## has no sword yet.
@@ -1132,13 +1132,13 @@ func test_a_save_past_king_grieve_holds_the_dragon_slayer() -> void:
 	check(not bool(got.abilities.get("dragon_slayer", false)) and got.equipment.blade == "short_sword", "a save before him has no sword yet")
 
 
-## Pass 221: the Dragon Slayer is an ability (the reach checker's gate, and the
+## Pass 221: the Severance is an ability (the reach checker's gate, and the
 ## sign a save took it) and gear (the Equipment page, the heart's seal). It was
 ## the one ability missing from a new game's list, so the round trip never
 ## carried it and a save could hold one half: now it is listed, and a save
 ## holds both or neither.
 func test_the_dragon_slayer_is_held_as_ability_and_gear_together() -> void:
-	check(GameState.fresh().abilities.has("dragon_slayer") and not bool(GameState.fresh().abilities.dragon_slayer), "a new game lists the Dragon Slayer, unheld")
+	check(GameState.fresh().abilities.has("dragon_slayer") and not bool(GameState.fresh().abilities.dragon_slayer), "a new game lists the Severance, unheld")
 	var src := GameState.fresh()
 	src.gear = ["short_sword", "dragon_slayer"]
 	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
@@ -1203,14 +1203,14 @@ func test_the_hand_dagger_is_the_short_sword_and_the_rune_dagger_is_found() -> v
 	GameState.data.gear.erase("small_shield")
 
 
-## Pass 185: the Battle Helmet left the shield slot for its own. A save that
-## wore it as a shield wears it as a helmet, with the Magic Shield in hand
+## Pass 185: the Elven Helm left the shield slot for its own. A save that
+## wore it as a shield wears it as a helmet, with the Warding Shield in hand
 ## (the guard and parry it had); a save from before helmets gets an empty slot.
 func test_a_save_with_the_helmet_in_the_shield_slot_moves_it_to_the_head() -> void:
 	var src := GameState.fresh()
 	src.equipment = {"blade": "long_sword", "armor": "full_plate", "shield": "battle_helmet"}
 	var got := GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
-	check(got.equipment.helmet == "battle_helmet" and got.equipment.shield == "magic_shield", "helmet on the head, Magic Shield in hand (%s)" % [got.equipment])
+	check(got.equipment.helmet == "battle_helmet" and got.equipment.shield == "magic_shield", "helmet on the head, Warding Shield in hand (%s)" % [got.equipment])
 	check(got.equipment.blade == "long_sword" and got.equipment.armor == "full_plate", "the rest untouched")
 	src.equipment = {"blade": "short_sword", "armor": "", "shield": "small_shield"}
 	got = GameState.sanitize(JSON.parse_string(JSON.stringify(src)))
@@ -1259,15 +1259,15 @@ func test_the_whole_world_is_counted() -> void:
 	w.free()
 
 
-## Pass 187: the finds a `prop:` line lays (the Battle Helmet, the Joker Key)
+## Pass 187: the finds a `prop:` line lays (the Elven Helm, the Glass Key)
 ## are treasures like the ones drawn in the grid: the percent, the Journey and
 ## Treasure Sense count them, under the same id the room gives the pickup.
 func test_finds_laid_by_props_count_as_treasures() -> void:
 	var w := make_world({}, "zenis/threshold")
 	await frames(2)
 	var helm_id := "zenis/threshold:2,19"
-	check(w.catalog["zenis/threshold"].treasures.has(helm_id), "the Battle Helmet is a Threshold treasure (%s)" % [w.catalog["zenis/threshold"].treasures])
-	check(w.catalog["dartmoor/drowned_market"].treasures.has("dartmoor/drowned_market:49,12"), "and the Joker Key a Drowned Market one")
+	check(w.catalog["zenis/threshold"].treasures.has(helm_id), "the Elven Helm is a Threshold treasure (%s)" % [w.catalog["zenis/threshold"].treasures])
+	check(w.catalog["dartmoor/drowned_market"].treasures.has("dartmoor/drowned_market:49,12"), "and the Glass Key a Drowned Market one")
 	var helm: ItemPickup = null
 	for c in w.room.get_children():
 		if c is ItemPickup and (c as ItemPickup).kind == "battle_helmet":
@@ -1286,7 +1286,7 @@ func test_the_thanks_card_counts_up_the_completion() -> void:
 	arena.add_child(e)
 	var stats := {"rooms": 50, "rooms_total": 100, "secrets": 3, "secrets_total": 7, "treasures": 40, "treasures_total": 106,
 		"bosses": 13, "bosses_total": 13, "percent": 60, "clears": 2}
-	e.start("Hero", 3725.0, false, 4, stats)
+	e.start("Heartwood", 3725.0, false, 4, stats)
 	e.skip()
 	check(e.phase == "thanks" and e.stats.percent == 60, "the thanks card carries the save's completion")
 	var rows := e.completion_rows()
@@ -1294,7 +1294,7 @@ func test_the_thanks_card_counts_up_the_completion() -> void:
 	e.tick(EndingScreen.COUNT_TIME + 0.1)
 	await frames(1)
 	check(e.visible, "it draws through the count")
-	e.start("Hero", 10.0)
+	e.start("Heartwood", 10.0)
 	e.skip()
 	e.tick(0.5)
 	await frames(1)
@@ -1302,7 +1302,7 @@ func test_the_thanks_card_counts_up_the_completion() -> void:
 	e.queue_free()
 
 
-# --- Guru Trials (pass 113) -------------------------------------------------------
+# --- Inner Rings (pass 113) -------------------------------------------------------
 
 func _temple() -> Dictionary:
 	var rows := grid_rows(30, 20)
@@ -1326,11 +1326,11 @@ func test_guru_trials_open_as_the_springs_flow() -> void:
 	check(Trials.format_time(83.47) == "1:23.4" and Trials.format_time(INF) == "--", "times read m:ss.t")
 
 
-## Bible 3.1: the Guru sends you to the trial's start, the clock runs, the bell
-## clears it (a Mantra Shard the first time, the best time kept), and the mantra
+## Bible 3.1: the Ringreader sends you to the trial's start, the clock runs, the bell
+## clears it (a Grain Shard the first time, the best time kept), and the ring
 ## carries you back to where you stood.
-## Pass 116: the mantra-space sounds like itself: its own theme and bed, a
-## shimmer as the mantra carries you in, a bronze bell, and a sting for a new best.
+## Pass 116: the inner rings sounds like itself: its own theme and bed, a
+## shimmer as the ring carries you in, a bronze bell, and a sting for a new best.
 func test_the_guru_trials_have_a_sound_of_their_own() -> void:
 	for name: String in ["trials", "amb_trials"]:
 		var stream := Music.stream_for(name)
@@ -1345,9 +1345,9 @@ func test_the_guru_trials_have_a_sound_of_their_own() -> void:
 		Sfx.recent.clear()
 		Menus.start_trial(w, p, Trials.find(id))
 		await frames(5)
-		check(Sfx.recent.has("trial_begin"), "%s: the mantra carries you in with a shimmer" % id)
+		check(Sfx.recent.has("trial_begin"), "%s: the ring carries you in with a shimmer" % id)
 		check(Music.track == "trials" and Music.ambience_track == "amb_trials",
-			"%s plays the trials theme over the mantra-space (%s, %s)" % [id, Music.track, Music.ambience_track])
+			"%s plays the trials theme over the inner rings (%s, %s)" % [id, Music.track, Music.ambience_track])
 		var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
 		Sfx.recent.clear()
 		p.teleport(bell.global_position)
@@ -1377,7 +1377,7 @@ func test_a_trial_runs_on_a_clock_and_the_bell_clears_it() -> void:
 	var back := p.global_position
 	Menus.start_trial(w, p, Trials.find("walls"))
 	await frames(5)
-	check(w.room.id == "trials/walls", "the mantra carries you to the trial")
+	check(w.room.id == "trials/walls", "the ring carries you to the trial")
 	var start := Trials.start_pos(w.room_text("trials/walls"))
 	check(p.global_position.distance_to(start) < 4.0, "to its start")
 	check(Trials.active(), "and the trial is under way")
@@ -1390,7 +1390,7 @@ func test_a_trial_runs_on_a_clock_and_the_bell_clears_it() -> void:
 	await frames(3)
 	check(bell.rung, "touching the bell rings it")
 	check(Trials.cleared("walls"), "the trial is cleared")
-	check(int(GameState.data.mantra_shards) == shards + 1, "the first clear gives a Mantra Shard")
+	check(int(GameState.data.mantra_shards) == shards + 1, "the first clear gives a Grain Shard")
 	var first := Trials.best("walls")
 	check(first > 0.9 and first < 1.3, "and keeps the time (%.2f s)" % first)
 	await frames(int(TrialGoal.RING * 60) + 10)
@@ -1411,7 +1411,7 @@ func test_a_trial_runs_on_a_clock_and_the_bell_clears_it() -> void:
 
 
 ## Bible 3.1: in a trial a hazard costs time, never health: it sets you back on
-## your last footing. Leaving from the pause menu returns you to the Guru.
+## your last footing. Leaving from the pause menu returns you to the Ringreader.
 func test_in_a_trial_hazards_cost_time_not_health() -> void:
 	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
 	GameState.set_flag("spring:trunk")
@@ -1430,7 +1430,7 @@ func test_in_a_trial_hazards_cost_time_not_health() -> void:
 	check(Trials.active(), "and the clock runs on")
 	Menus.leave_trial(w.get_tree())
 	await frames(5)
-	check(w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0, "leaving the trial returns you to the Guru")
+	check(w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0, "leaving the trial returns you to the Ringreader")
 	check(not Trials.active() and not Trials.cleared("walls"), "uncleared")
 	w.queue_free()
 
@@ -1469,10 +1469,10 @@ func test_damage_numbers_show_what_each_blow_dealt() -> void:
 	put_tiles(rows, 22, 19, "D")
 	rooms["test/town"] = room_text(["name: Town", "zone: test"], rows)
 	var w := make_world(rooms, "test/town")
-	var mono: Monodron = null
+	var mono: Blinkhop = null
 	var dwarf: RotDwarf = null
 	for c in w.room.get_children():
-		if c is Monodron:
+		if c is Blinkhop:
 			mono = c
 		elif c is RotDwarf:
 			dwarf = c
@@ -1525,9 +1525,9 @@ func test_damage_numbers_show_what_each_blow_dealt() -> void:
 
 
 ## Bible 14 (pass 309): with damage numbers on, each poison tick shows what it
-## took, in the poisoned masks' green. Poison bites as the room's foes do since
+## took, in the poisoned masks' green. Blightcap bites as the room's foes do since
 ## pass 306 (2 in the Tower, up to 4 deep), and a tick was the one loss of health
-## that showed no number. A tick an Ointment keeps off, or one that would take
+## that showed no number. A tick an Barkbalm keeps off, or one that would take
 ## the last point, shows nothing.
 func test_damage_numbers_show_each_poison_tick() -> void:
 	Settings.path = TEMP_SETTINGS
@@ -1545,7 +1545,7 @@ func test_damage_numbers_show_each_poison_tick() -> void:
 	await frames(roundi(Player.POISON_TICK * 60.0))
 	var nums: Array = _numbers(w.room).filter(func(n: DamageNumber) -> bool: return n.kind == "poison")
 	check(nums.size() == 1 and nums[0].amount == before - p.hp and nums[0].amount == 4,
-		"on: a Zenis tick shows the 4 it took (%s)" % [nums.map(func(n: DamageNumber) -> int: return n.amount)])
+		"on: an Evercrown tick shows the 4 it took (%s)" % [nums.map(func(n: DamageNumber) -> int: return n.amount)])
 	check(DamageNumber.COLORS.poison == GameHud.POISONED, "in the poisoned masks' green")
 	p.hp = 1
 	await frames(roundi(Player.POISON_TICK * 60.0))
@@ -1554,24 +1554,24 @@ func test_damage_numbers_show_each_poison_tick() -> void:
 	p.hp = 50
 	await frames(roundi(Player.POISON_TICK * 60.0))
 	check(_numbers(w.room).filter(func(n: DamageNumber) -> bool: return n.kind == "poison" and n != nums[0]).is_empty(),
-		"a tick that takes nothing (the last point, an Ointment) shows nothing")
+		"a tick that takes nothing (the last point, an Barkbalm) shows nothing")
 	p.cure_poison()
 	_restore()
 	check(not Settings.damage_numbers, "and the suite runs on the default, off")
 
-## Pass 155: the third trial, the Mantra of Thorns, is a pogo course: a spike
+## Pass 155: the third trial, the Ring of Thorns, is a pogo course: a spike
 ## corridor, a pit under a chain of thorn bulbs, and two bulbs up to a hanging
 ## slab that nothing else reaches. A simple pogo-playing hand clears it in the
 ## real game: it walks right, jumps off edges, steers over the next bulb and
 ## strikes down whenever it falls.
 func test_the_mantra_of_thorns_is_cleared_by_pogo() -> void:
 	var t := Trials.find("thorns")
-	check(Trials.built().has(t) and t.needs == ["glove", "mattock"], "the Mantra of Thorns is built, for the Glove and the Mattock")
-	check(t.desc != "", "and the Guru describes it")
-	# Without the Mattock the bell is out of reach (the checker).
+	check(Trials.built().has(t) and t.needs == ["glove", "mattock"], "the Ring of Thorns is built, for the Glove and the Delver's Pick")
+	check(t.desc != "", "and the Ringreader describes it")
+	# Without the Delver's Pick the bell is out of reach (the checker).
 	var text := FileAccess.get_file_as_string(World.room_path(t.room))
 	var bare := Reach.new({t.room: text}, {"glove": true})
-	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 90, 7)), "without the Mattock the bell can't be reached")
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 90, 7)), "without the Delver's Pick the bell can't be reached")
 	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
 	GameState.set_flag("spring:trunk")
 	GameState.set_flag("spring:mist")
@@ -1582,7 +1582,7 @@ func test_the_mantra_of_thorns_is_cleared_by_pogo() -> void:
 	await frames(5)
 	Menus.start_trial(w, p, t)
 	await frames(5)
-	check(w.room.id == "trials/thorns", "the Guru sends you there")
+	check(w.room.id == "trials/thorns", "the Ringreader sends you there")
 	var bell: TrialGoal = w.room.get_tree().get_first_node_in_group("trial_goal")
 	var bulbs: Array = []
 	for c in w.room.get_children():
@@ -1689,13 +1689,13 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 		await frames(int(BossRush.NEXT_DELAY * 60) + 10)
 	check(n == BossRush.ORDER.size(), "all %d guardians fought (%d)" % [BossRush.ORDER.size(), n])
 	check(not BossRush.active() and w.room.id == "test/a" and p.global_position.distance_to(back) < 4.0,
-		"the rush won, the mantra carries you back to the Guru")
+		"the rush won, the ring carries you back to the Ringreader")
 	check(GameState.data.flags == flags_before and GameState.data.rings == rings_before and p.gold == gold_before,
 		"nothing is won again")
-	check(int(GameState.data.get("clears", 0)) == 0, "and the Evil One's fall plays no ending")
+	check(int(GameState.data.get("clears", 0)) == 0, "and the Everbloom's fall plays no ending")
 	var best := BossRush.best()
 	check(best > 1.0 and best < INF, "the best time is kept (%.1f s)" % best)
-	check(Menus._rush_row().right == Trials.format_time(best), "and shown by the Guru")
+	check(Menus._rush_row().right == Trials.format_time(best), "and shown by the Ringreader")
 	# A killing blow ends the rush and returns you whole.
 	BossRush.start(w, p)
 	await frames(5)
@@ -1706,7 +1706,7 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 	check(Sfx.recent.has("rush_fall"), "a fall tolls the bell low")
 	await frames(5)
 	check(not BossRush.active() and not p.dead and p.hp == p.max_hp, "a killing blow ends the rush, and you live")
-	check(w.room.id == "test/a", "back at the Guru")
+	check(w.room.id == "test/a", "back at the Ringreader")
 	check(BossRush.best() == best, "a fallen rush keeps no time")
 	w.queue_free()
 	BossRush.abandon()
@@ -1716,7 +1716,7 @@ func test_the_boss_rush_runs_every_guardian_again() -> void:
 ## The rush test above ends each fight by the arena's own signal, so a
 ## guardian's real death (Enemy.die) was never seen there: it still sprayed its
 ## gold, rolled a drop and gave its experience every rush, and so did whatever
-## it called in (a Lilith, a daughter, a hound). A rush won some 3,000
+## it called in (a Mothling, a daughter, a hound). A rush won some 3,000
 ## experience and a purse of gold each time. Now a death in a rush leaves none.
 func test_a_boss_rush_kill_wins_no_gold_or_experience() -> void:
 	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
@@ -1742,7 +1742,7 @@ func test_a_boss_rush_kill_wins_no_gold_or_experience() -> void:
 		w.queue_free()
 		return
 	# A foe it calls in, struck down, and the guardian itself, dying for real.
-	var brood := Monodron.new()
+	var brood := Blinkhop.new()
 	w.room.add_child(brood)
 	brood.global_position = p.global_position + Vector2(40, 0)
 	await frames(2)
@@ -1770,7 +1770,7 @@ func test_a_boss_rush_kill_wins_no_gold_or_experience() -> void:
 	# Outside a rush a foe still pays.
 	var w2 := make_world(_temple(), "test/a", cell_feet(5, 16))
 	await frames(3)
-	var foe := Monodron.new()
+	var foe := Blinkhop.new()
 	w2.room.add_child(foe)
 	foe.global_position = w2.player.global_position + Vector2(60, 0)
 	await frames(2)
@@ -1787,7 +1787,7 @@ func test_a_boss_rush_kill_wins_no_gold_or_experience() -> void:
 					check(src.contains("BossRush.active()"), "%s pays only outside a rush" % f)
 
 
-## Pass 158: the boss rush's edges. A fall while the mantra is mid-fade waits
+## Pass 158: the boss rush's edges. A fall while the ring is mid-fade waits
 ## for the fade and then carries you back, once; the clock stops at the fall;
 ## no shrine on the way refills or saves you; no one stands in an arena; a
 ## world freed mid-rush leaves no timer behind; and a new game starts clean.
@@ -1798,7 +1798,7 @@ func test_the_boss_rush_holds_at_its_edges() -> void:
 	for pair: Array in BossRush.ORDER:
 		GameState.set_flag("boss:" + String(pair[0]))
 	GameState.set_flag("lord")
-	# No one stands in the fight: King Grieve's steward waits only outside a rush.
+	# No one stands in the fight: Thane Vorrund's steward waits only outside a rush.
 	w._enter("dartmoor/throne_hall")
 	check(w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "the steward stands in the throne hall after the king falls")
 	BossRush.begin("test/a", cell_feet(5, 16))
@@ -1806,11 +1806,11 @@ func test_the_boss_rush_holds_at_its_edges() -> void:
 	w.travel_to_door("dartmoor/throne_hall", BossRush.ENTRY_DOOR)
 	await frames(3)
 	check(not w.room.get_children().any(func(c: Node) -> bool: return c is Npc), "but not in the rush's arena")
-	# No rest on the way: the shrine by the Zenis gate neither refills nor saves.
+	# No rest on the way: the shrine by the Crown Gate neither refills nor saves.
 	BossRush.run.index = 8
 	BossRush.go(w)
 	await frames(3)
-	check(w.room.id == "dartmoor/zenis_gate", "on to the Zenis gate")
+	check(w.room.id == "dartmoor/zenis_gate", "on to the Crown Gate")
 	var shrine: SaveShrine = null
 	for c in w.room.get_children():
 		if c is SaveShrine:
@@ -1836,7 +1836,7 @@ func test_the_boss_rush_holds_at_its_edges() -> void:
 	check(w.room.id == "dartmoor/zenis_gate", "nothing moves while the world is busy")
 	w.busy = false
 	await frames(12)
-	check(not BossRush.active() and w.room.id == "test/a" and p.hp == p.max_hp, "once it settles, back to the Guru whole")
+	check(not BossRush.active() and w.room.id == "test/a" and p.hp == p.max_hp, "once it settles, back to the Ringreader whole")
 	check(banners[0] == 1, "and the rush ends once (%d banners)" % banners[0])
 	GameState.banner.disconnect(count)
 	# A world freed while the next arena is pending leaves nothing behind.
@@ -1852,30 +1852,30 @@ func test_the_boss_rush_holds_at_its_edges() -> void:
 	w2.queue_free()
 
 
-## Pass 160: the Mantra of Winds, the fourth trial, opened with Thorns by the
-## second spring and built for the Glove and the Wing Boots. Ride a current over
+## Pass 160: the Ring of Winds, the fourth trial, opened with Thorns by the
+## second spring and built for the Glove and the Featherstep Boots. Ride a current over
 ## the spikes, climb a wall into a second, take a double jump to a high plank,
 ## and drop out of the last current over the bell (ride it on and it throws you
-## onto spikes). The mantra-space has no weather: its winds never turn.
+## onto spikes). The inner rings has no weather: its winds never turn.
 func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
 	var t := Trials.find("winds")
-	check(Trials.built().has(t) and t.needs == ["glove", "boots"] and t.desc != "", "the Mantra of Winds is built, for the Glove and the Wing Boots")
+	check(Trials.built().has(t) and t.needs == ["glove", "boots"] and t.desc != "", "the Ring of Winds is built, for the Glove and the Featherstep Boots")
 	var text := FileAccess.get_file_as_string(World.room_path(t.room))
 	var bell := Reach.key(t.room, 86, 11)
 	for kit: Dictionary in [{"glove": true, "boots": true}, {"glove": true, "boots": true, "sky_spring": true}]:
 		var reach := Reach.new({t.room: text}, kit)
 		check(reach.reachable(reach.spot_of(t.room, "P")).has(bell), "the bell is reached with %s" % [kit.keys()])
 	var bare := Reach.new({t.room: text}, {"glove": true})
-	check(not bare.reachable(bare.spot_of(t.room, "P")).has(bell), "without the Wing Boots it is not")
+	check(not bare.reachable(bare.spot_of(t.room, "P")).has(bell), "without the Featherstep Boots it is not")
 	var calm_text := text.replace(">", ".")
 	var calm := Reach.new({t.room: calm_text}, {"glove": true, "boots": true, "stride": true})
 	check(not calm.reachable(calm.spot_of(t.room, "P")).has(bell), "and with no wind, not even with the Stride")
-	# The Guru keeps it sealed, and says why, until the boots are found.
+	# The Ringreader keeps it sealed, and says why, until the boots are found.
 	GameState.new_game()
 	GameState.set_flag("spring:trunk")
 	GameState.set_flag("spring:mist")
 	GameState.data.abilities["glove"] = true
-	check(Trials.is_open(t) and not Trials.ready(t) and Trials.missing(t) == ["Wing Boots"], "two springs open it, but it wants the Wing Boots (%s)" % [Trials.missing(t)])
+	check(Trials.is_open(t) and not Trials.ready(t) and Trials.missing(t) == ["Featherstep Boots"], "two springs open it, but it wants the Featherstep Boots (%s)" % [Trials.missing(t)])
 	GameState.data.abilities["boots"] = true
 	check(Trials.ready(t), "and with them it is ready")
 	# In the real game: the first current carries you over the spikes to the pillar.
@@ -1890,9 +1890,9 @@ func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
 	await frames(5)
 	Menus.start_trial(w, p, t)
 	await frames(5)
-	check(w.room.id == "trials/winds", "the Guru sends you there")
+	check(w.room.id == "trials/winds", "the Ringreader sends you there")
 	var winds := w.room.get_children().filter(func(c: Node) -> bool: return c is WindCurrent)
-	check(winds.size() == 3 and winds.all(func(c: WindCurrent) -> bool: return c.dir() == 1), "three currents, all blowing east even with the Spring of Sky restored")
+	check(winds.size() == 3 and winds.all(func(c: WindCurrent) -> bool: return c.dir() == 1), "three currents, all blowing east even with the Sky Spring restored")
 	var landed := false
 	# Run to the ledge's lip and jump into the current, then let it carry you.
 	var jumped := -1
@@ -1914,18 +1914,18 @@ func test_the_mantra_of_winds_is_ridden_climbed_and_let_go() -> void:
 	Trials.abandon()
 
 
-## Pass 162: the Mantra of Stillness, the fifth trial, opened by the third
-## spring and built for the Glove and the Hour Glass. Still a fall and climb its
+## Pass 162: the Ring of Stillness, the fifth trial, opened by the third
+## spring and built for the Glove and the Stillstone. Still a fall and climb its
 ## footholds, cross a pit on a curtain of water that hangs from the void, and
 ## climb a long fall with a dry niche halfway to wait out the glass.
 func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 	var t := Trials.find("stillness")
-	check(Trials.built().has(t) and t.needs == ["glove", "hourglass"] and t.desc != "", "the Mantra of Stillness is built, for the Glove and the Hour Glass")
+	check(Trials.built().has(t) and t.needs == ["glove", "hourglass"] and t.desc != "", "the Ring of Stillness is built, for the Glove and the Stillstone")
 	var text := FileAccess.get_file_as_string(World.room_path(t.room))
 	var bell := Reach.key(t.room, 68, 7)
 	var reach := Reach.new({t.room: text}, {"glove": true, "hourglass": true})
 	var nodes := reach.reachable(reach.spot_of(t.room, "P"))
-	check(nodes.has(bell), "the bell is reached with the Glove and the Hour Glass")
+	check(nodes.has(bell), "the bell is reached with the Glove and the Stillstone")
 	check(nodes.has(Reach.key(t.room, 50, 19)), "the dry niche halfway up the last fall is a place to wait")
 	var bare := Reach.new({t.room: text}, {"glove": true, "boots": true, "stride": true, "mattock": true})
 	check(not bare.reachable(bare.spot_of(t.room, "P")).has(Reach.key(t.room, 20, 38)), "without the glass not even the first ledge is in reach")
@@ -1933,7 +1933,7 @@ func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 	for s: String in ["trunk", "mist", "sky"]:
 		GameState.set_flag("spring:" + s)
 	GameState.data.abilities["glove"] = true
-	check(Trials.is_open(t) and Trials.missing(t) == ["Hour Glass"], "three springs open it, but it wants the Hour Glass (%s)" % [Trials.missing(t)])
+	check(Trials.is_open(t) and Trials.missing(t) == ["Stillstone"], "three springs open it, but it wants the Stillstone (%s)" % [Trials.missing(t)])
 	# In the real game: still the first fall and climb it to the ledge above.
 	var w := make_world(_temple(), "test/a", cell_feet(5, 16))
 	for s: String in ["trunk", "mist", "sky"]:
@@ -1945,7 +1945,7 @@ func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 	await frames(5)
 	Menus.start_trial(w, p, t)
 	await frames(5)
-	check(w.room.id == "trials/stillness", "the Guru sends you there")
+	check(w.room.id == "trials/stillness", "the Ringreader sends you there")
 	var falls := w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
 	check(falls.size() == 3, "three falls of time-locked water (%d)" % falls.size())
 	for f in 120:
@@ -1982,12 +1982,12 @@ func test_the_mantra_of_stillness_is_climbed_in_frozen_moments() -> void:
 
 
 
-## Pass 168 (bible 3.1): the sixth and last Guru Trial. A descent: ledges
+## Pass 168 (bible 3.1): the sixth and last Ringreader Trial. A descent: ledges
 ## falling away over spikes, planks to drop through, and a needle of thorn bulbs
 ## to fall straight down. A bot that only steers its falls clears it.
 func test_the_mantra_of_falling_is_steered_all_the_way_down() -> void:
 	var t := Trials.find("falling")
-	check(Trials.built().has(t) and t.desc != "" and not t.has("needs"), "the Mantra of Falling is built, for the Glove alone")
+	check(Trials.built().has(t) and t.desc != "" and not t.has("needs"), "the Ring of Falling is built, for the Glove alone")
 	check(Trials.built().size() == Trials.LIST.size(), "all six trials are built")
 	var text := FileAccess.get_file_as_string(World.room_path(t.room))
 	var reach := Reach.new({t.room: text}, {"glove": true})
@@ -2004,7 +2004,7 @@ func test_the_mantra_of_falling_is_steered_all_the_way_down() -> void:
 	check(Trials.ready(t), "three springs open it")
 	Menus.start_trial(w, p, t)
 	await frames(5)
-	check(w.room.id == "trials/falling", "the Guru sends you there")
+	check(w.room.id == "trials/falling", "the Ringreader sends you there")
 	# Waypoints: the column to stand on (or fall toward), and whether to drop
 	# through the plank underfoot once there.
 	var route := [[13, false], [8, false], [13, false], [19, false], [25, false], [34, true], [34, true], [34, true], [34, false], [21, false]]
@@ -2041,20 +2041,20 @@ func test_the_mantra_of_falling_is_steered_all_the_way_down() -> void:
 	check(goal.rung, "the bot rings the bell (lowest row %.1f, waypoint %d)" % [lowest / Room.TILE, step])
 	check(set_backs == 0, "without a single set-back (%d)" % set_backs)
 	var best := Trials.best("falling")
-	print("  Mantra of Falling: %.2f s" % best)
-	check(best < float(t.mantra), "a clean run beats the mantra time (%.2f < %d)" % [best, t.mantra])
+	print("  Ring of Falling: %.2f s" % best)
+	check(best < float(t.mantra), "a clean run beats the ring time (%.2f < %d)" % [best, t.mantra])
 	check(best > float(t.mantra) * 0.5, "which still asks for a clean one")
 	w.queue_free()
 	Trials.abandon()
 
 
-## Pass 164 (bible 10): the cosmetics the Guru Trials promise. Each trial has a
-## mantra time; ring its bell within it and the trial dyes your cloak a color of
+## Pass 164 (bible 10): the cosmetics the Inner Rings promise. Each trial has a
+## ring time; ring its bell within it and the trial dyes your cloak a color of
 ## its own, and Ilse keeps it on her shelf to wear again for nothing.
 func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	var dyes := {}
 	for t: Dictionary in Trials.built():
-		check(float(t.get("mantra", 0)) > 0.0, "%s has a mantra time" % t.name)
+		check(float(t.get("mantra", 0)) > 0.0, "%s has a ring time" % t.name)
 		var item := GameData.item(String(t.get("dye", "")))
 		check(String(item.get("kind", "")) == "dye" and String(item.get("color", "")) != "", "and a dye of its own (%s)" % t.get("dye", ""))
 		dyes[String(t.dye)] = true
@@ -2073,7 +2073,7 @@ func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)
 	Trials.run.time = float(t.mantra) + 0.5
 	var slow := Trials.finish()
-	check(slow.dye == "" and not GameState.owns_dye(String(t.dye)), "a clear outside the mantra earns no dye")
+	check(slow.dye == "" and not GameState.owns_dye(String(t.dye)), "a clear outside the ring earns no dye")
 	Trials.begin(t.id, "eolis/guru_temple", Vector2.ZERO)
 	Trials.run.time = float(t.mantra) - 0.5
 	var quick := Trials.finish()
@@ -2090,7 +2090,7 @@ func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	check(Trials.finish().dye == "", "a second quick clear does not give it twice")
 	var saved := GameState.sanitize(JSON.parse_string(JSON.stringify(GameState.data)))
 	check(Array(saved.dyes).has(String(t.dye)), "the save keeps it")
-	# The Guru's list names each mantra time and keeps the sealed ones sealed.
+	# The Ringreader's list names each ring time and keeps the sealed ones sealed.
 	GameState.set_flag("spring:trunk")
 	p.abilities["glove"] = true
 	GameState.data.abilities["glove"] = true
@@ -2100,16 +2100,16 @@ func test_a_trial_rung_within_its_mantra_dyes_the_cloak() -> void:
 	var rows := {}
 	for r: Dictionary in menu.rows:
 		rows[String(r.label)] = r
-	check(String(rows["Mantra of Walls"].detail).contains("Mantra Slate is yours"), "Walls says its dye is yours (%s)" % rows["Mantra of Walls"].detail)
-	check(String(rows["Mantra of Edges"].detail).contains("Ring it within 0:14.0 for Ledge Coral"), "Edges names its mantra time and dye (%s)" % rows["Mantra of Edges"].detail)
-	check(rows["Mantra of Stillness"].right == "Sealed" and not String(rows["Mantra of Stillness"].detail).contains("Ring it"), "a trial still sealed stays sealed, with no mantra yet")
+	check(String(rows["Ring of Walls"].detail).contains("Grain Slate is yours"), "Walls says its dye is yours (%s)" % rows["Ring of Walls"].detail)
+	check(String(rows["Ring of Edges"].detail).contains("Ring it within 0:14.0 for Ledge Coral"), "Edges names its ring time and dye (%s)" % rows["Ring of Edges"].detail)
+	check(rows["Ring of Stillness"].right == "Sealed" and not String(rows["Ring of Stillness"].detail).contains("Ring it"), "a trial still sealed stays sealed, with no ring yet")
 	menu.queue_free()
 	arena.get_tree().paused = false
 	w.queue_free()
 	Trials.abandon()
 
 
-## Pass 165 (bible 13): a mantra dye won rings out with its own sound over the
+## Pass 165 (bible 13): a ring dye won rings out with its own sound over the
 ## trial bell; a clear that earns none rings the bell alone.
 func test_a_won_dye_sounds_over_the_bell() -> void:
 	GameState.new_game()
@@ -2131,7 +2131,7 @@ func test_a_won_dye_sounds_over_the_bell() -> void:
 
 
 ## Pass 172: the Journey page shows Completion's shares mid-game (the 100% goal
-## gates the Lord's Gold and the Guru's rush) and the guardians found so far,
+## gates the Crown Gold and the Ringreader's rush) and the guardians found so far,
 ## never one whose arena you have not entered.
 func test_the_journey_page_counts_the_world_and_the_guardians_found() -> void:
 	var ids := Completion.GUARDIANS.map(func(g: Array) -> String: return g[0])
@@ -2142,7 +2142,7 @@ func test_the_journey_page_counts_the_world_and_the_guardians_found() -> void:
 	check(String(w.catalog["dartmoor/alpha_den"].boss) == "clockwork_alpha" and String(w.catalog["eolis/plaza"].get("boss", "")) == "",
 		"the catalog knows which rooms are arenas")
 	var found := Completion.guardians_found(w.catalog)
-	check(found.size() == 1 and found[0].id == "rokusutahn" and not found[0].beaten, "standing in the Root Chamber, only Rokusutahn is found, still waiting")
+	check(found.size() == 1 and found[0].id == "rokusutahn" and not found[0].beaten, "standing in the Root Chamber, only Gnarlmaw is found, still waiting")
 	GameState.set_flag("boss:rokusutahn")
 	w._enter("branches/thorn_yard")
 	await frames(2)
@@ -2153,7 +2153,7 @@ func test_the_journey_page_counts_the_world_and_the_guardians_found() -> void:
 	check(rows[0].right == "%d%%" % int(stats.percent), "the page opens on the percent of the world")
 	check(rows[4].label == "Guardians beaten" and rows[4].right == "1 / %d" % BossArena.BOSSES.size(), "and counts the guardians beaten (%s)" % rows[4].right)
 	var names := rows.map(func(r: Dictionary) -> String: return r.label)
-	check(names.has("Rokusutahn") and names.has("The Bark Knight Captain") and not names.has("Pakukame"), "it names the guardians found, and no other")
+	check(names.has("Gnarlmaw") and names.has("The Bark Knight Captain") and not names.has("Snapcrown"), "it names the guardians found, and no other")
 	check(rows[-1].label == "%d not yet found" % (BossArena.BOSSES.size() - 2), "and says how many are still to find (%s)" % rows[-1].label)
 	var menu := ListMenu.new()
 	arena.add_child(menu)
@@ -2196,8 +2196,8 @@ func test_the_journey_counts_every_life_fruit_and_mana_dew() -> void:
 
 
 ## Pass 253: bible 9 said the game gives 29 skill points: 15 ranks, 9 from the
-## main bosses and 7 from whole mantras. But twelve guardians give one (the
-## Evil One's three forms and the Drowned Warden among them), so it gives 34.
+## main bosses and 7 from whole rings. But twelve guardians give one (the
+## Everbloom's three forms and the Drowned Warden among them), so it gives 34.
 ## The Journey page now counts them, earned against the whole, and learning or
 ## unlearning a skill never moves the count.
 func test_the_journey_counts_every_skill_point_the_game_gives() -> void:
@@ -2208,7 +2208,7 @@ func test_the_journey_counts_every_skill_point_the_game_gives() -> void:
 	for id: String in w.catalog:
 		mantras += int(w.catalog[id].get("mantras", 0))
 	check(GameState.RANK_XP.size() - 1 == 15 and givers.size() == 12 and mantras == 15 and Trials.LIST.size() == 6,
-		"15 ranks, 12 guardians that give a point, 15 Mantra Shards in the rooms and 6 trials (%d, %d, %d)" % [givers.size(), mantras, Trials.LIST.size()])
+		"15 ranks, 12 guardians that give a point, 15 Grain Shards in the rooms and 6 trials (%d, %d, %d)" % [givers.size(), mantras, Trials.LIST.size()])
 	var s := Completion.skill_points(w.catalog)
 	check(int(s.points_total) == 34 and int(s.points) == 0, "34 points in all, as bible 9 counts them, and a new save has none (%d, %d)" % [s.points_total, s.points])
 	var cost := 0
@@ -2226,7 +2226,7 @@ func test_the_journey_counts_every_skill_point_the_game_gives() -> void:
 
 
 ## Pass 269 (bible 10.3): the Inventory page lists what you carry to use and
-## the charts you hold. An Elixir showed nowhere once bought, and the charts
+## the charts you hold. An Amber Draught showed nowhere once bought, and the charts
 ## only on the map, so nothing said which zones were still uncharted.
 func test_the_inventory_lists_supplies_and_charts() -> void:
 	var w := make_world(_town(), "test/town")
@@ -2243,8 +2243,8 @@ func test_the_inventory_lists_supplies_and_charts() -> void:
 	for r: Dictionary in rows:
 		by[r.label] = r
 	var total := GameData.table("items").values().filter(func(i: Dictionary) -> bool: return i.get("kind", "") == "chart").size()
-	check(by.has("Supplies") and by["Ointment"].right == "x2" and by["Elixir"].right == "x1", "Ointments and the Elixir show how many you carry")
-	check(by.has("Charts, 2 of %d" % total) and by.has("Chart of Eolis") and by.has("Chart of Dartmoor"), "each chart held, counted against every chart sold (%s)" % [labels.call()])
+	check(by.has("Supplies") and by["Barkbalm"].right == "x2" and by["Amber Draught"].right == "x1", "Barkbalms and the Amber Draught show how many you carry")
+	check(by.has("Charts, 2 of %d" % total) and by.has("Chart of Hearthroot") and by.has("Chart of Vorrhallow"), "each chart held, counted against every chart sold (%s)" % [labels.call()])
 	check(by.has("%d not yet charted" % (total - 2)) and by["%d not yet charted" % (total - 2)].get("enabled", true) == false, "and how many are still to buy")
 	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")
 	check(blank.is_empty(), "every line says what it does (%s)" % [blank])
@@ -2400,7 +2400,7 @@ func test_three_flasks_hold_three_journeys() -> void:
 	check(picker.cursor in [0, 2], "the shelf opens on a journey (%d)" % picker.cursor)
 	picker.cursor = 0
 	var said := " / ".join(picker.details())
-	check(said.contains("Apolune") and said.contains("Trunk Hollows") and said.contains(GameState.RANKS[4]) and said.contains("1,820 gold") and said.contains("One spring of three flows"), "a full flask tells its journey (%s)" % said)
+	check(said.contains("Amberlee") and said.contains("Heartwood") and said.contains(GameState.RANKS[4]) and said.contains("1,820 gold") and said.contains("One spring of three flows"), "a full flask tells its journey (%s)" % said)
 	check(float(picker.saves[2].fill) > float(picker.saves[0].fill), "a higher rank fills its flask higher")
 	picker.cursor = 1
 	check(" ".join(picker.details()).begins_with("An empty flask."), "an empty one says so")
@@ -2771,12 +2771,12 @@ func test_a_sign_and_the_pause_menu_take_turns() -> void:
 	check(note.contains("`test_a_sign_and_the_pause_menu_take_turns`"), "the bible names the test")
 
 
-## Pass 441: the Ointment by the buttons. The original's Ointment is rubbed on
+## Pass 441: the Barkbalm by the buttons. The source game's Barkbalm is rubbed on
 ## from the menu and turns every blow aside for a while. It was only ever used
 ## by a call (`use_ointment`), never from the pause menu with the buttons, nor
 ## against a real blow. The whole game, a Rot Dwarf beside the hero: Pause,
-## Down to "Use Ointment", Jump. The menu closes, the dwarf's blows land
-## nothing for the Ointment's ten seconds, and the next after it lands.
+## Down to "Use Barkbalm", Jump. The menu closes, the dwarf's blows land
+## nothing for the Barkbalm's ten seconds, and the next after it lands.
 func test_the_ointment_is_rubbed_on_with_the_buttons() -> void:
 	Settings.path = TEMP_SETTINGS
 	GameState.new_game()
@@ -2796,7 +2796,7 @@ func test_the_ointment_is_rubbed_on_with_the_buttons() -> void:
 	await _tap("pause")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	await _tap("move_down")
-	check(menu.is_open and String(menu.rows[menu.cursor].label) == "Use Ointment", "Pause, then Down to Use Ointment (%s)" % menu.rows[menu.cursor].label)
+	check(menu.is_open and String(menu.rows[menu.cursor].label) == "Use Barkbalm", "Pause, then Down to Use Barkbalm (%s)" % menu.rows[menu.cursor].label)
 	await _tap("jump")
 	check(not menu.is_open and not arena.get_tree().paused and p.ointments == 0, "Jump rubs it on, and the menu closes")
 	check(p.ointment_left > Player.OINTMENT_TIME - 0.1, "a full %d seconds of it, none spent in the menu (%.2f s left)" % [int(Player.OINTMENT_TIME), p.ointment_left])
@@ -2829,9 +2829,9 @@ func test_the_ointment_is_rubbed_on_with_the_buttons() -> void:
 
 ## Pass 460 (bible 3.1): the Boss Rush entered and left by the buttons. Every
 ## rush test began it with `BossRush.start` and left by a call. The whole game,
-## in the Guru's temple with every guardian down: Up at the Guru, Down to Boss
-## Rush, Jump, and the mantra carries the hero into the first arena; then Pause,
-## Down to "Leave the rush", Jump, and he is back by the Guru, the clock stopped,
+## in the Ringreader's temple with every guardian down: Up at the Ringreader, Down to Boss
+## Rush, Jump, and the ring carries the hero into the first arena; then Pause,
+## Down to "Leave the rush", Jump, and he is back by the Ringreader, the clock stopped,
 ## the guardian's music gone and no arena still fighting.
 func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
 	Settings.path = TEMP_SETTINGS
@@ -2855,7 +2855,7 @@ func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
 	var by_guru := p.global_position
 	p.hp = 5
 	await _tap("move_up")
-	check(menu.is_open, "Up at the Guru opens his menu")
+	check(menu.is_open, "Up at the Ringreader opens his menu")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	var downs := 0
 	while String(menu.rows[menu.cursor].label) != "Boss Rush" and downs < 10:
@@ -2871,7 +2871,7 @@ func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
 	while (g.world.room.id != first or g.world.busy) and waited < 240:
 		await frames(1)
 		waited += 1
-	check(g.world.room.id == first, "and the mantra carries him into the first arena (%s)" % g.world.room.id)
+	check(g.world.room.id == first, "and the ring carries him into the first arena (%s)" % g.world.room.id)
 	await frames(20)
 	Input.action_press("move_right")
 	waited = 0
@@ -2896,7 +2896,7 @@ func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
 		await frames(1)
 		waited += 1
 	await frames(30)
-	check(g.world.room.id == Trials.TEMPLE and p.global_position.distance_to(by_guru) < 24.0, "Jump takes him back by the Guru (%s, %.0f px)" % [g.world.room.id, p.global_position.distance_to(by_guru)])
+	check(g.world.room.id == Trials.TEMPLE and p.global_position.distance_to(by_guru) < 24.0, "Jump takes him back by the Ringreader (%s, %.0f px)" % [g.world.room.id, p.global_position.distance_to(by_guru)])
 	check(not BossRush.active() and not menu.is_open and not arena.get_tree().paused, "the rush is over and the game runs")
 	check(not BossArena.any_fighting(arena.get_tree()), "no arena is still fighting")
 	check(String(Music.track) != fight_track, "and the guardian's music is gone (%s)" % Music.track)
@@ -2942,7 +2942,7 @@ func test_a_hand_edited_save_still_fills_its_flask() -> void:
 	picker.open()
 	check(not picker.saves[0].is_empty(), "the flask is full")
 	var said := " / ".join(picker.details())
-	check(said.contains("Apolune") and said.contains("1,234,567 gold") and said.contains("One spring of three flows"), "and tells its journey (%s)" % said)
+	check(said.contains("Amberlee") and said.contains("1,234,567 gold") and said.contains("One spring of three flows"), "and tells its journey (%s)" % said)
 	var got := []
 	picker.chosen.connect(func(slot: int, fresh: bool) -> void: got.append([slot, fresh]))
 	picker.confirm()
@@ -2976,7 +2976,7 @@ func test_the_flasks_are_told_apart_by_shape() -> void:
 		check(not seen.has(shape), "flask %d's mark is its own shape (%s)" % [i, shape])
 		seen[shape] = true
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("Told apart by shape as well as color") and bible.contains("a leaf for the Trunk"), "bible 14 says how the flasks are told apart")
+	check(bible.contains("Told apart by shape as well as color") and bible.contains("a leaf for the Heartwood"), "bible 14 says how the flasks are told apart")
 
 
 ## Pass 350 (bible 13.3): the title's flasks borrowed the rest's chime, the
@@ -3179,7 +3179,7 @@ func test_the_menus_answer_the_real_controller() -> void:
 ## with real taps and pass 413 a shop, but no test had pressed Pause in play:
 ## the game's own `_check_pause` and the pause menu's rows were only reached by
 ## calling `Menus.open_pause`. Here the whole game runs, Pause opens the menu
-## over a frozen world, Down and Jump rub on an Ointment from it (bible 10.2,
+## over a frozen world, Down and Jump rub on an Barkbalm from it (bible 10.2,
 ## "rubbed on from the pause menu"), a second Pause finds that row refused
 ## while one is on, and Dash backs out to play.
 func test_the_pause_menu_answers_the_real_controller() -> void:
@@ -3202,7 +3202,7 @@ func test_the_pause_menu_answers_the_real_controller() -> void:
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	check(menu.cursor == 0, "on Resume")
 	await _tap("move_down")
-	check(String(menu.rows[menu.cursor].label) == "Use Ointment", "Down to Use Ointment (%s)" % menu.rows[menu.cursor].label)
+	check(String(menu.rows[menu.cursor].label) == "Use Barkbalm", "Down to Use Barkbalm (%s)" % menu.rows[menu.cursor].label)
 	Sfx.recent.clear()
 	await _tap("jump")
 	check(p.ointments == 0 and p.ointment_left > Player.OINTMENT_TIME - 1.0, "Jump rubs it on: none left, %d s of safety" % int(Player.OINTMENT_TIME))
@@ -3438,7 +3438,7 @@ func test_the_equipment_page_changes_hands_mid_guard() -> void:
 		return on and not menu.is_open and not arena.get_tree().paused
 	Input.action_press("block")
 	await frames(3)
-	check(p.is_blocking, "Block held raises the Small Shield")
+	check(p.is_blocking, "Block held raises the Buckler")
 	var went: bool = await wear.call("dwarvish_broad_sword")
 	check(went and GameState.data.equipment.blade == "dwarvish_broad_sword", "the buttons put the Broad Sword in hand (%s)" % GameState.data.equipment.blade)
 	check(not p.has_shield and not p.is_blocking, "two hands on the hilt, the guard is down though Block is still held")
@@ -3508,7 +3508,7 @@ func test_the_off_hand_changes_while_the_dagger_flies() -> void:
 	var flying: RuneDagger = p.rune_dagger
 	check(is_instance_valid(flying) and daggers.call() == 1, "Throw lets it fly")
 	var put_on: bool = await wear.call("small_shield")
-	check(put_on and p.has_shield and not GameState.offhand_free(), "with it still in the air, the buttons strap the Small Shield on")
+	check(put_on and p.has_shield and not GameState.offhand_free(), "with it still in the air, the buttons strap the Buckler on")
 	check(is_instance_valid(flying) and daggers.call() == 1, "the dagger is still in flight, alone (%d)" % daggers.call())
 	for i in 90:
 		await frames(1)
@@ -3534,3 +3534,34 @@ func test_the_off_hand_changes_while_the_dagger_flies() -> void:
 	_restore()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_the_off_hand_changes_while_the_dagger_flies`"), "the bible names the test")
+
+
+## Pass 461: the game was renamed, and Godot keeps saves in a folder named for
+## the game, so the first start under the new name copies the saves and the
+## settings over from the old folder (named in data/rename_map.json). It never
+## overwrites a file the new folder has, and copies nothing else.
+func test_old_saves_come_over_to_the_new_name() -> void:
+	var map: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/rename_map.json"))
+	var root := OS.get_user_data_dir().path_join("rename_test")
+	var new_dir := root.path_join("Yldenfall")
+	var old_dir := root.path_join(String(map.user_dir_before))
+	DirAccess.make_dir_recursive_absolute(new_dir)
+	DirAccess.make_dir_recursive_absolute(old_dir)
+	for f: String in ["save_1.json", "save_2.json", "settings.cfg", "notes.txt"]:
+		var w := FileAccess.open(old_dir.path_join(f), FileAccess.WRITE)
+		w.store_string("old " + f)
+		w.close()
+	var keep := FileAccess.open(new_dir.path_join("save_2.json"), FileAccess.WRITE)
+	keep.store_string("new save_2.json")
+	keep.close()
+	check(GameState.bring_old_saves(new_dir) == 2, "two files come over: save_1 and the settings")
+	check(FileAccess.get_file_as_string(new_dir.path_join("save_1.json")) == "old save_1.json", "the old save is copied whole")
+	check(FileAccess.get_file_as_string(new_dir.path_join("save_2.json")) == "new save_2.json", "a save the new folder has is kept")
+	check(not FileAccess.file_exists(new_dir.path_join("notes.txt")), "and nothing but saves and settings comes over")
+	check(GameState.bring_old_saves(new_dir) == 0, "a second start copies nothing")
+	check(GameState.bring_old_saves(root.path_join("nowhere").path_join("Yldenfall")) == 0, "with no old folder, nothing happens")
+	for d: String in [new_dir, old_dir]:
+		for f: String in DirAccess.get_files_at(d):
+			DirAccess.remove_absolute(d.path_join(f))
+		DirAccess.remove_absolute(d)
+	DirAccess.remove_absolute(root)

@@ -216,7 +216,7 @@ def _erase_hue(src, lo, hi, white=False):
 def _recolor(src, spec):
     """`src` (premultiplied RGBA) with the hues in spec["hue"] (degrees) turned by
     spec["shift"] degrees and their saturation scaled by spec["sat"]: a set's colors moved to
-    match a layer drawn over it (the Battle Suit's teal onto the Battle Helmet's)."""
+    match a layer drawn over it (the Elven Plate's teal onto the Elven Helm's)."""
     lo, hi = spec["hue"]
     a = src[..., 3:4]
     rgb = np.where(a > 1e-6, src[..., :3] / np.maximum(a, 1e-6), 0)
@@ -644,7 +644,7 @@ def imported(name, cell, origin, code_meta):
             elif cfg.get("detect") == "eye":
                 meta = imp.detect_eye(grid, meta)
             if cfg.get("head") == "top":
-                # A set drawn helmed (the Battle Suit with its helmet): the crown is
+                # A set drawn helmed (the Elven Plate with its helmet): the crown is
                 # simply the top of the figure, the crest included.
                 ys, xs = np.nonzero(np.asarray(img)[..., 3] > 0)
                 if len(ys):

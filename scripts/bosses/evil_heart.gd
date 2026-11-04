@@ -1,24 +1,24 @@
 class_name EvilHeart
 extends Enemy
-## The Evil One, phase 3: The Core (design bible 8.9). Starved of its veins,
-## the meteor's heart hangs in the dark of its last chamber, a crystal
+## The Everbloom, phase 3: The Core (design bible 8.9). Starved of its veins,
+## the Everbloom's heart hangs in the dark of its last chamber, a crystal
 ## eye-flower too high for any blade, and lashes out: beams, seeds of crystal
 ## and waves of spikes. But the Tree has reached it. On a rhythm the floor
 ## under it glows green and a root whips up, binds it and drags it down; while
-## it is held only the Dragon Slayer cuts it (every other blade, and magic,
+## it is held only the Severance cuts it (every other blade, and magic,
 ## glances off). Each third of its life cut away frees a spring's stolen light
 ## (a HeartLight in the vault), which heals you and quickens the Tree's roots.
 ##
 ## Phases follow the lights freed: phase 2 adds the spike wave, phase 3
 ## shortens its tells (never under Enemy.MIN_TELEGRAPH) and makes it burst
-## when the root lets go, the last half second flashing first. The Hour Glass
+## when the root lets go, the last half second flashing first. The Stillstone
 ## holds it, its roots and its beams, so time stopped while it is bound is time
 ## to cut.
 
 signal defeated
 
-const DISPLAY_NAME := "The Evil One"
-const EPITHET := "Heart of the Meteor"
+const DISPLAY_NAME := "The Everbloom"
+const EPITHET := "Heart of the Bloom"
 const PHASES := [0.66, 0.33]
 const MAX_HP := 300
 const SIZE := Vector2(80, 56)
@@ -133,9 +133,9 @@ func lights_freed() -> int:
 	return lights.filter(func(l: HeartLight) -> bool: return l.lit).size()
 
 
-## Only the Dragon Slayer's edge, and only while a root holds it down.
+## Only the Severance's edge, and only while a root holds it down.
 func _modify_damage(damage: int, _dir: Vector2) -> int:
-	# Only the Dragon Slayer in hand: a thrown dagger glances off (pass 188).
+	# Only the Severance in hand: a thrown dagger glances off (pass 188).
 	if not bound() or thrown:
 		return 0
 	var p := player()

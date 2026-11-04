@@ -1,6 +1,6 @@
 class_name LanternGhost
 extends Enemy
-## A Lantern Ghost of the Mist (design bible 7): the soul of a drowned dwarf,
+## A Lantern Ghost of the Haar (design bible 7): the soul of a drowned dwarf,
 ## a hooded wisp that drifts through wood and stone. Out in the fog it is all but
 ## invisible; it shows only near light (Fog.clear_at): your own pocket of sight,
 ## a lantern, a shrine. It drifts toward you, and once close its eyes flare (a

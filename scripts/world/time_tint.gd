@@ -1,6 +1,6 @@
 class_name TimeTint
 extends CanvasModulate
-## While the Hour Glass holds time still the world drains to a cold, pale blue.
+## While the Stillstone holds time still the world drains to a cold, pale blue.
 
 const STOPPED := Color(0.72, 0.82, 1.0)
 

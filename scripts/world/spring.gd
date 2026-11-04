@@ -1,8 +1,8 @@
 class_name Spring
 extends Interactable
-## One of the World Tree's three springs (design bible 4.2). Dry and choked
+## One of the Ylden's three springs (design bible 4.2). Dry and choked
 ## until restored by pressing Up; restoring it sets the `spring:<id>` flag,
-## which hardens sap into amber and fills a third of the Eolis fountain.
+## which hardens sap into amber and fills a third of the Hearthroot fountain.
 
 const STONE := Color("6b6380")
 const STONE_DARK := Color("4a4458")
@@ -11,8 +11,8 @@ const WATER_LIGHT := Color("d8f1ff")
 const SLUDGE := Color("6e4a2c")
 
 var spring_id := "trunk"
-var spring_name := "Spring of Trunk"
-var text := "The sap hardens to amber. Water returns to Eolis."
+var spring_name := "Heartwood Spring"
+var text := "The sap hardens to amber. Water returns to Hearthroot."
 ## A flag that must be set before the spring can be cleared ("" = none).
 var needs_flag := ""
 

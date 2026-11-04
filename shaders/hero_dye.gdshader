@@ -2,7 +2,7 @@ shader_type canvas_item;
 // The PixelLab hero sets (design bible 13.5) draw the cloak in a key green, like a
 // green screen, and keep the elf's purple hair: both are recolored here. Every
 // texel of the key (a saturated pure green no other part of the hero uses) takes
-// the cloak dye, keeping its shading; with `glow` (the Lord's Gold) a band of
+// the cloak dye, keeping its shading; with `glow` (the Crown Gold) a band of
 // light runs down the cloth. With `hair_on`, every texel of the hair's purple
 // takes the hair color the same way. The armor's violet-tinted steel and the
 // outline are too grey or too dark to count as hair.

@@ -4,7 +4,7 @@ extends Node2D
 ## and ivy hanging from ceilings, shelves on walls (sprites from
 ## tools/art/decorgen.py in assets/decor/). Scattered deterministically from the
 ## room id, so a room always looks the same. Pure decoration: no collision.
-## Light-giving pieces (the Trunk's cyan fungus) get a soft pulsing glow.
+## Light-giving pieces (the Heartwood's cyan fungus) get a soft pulsing glow.
 
 const DIR := "res://assets/decor/"
 ## Chance out of 100 for each kind of open cell.

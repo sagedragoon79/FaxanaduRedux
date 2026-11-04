@@ -1,8 +1,8 @@
 class_name Foreman
 extends Enemy
-## The Foreman (design bible 7 and 8): a rock golem the dwarves of Forepaw set
-## to work the tower, still wearing a foreman's lamp-helm, with the Mattock
-## wedged in its back. The mini-boss of the Tower of Trunk.
+## The Foreman (design bible 7 and 8): a rock golem the dwarves of Kettleforge set
+## to work the tower, still wearing a foreman's lamp-helm, with the Delver's Pick
+## wedged in its back. The mini-boss of the Hollin Tower.
 ##
 ## It plods after the player and picks one of three attacks:
 ## - Pound (close): fists overhead (tell), then a two-fisted slam that crushes
@@ -18,7 +18,7 @@ extends Enemy
 signal defeated
 
 const DISPLAY_NAME := "The Foreman"
-const EPITHET := "Golem of Forepaw"
+const EPITHET := "Golem of Kettleforge"
 const SHEET := "foreman"
 const MAX_HP := 220
 const PHASES := [0.5]

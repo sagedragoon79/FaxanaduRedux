@@ -2,7 +2,7 @@ name: Tower Foot
 zone: tower
 map: 14, -3
 chest_gold: 160
-sign: 30, 41, The dwarves of Forepaw bolted their tower to the Tree.|Its stairs are long gone. Climb the scaffolds.
+sign: 30, 41, The dwarves of Kettleforge bolted their tower to the Tree.|Its stairs are long gone. Climb the scaffolds.
 sign: 7, 41, Dwarf-cut stone. A sword only scratches it.
 prop: 24, 41, lift
 sign: 35, 19, An iron damper seals the old flue overhead.|Its chain runs up to the great winch. Only the dwarves could turn it.

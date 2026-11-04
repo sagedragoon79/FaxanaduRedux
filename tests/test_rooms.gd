@@ -211,19 +211,19 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 	check(GameState.mantra_stops("").is_empty() and not GameState.mantra_path_open(), "a new game forgets it all")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
 	check(GameState.mantra_path_open() and GameState.flag("boss:zoradohna"), "spring and boss flags survive")
-	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Mantra Path stops survive")
+	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Grain Road stops survive")
 	var at: Array = GameState.data.gurus["tower/forepaw"]
 	check(is_equal_approx(float(at[0]), 168.0), "with their positions")
 	check(GameState.temper_level("short_sword") == 2, "the blade's temper survives")
 	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
-	check(GameState.has_ability("mattock"), "the Mattock survives")
+	check(GameState.has_ability("mattock"), "the Delver's Pick survives")
 	GameState.delete_save(SAVE_SLOT)
 	GameState.slot = slot_was
 
 
 
 ## Pass 120: what passes 113 to 119 added comes back after a save: the card
-## keys and the Joker, the Battle Helmet and its mask, a trial's best, the
+## keys and the Glass, the Elven Helm and its mask, a trial's best, the
 ## card vaults opened. A damaged key entry is dropped, never a crash.
 func test_late_additions_survive_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
@@ -245,7 +245,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 	check(GameState.key_count("queen") == 2 and GameState.key_count("joker") == 1, "the card keys survive")
 	check(GameState.data.keys.get("lantern") == true, "and the Lantern Key, kept for good")
 	GameState.apply(p)
-	check(GameState.data.equipment.helmet == "battle_helmet" and p.max_hp == top, "the Battle Helmet and its mask survive, health full (%d)" % p.max_hp)
+	check(GameState.data.equipment.helmet == "battle_helmet" and p.max_hp == top, "the Elven Helm and its mask survive, health full (%d)" % p.max_hp)
 	check(p.hp == p.max_hp, "loading fills the new top, not the old one (%d/%d)" % [p.hp, p.max_hp])
 	check(is_equal_approx(float(GameState.data.trials["walls"]), 31.5), "a trial's best survives")
 	check(GameState.is_collected("mist/feather_hollow:4,19"), "an opened card door stays open")
@@ -256,7 +256,7 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 
 
 
-## Act II (the Mist): every world change made there comes back after a save,
+## Act II (the Haar): every world change made there comes back after a save,
 ## and the rooms rebuild in their changed state.
 func test_act_two_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
@@ -276,7 +276,7 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 	check(GameState.flag("boss:zorugeriru") and GameState.flag("spring:mist"), "boss and spring flags survive")
 	check((GameState.data.rings as Array) == ["elf", "ruby", "dworf"], "the three rings survive")
 	check(GameState.key_count("lantern") == 1, "the Lantern Key survives")
-	check(GameState.has_ability("boots") and GameState.has_ability("deluge"), "the Wing Boots and Deluge survive")
+	check(GameState.has_ability("boots") and GameState.has_ability("deluge"), "the Featherstep Boots and Torrent survive")
 	var found := {}
 	for stop: Array in [["mist/lantern_landing", MistCurtain], ["mist/marsh_road", FireSeal], ["mist/dry_cistern", DryBasin],
 			["mist/spring_of_mist", DryBasin]]:
@@ -290,7 +290,7 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 	check(found.get("mist/marsh_road", false), "the fire seal stays out")
 	check(found.get("mist/dry_cistern", false), "the cistern stays full")
 	check(found.get("mist/spring_of_mist", false), "the hydra's tanks stay full")
-	check(_arena_quiet(w), "and Zorugeriru doesn't come back")
+	check(_arena_quiet(w), "and the Haar Wyrm doesn't come back")
 	w._enter("mist/victim_causeway")
 	await frames(2)
 	check(w.room.is_one_way_at(Vector2(17 * Room.TILE + 4, 20 * Room.TILE + 4)), "the drowned boardwalks stay risen")
@@ -299,7 +299,7 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 
 
 
-## Act II (the Branches): the Elven Stride, Conflate's charts, Pakukame's fall
+## Act II (the High Boughs): the Elven Stride, Sylvarre's charts, Snapcrown's fall
 ## and the skills bought with its point all come back after a save.
 func test_branches_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
@@ -321,9 +321,9 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 	GameState.new_game()
 	check(not GameState.has_ability("stride") and GameState.data.skills.is_empty(), "a new game forgets it all")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
-	check(GameState.has_ability("stride") and GameState.flag("boss:pakukame"), "the Stride and Pakukame's fall survive")
-	check(GameState.has_chart("branches"), "the Branches chart survives")
-	check(GameState.data.gurus.has("branches/conflate"), "Conflate's guru is still met")
+	check(GameState.has_ability("stride") and GameState.flag("boss:pakukame"), "the Stride and Snapcrown's fall survive")
+	check(GameState.has_chart("branches"), "the High Boughs chart survives")
+	check(GameState.data.gurus.has("branches/conflate"), "Sylvarre's ringreader is still met")
 	GameState.apply(w.player)
 	check(w.player.bonus_air_dashes == 1 and w.player.abilities.get("stride", false), "Second Stride is back on the player")
 	w._enter("branches/windloft")
@@ -334,13 +334,13 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 	check(not left, "the Stride doesn't come back to its plinth")
 	w._enter("branches/crown_leaf")
 	await frames(2)
-	check(_arena_quiet(w), "and Pakukame doesn't come back")
+	check(_arena_quiet(w), "and Snapcrown doesn't come back")
 	GameState.delete_save(SAVE_SLOT)
 	GameState.slot = slot_was
 
 
 
-## Daybreak: rest at the Broken Shrine with the Life Fruit taken and the Sky
+## Carillon: rest at the Broken Shrine with the Life Fruit taken and the Sky
 ## Steps chest opened; the save brings it all back, and the rooms rebuild that way.
 func test_daybreak_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
@@ -442,7 +442,7 @@ func test_life_fruit_and_shards() -> void:
 	await frames(10)
 	check(w.player.max_hp == hp0 + GameState.LIFE_FRUIT_HP, "Life Fruit adds half a mask (%d)" % w.player.max_hp)
 	check(w.player.flask_max == flask0 + 1, "three Potion Shards add a flask charge")
-	check(int(GameState.data.mantra_shards) == 1, "one Mantra Shard counted")
+	check(int(GameState.data.mantra_shards) == 1, "one Grain Shard counted")
 	check(int(GameState.data.max_hp) == w.player.max_hp, "stats captured into the game state")
 	w.player.input.move_x = 0
 	w.use_door(1)
@@ -461,7 +461,7 @@ func test_mantra_shards_give_a_skill_point() -> void:
 	await frames(5)
 	w.player.input.move_x = 1
 	await frames(50)
-	check(int(GameState.data.skill_points) == 1, "three Mantra Shards make a skill point")
+	check(int(GameState.data.skill_points) == 1, "three Grain Shards make a skill point")
 
 
 func test_glove_pickup_grants_wall_jump() -> void:
@@ -555,7 +555,7 @@ func test_fake_wall_is_passable() -> void:
 	check(GameState.flag("secret:test/a"), "secret found flag set")
 
 
-## Black Onyx (bible A7): illusory walls shimmer at their seams and hidden
+## Seer's Lens (bible A7): illusory walls shimmer at their seams and hidden
 ## planks (legend `i`) show faintly, but only while you carry it.
 func test_black_onyx_shows_seams_and_hidden_planks() -> void:
 	var extra := {}
@@ -567,7 +567,7 @@ func test_black_onyx_shows_seams_and_hidden_planks() -> void:
 	w.player.abilities["onyx"] = false
 	await frames(30)
 	check(w.room.sheen != null and w.room.phantoms != null, "the room has a sheen and a hidden plank layer")
-	check(w.room.sheen.strength == 0.0 and w.room.phantoms.modulate.a == 0.0, "without the Onyx nothing shows")
+	check(w.room.sheen.strength == 0.0 and w.room.phantoms.modulate.a == 0.0, "without the Lens nothing shows")
 	w.player.abilities["onyx"] = true
 	await frames(40)
 	check(w.room.sheen.strength == 1.0, "with it the seams shimmer (strength %.2f)" % w.room.sheen.strength)
@@ -595,11 +595,11 @@ func test_the_onyx_waits_in_the_crypt_below_the_flooded_hall() -> void:
 	for c in w.room.get_children():
 		if c is ItemPickup and (c as ItemPickup).kind == "onyx":
 			onyx = c
-	check(onyx != null, "the Black Onyx lies on the crypt's dais")
+	check(onyx != null, "the Seer's Lens lies on the crypt's dais")
 	if onyx == null:
 		return
 	onyx.grant(w.player)
-	check(w.player.abilities.get("onyx", false) and GameState.has_ability("onyx"), "taking it gives the Onyx for good")
+	check(w.player.abilities.get("onyx", false) and GameState.has_ability("onyx"), "taking it gives the Lens for good")
 	var way_on: Rect2 = w.room.doors[2].rect
 	check(w.room.doors[2].target == "dartmoor/drowned_nave" and w.room.is_secret_at(way_on.get_center()),
 		"the way on to the lower halls is behind an illusory wall")
@@ -1015,8 +1015,8 @@ func test_sap_never_holds_a_dash_and_lets_go_at_its_edge() -> void:
 	check(not p.in_sap and is_equal_approx(p.velocity.x, p.tuning.run_speed), "where the run comes back at once (%.0f)" % p.velocity.x)
 
 
-## Bible 4.2 (pass 249): in the original a keeper stood before each spring. Each
-## of the remake's three has one: there while it is dry (at the Mist's and the
+## Bible 4.2 (pass 249): in the source game a keeper stood before each spring. Each
+## of the remake's three has one: there while it is dry (at the Haar's and the
 ## Sky's once their guardian is beaten, never mid-fight), glad once it flows.
 func test_every_spring_has_its_keeper() -> void:
 	var springs := {"trunk/spring_of_trunk": ["trunk", "", "trunk_keeper"],
@@ -1074,9 +1074,9 @@ func test_autotiles_match_their_neighbours() -> void:
 ## stand on, nor which rooms name their own. The table gives every zone's
 ## theme, bed and ground; the list names every room that overrides one.
 func test_every_zone_sounds_as_the_bible_says() -> void:
-	const NAMES := {"eolis": "Eolis", "trunk": "Trunk Hollows", "tower": "Tower of Trunk", "mist": "The Mist",
-		"branches": "Branches (Conflate)", "daybreak": "Branches (Daybreak)", "dartmoor": "Dartmoor",
-		"sunken": "Sunken Spring", "zenis": "Zenis", "trials": "Guru Trials"}
+	const NAMES := {"eolis": "Hearthroot", "trunk": "Heartwood", "tower": "Hollin Tower", "mist": "The Haar",
+		"branches": "High Boughs", "daybreak": "Storm Spires", "dartmoor": "Vorrhallow",
+		"sunken": "Sunken Spring", "zenis": "The Evercrown", "trials": "Inner Rings"}
 	const COUNTS := {20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var note := bible.get_slice("- **Every zone's sound, as built (pass 382):**", 1).get_slice("\n- **", 0)
@@ -1112,7 +1112,7 @@ func test_every_zone_sounds_as_the_bible_says() -> void:
 			if own:
 				rooms += 1
 			r.free()
-	check(rest.begins_with("The Branches") and rest.contains("%s rooms name their own" % COUNTS.get(rooms, str(rooms))), "the bible counts the rooms that name their own (%d)" % rooms)
+	check(rest.begins_with("The High Boughs") and rest.contains("%s rooms name their own" % COUNTS.get(rooms, str(rooms))), "the bible counts the rooms that name their own (%d)" % rooms)
 
 func test_footsteps_follow_the_surface_underfoot() -> void:
 	var rows := grid_rows(40, 23)
@@ -1142,14 +1142,14 @@ func test_footsteps_follow_the_surface_underfoot() -> void:
 	var paved := Room.from_text(room_text(["name: T", "zone: trunk", "surface: stone"], grid_rows(10, 23)), "t/paved")
 	arena.add_child(trunk)
 	arena.add_child(paved)
-	check(trunk.surface_at(below.call(5, 19)) == "moss", "the Trunk is soft moss")
+	check(trunk.surface_at(below.call(5, 19)) == "moss", "the Heartwood is soft moss")
 	check(paved.surface_at(below.call(5, 19)) == "stone", "a room's surface header overrides its zone")
 	trunk.queue_free()
 	paved.queue_free()
-	# Pass 181: the Mist's marsh squelches as mud, and its dwarf-built halls stay stone.
+	# Pass 181: The Haar's marsh squelches as mud, and its dwarf-built halls stay stone.
 	var marsh := Room.from_text(room_text(["name: T", "zone: mist"], grid_rows(10, 23)), "t/mud")
 	arena.add_child(marsh)
-	check(marsh.surface_at(below.call(5, 19)) == "mud", "the Mist's marsh is mud (%s)" % marsh.surface_at(below.call(5, 19)))
+	check(marsh.surface_at(below.call(5, 19)) == "mud", "the Haar's marsh is mud (%s)" % marsh.surface_at(below.call(5, 19)))
 	marsh.queue_free()
 	for id: String in ["mist/scorched_hall", "mist/dry_cistern", "mist/sunken_chapel", "mist/spring_of_mist"]:
 		var r := Room.from_file(World.room_path(id))
@@ -1471,7 +1471,7 @@ func test_the_hour_glass_waits_by_the_stopped_water_clock() -> void:
 	for c in w.room.get_children():
 		if c is ItemPickup and (c as ItemPickup).kind == "hourglass":
 			glass = c
-	check(glass != null, "the Hour Glass stands by the water-clock in the Drowned Nave")
+	check(glass != null, "the Stillstone stands by the water-clock in the Drowned Nave")
 	check(w.room.doors[2].target == "dartmoor/waterfall_stair", "and the nave's west door leads to the Waterfall Stair")
 	w._enter("dartmoor/waterfall_stair")
 	await frames(2)
@@ -1487,8 +1487,8 @@ func test_the_waterfall_stair_gallery_opens_on_the_drowned_market() -> void:
 	await frames(2)
 	var falls: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
 	check(falls.size() == 1, "where one fall pours down into a spiked pit")
-	var slugs := w.room.get_children().filter(func(c: Node) -> bool: return c is MeteorSlug).size()
-	check(slugs == 2, "and Meteor Slugs creep along the market floor (%d)" % slugs)
+	var slugs := w.room.get_children().filter(func(c: Node) -> bool: return c is GlassSlug).size()
+	check(slugs == 2, "and Stillglass Slugs creep along the market floor (%d)" % slugs)
 
 
 func test_the_kings_stair_runs_down_from_the_market_to_the_kennels() -> void:
@@ -1510,7 +1510,7 @@ func test_the_way_past_the_throne_opens_once_the_king_is_at_rest() -> void:
 	GameState.new_game()
 	var w := make_world({}, "dartmoor/throne_hall")
 	await frames(3)
-	check(w.room.doors[2].target == "dartmoor/meteor_rise", "a door behind the throne leads on to the Meteor Rise")
+	check(w.room.doors[2].target == "dartmoor/meteor_rise", "a door behind the throne leads on to the Glass Rise")
 	var arena: BossArena = null
 	for c in w.room.get_children():
 		if c is BossArena:
@@ -1537,12 +1537,12 @@ func test_the_gate_of_zenis_waits_for_four_rings() -> void:
 	GameState.new_game()
 	var w := make_world({}, "dartmoor/meteor_rise")
 	await frames(2)
-	check(w.room.doors[2].target == "dartmoor/zenis_gate", "the Meteor Rise climbs to the gate of Zenis")
+	check(w.room.doors[2].target == "dartmoor/zenis_gate", "the Glass Rise climbs to the gate of the Evercrown")
 	w._enter("dartmoor/zenis_gate")
 	await frames(2)
-	var gates: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is ZenisGate)
+	var gates: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is CrownGate)
 	check(gates.size() == 1, "where the gate stands")
-	var gate: ZenisGate = gates[0]
+	var gate: CrownGate = gates[0]
 	GameState.data.rings = ["elf", "demon"]
 	check(gate.lit() == ["elf", "demon"], "its sockets glow for the rings you hold (%s)" % [gate.lit()])
 	check(gate.message().contains("2 of them"), "and it says how many")
@@ -1560,8 +1560,8 @@ func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
 	GameState.set_flag("boss:shadow_eura")
 	w._enter("dartmoor/zenis_gate")
 	await frames(2)
-	var gate: ZenisGate = w.room.get_children().filter(func(c: Node) -> bool: return c is ZenisGate)[0]
-	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/threshold", "the way into Zenis lies behind the gate")
+	var gate: CrownGate = w.room.get_children().filter(func(c: Node) -> bool: return c is CrownGate)[0]
+	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/threshold", "the way into the Evercrown lies behind the gate")
 	GameState.data.rings = ["elf", "ruby", "dworf"]
 	check(not gate.is_open(), "three rings do not open it")
 	# Shut, it bars the way: walk at it and you stop at its face.
@@ -1583,7 +1583,7 @@ func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
 			through = true
 			break
 	p.input.move_x = 0
-	check(through, "and you walk through into Zenis")
+	check(through, "and you walk through into the Evercrown")
 	check(w.room.zone == "zenis" and Music.track == "zenis" and Music.ambience_track == "amb_zenis", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
 	check(World.ZONES.has("zenis") and w.motes.zone == "zenis", "the map knows the zone, and spores drift in the air")
 	check(w.room.doors[2].target == "zenis/heart_stair", "the Threshold leads on to the Heart Stair")
@@ -1624,7 +1624,7 @@ func test_the_drift_well_lifts_you_up_its_ledges() -> void:
 
 
 ## Bible 8.9, A10: past the Drift Well the heart's flesh turns every blade but
-## the Dragon Slayer. Since pass 217 King Grieve gives it up, and the altar a
+## the Severance. Since pass 217 Thane Vorrund gives it up, and the altar a
 ## drift pocket lifts you to is bare.
 func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	GameState.new_game()
@@ -1652,8 +1652,8 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	p.input.attack_pressed = true
 	await frames(30)
 	check(not seal.is_open(), "a long sword glances off it")
-	check(w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup).is_empty(), "the altar is bare: King Grieve had the sword")
-	# The Dragon Slayer, as King Grieve gives it up (test_boss.gd).
+	check(w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup).is_empty(), "the altar is bare: Thane Vorrund had the sword")
+	# The Severance, as Thane Vorrund gives it up (test_boss.gd).
 	p.abilities["dragon_slayer"] = true
 	GameState.obtain_gear("dragon_slayer", p)
 	check(p.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts harder than any bought blade (%d)" % p.slash_damage)
@@ -1674,7 +1674,7 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	check(GameState.is_collected(seal_id), "and it stays open")
 
 
-## Bible 8.10: at the foot of the Meteor Rise the last stone is cracked; under it
+## Bible 8.10: at the foot of the Glass Rise the last stone is cracked; under it
 ## a flooded shaft drops into the Sunken Spring, a zone of its own, and the
 ## water carries you back up the way you came.
 func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
@@ -1748,11 +1748,11 @@ func test_every_large_zone_hides_a_room() -> void:
 ## Pass 379 (bible 11): "at least 3 secrets per zone room-cluster, about 70
 ## total" was the plan's and nothing counted it. Counted as the completion card
 ## counts (hidden rooms and catalogued treasures), every zone's row is the
-## rooms', every zone but Zenis holds three, and the total is the rooms'.
+## rooms', every zone but the Evercrown holds three, and the total is the rooms'.
 func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
-	const NAMES := {"eolis": "Eolis", "trunk": "Trunk Hollows", "tower": "Tower of Trunk", "mist": "The Mist",
-		"branches": "Branches (Conflate)", "daybreak": "Branches (Daybreak)", "dartmoor": "Dartmoor",
-		"sunken": "Sunken Spring", "zenis": "Zenis"}
+	const NAMES := {"eolis": "Hearthroot", "trunk": "Heartwood", "tower": "Hollin Tower", "mist": "The Haar",
+		"branches": "High Boughs", "daybreak": "Storm Spires", "dartmoor": "Vorrhallow",
+		"sunken": "Sunken Spring", "zenis": "The Evercrown"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var note := bible.get_slice("**Secrets per zone, as built (pass 379).**", 1)
 	var table := note.get_slice("| Zone | Rooms | Hidden rooms | Treasures | In all |", 1).get_slice("\n\n", 0)
@@ -1784,8 +1784,8 @@ func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
 	check(note.get_slice("\n\n", 0).contains("**%d hidden rooms and %d treasures, %d in all**" % [hidden, treasures, hidden + treasures]),
 		"bible 11 gives the world's total (%d hidden rooms, %d treasures)" % [hidden, treasures])
 
-## Pass 135: the Mattock breaks cracked stone, and every large zone the player
-## walks with it in hand keeps something behind some. Zenis, the last climb,
+## Pass 135: the Delver's Pick breaks cracked stone, and every large zone the player
+## walks with it in hand keeps something behind some. The Evercrown, the last climb,
 ## holds no side treasure at all by design.
 func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
 	for zone: String in DirAccess.get_directories_at("res://levels"):
@@ -1804,9 +1804,9 @@ func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
 			check(cracked >= 1, "%s (%d rooms) has cracked stone (%d rooms)" % [zone, rooms, cracked])
 
 
-## Pass 159: Dartmoor wakes a town, as the original's last town was. Once King
-## Grieve falls, the Drowned Market's foes are gone (`calm:`), and a Guru and
-## Keymaster Sigrun stand there, the last Guru and key master before Zenis.
+## Pass 159: Vorrhallow wakes a town, as the source game's last town was. Once King
+## Vorrund falls, the Drowned Market's foes are gone (`calm:`), and a Ringreader and
+## Keymaster Sigrun stand there, the last Ringreader and key master before the Evercrown.
 func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
 	GameState.new_game()
 	var w := make_world({}, "dartmoor/drowned_market")
@@ -1827,17 +1827,17 @@ func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
 	var after: Dictionary = kinds.call()
 	check(after.enemies == 0, "with the king at rest, the market is a town again: no foes (%d)" % after.enemies)
 	check(after.npcs.has("guru") and after.npcs.has("dartmoor_keymaster") and after.npcs.has("dartmoor_mason"),
-		"a Guru, Keymaster Sigrun and the mason stand in it (%s)" % [after.npcs])
+		"a Ringreader, Keymaster Sigrun and the mason stand in it (%s)" % [after.npcs])
 	var shop: Dictionary = GameData.shop("dartmoor_keys")
 	var stock: Array = []
 	for s: Dictionary in shop.get("stock", []):
 		stock.append(String(s.item))
 	check(stock.has("jack_key") and stock.has("queen_key") and stock.has("king_key") and stock.has("ace_key") and not stock.has("joker_key"),
-		"Sigrun cuts every key but the Joker (%s)" % [stock])
+		"Sigrun cuts every key but the Glass (%s)" % [stock])
 	w.queue_free()
 
 
-## Bible 3.2 and 4.2: Zenis's gauntlet, between the Dragon Slayer and the throne,
+## Bible 3.2 and 4.2: The Evercrown's gauntlet, between the Severance and the throne,
 ## asks for every ability once more (the checker proves each one is needed, in
 ## test_reachability.gd), and a shrine waits at its end.
 func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
@@ -1855,14 +1855,14 @@ func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
 	var shrines := kids.filter(func(c: Node) -> bool: return c is SaveShrine)
 	check(shrines.size() == 1 and (shrines[0] as Node2D).position.x > 66 * 16, "a shrine stands in its last hall, before the throne")
 	var foes := kids.filter(func(c: Node) -> bool: return c is Enemy)
-	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "its three foes are the meteor's, corrupted")
+	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "its three foes are the Everbloom's, corrupted")
 	w._enter("zenis/throne")
 	await frames(2)
 	check(w.room.doors[1].target == "zenis/proving_scar", "the throne's west door leads back into the Scar")
 
 
 ## Pass 199: a fat purse sprays a few big coins, not a thousand small ones
-## (the Dartmoor vault's 5,000 g chest threw 1,004 coins and a 27 ms frame).
+## (the Vorrhallow vault's 5,000 g chest threw 1,004 coins and a 27 ms frame).
 func test_a_big_purse_sprays_few_coins() -> void:
 	var w := make_world(_rooms({}), "test/a", cell_feet(4, 19))
 	await frames(5)
@@ -1907,11 +1907,11 @@ func test_a_big_coin_rings_lower_and_longer() -> void:
 	check(not is_instance_valid(coin) and Sfx.recent.has("coin_big"), "taking a 100 g coin plays it (%s)" % [Sfx.recent])
 
 
-## Pass 259 (bible 4.4): "King Grieve defeated: Dartmoor drains." Until pass
+## Pass 259 (bible 4.4): "Thane Vorrund defeated: Vorrhallow drains." Until pass
 ## 259 that was a line two people said; the drowned halls had no water in
 ## them. Now the Flooded Hall and the Drowned Nave stand a tile deep (the
 ## `tide:` header) and fill their spike pits, you wade with a splash, and once
-## King Grieve is at rest the water is gone and only its mark is left.
+## Thane Vorrund is at rest the water is gone and only its mark is left.
 func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 	for id: String in ["dartmoor/flooded_hall", "dartmoor/drowned_nave"]:
 		var w := make_world({}, id)
@@ -1934,7 +1934,7 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 		while w.room.tiles.get_cell_source_id(w.room.cell_at(wade)) == -1 or w.room.tiles.get_cell_source_id(w.room.cell_at(wade + Vector2(0, -Room.TILE))) != -1:
 			wade.x += Room.TILE
 		check(w.room.surface_at(wade) == "wade", "%s: wading sloshes (%s)" % [id, w.room.surface_at(wade)])
-		# Pass 262: a step in it sloshes with its own sound, not the Mist's mud.
+		# Pass 262: a step in it sloshes with its own sound, not the Haar's mud.
 		w.player.global_position = wade - Vector2(0, 2)
 		Sfx.recent.clear()
 		w.player.call("_footstep", -10.0)
@@ -1942,24 +1942,24 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 		GameState.set_flag(Tide.DRAIN_FLAG)
 		w._enter(id)
 		await frames(3)
-		check(w.room.tide != null and w.room.tide.drained() and not w.room.tide.has_point(wade + Vector2(0, -8)), "%s drains once King Grieve is at rest" % id)
+		check(w.room.tide != null and w.room.tide.drained() and not w.room.tide.has_point(wade + Vector2(0, -8)), "%s drains once Thane Vorrund is at rest" % id)
 		check(w.room.surface_at(wade) == "stone", "%s: and the floor is stone again (%s)" % [id, w.room.surface_at(wade)])
 		GameState.data.flags.erase(Tide.DRAIN_FLAG)
-	# No hall above the flood, and no room outside Dartmoor, stands in it.
+	# No hall above the flood, and no room outside Vorrhallow, stands in it.
 	for zone in DirAccess.get_directories_at("res://levels"):
 		for f in DirAccess.get_files_at("res://levels/" + zone):
 			if f.ends_with(".room"):
 				var head: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])).header
 				if head.has("tide"):
-					check(zone == "dartmoor", "%s/%s: only Dartmoor drowned" % [zone, f])
+					check(zone == "dartmoor", "%s/%s: only Vorrhallow drowned" % [zone, f])
 
 
 ## Pass 267 (bible 4.4): a guardian's hall answers its fall. Most arenas' signs
-## read differently once their guardian is beaten (the Trunk's chewing stops,
+## read differently once their guardian is beaten (the Heartwood's chewing stops,
 ## the Spires' nest is empty), but seven still spoke of theirs as alive: the
-## Sunken Chapel's lanterns burned on after Ripasheiku went dark, the Bloom
+## Sunken Chapel's lanterns burned on after Gloamweaver went dark, the Bloom
 ## still grew on the crown-leaf, the Roost still told you to call the storm
-## down. Now every sign in an arena outside Zenis has a word for after, and so
+## down. Now every sign in an arena outside the Evercrown has a word for after, and so
 ## do the doorways that named the Singer and the Foreman.
 func test_every_guardians_hall_answers_its_fall() -> void:
 	var missing := []
@@ -1997,16 +1997,16 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 		await frames(2)
 
 
-## Pass 275 (bible 7, the Naga): "a climb past it is timed to its swing" was
+## Pass 275 (bible 7, the Silt Adder): "a climb past it is timed to its swing" was
 ## not true. Its coil froze it where it was, so by the time it struck, a
-## climber holding Up was already above its bite: every climb past both Nagas
+## climber holding Up was already above its bite: every climb past both Silt Adders
 ## went unbitten, whatever the swing. Now the coil follows the climber's height
 ## along its column, slower than a climb, and its recovery is longer. In each
-## Naga's room, for climbs started at eight points of its swing: holding Up
+## Silt Adder's room, for climbs started at eight points of its swing: holding Up
 ## straight past is met by the bite nearly every time, and baiting it (climb into its
 ## level, drop back as it hoods, climb again once it has glided off the
 ## ladder) always gets past.
-## Bible 7 (pass 283): the great loaf a slain Naga leaves (pass 281) falls
+## Bible 7 (pass 283): the great loaf a slain Silt Adder leaves (pass 281) falls
 ## down the Tower's ladder shafts. Wherever along its swing and strike the
 ## serpent dies, and whichever way the loaf pops, it must come to rest on a
 ## floor inside the room, where you can walk to it, not fall out through the
@@ -2015,13 +2015,13 @@ func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
-		var n: Naga = null
+		var n: SiltAdder = null
 		for c in w.room.get_children():
-			if c is Naga:
+			if c is SiltAdder:
 				n = c
 			elif c is Enemy:
 				c.queue_free()
-		check(n != null, "%s keeps its Naga" % id)
+		check(n != null, "%s keeps its Silt Adder" % id)
 		if n == null:
 			w.queue_free()
 			await frames(1)
@@ -2034,7 +2034,7 @@ func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
 		var tried := 0
 		# Its strike carries it up to 104 px toward the ladder (to its right).
 		for k in 8:
-			for dy in [-Naga.SWING, 0.0, Naga.SWING]:
+			for dy in [-SiltAdder.SWING, 0.0, SiltAdder.SWING]:
 				for vx in [-40.0, 0.0, 40.0]:
 					var at := n.home + Vector2(k * 15.0, dy - 22.0)
 					var d := Drop.make(w.room, at, "loaf")
@@ -2058,13 +2058,13 @@ func test_a_nagas_gold_lands_where_you_can_reach_it() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
-		var n: Naga = null
+		var n: SiltAdder = null
 		for c in w.room.get_children():
-			if c is Naga:
+			if c is SiltAdder:
 				n = c
 			elif c is Enemy:
 				c.queue_free()
-		check(n != null, "%s keeps its Naga" % id)
+		check(n != null, "%s keeps its Silt Adder" % id)
 		if n == null:
 			w.queue_free()
 			await frames(1)
@@ -2078,7 +2078,7 @@ func test_a_nagas_gold_lands_where_you_can_reach_it() -> void:
 		var tried := 0
 		var start_gold := w.player.gold
 		for k in 8:
-			for dy in [-Naga.SWING, 0.0, Naga.SWING]:
+			for dy in [-SiltAdder.SWING, 0.0, SiltAdder.SWING]:
 				for vx in [-80.0, 0.0, 80.0]:
 					var at := n.home + Vector2(k * 15.0, dy - 22.0)
 					var c := Coin.new()
@@ -2163,13 +2163,13 @@ func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
-		var n: Naga = null
+		var n: SiltAdder = null
 		for c in w.room.get_children():
-			if c is Naga:
+			if c is SiltAdder:
 				n = c
 			elif c is Enemy:
 				c.queue_free()
-		check(n != null, "%s keeps its Naga" % id)
+		check(n != null, "%s keeps its Silt Adder" % id)
 		if n == null:
 			w.queue_free()
 			await frames(1)
@@ -2196,7 +2196,7 @@ func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
 				n.global_position = n.home
 				n.velocity = Vector2.ZERO
 				n.set_state("float")
-				n._swung = k * Naga.SWING_TIME / 8.0
+				n._swung = k * SiltAdder.SWING_TIME / 8.0
 				n._cooldown = 0.0
 				p.input.up = true
 				var step := 0
@@ -2334,9 +2334,9 @@ func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
 ## Pass 323: the bible's zone table (3.2) and overview (3.1) count the rooms
 ## the game has. Until then they carried the plan's counts (about 190 rooms).
 func test_the_bible_counts_each_zones_rooms() -> void:
-	const ZONES := {"Eolis": "eolis", "Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
-		"Branches (Conflate)": "branches", "Branches (Daybreak) and Canopy Spires": "daybreak", "Dartmoor": "dartmoor",
-		"Zenis": "zenis", "Sunken Spring": "sunken", "Guru Trials": "trials"}
+	const ZONES := {"Hearthroot": "eolis", "Heartwood": "trunk", "Hollin Tower": "tower", "The Haar": "mist",
+		"High Boughs": "branches", "Storm Spires": "daybreak", "Vorrhallow": "dartmoor",
+		"The Evercrown": "zenis", "Sunken Spring": "sunken", "Inner Rings": "trials"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var table := bible.get_slice("### 3.2 Zones", 1).get_slice("\n\n**", 0)
 	var total := 0
@@ -2360,67 +2360,8 @@ func test_the_bible_counts_each_zones_rooms() -> void:
 
 
 
-## Pass 377 (bible 3.2, 5.2): the bible said only in passing which zones and
-## guardians are the original's and which the remake's own, and 5.2 gave the
-## Battle Suit "its place" from the original though it is won from the Drowned
-## Warden in the Sunken Spring, both the remake's own. The ledger in 3.2 names
-## every zone and guardian, whose it is, and what each guardian gives.
-func test_the_bible_says_whose_each_zone_and_guardian_is() -> void:
-	const ORIGINAL_ZONES := ["eolis", "trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]
-	const ORIGINAL_GUARDIANS := ["rokusutahn", "zoradohna", "ripasheiku", "zorugeriru", "pakukame", "borabohra",
-		"king_grieve", "shadow_eura", "evil_avatar", "evil_veins", "evil_one"]
-	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	var ledger := bible.get_slice("**Whose is it (pass 377).**", 1).get_slice("\n\n`test_", 0)
-	check(ledger != "", "3.2 has the ledger")
-	var whose := {}
-	var prize := {}
-	for line: String in ledger.split("\n"):
-		if not line.begins_with("| ") or line.begins_with("| ---"):
-			continue
-		var cells := line.split("|")
-		for id: String in cells[2].split(","):
-			id = id.strip_edges().trim_prefix("`").trim_suffix("`")
-			whose[id] = cells[3].strip_edges()
-			if cells.size() > 5:
-				prize[id] = cells[4].strip_edges()
-	var original_zones := []
-	for zone: String in World.ZONES:
-		if zone in ["gym", "test"]:
-			continue
-		check(whose.has(zone), "the ledger has a row for the zone %s" % zone)
-		if whose.get(zone, "") == "the original's":
-			original_zones.append(zone)
-		else:
-			check(whose.get(zone, "") == "the remake's own", "%s is the original's or the remake's own" % zone)
-	check(original_zones == ORIGINAL_ZONES, "the original's zones are the eight (%s)" % [original_zones])
-	var original_guardians := []
-	var moved := []
-	for id: String in BossArena.BOSSES:
-		var reward: Dictionary = BossArena.BOSSES[id]
-		check(whose.has(id), "the ledger has a row for the guardian %s" % id)
-		if whose.get(id, "") == "the original's":
-			original_guardians.append(id)
-		else:
-			check(whose.get(id, "") == "the remake's own", "%s is the original's or the remake's own" % id)
-			for key: String in ["armor", "blade", "ability"]:
-				if reward.has(key):
-					moved.append(String(reward.title))
-		var said: String = prize.get(id, "")
-		for name_key: String in ["title", "ring_name"]:
-			var name: String = reward.get(name_key, "")
-			if name != "" and (reward.has("stat_item") or reward.has("armor") or reward.has("blade") \
-					or reward.has("ability") or reward.has("key") or name_key == "ring_name"):
-				check(said.contains(name), "the ledger names %s's prize, %s (it says \"%s\")" % [id, name, said])
-	check(original_guardians == ORIGINAL_GUARDIANS, "the original's guardians are the nine (%s)" % [original_guardians])
-	check(moved.has("Battle Suit") and moved.has("Mattock"), "the remake's own guardians move the Battle Suit and the Mattock (%s)" % [moved])
-	var kept := bible.get_slice("keep their place as well", 0)
-	kept = kept.substr(kept.rfind("("))
-	check(kept.contains("Long Sword"), "5.2 lists the gear that keeps the original's place")
-	for name: String in moved:
-		check(not kept.contains(name), "5.2 doesn't give %s the original's place: a guardian of the remake's own gives it" % name)
-
 ## Pass 363 (levels/README.md): the README's legend is the room builder's key,
-## but nothing held it to the rooms or the loader. The Evil One's light veins
+## but nothing held it to the rooms or the loader. The Everbloom's light veins
 ## (`x`) had been in the Veins since pass 82 with no row. Every character a room
 ## grid uses has a legend row, and every row is one the loader places.
 func test_the_readme_legend_matches_the_rooms() -> void:
@@ -2512,9 +2453,9 @@ func test_every_room_keeps_the_bibles_size() -> void:
 ## bible quoting the old one. Every chart sold must be written there with its
 ## price, and the count of towns with a cartographer must be the shops'.
 func test_the_bibles_chart_prices_are_the_shops() -> void:
-	const ZONE := {"chart_eolis": "Eolis", "chart_trunk": "Trunk Hollows", "chart_tower": "Tower",
-		"chart_mist": "Mist", "chart_branches": "Branches", "chart_daybreak": "Daybreak",
-		"chart_dartmoor": "Dartmoor", "chart_sunken": "Sunken Spring"}
+	const ZONE := {"chart_eolis": "Hearthroot", "chart_trunk": "Heartwood", "chart_tower": "Tower",
+		"chart_mist": "Haar", "chart_branches": "High Boughs", "chart_daybreak": "Carillon",
+		"chart_dartmoor": "Vorrhallow", "chart_sunken": "Sunken Spring"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var line := bible.get_slice("### 3.3 Room and map rules", 1).get_slice("- **Map:**", 1).get_slice("\n", 0)
 	var shops := GameData.table("shops")
@@ -2540,9 +2481,9 @@ func test_the_bibles_chart_prices_are_the_shops() -> void:
 
 
 func test_every_zone_has_the_shrines_the_bible_counts() -> void:
-	const ZONES := {"Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
-		"Branches (Conflate)": "branches", "Branches (Daybreak)": "daybreak", "Dartmoor": "dartmoor",
-		"Sunken Spring": "sunken", "Zenis": "zenis", "Eolis": "eolis"}
+	const ZONES := {"Heartwood": "trunk", "Hollin Tower": "tower", "The Haar": "mist",
+		"High Boughs": "branches", "Storm Spires": "daybreak", "Vorrhallow": "dartmoor",
+		"Sunken Spring": "sunken", "The Evercrown": "zenis", "Hearthroot": "eolis"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var rule := bible.get_slice("- **Save points:**", 1).get_slice("\n", 0).get_slice("**As built (pass 331):**", 1)
 	var total := 0
@@ -2617,7 +2558,7 @@ func test_the_bible_counts_the_games_sounds() -> void:
 
 ## Pass 339: bible 4.5 gives each gate its look and its numbers (the fog's
 ## sight, a fire seal's burn, a conduit's reach, time-locked water's push), and
-## 3.2 the Mist towns' fog and lamps, but no test read them: a retuned gate
+## 3.2 the Haar towns' fog and lamps, but no test read them: a retuned gate
 ## would have left the bible behind. Each number is held to its constant here.
 func test_every_gates_number_is_written_in_bible_4_5() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
@@ -2625,11 +2566,11 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 	var tile := float(TilesetFactory.TILE)
 	var said := func(gate: String) -> String:
 		return gates.get_slice("- **%s:**" % gate, 1).get_slice("\n", 0)
-	var fog: String = said.call("Fog (the Mist)")
+	var fog: String = said.call("Fog (the Haar)")
 	check(fog.contains("around you (about %d tiles)" % roundi(Fog.VISION / tile)), "4.5 gives the fog's sight (%d px)" % Fog.VISION)
 	check(fog.contains("(about %d tiles each)" % roundi(Fog.LANTERN_RADIUS / tile)), "4.5 gives a lantern's light (%d px)" % Fog.LANTERN_RADIUS)
-	check(is_equal_approx(Fog.SPRING_DENSITY, 0.5) and fog.contains("thins it by half"), "4.5: the Spring of Mist halves the fog (%s)" % Fog.SPRING_DENSITY)
-	check(is_equal_approx(Fog.SPRING_VISION, 1.5) and fog.contains("widens your sight by half"), "4.5: the Spring of Mist widens sight by half (%s)" % Fog.SPRING_VISION)
+	check(is_equal_approx(Fog.SPRING_DENSITY, 0.5) and fog.contains("thins it by half"), "4.5: The Haar Spring halves the fog (%s)" % Fog.SPRING_DENSITY)
+	check(is_equal_approx(Fog.SPRING_VISION, 1.5) and fog.contains("widens your sight by half"), "4.5: The Haar Spring widens sight by half (%s)" % Fog.SPRING_VISION)
 	check(said.call("Fire seals").contains("burn for %d on touch" % FireSeal.BURN), "4.5 gives a fire seal's burn (%d)" % FireSeal.BURN)
 	check(is_equal_approx(DryBasin.FILL_TIME, 1.0) and said.call("Dry basins").contains("fills it over a second"), "4.5: a basin fills over a second (%s s)" % DryBasin.FILL_TIME)
 	var conduits: String = said.call("Dead conduits")
@@ -2638,7 +2579,7 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 	check(water.contains("bears down at %d px/s" % Waterfall.PUSH), "4.5 gives time-locked water's push (%d px/s)" % Waterfall.PUSH)
 	check(water.contains("footholds every %s rows" % ["", "one", "two", "three", "four"][mini(Waterfall.STEP, 4)]), "4.5 gives the frozen footholds' spacing (%d rows)" % Waterfall.STEP)
 	check(said.call("Key doors").contains("every card door is %s tiles tall" % ["", "one", "two", "three", "four"][mini(roundi(KeyDoor.SIZE.y / tile), 4)]), "4.5 gives a card door's height (%d px)" % KeyDoor.SIZE.y)
-	# The Mist's towns (3.2): the marsh's fog, each town's fog and lamp posts,
+	# The Haar's towns (3.2): the marsh's fog, each town's fog and lamp posts,
 	# and the pocket each lamp clears.
 	var lamp := TownLamp.new()
 	var radius := lamp.light_radius
@@ -2655,7 +2596,7 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 			elif line.begins_with("fog: "):
 				density = line.trim_prefix("fog: ")
 		var words: String = ["", "one", "two", "three", "four", "five"][mini(lamps, 5)]
-		var para := bible.get_slice("**%s (pass " % town.capitalize(), 1).get_slice("\n\n**", 0)
+		var para := bible.get_slice("**%s (pass " % {"victim": "Lampwick", "mascon": "Polesend"}[town], 1).get_slice("\n\n**", 0)
 		check(para.contains("%s lamp posts" % words), "3.2 counts %s's lamp posts (%d)" % [town, lamps])
 		check(para.contains("at %s" % density) or para.contains("fog at %s" % density), "3.2 gives %s's fog (%s)" % [town, density])
 
@@ -2831,90 +2772,56 @@ func test_the_aqueducts_fall_is_heard_near_it() -> void:
 	await frames(2)
 
 
-## Pass 385 (bible 1, the IP note): the bible said every name lives "in a single
-## localization table" so a rename for a public release would be trivial. No
-## such table was ever built: Eolis alone is written in 26 files, in dialog,
-## signs, rooms and code. The rename list is `data/original_names.json`, the
-## original's names the remake keeps. Every one must be written somewhere in
-## the game (a whole word), and the list must hold every name the bible's
-## ledgers and the game's own tables say is the original's: the eight zones,
-## the nine guardians, the five spells and the sixteen ranks.
-func test_the_rename_list_finds_every_name_it_keeps() -> void:
-	var list: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/original_names.json"))
-	var names: Array[String] = []
-	for group: String in list:
-		if group != "_about":
-			for n: String in list[group]:
-				names.append(n)
+## Pass 461 (bible 1, Names): the game stopped being a remake and became
+## Yldenfall, with a story and names of its own. `data/rename_map.json` lists
+## every retired name; a "checked" one must not be written in any of the
+## game's files as a whole word: data, rooms, scripts, tests, shaders, tools
+## and the docs (the old loop logs in docs/loop are history and are left as
+## they were). 
+func test_no_retired_name_is_left() -> void:
+	var map: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/rename_map.json"))
+	var checked: Dictionary = map.checked
+	check(checked.size() >= 40 and map.generic.size() >= 30, "the map lists the retired names (%d checked, %d generic)" % [checked.size(), map.generic.size()])
+	for old: String in checked:
+		check(String(checked[old]) != "" and String(checked[old]) != old, "%s has a new name (%s)" % [old, checked[old]])
 	var texts := {}
-	for root: String in ["res://data", "res://levels", "res://scripts"]:
+	for root: String in ["res://data", "res://levels", "res://scripts", "res://tests", "res://shaders", "res://tools", "res://docs"]:
 		_read_texts(root, texts)
-	texts.erase("res://data/original_names.json")
+	for f: String in ["res://README.md", "res://CLAUDE.md", "res://project.godot", "res://export_presets.cfg"]:
+		texts[f] = FileAccess.get_file_as_string(f)
+	texts.erase("res://data/rename_map.json")
+	for path: String in texts.keys():
+		if path.begins_with("res://docs/loop/") or path.begins_with("res://tools/rename/"):
+			texts.erase(path)
 	check(texts.size() > 300, "the game's own text is read (%d files)" % texts.size())
-	var files_per := {}
-	var everywhere := {}
-	for n: String in names:
-		var re := RegEx.create_from_string("\\b%s\\b" % n)
-		var hits := 0
+	check(texts.has("res://docs/design-bible.md") and texts.has("res://data/npcs.json"), "the bible and the people are among them")
+	var found := []
+	for old: String in checked:
+		var re := RegEx.create_from_string("\\b%s\\b" % old)
 		for path: String in texts:
 			if re.search(texts[path]) != null:
-				hits += 1
-				everywhere[path] = true
-		files_per[n] = hits
-		check(hits > 0, "%s is written somewhere in the game" % n)
-	print("  Rename list: %d names in %d files; %s" % [names.size(), everywhere.size(),
-		", ".join(names.map(func(n: String) -> String: return "%s %d" % [n, files_per[n]]))])
-	# The original's zones (3.2's ledger): each one's name holds a listed place.
-	for zone: String in ["eolis", "trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]:
-		var zone_name: String = World.ZONES[zone].name
-		check(list.places.any(func(p: String) -> bool: return zone_name.contains(p)), "the original's zone %s is on the list" % zone_name)
-	# The original's guardians: each row of 3.2's ledger marked the original's.
-	var ledger := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**Whose is it (pass 377).**", 1).get_slice("\n\n`test_", 0)
-	var rows := 0
-	for line: String in ledger.split("\n"):
-		var cells := line.split("|")
-		if cells.size() > 5 and cells[3].strip_edges() == "the original's":
-			rows += 1
-			check(list.guardians.any(func(g: String) -> bool: return cells[1].contains(g)), "the original's guardian %s is on the list" % cells[1].strip_edges())
-	check(rows == 9, "the ledger's nine guardians are the original's (%d)" % rows)
-	for id: String in Spells.DATA:
-		check(String(Spells.DATA[id].name) in list.spells, "the spell %s is on the list" % Spells.DATA[id].name)
-	check(list.ranks == GameState.RANKS, "the sixteen ranks are on the list, in order")
-	# The original's foes (pass 393): every foe whose script says it is the
-	# original's has its name on the list, and every listed foe is a foe.
-	var foes_seen := {}
-	for f: String in DirAccess.get_files_at("res://scripts/enemies"):
-		if f.get_extension() != "gd":
-			continue
-		var src := FileAccess.get_file_as_string("res://scripts/enemies".path_join(f))
-		var cls := src.get_slice("class_name ", 1).get_slice("\n", 0).strip_edges()
-		var named: Array = list.foes.filter(func(n: String) -> bool: return cls.ends_with(n))
-		if src.contains("the original"):
-			check(not named.is_empty(), "%s, which its script calls the original's, is on the list" % cls)
-		for n: String in named:
-			foes_seen[n] = true
-	check(foes_seen.size() == list.foes.size(), "every listed foe is a foe in scripts/enemies (%s)" % [foes_seen.keys()])
-	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**IP note:**", 1).get_slice("\n", 0)
-	check(note.contains("`data/original_names.json`") and not note.contains("(all names live in a single"), "bible 1's IP note names the rename list")
-	check(note.contains("%d names" % names.size()), "and says how many names it holds (%d)" % names.size())
+				found.append("%s in %s" % [old, path])
+	check(found.is_empty(), "no retired name is left (%s)" % ", ".join(found.slice(0, 12)))
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`data/rename_map.json`") and bible.contains("`test_no_retired_name_is_left`"), "bible 1 names the map and this test")
 
 
 func _read_texts(dir: String, out: Dictionary) -> void:
 	for sub: String in DirAccess.get_directories_at(dir):
 		_read_texts(dir.path_join(sub), out)
 	for f: String in DirAccess.get_files_at(dir):
-		if f.get_extension() in ["gd", "json", "room"]:
+		if f.get_extension() in ["gd", "json", "room", "md", "py", "gdshader", "sh", "txt"]:
 			out[dir.path_join(f)] = FileAccess.get_file_as_string(dir.path_join(f))
 
 
 ## Pass 387 (bible 3.1): the overview's diagram was the plan's. It had the
-## Tower meet Mascon, Conflate the Canopy Spires and the Spires Dartmoor, and
+## Tower meet Polesend, Sylvarre the Canopy Spires and the Spires Vorrhallow, and
 ## said each zone looped back on earlier ones through shortcuts; no test read
 ## it. The zones meet in one chain, a pair at one doorway each. This holds 3.1's
 ## doorway table to the rooms' doors both ways, and its count of loops in each
 ## zone (links between its rooms, less the rooms a tree would need).
-## Pass 395 (bible 3.1): the zones from the Mist up stay trees, so a dead end
-## costs the walk back to a Guru. Each zone's farthest room from a Guru's room,
+## Pass 395 (bible 3.1): the zones from the Haar up stay trees, so a dead end
+## costs the walk back to a Ringreader. Each zone's farthest room from a Ringreader's room,
 ## in doors walked, is written in 3.1 and held to the rooms.
 func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
 	var w := make_world({}, "eolis/west_gate")
@@ -2925,7 +2832,7 @@ func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
 			if line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "guru":
 				gurus.append(id)
 				break
-	check(gurus.size() == 8, "eight rooms hold a Guru (%s)" % [gurus])
+	check(gurus.size() == 8, "eight rooms hold a Ringreader (%s)" % [gurus])
 	var dist := {}
 	var queue: Array[String] = []
 	for g: String in gurus:
@@ -2949,7 +2856,7 @@ func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
 		elif d == int(far[zone][0]):
 			far[zone][1].append(id)
 	w.queue_free()
-	var section := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**No shortcut loops from the Mist up: decided (pass 395).**", 1).get_slice("\n### 3.2 ", 0)
+	var section := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**No shortcut loops from the Haar up: decided (pass 395).**", 1).get_slice("\n### 3.2 ", 0)
 	var written := {}
 	for line: String in section.split("\n"):
 		var cells := line.split("|")
@@ -2962,7 +2869,7 @@ func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
 		var rooms: Array = far[zone][1]
 		rooms.sort()
 		check(written.has(zone) and written[zone][0] == far[zone][0] and written[zone][1] == rooms,
-			"%s's farthest rooms from a Guru are %s, %d doors, as 3.1 says (%s)" % [zone, rooms, far[zone][0], written.get(zone, "nothing")])
+			"%s's farthest rooms from a Ringreader are %s, %d doors, as 3.1 says (%s)" % [zone, rooms, far[zone][0], written.get(zone, "nothing")])
 
 
 func test_the_zones_meet_as_the_bible_draws() -> void:
@@ -3013,21 +2920,21 @@ func test_the_zones_meet_as_the_bible_draws() -> void:
 		if zone == "trials":
 			continue
 		loops[zone] = Dictionary(links.get(zone, {})).size() - (int(rooms[zone]) - 1)
-	check(loops.trunk == 8 and section.contains("Trunk Hollows has 8 loops (%d links among %d rooms)" % [links.trunk.size(), rooms.trunk]),
-		"Trunk Hollows loops %d times, as 3.1 says" % loops.trunk)
-	check(loops.tower == 4 and section.contains("the Tower of Trunk 4 (%d among %d)" % [links.tower.size(), rooms.tower]),
+	check(loops.trunk == 8 and section.contains("Heartwood has 8 loops (%d links among %d rooms)" % [links.trunk.size(), rooms.trunk]),
+		"Heartwood loops %d times, as 3.1 says" % loops.trunk)
+	check(loops.tower == 4 and section.contains("the Hollin Tower 4 (%d among %d)" % [links.tower.size(), rooms.tower]),
 		"the Tower loops %d times, as 3.1 says" % loops.tower)
 	for zone: String in loops:
 		if zone not in ["trunk", "tower"]:
 			check(loops[zone] == 0, "%s's rooms form a tree, as 3.1 says (%d loops)" % [zone, loops[zone]])
 	for id: String in ["tower/foot", "tower/forepaw", "eolis/east_gate"]:
-		check(LiftCage.STOPS.any(func(s: Array) -> bool: return s[0] == id), "the Forepaw lift stops at %s, a way back that is not a door" % id)
+		check(LiftCage.STOPS.any(func(s: Array) -> bool: return s[0] == id), "the Kettleforge lift stops at %s, a way back that is not a door" % id)
 
 
 ## Pass 403 (bible 3.3): the map marked every Meditation Shrine but not a single
-## Guru, though each town's Guru rests and saves as a shrine does. A player
-## looking for the nearest rest saw none in Eolis, Apolune or any town. The
-## catalog now lists a Guru's cell with the shrines, so the map and the
+## Ringreader, though each town's Ringreader rests and saves as a shrine does. A player
+## looking for the nearest rest saw none in Hearthroot, Amberlee or any town. The
+## catalog now lists a Ringreader's cell with the shrines, so the map and the
 ## minimap mark both, and every rest in the world shows.
 func test_the_map_marks_every_rest() -> void:
 	var w := World.new()
@@ -3059,18 +2966,18 @@ func test_the_map_marks_every_rest() -> void:
 					missing.append("%s %s" % [id, cell])
 			if shown.size() != rests.size():
 				missing.append("%s marks %d of %d" % [id, shown.size(), rests.size()])
-	check(gurus >= 8, "the eight towns' Gurus are counted (%d)" % gurus)
-	check(missing.is_empty(), "every shrine and every Guru is marked on the map (missing: %s)" % [missing])
-	check(not (w.catalog["eolis/guru_temple"].shrines as Array).is_empty(), "Eolis, which has no shrine, shows its Guru's rest")
+	check(gurus >= 8, "the eight towns' Ringreaders are counted (%d)" % gurus)
+	check(missing.is_empty(), "every shrine and every Ringreader is marked on the map (missing: %s)" % [missing])
+	check(not (w.catalog["eolis/guru_temple"].shrines as Array).is_empty(), "Hearthroot, which has no shrine, shows its Ringreader's rest")
 	w.free()
 	check(FileAccess.get_file_as_string("res://scripts/ui/map_screen.gd").contains("[\"Rest\", SHRINE"), "the legend calls the mark a rest")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 3.3 ", 1).get_slice("\n### ", 0)
 	check(note.contains("`test_the_map_marks_every_rest`"), "3.3 names the test")
 
 
-## Bible 13.6: Eolis's walls are filled from one large texture, not one tile repeated.
+## Bible 13.6: Hearthroot's walls are filled from one large texture, not one tile repeated.
 func test_eolis_walls_fill_from_one_large_texture() -> void:
-	check(ResourceLoader.exists(GroundFill.path("eolis")), "Eolis has a fill texture")
+	check(ResourceLoader.exists(GroundFill.path("eolis")), "Hearthroot has a fill texture")
 	var tex: Texture2D = load(GroundFill.path("eolis"))
 	check(tex.get_width() >= 4 * TilesetFactory.TILE * TilesetFactory.DENSITY, "it spans at least four tiles")
 	var room := Room.from_text("name: T\nzone: eolis\n---\n" + "\n".join(PackedStringArray(["##########", "#........#", "#........#", "##########", "##########"])), "t/fill")

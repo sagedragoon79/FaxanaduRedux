@@ -1,25 +1,26 @@
-# Faxanadu Redux
+# Yldenfall
 
-A metroidvania remake of the NES classic *Faxanadu*, built in Godot 4.7 with HD pixel art.
+An original 2D action metroidvania, built in Godot 4.7 with HD pixel art. Nine years ago the leaves of the
+great tree Ylden stopped falling; a stranger climbs it to cut out the flower that will not die.
 The full design lives in [docs/design-bible.md](docs/design-bible.md).
 
 ## Status
 
 **M3: vertical slice, done (pass 03 in docs/loop).** A title menu starts a new game at the West Gate of
-Eolis. Six Eolis rooms (King, Guru, shops, townsfolk) and nine Trunk Hollows rooms (sap
-pools, Monodrons, Hornets, Rot Dwarves, the Climbing Glove, secrets, save shrines) are
-connected by doors, with a map, saving, ranks, a skill tree, shops and Jack doors. The Root
-Chamber holds Rokusutahn, a three-phase boss; beating it wins the Elf Ring and opens the
-Spring of Trunk, which hardens the sap into amber and starts filling the Eolis fountain.
+Hearthroot. Six Hearthroot rooms (Reeve, Ringreader, shops, townsfolk) and nine Heartwood rooms (sap
+pools, Blinkhops, Hornets, Rot Dwarves, the Climbing Glove, secrets, save shrines) are
+connected by doors, with a map, saving, ranks, a skill tree, shops and Copper doors. The Root
+Chamber holds Gnarlmaw, a three-phase boss; beating it wins the Thaw Seed and opens the
+Heartwood Spring, which hardens the sap into amber and starts filling the Hearthroot fountain.
 Final art and music come next. The movement and combat gym is still there:
 `godot --path . -- --room=gym/gym`.
 
 ## Running
 
 **Playtest build:** every push to `main` exports a Windows build to the rolling
-[playtest release](https://github.com/sagedragoon79/FaxanaduRedux/releases/tag/playtest)
+[playtest release](https://github.com/sagedragoon79/faxanaduredux/releases/tag/playtest)
 (see [docs/playtest.md](docs/playtest.md) for controls, debug keys and launch options).
-To export locally: `godot --headless --path . --export-debug "Windows Desktop" builds/windows/FaxanaduRedux.exe`
+To export locally: `godot --headless --path . --export-debug "Windows Desktop" builds/windows/Yldenfall.exe`
 (needs the 4.7.2 export templates).
 
 From source:
@@ -34,12 +35,12 @@ From source:
 | Attack (hold down in the air to pogo) | X / J | X |
 | Dash | C / L / Shift | B / RB / RT |
 | Block (tap to parry) | V / I | LB |
-| Cast spell (Deluge) | F / U | Y |
-| Drink Red Potion | Q / H | LT |
+| Cast spell (Torrent) | F / U | Y |
+| Drink Sapflask | Q / H | LT |
 | Drop through a platform | Down + Jump | Down + A |
 | Talk, read, use doors, rest at shrines | Up | Up |
 | Map | Tab / M | Back |
-| Toggle Glove, Mattock, Wing Boots, Elven Stride, Deluge (debug builds) | F1 to F4, F7 | |
+| Toggle Glove, Delver's Pick, Featherstep Boots, Elven Stride, Torrent (debug builds) | F1 to F4, F7 | |
 | Reset to spawn | R / F5 | Back |
 | Toggle debug HUD | F6 | |
 | Fullscreen | F11 / Alt+Enter | |

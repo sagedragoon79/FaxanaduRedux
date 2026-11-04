@@ -2,7 +2,7 @@ class_name MistCurtain
 extends StaticBody2D
 ## One tile of bound fog (room legend `Y`, a row or column of three is usual):
 ## a wall of pale, unmoving mist with drowned souls glinting in it. Nothing
-## passes it but a lantern's light: carry the Lantern Key (Ripasheiku's reward,
+## passes it but a lantern's light: carry the Lantern Key (Gloamweaver's reward,
 ## design bible 4.4) within RANGE and every curtain in the room parts for good.
 ## Without the key, touching it says what it needs. The key is not used up.
 ## Drawn at 2x render density: `_px` takes half-pixels.

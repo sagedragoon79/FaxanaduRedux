@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Builds the Battle Helmet layer from the PixelLab helmed elf (design bible 13.4, 13.5).
+"""Builds the Elven Helm layer from the PixelLab helmed elf (design bible 13.4, 13.5).
 
-The Battle Suit worn under the Battle Helmet has a body set of its own, drawn helmed in
+The Elven Plate worn under the Elven Helm has a body set of its own, drawn helmed in
 PixelLab (hero_battle_helm). With any other set the helmet is a layer on the head, and it is
 cut from that same art so the two match: the helm's steel in the first frame of the helmed
 idle (art/pixellab/hero/battle_helm_cloak/idle/00.png), the connected pale steel from the
@@ -12,7 +12,7 @@ It is scaled as the importer scales the hero sets (their 46 px figure at the 2x 
 density, design bible 12.1), hardened to a 1-bit alpha, given the dark sprite outline,
 reduced to a small palette and written to assets/sprites/battle_helmet.png. The player draws
 it with its top-left PlayerVisual.HELMET_OFFSET from the frame's crown; this prints that
-offset, measured on the bare Battle Suit's idle, whose head lies where the helm's does.
+offset, measured on the bare Elven Plate's idle, whose head lies where the helm's does.
 
 The earlier layer, Sean's pixel helmet for the Autosprite hero, stays in art/battle_helmet/.
 

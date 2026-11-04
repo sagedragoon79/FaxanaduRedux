@@ -19,14 +19,14 @@ extends Node2D
 ##   --shot-at=X,Y              place the player at tile X,Y first
 ##   --shot-climb=1|-1          hold Up (1) or Down (-1) from the start, to climb a ladder
 ##   --shot-pogo                play a simple pogo hand: run right, jump off edges, strike down
-##                              whenever falling (as the Mantra of Thorns test does)
+##                              whenever falling (as the Ring of Thorns test does)
 ##   --shot-attack=N            press Attack every N frames (a sword combo, for captures)
 ##   --film=DIR                 save every frame up to --shot-frames as DIR/0000.png ... (with
 ##                              --film-every=N, every Nth), for animated captures
 ##   --map                      open the map before the screenshot
 ##   --say=NPC                  open the dialog box on that NPC's lines (data/npcs.json)
-##   --open=shop:ID|guru|trials|title|skills|pause|options|controls|journey|equipment|inventory
-##                              (title: the nearest Guru names your rank; pair with --xp)
+##   --open=shop:ID|ringreader|trials|title|skills|pause|options|controls|journey|equipment|inventory
+##                              (title: the nearest Ringreader names your rank; pair with --xp)
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --cursor=N                 with --open: put the menu's cursor on row N
@@ -37,26 +37,26 @@ extends Node2D
 ##   --armor=ID                 wear an armor (data/items.json, kind "armor"), and its body set
 ##   --wear=A,B                 own and wear gear (blades, armor, shields, helmets), e.g. for --open=equipment
 ##   --hp=N                     start with N health (for screenshots)
-##   --ointments=N, --use-ointment   carry N Ointments, and rub one on
-##   --reflect                  fling a Magic Shield shot of sap-light from in front of the player
-##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Ointment ahead of the player
+##   --ointments=N, --use-ointment   carry N Barkbalms, and rub one on
+##   --reflect                  fling a Warding Shield shot of sap-light from in front of the player
+##   --drops                    drop a loaf of bread, a mana orb, a poison flask, a War Glove and an Barkbalm ahead of the player
 ##   --coins                    lay a 1, 5, 25 and 100 gold coin ahead of the player (pass 199)
 ##   --glove                    wear a War Glove (a rare drop) from the start
 ##   --shot-thrust=N            thrust (the Blade skill) on frame N
 ##   --damage-numbers           show damage numbers (the option) for this run
 ##   --poisoned                 start poisoned
 ##   --flags=A,B                set world flags first, e.g. spring:trunk
-##   --trial=ID[,SECONDS]       run that Guru Trial's clock from here (SECONDS on it), e.g. walls,12.3
-##   --rush=N[,SECONDS]         be on boss N (from 0) of a boss rush begun at the Guru (SECONDS on its clock)
+##   --trial=ID[,SECONDS]       run that Ringreader Trial's clock from here (SECONDS on it), e.g. walls,12.3
+##   --rush=N[,SECONDS]         be on boss N (from 0) of a boss rush begun at the Ringreader (SECONDS on its clock)
 ##   --title                    with --shot: capture the title screen
 ##   --boss-hp=F                set a boss's health to fraction F when it appears
-##   --conduits=N               wake every conduit in the room at frame N (Borabohra's grounding)
+##   --conduits=N               wake every conduit in the room at frame N (Skyrend's grounding)
 ##   --cast=SPELL               learn SPELL and cast it on frame 10 (e.g. fire)
 ##   --glide=FRAME              glide with Feather Fall from FRAME on, drifting right
 ##   --dash=FRAME               dash right on this frame (Elven Stride)
 ##   --ending=SECONDS[,PART]    play the ending on frame 2 and run it SECONDS in (PART:
 ##                              epilogue, credits or thanks to start there)
-##   --secret                   with --ending: the secret ending (no deaths, the Battle Suit)
+##   --secret                   with --ending: the secret ending (no deaths, the Elven Plate)
 
 const NEW_GAME_ROOM := "eolis/west_gate"
 ## The three journeys' save slots (Sean, 2026-10-31; bible 14). The title shows
@@ -94,6 +94,7 @@ var _frames := 0
 func _ready() -> void:
 	# The game node keeps running while paused (map, menus); the world does not.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	GameState.bring_old_saves()
 	Settings.load_settings()
 	Settings.apply()
 	for arg in OS.get_cmdline_user_args():
@@ -216,7 +217,7 @@ func _title() -> void:
 				Menus.open_controls(get_tree(), _title)
 			3:
 				get_tree().quit()
-	menu.open("A wanderer returns", "The World Tree's springs have run dry.", rows, pick)
+	menu.open("A wanderer returns", "The Ylden's springs have run dry.", rows, pick)
 	menu.cursor = 0
 
 
@@ -246,7 +247,7 @@ func _take_up(slot: int, fresh: bool) -> void:
 	GameState.slot = slot
 	_start(NEW_GAME_ROOM)
 	if fresh:
-		GameState.banner.emit("Eolis", "The root town")
+		GameState.banner.emit("Hearthroot", "The root town")
 	else:
 		# Nothing in the flask could be read (pass 109): start over rather than fail.
 		GameState.toast.emit("The old journey could not be read. A new one begins.")
@@ -389,42 +390,42 @@ func _process(_delta: float) -> void:
 			(tanks[i] as DryBasin).douse()
 	if _args.has("boss-hp"):
 		var boss := get_tree().get_first_node_in_group("boss")
-		if boss is Rokusutahn and boss.state == "intro":
-			boss.hp = roundi(Rokusutahn.MAX_HP * float(_args["boss-hp"]))
-		elif boss is Zoradohna and boss.state == "intro":
+		if boss is Gnarlmaw and boss.state == "intro":
+			boss.hp = roundi(Gnarlmaw.MAX_HP * float(_args["boss-hp"]))
+		elif boss is Durgan and boss.state == "intro":
 			boss.set_health_fraction(float(_args["boss-hp"]))
-		elif boss is Zorugeriru and boss.state == "intro" and boss.hp == Zorugeriru.MAX_HP:
-			boss.hp = roundi(Zorugeriru.MAX_HP * float(_args["boss-hp"]))
+		elif boss is HaarWyrm and boss.state == "intro" and boss.hp == HaarWyrm.MAX_HP:
+			boss.hp = roundi(HaarWyrm.MAX_HP * float(_args["boss-hp"]))
 			boss._check_phase()
 			boss._check_phase()
-		elif boss is Borabohra and boss.state == "intro" and boss.hp == Borabohra.MAX_HP:
-			boss.hp = roundi(Borabohra.MAX_HP * float(_args["boss-hp"]))
+		elif boss is Skyrend and boss.state == "intro" and boss.hp == Skyrend.MAX_HP:
+			boss.hp = roundi(Skyrend.MAX_HP * float(_args["boss-hp"]))
 			boss._check_phase()
-		elif boss is KingGrieve and boss.state == "intro" and boss.hp == KingGrieve.MAX_HP:
-			boss.hp = roundi(KingGrieve.MAX_HP * float(_args["boss-hp"]))
-			if boss.health_fraction() <= KingGrieve.PHASES[1]:
+		elif boss is ThaneVorrund and boss.state == "intro" and boss.hp == ThaneVorrund.MAX_HP:
+			boss.hp = roundi(ThaneVorrund.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= ThaneVorrund.PHASES[1]:
 				boss.phase = 3
-			elif boss.health_fraction() <= KingGrieve.PHASES[0]:
+			elif boss.health_fraction() <= ThaneVorrund.PHASES[0]:
 				boss.phase = 2
 			boss._check_phase()
-		elif boss is ShadowEura and boss.state == "intro" and boss.hp == ShadowEura.MAX_HP:
-			boss.hp = roundi(ShadowEura.MAX_HP * float(_args["boss-hp"]))
-			if boss.health_fraction() <= ShadowEura.PHASES[0]:
+		elif boss is Likeness and boss.state == "intro" and boss.hp == Likeness.MAX_HP:
+			boss.hp = roundi(Likeness.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= Likeness.PHASES[0]:
 				boss._break_free()
-			if boss.health_fraction() <= ShadowEura.PHASES[1]:
+			if boss.health_fraction() <= Likeness.PHASES[1]:
 				boss.phase = 3
 				boss._split()
-		elif boss is Pakukame and boss.state == "intro" and boss.hp == Pakukame.MAX_HP:
-			boss.hp = roundi(Pakukame.MAX_HP * float(_args["boss-hp"]))
-			if boss.health_fraction() <= Pakukame.PHASES[1]:
+		elif boss is Snapcrown and boss.state == "intro" and boss.hp == Snapcrown.MAX_HP:
+			boss.hp = roundi(Snapcrown.MAX_HP * float(_args["boss-hp"]))
+			if boss.health_fraction() <= Snapcrown.PHASES[1]:
 				boss.phase = 3
-			elif boss.health_fraction() <= Pakukame.PHASES[0]:
+			elif boss.health_fraction() <= Snapcrown.PHASES[0]:
 				boss.phase = 2
 	_check_pause()
 	_take_shot()
 
 
-## The Evil One is dead: freeze the world and play the ending over it.
+## The Everbloom is dead: freeze the world and play the ending over it.
 func _play_ending() -> void:
 	get_tree().paused = true
 	menu.close()
@@ -502,7 +503,7 @@ func _take_shot() -> void:
 
 
 ## Screenshots (--shot-pogo): run right, jump off each edge and strike down just above the floor,
-## so a capture shows the Mattock's pogo along a spike corridor.
+## so a capture shows the Delver's Pick's pogo along a spike corridor.
 func _pogo_hand() -> void:
 	var p := player
 	p.input.scripted = true

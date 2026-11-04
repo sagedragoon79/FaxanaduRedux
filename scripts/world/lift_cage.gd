@@ -1,8 +1,8 @@
 class_name LiftCage
 extends Interactable
-## The Forepaw lift (design bible 4.4): an iron cage on a chain that stops at
-## freed Forepaw, the Tower Foot and, down the outside of the trunk, the East
-## Gate of Eolis. Room prop `lift`. It runs only once Zoradohna is beaten;
+## The Kettleforge lift (design bible 4.4): an iron cage on a chain that stops at
+## freed Kettleforge, the Tower Foot and, down the outside of the trunk, the East
+## Gate of Hearthroot. Room prop `lift`. It runs only once Durgan is beaten;
 ## until then its chain hangs slack. Press Up inside it to pick a stop (or,
 ## with no menu open to pick from, ride to its usual stop).
 
@@ -23,9 +23,9 @@ const LAMP := Color("ffb347")
 const LAMP_CORE := Color("fff2b0")
 ## Every stop, top to bottom: [room, display name, tile the rider steps out on].
 const STOPS := [
-	["tower/forepaw", "Forepaw", Vector2i(71, 19)],
+	["tower/forepaw", "Kettleforge", Vector2i(71, 19)],
 	["tower/foot", "Tower Foot", Vector2i(24, 41)],
-	["eolis/east_gate", "Eolis, East Gate", Vector2i(4, 19)],
+	["eolis/east_gate", "Hearthroot, East Gate", Vector2i(4, 19)],
 ]
 ## Room id -> the stop a ride goes to by default.
 const USUAL := {"tower/forepaw": "tower/foot", "tower/foot": "tower/forepaw", "eolis/east_gate": "tower/foot"}
@@ -64,7 +64,7 @@ func interact(p: Player) -> void:
 	if destination().is_empty():
 		return
 	if not running():
-		GameState.say("", ["The cage hangs still. Its chain runs up into the dark, toward Forepaw.",
+		GameState.say("", ["The cage hangs still. Its chain runs up into the dark, toward Kettleforge.",
 			"Somewhere above, something is holding the lift."])
 		return
 	if Menus.open_lift(get_tree(), p, self):

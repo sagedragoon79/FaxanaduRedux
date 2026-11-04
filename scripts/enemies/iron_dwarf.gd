@@ -1,6 +1,6 @@
 class_name IronDwarf
 extends Enemy
-## A dwarf of Forepaw in iron plate (design bible 7, Tower of Trunk). Plods on
+## A dwarf of Kettleforge in iron plate (design bible 7, Hollin Tower). Plods on
 ## patrol with a two-handed hammer on his shoulder. With you in front of him he
 ## heaves it overhead (the telegraph) and slams it down: the blow crushes what
 ## is in front of him and sends a shockwave rolling along the floor, which you

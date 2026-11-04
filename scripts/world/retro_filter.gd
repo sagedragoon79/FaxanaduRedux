@@ -1,6 +1,6 @@
 class_name RetroFilter
 extends CanvasLayer
-## Eolis of Old (design bible 11, pass 152): over a room whose header says
+## Old Hearthroot (design bible 11, pass 152): over a room whose header says
 ## `retro: true`, the world is drawn as the NES drew it: chunky pixels in a 4:3
 ## frame and only the NES palette's colours (shaders/retro.gdshader). It sits
 ## under the game's UI layer, so the HUD stays as it is.

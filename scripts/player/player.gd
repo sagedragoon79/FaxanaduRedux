@@ -28,9 +28,9 @@ const LAYER_ENEMY := 8
 ## Elven veils (StrideVeil, bible 4.1 A5): a wall to the player except mid-dash.
 const LAYER_VEIL := 16
 
-## How long an Ointment protects you (design bible 10.2).
+## How long an Barkbalm protects you (design bible 10.2).
 const OINTMENT_TIME := 10.0
-## Poison (a Faxanadu drop): seconds it lasts, and health lost each POISON_TICK.
+## Blightcap (a Yldenfall drop): seconds it lasts, and health lost each POISON_TICK.
 ## It never takes your last point of health.
 const POISON_TIME := 8.0
 const POISON_TICK := 1.0
@@ -66,7 +66,7 @@ const WALL_SCRAPE := 0.24
 ## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
-## Mantra of Death (pass 134): what share of its MP the Death spell costs.
+## Deep Wither (pass 134): what share of its MP the Wither spell costs.
 const MANTRA_OF_DEATH_MULT := 0.5
 ## Wanderer's Grace (pass 142): seconds of harm passing through you added to
 ## every dash, on top of `MovementTuning.dash_invuln`.
@@ -117,15 +117,15 @@ var defense := 0.0
 var has_shield := true
 ## Share of damage a guard blocks; the shield sets it (data/items.json "guard").
 var guard_reduction := 0.5
-## The Magic Shield: a parry also catches small shots that can't otherwise be
+## The Warding Shield: a parry also catches small shots that can't otherwise be
 ## parried (group "small_projectile") and flings them back (ReflectedShot).
 var reflects := false
-## What a worn shield (and the Battle Helmet) turns of a foe's sorcery, guarding
+## What a worn shield (and the Elven Helm) turns of a foe's sorcery, guarding
 ## or not (pass 225): the original's shields resisted enemy magic, 50 to 90%.
 var magic_ward := 0.0
-## Elixirs carried: dying with one revives you where you fell.
+## Amber Draughts carried: dying with one revives you where you fell.
 var elixirs := 0
-## Ointments carried: each makes you immune to harm for OINTMENT_TIME.
+## Barkbalms carried: each makes you immune to harm for OINTMENT_TIME.
 var ointments := 0
 ## Seconds left on a War Glove (the original's Glove, a rare drop): blade hits
 ## deal combat.war_glove_mult more while it lasts.
@@ -141,12 +141,12 @@ var rising_cut := false
 var down_strike_mult := 1.0
 var spell_pierce := false
 var drink_mult := 1.0
-## Tilte Swarm (skill): Tilte throws three orbs.
+## Wisp Swarm (skill): Wisplight throws three orbs.
 var tilte_swarm := false
 var bonus_air_dashes := 0
 ## Riposte: a parry answers with a heavy counter-cut. Bloodletting: hits on a
-## staggered foe heal. Thrift scales spell costs; Chain Thunder lets Thunder leap;
-## Time Thief lengthens the Hour Glass (Treasure Sense lives on the map); Last
+## staggered foe heal. Thrift scales spell costs; Forked Storm lets Stormcall leap;
+## Time Thief lengthens the Stillstone (Treasure Sense lives on the map); Last
 ## Stand cuts damage at low health; Second Wind survives one killing blow per rest.
 var riposte := false
 var bloodletting := false
@@ -172,7 +172,7 @@ var feather_fall := false
 ## True while gliding (set each frame).
 var is_gliding := false
 var _glide_feather_timer := 0.0
-## Spent until the next rest (a shrine, a Guru, or a respawn).
+## Spent until the next rest (a shrine, a Ringreader, or a respawn).
 var second_wind_used := false
 ## Set each frame by the World when the feet are in a sap pool.
 var in_sap := false
@@ -198,7 +198,7 @@ var air_dash_charges := 1
 ## hurts them (pass 435). A dialog pauses the world instead (pass 436).
 var invulnerable: bool:
 	get: return frozen or _invuln_timer > 0.0 or _ointment_timer > 0.0
-## Seconds of Ointment left (0 when none is on).
+## Seconds of Barkbalm left (0 when none is on).
 var ointment_left: float:
 	get: return maxf(_ointment_timer, 0.0)
 ## Seconds of poison left (0 when you are well).
@@ -245,7 +245,7 @@ var pull := Vector2.ZERO
 ## Set by a Waterfall while you are in it; cleared every frame.
 var water_push := 0.0
 ## How much of their weight the player has this frame: a GravityDrift pocket in
-## Zenis lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
+## the Evercrown lowers it (design bible 8.9). Set by the pocket each frame, like water_push.
 var gravity_scale := 1.0
 ## Field cues (pass 137): whether a current held you, and whether a pocket of
 ## wrong gravity did, last frame, and how long until each cue may sound again.
@@ -253,11 +253,11 @@ var _was_in_wind := false
 var _was_drifting := false
 var _wind_cue_wait := 0.0
 var _drift_cue_wait := 0.0
-## Rising wind under the player this frame (px/s up): Borabohra's updraft in its
+## Rising wind under the player this frame (px/s up): Skyrend's updraft in its
 ## third phase (design bible 8.6). Set by an Updraft each frame; Down drops out.
 var updraft := 0.0
 ## A wind current pushing the airborne player this frame (px/s, + east): the
-## Branches' wind (bible 6.9). Set by a WindCurrent each frame; Down drops out.
+## High Boughs' wind (bible 6.9). Set by a WindCurrent each frame; Down drops out.
 var wind := 0.0
 ## Deep water around the body's centre this frame (the Sunken Spring, legend
 ## `a`), and the y of its surface in that column. Set by SwimWater each frame.
@@ -552,7 +552,7 @@ func _tick_timers(delta: float) -> void:
 	if _ointment_timer > 0.0:
 		_ointment_timer -= delta
 		if _ointment_timer <= 0.0:
-			GameState.toast.emit("The Ointment wears off.")
+			GameState.toast.emit("The Barkbalm wears off.")
 	if _poison_timer > 0.0:
 		_tick_poison(delta)
 	if _glove_timer > 0.0:
@@ -1467,7 +1467,7 @@ func _try_cycle_spell() -> void:
 	GameState.toast.emit("Spell: " + String(Spells.DATA[next].name))
 
 
-## The Hour Glass (design bible A8): stop time for a moment.
+## The Stillstone (design bible A8): stop time for a moment.
 func _try_hourglass() -> void:
 	if not input.hourglass_pressed or not abilities.get("hourglass", false):
 		return
@@ -1581,7 +1581,7 @@ func _field_cues(delta: float) -> void:
 
 ## A foe's guard turned a blow (`Enemy._on_blocked`). Only the blade's own
 ## blow pushes you back, harder than a landed cut (pass 442): until then the
-## push met every turned blow, so a Deluge cast at a Rot Dwarf's shield across
+## push met every turned blow, so a Torrent cast at a Rot Dwarf's shield across
 ## the room shoved the caster, while a turned slash was pushed only by its
 ## ordinary recoil, which overwrote it.
 func blade_turned() -> void:
@@ -1590,8 +1590,8 @@ func blade_turned() -> void:
 		_turned_now = true
 
 
-## The MP a spell costs you now: Thrift for every spell, and Mantra of Death
-## halves Death on top.
+## The MP a spell costs you now: Thrift for every spell, and Deep Wither
+## halves Wither on top.
 func spell_cost(id: String) -> float:
 	var cost := Spells.cost(id) * spell_cost_mult
 	if id == "death" and mantra_of_death:
@@ -1735,7 +1735,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		# in the air while the guardian falls (pass 239).
 		return
 	if from_hazard and Trials.active():
-		# A Guru Trial (bible 3.1): a miss costs time, never health.
+		# A Ringreader Trial (bible 3.1): a miss costs time, never health.
 		Sfx.play("hurt", 0.05, -4.0)
 		visual.flash_hurt()
 		_invuln_timer = hurt_invuln()
@@ -1754,7 +1754,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 		_spawn_dust(Vector2(0, -16), "heal")
 	if BossRush.active() and amount >= hp and elixirs <= 0:
 		# A boss rush (bible 11): the blow that would kill you ends the rush
-		# (an Elixir still saves you first).
+		# (an Amber Draught still saves you first).
 		var world := get_tree().get_first_node_in_group("world") as World
 		if world != null:
 			_invuln_timer = hurt_invuln()
@@ -1802,7 +1802,7 @@ func take_damage(amount: int, from_hazard := false, knock_dir := 0) -> void:
 	health_changed.emit(hp, max_hp)
 
 
-## Rubs on an Ointment (from the pause menu): nothing can hurt you for
+## Rubs on an Barkbalm (from the pause menu): nothing can hurt you for
 ## OINTMENT_TIME seconds. False if you have none or one is already on.
 func use_ointment() -> bool:
 	if ointments <= 0 or _ointment_timer > 0.0 or dead:
@@ -1810,12 +1810,12 @@ func use_ointment() -> bool:
 	ointments -= 1
 	_ointment_timer = OINTMENT_TIME
 	Sfx.play("heal", 0.0)
-	GameState.toast.emit("The Ointment shimmers on your skin.")
+	GameState.toast.emit("The Barkbalm shimmers on your skin.")
 	return true
 
 
 ## What a blade hit is multiplied by: the skill tree's melee_mult, the War
-## Glove's while it lasts, and the Pendant's once found (pass 201).
+## Glove's while it lasts, and the Acorn Charm's once found (pass 201).
 func blade_mult() -> float:
 	var pendant := combat.pendant_mult if abilities.get("pendant", false) else 1.0
 	return melee_mult * pendant * (combat.war_glove_mult if _glove_timer > 0.0 else 1.0)
@@ -1848,7 +1848,7 @@ func _tick_glove(delta: float) -> void:
 
 ## Drinks in poison: for POISON_TIME seconds you lose POISON_DAMAGE health
 ## every POISON_TICK, down to 1, scaled by the room's threat like a foe's blow
-## (bible 7, pass 306). An Ointment keeps it off. False if it didn't take.
+## (bible 7, pass 306). An Barkbalm keeps it off. False if it didn't take.
 func poison() -> bool:
 	if dead or _ointment_timer > 0.0:
 		return false
@@ -1859,7 +1859,7 @@ func poison() -> bool:
 	return true
 
 
-## Bread, a shrine or the Guru clears poison.
+## Bread, a shrine or the Ringreader clears poison.
 func cure_poison() -> void:
 	_poison_timer = 0.0
 
@@ -1883,7 +1883,7 @@ func _tick_poison(delta: float) -> void:
 		GameState.toast.emit("The poison fades.")
 
 
-## Dying with an Elixir: it is used up and you rise where you fell, fully
+## Dying with an Amber Draught: it is used up and you rise where you fell, fully
 ## healed and with full magic, as the original's manual has it: "Medicine that
 ## will restore your magic and power." (bible 5.2, pass 345)
 func _drink_elixir() -> void:
@@ -1899,7 +1899,7 @@ func _drink_elixir() -> void:
 	d.setup("heal")
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
-	GameState.toast.emit("The Elixir burns. You rise again.")
+	GameState.toast.emit("The Amber Draught burns. You rise again.")
 	health_changed.emit(hp, max_hp)
 
 
@@ -1956,7 +1956,7 @@ func add_gold(amount: int, found := false) -> void:
 	gold += whole
 
 
-## Refills health, magic and potion charges (save shrines, the Guru).
+## Refills health, magic and potion charges (save shrines, the Ringreader).
 func restore() -> void:
 	_poison_timer = 0.0
 	second_wind_used = false

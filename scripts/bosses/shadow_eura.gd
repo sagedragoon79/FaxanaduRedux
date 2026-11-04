@@ -1,8 +1,8 @@
-class_name ShadowEura
+class_name Likeness
 extends Enemy
-## Shadow Eura, the Mirror (design bible 8.8): a shadow copy of the player,
-## made from every fight the meteor has watched. It waits before the gate of
-## Zenis as your reflection: the hall is mirrored down its middle, and the
+## the Likeness, the Mirror (design bible 8.8): a shadow copy of the player,
+## made from every fight the Everbloom has watched. It waits before the gate of
+## the Evercrown as your reflection: the hall is mirrored down its middle, and the
 ## shadow stands where you would stand on the far side of the glass.
 ##
 ## Phase 1, the mirror: it does what you did DELAY seconds ago, mirrored. Walk
@@ -33,8 +33,8 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Shadow Eura"
-const EPITHET := "the Mirror"
+const DISPLAY_NAME := "The Likeness"
+const EPITHET := "Kept by the Glass"
 const MAX_HP := 320
 ## Health fractions where later phases begin: below half it breaks the mirror.
 const PHASES := [0.5, 0.2]
@@ -121,8 +121,8 @@ var _spilled := false
 ## Phase 3: the false shadow (no reflection, no health of its own) and, on the
 ## real one, its current false double and the wait before splitting again.
 var decoy := false
-var real: ShadowEura
-var double: ShadowEura
+var real: Likeness
+var double: Likeness
 var _resplit := 0.0
 
 
@@ -248,7 +248,7 @@ func _split() -> void:
 	if absf(other - global_position.x) < 40.0 or not _clear_at(Vector2(other, global_position.y)):
 		# No room on your far side (too close, or in the wall): toward the middle instead.
 		other = clampf(global_position.x + (80.0 if global_position.x < axis() else -80.0), arena.position.x + 16.0, arena.end.x - 16.0)
-	var d := ShadowEura.new()
+	var d := Likeness.new()
 	d.decoy = true
 	d.real = self
 	d.phase = 3
@@ -793,7 +793,7 @@ func _draw() -> void:
 	var eye := Vector2(neck[0] + 2.0, neck[1] - 6.0)
 	draw_rect(Rect2(eye, Vector2(2, 1)), Color(EYE, a))
 	draw_rect(Rect2(eye + Vector2(-3, 0), Vector2(1, 1)), Color(EYE, 0.6 * a))
-	# Its blade, a shard of the meteor, glinting before each blow.
+	# Its blade, a shard of the Everbloom, glinting before each blow.
 	if info.has("blade"):
 		var hand := Vector2(info.hand[0], info.hand[1])
 		var dir := Vector2.from_angle(deg_to_rad(float(info.blade)))

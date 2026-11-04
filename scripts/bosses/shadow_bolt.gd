@@ -1,8 +1,8 @@
 class_name ShadowBolt
 extends Node2D
-## A bolt of shadow Shadow Eura casts once it fights on its own with your
+## A bolt of shadow the Likeness casts once it fights on its own with your
 ## Arcana (design bible 8.8). It flies straight along the hall. Parry it and it
-## turns back on the shadow that cast it. The Hour Glass holds it still. The
+## turns back on the shadow that cast it. The Stillstone holds it still. The
 ## origin is the bolt's centre.
 
 const SPEED := 200.0
@@ -15,7 +15,7 @@ const CORE := Color("ffb8f0")
 const BODY := Color("9a5ae0")
 const DARK := Color("120a1c")
 
-var boss: ShadowEura
+var boss: Likeness
 var direction := 1
 ## Turned back by a parry: it hurts the shadow now, not you.
 var reflected := false

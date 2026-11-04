@@ -46,7 +46,7 @@ Pass 163 left Systems, Audio, Stability and Faithfulness tied at 98.5. Systems w
   - the save keeps the dye;
   - the Guru's list names the dye as yours or names the mantra time, and keeps a sealed trial sealed.
 
-Full suite: 3116 checks, all passing, with no script errors in the log. (The first run caught `test_the_dyer_dyes_the_cloak` reading the Lord's Gold as the last shelf entry; the mantra dyes now sit before it.)
+Full suite: 3116 checks, all passing, with no script errors in the log. (The first run caught `test_the_dyer_dyes_the_cloak` reading the Crown Gold as the last shelf entry; the mantra dyes now sit before it.)
 
 ## Rubric
 

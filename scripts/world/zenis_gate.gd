@@ -1,12 +1,12 @@
-class_name ZenisGate
+class_name CrownGate
 extends Node2D
-## The gate of Zenis (room prop `zenis_gate`, design bible 9): a great door of
-## black meteor-iron set in the rock at the top of the Meteor Rise, four ring
-## sockets in its face (Elf, Ruby, Dworf, Demon). Each socket glows once you
+## The gate of the Evercrown (room prop `zenis_gate`, design bible 9): a great door of
+## black stillglass-iron set in the rock at the top of the Glass Rise, four ring
+## sockets in its face (Elf, Ruby, Hollin, Demon). Each socket glows once you
 ## hold that ring. It stays shut until all four are held and the shadow before
-## it (Shadow Eura, bible 8.8) is beaten. Shut, it bars the way from floor to
+## it (the Likeness, bible 8.8) is beaten. Shut, it bars the way from floor to
 ## vault and walking up to it only tells you what it wants; open, its leaves
-## stand wide on the cyan light of the meteor's insides and you walk through
+## stand wide on the cyan light of the Everbloom's insides and you walk through
 ## (the room's door 2 is behind it). Drawn at 2x density. The origin is the
 ## bottom centre (it stands on the floor).
 
@@ -66,10 +66,10 @@ func lit() -> Array:
 func message() -> String:
 	var n := lit().size()
 	if n < RINGS.size():
-		return "The gate of Zenis. Four sockets for four rings: %d of them glow." % n
+		return "The gate of the Evercrown. Four sockets for four rings: %d of them glow." % n
 	if not GameState.flag(FLAG):
 		return "All four rings burn in the gate. It does not open: something in the dark before it is watching you."
-	return "All four rings burn and nothing watches from the dark. The gate of Zenis stands open."
+	return "All four rings burn and nothing watches from the dark. The gate of the Evercrown stands open."
 
 
 func _process(delta: float) -> void:
@@ -95,12 +95,12 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var w := WIDTH
 	var h := HEIGHT
-	# The arch: a pointed frame of meteor-iron, veined with crystal.
+	# The arch: a pointed frame of stillglass-iron, veined with crystal.
 	draw_rect(Rect2(-w * 0.5 - 6.0, -h, w + 12.0, h), OUTLINE)
 	draw_colored_polygon(PackedVector2Array([Vector2(-w * 0.5 - 6.0, -h), Vector2(0, -h - 24.0), Vector2(w * 0.5 + 6.0, -h)]), OUTLINE)
 	draw_rect(Rect2(-w * 0.5 - 4.0, -h + 2.0, w + 8.0, h - 2.0), IRON_LIGHT)
 	draw_colored_polygon(PackedVector2Array([Vector2(-w * 0.5 - 4.0, -h + 2.0), Vector2(0, -h - 20.0), Vector2(w * 0.5 + 4.0, -h + 2.0)]), IRON_LIGHT)
-	# The doorway behind the leaves: the meteor's light, seen as they part.
+	# The doorway behind the leaves: the Everbloom's light, seen as they part.
 	if swing > 0.0:
 		draw_rect(Rect2(-w * 0.5, -h + 4.0, w, h - 4.0), Color("0a0612"))
 		var k := 0.6 + 0.4 * sin(_t * 2.5)

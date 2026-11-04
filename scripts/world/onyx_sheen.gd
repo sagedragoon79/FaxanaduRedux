@@ -1,19 +1,19 @@
 class_name OnyxSheen
 extends Node2D
-## What the Black Onyx shows (design bible A7, 4.5): a thin violet seam that
+## What the Seer's Lens shows (design bible A7, 4.5): a thin violet seam that
 ## shimmers around every illusory wall (fake wall, legend `%`) in the room, and
-## the hidden planks (legend `i`) drawn faintly. Without the Onyx it draws
+## the hidden planks (legend `i`) drawn faintly. Without the Lens it draws
 ## nothing and the planks stay invisible, though they still hold you up.
 
 const SEAM := Color("c8b0ff")
-## How faintly the hidden planks show through the Onyx.
+## How faintly the hidden planks show through the Lens.
 const PHANTOM_ALPHA := 0.38
 const FADE := 2.5
 
 var room: Room
 ## The room's fake-wall cells (cell -> true).
 var cells := {}
-## 0 without the Onyx, easing to 1 once the player carries it.
+## 0 without the Lens, easing to 1 once the player carries it.
 var strength := 0.0
 
 var _t := 0.0

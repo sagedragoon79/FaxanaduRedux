@@ -1,7 +1,7 @@
 class_name DryBasin
 extends Area2D
 ## A dry basin (bible 4.5): a stone tank whose mud bed (legend `u`) has cracked
-## under a water-line stain (legend `=`, a row across the tank). A Deluge bolt
+## under a water-line stain (legend `=`, a row across the tank). A Torrent bolt
 ## that crosses the tank (group "water_target") fills it: the water rises over
 ## FILL_TIME and floats a raft up to the stain, which then stands as a one-way
 ## platform along the `=` row. The flag "basin:<room id>:<x>" keeps it full.
@@ -29,7 +29,7 @@ var bed_row := 0
 var filled := false
 ## 0 dry .. 1 full.
 var level := 0.0
-## Set by a boss that needs the tank filled (Zorugeriru's phase 2): the dry
+## Set by a boss that needs the tank filled (the Haar Wyrm's phase 2): the dry
 ## tank shimmers, its stain glowing and water beading under it.
 var beckon := false:
 	set(on):
@@ -57,7 +57,7 @@ func _ready() -> void:
 		_fill(true)
 
 
-## A Deluge bolt crossed the tank: it fills, and the raft rises.
+## A Torrent bolt crossed the tank: it fills, and the raft rises.
 func douse() -> void:
 	if filled:
 		return

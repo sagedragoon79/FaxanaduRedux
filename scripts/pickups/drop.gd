@@ -1,11 +1,11 @@
 class_name Drop
 extends CharacterBody2D
 ## Food and magic that defeated enemies sometimes leave (design bible 7: drops
-## are gold, MP orbs and rare items). Bread heals, as it did in Faxanadu; a
-## mana orb refills magic. From the Tower on, some enemies leave Faxanadu's
-## Poison instead: a skull-marked flask that sickens you if you walk over it.
+## are gold, MP orbs and rare items). Bread heals, as it did in Yldenfall; a
+## mana orb refills magic. From the Tower on, some enemies leave Yldenfall's
+## Blightcap instead: a skull-marked flask that sickens you if you walk over it.
 ## Rarely, any foe leaves one of the original's rare items (pass 147): a War
-## Glove (the original's Glove: harder blows for a while) or an Ointment.
+## Glove (the original's Glove: harder blows for a while) or an Barkbalm.
 ## All of them pop out, settle on the floor and wait, blinking before they vanish.
 
 const GRAVITY := 700.0
@@ -17,7 +17,7 @@ const DOOR_CLEAR := 40.0
 ## How many tiles up the side of a spiked pit a drop may step to rest beside it.
 const SPIKE_STEP_RISE := 4
 const BREAD_HEAL := 15
-## The great loaf, the original's largest bread: what a slain Naga leaves (pass 281).
+## The great loaf, the original's largest bread: what a slain Silt Adder leaves (pass 281).
 const LOAF_HEAL := 40
 const MANA_GAIN := 12.0
 ## The game's chances per kill (bible 5.3, Drops): bread, a mana orb, poison
@@ -128,7 +128,7 @@ func _physics_process(delta: float) -> void:
 
 
 ## A drop never rests on spikes (pass 308): one that falls into a spiked pit,
-## a Lilith struck down over a torn leaf or a foe slain over a crystal trench,
+## a Mothling struck down over a torn leaf or a foe slain over a crystal trench,
 ## would cost a blow to take. It moves to the nearest floor beside the pit, up
 ## to SPIKE_STEP_RISE tiles above it, as a purse on torn floor does (pass 300).
 func _step_off_spikes() -> void:
@@ -224,10 +224,10 @@ func _collect(p: Player) -> void:
 	elif kind == "poison":
 		d.setup("debris")
 		if p.poison():
-			GameState.toast.emit("Poison! It will pass, or bread will settle it.")
+			GameState.toast.emit("Blightcap! It will pass, or bread will settle it.")
 			Sfx.play("hurt", 0.1, -6.0)
 		else:
-			GameState.toast.emit("The Ointment keeps the poison off.")
+			GameState.toast.emit("The Barkbalm keeps the poison off.")
 			# Every drop is heard as it is taken (pass 302): the ring of a ward
 			# turning harm, the sound the shield's ward makes against sorcery.
 			Sfx.play("ward", 0.05, -6.0)
@@ -239,13 +239,13 @@ func _collect(p: Player) -> void:
 		Sfx.play("item", 0.0, -4.0)
 		if p.ointments < Shop.OINTMENT_MAX:
 			p.ointments += 1
-			GameState.toast.emit("An Ointment! Rub it on from the pause menu.")
+			GameState.toast.emit("An Barkbalm! Rub it on from the pause menu.")
 		elif p.ointment_left <= 0.0:
 			# The pouch is full: it goes straight on, as the original's did.
 			p.ointments += 1
 			p.use_ointment()
 		else:
-			GameState.toast.emit("An Ointment, but your pouch is full.")
+			GameState.toast.emit("An Barkbalm, but your pouch is full.")
 	else:
 		p.mp = minf(p.max_mp, p.mp + MANA_GAIN)
 		d.setup("coin")
