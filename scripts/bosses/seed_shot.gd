@@ -1,6 +1,6 @@
 class_name SeedShot
 extends Node2D
-## A seed Pakukame spits: a hard green pip that arcs through the air and
+## A seed Snapcrown spits: a hard green pip that arcs through the air and
 ## stings whoever it hits. It can be parried, and bursts on the leaf.
 
 const GRAVITY := 600.0
@@ -9,7 +9,7 @@ const LIFE := 3.0
 const SIZE := 6.0
 
 var velocity := Vector2.ZERO
-## What a Magic Shield's reflected shot glows with.
+## What a Warding Shield's reflected shot glows with.
 var tint := Color("7cbf52")
 var _t := 0.0
 
@@ -20,7 +20,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	velocity.y += GRAVITY * delta
 	global_position += velocity * delta

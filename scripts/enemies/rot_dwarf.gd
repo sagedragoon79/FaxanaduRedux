@@ -1,6 +1,6 @@
 class_name RotDwarf
 extends Enemy
-## A dwarf rotted by the meteor's influence. Patrols behind a shield that blocks
+## A dwarf rotted by the Everbloom's influence. Patrols behind a shield that blocks
 ## frontal hits; raises an axe (telegraph) to swing. Parry the swing to stagger
 ## him, or hit him from behind or above.
 

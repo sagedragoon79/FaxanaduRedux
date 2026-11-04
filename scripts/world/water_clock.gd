@@ -1,6 +1,6 @@
 class_name WaterClock
 extends Node2D
-## The great water-clock of King Grieve's throne hall (room prop `water_clock`,
+## The great water-clock of Thane Vorrund's throne hall (room prop `water_clock`,
 ## design bible 8.7): a tall glass column in a bronze frame with a dial of
 ## hours, full of flood-water since the day the king made his pact. While you
 ## fight him it drains with his life, so the hall's own clock shows how near
@@ -37,8 +37,8 @@ func target_level() -> float:
 	if GameState.flag(FLAG):
 		return 0.0
 	var b := get_tree().get_first_node_in_group("boss") if is_inside_tree() else null
-	if b is KingGrieve and not (b as KingGrieve).is_queued_for_deletion():
-		return (b as KingGrieve).health_fraction()
+	if b is ThaneVorrund and not (b as ThaneVorrund).is_queued_for_deletion():
+		return (b as ThaneVorrund).health_fraction()
 	return 1.0
 
 

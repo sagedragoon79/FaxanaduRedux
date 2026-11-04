@@ -8,15 +8,15 @@ extends RefCounted
 ## standing spot: room, tile column x and the tile row y holding the feet, with
 ## three clear tiles for the body and support below. Moves are walking, walking
 ## off ledges (with some drift), jumps within the safe envelope, doors, with
-## the Climbing Glove climbing any wall face, and with the Mattock pogo bounces
-## off spikes and thorn bulbs (see drop()), and with the Wing Boots a higher,
+## the Climbing Glove climbing any wall face, and with the Delver's Pick pogo bounces
+## off spikes and thorn bulbs (see drop()), and with the Featherstep Boots a higher,
 ## longer jump (BOOT_JUMP), and from a bounce-pod a much higher one (POD_JUMP), and with the Elven
 ## Stride an air dash at the top of each (STRIDE_REACH). Numbers are a little under
 ## the movement spec so a route that passes here is comfortable in play.
 
 ## Safe jump envelope in tiles: rise -> max horizontal distance.
 const JUMP := {0: 5, 1: 5, 2: 5, 3: 4, 4: 2}
-## With the Wing Boots: a second jump at the top adds three tiles of rise
+## With the Featherstep Boots: a second jump at the top adds three tiles of rise
 ## (double_jump_height 48) and keeps the player in the air longer. In play the
 ## feet rise 124 px; seven rows (112 px) keeps the plain jump's 12 px margin
 ## (pass 235: the Feather Hollow's perch, proven in test_abilities.gd).
@@ -40,8 +40,8 @@ const DRIFT_JUMP := {0: 6, 1: 6, 2: 6, 3: 6, 4: 6, 5: 6, 6: 5, 7: 5, 8: 4, 9: 3}
 ## rows up) you can jump out, a little short of a jump from the floor.
 const WATER := "al"
 const WATER_JUMP := {0: 4, 1: 4, 2: 4, 3: 3}
-## Wind currents (legend `>` east, `<` west; the Branches, bible 6.9), reversed
-## with the "sky_spring" ability (the Spring of Sky restored). A jump whose top
+## Wind currents (legend `>` east, `<` west; the High Boughs, bible 6.9), reversed
+## with the "sky_spring" ability (the Sky Spring restored). A jump whose top
 ## puts the middle of the body (the row above the feet) in a current is caught:
 ## it rides the current downwind along that row, and can touch down on any spot
 ## it passes, drop out (Down) anywhere, or fly out of the band's far end and
@@ -68,7 +68,7 @@ const HAZARD := "^o"
 
 var rooms := {}        # room id -> {grid: Array[String], size: Vector2i, doors: {n: {...}}}
 var abilities := {}    # ability -> bool
-var keys := false      # may Jack doors be opened?
+var keys := false      # may Copper doors be opened?
 
 var _edges := {}       # node key -> Array of node keys
 # Per-room caches, for speed only (a full flood visits each cell many times):
@@ -104,8 +104,8 @@ func _init(room_texts: Dictionary, ability_set: Dictionary, can_use_keys := fals
 			var n := int(parts[0])
 			if found.has(n):
 				doors[n] = {"rect": found[n].rect, "edge": found[n].edge, "target": parts[1].strip_edges(), "target_door": int(parts[2])}
-		# Finds laid by `prop:` lines (Room.FOUND_PROPS: the Joker Key, the
-		# Battle Helmet, the Pendant, the Magical Rod), as [kind, x, y] (pass 203).
+		# Finds laid by `prop:` lines (Room.FOUND_PROPS: the Glass Key, the
+		# Elven Helm, the Acorn Charm, the Briar Wand), as [kind, x, y] (pass 203).
 		var finds := []
 		for spec: String in parsed.lists.get("prop", []):
 			var pr := spec.split(",")
@@ -179,10 +179,10 @@ func _solid_char(room_id: String, c: String) -> bool:
 	if c == "J":
 		return not keys
 	if c == "f":
-		# Falling water beats you back down; only the Hour Glass stills it.
+		# Falling water beats you back down; only the Stillstone stills it.
 		return not abilities.get("hourglass", false)
 	if c == "g":
-		# Dartmoor's upper gate opens with the Sky Key (Borabohra's reward).
+		# Vorrhallow's upper gate opens with the Sky Key (Skyrend's reward).
 		return not abilities.get("sky_key", false)
 	if c == "C":
 		return not abilities.get("mattock", false)
@@ -190,28 +190,28 @@ func _solid_char(room_id: String, c: String) -> bool:
 		# A root-gate opens once the room's Root Heart can be struck.
 		return not _roots_open.has(room_id)
 	if c == "Q":
-		# The flue damper stands open once Zoradohna falls and the winch turns.
+		# The flue damper stands open once Durgan falls and the winch turns.
 		return not abilities.get("winch", false)
 	if c == "|":
 		# An elven veil lets only a dash through (the Elven Stride).
 		return not abilities.get("stride", false)
 	if c == "Y":
-		# Bound fog parts for the Lantern Key (Ripasheiku's reward).
+		# Bound fog parts for the Lantern Key (Gloamweaver's reward).
 		return not abilities.get("lantern", false)
 	if c == "Z":
-		# A fire seal goes out for good once a Deluge bolt strikes it.
+		# A fire seal goes out for good once a Torrent bolt strikes it.
 		return not abilities.get("deluge", false)
 	if c == "k":
-		# A conduit gate slides open once Thunder powers the room's conduits.
+		# A conduit gate slides open once Stormcall powers the room's conduits.
 		return not abilities.get("thunder", false)
 	if c == "+":
-		# The heart's flesh parts only for the Dragon Slayer.
+		# The heart's flesh parts only for the Severance.
 		return not abilities.get("dragon_slayer", false)
 	if c == "w":
-		# A bramble wall burns away for good under a Fire spell.
+		# A bramble wall burns away for good under a Kindle spell.
 		return not abilities.get("fire", false)
 	if c == "~":
-		# Sap hardens into solid amber once the Spring of Trunk is restored.
+		# Sap hardens into solid amber once the Heartwood Spring is restored.
 		return abilities.get("amber", false)
 	return SOLID.contains(c)
 
@@ -231,7 +231,7 @@ func supported(room_id: String, x: int, y: int) -> bool:
 		or (below == "b" and abilities.get("spring_mist", false))
 
 
-## Time-locked water (`f`): with the Hour Glass it freezes into footholds every
+## Time-locked water (`f`): with the Stillstone it freezes into footholds every
 ## Waterfall.STEP rows up from the bottom of its run.
 func _foothold(room_id: String, x: int, y: int) -> bool:
 	if ch(room_id, x, y) != "f" or not abilities.get("hourglass", false):
@@ -257,7 +257,7 @@ func standable(room_id: String, x: int, y: int) -> bool:
 
 
 ## Where something falling down column x from row y lands, or -1 if it leaves
-## the room (through a floor door) or never lands. With the Mattock, a fall onto
+## the room (through a floor door) or never lands. With the Delver's Pick, a fall onto
 ## spikes or a thorn bulb is a pogo: it "lands" just above the hazard, and the
 ## bounce works like a jump from there.
 func drop(room_id: String, x: int, y: int) -> int:
@@ -363,7 +363,7 @@ func wind_dir(room_id: String, x: int, y: int) -> int:
 	if not WIND.contains(c):
 		return 0
 	var d := 1 if c == ">" else -1
-	# The mantra-space's winds never turn (the trials, pass 160).
+	# The inner rings's winds never turn (the trials, pass 160).
 	if room_id.begins_with("trials/"):
 		return d
 	return -d if abilities.get("sky_spring", false) else d
@@ -655,7 +655,7 @@ func spot_of(room_id: String, marker: String) -> String:
 
 ## True if a pickup at tile (x, y) can be touched from some reachable node:
 ## standing in it, or jumping into it from below: within TOUCH_RISE rows, or
-## BOOT_TOUCH_RISE with the Wing Boots' second jump (pass 232).
+## BOOT_TOUCH_RISE with the Featherstep Boots' second jump (pass 232).
 func touchable(nodes: Dictionary, room_id: String, x: int, y: int) -> bool:
 	var rise := BOOT_TOUCH_RISE if abilities.get("boots", false) else TOUCH_RISE
 	for dy in range(0, rise + 1):

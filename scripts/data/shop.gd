@@ -3,15 +3,15 @@ extends RefCounted
 ## Buying from a shop (data/shops.json). Pure logic, so the menu and the tests
 ## share it.
 
-## Elixirs you can carry at once (design bible 10.2).
+## Amber Draughts you can carry at once (design bible 10.2).
 const ELIXIR_MAX := 1
-## Ointments you can carry at once.
+## Barkbalms you can carry at once.
 const OINTMENT_MAX := 3
 
 
 ## The stock indices on the shelf now. An entry with "requires" (a GameState flag)
 ## stays off the shelf until that flag is set: the final tier comes in on the
-## sky road once the Spring of Sky is restored (design bible 10.2).
+## sky road once the Sky Spring is restored (design bible 10.2).
 static func shelf(shop_id: String) -> Array[int]:
 	var out: Array[int] = []
 	var stock: Array = GameData.shop(shop_id).stock
@@ -25,7 +25,7 @@ static func shelf(shop_id: String) -> Array[int]:
 ## Why an entry can't be bought right now: "" (it can), "hidden" (not on the
 ## shelf yet), "owned", "full", "sold out", "locked" (a second temper before the
 ## first), "enough" (the keys you hold already open every door of that card still
-## shut), "shards" (too few Meteor Shards for an entry's "shards") or "gold".
+## shut), "shards" (too few Stillglass Shards for an entry's "shards") or "gold".
 static func status(shop_id: String, index: int, p: Player) -> String:
 	var entry: Dictionary = GameData.shop(shop_id).stock[index]
 	var item := GameData.item(entry.item)
@@ -82,7 +82,7 @@ static func doors_shut(kind: String) -> int:
 	return n
 
 
-## Meteor Shards an entry costs besides its gold (design bible 5.2).
+## Stillglass Shards an entry costs besides its gold (design bible 5.2).
 static func shards(entry: Dictionary) -> int:
 	return int(entry.get("shards", 0))
 

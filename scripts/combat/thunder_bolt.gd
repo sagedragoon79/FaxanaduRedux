@@ -1,6 +1,6 @@
 class_name ThunderBolt
 extends Node2D
-## The Thunder spell (design bible 4.1, A6): a fast crackling bolt. Before it
+## The Stormcall spell (design bible 4.1, A6): a fast crackling bolt. Before it
 ## touches anything, it leaps to any dead conduit (group "conductor") within
 ## ARC of it ahead or beside, and wakes it. Otherwise it strikes the first foe
 ## or wall it meets.
@@ -9,7 +9,7 @@ const SIZE := Vector2(12, 6)
 const LIFE := 0.7
 ## How far the bolt leaps to a conduit.
 const ARC := 72.0
-## Chain Thunder (skill): leaps from the struck foe to this many more within
+## Forked Storm (skill): leaps from the struck foe to this many more within
 ## CHAIN_REACH of the last, each for CHAIN_DAMAGE of the bolt's damage. The arcs
 ## fall from above, past shields.
 const CHAIN_JUMPS := 2

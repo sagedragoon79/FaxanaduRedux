@@ -243,7 +243,7 @@ func test_double_jump_needs_wing_boots() -> void:
 	p.input.jump_pressed = true
 	p.input.jump_held = true
 	await frames(1)
-	check(p.velocity.y > 0.0, "no mid-air jump without Wing Boots (vy %.1f)" % p.velocity.y)
+	check(p.velocity.y > 0.0, "no mid-air jump without Featherstep Boots (vy %.1f)" % p.velocity.y)
 
 
 func test_ground_dash_distance() -> void:
@@ -364,7 +364,7 @@ func test_the_warden_cache_needs_the_stride() -> void:
 
 
 
-## Pass 232: the Wing Boots opened no room the critical path needed, so a core
+## Pass 232: the Featherstep Boots opened no room the critical path needed, so a core
 ## ability was optional. The Elven Stride now hangs in the Windloft's open air,
 ## its centre 136 px over the floor: a plain jump lifts the head 112 px, the
 ## second jump 160 px. Proved with the real controller (the checker can't prove
@@ -478,7 +478,7 @@ func _try_the_feather_perch(boots: bool, mode: String, k: int) -> bool:
 ## secret is reached but never that it is out of reach. The Sky Steps' purse
 ## island stood four rows over the one below, and a plain running jump off
 ## that island's edge landed on it. Raised to five rows (80 px, past the 72 px
-## apex), it takes the Wing Boots, as BOOT_SECRETS says.
+## apex), it takes the Featherstep Boots, as BOOT_SECRETS says.
 func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
 	for boots: bool in [false, true]:
 		var w := make_world({}, "daybreak/sky_steps", cell_feet(18, 24))
@@ -504,7 +504,7 @@ func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
 			# Standing anywhere over the purse's island columns, above the start.
 			if p.is_on_floor() and p.global_position.y < 25 * Room.TILE - 8 and x >= 4.0 and x < 10.0:
 				landed = true
-		check(landed == boots, "with the Wing Boots %s, the purse's island is %s" % [boots, "reached" if landed else "out of reach"])
+		check(landed == boots, "with the Featherstep Boots %s, the purse's island is %s" % [boots, "reached" if landed else "out of reach"])
 		w.queue_free()
 		await frames(1)
 
@@ -512,9 +512,9 @@ func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
 ## Pass 224: the wind-niche over the Thicket Road (WIND_SECRETS) sits at the
 ## far end of an east-blowing band, open only on its windward side. The checker
 ## can't prove "out of reach", so the real controller tries it: from the shelf
-## under the band, with the Wing Boots and the Stride, a jump, a second jump and
+## under the band, with the Featherstep Boots and the Stride, a jump, a second jump and
 ## an air dash west at every timing in 0.1 s steps. The wind gives no headway
-## until the Spring of Sky turns it; then any jump into the band carries you in.
+## until the Sky Spring turns it; then any jump into the band carries you in.
 func test_the_wind_niche_needs_the_spring_of_sky() -> void:
 	var tries := 0
 	var reached := 0
@@ -524,7 +524,7 @@ func test_the_wind_niche_needs_the_spring_of_sky() -> void:
 			if await _try_the_wind_niche(false, k1, k2):
 				reached += 1
 	check(tries >= 40 and reached == 0, "against the wind, no jump, second jump or dash gets in (%d of %d)" % [reached, tries])
-	check(await _try_the_wind_niche(true, 22, -1), "with the Spring of Sky, a jump and a second jump into the band carry you in")
+	check(await _try_the_wind_niche(true, 22, -1), "with the Sky Spring, a jump and a second jump into the band carry you in")
 
 
 ## From the shelf under the band: jump west, jump again at frame k1, air dash
@@ -559,7 +559,7 @@ func _try_the_wind_niche(spring: bool, k1: int, k2: int) -> bool:
 ## in test_reachability.gd), but the last leap, from the top island to the exit
 ## ledge, was crossed by a plain running jump: the checker's envelopes fall short
 ## of real ones, so the gate had never held. An elven veil now stands before the
-## ledge. From the top island, with the Wing Boots, no jump and second jump gets
+## ledge. From the top island, with the Featherstep Boots, no jump and second jump gets
 ## onto it; with the Stride, a jump and a dash do.
 func test_the_sky_steps_exit_needs_the_stride() -> void:
 	var tries := 0
@@ -649,7 +649,7 @@ func test_no_pogo_without_mattock() -> void:
 		await frames(1)
 		if p.hp < p.max_hp:
 			break
-	check(p.hp < p.max_hp, "without the Mattock the down-attack does not pogo")
+	check(p.hp < p.max_hp, "without the Delver's Pick the down-attack does not pogo")
 
 
 const POD_FLOOR := [
@@ -725,7 +725,7 @@ func test_walking_into_a_bounce_pod_does_nothing_but_a_hop_launches() -> void:
 	check(launched, "a hop on the spot lands on it and launches")
 
 
-## Bible A8: the Hour Glass stops time for 2.5 s and runs back for 8 s.
+## Bible A8: the Stillstone stops time for 2.5 s and runs back for 8 s.
 func test_hour_glass_stops_time_then_runs_back() -> void:
 	var room := make_room(SHAFT)
 	var p := make_player(room, Vector2i(7, 18), {"hourglass": true})
@@ -1398,7 +1398,7 @@ func test_pogo_numbers_match_the_bible() -> void:
 	check_near(await _pogo_speed(true), t.pogo_bounce_held, 0.5, "holding Jump bounces at 420 px/s")
 
 
-## Pass 388 (bible 8.5): Pakukame tests the air dash, so the Windloft's east
+## Pass 388 (bible 8.5): Snapcrown tests the air dash, so the Windloft's east
 ## door to the Crown-Leaf stands behind an elven veil. With the real controller
 ## from the Windloft's floor: walking east without the Stride stops at the veil,
 ## and with it a dash passes the veil and the door leads on to the Bloom.

@@ -1,6 +1,6 @@
 class_name GearBat
 extends Enemy
-## A Tower of Trunk clockwork bat. It roosts upside down until you pass near,
+## A Hollin Tower clockwork bat. It roosts upside down until you pass near,
 ## then hangs off to one side of you, winds the gear on its back up to a whir
 ## (telegraph) and flings it. The gear flies out, slows, and comes back to the
 ## bat; parry it and it flies home hard enough to stagger its owner.

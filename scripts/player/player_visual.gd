@@ -19,7 +19,7 @@ const ARMOR_SHEETS := {
 	"battle_suit": "hero_battle",
 }
 ## Armor and helmet worn together that have a body set of their own, drawn with
-## the helmet on (Sean's Battle Suit + Battle Helmet character): the helmet
+## the helmet on (Sean's Elven Plate + Elven Helm character): the helmet
 ## layer is not drawn over it.
 const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
 ## Swords are drawn into the attack clips (design bible 13.5): each body set has
@@ -45,7 +45,7 @@ const POTION := Color("c02a20")
 const GLASS := Color("e68c75")
 const OINTMENT := Color("f0c02e")
 const POISON := Color("8fd14f")
-## The Battle Helmet layer: the helm of the PixelLab helmed elf (tools/art/helmetgen.py), drawn
+## The Elven Helm layer: the helm of the PixelLab helmed elf (tools/art/helmetgen.py), drawn
 ## at the sheets' 2x density with its top-left this far from the frame's crown.
 const HELMET := preload("res://assets/sprites/battle_helmet.png")
 const HELMET_OFFSET := Vector2(-5.5, -4)
@@ -58,7 +58,7 @@ const HELMET_RUN_OFFSET := Vector2(-4.5, -5.5)
 const BLADE_LENGTH := 11.0
 ## Animations that hold on until they finish even when the action behind them
 ## ends (the recovery frames of a swing). A pogo's strike ends the moment it
-## lands, so the Mattock's blow plays out over the bounce.
+## lands, so the Delver's Pick's blow plays out over the bounce.
 const FINISH := ["slash1", "slash2", "slash3", "slash_up", "strike_down", "cast", "throw", "throw_up"]
 ## Poses an unfinished swing may play over.
 ## The speed share (MovementTuning.speed_fraction) at or under which moving is a walk.
@@ -357,13 +357,13 @@ func _draw() -> void:
 	_sync_dye()
 	var tint := Color(1.0, 0.45, 0.45) if _red_time > 0.0 else Color.WHITE
 	if player.poison_left > 0.0 and _red_time <= 0.0:
-		# Poison: a sickly green cast that throbs with each tick.
+		# Blightcap: a sickly green cast that throbs with each tick.
 		var t := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
 		tint = Color.WHITE.lerp(POISON, 0.35 + 0.2 * t)
 	Sheet.draw(self, sheet, anim, frame, tint, false)
 	var oint := player.ointment_left
 	if oint > 0.0:
-		# The Ointment: a gold sheen that pulses, and flickers as it runs out.
+		# The Barkbalm: a gold sheen that pulses, and flickers as it runs out.
 		var a := 0.38 + 0.14 * sin(Time.get_ticks_msec() * 0.008)
 		if oint < 2.0 and int(oint * 8.0) % 2 == 0:
 			a *= 0.3
@@ -403,7 +403,7 @@ func _draw_blade(hand: Vector2, angle: float, length: float, tint: Color) -> voi
 	draw_rect(Rect2((hand - dir * 2.0).round() - Vector2(1, 1), Vector2(2, 2)), HILT * tint)
 
 
-## The Battle Helmet, facing +x (the node's scale mirrors it), its dome on
+## The Elven Helm, facing +x (the node's scale mirrors it), its dome on
 ## `crown` (the top of the head, found in the sheet's pixels by
 ## autosprite_import.head_point).
 func _draw_helmet(crown: Vector2, tint: Color) -> void:

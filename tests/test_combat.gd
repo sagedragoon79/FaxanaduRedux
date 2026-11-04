@@ -196,7 +196,7 @@ func test_deluge_costs_mp_and_hits() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(p.mp < mp0 - Spells.cost("deluge") + 0.5, "Deluge costs %.0f MP" % Spells.cost("deluge"))
+	check(p.mp < mp0 - Spells.cost("deluge") + 0.5, "Torrent costs %.0f MP" % Spells.cost("deluge"))
 	await frames(40)
 	check(dummy.hits_taken == 1, "water bolt hits the dummy")
 
@@ -229,7 +229,7 @@ func test_melee_hit_restores_mp() -> void:
 func test_enemy_drops_gold_that_flies_to_player() -> void:
 	var room := _arena_with("M", Vector2i(6, 6))
 	var p := make_player(room, Vector2i(3, 6))
-	var m: Monodron = _find(room, Monodron)
+	var m: Blinkhop = _find(room, Blinkhop)
 	m.gold_min = 7
 	m.gold_max = 7
 	m.contact_damage = 0
@@ -319,7 +319,7 @@ func test_camera_renders_at_detail() -> void:
 
 
 func test_fire_arcs_bursts_and_scorches_foes_in_reach() -> void:
-	# Bible 4.1: Fire is thrown in an arc and bursts on what it meets.
+	# Bible 4.1: Kindle is thrown in an arc and bursts on what it meets.
 	var room := _arena_with("E", Vector2i(10, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
@@ -328,7 +328,7 @@ func test_fire_arcs_bursts_and_scorches_foes_in_reach() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("fire"))) < 0.5, "Fire costs %.0f MP" % Spells.cost("fire"))
+	check(absf(p.mp - (mp0 - Spells.cost("fire"))) < 0.5, "Kindle costs %.0f MP" % Spells.cost("fire"))
 	var balls := runner.get_tree().get_nodes_in_group("projectile")
 	check(balls.size() == 1 and balls[0] is Fireball, "a fireball is thrown")
 	if balls.is_empty():
@@ -352,14 +352,14 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	p.equipped_spell = "deluge"
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "deluge", "with only Deluge, Next Spell keeps it")
+	check(p.equipped_spell == "deluge", "with only Torrent, Next Spell keeps it")
 	p.abilities["fire"] = true
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "fire", "with Fire owned it switches to Fire")
+	check(p.equipped_spell == "fire", "with Kindle owned it switches to Kindle")
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "deluge", "and back round to Deluge")
+	check(p.equipped_spell == "deluge", "and back round to Torrent")
 	p.abilities["deluge"] = false
 	p.input.spell_next_pressed = true
 	await frames(1)
@@ -375,7 +375,7 @@ func test_thunder_bolt_strikes_a_foe() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("thunder"))) < 0.5, "Thunder costs %.0f MP" % Spells.cost("thunder"))
+	check(absf(p.mp - (mp0 - Spells.cost("thunder"))) < 0.5, "Stormcall costs %.0f MP" % Spells.cost("thunder"))
 	var bolts := runner.get_tree().get_nodes_in_group("projectile")
 	check(bolts.size() == 1 and bolts[0] is ThunderBolt, "a bolt flies")
 	await frames(20)
@@ -519,7 +519,7 @@ func test_the_roost_frames_the_storm_wide() -> void:
 
 
 func test_tilte_wakes_then_seeks_the_nearest_foe() -> void:
-	# Bible 4.1: Tilte is a homing spirit orb.
+	# Bible 4.1: Wisplight is a homing spirit orb.
 	var room := _arena_with("E", Vector2i(12, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
@@ -528,14 +528,14 @@ func test_tilte_wakes_then_seeks_the_nearest_foe() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "Tilte costs %.0f MP" % Spells.cost("tilte"))
+	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "Wisplight costs %.0f MP" % Spells.cost("tilte"))
 	var orbs := runner.get_tree().get_nodes_in_group("projectile")
-	check(orbs.size() == 1 and orbs[0] is TilteOrb, "one spirit orb leaves the hand")
+	check(orbs.size() == 1 and orbs[0] is WispOrb, "one spirit orb leaves the hand")
 	if orbs.is_empty():
 		return
-	var orb := orbs[0] as TilteOrb
-	await frames(int(TilteOrb.WAKE * 60.0) - 2)
-	check(orb.velocity.length() < TilteOrb.DRIFT, "it hangs while it wakes, the tell (%.0f px/s)" % orb.velocity.length())
+	var orb := orbs[0] as WispOrb
+	await frames(int(WispOrb.WAKE * 60.0) - 2)
+	check(orb.velocity.length() < WispOrb.DRIFT, "it hangs while it wakes, the tell (%.0f px/s)" % orb.velocity.length())
 	await frames(4)
 	check(orb.target == dummy, "then it chooses the dummy")
 	await _until(func() -> bool: return dummy.hits_taken > 0, 90)
@@ -570,17 +570,17 @@ func test_tilte_swarm_fans_three_orbs() -> void:
 	p.input.spell_pressed = true
 	await frames(1)
 	var orbs := runner.get_tree().get_nodes_in_group("projectile")
-	check(orbs.size() == 3, "Tilte Swarm throws three orbs (%d)" % orbs.size())
+	check(orbs.size() == 3, "Wisp Swarm throws three orbs (%d)" % orbs.size())
 	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "for the cost of one")
 	if orbs.size() == 3:
-		var a := [(orbs[0] as TilteOrb).heading.angle(), (orbs[1] as TilteOrb).heading.angle(), (orbs[2] as TilteOrb).heading.angle()]
+		var a := [(orbs[0] as WispOrb).heading.angle(), (orbs[1] as WispOrb).heading.angle(), (orbs[2] as WispOrb).heading.angle()]
 		a.sort()
 		check(a[1] - a[0] > 0.4 and a[2] - a[1] > 0.4, "in a fan (%s)" % [a])
 	await _until(func() -> bool: return dummy.hits_taken >= 3, 150)
 	check(dummy.hp == TrainingDummy.HP - 30, "each strikes for 10 (hp %d)" % dummy.hp)
 
 
-## Death (bible 4.1, pass 132): a ring of black light strikes every foe around
+## Wither (bible 4.1, pass 132): a ring of black light strikes every foe around
 ## you once, through walls; bosses take half.
 func test_death_strikes_every_foe_around_through_walls() -> void:
 	var rows := ARENA.duplicate()
@@ -607,7 +607,7 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 	p.input.spell_pressed = true
 	await frames(1)
 	p.input.spell_pressed = false
-	check(absf(p.mp - (60.0 - Spells.cost("death"))) < 0.5, "Death costs %.0f MP" % Spells.cost("death"))
+	check(absf(p.mp - (60.0 - Spells.cost("death"))) < 0.5, "Wither costs %.0f MP" % Spells.cost("death"))
 	check(Spells.cost("death") >= 40.0 and Spells.ORDER.has("death"), "the dearest spell, on the Next Spell cycle")
 	check(Sfx.recent.has("death_wave"), "it tolls (%s)" % [Sfx.recent])
 	await frames(int(DeathWave.DURATION * 60.0) + 4)
@@ -624,9 +624,9 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 
 
 func test_the_death_scroll_is_a_late_secret() -> void:
-	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Death scroll")
+	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Wither scroll")
 	var text := FileAccess.get_file_as_string("res://levels/dartmoor/kings_kennels.room")
-	check(text.contains("{"), "it lies in the King's Kennels' loft, up the hidden planks")
+	check(text.contains("{"), "it lies in the Thane's Kennels' loft, up the hidden planks")
 	GameState.new_game()
 	check(GameState.data.abilities.has("death") and not GameState.data.abilities.death, "a new game starts without it")
 
@@ -875,12 +875,12 @@ func test_being_hit_answers_the_real_controller() -> void:
 	room.free()
 
 
-## Pass 433 (bible 5.2): the original's Elixir, in a real fight. The Elixir
+## Pass 433 (bible 5.2): the source game's Amber Draught, in a real fight. The Amber Draught
 ## test lands its fatal blow with `take_damage` on a hero standing still; here
 ## the hero walks into the Rot Dwarf with Right held on the real controller,
-## near death, and his swing is the fatal blow. The Elixir is drunk by the hit
+## near death, and his swing is the fatal blow. The Amber Draught is drunk by the hit
 ## itself: the hero rises at full health and magic with the burn's words, its
-## doubled grace outlasts the dwarf's next swing, and with no Elixir left the
+## doubled grace outlasts the dwarf's next swing, and with no Amber Draught left the
 ## same swing, met the same way, fells them.
 func test_the_elixir_saves_a_real_fight() -> void:
 	var a := _dwarf_arena()
@@ -902,9 +902,9 @@ func test_the_elixir_saves_a_real_fight() -> void:
 		if p.hp != 5:
 			hit = true
 			break
-	check(hit and not p.dead and p.hp == p.max_hp and p.elixirs == 0, "the fatal swing drinks the Elixir: up again at full health (%d of %d)" % [p.hp, p.max_hp])
+	check(hit and not p.dead and p.hp == p.max_hp and p.elixirs == 0, "the fatal swing drinks the Amber Draught: up again at full health (%d of %d)" % [p.hp, p.max_hp])
 	check(is_equal_approx(p.mp, p.max_mp) and p.velocity.y < 0.0, "full magic, and rising (%.0f mp, %.0f)" % [p.mp, p.velocity.y])
-	check(toasts.has("The Elixir burns. You rise again."), "with the burn's words (%s)" % [toasts])
+	check(toasts.has("The Amber Draught burns. You rise again."), "with the burn's words (%s)" % [toasts])
 	var taken := false
 	for i in 90:
 		await frames(1)
@@ -916,7 +916,7 @@ func test_the_elixir_saves_a_real_fight() -> void:
 	GameState.toast.disconnect(hear)
 	room.free()
 	Feel.reset()
-	# No Elixir: the same swing, met the same way, fells the hero.
+	# No Amber Draught: the same swing, met the same way, fells the hero.
 	a = _dwarf_arena()
 	room = a[0]
 	p = a[1]
@@ -932,7 +932,7 @@ func test_the_elixir_saves_a_real_fight() -> void:
 			fell = true
 			break
 	Input.action_release("move_right")
-	check(fell and p.elixirs == 0, "with no Elixir, the same swing fells the hero")
+	check(fell and p.elixirs == 0, "with no Amber Draught, the same swing fells the hero")
 	room.free()
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("`test_the_elixir_saves_a_real_fight`"), "5.2 names the test")
@@ -958,7 +958,7 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check_near(c.parry_window, 0.12, 0.0001, "parry window 0.12 s")
 	check_near(c.parry_hitstop, 0.14, 0.0001, "parry hit-stop 140 ms")
 	check_near(c.parry_mp_gain, 6.0, 0.0001, "a parry gives 6 MP")
-	check_near(c.guard_reduction, 0.5, 0.0001, "the Small Shield's guard halves damage")
+	check_near(c.guard_reduction, 0.5, 0.0001, "the Buckler's guard halves damage")
 	check_near(c.guard_mp_cost, 8.0, 0.0001, "8 MP per blocked hit")
 	check_near(c.guard_move_multiplier, 0.4, 0.0001, "40% walk speed on guard")
 	check(c.hurt_knockback == Vector2(160, 220), "knocked 160 px/s back, 220 px/s up")
@@ -968,32 +968,32 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check_near(c.max_mp, 60.0, 0.0001, "60 MP")
 	check_near(c.mp_regen_per_second, 2.0, 0.0001, "+2 MP a second")
 	check_near(c.mp_per_melee_hit, 4.0, 0.0001, "+4 MP per melee hit")
-	check(c.flask_charges == 2 and c.flask_heal == 40, "Red Potion: 2 charges of 40")
+	check(c.flask_charges == 2 and c.flask_heal == 40, "Sapflask: 2 charges of 40")
 	check_near(c.drink_time, 0.7, 0.0001, "0.7 s to drink")
 	var deluge: Dictionary = Spells.DATA.deluge
-	check(deluge.cost == 15.0 and deluge.damage == 12 and deluge.speed == 300.0, "Deluge: 15 MP, 12 damage, 300 px/s")
+	check(deluge.cost == 15.0 and deluge.damage == 12 and deluge.speed == 300.0, "Torrent: 15 MP, 12 damage, 300 px/s")
 	check(c.war_glove_mult == 1.5 and c.war_glove_time == 15.0, "War Glove: x1.5 for 15 s")
 	check_near(c.thrust_charge, 0.4, 0.0001, "Thrust: hold 0.4 s")
 	check_near(c.thrust_mult, 1.5, 0.0001, "Thrust: heavy hit x1.5")
 	check(c.thrust_speed == 320.0 and c.thrust_time == 0.16 and c.thrust_cooldown == 0.35, "Thrust: 320 px/s for 0.16 s, 0.35 s cooldown")
-	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Pendant x1.1, the Magical Rod's Deluge x1.5")
+	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Acorn Charm x1.1, the Briar Wand's Torrent x1.5")
 	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
 	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
 	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
 	check_near(c.cast_cooldown, 0.35, 0.0001, "0.35 s between casts (pass 282)")
-	check(Drop.BREAD_HEAL == 15 and Drop.LOAF_HEAL == 40, "bread +15, the Naga's great loaf +40 (pass 282)")
+	check(Drop.BREAD_HEAL == 15 and Drop.LOAF_HEAL == 40, "bread +15, the Silt Adder's great loaf +40 (pass 282)")
 	check(Drop.BREAD_CHANCE == 0.08 and Drop.MANA_CHANCE == 0.1 and Drop.POISON_CHANCE == 0.07 and Drop.RARE_CHANCE == 0.025, "drops: bread 8%, mana 10%, poison 7%, rare 2.5% (pass 290)")
 	check(Drop.MANA_GAIN == 12.0 and Drop.GLOVE_SHARE == 0.6, "a mana orb gives 12 MP; a rare drop is the War Glove 60% of the time (pass 290)")
 
 
 ## Pass 330: the test above copies each number, so a tuning change made in
 ## both the tuning and that test passed with the bible left behind, and four of
-## the five spells (Thunder, Fire, Tilte, Death) were only read back from
+## the five spells (Stormcall, Kindle, Wisplight, Wither) were only read back from
 ## `Spells.DATA`. These read the bible: every combat number is written in 5.3,
 ## and each spell's row names its own cost, damage and speed.
 ## Pass 370 (bible 5.3): every spell's row gave its cost, damage and speed,
 ## but not how far it carries: a bolt's life was a constant in its own class,
-## and Thunder (0.7 s) reaches only about two thirds as far as Deluge (1.2 s).
+## and Stormcall (0.7 s) reaches only about two thirds as far as Torrent (1.2 s).
 ## Each is cast by the real player across an empty hall and measured.
 func test_every_spell_carries_as_far_as_5_3_says() -> void:
 	var rows := ["#".repeat(60)]
@@ -1029,17 +1029,17 @@ func test_every_spell_carries_as_far_as_5_3_says() -> void:
 	if not check(row != "", "5.3 has the row"):
 		return
 	# What the row says each one does, measured.
-	for said: Array in [["deluge", 355.0, DelugeBolt.LIFE], ["thunder", 260.0, ThunderBolt.LIFE], ["fire", 113.0, -1.0]]:
+	for said: Array in [["deluge", 355.0, TorrentBolt.LIFE], ["thunder", 260.0, ThunderBolt.LIFE], ["fire", 113.0, -1.0]]:
 		var got: Array = flown.get(said[0], [0.0, 0.0])
 		check(absf(float(got[0]) - float(said[1])) <= 8.0, "%s carries about %d px (%.0f)" % [said[0], said[1], got[0]])
 		if float(said[2]) > 0.0:
 			check(absf(float(got[1]) - float(said[2])) <= 0.05, "for its %.1f s (%.2f)" % [said[2], got[1]])
 		check(written_exactly_in(row, float(said[1])), "the row writes %s's %d px" % [said[0], said[1]])
-	check(float(flown.thunder[0]) < float(flown.deluge[0]) * 0.8, "Thunder pays for its speed in reach")
+	check(float(flown.thunder[0]) < float(flown.deluge[0]) * 0.8, "Stormcall pays for its speed in reach")
 	# The numbers the classes keep.
-	var kept := {"Deluge's life": DelugeBolt.LIFE, "Thunder's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
-		"Fire's burst": Fireball.BURST, "Fire's life": Fireball.LIFE, "Tilte's life": TilteOrb.LIFE, "Tilte's speed": TilteOrb.SPEED,
-		"Tilte's seek": TilteOrb.SEEK, "Death's ring": DeathWave.RADIUS, "Death's roll": DeathWave.DURATION,
+	var kept := {"Torrent's life": TorrentBolt.LIFE, "Stormcall's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
+		"Kindle's burst": Fireball.BURST, "Kindle's life": Fireball.LIFE, "Wisplight's life": WispOrb.LIFE, "Wisplight's speed": WispOrb.SPEED,
+		"Wisplight's seek": WispOrb.SEEK, "Wither's ring": DeathWave.RADIUS, "Wither's roll": DeathWave.DURATION,
 		"the dagger's range": RuneDagger.RANGE, "the dagger's speed": RuneDagger.SPEED}
 	for what: String in kept:
 		check(written_exactly_in(row, float(kept[what])), "the row writes %s, %s" % [what, String.num(float(kept[what]))])
@@ -1101,11 +1101,11 @@ func test_every_combat_number_is_written_in_its_own_row() -> void:
 		"| Throw buffer": ["throw_buffer"],
 		"| Hit-stop (6.7) |": ["hit_hitstop", "heavy_hitstop", "kill_hitstop", "hurt_hitstop", "death_hitstop"],
 		"| Parry window |": ["parry_window", "parry_hitstop", "parry_mp_gain"],
-		"| Guard (Small Shield) |": ["guard_reduction", "guard_mp_cost", "guard_move_multiplier"],
+		"| Guard (Buckler) |": ["guard_reduction", "guard_mp_cost", "guard_move_multiplier"],
 		"| Knockback when hit |": ["hurt_knockback", "hurt_control_lock"],
 		"| Low health |": ["low_health", "heartbeat_interval"],
 		"| MP |": ["max_mp", "mp_regen_per_second", "mp_per_melee_hit"],
-		"| Red Potion |": ["flask_charges", "flask_heal", "drink_time"],
+		"| Sapflask |": ["flask_charges", "flask_heal", "drink_time"],
 		"| War Glove": ["war_glove_mult", "war_glove_time"],
 		"| Thrust (skill, 9) |": ["thrust_charge", "thrust_mult", "thrust_speed", "thrust_time", "thrust_cooldown"],
 		"| Executioner (skill, 9) |": ["executioner_mult"],
@@ -1265,9 +1265,9 @@ func test_a_foe_that_falls_out_pays_without_a_kills_freeze() -> void:
 	await frames(4)
 	var foe: Enemy = null
 	for c in room.get_children():
-		if c is Monodron:
+		if c is Blinkhop:
 			foe = c
-	check(foe != null, "a Monodron hangs over the gap")
+	check(foe != null, "a Blinkhop hangs over the gap")
 	if foe == null:
 		room.free()
 		return
@@ -1450,7 +1450,7 @@ func test_the_off_hand_holds_a_shield_or_the_rune_dagger() -> void:
 	GameState.data.gear.append("small_shield")
 	GameState.wear("small_shield", p)
 	await frames(6)
-	check(p.has_shield, "the Small Shield is on the off hand")
+	check(p.has_shield, "the Buckler is on the off hand")
 	p.input.throw_pressed = true
 	await frames(2)
 	p.input.throw_pressed = false
@@ -1748,22 +1748,22 @@ const PAR_KIT := {
 	"sunken": ["dragon_slayer", 0, "full_plate", "magic_shield"],
 	"zenis": ["dragon_slayer", 0, "full_plate", "magic_shield"],
 }
-## Pass 218: King Grieve gives up the Dragon Slayer (pass 217), so everything
-## past his throne is fought with it: the Meteor Rise, the Zenis Gate and its
+## Pass 218: Thane Vorrund gives up the Severance (pass 217), so everything
+## past his throne is fought with it: the Glass Rise, the Crown Gate and its
 ## mirror, and the Sunken Spring below the Rise.
 const PAST_GRIEVE_KIT := ["dragon_slayer", 0, "full_plate", "magic_shield"]
 const PAST_GRIEVE_ROOMS := ["dartmoor/meteor_rise", "dartmoor/zenis_gate"]
-const PAST_GRIEVE_BOSSES := ["ShadowEura"]
+const PAST_GRIEVE_BOSSES := ["Likeness"]
 ## Each room legend's foe, and the shot it fires (null for none).
 var sheet_foes := {
-	"M": [Monodron, null], "H": [Hornet, null], "D": [RotDwarf, null],
+	"M": [Blinkhop, null], "H": [Hornet, null], "D": [RotDwarf, null],
 	"T": [SapSpitter, SapGlob], "U": [GrubLump, null], "I": [IronDwarf, Shockwave],
 	"B": [GearBat, GearBlade], "K": [MinecartRider, null], "A": [LanternGhost, null],
-	"V": [BogMyconid, SporeCloud], "p": [DrownedDwarf, null], "m": [LeafMantis, null],
+	"V": [BogPuffcap, SporeCloud], "p": [DrownedDwarf, null], "m": [LeafMantis, null],
 	"!": [BarkKnight, null], ";": [SeedBomber, BomberSeed], "?": [MarshHag, MireGrasp],
 	"t": [ThunderBeetle, null], "y": [StormHarpy, HarpyFeather], "]": [SpireSentinel, null],
 	"q": [CrystalDwarf, CrystalSpike], "e": [ShadeKnight, null], "j": [ClockworkHound, null],
-	"s": [MeteorSlug, MeteorGlob], "l": [SpringEel, null], ")": [Naga, null],
+	"s": [GlassSlug, MeteorGlob], "l": [SpringEel, null], ")": [SiltAdder, null],
 }
 
 
@@ -1850,7 +1850,7 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 			checked += 1
 		check(zone_hardest >= 15 and zone_hardest <= 28, "%s's hardest blow costs 0.75 to 1.4 masks through par armor (%d)" % [zone, zone_hardest])
 	check(checked >= 40, "the sheet covers every zone's foes (%d rows)" % checked)
-	# Past King Grieve the Dragon Slayer is in hand: the Rise's foes still take
+	# Past Thane Vorrund the Severance is in hand: the Rise's foes still take
 	# two slashes or more (pass 218).
 	var slayer := int(GameData.item(PAST_GRIEVE_KIT[0]).slash)
 	for id: String in PAST_GRIEVE_ROOMS:
@@ -1859,17 +1859,17 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 				if sheet_foes.has(ch):
 					var foe: Enemy = sheet_foes[ch][0].new()
 					var slashes := ceili(float(foe.max_hp) / slayer)
-					check(slashes >= 2 and slashes <= 7, "%s past King Grieve falls in 2 to 7 Dragon Slayer slashes (%d)" % [(foe.get_script() as Script).get_global_name(), slashes])
+					check(slashes >= 2 and slashes <= 7, "%s past Thane Vorrund falls in 2 to 7 Severance slashes (%d)" % [(foe.get_script() as Script).get_global_name(), slashes])
 					foe.free()
 
 
 ## Pass 258: a foe a guardian calls into its fight is a foe like any other,
 ## so it answers to the same sheet. The Matriarch's daughter (a Marsh Hag) and
 ## the Alpha's pack (Clockwork Hounds) stand in rooms too, so the sheet already
-## held them; Pakukame's Liliths (pass 257) stand nowhere else, and fell to a
-## single slash of the Branches' par blade. Every Enemy a guardian's script
+## held them; Snapcrown's Mothlings (pass 257) stand nowhere else, and fell to a
+## single slash of the High Boughs' par blade. Every Enemy a guardian's script
 ## makes must be a room foe on the sheet or listed here with its zone.
-const SUMMONED := {"Lilith": "branches"}
+const SUMMONED := {"Mothling": "branches"}
 
 func test_a_guardians_brood_answers_to_the_sheet() -> void:
 	var classes := {}
@@ -1899,7 +1899,7 @@ func test_a_guardians_brood_answers_to_the_sheet() -> void:
 				base = base.get_base_script()
 			if base != null:
 				found[name] = f
-	check(found.has("Lilith") and found.has("MarshHag") and found.has("ClockworkHound"), "found the guardians' broods (%s)" % [found])
+	check(found.has("Mothling") and found.has("MarshHag") and found.has("ClockworkHound"), "found the guardians' broods (%s)" % [found])
 	for name: String in found:
 		check(placed.has(name) or SUMMONED.has(name), "%s (called by %s) is on the sheet" % [name, found[name]])
 	for name: String in SUMMONED:
@@ -1920,23 +1920,23 @@ func test_a_guardians_brood_answers_to_the_sheet() -> void:
 		check(hardest >= 1 and hardest <= 28, "%s in %s hits for at most 1.4 masks through par armor (%d)" % [name, zone, hardest])
 
 
-## Pass 218: the sheet's kit past King Grieve is the one the game gives there.
+## Pass 218: the sheet's kit past Thane Vorrund is the one the game gives there.
 func test_the_sheet_past_king_grieve_holds_the_dragon_slayer() -> void:
-	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == PAST_GRIEVE_KIT[0], "King Grieve gives the blade the sheet expects past him")
-	check(PAR_KIT.sunken == PAST_GRIEVE_KIT and PAR_KIT.zenis == PAST_GRIEVE_KIT, "the Sunken Spring and Zenis are fought with it")
+	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == PAST_GRIEVE_KIT[0], "Thane Vorrund gives the blade the sheet expects past him")
+	check(PAR_KIT.sunken == PAST_GRIEVE_KIT and PAR_KIT.zenis == PAST_GRIEVE_KIT, "the Sunken Spring and the Evercrown are fought with it")
 	var rise: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/dartmoor/throne_hall.room"))
 	var past := []
 	for spec: String in rise.lists.get("door", []):
 		past.append(spec.get_slice(",", 1).strip_edges())
-	check(past.has("dartmoor/meteor_rise"), "the Meteor Rise lies behind his throne (%s)" % [past])
+	check(past.has("dartmoor/meteor_rise"), "the Glass Rise lies behind his throne (%s)" % [past])
 	var rooms := {}
 	for id: String in PAST_GRIEVE_ROOMS:
 		rooms[id] = Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % id))
-	check(String(rooms["dartmoor/zenis_gate"].header.get("boss", "")) == "shadow_eura", "and Shadow Eura waits past it, at the Zenis Gate")
+	check(String(rooms["dartmoor/zenis_gate"].header.get("boss", "")) == "shadow_eura", "and the Likeness waits past it, at the Crown Gate")
 	var down := []
 	for spec: String in rooms["dartmoor/meteor_rise"].lists.get("door", []):
 		down.append(spec.get_slice(",", 1).strip_edges())
-	check(down.has("sunken/spring_gate") and down.has("dartmoor/zenis_gate"), "the Rise leads on to the Zenis Gate and down to the Sunken Spring (%s)" % [down])
+	check(down.has("sunken/spring_gate") and down.has("dartmoor/zenis_gate"), "the Rise leads on to the Crown Gate and down to the Sunken Spring (%s)" % [down])
 
 
 func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
@@ -1944,14 +1944,14 @@ func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(room)
 	var p := make_player(room, Vector2i(3, 6))
-	var foe := Monodron.new()
+	var foe := Blinkhop.new()
 	foe.position = cell_feet(8, 6)
 	room.add_child(foe)
 	await frames(2)
 	p.defense = 0.0
 	var before := p.hp
 	p.receive_attack(10, foe, false)
-	check(before - p.hp == 20, "a Dartmoor foe's 10 lands for 20 (took %d)" % (before - p.hp))
+	check(before - p.hp == 20, "a Vorrhallow foe's 10 lands for 20 (took %d)" % (before - p.hp))
 	# A fire seal is the world, not a foe: it burns as written.
 	p.hp = p.max_hp
 	p._invuln_timer = 0.0
@@ -1961,10 +1961,10 @@ func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 	check(p.max_hp - p.hp == 10, "a fire seal burns for 10 anywhere (took %d)" % (p.max_hp - p.hp))
 	# A boss's arena is as deep as its zone (pass 196).
 	room.header["boss"] = "test"
-	check(room.threat() == 2.0, "a Dartmoor arena's threat is its zone's")
+	check(room.threat() == 2.0, "a Vorrhallow arena's threat is its zone's")
 	room.header.erase("boss")
 	room.zone = "trunk"
-	check(room.threat() == 1.0, "the Trunk hits as written")
+	check(room.threat() == 1.0, "the Heartwood hits as written")
 	room.zone = "eolis"
 	check(room.threat() == 1.0, "a zone off the sheet hits as written")
 
@@ -1972,13 +1972,13 @@ func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 ## The guardians' sheet (design bible 5.5, pass 196): each boss, its zone, and
 ## the shots it fires.
 var sheet_bosses := [
-	[Rokusutahn, "trunk", [SapClump]], [Zoradohna, "tower", [Rubble]],
-	[Foreman, "tower", [Rubble]], [Ripasheiku, "mist", []],
-	[HagMatriarch, "mist", [MireGrasp]], [Zorugeriru, "mist", [MistBreath]],
-	[Pakukame, "branches", [SeedShot]], [BarkCaptain, "branches", []],
-	[Borabohra, "daybreak", [StormStrike, HarpyFeather]],
-	[KingGrieve, "dartmoor", [CrystalShard, Shockwave, CrystalSpike]],
-	[ClockworkAlpha, "dartmoor", []], [ShadowEura, "dartmoor", [ShadowBolt]],
+	[Gnarlmaw, "trunk", [SapClump]], [Durgan, "tower", [Rubble]],
+	[Foreman, "tower", [Rubble]], [Gloamweaver, "mist", []],
+	[HagMatriarch, "mist", [MireGrasp]], [HaarWyrm, "mist", [MistBreath]],
+	[Snapcrown, "branches", [SeedShot]], [BarkCaptain, "branches", []],
+	[Skyrend, "daybreak", [StormStrike, HarpyFeather]],
+	[ThaneVorrund, "dartmoor", [CrystalShard, Shockwave, CrystalSpike]],
+	[ClockworkAlpha, "dartmoor", []], [Likeness, "dartmoor", [ShadowBolt]],
 	[DrownedWarden, "sunken", [TidalWave]], [EvilAvatar, "zenis", [CrystalSpike]],
 	[EvilCore, "zenis", [CoreBeam]], [EvilHeart, "zenis", [CoreBeam, CrystalSpike, MeteorSeed]],
 ]
@@ -2009,9 +2009,9 @@ func test_the_guardians_hit_as_hard_as_their_zone() -> void:
 
 ## Pass 204: the rubric's "balanced HP" (15.3) had no sheet. Each guardian's
 ## health in slashes of its zone's par blade (5.5): every one 15 to 40, a
-## mini-boss never outlasting its zone's guardians, and the Evil One (avatar
-## and heart) the longest fight of the critical path. Rokusutahn's 600 is
-## spread over a plated body and a soft tail, and the Evil One's veins are a
+## mini-boss never outlasting its zone's guardians, and the Everbloom (avatar
+## and heart) the longest fight of the critical path. Gnarlmaw's 600 is
+## spread over a plated body and a soft tail, and the Everbloom's veins are a
 ## climb, not a health bar, so they stay off the sheet.
 const MINI_BOSSES := ["Foreman", "HagMatriarch", "BarkCaptain", "ClockworkAlpha"]
 const OPTIONAL_BOSSES := ["DrownedWarden"]
@@ -2022,7 +2022,7 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 	for row: Array in sheet_bosses:
 		var script: Script = row[0]
 		var name := script.get_global_name()
-		if name in ["Rokusutahn", "EvilCore"]:
+		if name in ["Gnarlmaw", "EvilCore"]:
 			continue
 		var kit: Array = PAST_GRIEVE_KIT if name in PAST_GRIEVE_BOSSES else PAR_KIT[row[1]]
 		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
@@ -2039,9 +2039,9 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 		check(slashes[mini] <= 25 and slashes[mini] <= longest, "%s (a mini-boss, %d) is no longer than %s's guardians (%d)" % [mini, slashes[mini], zone_of[mini], longest])
 	# Pass 324: the bible's table (5.5) names each guardian's count, and every
 	# `(ClassName, N HP` the bible names is the boss's MAX_HP.
-	const NAMED := {"Zoradohna": "Zoradohna", "Foreman": "the Foreman", "Zorugeriru": "Zorugeriru", "Ripasheiku": "Ripasheiku",
-		"HagMatriarch": "the Marsh Hag Matriarch", "Pakukame": "Pakukame", "BarkCaptain": "the Bark Knight Captain",
-		"Borabohra": "Borabohra", "KingGrieve": "King Grieve", "ClockworkAlpha": "the Clockwork Alpha", "ShadowEura": "Shadow Eura",
+	const NAMED := {"Durgan": "Durgan", "Foreman": "the Foreman", "HaarWyrm": "the Haar Wyrm", "Gloamweaver": "Gloamweaver",
+		"HagMatriarch": "the Marsh Hag Matriarch", "Snapcrown": "Snapcrown", "BarkCaptain": "the Bark Knight Captain",
+		"Skyrend": "Skyrend", "ThaneVorrund": "Thane Vorrund", "ClockworkAlpha": "the Clockwork Alpha", "Likeness": "the Likeness",
 		"DrownedWarden": "the Drowned Warden", "EvilAvatar": "its avatar", "EvilHeart": "then its heart"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var table := bible.get_slice("**The guardians' health (pass 204).**", 1).get_slice("\n\n`test_", 0)
@@ -2066,7 +2066,7 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 	var finale: int = slashes["EvilAvatar"] + slashes["EvilHeart"]
 	for name: String in slashes:
 		if not name in ["EvilAvatar", "EvilHeart"] and not name in OPTIONAL_BOSSES:
-			check(finale >= slashes[name], "the Evil One (%d) lasts longer than %s (%d)" % [finale, name, slashes[name]])
+			check(finale >= slashes[name], "the Everbloom (%d) lasts longer than %s (%d)" % [finale, name, slashes[name]])
 	# Pass 212: no guardian outlasts every later zone's longest by more than two
 	# slashes, so the fights grow (or hold) as the game goes on.
 	var zones := PAR_KIT.keys()
@@ -2087,7 +2087,7 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 func test_a_blow_that_costs_a_mask_sounds_heavier() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6))
-	var foe := Monodron.new()
+	var foe := Blinkhop.new()
 	foe.position = cell_feet(12, 6)
 	room.add_child(foe)
 	await frames(3)
@@ -2104,7 +2104,7 @@ func test_a_blow_that_costs_a_mask_sounds_heavier() -> void:
 
 ## Pass 266 (bible 5.5): a guardian's brood goes down with its guardian, and
 ## no blow felled it. The Bloom, the Matriarch and the Clockwork Alpha had
-## struck their brood down as if the player had: each Lilith, daughter or hound
+## struck their brood down as if the player had: each Mothling, daughter or hound
 ## sprayed gold, rolled a drop, gave experience, counted as a kill for
 ## Wanderer's Grace, and piled a kill's hitstop and shake onto the guardian's
 ## own death. `Enemy.perish` dissolves a foe with none of that; a real kill
@@ -2134,9 +2134,9 @@ func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
 			if n is Coin or n is Drop:
 				n.free()
 		return [GameState.data.xp - xp, coins, regained, foe.dead]
-	var died: Array = await paid.call(Monodron.new(), false)
+	var died: Array = await paid.call(Blinkhop.new(), false)
 	check(died[3] and died[0] == 0 and died[1] == 0 and not died[2], "a foe that perishes pays no experience, gold or drop, and is no kill (%s)" % [died])
-	var killed: Array = await paid.call(Monodron.new(), true)
+	var killed: Array = await paid.call(Blinkhop.new(), true)
 	check(killed[3] and killed[0] > 0 and killed[1] > 0 and killed[2], "one struck down pays them all, and counts (%s)" % [killed])
 	Drop.bread_chance = bread
 	# No guardian kills its brood with a blow or a bare death any more.
@@ -2155,8 +2155,8 @@ func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
 ## real controller, but the fight's own buttons were still only ever scripted.
 ## Each is pressed through `Input` here and must answer on the first physics
 ## step that sees it: Block raises the guard and opens the parry window, Spell
-## casts, Next Spell turns to the next spell, Red Potion starts the drink, the
-## Hour Glass stops time, Throw lets the Rune Dagger fly, and letting go of an
+## casts, Next Spell turns to the next spell, Sapflask starts the drink, the
+## Stillstone stops time, Throw lets the Rune Dagger fly, and letting go of an
 ## Attack held past the charge lunges into a Thrust.
 ## Pass 394: the guard, held and let go through the real controller. Pass 386
 ## timed the press of Block (the parry window opening), but the guard itself is
@@ -2205,14 +2205,14 @@ func test_every_combat_button_answers_on_its_frame() -> void:
 			"block":
 				check(p.is_blocking and p._parry_timer > c.parry_window - 0.02, "Block guards and opens the parry window on its frame (%.2f s)" % p._parry_timer)
 			"spell":
-				check(mp0 - p.mp > p.spell_cost("deluge") - 0.5 and _find(room, DelugeBolt) != null,
+				check(mp0 - p.mp > p.spell_cost("deluge") - 0.5 and _find(room, TorrentBolt) != null,
 					"Spell casts on its frame (MP %.1f -> %.1f)" % [mp0, p.mp])
 			"spell_next":
-				check(p.equipped_spell == "thunder", "Next Spell turns from Deluge to Thunder on its frame (%s)" % p.equipped_spell)
+				check(p.equipped_spell == "thunder", "Next Spell turns from Torrent to Stormcall on its frame (%s)" % p.equipped_spell)
 			"heal":
-				check(p.is_drinking, "Red Potion starts the drink on its frame")
+				check(p.is_drinking, "Sapflask starts the drink on its frame")
 			"hourglass":
-				check(TimeStop.active(), "the Hour Glass stops time on its frame")
+				check(TimeStop.active(), "the Stillstone stops time on its frame")
 			"throw":
 				check(is_instance_valid(p.rune_dagger), "Throw lets the Rune Dagger fly on its frame")
 		release_for_real([button])
@@ -2351,7 +2351,7 @@ func test_the_combo_windows_hold_through_the_real_controller() -> void:
 
 
 ## Pass 418: an ordinary foe parried through the real controller. Pass 412
-## parried King Grieve by the buttons, and 386 and 394 pressed and held Block
+## parried Thane Vorrund by the buttons, and 386 and 394 pressed and held Block
 ## on an empty floor, but the parry window against an ordinary foe (0.12 s,
 ## 6 MP, the stagger) and the held guard's halved blow were only ever scripted.
 ## Block goes down for real so that the game sees it `frames_before` steps
@@ -2452,16 +2452,16 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	p.has_shield = true
 	var dwarf: RotDwarf = _find(room, RotDwarf)
 	await frames(6)
-	# Deluge, pressed for real, meets the dwarf's shield across the room.
+	# Torrent, pressed for real, meets the dwarf's shield across the room.
 	var hp0 := dwarf.hp
 	var mp0 := p.mp
 	var x0 := p.global_position.x
 	Sfx.recent.clear()
 	await press_for_real(p, ["spell"])
 	release_for_real(["spell"])
-	var bolt: DelugeBolt = _find(room, DelugeBolt)
+	var bolt: TorrentBolt = _find(room, TorrentBolt)
 	check(bolt != null and absf(mp0 - p.mp - p.spell_cost("deluge")) < 0.5,
-		"Spell casts the Deluge and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("deluge"), mp0, p.mp])
+		"Spell casts the Torrent and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("deluge"), mp0, p.mp])
 	var dmg := bolt.damage if bolt != null else -1
 	var most := 0.0
 	for i in 60:
@@ -2483,9 +2483,9 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 		await frames(1)
 		if dwarf.hp < hp0:
 			break
-	check(hp0 - dwarf.hp == dmg, "cast then, the Deluge strikes him for its %d (%d -> %d)" % [dmg, hp0, dwarf.hp])
+	check(hp0 - dwarf.hp == dmg, "cast then, the Torrent strikes him for its %d (%d -> %d)" % [dmg, hp0, dwarf.hp])
 	room.free()
-	# Next Spell turns to Thunder; Spell then casts it, and a press inside
+	# Next Spell turns to Stormcall; Spell then casts it, and a press inside
 	# the cooldown casts nothing, then or once the cooldown is over.
 	room = make_room(ARENA)
 	p = make_player(room, Vector2i(3, 6), {"thunder": true})
@@ -2493,12 +2493,12 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	await frames(6)
 	await press_for_real(p, ["spell_next"])
 	release_for_real(["spell_next"])
-	check(p.equipped_spell == "thunder", "Next Spell readies Thunder (%s)" % p.equipped_spell)
+	check(p.equipped_spell == "thunder", "Next Spell readies Stormcall (%s)" % p.equipped_spell)
 	mp0 = p.mp
 	await press_for_real(p, ["spell"])
 	release_for_real(["spell"])
 	check(_find(room, ThunderBolt) != null and absf(mp0 - p.mp - p.spell_cost("thunder")) < 0.5,
-		"Spell now casts Thunder for %.0f MP (%.1f -> %.1f)" % [p.spell_cost("thunder"), mp0, p.mp])
+		"Spell now casts Stormcall for %.0f MP (%.1f -> %.1f)" % [p.spell_cost("thunder"), mp0, p.mp])
 	await frames(4)
 	var mp1 := p.mp
 	await press_for_real(p, ["spell"])

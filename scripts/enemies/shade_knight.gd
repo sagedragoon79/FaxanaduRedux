@@ -1,7 +1,7 @@
 class_name ShadeKnight
 extends Enemy
-## A Shade Knight of Dartmoor (design bible 7): the drowned ghost of one of King
-## Grieve's household guard, still in his armour, a tower shield on his left arm.
+## A Shade Knight of Vorrhallow (design bible 7): the drowned ghost of one of King
+## Vorrund's household guard, still in his armour, a tower shield on his left arm.
 ## A parry fight. His shield turns every blow from the front. He advances behind
 ## it, then draws his blade back (it glows: the telegraph) and thrusts, then
 ## cuts again. Parry either and he reels, shield wide, open to every blow.
@@ -177,7 +177,7 @@ func _draw() -> void:
 			shield_low = 4
 			shield_x = -10
 			lean = -3
-	# Mist trailing at his feet.
+	# Haar trailing at his feet.
 	for i in 4:
 		var mx := -10 + i * 6 + roundi(sin(t * 2.5 + i) * 2.0)
 		_px(mx, -4, 6, 4, Color(GLOW, 0.25), a)

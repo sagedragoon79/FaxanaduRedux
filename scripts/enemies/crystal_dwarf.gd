@@ -1,6 +1,6 @@
 class_name CrystalDwarf
 extends Enemy
-## A dwarf of Dartmoor fused with the meteor (design bible 7, Dartmoor). Magenta
+## A dwarf of Vorrhallow fused with the Everbloom (design bible 7, Vorrhallow). Magenta
 ## crystal has grown out of his back like a shell and swallowed his right arm.
 ## He trudges toward you, and with you ahead of him he raises the crystal fist
 ## (it brightens: the telegraph) and drives it into the floor. A chain of crystal

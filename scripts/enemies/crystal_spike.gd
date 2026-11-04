@@ -1,7 +1,7 @@
 class_name CrystalSpike
 extends Node2D
 ## One spike of a Crystal Dwarf's eruption: the floor glows where it will burst
-## for WARN seconds, then a shard of meteor crystal stabs up for UP seconds and
+## for WARN seconds, then a shard of stillglass stabs up for UP seconds and
 ## sinks again. It hurts anything standing over it while it is up, so a jump
 ## clears it. Unparryable. The origin is on the floor.
 
@@ -50,7 +50,7 @@ func hit_rect() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	var was := _t
 	_t += delta
 	if was < delay + WARN and _t >= delay + WARN and Engine.get_physics_frames() != _stab_frame:

@@ -1,6 +1,6 @@
 class_name BouncePod
 extends Node2D
-## A bounce-pod (Branches, design bible 3.2 and 6.6): a fat seed-pod growing on
+## A bounce-pod (High Boughs, design bible 3.2 and 6.6): a fat seed-pod growing on
 ## the bough. Land on it from above and it squashes and throws you about nine
 ## tiles up (MovementTuning.pod_bounce). It isn't solid: walk into it and you
 ## walk through, so a hop onto it is all it takes. Legend `@`, standing on the

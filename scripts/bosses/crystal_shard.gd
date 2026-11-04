@@ -1,8 +1,8 @@
 class_name CrystalShard
 extends Node2D
-## A shard of meteor crystal King Grieve calls up out of his throne-hall floor
+## A shard of stillglass Thane Vorrund calls up out of his throne-hall floor
 ## (design bible 8.7). It glows on the floor for GLOW seconds (the telegraph),
-## then shoots up to the vault, burning what it passes through. The Hour Glass
+## then shoots up to the vault, burning what it passes through. The Stillstone
 ## holds it in the air, and while it is held its flat top is a foothold: a
 ## string of them, frozen in time, is a stair up to the king's crown. When time
 ## runs again a held shard cracks and falls to pieces. The origin is the
@@ -51,7 +51,7 @@ func hit_rect() -> Rect2:
 	return Rect2(global_position - SIZE * 0.5, SIZE)
 
 
-## True while the Hour Glass holds it in the air as a foothold.
+## True while the Stillstone holds it in the air as a foothold.
 func held() -> bool:
 	return state == "rise" and TimeStop.active()
 

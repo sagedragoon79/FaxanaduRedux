@@ -1,6 +1,6 @@
 class_name MinecartRider
 extends Enemy
-## A Forepaw dwarf hunched in an ore cart (design bible 7, Tower of Trunk).
+## A Kettleforge dwarf hunched in an ore cart (design bible 7, Hollin Tower).
 ## Trundles along the floor; with you level with him and in front, he hauls
 ## the brake and the wheels shriek (the telegraph), then lets go and charges
 ## the length of the floor. Jump him. The cart stops dead at a wall or the end

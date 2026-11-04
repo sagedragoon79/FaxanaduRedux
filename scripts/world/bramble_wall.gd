@@ -1,10 +1,10 @@
 class_name BrambleWall
 extends StaticBody2D
 ## One tile of a bramble wall (room legend `w`, design bible 4.5): a knot of
-## dry thorn-vine that blocks like stone. Blades only snag in it, but a Fire
+## dry thorn-vine that blocks like stone. Blades only snag in it, but a Kindle
 ## spell (group "fire_target") sets it alight; the fire creeps tile to tile
 ## through the whole knot and leaves ash. Burnt tiles stay burnt (by room and
-## tile, like a cracked wall). Fire is a supporting spell, so brambles only ever
+## tile, like a cracked wall). Kindle is a supporting spell, so brambles only ever
 ## hide secrets. Drawn at 2x render density: `_px` takes half-pixels.
 
 ## How long a tile burns before it falls to ash, and before it lights its neighbours.

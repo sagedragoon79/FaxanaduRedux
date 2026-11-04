@@ -1,6 +1,6 @@
 class_name ThunderBeetle
 extends Enemy
-## A Thunder Beetle of Daybreak (design bible 7): a beetle as big as a dog,
+## A Thunder Beetle of Carillon (design bible 7): a beetle as big as a dog,
 ## its storm-violet shell striped with gold, that trundles the shrine stones
 ## soaking up the storm. The shell turns blows from the side, but not from
 ## above: pogo it. Linger near it and its wing cases lift and crackle (the

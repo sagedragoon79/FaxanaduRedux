@@ -12,26 +12,26 @@ signal phase_broken(level: int)
 
 ## Boss id -> how to make it and what it gives.
 const BOSSES := {
-	"rokusutahn": {"ring": "elf", "ring_name": "Elf Ring", "skill_points": 1},
-	"foreman": {"ability": "mattock", "title": "Mattock",
+	"rokusutahn": {"ring": "elf", "ring_name": "Thaw Seed", "skill_points": 1},
+	"foreman": {"ability": "mattock", "title": "Delver's Pick",
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
-	"zoradohna": {"ring": "ruby", "ring_name": "Ruby Ring", "skill_points": 1, "music": "zoradohna"},
+	"zoradohna": {"ring": "ruby", "ring_name": "Sun Seed", "skill_points": 1, "music": "zoradohna"},
 	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
-		"text": "Its light opens the way to the Spring of Mist. Your magic grows.", "music": "ripasheiku"},
-	"zorugeriru": {"ring": "dworf", "ring_name": "Dworf Ring", "skill_points": 1, "music": "zorugeriru"},
+		"text": "Its light opens the way to the Haar Spring. Your magic grows.", "music": "ripasheiku"},
+	"zorugeriru": {"ring": "dworf", "ring_name": "Fall Seed", "skill_points": 1, "music": "zorugeriru"},
 	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
 	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
-		"text": "The storm breaks over the Spires. Its key opens Dartmoor's upper gate.", "music": "borabohra"},
-	"king_grieve": {"ring": "demon", "ring_name": "Demon Ring", "skill_points": 1, "music": "grieve",
-		"blade": "dragon_slayer", "title": "Dragon Slayer",
-		"text": "He swallowed it to keep it from the meteor, and gives it up at rest. With it, the Demon Ring."},
+		"text": "The storm breaks over the Spires. Its key opens Vorrhallow's upper gate.", "music": "borabohra"},
+	"king_grieve": {"ring": "demon", "ring_name": "Frost Seed", "skill_points": 1, "music": "grieve",
+		"blade": "dragon_slayer", "title": "Severance",
+		"text": "His grafting blade, the one edge that can part the bloom from the tree. With it, the Frost Seed."},
 	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1, "music": "eura",
-		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of Zenis but its four sockets."},
+		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of the Evercrown but its four sockets."},
 	"evil_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "evil_one",
-		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the meteor."},
+		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the Everbloom."},
 	"evil_veins": {"title": "The Veins Go Dark", "skill_points": 1, "music": "evil_one",
-		"text": "Starved of its light, the core gutters. Above, the heart of the meteor lies open."},
-	"evil_one": {"title": "The Heart of the Meteor Dies", "skill_points": 1, "music": "evil_one",
+		"text": "Starved of its light, the core gutters. Above, the heart of the Everbloom lies open."},
+	"evil_one": {"title": "The Heart of the Bloom Dies", "skill_points": 1, "music": "evil_one",
 		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
 	"clockwork_alpha": {"stat_item": "life_fruit", "title": "Life Fruit", "music": "miniboss",
 		"text": "A Life Fruit was locked in the Alpha's winding-chest, the king's own reward for his first hound."},
@@ -39,7 +39,7 @@ const BOSSES := {
 		"text": "Dew gathered in the Captain's leaf-crown all the centuries it stood guard. Your magic grows."},
 	"hag_matriarch": {"stat_item": "mana_dew", "title": "Mana Dew", "music": "miniboss",
 		"text": "The wisp in her staff gutters out into a single drop of bog light. Your magic grows."},
-	"drowned_warden": {"armor": "battle_suit", "title": "Battle Suit", "skill_points": 1, "music": "warden",
+	"drowned_warden": {"armor": "battle_suit", "title": "Elven Plate", "skill_points": 1, "music": "warden",
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
 ## How far the player must be from the entry door before the fight starts.
@@ -51,7 +51,7 @@ const OPEN_DELAY := 1.2
 ## the chime of any find), and the boss theme drops away fast enough for it.
 const WIN_SOUND := "boss_won"
 const WIN_FADE := 0.4
-## Seconds from the Evil One's death to the ending (the banner shows first).
+## Seconds from the Everbloom's death to the ending (the banner shows first).
 const ENDING_DELAY := 4.0
 
 var boss_id := ""
@@ -75,7 +75,7 @@ func _ready() -> void:
 
 ## Loads what the fight will need while the room itself is loading, so the
 ## fight doesn't hitch when it starts mid-play: the boss's sprite sheet and its
-## music (pass 99; Zoradohna's first frame cost about 140 ms).
+## music (pass 99; Durgan's first frame cost about 140 ms).
 func warm() -> void:
 	warmed = true
 	if boss_id == "" or defeated_before():
@@ -149,7 +149,7 @@ func _start() -> void:
 	_seal(entry_door)
 	match boss_id:
 		"rokusutahn":
-			var r := Rokusutahn.new()
+			var r := Gnarlmaw.new()
 			r.room = room
 			boss = r
 			r.defeated.connect(_on_defeated)
@@ -164,7 +164,7 @@ func _start() -> void:
 			f.defeated.connect(_on_defeated)
 		"zoradohna":
 			# The drill waits across the lift from the way in, the shaft behind it.
-			var z := Zoradohna.new()
+			var z := Durgan.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			z.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			var px := p_x()
@@ -177,7 +177,7 @@ func _start() -> void:
 			z.defeated.connect(_on_defeated)
 		"ripasheiku":
 			# The widow waits in the dark across the chapel from the way in.
-			var r := Ripasheiku.new()
+			var r := Gloamweaver.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			r.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			var px := p_x()
@@ -186,7 +186,7 @@ func _start() -> void:
 			r.defeated.connect(_on_defeated)
 		"zorugeriru":
 			# The hydra lies coiled around the spring on its shelf in the middle.
-			var z := Zorugeriru.new()
+			var z := HaarWyrm.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			z.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			z.position = Vector2(w * 0.5, 9 * Room.TILE - 10)
@@ -194,7 +194,7 @@ func _start() -> void:
 			z.defeated.connect(_on_defeated)
 		"pakukame":
 			# The bloom is rooted in the middle of the crown-leaf.
-			var k := Pakukame.new()
+			var k := Snapcrown.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			k.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			k.position = Vector2(w * 0.5, k.arena.end.y)
@@ -202,7 +202,7 @@ func _start() -> void:
 			k.defeated.connect(_on_defeated)
 		"borabohra":
 			# The roc comes down out of the storm over the middle island.
-			var b := Borabohra.new()
+			var b := Skyrend.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			# The roost has open sky above the fight for the wide camera; the roc
 			# keeps to the 16 rows above the floor.
@@ -212,7 +212,7 @@ func _start() -> void:
 			b.defeated.connect(_on_defeated)
 		"king_grieve":
 			# The king waits before his throne, the dais at the hall's east end.
-			var k := KingGrieve.new()
+			var k := ThaneVorrund.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			k.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			k.dais = Rect2(46 * Room.TILE, 14 * Room.TILE, w - 47 * Room.TILE, 6 * Room.TILE)
@@ -221,13 +221,13 @@ func _start() -> void:
 			k.defeated.connect(_on_defeated)
 		"shadow_eura":
 			# Your reflection, on the far side of the mirror down the middle of the hall.
-			var e := ShadowEura.new()
+			var e := Likeness.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			e.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = e
 			e.defeated.connect(_on_defeated)
 		"evil_avatar":
-			# The Evil One's avatar comes down off its throne at the hall's east end.
+			# The Everbloom's avatar comes down off its throne at the hall's east end.
 			var a := EvilAvatar.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			a.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
@@ -261,7 +261,7 @@ func _start() -> void:
 			boss = a
 			a.defeated.connect(_on_defeated)
 		"bark_captain":
-			# The Captain keeps the far end of his yard from the Conflate door.
+			# The Captain keeps the far end of his yard from the Sylvarre door.
 			var c := BarkCaptain.new()
 			var cw := float(room.size_tiles.x * Room.TILE)
 			c.arena = Rect2(Room.TILE, 4 * Room.TILE, cw - 2 * Room.TILE, float(room.size_tiles.y - 7) * Room.TILE)
@@ -269,7 +269,7 @@ func _start() -> void:
 			boss = c
 			c.defeated.connect(_on_defeated)
 		"hag_matriarch":
-			# The Matriarch waits at the far end of her mire from the Mascon door.
+			# The Matriarch waits at the far end of her mire from the Polesend door.
 			var m := HagMatriarch.new()
 			var mw := float(room.size_tiles.x * Room.TILE)
 			m.arena = Rect2(Room.TILE, 4 * Room.TILE, mw - 2 * Room.TILE, float(room.size_tiles.y - 10) * Room.TILE)
@@ -320,15 +320,15 @@ func _on_defeated() -> void:
 			GameState.grant_stat_item("mana_dew", p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("armor"):
-		# Armor the boss wore or kept goes straight on (the Warden's Battle Suit).
+		# Armor the boss wore or kept goes straight on (the Warden's Elven Plate).
 		var p := get_tree().get_first_node_in_group("player") as Player
 		GameState.obtain_gear(String(reward.armor), p)
 		if p != null:
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("blade"):
-		# The blade the boss kept goes straight into your hand: King Grieve
-		# swallowed the Dragon Slayer, as in the original (pass 217).
+		# The blade the boss kept goes straight into your hand: Thane Vorrund
+		# carried Severance, his grafting blade (pass 217).
 		var p := get_tree().get_first_node_in_group("player") as Player
 		GameState.data.abilities[reward.blade] = true
 		GameState.obtain_gear(String(reward.blade), p)
@@ -344,7 +344,7 @@ func _on_defeated() -> void:
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("ability"):
-		# The ability the boss guarded (the Foreman drops the Mattock from its back).
+		# The ability the boss guarded (the Foreman drops the Delver's Pick from its back).
 		var p := get_tree().get_first_node_in_group("player") as Player
 		GameState.data.abilities[reward.ability] = true
 		if p != null:
@@ -352,7 +352,7 @@ func _on_defeated() -> void:
 			GameState.capture(p)
 		GameState.banner.emit(reward.title, reward.text)
 	elif reward.has("text"):
-		# A guardian that leaves only its story (Shadow Eura, the Evil One's three).
+		# A guardian that leaves only its story (the Likeness, the Everbloom's three).
 		GameState.banner.emit(reward.title, reward.text)
 	else:
 		GameState.banner.emit(reward.get("ring_name", reward.get("title", "Victory")), point_line(points))

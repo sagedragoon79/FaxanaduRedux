@@ -42,7 +42,7 @@ two or more tiles from open air use darker interior tiles so rooms read as space
 Each room also gets a `Decor` child: small sprites from `tools/art/decorgen.py`
 (`assets/decor/<zone>.png` and `.json`) scattered over open floor, ceiling and wall cells,
 seeded by the room id so a room always looks the same. Pieces that give light (the
-Trunk's cyan fungus) get an additive, pulsing glow. `Motes` (owned by the World) is the
+Heartwood's cyan fungus) get an additive, pulsing glow. `Motes` (owned by the World) is the
 particle layer in front: spores or dust in screen space that wrap at the view's edges, at
 two depths of parallax.
 
@@ -68,7 +68,7 @@ Enemies and NPCs use the same pipeline: `tools/art/castgen.py` (on the shared
 `tools/art/pixelrig.py`) writes a sheet per enemy and one per person in `data/npcs.json`,
 and `Sheet` (`scripts/fx/sheet.gd`) loads and draws any of them. `Enemy.draw_sheet()` picks
 a frame by state and time and washes it white (the silhouette sheet) while flashing or
-telegraphing; the Monodron draws its pupil on the eye point its frames carry.
+telegraphing; the Blinkhop draws its pupil on the eye point its frames carry.
 
 ## Reachability checker
 
@@ -86,7 +86,7 @@ Balance tables are JSON in `data/` (`items`, `shops`, `skills`, `npcs`), read th
 menus (`Menus` opening a shared `ListMenu`) only display them, so tests call the rules
 directly. Gear and skills turn into player numbers in one place: `GameState.refresh_stats()`.
 NPCs (`scripts/world/npc.gd`) are placed with `npc:` lines and act by role: talk, king, shop
-or guru.
+or ringreader.
 
 ## Bosses
 
@@ -98,7 +98,7 @@ room is rebuilt on respawn.
 
 Bosses are not `Enemy` subclasses: they are made of several `BossSegment` hitboxes
 (`StaticBody2D` on the enemy layer, in the `enemy` and `pogo` groups) that forward hits to
-the boss, which decides the damage. `Rokusutahn` moves its segments along a straight "rail"
+the boss, which decides the damage. `Gnarlmaw` moves its segments along a straight "rail"
 per attack, so the body follows the head in and out of the walls. The HUD draws the health
 bar of whatever is in the `boss` group, with ticks at its `PHASES` thresholds, and
 `GameState.flash` gives the white flash of a boss kill; `Feel.slowmo()` the slow motion.
@@ -125,7 +125,7 @@ bar of whatever is in the `boss` group, with ticks at its `PHASES` thresholds, a
 | 3 | 4 | Hazard | Spikes, thorn bulbs (groups `hazard`, `pogo`) |
 | 4 | 8 | Enemy | Enemies and dummies (groups `enemy`, `pogo`) |
 
-Groups: `pogo` (down-strike bounces), `hazard` (hurts on touch), `breakable` (Mattock),
+Groups: `pogo` (down-strike bounces), `hazard` (hurts on touch), `breakable` (Delver's Pick),
 `room`, `player`, `world`, `interactable`, `purse`.
 
 ## Rendering

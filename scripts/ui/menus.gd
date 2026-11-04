@@ -1,9 +1,9 @@
 class_name Menus
 extends RefCounted
-## Opens the shop, Guru and skill tree menus on the scene's ListMenu. Each
+## Opens the shop, Ringreader and skill tree menus on the scene's ListMenu. Each
 ## returns false when there is no menu (tests, headless runs).
 
-## How far from the Guru the Mantra Path sets you down, in pixels.
+## How far from the Ringreader the Grain Road sets you down, in pixels.
 const MANTRA_STEP := 32.0
 
 
@@ -46,14 +46,14 @@ static func shop_rows(shop_id: String, p: Player) -> Array:
 			var kind := String(entry.item).trim_suffix("_key")
 			detail += "  You have %d." % GameState.key_count(kind)
 			if st == "enough":
-				detail += " " + ("Its door stands open." if Shop.doors_shut(kind) == 0 else "Enough for every %s door left." % kind.capitalize())
+				detail += " " + ("Its door stands open." if Shop.doors_shut(kind) == 0 else "Enough for every %s door left." % KeyDoor.label(kind))
 		elif item.kind == "ointment":
 			detail += "  You have %d." % p.ointments
 		elif item.kind == "temper":
 			var blade := String(GameState.data.equipment.blade)
 			detail += "  Your %s: tempered %d of 2." % [GameData.item(blade).get("name", "blade"), GameState.temper_level(blade)]
 			if Shop.shards(entry) > 0:
-				detail += "  Costs a Meteor Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
+				detail += "  Costs a Stillglass Shard too: you carry %d." % int(GameState.data.get("meteor_shards", 0))
 		elif item.kind == "blade":
 			detail += "  " + blade_numbers(String(entry.item))
 		out.append({"label": item.name, "right": right, "detail": detail, "enabled": st == ""})
@@ -92,7 +92,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 			rank_line += " of %d for the next rank." % GameState.next_rank_xp()
 		var rows := [
 			{"label": "Rest and save", "detail": "Restore health, magic and potions, and record your journey. " + rank_line},
-			{"label": "Learn skills", "right": "%d pt" % pts, "detail": "Spend skill points. You earn them from ranks, bosses and Mantra Shards."},
+			{"label": "Learn skills", "right": "%d pt" % pts, "detail": "Spend skill points. You earn them from ranks, bosses and Grain Shards."},
 			{"label": "Unlearn skills", "right": "%d g" % Skills.respec_cost(), "detail": "Forget every skill and get the points back, for a price that rises each time.",
 				"enabled": not GameState.data.skills.is_empty() and p.gold >= Skills.respec_cost()},
 			_mantra_row(tree),
@@ -104,7 +104,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 		return rows
 	var on_select := func(i: int) -> void:
 		if _here(tree) == Trials.TEMPLE and i >= 4:
-			# The Guru Trials and Boss Rush rows sit before Leave in the temple.
+			# The Inner Rings and Boss Rush rows sit before Leave in the temple.
 			if i == 4:
 				open_trials(tree, p)
 				return
@@ -132,12 +132,12 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 				open_mantra_path(tree, p)
 			4:
 				menu.close()
-	menu.open("Guru", greeting, provider, on_select, _gold_footer(p))
+	menu.open("Ringreader", greeting, provider, on_select, _gold_footer(p))
 	return true
 
 
 static func _trials_row() -> Dictionary:
-	var row := {"label": "Guru Trials", "detail": "Walk a mantra made of nothing but footholds.",
+	var row := {"label": "Inner Rings", "detail": "Walk a ring made of nothing but footholds.",
 		"enabled": Trials.springs_flowing() > 0 and not Trials.built().is_empty()}
 	var done := 0
 	for t: Dictionary in Trials.built():
@@ -145,7 +145,7 @@ static func _trials_row() -> Dictionary:
 			done += 1
 	row.right = "%d/%d" % [done, Trials.built().size()]
 	if Trials.springs_flowing() == 0:
-		row.detail = "The mantra-space is dry. Restore a spring and the Guru will open it."
+		row.detail = "The inner rings is dry. Restore a spring and the Ringreader will open it."
 	return row
 
 
@@ -155,13 +155,13 @@ static func _rush_row() -> Dictionary:
 		"detail": "Every guardian of the Tree again, one after another. A third of your health back between fights; fall and the rush ends."}
 	if not BossRush.unlocked():
 		row.right = "Sealed"
-		row.detail = "Sealed. Walk the whole Tree, every room, secret, treasure and guardian, and the Guru will open it."
+		row.detail = "Sealed. Walk the whole Tree, every room, secret, treasure and guardian, and the Ringreader will open it."
 	elif BossRush.best() != INF:
 		row.right = Trials.format_time(BossRush.best())
 	return row
 
 
-## The Guru Trials (design bible 3.1): pick an open trial and the mantra carries
+## The Inner Rings (design bible 3.1): pick an open trial and the ring carries
 ## you to its start; you come back here when it ends.
 static func open_trials(tree: SceneTree, p: Player) -> bool:
 	var menu := _menu(tree)
@@ -184,11 +184,11 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 				row.detail += "  Best %s." % Trials.format_time(Trials.best(t.id))
 			else:
 				row.right = "Open"
-				row.detail += "  Clear it for a Mantra Shard."
-			# Its mantra time and the dye it gives (pass 164).
+				row.detail += "  Clear it for a Grain Shard."
+			# Its ring time and the dye it gives (pass 164).
 			if t.has("mantra") and Trials.ready(t):
 				if GameState.owns_dye(String(t.dye)):
-					row.detail += "  Within the mantra: %s is yours." % GameData.item(t.dye).name
+					row.detail += "  Within the ring: %s is yours." % GameData.item(t.dye).name
 				else:
 					row.detail += "  Ring it within %s for %s." % [Trials.format_time(float(t.mantra)), GameData.item(t.dye).name]
 			out.append(row)
@@ -199,7 +199,7 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 			return
 		menu.close()
 		start_trial(world, p, t)
-	menu.open("Guru Trials", "The trial begins the moment you arrive. Hazards cost time, not health.", provider, on_select)
+	menu.open("Inner Rings", "The trial begins the moment you arrive. Hazards cost time, not health.", provider, on_select)
 	return true
 
 
@@ -217,16 +217,16 @@ static func _here(tree: SceneTree) -> String:
 
 
 static func _mantra_row(tree: SceneTree) -> Dictionary:
-	var row := {"label": "Mantra Path", "detail": "Walk the mantra to another Guru you have met.",
+	var row := {"label": "Grain Road", "detail": "Follow the grain to another Ringreader you have met.",
 		"enabled": GameState.mantra_path_open() and not GameState.mantra_stops(_here(tree)).is_empty()}
 	if not GameState.mantra_path_open():
-		row.detail = "The path between Gurus is dry. Restore a spring to walk it."
+		row.detail = "The path between Ringreaders is dry. Restore a spring to walk it."
 	elif not row.enabled:
-		row.detail = "You have met no other Guru yet."
+		row.detail = "You have met no other Ringreader yet."
 	return row
 
 
-## Guru-to-Guru travel (design bible 3.3). You arrive a step from the Guru.
+## Ringreader-to-Ringreader travel (design bible 3.3). You arrive a step from the Ringreader.
 static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
 	var menu := _menu(tree)
 	var world := tree.get_first_node_in_group("world") as World
@@ -237,8 +237,8 @@ static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
 		var out := []
 		for id: String in stops:
 			var info: Dictionary = world.catalog.get(id, {})
-			out.append({"label": String(info.get("name", id)), "right": String(info.get("zone", "")).capitalize(),
-				"detail": "Close your eyes and speak the mantra."})
+			out.append({"label": String(info.get("name", id)), "right": String(World.ZONES.get(String(info.get("zone", "")), {}).get("name", String(info.get("zone", "")).capitalize())),
+				"detail": "Close your eyes and follow the grain."})
 		return out
 	var on_select := func(i: int) -> void:
 		menu.close()
@@ -247,7 +247,7 @@ static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
 		GameState.flash.emit(0.2)
 		world.travel(stops[i], Vector2(float(at[0]) + MANTRA_STEP, float(at[1])))
 		p.velocity = Vector2.ZERO
-	menu.open("Mantra Path", "Every Guru hears every other.", provider, on_select)
+	menu.open("Grain Road", "Every Ringreader hears every other.", provider, on_select)
 	return true
 
 
@@ -265,7 +265,7 @@ static func open_lift(tree: SceneTree, p: Player, cage: LiftCage) -> bool:
 	var on_select := func(i: int) -> void:
 		menu.close()
 		cage.ride(p, String(stops[i][0]))
-	menu.open("Forepaw Lift", "The dwarves' chain runs the length of the trunk.", provider, on_select)
+	menu.open("Kettleforge Lift", "The dwarves' chain runs the length of the trunk.", provider, on_select)
 	return true
 
 
@@ -318,13 +318,13 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 	if menu == null:
 		return false
 	var provider := func() -> Array:
-		var oint := {"label": "Use Ointment", "right": "x%d" % p.ointments,
+		var oint := {"label": "Use Barkbalm", "right": "x%d" % p.ointments,
 			"detail": "Nothing can hurt you for %d seconds." % int(Player.OINTMENT_TIME),
 			"enabled": p.ointments > 0 and p.ointment_left <= 0.0}
 		if p.ointment_left > 0.0:
 			oint.detail = "One is already on: %d seconds left." % ceili(p.ointment_left)
 		elif p.ointments <= 0:
-			oint.detail = "You carry none. The item shops in Eolis and Apolune sell them."
+			oint.detail = "You carry none. The item shops in Hearthroot and Amberlee sell them."
 		return [
 			{"label": "Resume", "detail": "Back to the Tree."},
 			oint,
@@ -334,8 +334,8 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Controls", "detail": CONTROLS_DETAIL},
 			{"label": "Journey", "detail": "How much of the world you have seen, and the guardians you have found."},
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
-		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Guru."}] if Trials.active() else []) \
-			+ ([{"label": "Leave the rush", "detail": "Stop the clock and return to the Guru."}] if BossRush.active() else [])
+		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Ringreader."}] if Trials.active() else []) \
+			+ ([{"label": "Leave the rush", "detail": "Stop the clock and return to the Ringreader."}] if BossRush.active() else [])
 	var reopen := func() -> void: open_pause(tree, p, on_quit)
 	var on_select := func(i: int) -> void:
 		match i:
@@ -386,7 +386,7 @@ static func blade_numbers(id: String) -> String:
 
 
 ## The cloak dyes you can put on from the Equipment page (pass 189): Warden
-## Green, each one bought or won, and the Lord's Gold once it is yours.
+## Green, each one bought or won, and the Crown Gold once it is yours.
 static func cloak_dyes() -> Array:
 	var out := []
 	for id: String in GameData.items_of_kind("dye"):
@@ -448,7 +448,7 @@ static func equipment_rows() -> Array:
 
 ## The Equipment page's footer (pass 229): what all you wear adds up to, as
 ## refresh_stats works it out. Armor and helmet stack by what each lets
-## through, so the Battle Suit under the Battle Helmet stops 64%, not 70%; the
+## through, so the Elven Plate under the Elven Helm stops 64%, not 70%; the
 ## ward is the shield's and the helmet's, capped at GameState.MAX_WARD, and a
 ## shield on a two-hander's back gives none.
 static func worn_totals(p: Player) -> String:
@@ -523,14 +523,14 @@ static func open_journey(tree: SceneTree, back: Callable) -> bool:
 
 ## The Inventory page (pause menu, pass 205): what you have found and carry,
 ## that the Equipment page does not show. Abilities, spells, relics, the rings
-## for the gate of Zenis, keys and shards, each with what it does, so a found
+## for the gate of the Evercrown, keys and shards, each with what it does, so a found
 ## thing is never known only by its banner. Read only; Back returns.
 const INVENTORY_GROUPS := [
 	["Abilities", ["glove", "mattock", "boots", "stride", "onyx", "hourglass", "rune_dagger"]],
 	["Spells", ["deluge", "fire", "tilte", "thunder", "death"]],
 	["Relics", ["pendant", "magical_rod"]],
 ]
-const RING_NAMES := {"elf": "Elf Ring", "ruby": "Ruby Ring", "dworf": "Dworf Ring", "demon": "Demon Ring"}
+const RING_NAMES := {"elf": "Thaw Seed", "ruby": "Sun Seed", "dworf": "Fall Seed", "demon": "Frost Seed"}
 const KEY_ORDER := ["jack", "queen", "king", "ace", "joker", "lantern", "sky"]
 
 
@@ -551,11 +551,11 @@ static func key_info(kind: String) -> Array:
 	if kind == "joker":
 		return [String(ItemPickup.INFO.joker_key.title), String(ItemPickup.INFO.joker_key.text)]
 	if kind == "lantern":
-		return [String(BossArena.BOSSES.ripasheiku.title), "Ripasheiku's light. It opens the way to the Spring of Mist."]
+		return [String(BossArena.BOSSES.ripasheiku.title), "Gloamweaver's light. It opens the way to the Haar Spring."]
 	if kind == "sky":
-		return [String(BossArena.BOSSES.borabohra.title), "Borabohra's key. It opens Dartmoor's upper gate."]
+		return [String(BossArena.BOSSES.borabohra.title), "Skyrend's key. It opens Vorrhallow's upper gate."]
 	var item := GameData.item(kind + "_key")
-	return [String(item.get("name", kind.capitalize() + " Key")), String(item.get("desc", ""))]
+	return [String(item.get("name", KeyDoor.label(kind) + " Key")), String(item.get("desc", ""))]
 
 
 static func inventory_rows(p: Player) -> Array:
@@ -572,22 +572,22 @@ static func inventory_rows(p: Player) -> Array:
 	var rings: Array = GameState.data.get("rings", [])
 	if not rings.is_empty():
 		out.append({"label": "Rings, %d of 4" % rings.size(), "header": true})
-		for r: String in ZenisGate.RINGS:
+		for r: String in CrownGate.RINGS:
 			if rings.has(r):
-				out.append({"label": RING_NAMES[r], "detail": "One of the four rings that open the gate of Zenis."})
+				out.append({"label": RING_NAMES[r], "detail": "One of the four rings that open the gate of the Evercrown."})
 	var keys := KEY_ORDER.filter(func(k: String) -> bool: return GameState.key_count(k) > 0)
 	if not keys.is_empty():
 		out.append({"label": "Keys", "header": true})
 		for k: String in keys:
 			var info := key_info(k)
 			out.append({"label": info[0], "right": "x%d" % GameState.key_count(k), "detail": info[1]})
-	# What you carry to use (pass 269): the HUD shows an Ointment only once one
-	# is bought, and the Elixir nowhere, so a player could not see it was there.
+	# What you carry to use (pass 269): the HUD shows an Barkbalm only once one
+	# is bought, and the Amber Draught nowhere, so a player could not see it was there.
 	var supplies := []
 	if p.ointments > 0:
-		supplies.append({"label": "Ointment", "right": "x%d" % p.ointments, "detail": "Rub one on from the pause menu: nothing can hurt you for 10 seconds."})
+		supplies.append({"label": "Barkbalm", "right": "x%d" % p.ointments, "detail": "Rub one on from the pause menu: nothing can hurt you for 10 seconds."})
 	if p.elixirs > 0:
-		supplies.append({"label": "Elixir", "right": "x%d" % p.elixirs, "detail": "Used by itself when a blow would fell you: it brings you back at full health."})
+		supplies.append({"label": "Amber Draught", "right": "x%d" % p.elixirs, "detail": "Used by itself when a blow would fell you: it brings you back at full health."})
 	if not supplies.is_empty():
 		out.append({"label": "Supplies", "header": true})
 		out.append_array(supplies)
@@ -601,11 +601,11 @@ static func inventory_rows(p: Player) -> Array:
 	var mantra := int(GameState.data.get("mantra_shards", 0)) % 3
 	var meteor := int(GameState.data.get("meteor_shards", 0))
 	if potion > 0:
-		shards.append({"label": "Potion Shards", "right": "%d of 3" % potion, "detail": "Three fuse into a new Red Potion charge."})
+		shards.append({"label": "Potion Shards", "right": "%d of 3" % potion, "detail": "Three fuse into a new Sapflask charge."})
 	if mantra > 0:
-		shards.append({"label": "Mantra Shards", "right": "%d of 3" % mantra, "detail": "Three complete a mantra and give a skill point."})
+		shards.append({"label": "Grain Shards", "right": "%d of 3" % mantra, "detail": "Three complete a ring and give a skill point."})
 	if meteor > 0:
-		shards.append({"label": "Meteor Shards", "right": "x%d" % meteor, "detail": "The Forepaw smith folds one into a blade's second temper."})
+		shards.append({"label": "Stillglass Shards", "right": "x%d" % meteor, "detail": "The Kettleforge smith folds one into a blade's second temper."})
 	if not shards.is_empty():
 		out.append({"label": "Shards", "header": true})
 		out.append_array(shards)
@@ -654,7 +654,7 @@ static func leave_trial(tree: SceneTree) -> void:
 
 static func _room_title(tree: SceneTree) -> String:
 	var w := tree.get_first_node_in_group("world")
-	return String(w.get("room").title) if w != null and w.get("room") != null else "The World Tree"
+	return String(w.get("room").title) if w != null and w.get("room") != null else "The Ylden"
 
 
 ## What the Options row says of the page, on the pause menu and the title
@@ -666,7 +666,7 @@ const CONTROLS_DETAIL := "Rebind the keys and the pad."
 
 const OPTIONS := [
 	["shake", "Screen shake", "How hard the screen shakes on hits and slams."],
-	["flashes", "Screen flashes", "The white flash on boss kills and the Elixir."],
+	["flashes", "Screen flashes", "The white flash on boss kills and the Amber Draught."],
 	["rumble", "Rumble", "Controller vibration."],
 	["numbers", "Damage numbers", "Show the damage each blow deals, over what it strikes."],
 	["mercy", "Assist: mercy", "After a hit, nothing can hurt you again for twice as long (1.6 s, not 0.8)."],
@@ -703,7 +703,7 @@ static func open_options(tree: SceneTree, back: Callable) -> bool:
 const ACTION_NAMES := {
 	"move_left": "Move left", "move_right": "Move right", "move_up": "Look up / enter", "move_down": "Crouch / drop",
 	"jump": "Jump", "attack": "Attack", "dash": "Dash", "block": "Block / parry", "spell": "Cast spell", "spell_next": "Next spell",
-	"heal": "Drink potion", "hourglass": "Hour Glass", "throw": "Throw dagger", "map": "Map",
+	"heal": "Drink potion", "hourglass": "Stillstone", "throw": "Throw dagger", "map": "Map",
 }
 
 

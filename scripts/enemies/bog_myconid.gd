@@ -1,11 +1,11 @@
-class_name BogMyconid
+class_name BogPuffcap
 extends Enemy
-## A Bog Myconid of the Mist (design bible 7): a squat marsh mushroom rooted in
+## A Bog Puffcap of the Haar (design bible 7): a squat marsh mushroom rooted in
 ## the boardwalk mud. Come near and its cap swells and its gills glow (the
 ## telegraph, a light that shows through the fog), then it bursts into a cloud
 ## of spores that hangs in the air and stings anyone inside. Spent, its cap
 ## sags open and soft: strike it then for half again the damage. Legend `V`.
-## As in the original, where the Myconid always drops health-restoring bread,
+## As in the original, where the Puffcap always drops health-restoring bread,
 ## a slain one always leaves a loaf of bread (pass 289).
 
 ## How near you must come (px, centre to centre) before it swells.

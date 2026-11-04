@@ -1,6 +1,6 @@
-class_name TilteOrb
+class_name WispOrb
 extends Node2D
-## The Tilte spell (design bible 4.1, a supporting spell): a homing spirit orb.
+## The Wisplight spell (design bible 4.1, a supporting spell): a homing spirit orb.
 ## It leaves the hand drifting up and forward and hangs for WAKE seconds,
 ## pulsing (the tell that it is choosing), then locks on the nearest foe within
 ## SEEK and flies at it, turning at most TURN radians a second, so a quick foe

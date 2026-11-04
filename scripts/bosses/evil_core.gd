@@ -1,7 +1,7 @@
 class_name EvilCore
 extends Enemy
-## The Evil One, phase 2: The Veins (design bible 8.9). The avatar is broken
-## and the meteor's core, a vast crystal eye-flower rooted in the vault at the
+## The Everbloom, phase 2: The Veins (design bible 8.9). The avatar is broken
+## and the Everbloom's core, a vast crystal eye-flower rooted in the vault at the
 ## top of the shaft, fights for itself. No blade reaches it: it feeds through
 ## veins of light grown up the shaft (LightVein), and you climb, cutting them
 ## one by one, while it fires beams down at you. Each beam's line flickers for
@@ -9,13 +9,13 @@ extends Enemy
 ##
 ## Below half its light (phase 2) its tells are shorter (never under
 ## Enemy.MIN_TELEGRAPH), it fires more often, and every other volley is a pair
-## of beams that fan out to either side of you. The Hour Glass holds the core
+## of beams that fan out to either side of you. The Stillstone holds the core
 ## and its beams.
 
 signal defeated
 
-const DISPLAY_NAME := "The Evil One"
-const EPITHET := "Core of the Meteor"
+const DISPLAY_NAME := "The Everbloom"
+const EPITHET := "Core of the Stillglass"
 const PHASES := [0.5]
 ## Health each vein carries (the bar empties as they are cut).
 const VEIN_HP := 10

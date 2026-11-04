@@ -106,7 +106,7 @@ def paint_bricks(img, ox, oy, seed, ramp):
 
 
 def paint_shrine(img, ox, oy, seed, ramp):
-    """Daybreak's ruined elf shrines: big pale ashlar blocks, weathered and
+    """Carillon's ruined elf shrines: big pale ashlar blocks, weathered and
     cracked, some still carrying a groove of gold inlay along their face."""
     bw, bh = 12 * D, 6 * D
     for y in range(T):
@@ -141,8 +141,8 @@ def paint_shrine(img, ox, oy, seed, ramp):
 
 
 def paint_drowned(img, ox, oy, seed, ramp):
-    """Dartmoor's drowned masonry: squat dwarven blocks, dark and water-worn,
-    a teal tide line where the flood stood, and veins of magenta meteor crystal
+    """Vorrhallow's drowned masonry: squat dwarven blocks, dark and water-worn,
+    a teal tide line where the flood stood, and veins of magenta stillglass
     forcing their way through the joints of some blocks."""
     bw, bh = 16 * D, 8 * D
     for y in range(T):
@@ -170,7 +170,7 @@ def paint_drowned(img, ox, oy, seed, ramp):
 
 
 def paint_meteor(img, ox, oy, seed, ramp):
-    """Zenis, the inside of the meteor: organic stone grown in rounded cells
+    """the Evercrown, the inside of the Everbloom: organic stone grown in rounded cells
     like a honeycomb of scar tissue, black-violet, with blood-red sinew in the
     seams and the odd pore of alien cyan light."""
     cell = 7 * D
@@ -222,7 +222,7 @@ def paint_spring(img, ox, oy, seed, ramp):
 
 
 def crystal_vein(img, ox, oy, seed):
-    """Dartmoor: a vein of meteor crystal, a jagged run of shards up through the
+    """Vorrhallow: a vein of stillglass, a jagged run of shards up through the
     joints. Only on tiles with an open face, so the solid fill doesn't repeat it."""
     if hash2(seed, 3, 41) <= 0.6:
         return
@@ -284,7 +284,7 @@ def paint_limb(img, ox, oy, seed, ramp):
 
 
 def paint_bough(img, ox, oy, seed, ramp):
-    """A sunlit bough high in the canopy: the Trunk's grain two shades lighter,
+    """A sunlit bough high in the canopy: The Heartwood's grain two shades lighter,
     warm light streaking down the bark, and the odd sprig of young leaves."""
     for x in range(T):
         base = 3 if hash2(x // 3, 0, seed) > 0.4 else 4
@@ -414,7 +414,7 @@ ZONES = {
               "under": "night-0", "outline": "night-0"},
     "sunken": {"painter": paint_spring, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "sky-6", "cap_top": 3,
                "under": "night-1", "outline": "night-0"},
-    # The Guru Trials' mantra-space (pass 113): pale grey blocks with no moss and
+    # The Inner Rings' inner rings (pass 113): pale grey blocks with no moss and
     # no warmth, a place made of nothing but footholds.
     "trials": {"painter": paint_bricks, "ramp": "stone", "cap": "stone", "light": "stone", "glow": None,
                "under": "night-1", "outline": "night-0"},
@@ -917,7 +917,7 @@ def tower_mid():
 
 
 def fog_color():
-    """Grey-green fog (bible 12: the Mist is grey-green, bone and lantern yellow)."""
+    """Grey-green fog (bible 12: The Haar is grey-green, bone and lantern yellow)."""
     return blend(c("stone-4"), c("leaf-4"), 70)
 
 
@@ -1259,7 +1259,7 @@ def zenis_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "crystal-1")
     rng = random.Random(77)
-    # The meteor's hollow heart: vast ribbed walls curving away like the inside
+    # The stillglass's hollow heart: vast ribbed walls curving away like the inside
     # of a shell, cyan veins of light pulsing through them toward a red glow.
     for i in range(9):
         cx = int((i + rng.uniform(0.0, 0.5)) * BG_W / 9)
@@ -1292,7 +1292,7 @@ def zenis_far():
 def zenis_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(78)
-    # Nearer: tendrils of meteor flesh hanging and rising, crystal growing on them.
+    # Nearer: tendrils of stillglass flesh hanging and rising, crystal growing on them.
     for i in range(8):
         x0 = int((i + rng.uniform(0.1, 0.8)) * BG_W / 8)
         down = rng.random() > 0.5
@@ -1383,7 +1383,7 @@ def trials_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "stone-1")
     rng = random.Random(113)
-    # A void with great faint mantra rings turning in it, each a circle of
+    # A void with great faint ring rings turning in it, each a circle of
     # broken strokes like letters seen from far off.
     for _ in range(7):
         cx, cy = rng.randrange(BG_W), rng.randrange(BG_H)

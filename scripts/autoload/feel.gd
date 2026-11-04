@@ -16,7 +16,7 @@ const BOSS_KILL_FLASH := 1.0
 var hitstop_enabled := true
 var shake_scale := 1.0
 var rumble_enabled := true
-## Scales full-screen flashes (boss kills, the Elixir): 1 full, 0 off.
+## Scales full-screen flashes (boss kills, the Amber Draught): 1 full, 0 off.
 var flash_scale := 1.0
 ## Game speed (accessibility, 70% to 100%): the time scale the game runs at.
 var game_speed := 1.0

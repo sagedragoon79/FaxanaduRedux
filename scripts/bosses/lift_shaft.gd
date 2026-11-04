@@ -1,6 +1,6 @@
 class_name LiftShaft
 extends Node2D
-## The Forepaw Lift's shaft behind Zoradohna's fight (design bible 8.2): iron
+## The Kettleforge Lift's shaft behind Durgan's fight (design bible 8.2): iron
 ## girders and cable runs on the back wall. While the boss's `rising` is set,
 ## the lift climbs, so the girders stream downward past it and the cables hum.
 

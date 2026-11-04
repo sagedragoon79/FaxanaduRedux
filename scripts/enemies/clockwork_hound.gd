@@ -1,12 +1,12 @@
 class_name ClockworkHound
 extends Enemy
-## A Clockwork Hound of Dartmoor (design bible 7): one of King Grieve's brass
+## A Clockwork Hound of Vorrhallow (design bible 7): one of Thane Vorrund's brass
 ## hunting dogs, still running on the spring the king last wound. It trots after
 ## you. Near enough, it crouches and its key spins up, ratcheting, its eyes
 ## blazing (the telegraph), then it pounces in a long low arc and bites.
 ## Parry the bite and it tumbles onto its back, belly plates open, every blow
 ## landing. Otherwise its brass plating turns half of every blow. It is a thing
-## of clockwork, so the Hour Glass stops it dead where it stands, mid-leap or
+## of clockwork, so the Stillstone stops it dead where it stands, mid-leap or
 ## not. Legend `j`.
 
 const TROT := 62.0

@@ -1,6 +1,6 @@
-class_name Monodron
+class_name Blinkhop
 extends Enemy
-## One-eyed hopper from the Trunk Hollows, the original's Monodron. Crouches
+## One-eyed hopper from the Heartwood, the original's Blinkhop. Crouches
 ## (telegraph), then hops at you.
 
 const SIGHT := Vector2(170, 90)

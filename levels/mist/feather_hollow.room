@@ -2,7 +2,7 @@ name: Feather Hollow
 zone: mist
 map: 27, -8
 chest_gold: 180
-sign: 34, 19, The elves' messengers roosted here before the Mist. One left her boots on the perch.|They say a second step waits in the air for whoever wears them.
+sign: 34, 19, The elves' messengers roosted here before the Haar. One left her boots on the perch.|They say a second step waits in the air for whoever wears them.
 door: 1, mist/victim_causeway, 2
 door: 2, mist/victim, 1
 lock: 4, 19, queen

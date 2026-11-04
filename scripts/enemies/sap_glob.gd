@@ -14,7 +14,7 @@ const OUTLINE := Color("120f19")
 
 var velocity := Vector2.ZERO
 var room: Room
-## What a Magic Shield's reflected shot glows with.
+## What a Warding Shield's reflected shot glows with.
 var tint := SAP
 var _t := 0.0
 
@@ -32,14 +32,14 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	velocity.y += GRAVITY * delta
 	var next := global_position + velocity * delta
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null and not p.dead and Rect2(next - Vector2(RADIUS, RADIUS), Vector2(RADIUS, RADIUS) * 2.0).intersects(p.body_rect()):
 		if p.receive_attack(DAMAGE, self, false) == "parried":
-			queue_free()  # caught by the Magic Shield: no puddle
+			queue_free()  # caught by the Warding Shield: no puddle
 			return
 		_splash(next)
 		return

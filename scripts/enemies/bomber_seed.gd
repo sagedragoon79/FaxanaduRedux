@@ -51,7 +51,7 @@ func box() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	_life += delta
 	var room := get_parent() as Room

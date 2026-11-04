@@ -1,11 +1,11 @@
 class_name TreeRoot
 extends Node2D
-## A root of the World Tree lashing up through the floor of the meteor's heart
-## to bind the core (the Evil One, phase 3, design bible 8.9). The Tree fights
+## A root of the Ylden lashing up through the floor of the Everbloom's heart
+## to bind the core (the Everbloom, phase 3, design bible 8.9). The Tree fights
 ## alongside you on a rhythm: the floor under the core cracks and glows green
 ## for TELL seconds, then the root whips up, wraps the core and drags it down to
-## the floor, where the Dragon Slayer can reach it. It holds it for `hold`
-## seconds and sinks back. It never hurts the player. The Hour Glass holds it.
+## the floor, where the Severance can reach it. It holds it for `hold`
+## seconds and sinks back. It never hurts the player. The Stillstone holds it.
 ## The origin is on the floor where it breaks through.
 
 signal struck

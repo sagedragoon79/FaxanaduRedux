@@ -22,7 +22,7 @@ var size_tiles := Vector2i.ZERO
 var spawn_position := Vector2.ZERO
 var tiles: TileMapLayer
 var secrets: TileMapLayer
-## Hidden planks (legend `i`), seen only through the Black Onyx.
+## Hidden planks (legend `i`), seen only through the Seer's Lens.
 var phantoms: TileMapLayer
 var sheen: OnyxSheen
 ## Door number -> {rect: Rect2 (pixels), edge: "left"/"right"/"top"/"bottom"/"inner",
@@ -40,9 +40,9 @@ var _winds_east := {}
 var _winds_west := {}
 ## Deep water cells (legend `a`), one SwimWater for the room after the grid.
 var _water := {}
-## Dartmoor's standing water (the `tide:` header), until King Grieve is at rest.
+## Vorrhallow's standing water (the `tide:` header), until Thane Vorrund is at rest.
 var tide: Tide
-## The meteor's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
+## The stillglass's flesh across the way into its heart (legend `+`), gathered into HeartSeals.
 var _seals := {}
 ## Ladder cells (legend `"`, bible 6.11). The top cell of each is also a plank.
 var _ladders := {}
@@ -53,7 +53,7 @@ var _solid_look := {}
 ## Slope cells (`/`, `\`): ground to their neighbours, but half open air, so
 ## the ground under a slope stays as light as any surface tile.
 var _slope_cells := {}
-## Key doors (`J`) that take another card than the Jack: cell -> kind (header `lock: x, y, kind`).
+## Key doors (`J`) that take another card than the Copper: cell -> kind (header `lock: x, y, kind`).
 var _locks := {}
 ## Chests worth more than the room's `chest_gold`: cell -> gold (header `chest: x, y, gold`).
 var _chest_gold := {}
@@ -328,28 +328,28 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 		"spring_trunk":
 			var spring := Spring.new()
 			spring.spring_id = "trunk"
-			spring.spring_name = "Spring of Trunk"
+			spring.spring_name = "Heartwood Spring"
 			_spawn(spring, pos)
 		"spring_mist":
-			# Zorugeriru lies coiled around it: it can be cleared once he is beaten.
+			# the Haar Wyrm lies coiled around it: it can be cleared once he is beaten.
 			var spring := Spring.new()
 			spring.spring_id = "mist"
-			spring.spring_name = "Spring of Mist"
-			spring.text = "The fog thins. Water returns to Eolis."
+			spring.spring_name = "Haar Spring"
+			spring.text = "The fog thins. Water returns to Hearthroot."
 			spring.needs_flag = "boss:zorugeriru"
 			_spawn(spring, pos)
 		"spring_sky":
-			# The roc nested on it: it can be cleared once Borabohra falls.
+			# The roc nested on it: it can be cleared once Skyrend falls.
 			var spring := Spring.new()
 			spring.spring_id = "sky"
-			spring.spring_name = "Spring of Sky"
-			spring.text = "The storm breaks. Eolis's fountain runs full."
+			spring.spring_name = "Sky Spring"
+			spring.text = "The storm breaks. Hearthroot's fountain runs full."
 			spring.needs_flag = "boss:borabohra"
 			_spawn(spring, pos)
 		"house":
 			var house := HouseFront.new()
 			if zone == "mist":
-				# Victim's boardwalk houses: its people never left, so they are lit.
+				# Lampwick's boardwalk houses: its people never left, so they are lit.
 				house.style = "mist"
 				house.lit_flag = ""
 			_spawn(house, pos)
@@ -371,12 +371,12 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 		"aqueduct_spill":
 			_spawn(AqueductSpill.new(), pos)
 		"zenis_gate":
-			_spawn(ZenisGate.new(), pos)
+			_spawn(CrownGate.new(), pos)
 		"trial_goal":
 			_spawn(TrialGoal.new(), pos)
 		"joker_key", "battle_helmet", "pendant", "magical_rod":
-			# Found once, never sold: the one Joker Key, the Battle Helmet and the
-			# original's two relics, the Pendant and the Magical Rod (pass 201;
+			# Found once, never sold: the one Glass Key, the Elven Helm and the
+			# original's two relics, the Acorn Charm and the Briar Wand (pass 201;
 			# FOUND_PROPS: the World catalog counts them as treasures).
 			var item_id := _pickup_id(Vector2i(int(pos.x / TILE), int(pos.y / TILE) - 1))
 			if not GameState.is_collected(item_id):
@@ -397,7 +397,7 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 				push_warning("Unknown prop in %s: %s" % [id, kind])
 
 
-## A guardian tears the floor (Rokusutahn's phase 3, the Bloom's bites): removes
+## A guardian tears the floor (Gnarlmaw's phase 3, the Bloom's bites): removes
 ## floor rows `row_from`..`row_to` between the columns, and lines the new pit's
 ## floor with spikes.
 func tear_floor(col_from: int, col_to: int, row_from: int, row_to: int) -> void:
@@ -514,7 +514,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"\\":
 			tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.SLOPE_WEST)
 		"b":
-			# A drowned boardwalk: it rises once the Spring of Mist flows.
+			# A drowned boardwalk: it rises once the Haar Spring flows.
 			if GameState.flag(Fog.SPRING_FLAG):
 				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.ONE_WAY)
 				_one_way[cell] = true
@@ -536,7 +536,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			_seals[cell] = true
 		"~":
 			if _amber_on():
-				# The restored spring hardens the Trunk's sap into walkable amber.
+				# The restored spring hardens the Heartwood's sap into walkable amber.
 				tiles.set_cell(cell, TilesetFactory.SOURCE_ID, TilesetFactory.AMBER)
 			else:
 				_sap_cells[cell] = true
@@ -561,7 +561,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"E":
 			_spawn(TrainingDummy.new(), bottom_center)
 		"M":
-			_spawn_enemy(Monodron.new(), bottom_center)
+			_spawn_enemy(Blinkhop.new(), bottom_center)
 		"H":
 			_spawn_enemy(Hornet.new(), center)
 		"D":
@@ -579,7 +579,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"A":
 			_spawn_enemy(LanternGhost.new(), center)
 		"V":
-			_spawn_enemy(BogMyconid.new(), bottom_center)
+			_spawn_enemy(BogPuffcap.new(), bottom_center)
 		"p":
 			_spawn_enemy(DrownedDwarf.new(), bottom_center)
 		"m":
@@ -603,13 +603,13 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"j":
 			_spawn_enemy(ClockworkHound.new(), bottom_center)
 		"s":
-			_spawn_enemy(MeteorSlug.new(), bottom_center)
+			_spawn_enemy(GlassSlug.new(), bottom_center)
 		"l":
 			# A Spring Eel, in a cell of the water it never leaves.
 			_water[cell] = true
 			_spawn_enemy(SpringEel.new(), center)
 		")":
-			_spawn_enemy(Naga.new(), center)
+			_spawn_enemy(SiltAdder.new(), center)
 		"R":
 			var gate := RootGate.new()
 			_spawn(gate, center)
@@ -657,7 +657,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 				var key_door := KeyDoor.new()
 				key_door.persist_id = door_id
 				if ch == "g":
-					# Dartmoor's upper gate: Borabohra's Sky Key opens it.
+					# Vorrhallow's upper gate: Skyrend's Sky Key opens it.
 					key_door.kind = "sky"
 				elif _locks.has(cell):
 					key_door.kind = _locks[cell]
@@ -754,7 +754,7 @@ func _blocks(cells: Dictionary) -> Array[Rect2i]:
 
 
 ## A hidden plank: a one-way platform that is always there but drawn only
-## faintly, and only for a player carrying the Black Onyx (design bible A7).
+## faintly, and only for a player carrying the Seer's Lens (design bible A7).
 func _place_phantom(cell: Vector2i) -> void:
 	if phantoms == null:
 		phantoms = TilesetFactory.layer(zone)
@@ -786,13 +786,13 @@ func _spawn(node: Node2D, pos: Vector2) -> void:
 
 func _spawn_enemy(enemy: Enemy, pos: Vector2) -> void:
 	# `calm: flag`: once the flag is set the room is a town again, and its foes
-	# are gone (the Drowned Market after King Grieve falls, pass 159).
+	# are gone (the Drowned Market after Thane Vorrund falls, pass 159).
 	if header.has("calm") and GameState.flag(String(header.calm)):
 		enemy.free()
 		return
 	_foes += 1
 	enemy.respawn_time = float(header.get("enemy_respawn", "0"))
-	# Everything that lives in the meteor is grown through with its crystal.
+	# Everything that lives in the Everbloom is grown through with its crystal.
 	enemy.corrupted = str(header.get("corrupted", "true" if zone == "zenis" else "false")) == "true"
 	_spawn(enemy, pos)
 
@@ -934,7 +934,7 @@ func surface_at(world_pos: Vector2) -> String:
 	if is_one_way_at(world_pos):
 		return "plank"
 	if tide != null and tide.has_point(world_pos + Vector2(0, -TILE * 0.5)):
-		# Wading Dartmoor's standing water (its own slosh since pass 262).
+		# Wading Vorrhallow's standing water (its own slosh since pass 262).
 		return "wade"
 	var cell := cell_at(world_pos)
 	if tiles.get_cell_source_id(cell) == -1:

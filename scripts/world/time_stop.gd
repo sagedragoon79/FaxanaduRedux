@@ -1,6 +1,6 @@
 class_name TimeStop
 extends RefCounted
-## The Hour Glass (design bible A8): time stops for DURATION. Falling water
+## The Stillstone (design bible A8): time stops for DURATION. Falling water
 ## freezes into footholds (Waterfall) and enemy projectiles hang where they are
 ## (they check `active()`); the player and the enemies themselves go on. The
 ## player ticks it, so it can't outlive the one who turned the glass.

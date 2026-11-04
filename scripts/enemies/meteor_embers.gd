@@ -1,6 +1,6 @@
 class_name MeteorEmbers
 extends Node2D
-## A patch of embers where a meteor glob splashed on the floor: it burns
+## A patch of embers where a stillglass glob splashed on the floor: it burns
 ## whoever stands in it for LIFE seconds, then dies down. The origin is on the
 ## floor's surface.
 
@@ -26,7 +26,7 @@ func hit_rect() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	if _t >= LIFE:
 		queue_free()

@@ -2,7 +2,7 @@ shader_type canvas_item;
 // Cloak dyes (pass 136, design bible 10): the player sheet's cloak is the only
 // green in it, so every green texel is recolored to the dye, keeping its
 // shading. `dye` is the dye's lit tone; a texel as bright as LIT takes it in
-// full. With `glow` (the Lord's Gold) a band of light runs down the cloth.
+// full. With `glow` (the Crown Gold) a band of light runs down the cloth.
 
 uniform vec4 dye : source_color = vec4(1.0);
 uniform bool glow = false;

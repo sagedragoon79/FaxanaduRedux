@@ -1,6 +1,6 @@
 class_name SapPool
 extends Node2D
-## Amber sap pools (Trunk Hollows). Drawn over the player's feet so they read
+## Amber sap pools (Heartwood). Drawn over the player's feet so they read
 ## as sinking in. The slow-down itself is applied by the World. Sap with open
 ## air beside it and more sap below is a falls: drawn as a pouring stream that
 ## splashes into the pool it lands in.

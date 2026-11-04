@@ -1,11 +1,11 @@
-class_name Zoradohna
+class_name Durgan
 extends Enemy
-## Zoradohna, the Hammer of Forepaw (design bible 8.2): a dwarf champion fused
-## with a walking siege drill. The boss of the Tower of Trunk.
+## Durgan, the Hammer of Kettleforge (design bible 8.2): a dwarf champion fused
+## with a walking siege drill. The boss of the Hollin Tower.
 ##
 ## The iron hull shrugs off sword blows from the side (a quarter gets through).
 ## Its exhaust stacks and cockpit are on top: strike down onto it, bouncing off
-## the vents with the Mattock, to deal full damage. Driving the drill into a
+## the vents with the Delver's Pick, to deal full damage. Driving the drill into a
 ## wall or the floor leaves it stuck and open to any blow.
 ##
 ## Phase 1: drill charges (spins up, then rams across the shaft) and stomps
@@ -18,8 +18,8 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Zoradohna"
-const EPITHET := "Hammer of Forepaw"
+const DISPLAY_NAME := "Durgan"
+const EPITHET := "Hammer of Kettleforge"
 const SHEET := "zoradohna"
 const MAX_HP := 260
 const PHASES := [0.65, 0.3]
@@ -360,7 +360,7 @@ func _process(delta: float) -> void:
 		_dust(Vector2(_rng.randf_range(-24, 24), _rng.randf_range(-50, -6)), "debris")
 	if state_time >= DYING_TIME:
 		state = "dead"
-		GameState.toast.emit("The harness shatters. The dwarf of Forepaw is free.")
+		GameState.toast.emit("The harness shatters. The dwarf of Kettleforge is free.")
 		defeated.emit()
 		super.die()
 

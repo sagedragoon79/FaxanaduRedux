@@ -1,4 +1,4 @@
-# Pass 136: cloak dyes and the Lord's Gold
+# Pass 136: cloak dyes and the Crown Gold
 
 Systems (97.5, weight 10) was tied for the lowest category apart from Art, and weighs the most of the tied ones. I audited bible 9, 10 and 11.
 
@@ -29,7 +29,7 @@ Systems (97.5, weight 10) was tied for the lowest category apart from Art, and w
   - A dye you own, or the Warden Green you start in, can be worn again for free.
   - The save keeps `dyes` and `dye`.
 - **The cloak dye shader** (`shaders/cloak_dye.gdshader`): the player sheet's cloak is its only green, so every green texel takes the dye and keeps its shading. The skin, leather and blade are untouched.
-- **The Lord's Gold:** a clear at 100% sets the `lord` flag (`Completion.award`). That puts the Lord's Gold on Ilse's shelf for free: a pale gold cloak with a band of light running down it.
+- **The Crown Gold:** a clear at 100% sets the `lord` flag (`Completion.award`). That puts the Crown Gold on Ilse's shelf for free: a pale gold cloak with a band of light running down it.
 - `--dye=ID` wears a dye for screenshots.
 - Deviation: the bible's "cosmetics" didn't say where they are sold. They went to a dyer in the home town, where a returning player passes anyway.
 
@@ -37,7 +37,7 @@ Systems (97.5, weight 10) was tied for the lowest category apart from Art, and w
 
 In `/mnt/project-files/pass-136/`:
 - `dyeworks.png`: Ilse's shelf.
-- `cloak_dyes.png`: all eight cloaks running: Warden Green, Ember, Tide, Dusk on the top row; Ash, Saffron, Night and the Lord's Gold below.
+- `cloak_dyes.png`: all eight cloaks running: Warden Green, Ember, Tide, Dusk on the top row; Ash, Saffron, Night and the Crown Gold below.
 
 ## Tests
 
@@ -48,7 +48,7 @@ In `/mnt/project-files/pass-136/`:
 - buying Ember Red costs 300 g and puts the shader on with the dye's color;
 - with no gold, Tide Blue can't be bought;
 - Warden Green and Ember are worn again for free;
-- the Lord's Gold stays off the shelf at 99% and appears at 100%, and it glows.
+- the Crown Gold stays off the shelf at 99% and appears at 100%, and it glows.
 
 ## Rubric
 

@@ -1,6 +1,6 @@
 class_name TitleScreen
 extends Control
-## The title backdrop: Eolis's distant houses and the Trunk's hanging roots
+## The title backdrop: Hearthroot's distant houses and the Heartwood's hanging roots
 ## drifting by, falling spores, and the logo. The menu itself is the shared
 ## ListMenu, drawn on top.
 
@@ -67,7 +67,7 @@ func _layer(tex: Texture2D, speed: float, y: float) -> void:
 
 
 func _logo(center: Vector2) -> void:
-	var title := "FAXANADU"
+	var title := "YLDENFALL"
 	var size := 44
 	var w := PixelFont.width(title, size)
 	var pos := Vector2(roundf(center.x - w * 0.5), center.y)

@@ -79,7 +79,7 @@ extends Resource
 @export var pogo_bounce_held := 420.0
 ## The hit-stop a pogo lands with (bible 6.6), so each bounce reads as a strike.
 @export var pogo_hitstop := 0.045
-## A bounce-pod's launch (Branches): about 9 tiles of rise.
+## A bounce-pod's launch (High Boughs): about 9 tiles of rise.
 @export var pod_bounce := 600.0
 @export var slash_active := 0.10
 @export var down_strike_active := 0.14
@@ -97,7 +97,7 @@ extends Resource
 @export var swim_stroke := 230.0
 
 @export_group("Wind")
-## A wind current in the Branches (bible 6.9): in the air inside one, the run
+## A wind current in the High Boughs (bible 6.9): in the air inside one, the run
 ## target is shifted by wind_speed along the wind, so you can't make headway
 ## against it, and the current bears you level (velocity.y eases to 0 at
 ## wind_drag once you stop rising). Hold Down to drop out of it.
@@ -105,7 +105,7 @@ extends Resource
 @export var wind_drag := 2400.0
 
 @export_group("Sap")
-## Amber sap (bible 6.12, the Trunk Hollows' pools and a Sap Spitter's puddles):
+## Amber sap (bible 6.12, the Heartwood' pools and a Sap Spitter's puddles):
 ## standing in it, the run is held to sap_speed of its pace and a ground jump
 ## leaves at sap_jump of its speed (about half the height). Nothing else is
 ## slowed: the double jump, wall jump and dash are the way out.

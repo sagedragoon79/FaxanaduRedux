@@ -258,10 +258,10 @@ func _text(pos: Vector2, s: String, size: int, color: Color) -> void:
 	PixelFont.draw(self, pos, s, size, color, OUTLINE)
 
 
-## The card keys you hold, by name ("Keys: Jack 2, Queen 1"), or "Keys: none".
+## The card keys you hold, by name ("Keys: Copper 2, Silver 1"), or "Keys: none".
 static func key_line() -> String:
 	var held: Array[String] = []
 	for kind: String in KeyDoor.CARDS:
 		if GameState.key_count(kind) > 0:
-			held.append("%s %d" % [kind.capitalize(), GameState.key_count(kind)])
+			held.append("%s %d" % [KeyDoor.label(kind), GameState.key_count(kind)])
 	return "Keys: " + (", ".join(held) if not held.is_empty() else "none")

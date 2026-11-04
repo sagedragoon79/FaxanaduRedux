@@ -1,6 +1,6 @@
-class_name Lilith
+class_name Mothling
 extends Enemy
-## A Lilith, Pakukame's brood (design bible 8.5): a winged imp the size of a
+## A Mothling, Snapcrown's brood (design bible 8.5): a winged imp the size of a
 ## hand, violet with petal wings, three loosed at a time from the Bloom's
 ## petals as in the original. It flutters up out of the bulb, hangs above and
 ## to one side of you, screeches with its wings flared (telegraph), then dives

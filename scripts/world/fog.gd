@@ -1,9 +1,9 @@
 class_name Fog
 extends Node2D
-## The Mist's fog (design bible 3.2): a murk over the room that hides all but a
+## The Haar's fog (design bible 3.2): a murk over the room that hides all but a
 ## pocket around the player and every light: the lanterns of the decor and
 ## anything in the group "light" with a `light_radius`. Restoring the Spring of
-## Mist lifts it by half: thinner, and the player sees further.
+## Haar lifts it by half: thinner, and the player sees further.
 ## The fog is on in zones listed in ZONES; a room's `fog:` header sets its
 ## density (0 turns it off).
 

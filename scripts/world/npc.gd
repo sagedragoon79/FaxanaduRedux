@@ -2,7 +2,7 @@ class_name Npc
 extends Interactable
 ## A townsperson (data/npcs.json). Press Up to talk. Roles: "talk" (dialog),
 ## "king" (dialog, gives the starting gold once), "shop" (opens the shop) and
-## "guru" (rest and save, skills) and "physician" (Forepaw's hospital: mends
+## "guru" (rest and save, skills) and "physician" (Kettleforge's hospital: mends
 ## you for free, without a save; pass 175).
 
 const KING_GOLD := 1500
@@ -53,8 +53,8 @@ func interact(p: Player) -> void:
 			GameState.say(info.get("name", ""), lines(info, "lines"))
 
 
-## The original's town hospital (Forepaw's, in Faxanadu): health and magic
-## made whole and poison drawn out. Unlike a Guru's rest it neither saves nor
+## The original's town hospital (Kettleforge's, in Yldenfall): health and magic
+## made whole and poison drawn out. Unlike a Ringreader's rest it neither saves nor
 ## refills the flask. Returns false when there was nothing to mend.
 static func treat(p: Player) -> bool:
 	if p.hp >= p.max_hp and p.mp >= p.max_mp and p.poison_left <= 0.0:
@@ -74,7 +74,7 @@ func _mend_fx() -> void:
 	Sfx.play("heal", 0.0)
 
 
-## What a person says from `key` of their data. Once the Evil One is dead and
+## What a person says from `key` of their data. Once the Everbloom is dead and
 ## the Tree blooms (`cleared`), "lines_cleared" takes over where it is written
 ## (design bible 4.4).
 static func lines(npc: Dictionary, key: String) -> Array:
@@ -83,8 +83,8 @@ static func lines(npc: Dictionary, key: String) -> Array:
 	return npc.get(key, [])
 
 
-## Faxanadu's title ceremony: a rank you earned in the field becomes your
-## name when a Guru speaks it, to a fanfare.
+## Yldenfall's title ceremony: a rank you earned in the field becomes your
+## name when a Ringreader speaks it, to a fanfare.
 func _name_title() -> void:
 	var title := GameState.name_title()
 	var r := int(GameState.data.rank)
@@ -95,18 +95,18 @@ func _name_title() -> void:
 	d.setup("heal")
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -24)
-	GameState.say(info.get("name", "Guru"), title_lines(r, title))
+	GameState.say(info.get("name", "Ringreader"), title_lines(r, title))
 	var box := _dialog_box()
 	if box != null and box.is_open:
 		await box.closed
 
 
-## What the Guru says when naming you `title` (rank index `r`), in the
+## What the Ringreader says when naming you `title` (rank index `r`), in the
 ## original's manner.
 static func title_lines(r: int, title: String) -> Array:
 	var first := "You have done well, wanderer. The Tree has felt your blade."
 	if r >= 12:
-		first = "Few who climb the World Tree come back as you have. Even the meteor must fear you now."
+		first = "Few who climb the Ylden come back as you have. Even the Everbloom must fear you now."
 	elif r >= 8:
 		first = "The dwarves' halls echo with your name. You walk like one the Tree has chosen."
 	elif r >= 4:
@@ -120,7 +120,7 @@ func _dialog_box() -> DialogBox:
 	return null
 
 
-## The Guru's "Rest and save": same as a shrine.
+## The Ringreader's "Rest and save": same as a shrine.
 func rest(p: Player) -> void:
 	p.restore()
 	var world := get_tree().get_first_node_in_group("world") as World
@@ -130,7 +130,7 @@ func rest(p: Player) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
 	Sfx.play("save", 0.0)
-	GameState.toast.emit("Rested. Your mantra is: " + GameState.mantra() if saved else SaveShrine.NOT_SAVED)
+	GameState.toast.emit("Rested. Your mark in the wood: " + GameState.mantra() if saved else SaveShrine.NOT_SAVED)
 
 
 func _face(p: Player) -> void:

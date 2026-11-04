@@ -1,8 +1,8 @@
 class_name HeartSeal
 extends StaticBody2D
-## A wall of the meteor's living flesh across the way into its heart (Zenis,
+## A wall of the Everbloom's living flesh across the way into its heart (the Evercrown,
 ## design bible 8.9; legend `+`, a rectangle of cells). Every blade glances
-## off it except the Dragon Slayer: one cut with it and the flesh tears open
+## off it except the Severance: one cut with it and the flesh tears open
 ## for good. A slit of cyan light runs down its middle and an eye opens in it,
 ## watching you.
 
@@ -45,7 +45,7 @@ func is_open() -> bool:
 	return _torn
 
 
-## The player's blade lands on it. Only the Dragon Slayer cuts.
+## The player's blade lands on it. Only the Severance cuts.
 func take_hit(_damage: int, dir: Vector2) -> void:
 	if _torn:
 		return

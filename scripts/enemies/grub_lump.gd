@@ -1,6 +1,6 @@
 class_name GrubLump
 extends Enemy
-## A Trunk Hollows grub (design bible 7) that crawls over floors, walls and
+## A Heartwood grub (design bible 7) that crawls over floors, walls and
 ## ceilings, wrapping around corners. Crossing a ceiling with you below, it
 ## stops, rears and shivers (the telegraph), then lets go and drops on you.
 ## It lands stunned for a moment, then crawls on along the floor.

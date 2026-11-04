@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Carries a local change from one Autosprite still onto other poses (design bible 13.2).
 
-A boss whose second look differs only in one spot (Zoradohna's phase 3: the cockpit hatch
+A boss whose second look differs only in one spot (Durgan's phase 3: the cockpit hatch
 thrown back and a crystal harness on the pilot) needs that look on every pose. Rather than
 paying for a second set of poses, the change is cut once from a pair of stills of the same
 standing pose (BEFORE and AFTER), inside a box: what AFTER adds, and what it takes away.

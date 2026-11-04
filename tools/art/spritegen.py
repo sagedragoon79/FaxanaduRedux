@@ -266,7 +266,7 @@ BODY_SETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_ba
 BLADES = ["long_sword", "broad_sword", "dragon_slayer"]
 SHIELDS = ["small_shield", "large_shield", "magic_shield"]
 ARMOR_SHEETS = BODY_SETS + [f"{s}_{b}" for s in BODY_SETS for b in BLADES] + [f"{s}_{h}" for s in BODY_SETS for h in SHIELDS]
-# Their cells run 20 px deeper under the feet than the code rig's, for the Mattock's head on a pogo.
+# Their cells run 20 px deeper under the feet than the code rig's, for the Delver's Pick's head on a pogo.
 ARMOR_CELL = (CELL, CELL + 20)
 
 

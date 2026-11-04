@@ -1,23 +1,23 @@
 class_name BossRush
 extends RefCounted
 ## The boss rush (design bible 11): a whole clear at 100% (the `lord` flag)
-## opens it at the Guru of the Temple of Mantras. The mantra carries you through
+## opens it at the Ringreader of the Hall of Rings. The ring carries you through
 ## every boss of the Tree in the order you met them, each in its own arena,
-## entered by the door you first came in by. Between fights the mantra mends a
+## entered by the door you first came in by. Between fights the ring mends a
 ## third of your health and all your magic. Nothing is won again: no rings,
-## keys or skill points, and the Evil One's death plays no ending. A blow that
-## would kill you ends the rush instead and returns you to the Guru, whole. The
+## keys or skill points, and the Everbloom's death plays no ending. A blow that
+## would kill you ends the rush instead and returns you to the Ringreader, whole. The
 ## clock runs from the first arena to the last blow; the best time is kept with
 ## the trials' (`GameState.data.trials`, under RECORD).
 ##
 ## Heard (pass 157): between fights the arenas play the trials' theme, the
-## mantra-space carrying you on, and each boss brings its own music when it
-## rises. A boss down rings the bronze bell soft as the mantra mends you
+## inner rings carrying you on, and each boss brings its own music when it
+## rises. A boss down rings the bronze bell soft as the ring mends you
 ## (rush_mend); the win rings it three times up the chord (rush_won); a fall
 ## tolls it low (rush_fall).
 
 ## Boss id and its arena, in the order of the critical path (bible 4.2), the
-## Drowned Warden of the optional Sunken Spring before Zenis.
+## Drowned Warden of the optional Sunken Spring before the Evercrown.
 const ORDER := [
 	["rokusutahn", "trunk/root_chamber"],
 	["foreman", "tower/foreman_hall"],
@@ -44,11 +44,11 @@ const MEND := 1.0 / 3.0
 const NEXT_DELAY := 2.5
 ## While the world is mid-fade, a move waits and tries again this often.
 const RETRY := 0.1
-## Between fights: the trials' theme, the mantra-space.
+## Between fights: the trials' theme, the inner rings.
 const MUSIC := "trials"
 
 ## The rush under way: {"index", "time", "back_room", "back_pos"}, or empty.
-## "over" is set once it is won or lost, while the mantra carries you back:
+## "over" is set once it is won or lost, while the ring carries you back:
 ## the clock stops and a second fall does nothing.
 static var run := {}
 
@@ -110,7 +110,7 @@ static func mend(p: Player) -> void:
 	p.health_changed.emit(p.hp, p.max_hp)
 
 
-## Starts a rush from where the player stands (by the Guru): full health,
+## Starts a rush from where the player stands (by the Ringreader): full health,
 ## magic and potions, then on to the first arena.
 static func start(world: World, p: Player) -> void:
 	begin(world.room.id, p.global_position)
@@ -156,7 +156,7 @@ static func on_boss_down(world: World, p: Player) -> void:
 		return
 	mend(p)
 	Sfx.play("rush_mend", 0.0)
-	GameState.toast.emit("%d of %d. The mantra mends you." % [int(run.index), ORDER.size()])
+	GameState.toast.emit("%d of %d. The ring mends you." % [int(run.index), ORDER.size()])
 	_later(world, NEXT_DELAY, func() -> void: go(world))
 
 
@@ -176,7 +176,7 @@ static func back(world: World, p: Player) -> void:
 	if not active() or not is_instance_valid(world):
 		return
 	if world.busy:
-		# Mid-fade (a fall as the mantra carries you on): go once it settles.
+		# Mid-fade (a fall as the ring carries you on): go once it settles.
 		_later(world, RETRY, func() -> void: back(world, p))
 		return
 	var room_id: String = run.back_room

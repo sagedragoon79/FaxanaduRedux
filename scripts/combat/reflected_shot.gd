@@ -1,10 +1,10 @@
 class_name ReflectedShot
 extends Node2D
-## A small projectile turned by the Magic Shield (design bible 5.2 and the
-## Daybreak armory): parried, the seed, glob or pip the shield caught flies back
+## A small projectile turned by the Warding Shield (design bible 5.2 and the
+## Carillon armory): parried, the seed, glob or pip the shield caught flies back
 ## as a mote of the shield's light, straight at the nearest foe in front of you
 ## (or straight ahead if none is near), and strikes the first foe it meets for
-## DAMAGE. Walls stop it. The Hour Glass holds it still.
+## DAMAGE. Walls stop it. The Stillstone holds it still.
 
 const SPEED := 340.0
 const DAMAGE := 16

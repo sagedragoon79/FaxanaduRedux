@@ -1,9 +1,9 @@
 class_name EvilAvatar
 extends Enemy
-## The Evil One, phase 1: The Throne (design bible 8.9). The meteor wears a
+## The Everbloom, phase 1: The Throne (design bible 8.9). The stillglass wears a
 ## body of armor grown from its own black crystal and comes down off its throne
 ## to duel you with a crystal greatsword. A standard boss, and the first of the
-## Evil One's three arenas.
+## Everbloom's three arenas.
 ##
 ## It stalks you and picks from four attacks:
 ## - Cleave (close): the greatsword goes up overhead (tell), then comes down
@@ -11,7 +11,7 @@ extends Enemy
 ## - Lunge (middle): it sinks into a crouch, blade back (tell), then drives
 ##   across the floor point first. Parryable.
 ## - Pull (any range): it plants the blade and raises a glowing palm (tell);
-##   the meteor's wrong gravity drags you toward it for PULL_TIME, then bursts
+##   the Everbloom's wrong gravity drags you toward it for PULL_TIME, then bursts
 ##   out from it in a ring. Run or dash against the pull. Unparryable.
 ## - Rain (far): it lifts the blade to the vault (tell) and spikes of crystal
 ##   erupt from the floor in a line toward you, each marking its spot first.
@@ -22,8 +22,8 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "The Evil One"
-const EPITHET := "Avatar on the Throne"
+const DISPLAY_NAME := "The Everbloom"
+const EPITHET := "The Bud on the Throne"
 const MAX_HP := 360
 const PHASES := [0.5]
 const WALK_SPEED := 50.0
@@ -372,7 +372,7 @@ func _draw() -> void:
 	if not white:
 		draw_line(Vector2(-8, ty + 8), Vector2(0, ty + 14), Color(VEIN, 0.8), 1.0)
 		draw_line(Vector2(0, ty + 14), Vector2(7, ty + 10), Color(VEIN, 0.8), 1.0)
-		# The meteor's light at its heart.
+		# The stillglass's light at its heart.
 		var k := 0.6 + 0.4 * sin(state_time * 6.0)
 		draw_rect(Rect2(-2.0, ty + 9.0, 4.0, 4.0), Color(CRYSTAL, k))
 	# Pauldrons: crystal spikes over each shoulder.

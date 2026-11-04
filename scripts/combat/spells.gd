@@ -4,15 +4,15 @@ extends RefCounted
 ## Spells are unlocked through `Player.abilities` (the key matches the spell id).
 
 const DATA := {
-	"deluge": {"name": "Deluge", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
-	"thunder": {"name": "Thunder", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
-	"fire": {"name": "Fire", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
-	"tilte": {"name": "Tilte", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
-	"death": {"name": "Death", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
+	"deluge": {"name": "Torrent", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
+	"thunder": {"name": "Stormcall", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
+	"fire": {"name": "Kindle", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
+	"tilte": {"name": "Wisplight", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
+	"death": {"name": "Wither", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
 }
 ## The order the Next Spell button cycles through.
 const ORDER := ["deluge", "thunder", "fire", "tilte", "death"]
-## How far apart (radians) Tilte Swarm fans its three orbs.
+## How far apart (radians) Wisp Swarm fans its three orbs.
 const SWARM_SPREAD := 0.5
 
 
@@ -34,12 +34,12 @@ static func next_owned(current: String, abilities: Dictionary) -> String:
 	return current
 
 
-## Everything one cast throws: one projectile, or Tilte Swarm's three orbs.
+## Everything one cast throws: one projectile, or Wisp Swarm's three orbs.
 static func cast_all(id: String, caster: Player) -> Array[Node2D]:
 	var out: Array[Node2D] = []
 	if id == "tilte" and caster.tilte_swarm:
 		for i in 3:
-			var orb := cast(id, caster) as TilteOrb
+			var orb := cast(id, caster) as WispOrb
 			orb.damage = DATA[id]["swarm_damage"]
 			orb.heading = orb.heading.rotated((i - 1) * SWARM_SPREAD * caster.facing)
 			out.append(orb)
@@ -53,10 +53,10 @@ static func cast_all(id: String, caster: Player) -> Array[Node2D]:
 static func cast(id: String, caster: Player) -> Node2D:
 	match id:
 		"deluge":
-			var bolt := DelugeBolt.new()
+			var bolt := TorrentBolt.new()
 			bolt.damage = DATA[id]["damage"]
 			if caster.abilities.get("magical_rod", false):
-				# The original's Magical Rod (pass 201): Deluge half again as hard.
+				# The original's Briar Wand (pass 201): Torrent half again as hard.
 				bolt.damage = roundi(bolt.damage * caster.combat.rod_deluge_mult)
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			bolt.pierce = caster.spell_pierce
@@ -67,7 +67,7 @@ static func cast(id: String, caster: Player) -> Node2D:
 			ball.velocity = Vector2(caster.facing * DATA[id]["speed"], -DATA[id]["lift"])
 			return ball
 		"tilte":
-			var orb := TilteOrb.new()
+			var orb := WispOrb.new()
 			orb.damage = DATA[id]["damage"]
 			# It leaves the hand drifting up and forward.
 			orb.heading = Vector2(caster.facing, -0.6).normalized()

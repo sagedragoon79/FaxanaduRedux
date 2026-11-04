@@ -1,7 +1,7 @@
 class_name SeedBomber
 extends Enemy
-## A Seed Bomber of the Branches (design bible 7): a pod-bellied canopy bird the
-## World Tree grew to sow itself, with leaf wings and a husk of hard seeds for a
+## A Seed Bomber of the High Boughs (design bible 7): a pod-bellied canopy bird the
+## Ylden grew to sow itself, with leaf wings and a husk of hard seeds for a
 ## belly. It beats along high over the branch roads. Once it sees you it keeps
 ## about five tiles over your head, out of reach of a plain slash. Right above
 ## you it squeezes its husk, wings up, belly swelling and glowing, seeds

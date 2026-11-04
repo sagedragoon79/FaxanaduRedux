@@ -1,6 +1,6 @@
 class_name MarshHag
 extends Enemy
-## A Marsh Hag of the Mist (design bible 7): a bent old crone of the drowned
+## A Marsh Hag of the Haar (design bible 7): a bent old crone of the drowned
 ## villages in a shawl of reeds, moss for hair, leaning on a crooked willow staff
 ## with a marsh-wisp caught in its crook. The wisp is a light, so she shows
 ## through the fog from far off. She keeps her distance: come within about four

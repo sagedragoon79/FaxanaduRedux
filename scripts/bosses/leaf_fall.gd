@@ -1,6 +1,6 @@
 class_name LeafFall
 extends Node2D
-## The crown-leaf falling through the sky (design bible 8.5, Pakukame's third
+## The crown-leaf falling through the sky (design bible 8.5, Snapcrown's third
 ## phase): once the Bloom tears its root out, the leaf is cut loose. Wind rushes
 ## up past it, torn leaves and petals ride the wind up, and while it falls the
 ## player in the arena weighs a little less (WEIGHT), so jumps hang longer: room

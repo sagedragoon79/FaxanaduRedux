@@ -1,6 +1,6 @@
 class_name HydraHead
 extends BossSegment
-## One of Zorugeriru's heads: a hitbox the boss moves and a light in the fog.
+## One of the Haar Wyrm's heads: a hitbox the boss moves and a light in the fog.
 ## Only a solid head has a hitbox; a mist head is fog the blade passes through.
 ## The boss runs its moves (`mode`); the head only keeps the numbers.
 

@@ -1,10 +1,10 @@
-class_name Borabohra
+class_name Skyrend
 extends Enemy
-## Borabohra, the Storm Roc (design bible 8.6): a titanic thunderbird nesting
+## Skyrend, the Storm Roc (design bible 8.6): a titanic thunderbird nesting
 ## on the highest spire, its wings made of rain clouds. Code-drawn at 2x.
 ##
 ## In the air it is mostly cloud: blows land at a third. Three dead conduits
-## stand on the roost's islands; wake all three with Thunder and the lightning
+## stand on the roost's islands; wake all three with Stormcall and the lightning
 ## grounds the bird. It crashes onto the cloud-stone floor and lies stunned,
 ## and every blow lands in full. Then it shakes the charge off, the conduits
 ## go dead, and it climbs back into the storm.
@@ -26,7 +26,7 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Borabohra"
+const DISPLAY_NAME := "Skyrend"
 const EPITHET := "the Storm Roc"
 const MAX_HP := 320
 const INTRO_TIME := 1.6

@@ -1,8 +1,8 @@
 class_name MeteorGlob
 extends Node2D
-## A gobbet of molten meteor-rock lobbed by a Meteor Slug. It flies in an arc,
+## A gobbet of molten stillglass-rock lobbed by a Glass Slug. It flies in an arc,
 ## burns the player on contact (unparryable), and where it lands on a floor it
-## leaves a patch of embers for a moment. The Hour Glass holds it in the air.
+## leaves a patch of embers for a moment. The Stillstone holds it in the air.
 
 const GRAVITY := 700.0
 const RADIUS := 4.5
@@ -15,7 +15,7 @@ const OUTLINE := Color("120f19")
 
 var velocity := Vector2.ZERO
 var room: Room
-## What a Magic Shield's reflected shot glows with.
+## What a Warding Shield's reflected shot glows with.
 var tint := HOT
 var _t := 0.0
 
@@ -34,14 +34,14 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	velocity.y += GRAVITY * delta
 	var next := global_position + velocity * delta
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p != null and not p.dead and Rect2(next - Vector2(RADIUS, RADIUS), Vector2(RADIUS, RADIUS) * 2.0).intersects(p.body_rect()):
 		if p.receive_attack(DAMAGE, self, false) == "parried":
-			queue_free()  # caught by the Magic Shield
+			queue_free()  # caught by the Warding Shield
 			return
 		_burst(next, false)
 		return

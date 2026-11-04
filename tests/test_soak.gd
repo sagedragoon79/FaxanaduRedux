@@ -104,7 +104,7 @@ func _embedded(room: Room, p: Player) -> bool:
 
 
 const TOWER_FRAMES := 420
-## Long enough for the Hour Glass to be turned twice in each room.
+## Long enough for the Stillstone to be turned twice in each room.
 const GLASS_FRAMES := 660
 ## Frames timed in each room once it has loaded (the room-load sweep, pass 166).
 const SETTLE_FRAMES := 12
@@ -122,37 +122,37 @@ func test_random_input_soak_in_every_tower_room() -> void:
 	await _soak_zone("tower", "Tower")
 
 
-## The same soak over every Eolis and Trunk room, so the first two zones keep up
+## The same soak over every Hearthroot and Heartwood room, so the first two zones keep up
 ## with changes made for later ones.
 func test_random_input_soak_in_every_eolis_and_trunk_room() -> void:
-	await _soak_zone("eolis", "Eolis")
-	await _soak_zone("trunk", "Trunk")
+	await _soak_zone("eolis", "Hearthroot")
+	await _soak_zone("trunk", "Heartwood")
 
 
-## The Mist under its fog: the same soak, and the fog never runs out of lights.
+## The Haar under its fog: the same soak, and the fog never runs out of lights.
 func test_random_input_soak_in_every_mist_room() -> void:
-	await _soak_zone("mist", "Mist")
+	await _soak_zone("mist", "Haar")
 
 
-## The Branches: the canopy's rooms, bounce-pods and all.
+## The High Boughs: the canopy's rooms, bounce-pods and all.
 func test_random_input_soak_in_every_branches_room() -> void:
-	await _soak_zone("branches", "Branches")
+	await _soak_zone("branches", "High Boughs")
 
 
-## Daybreak: storm rain, sky islands and crystal-thorned cliffs.
+## Carillon: storm rain, sky islands and crystal-thorned cliffs.
 func test_random_input_soak_in_every_daybreak_room() -> void:
-	await _soak_zone("daybreak", "Daybreak")
+	await _soak_zone("daybreak", "Carillon")
 
 
-## Dartmoor, with the Hour Glass turned whenever it is ready: frozen water,
+## Vorrhallow, with the Stillstone turned whenever it is ready: frozen water,
 ## projectiles held in the air, and time running on again, room after room.
 func test_random_input_soak_in_every_dartmoor_room() -> void:
-	await _soak_zone("dartmoor", "Dartmoor", true)
+	await _soak_zone("dartmoor", "Vorrhallow", true)
 
 
-## Zenis: spores, flesh and the meteor's light, room after room.
+## the Evercrown: spores, flesh and the Everbloom's light, room after room.
 func test_random_input_soak_in_every_zenis_room() -> void:
-	await _soak_zone("zenis", "Zenis")
+	await _soak_zone("zenis", "The Evercrown")
 
 
 ## The Sunken Spring: swimming, eels and the water drawn over everything.
@@ -160,8 +160,8 @@ func test_random_input_soak_in_every_sunken_spring_room() -> void:
 	await _soak_zone("sunken", "Sunken Spring")
 
 
-## The Guru Trials' mantra-space (pass 113), off the map but built like any zone.
-## Each room is soaked as a live run with the Hour Glass turned whenever it is
+## The Inner Rings' inner rings (pass 113), off the map but built like any zone.
+## Each room is soaked as a live run with the Stillstone turned whenever it is
 ## ready (pass 166): hazards set you back instead of hurting, Stillness's water
 ## freezes and runs on, and a rung bell carries you back to the temple.
 func test_random_input_soak_in_every_trial_room() -> void:
@@ -169,7 +169,7 @@ func test_random_input_soak_in_every_trial_room() -> void:
 	check(not Trials.active(), "no trial run is left open after the soak")
 
 
-## Daybreak's storm: rain streaks on the wind over the lightning backdrop,
+## Carillon's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.
 func test_daybreak_rain_stays_cheap() -> void:
@@ -192,7 +192,7 @@ func test_daybreak_rain_stays_cheap() -> void:
 		total_usec += dt
 		worst = maxi(worst, dt)
 	var avg_ms := total_usec / 1000.0 / RAIN_FRAMES
-	print("  Daybreak rain: %.2f ms a frame on average, %.2f ms at worst" % [avg_ms, worst / 1000.0])
+	print("  Carillon rain: %.2f ms a frame on average, %.2f ms at worst" % [avg_ms, worst / 1000.0])
 	var inside := true
 	for m: Array in w.motes._motes:
 		var at: Vector2 = m[0]
@@ -202,12 +202,12 @@ func test_daybreak_rain_stays_cheap() -> void:
 	check(avg_ms < 8.0, "a storm frame averages well under budget (%.2f ms)" % avg_ms)
 	w._enter("branches/crown_leaf")
 	await frames(2)
-	check(w.motes.zone == "branches", "back in the Branches the rain stops")
+	check(w.motes.zone == "branches", "back in the High Boughs the rain stops")
 	w.queue_free()
 	await frames(2)
 
 
-## The fog's CPU side in every Mist room: the player walked across the room,
+## The fog's CPU side in every Haar room: the player walked across the room,
 ## the light list rebuilt each frame. It must stay cheap and never hit
 ## Fog.MAX_LIGHTS (the shader would drop lanterns).
 func test_fog_stays_cheap_in_every_mist_room() -> void:
@@ -246,7 +246,7 @@ func test_fog_stays_cheap_in_every_mist_room() -> void:
 	check(problems.is_empty(), "the fog is cheap and never short of lights: %s" % [problems])
 
 
-## Ripasheiku at full tilt for 30 seconds against a mashing player who can't
+## Gloamweaver at full tilt for 30 seconds against a mashing player who can't
 ## die: under the fog, with her lanterns as lights. Effects clean up after
 ## themselves and a frame stays well inside the 60 fps budget.
 func test_widow_fight_soak_stays_lean() -> void:
@@ -254,8 +254,8 @@ func test_widow_fight_soak_stays_lean() -> void:
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as Ripasheiku
-	check(boss != null, "Ripasheiku wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Gloamweaver
+	check(boss != null, "Gloamweaver wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -295,7 +295,7 @@ func test_widow_fight_soak_stays_lean() -> void:
 	await frames(2)
 
 
-## Zorugeriru through all three phases, 30 seconds against a mashing player who
+## the Haar Wyrm through all three phases, 30 seconds against a mashing player who
 ## can't die: breaths, bites, the fourth head and the flood clean up after
 ## themselves, and a frame stays well inside the 60 fps budget.
 func test_hydra_fight_soak_stays_lean() -> void:
@@ -303,8 +303,8 @@ func test_hydra_fight_soak_stays_lean() -> void:
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as Zorugeriru
-	check(boss != null, "Zorugeriru wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as HaarWyrm
+	check(boss != null, "the Haar Wyrm wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -322,12 +322,12 @@ func test_hydra_fight_soak_stays_lean() -> void:
 		_mash(w.player, rng, hold)
 		# Phase 2 a third of the way in (the tanks filled), phase 3 at two thirds.
 		if f == FIGHT_FRAMES / 3 and boss.phase == 1:
-			_push_to_mark(boss, Zorugeriru.PHASES[0])
+			_push_to_mark(boss, HaarWyrm.PHASES[0])
 			for c in w.room.get_children():
 				if c is DryBasin:
 					c.douse()
 		if f == FIGHT_FRAMES * 2 / 3 and boss.phase == 2:
-			_push_to_mark(boss, Zorugeriru.PHASES[1])
+			_push_to_mark(boss, HaarWyrm.PHASES[1])
 			check(boss.phase == 3, "the push at two thirds floods the arena (hp %d of %d)" % [boss.hp, boss.max_hp])
 		var t0 := Time.get_ticks_usec()
 		await frames(1)
@@ -378,7 +378,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 			w.player.abilities[k] = true
 		_learn_the_blade(w)
 		# The off hand (Sean, 2026-10-31) holds a shield or the Rune Dagger, so
-		# every other room is mashed with the Magic Shield on (guard, parry, the
+		# every other room is mashed with the Warding Shield on (guard, parry, the
 		# reflect and the ward) and the rest with the hand free to throw (pass 319).
 		var shielded := ids.find(id) % 2 == 1
 		if shielded:
@@ -440,13 +440,13 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 	check(throws >= ids.size() - shield_rooms, "the mashing player threw the Rune Dagger %d times across %d %s rooms with the hand free" % [throws, ids.size() - shield_rooms, label])
 	if shield_rooms > 0:
 		print("  %s soak: %d frames guarded across %d shielded rooms" % [label, guarded, shield_rooms])
-		check(guarded >= shield_rooms * 10, "and guarded %d frames across %d rooms with the Magic Shield on" % [guarded, shield_rooms])
+		check(guarded >= shield_rooms * 10, "and guarded %d frames across %d rooms with the Warding Shield on" % [guarded, shield_rooms])
 	if glass:
-		check(turns >= ids.size() * 2, "the Hour Glass was turned %d times along the way" % turns)
+		check(turns >= ids.size() * 2, "the Stillstone was turned %d times along the way" % turns)
 		TimeStop.reset()
 
 
-## The Guru Trial built in room `id`, or {} if none is.
+## The Ringreader Trial built in room `id`, or {} if none is.
 func _trial_for(id: String) -> Dictionary:
 	for t: Dictionary in Trials.LIST:
 		if String(t.get("room", "")) == id:
@@ -537,7 +537,7 @@ func _count_nodes(w: World) -> int:
 	return w.room.get_child_count() if w.room != null else 0
 
 
-## Mantra Path hops and lift rides, back and forth, with mashing in between:
+## Grain Road hops and lift rides, back and forth, with mashing in between:
 ## every arrival is in the right room, on open floor.
 func test_mantra_path_and_lift_travel_soak() -> void:
 	var w := make_world({}, "tower/forepaw")
@@ -597,8 +597,8 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	w.player.hp = 99999
 	w.player.abilities["stride"] = true
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as Pakukame
-	check(boss != null, "Pakukame wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Snapcrown
+	check(boss != null, "Snapcrown wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -628,7 +628,7 @@ func test_bloom_fight_soak_stays_lean() -> void:
 			# Into biting range now and then: the mashing alone may keep its
 			# distance for the whole fight, and then the bite is never soaked.
 			var side := -1.0 if w.player.global_position.x < boss.global_position.x else 1.0
-			w.player.teleport(Vector2(boss.global_position.x + side * Pakukame.BITE_RANGE * 0.5, w.player.global_position.y))
+			w.player.teleport(Vector2(boss.global_position.x + side * Snapcrown.BITE_RANGE * 0.5, w.player.global_position.y))
 		elif boss.phase >= 2 and boss.state in ["idle", "bite_tell"]:
 			# Phase 2: while the jaws choose and aim, the player stands far
 			# enough out on the leaf for them to tear it, over its wider
@@ -636,7 +636,7 @@ func test_bloom_fight_soak_stays_lean() -> void:
 			# tears, and the mashing walked back under the root, so the
 			# floor's tearing had gone unsoaked).
 			var side := 1.0 if boss.arena.end.x - boss.global_position.x > boss.global_position.x - boss.arena.position.x else -1.0
-			w.player.teleport(Vector2(boss.global_position.x + side * Pakukame.BITE_RANGE * 0.9, leaf_y))
+			w.player.teleport(Vector2(boss.global_position.x + side * Snapcrown.BITE_RANGE * 0.9, leaf_y))
 		# Phase 2 halfway through, so the leaf gets torn too.
 		if f == FIGHT_FRAMES / 2 and boss.phase == 1:
 			boss.phase = 2
@@ -656,9 +656,9 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("gape") and states.has("whip"), "bites and lashes were soaked")
-	check(boss.gaps.size() >= 1 and boss.gaps.size() <= Pakukame.MAX_GAPS, "the leaf was torn, never past %d gaps (%d; bites %s, arena %s)" % [Pakukame.MAX_GAPS, boss.gaps.size(), bites, boss.arena])
-	check(states.has("brood_tell") and most_brood >= 1 and most_brood <= Pakukame.BROOD, "the brood was loosed, never more than %d at once (%d)" % [Pakukame.BROOD, most_brood])
-	# Struck down with its brood in the air, the Bloom takes every Lilith with
+	check(boss.gaps.size() >= 1 and boss.gaps.size() <= Snapcrown.MAX_GAPS, "the leaf was torn, never past %d gaps (%d; bites %s, arena %s)" % [Snapcrown.MAX_GAPS, boss.gaps.size(), bites, boss.arena])
+	check(states.has("brood_tell") and most_brood >= 1 and most_brood <= Snapcrown.BROOD, "the brood was loosed, never more than %d at once (%d)" % [Snapcrown.BROOD, most_brood])
+	# Struck down with its brood in the air, the Bloom takes every Mothling with
 	# it: none is left flying, and none outlives the room's settling.
 	if boss.brood_alive() == 0:
 		boss.phase = 2
@@ -670,10 +670,10 @@ func test_bloom_fight_soak_stays_lean() -> void:
 	var left := 0
 	for i in 240:
 		await frames(1)
-		left = w.room.get_children().filter(func(n: Node) -> bool: return n is Lilith).size()
+		left = w.room.get_children().filter(func(n: Node) -> bool: return n is Mothling).size()
 		if left == 0:
 			break
-	check(boss.brood_alive() == 0 and left == 0, "no Lilith outlives the Bloom (%d left)" % left)
+	check(boss.brood_alive() == 0 and left == 0, "no Mothling outlives the Bloom (%d left)" % left)
 	w.queue_free()
 	await frames(2)
 
@@ -686,8 +686,8 @@ func test_roc_fight_soak_stays_lean() -> void:
 	w.player.hp = 99999
 	w.player.abilities["stride"] = true
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as Borabohra
-	check(boss != null, "Borabohra wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Skyrend
+	check(boss != null, "Skyrend wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -758,16 +758,16 @@ func test_waterfalls_stay_cheap() -> void:
 	await frames(2)
 
 
-## King Grieve's fight at full tilt: a mashing player who can't die, 30 seconds,
-## the second half on his throne with the Hour Glass turned whenever it is ready.
+## Thane Vorrund's fight at full tilt: a mashing player who can't die, 30 seconds,
+## the second half on his throne with the Stillstone turned whenever it is ready.
 func test_king_grieve_fight_soak_stays_lean() -> void:
 	var w := make_world({}, "dartmoor/throne_hall", cell_feet(10, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.abilities["hourglass"] = true
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as KingGrieve
-	check(boss != null, "King Grieve wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as ThaneVorrund
+	check(boss != null, "Thane Vorrund wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -819,7 +819,7 @@ func test_king_grieve_fight_soak_stays_lean() -> void:
 	check(states.has("chop_tell") and states.has("ward") and states.has("summon_tell"), "duels and the throne were soaked")
 	check(shards > 0, "and shard waves (%d)" % shards)
 	check(guards.size() >= 1 and guards.size() == boss.guards_called, "and his household guard came (%d called, %d seen)" % [boss.guards_called, guards.size()])
-	check(most_guards <= 1 and boss.guards_called <= KingGrieve.GUARDS, "one knight at a time, %d at most (%d at once, %d called)" % [KingGrieve.GUARDS, most_guards, boss.guards_called])
+	check(most_guards <= 1 and boss.guards_called <= ThaneVorrund.GUARDS, "one knight at a time, %d at most (%d at once, %d called)" % [ThaneVorrund.GUARDS, most_guards, boss.guards_called])
 	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")
 	# Felled mid-soak, with whatever guard stands (his ward and armour turn a
 	# test's blow, so the fall is called straight): none outlives him, and the
@@ -854,8 +854,8 @@ func test_shadow_eura_fight_soak_stays_lean() -> void:
 	w.player.hp = 99999
 	w.player.has_shield = true
 	await frames(30)
-	var boss := runner.get_tree().get_first_node_in_group("boss") as ShadowEura
-	check(boss != null, "Shadow Eura wakes")
+	var boss := runner.get_tree().get_first_node_in_group("boss") as Likeness
+	check(boss != null, "the Likeness wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -911,7 +911,7 @@ func test_evil_avatar_fight_soak_stays_lean() -> void:
 	w.player.has_shield = true
 	await frames(30)
 	var boss := runner.get_tree().get_first_node_in_group("boss") as EvilAvatar
-	check(boss != null, "the Evil One's avatar wakes")
+	check(boss != null, "the Everbloom's avatar wakes")
 	if boss == null:
 		return
 	boss.max_hp = 99999
@@ -1108,7 +1108,7 @@ func test_every_other_guardian_fight_soak_stays_lean() -> void:
 		for c in w.room.get_children():
 			if c is Spikes:
 				spikes += 1
-			# (Rokusutahn's torn floor and its spikes are meant to stay.)
+			# (Gnarlmaw's torn floor and its spikes are meant to stay.)
 			if not (c is Dust or c is Coin or c is Spikes):
 				settled += 1
 				var k := String(c.get_script().get_global_name()) if c.get_script() else c.get_class()
@@ -1149,9 +1149,9 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 	w.player.hp = 99999
 	for a: String in w.player.abilities:
 		w.player.abilities[a] = true
-	# The gate of Zenis stands open for whoever reaches the far side of it.
-	GameState.data.rings = ZenisGate.RINGS.duplicate()
-	GameState.set_flag(ZenisGate.FLAG)
+	# The gate of the Evercrown stands open for whoever reaches the far side of it.
+	GameState.data.rings = CrownGate.RINGS.duplicate()
+	GameState.set_flag(CrownGate.FLAG)
 	await frames(5)
 	var start_count := runner.get_tree().get_node_count()
 	var problems: Array[String] = []
@@ -1204,9 +1204,9 @@ func test_every_door_up_or_down_lands_you_on_footing() -> void:
 	w.player.hp = 99999
 	for a: String in w.player.abilities:
 		w.player.abilities[a] = false
-	GameState.data.rings = ZenisGate.RINGS.duplicate()
-	GameState.set_flag(ZenisGate.FLAG)
-	# The flue damper (Zoradohna) and the bound fog over the Veiled Rise (the
+	GameState.data.rings = CrownGate.RINGS.duplicate()
+	GameState.set_flag(CrownGate.FLAG)
+	# The flue damper (Durgan) and the bound fog over the Veiled Rise (the
 	# Lantern Key) stand open before you can reach the rooms above them.
 	GameState.set_flag(FlueDamper.FLAG)
 	GameState.set_flag("curtain:mist/lantern_landing")
@@ -1379,7 +1379,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	var slot_was := GameState.slot
 	GameState.slot = JOURNEY_SLOT
 	var errors := ErrorCatcher.start()
-	# Each lap walks out of Eolis and, separately, out of the dead meteor.
+	# Each lap walks out of Hearthroot and, separately, out of the dead stillglass.
 	var first: Dictionary = _merge(await _journey(1987, true, POSTGAME_DOORS), await _journey(1987, true, POSTGAME_DOORS / 2, "zenis/threshold"))
 	var obj0 := Performance.get_monitor(Performance.OBJECT_COUNT)
 	var orphans0 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
@@ -1399,7 +1399,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	var caught := errors.stop()
 	GameState.delete_save(JOURNEY_SLOT)
 	for r: Dictionary in [first, second]:
-		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still meteor %d, festival %d, host paused %d" % [
+		print("  After the end: %d rooms, %d reloads, worst frame %.1f ms (%s), bloom in %d room stays, still stillglass %d, festival %d, host paused %d" % [
 			r.rooms, r.reloads, r.worst / 1000.0, r.where, r.bloomed, r.still, r.festival, r.paused])
 	print("  Retraced lap: objects %d -> %d, orphans %d -> %d, nodes %d -> %d" % [obj0, obj1, orphans0, orphans1, nodes0, nodes1])
 	check(caught.is_empty(), "no engine or script errors on the way: %s" % [caught.slice(0, 3)])
@@ -1407,7 +1407,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 		check(r.problems.is_empty(), "every rest continues where it was taken, still cleared: %s" % [r.problems])
 		check(r.rooms >= 20, "the walk saw much of the world (%d rooms)" % r.rooms)
 		check(r.bloomed > 0, "blossom drifted through the living Tree (%d room stays)" % r.bloomed)
-		check(r.still > 0 and r.festival > 0, "Zenis played still and Eolis its festival (%d, %d room stays)" % [r.still, r.festival])
+		check(r.still > 0 and r.festival > 0, "the Evercrown played still and Hearthroot its festival (%d, %d room stays)" % [r.still, r.festival])
 		_check_frames(r)
 	check(orphans1 <= orphans0, "no orphan nodes left behind (%d -> %d)" % [orphans0, orphans1])
 	check(obj1 - obj0 < 50, "a retraced lap leaves no live objects behind (%d -> %d)" % [obj0, obj1])
@@ -1443,8 +1443,8 @@ func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
 
 func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eolis/west_gate") -> Dictionary:
 	var w := make_world({}, start)
-	GameState.data.rings = ZenisGate.RINGS.duplicate()
-	GameState.set_flag(ZenisGate.FLAG)
+	GameState.data.rings = CrownGate.RINGS.duplicate()
+	GameState.set_flag(CrownGate.FLAG)
 	if postgame:
 		_clear_the_game(w)
 		# Enter the first room again as the cleared save would, bloom and all.
@@ -1590,7 +1590,7 @@ func test_the_journey_frame_budget_forgives_one_lone_frame() -> void:
 	check(int(m.second) >= FRAME_BUDGET and int(m.worst) < LONE_FRAME_LIMIT, "so the budget fails two where it forgives one")
 
 
-## Counts what the room shows of the post-game: blossom, the still meteor, the festival.
+## Counts what the room shows of the post-game: blossom, the still stillglass, the festival.
 func _tally_bloom(w: World, r: Dictionary) -> void:
 	if not w.blossom.get("_motes").is_empty():
 		r.bloomed += 1
@@ -1915,7 +1915,7 @@ func test_every_room_loads_and_settles_inside_the_budget() -> void:
 
 
 ## Pass 287: no foe's spoils ever leave its room. Passes 283 and 285 kept a
-## drop and a coin in the room (`Drop.keep_in_room`), tested in the two Naga
+## drop and a coin in the room (`Drop.keep_in_room`), tested in the two Silt Adder
 ## rooms. Here every foe in every room dies at once, each leaving a loaf and
 ## three coins, and every one of them must come to rest on a floor inside the
 ## room, within its life, while the room keeps its frame budget. The hero is
@@ -1983,10 +1983,10 @@ func test_every_foes_spoils_rest_in_its_room() -> void:
 
 
 ## Pass 220: every guardian's win says what it gave. A boss with a line of its
-## own (Shadow Eura, the Evil One's avatar and veins) shows that line, which until
+## own (the Likeness, the Everbloom's avatar and veins) shows that line, which until
 ## pass 220 was written but never shown, and a skill point it gives is always
 ## told: in the banner, or in a toast when the banner tells the story. Every
-## line fits the screen, the Evil One's last one too.
+## line fits the screen, the Everbloom's last one too.
 func test_every_guardians_win_says_what_it_gave() -> void:
 	for boss_id: String in BossArena.BOSSES:
 		var reward: Dictionary = BossArena.BOSSES[boss_id]

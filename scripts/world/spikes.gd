@@ -1,6 +1,6 @@
 class_name Spikes
 extends Area2D
-## A tile of floor spikes. Hurts on touch, and can be pogoed with the Mattock.
+## A tile of floor spikes. Hurts on touch, and can be pogoed with the Delver's Pick.
 
 const COLOR := Color("b9b4c4")
 const SHADE := Color("6f6982")

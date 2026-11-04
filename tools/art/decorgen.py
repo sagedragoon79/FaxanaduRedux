@@ -10,7 +10,7 @@ Each zone gets an atlas of cells, one cell per 16x32 world pixels, drawn at the
   row 3  the same, mirrored, for a wall to the right
 and a JSON file: the cell size in world pixels, the density, how many variants
 each row has, and the glow points (world pixels within the cell) of the pieces
-that give off light (the Trunk's cyan fungus, Eolis's sconces).
+that give off light (the Heartwood's cyan fungus, Hearthroot's sconces).
 
 Pieces are painted in atlas pixels: strokes are one atlas pixel wide, half a
 world pixel, which is where the extra detail comes from.
@@ -102,7 +102,7 @@ def blade(c, x, h, lean, dark, light, tip):
     c.px(pts[-1][0], pts[-1][1], tip)
 
 
-# --- Trunk Hollows -------------------------------------------------------------
+# --- Heartwood -------------------------------------------------------------
 
 def trunk_tuft(rng):
     c = Cell()
@@ -246,7 +246,7 @@ def trunk_shelf(rng, glow):
     return c
 
 
-# --- Eolis ---------------------------------------------------------------------
+# --- Hearthroot ---------------------------------------------------------------------
 
 def eolis_weeds(rng):
     c = Cell()
@@ -374,7 +374,7 @@ def eolis_sconce(rng):
     return c
 
 
-# --- Tower of Trunk ------------------------------------------------------------
+# --- Hollin Tower ------------------------------------------------------------
 
 def tower_rubble(rng):
     c = Cell()
@@ -484,7 +484,7 @@ def tower_gear_plate(rng):
     return c
 
 
-# --- The Mist ------------------------------------------------------------------
+# --- The Haar ------------------------------------------------------------------
 
 def mist_reeds(rng):
     """Marsh reeds, grey-green, a few with seed heads like bone beads."""
@@ -825,7 +825,7 @@ def daybreak_wall_ledge(rng):
 
 
 def dartmoor_shards(rng):
-    """Meteor crystal shards pushing up through the floor, lit from within."""
+    """Stillglass crystal shards pushing up through the floor, lit from within."""
     c = Cell()
     base = rng.randint(8, 22)
     for _ in range(rng.randint(2, 4)):
@@ -935,7 +935,7 @@ def dartmoor_wall_brazier(rng):
 
 
 def zenis_polyps(rng):
-    """Polyps of meteor flesh budding from the floor, each tipped with a cyan eye."""
+    """Polyps of stillglass flesh budding from the floor, each tipped with a cyan eye."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
         x = rng.randint(4, 27)
@@ -1024,7 +1024,7 @@ def zenis_wall_eye(rng):
 
 
 def zenis_wall_growth(rng):
-    """A shelf of meteor flesh grown out of the wall."""
+    """A shelf of stillglass flesh grown out of the wall."""
     c = Cell()
     y = rng.randint(24, 42)
     for k in range(4):
@@ -1141,7 +1141,7 @@ ZONES = {
         "ceiling": [zenis_tendrils, zenis_eyes, zenis_tendrils, zenis_tendrils],
         "wall": [zenis_wall_eye, zenis_wall_growth],
     },
-    # The mantra-space keeps only stone: rubble, a hanging chain, a cold sconce.
+    # The inner rings keeps only stone: rubble, a hanging chain, a cold sconce.
     "trials": {
         "floor": [eolis_stones, dartmoor_rubble, eolis_stones, dartmoor_rubble, eolis_stones, eolis_stones],
         "ceiling": [eolis_chain, eolis_chain, sunken_straws, eolis_chain],

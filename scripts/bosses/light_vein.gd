@@ -1,6 +1,6 @@
 class_name LightVein
 extends Area2D
-## One of the veins of light the meteor's core feeds through (the Evil One,
+## One of the veins of light the Everbloom's core feeds through (the Everbloom,
 ## phase 2: The Veins, design bible 8.9; legend `x`). A knot of cyan crystal
 ## grown into the shaft, pulsing up toward the core. One blow cuts it and its
 ## light goes out; cut them all and the core starves. A pogo bounces off it.

@@ -3,7 +3,7 @@ zone: tower
 map: 22, -4
 ambience: mine
 chest_gold: 220
-sign: 3, 19, FOREPAW DEEP WORKINGS.|The miners say the rails above still run, all the way to where the fog comes in.
+sign: 3, 19, KETTLEFORGE DEEP WORKINGS.|The miners say the rails above still run, all the way to where the fog comes in.
 door: 1, tower/forepaw, 2
 door: 2, tower/mine_shaft, 2
 door: 3, tower/sorting_floor, 1

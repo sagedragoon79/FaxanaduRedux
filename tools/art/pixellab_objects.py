@@ -25,7 +25,7 @@ OUT = ROOT / "assets" / "sprites"
 
 # name: (source dir, [(anim, state dir, fps)]). A state without frames is a still.
 OBJECTS = {
-    # The Fountain of Eolis, one state per restored spring (scripts/world/fountain.gd).
+    # The Fountain of Hearthroot, one state per restored spring (scripts/world/fountain.gd).
     "fountain": ("art/pixellab/eolis/fountain", [
         ("dry", "dry", 1),
         ("third", "third", 8),

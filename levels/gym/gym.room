@@ -6,7 +6,7 @@ label: 3, 33, MOVEMENT GYM - run, jump, measure
 label: 10, 30, 2  3  4  5 tiles
 label: 27, 35, Slash / up-slash
 label: 40, 34, Pogo the spikes (attack+down in air)
-label: 62, 35, Mattock: break cracked stone
+label: 62, 35, Delver's Pick: break cracked stone
 label: 76, 21, Wall jump shaft
 label: 89, 9, Double jump (6 tiles)
 label: 99, 12, Gap: 10 tiles
@@ -17,7 +17,7 @@ label: 158, 13, Drop down to loop
 label: 90, 38, One-way stairs (down+jump drops)
 label: 134, 31, Slopes: run or stride up and down
 label: 157, 26, Ladder: Up/Down climb, Jump leaves
-label: 112, 36, Combat: combo X X X, parry V, Deluge F, potion Q
+label: 112, 36, Combat: combo X X X, parry V, Torrent F, potion Q
 ---
 ##########################################################################################################################################################################
 ##########################################################################################################################################################################

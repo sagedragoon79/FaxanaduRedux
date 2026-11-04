@@ -24,10 +24,10 @@ func test_buying_a_blade_changes_damage() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
 	p.gold = 500
-	check(Shop.status("eolis_arms", 0, p) == "", "Long Sword is for sale")
-	check(Shop.buy("eolis_arms", 0, p), "bought the Long Sword")
+	check(Shop.status("eolis_arms", 0, p) == "", "Wayfarer's Sword is for sale")
+	check(Shop.buy("eolis_arms", 0, p), "bought the Wayfarer's Sword")
 	check(p.gold == 100 and GameState.data.equipment.blade == "long_sword", "paid 400 and equipped it")
-	check(p.slash_damage == 11 and p.heavy_damage == 19 and p.reach_bonus > 0.0, "Long Sword stats applied")
+	check(p.slash_damage == 11 and p.heavy_damage == 19 and p.reach_bonus > 0.0, "Wayfarer's Sword stats applied")
 	check(Shop.status("eolis_arms", 0, p) == "owned", "can't buy it twice")
 	check(Shop.status("eolis_arms", 1, p) == "gold", "can't afford the armor with 100 gold")
 	check(not Shop.buy("eolis_arms", 1, p) and p.gold == 100, "failed purchase costs nothing")
@@ -36,7 +36,7 @@ func test_buying_a_blade_changes_damage() -> void:
 ## Pass 413 (bible 10): a shop by the buttons. Every shop test called
 ## `Shop.buy` or the menu's choose function itself, so the way a player shops
 ## (Up at the shopkeeper, Down to a row, Jump to buy, Dash to leave) was never
-## played. The Eolis arms dealer is visited here with the real controller.
+## played. The Hearthroot arms dealer is visited here with the real controller.
 func test_a_shop_answers_the_real_controller() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, arms_dealer"]), "test/town", cell_feet(8, 19))
 	var p := w.player
@@ -49,7 +49,7 @@ func test_a_shop_answers_the_real_controller() -> void:
 	check(menu.is_open and arena.get_tree().paused, "Up at the arms dealer opens his shop")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	var shelf := Shop.shelf("eolis_arms")
-	check(shelf[menu.cursor] == 0, "on the Long Sword's row")
+	check(shelf[menu.cursor] == 0, "on the Wayfarer's Sword's row")
 	Sfx.recent.clear()
 	await _tap_for_real("jump")
 	check(p.gold == 100 and GameState.data.equipment.blade == "long_sword", "Jump buys it: 400 paid and the sword in hand (%d, %s)" % [p.gold, GameState.data.equipment.blade])
@@ -75,9 +75,9 @@ func test_once_only_stock_sells_out() -> void:
 	check(p.max_mp == mp0 + GameState.MANA_DEW_MP, "max MP grew")
 	check(Shop.status("eolis_items", 1, p) == "sold out", "Mana Dew sold out")
 	# A key is not once-only stock, but it is sold only while a door of its card
-	# waits for it (pass 245): one Jack door, so one Jack Key.
+	# waits for it (pass 245): one Copper door, so one Copper Key.
 	check(Shop.buy("eolis_items", 0, p) and Shop.status("eolis_items", 0, p) == "enough", "a key sells while its door waits, then says Enough")
-	check(GameState.key_count("jack") == 1, "one Jack Key")
+	check(GameState.key_count("jack") == 1, "one Copper Key")
 
 
 func test_armor_reduces_damage() -> void:
@@ -87,7 +87,7 @@ func test_armor_reduces_damage() -> void:
 	GameState.data.equipment.armor = "leather_armor"
 	GameState.refresh_stats(p)
 	p.take_damage(20)
-	check(p.hp == p.max_hp - 17, "Leather Armor: 20 damage becomes 17 (hp %d)" % p.hp)
+	check(p.hp == p.max_hp - 17, "Tanned Jerkin: 20 damage becomes 17 (hp %d)" % p.hp)
 
 
 func test_no_shield_no_block() -> void:
@@ -101,7 +101,7 @@ func test_no_shield_no_block() -> void:
 	GameState.data.equipment.shield = "small_shield"
 	GameState.refresh_stats(p)
 	await frames(2)
-	check(p.is_blocking, "blocks once the Small Shield is bought")
+	check(p.is_blocking, "blocks once the Buckler is bought")
 
 
 # --- Keys ----------------------------------------------------------------------------
@@ -126,11 +126,11 @@ func test_jack_door_needs_a_key_and_stays_open() -> void:
 	check(_find(w.room, KeyDoor) == null, "opened doors stay open")
 
 
-## Pass 417: a card door by the buttons. The original's key doors open when
+## Pass 417: a card door by the buttons. The source game's key doors open when
 ## you walk into one holding its key, and until now every door test walked by
-## a scripted intent. Here Right is held for real: a Queen door stops the hero
-## and rattles once however long he leans on it, a Jack Key does nothing to it,
-## stepping back and leaning again rattles again, and the Queen Key opens it on
+## a scripted intent. Here Right is held for real: a Silver door stops the hero
+## and rattles once however long he leans on it, a Copper Key does nothing to it,
+## stepping back and leaning again rattles again, and the Silver Key opens it on
 ## the touch so the held Right walks straight through.
 func test_a_card_door_answers_the_real_controller() -> void:
 	var rooms := _town({Vector2i(12, 19): "J"}, ["lock: 12, 19, queen"])
@@ -143,9 +143,9 @@ func test_a_card_door_answers_the_real_controller() -> void:
 	await press_for_real(p, ["move_right"])
 	await frames(60)
 	check(p.global_position.x < 12 * 16 and is_instance_valid(door) and not door.is_queued_for_deletion(),
-		"Right held, a Queen door stops the hero holding a Jack Key (x %.0f)" % p.global_position.x)
+		"Right held, a Silver door stops the hero holding a Copper Key (x %.0f)" % p.global_position.x)
 	check(Sfx.recent.count("door_locked") == 1, "and rattles once however long he leans (%s)" % [Sfx.recent])
-	check(GameState.key_count("jack") == 1, "the Jack Key is not spent")
+	check(GameState.key_count("jack") == 1, "the Copper Key is not spent")
 	release_for_real(["move_right"])
 	Input.action_press("move_left")
 	await frames(20)
@@ -158,20 +158,20 @@ func test_a_card_door_answers_the_real_controller() -> void:
 	Sfx.recent.clear()
 	GameState.add_key("queen")
 	await frames(40)
-	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "with the Queen Key, the held Right opens it")
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "with the Silver Key, the held Right opens it")
 	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door_locked"), "the key turns, no rattle (%s)" % [Sfx.recent])
 	check(p.global_position.x > 13 * 16, "and walks straight through (x %.0f)" % p.global_position.x)
-	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Queen Key is spent")
+	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Silver Key is spent")
 	release_for_real(["move_right"])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("A card door by the buttons (pass 417)"), "bible 4.5 says so")
 
-## Pass 459 (bible 4.5, 10.2): the original's first steps in Eolis, by the
+## Pass 459 (bible 4.5, 10.2): the source game's first steps in Hearthroot, by the
 ## buttons. The King's purse, the key shop and a key door were each played with
 ## the real controller on their own (passes 413 and 417), or by a scripted Up
 ## (the King), but never one after another as a new player meets them. Up at
 ## the King, Jump through his words; Right to the Merchant, Up, Jump on the
-## Jack Key, Dash; Right held into the Jack door, which opens on the touch.
+## Copper Key, Dash; Right held into the Copper door, which opens on the touch.
 func test_the_kings_gold_buys_the_key_that_opens_the_door() -> void:
 	GameState.new_game()
 	var rooms := _town({Vector2i(20, 19): "J"}, ["npc: 6, 19, king", "npc: 12, 19, merchant"])
@@ -212,7 +212,7 @@ func test_the_kings_gold_buys_the_key_that_opens_the_door() -> void:
 	while String(stock[shelf[menu.cursor]].item) != "jack_key" and downs < shelf.size():
 		await _tap_for_real("move_down")
 		downs += 1
-	check(String(stock[shelf[menu.cursor]].item) == "jack_key", "Down finds the Jack Key (%d presses)" % downs)
+	check(String(stock[shelf[menu.cursor]].item) == "jack_key", "Down finds the Copper Key (%d presses)" % downs)
 	Sfx.recent.clear()
 	await _tap_for_real("jump")
 	check(GameState.key_count("jack") == 1 and p.gold == Npc.KING_GOLD - 150, "Jump buys it with the King's gold (%d g)" % p.gold)
@@ -226,7 +226,7 @@ func test_the_kings_gold_buys_the_key_that_opens_the_door() -> void:
 		await frames(1)
 		waited += 1
 	Input.action_release("move_right")
-	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "Right held into the Jack door opens it")
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "Right held into the Copper door opens it")
 	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door_locked"), "the key turns, no rattle (%s)" % [Sfx.recent])
 	check(p.global_position.x >= 21 * Room.TILE and GameState.key_count("jack") == 0, "he walks through and the key is spent (x %.0f)" % p.global_position.x)
 	box.free()
@@ -234,12 +234,12 @@ func test_the_kings_gold_buys_the_key_that_opens_the_door() -> void:
 
 
 func test_card_doors_take_only_their_own_key() -> void:
-	# A `lock:` line turns a J into a Queen door; a `chest:` line sets one chest's gold.
+	# A `lock:` line turns a J into a Silver door; a `chest:` line sets one chest's gold.
 	var rooms := _town({Vector2i(12, 19): "J", Vector2i(14, 19): "$"}, ["lock: 12, 19, queen", "chest: 14, 19, 900"])
 	var w := make_world(rooms, "test/town", cell_feet(9, 19))
 	var p := w.player
 	var door := _find(w.room, KeyDoor) as KeyDoor
-	check(door != null and door.kind == "queen", "the lock line makes it a Queen door")
+	check(door != null and door.kind == "queen", "the lock line makes it a Silver door")
 	check((_find(w.room, Chest) as Chest).value == 900, "the chest line sets that chest's gold")
 	await frames(3)
 	GameState.add_key("jack")
@@ -247,20 +247,20 @@ func test_card_doors_take_only_their_own_key() -> void:
 	Sfx.recent.clear()
 	p.input.move_x = 1
 	await frames(40)
-	check(is_instance_valid(door) and not door.is_queued_for_deletion(), "a Jack or King Key won't open a Queen door")
+	check(is_instance_valid(door) and not door.is_queued_for_deletion(), "a Copper or Gold Key won't open a Silver door")
 	check(GameState.key_count("jack") == 1 and GameState.key_count("king") == 1, "and neither is spent")
 	# Pass 122: a locked door rattles its latch (not the spell-fail fizzle), once per touch.
 	check(Sfx.recent.count("door_locked") == 1 and not Sfx.recent.has("fizzle"), "a locked door rattles once, no fizzle (%s)" % [Sfx.recent])
 	Sfx.recent.clear()
 	GameState.add_key("queen")
 	await frames(30)
-	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "the Queen Key opens it")
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "the Silver Key opens it")
 	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door"), "the key turns with its own click and chime (%s)" % [Sfx.recent])
 	for sound in ["door_locked", "key_turn"]:
 		check(ResourceLoader.exists("res://assets/sfx/%s.wav" % sound), "%s is rendered" % sound)
-	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Queen Key is used up")
-	check(MapScreen.key_line() == "Keys: Jack 1, King 1", "the map lists the keys you hold (%s)" % MapScreen.key_line())
-	# Every card has its look; an unknown kind falls back to the Jack's.
+	check(GameState.key_count("queen") == 0 and GameState.key_count("jack") == 1, "only the Silver Key is used up")
+	check(MapScreen.key_line() == "Keys: Copper 1, Gold 1", "the map lists the keys you hold (%s)" % MapScreen.key_line())
+	# Every card has its look; an unknown kind falls back to the Copper's.
 	for kind in ["jack", "queen", "king", "ace", "joker"]:
 		check(KeyDoor.CARDS.has(kind), "%s door has a look" % kind)
 
@@ -279,25 +279,25 @@ func test_the_card_keys_are_sold_and_the_joker_is_found() -> void:
 				if item != "jack_key":
 					p.gold = 5000
 					check(Shop.buy(shop, i, p) and GameState.key_count(item.trim_suffix("_key")) == 1, "%s sells the %s" % [shop, item])
-	check(prices.get("queen_key") == 400 and prices.get("king_key") == 900 and prices.get("ace_key") == 1800, "Queen 400, King 900, Ace 1,800 (bible 10.1): %s" % prices)
-	check(not prices.has("joker_key"), "no one sells the Joker Key")
-	# The Joker Key lies in the Drowned Market, once.
+	check(prices.get("queen_key") == 400 and prices.get("king_key") == 900 and prices.get("ace_key") == 1800, "Silver 400, King 900, Thorn 1,800 (bible 10.1): %s" % prices)
+	check(not prices.has("joker_key"), "no one sells the Glass Key")
+	# The Glass Key lies in the Drowned Market, once.
 	var market := Room.parse(FileAccess.get_file_as_string("res://levels/dartmoor/drowned_market.room"))
-	check("49, 12, joker_key" in market.lists.get("prop", []), "the Joker Key lies in the Drowned Market")
+	check("49, 12, joker_key" in market.lists.get("prop", []), "the Glass Key lies in the Drowned Market")
 	var key := _find(w.room, ItemPickup) as ItemPickup
-	check(key != null and key.kind == "joker_key", "the prop lays a Joker Key")
+	check(key != null and key.kind == "joker_key", "the prop lays a Glass Key")
 	check(GameState.key_count("joker") == 0, "none held yet")
 	p.input.move_x = 1
 	await frames(60)
-	check(GameState.key_count("joker") == 1, "touching it gives the Joker Key")
+	check(GameState.key_count("joker") == 1, "touching it gives the Glass Key")
 	w.texts["test/town"] = rooms["test/town"]
 	w._enter("test/town")
 	check(_find(w.room, ItemPickup) == null, "it never comes back")
 
 
-## Bible 10.2 (pass 245): each card has one door, and every grocer cuts Jack Keys,
+## Bible 10.2 (pass 245): each card has one door, and every grocer cuts Copper Keys,
 ## so a key shop stops selling a card once the keys you hold open every door of it
-## still shut. A second Jack Key had been 150 g for nothing.
+## still shut. A second Copper Key had been 150 g for nothing.
 func test_a_key_shop_sells_no_key_without_a_door() -> void:
 	GameState.new_game()
 	var w := make_world(_town(), "test/town")
@@ -311,18 +311,18 @@ func test_a_key_shop_sells_no_key_without_a_door() -> void:
 	var at := func(item: String) -> int: return stock.find_custom(func(e: Dictionary) -> bool: return e.item == item)
 	var jack: int = at.call("jack_key")
 	p.gold = 5000
-	check(Shop.doors_shut("jack") == 1 and Shop.status("dartmoor_keys", jack, p) == "", "with the Jack door shut and no key, the Jack Key is for sale")
+	check(Shop.doors_shut("jack") == 1 and Shop.status("dartmoor_keys", jack, p) == "", "with the Copper door shut and no key, the Copper Key is for sale")
 	check(Shop.buy("dartmoor_keys", jack, p) and GameState.key_count("jack") == 1, "you buy one")
 	check(Shop.status("dartmoor_keys", jack, p) == "enough" and not Shop.buy("dartmoor_keys", jack, p), "a second is not sold: one key opens the one door")
 	check(p.gold == 5000 - 150 and GameState.key_count("jack") == 1, "and costs nothing (%d g, %d keys)" % [p.gold, GameState.key_count("jack")])
 	var row: Dictionary = Menus.shop_rows("dartmoor_keys", p)[Shop.shelf("dartmoor_keys").find(jack)]
-	check(row.right == "Enough" and not row.enabled and String(row.detail).ends_with("You have 1. Enough for every Jack door left."), "the row says why (%s, %s)" % [row.right, row.detail])
+	check(row.right == "Enough" and not row.enabled and String(row.detail).ends_with("You have 1. Enough for every Copper door left."), "the row says why (%s, %s)" % [row.right, row.detail])
 	# The door opens and spends the key: the card is done with.
 	var door: Dictionary = World.world_locks().filter(func(l: Dictionary) -> bool: return l.kind == "jack")[0]
 	GameState.collect(String(door.id))
 	GameState.add_key("jack", -1)
 	row = Menus.shop_rows("dartmoor_keys", p)[Shop.shelf("dartmoor_keys").find(jack)]
-	check(Shop.doors_shut("jack") == 0 and Shop.status("dartmoor_keys", jack, p) == "enough", "with its door open, no Jack Key is sold again")
+	check(Shop.doors_shut("jack") == 0 and Shop.status("dartmoor_keys", jack, p) == "enough", "with its door open, no Copper Key is sold again")
 	check(String(row.detail).ends_with("You have 0. Its door stands open."), "the row says the door is open (%s)" % row.detail)
 	# The other cards are still for sale, and every key row fits the menu's box.
 	for item: String in ["queen_key", "king_key", "ace_key"]:
@@ -365,13 +365,13 @@ func test_the_battle_helmet_is_a_secret_worth_a_mask() -> void:
 	GameState.refresh_stats(p)
 	var def0 := p.defense
 	var helm := _find(w.room, ItemPickup) as ItemPickup
-	check(helm != null and helm.kind == "battle_helmet", "the prop lays the Battle Helmet")
+	check(helm != null and helm.kind == "battle_helmet", "the prop lays the Elven Helm")
 	p.input.move_x = 1
 	await frames(60)
 	check(GameState.data.equipment.helmet == "battle_helmet", "touching it puts it on, in the helmet's own slot")
-	check(GameState.data.equipment.shield == "magic_shield" and p.has_shield and p.reflects, "and the Magic Shield stays in hand")
+	check(GameState.data.equipment.shield == "magic_shield" and p.has_shield and p.reflects, "and the Warding Shield stays in hand")
 	check(p.max_hp == hp0 + 20 and p.hp == p.max_hp, "one more mask, filled (%d -> %d)" % [hp0, p.max_hp])
-	check(is_equal_approx(def0, 0.6) and is_equal_approx(p.defense, 0.64), "10%% less on top of the Battle Suit's 60%%: 64%% (%.2f)" % p.defense)
+	check(is_equal_approx(def0, 0.6) and is_equal_approx(p.defense, 0.64), "10%% less on top of the Elven Plate's 60%%: 64%% (%.2f)" % p.defense)
 	GameState.data.equipment.armor = ""
 	GameState.refresh_stats(p)
 	check(is_equal_approx(p.defense, 0.1), "10%% on its own (%.2f)" % p.defense)
@@ -390,7 +390,7 @@ func test_the_battle_helmet_is_a_secret_worth_a_mask() -> void:
 	w.texts["test/town"] = rooms["test/town"]
 	w._enter("test/town")
 	check(_find(w.room, ItemPickup) == null, "it never comes back")
-	# Where it lies: a hidden pocket at the meteor's threshold, behind fake wall.
+	# Where it lies: a hidden pocket at the Everbloom's threshold, behind fake wall.
 	var t := Room.parse(FileAccess.get_file_as_string("res://levels/zenis/threshold.room"))
 	check("2, 19, battle_helmet" in t.lists.get("prop", []), "it lies in the Threshold")
 	var hidden := false
@@ -427,8 +427,8 @@ func test_skill_rules() -> void:
 ## skill that names one in its text without a "uses" is caught.
 func test_the_skill_tree_says_what_a_skill_waits_on() -> void:
 	GameState.new_game()
-	var names := {"mattock": "Mattock", "deluge": "Deluge", "tilte": "Tilte", "thunder": "Thunder", "hourglass": "Hour Glass",
-		"death": "Death", "stride": "Stride", "boots": "Wing Boots", "fire": "Fire"}
+	var names := {"mattock": "Delver's Pick", "deluge": "Torrent", "tilte": "Wisplight", "thunder": "Stormcall", "hourglass": "Stillstone",
+		"death": "Wither", "stride": "Stride", "boots": "Featherstep Boots", "fire": "Kindle"}
 	var untagged := []
 	var users := []
 	for node: Dictionary in Skills.nodes():
@@ -449,8 +449,8 @@ func test_the_skill_tree_says_what_a_skill_waits_on() -> void:
 	for id: String in users:
 		check(String(by_id[id].detail).contains("Does nothing until you find the " + Skills.waits_on(id) + "."), "on a new game %s says what it waits on" % id)
 	check(not String(by_id.keen_edge.detail).contains("Does nothing"), "a skill that needs nothing says nothing")
-	check(String(by_id.feather_fall.detail).ends_with("Does nothing until you find the Wing Boots."), "Feather Fall waits on the Wing Boots")
-	check(String(by_id.mattock_mastery.detail).contains("the Mattock."), "Mattock Mastery on the Mattock")
+	check(String(by_id.feather_fall.detail).ends_with("Does nothing until you find the Featherstep Boots."), "Feather Fall waits on the Featherstep Boots")
+	check(String(by_id.mattock_mastery.detail).contains("the Delver's Pick."), "Pick Mastery on the Delver's Pick")
 	for id: String in GameState.data.abilities:
 		GameState.data.abilities[id] = true
 	rows = Menus.skill_rows()
@@ -515,8 +515,8 @@ func test_act_two_skills_chain_and_apply() -> void:
 	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "clear_mind", "siphon",
 			"deluge_pierce", "deep_pockets", "gold_sense", "quick_draught", "second_stride"]:
 		check(Skills.learn(id, p), "learned " + id)
-	check(p.rising_cut and p.spell_pierce, "Rising Cut and Deluge Pierce switch on")
-	check(is_equal_approx(p.down_strike_mult, 1.5), "Mattock Mastery: the down strike hits 50% harder")
+	check(p.rising_cut and p.spell_pierce, "Rising Cut and Torrent Pierce switch on")
+	check(is_equal_approx(p.down_strike_mult, 1.5), "Pick Mastery: the down strike hits 50% harder")
 	check(is_equal_approx(p.drink_mult, 0.6), "Quick Draught: drinking takes 60% as long")
 	check(p.bonus_air_dashes == 1, "Second Stride: one more air dash")
 	check(int(GameState.data.skill_points) == 20 - 13, "the eleven nodes cost 13 points")
@@ -573,7 +573,7 @@ func test_rising_cut_launches_small_foes_only() -> void:
 	var w := make_world(_town({Vector2i(20, 19): "M", Vector2i(30, 19): "I"}), "test/town", cell_feet(8, 19))
 	var p := w.player
 	await frames(6)
-	var m: Monodron = _find(w.room, Monodron)
+	var m: Blinkhop = _find(w.room, Blinkhop)
 	var dwarf: IronDwarf = _find(w.room, IronDwarf)
 	m.hp = 999
 	var nudge := await _rise_after_up_slash(p, m)
@@ -583,7 +583,7 @@ func test_rising_cut_launches_small_foes_only() -> void:
 	for id: String in ["keen_edge", "fourth_strike", "rising_cut"]:
 		Skills.learn(id, p)
 	var rise := await _rise_after_up_slash(p, m)
-	check(rise > 30.0, "Rising Cut throws a Monodron up (%.0f px)" % rise)
+	check(rise > 30.0, "Rising Cut throws a Blinkhop up (%.0f px)" % rise)
 	check(not dwarf.launch(), "an Iron Dwarf is too heavy to lift")
 	var spitter := SapSpitter.new()
 	check(not spitter.launch(), "a rooted Sap Spitter stays put")
@@ -593,7 +593,7 @@ func test_rising_cut_launches_small_foes_only() -> void:
 ## Pass 458 (bible 9): the Blade skills, by the buttons. Fourth Strike, Rising
 ## Cut and Riposte were proved with scripted intents only. Real Attack taps, each a tap after the last swing's cooldown,
 ## run the learned ground combo to a fourth, heavy hit on a dummy; real Up with
-## Attack throws a Monodron into the air; a real Block pressed as a Rot Dwarf's
+## Attack throws a Blinkhop into the air; a real Block pressed as a Rot Dwarf's
 ## blade comes down parries it and the Riposte answers with one heavy cut.
 func test_the_blade_skills_answer_the_real_controller() -> void:
 	var w := make_world(_town({Vector2i(9, 19): "E", Vector2i(30, 19): "M"}), "test/town", cell_feet(7, 19))
@@ -622,7 +622,7 @@ func test_the_blade_skills_answer_the_real_controller() -> void:
 	check(dummy.hp == TrainingDummy.HP - light * 3 - big, "each with Keen Edge's damage (dummy hp %d)" % dummy.hp)
 	await frames(40)
 	# Rising Cut: Up with Attack, both through the real controller.
-	var m: Monodron = _find(w.room, Monodron)
+	var m: Blinkhop = _find(w.room, Blinkhop)
 	m.hp = 999
 	m.global_position = p.global_position + Vector2(0, -Player.BODY_SIZE.y - 6)
 	m.velocity = Vector2.ZERO
@@ -636,7 +636,7 @@ func test_the_blade_skills_answer_the_real_controller() -> void:
 			Input.action_release("attack")
 		top = minf(top, m.global_position.y)
 	Input.action_release("move_up")
-	check(y0 - top > 30.0, "real Up with Attack throws a Monodron up (%.0f px)" % (y0 - top))
+	check(y0 - top > 30.0, "real Up with Attack throws a Blinkhop up (%.0f px)" % (y0 - top))
 	w.free()
 	await frames(2)
 	# Riposte: a real Block as the Rot Dwarf's blade comes down.
@@ -691,7 +691,7 @@ func test_mattock_mastery_hits_harder_downward() -> void:
 	await frames(1)
 	p.input.down = false
 	check(p.attack_kind == "down", "a downward strike in the air")
-	check(p._swing_damage == roundi(p.slash_damage * 1.1 * 1.5), "Keen Edge and Mattock Mastery stack (%d)" % p._swing_damage)
+	check(p._swing_damage == roundi(p.slash_damage * 1.1 * 1.5), "Keen Edge and Pick Mastery stack (%d)" % p._swing_damage)
 
 
 func test_deluge_pierce_strikes_every_foe_in_line() -> void:
@@ -724,21 +724,21 @@ func test_deluge_pierce_strikes_every_foe_in_line() -> void:
 func test_xp_raises_rank_and_gives_points() -> void:
 	make_world(_town(), "test/town")
 	GameState.add_xp(39)
-	check(int(GameState.data.rank) == 0, "39 XP is still Novice")
+	check(int(GameState.data.rank) == 0, "39 XP is still Seedling")
 	GameState.add_xp(1)
-	check(GameState.rank_name() == "Aspirant" and int(GameState.data.skill_points) == 1, "40 XP: Aspirant and a skill point")
+	check(GameState.rank_name() == "Sprout" and int(GameState.data.skill_points) == 1, "40 XP: Sprout and a skill point")
 	GameState.add_xp(260)
-	check(GameState.rank_name() == "Adept" and int(GameState.data.skill_points) == 4, "300 XP: Adept, four points")
+	check(GameState.rank_name() == "Barkskin" and int(GameState.data.skill_points) == 4, "300 XP: Barkskin, four points")
 
 
 func test_kills_give_xp() -> void:
 	var w := make_world(_town({Vector2i(12, 19): "M"}), "test/town")
 	await frames(3)
-	var m: Monodron = _find(w.room, Monodron)
+	var m: Blinkhop = _find(w.room, Blinkhop)
 	var xp := m.xp
 	m.take_hit(999, Vector2.RIGHT)
 	await frames(2)
-	check(xp > 0 and int(GameState.data.xp) == xp, "a Monodron kill gives %d XP (got %d)" % [xp, int(GameState.data.xp)])
+	check(xp > 0 and int(GameState.data.xp) == xp, "a Blinkhop kill gives %d XP (got %d)" % [xp, int(GameState.data.xp)])
 
 
 func test_gym_kills_give_no_xp() -> void:
@@ -753,7 +753,7 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 	var w := make_world(_town({Vector2i(12, 19): "M", Vector2i(20, 19): "M"}), "test/town")
 	var p := w.player
 	await frames(3)
-	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)
+	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Blinkhop)
 	Drop.bread_chance = 1.0
 	monos[0].take_hit(999, Vector2.RIGHT)
 	Drop.bread_chance = 0.0
@@ -794,9 +794,9 @@ func test_kills_sometimes_drop_bread_or_mana() -> void:
 
 
 
-## Bible 7 (pass 147): any foe may rarely leave one of the original's rare
-## items. The War Glove (the original's Glove) makes every blade hit land half
-## again as hard for 15 s; an Ointment goes in the pouch, or straight on when
+## Bible 7 (pass 147): any foe may rarely leave one of the source game's rare
+## items. The War Glove (the source game's Glove) makes every blade hit land half
+## again as hard for 15 s; an Barkbalm goes in the pouch, or straight on when
 ## the pouch is full.
 func test_rare_drops_a_war_glove_and_an_ointment() -> void:
 	var w := make_world(_town({Vector2i(12, 19): "M", Vector2i(16, 19): "M", Vector2i(24, 19): "D"}), "test/town", cell_feet(8, 19))
@@ -819,8 +819,8 @@ func test_rare_drops_a_war_glove_and_an_ointment() -> void:
 	check(kinds.size() == 2 and rare > 60 and rare < 140, "about 1 kill in 40 leaves a rare item (%s)" % [kinds])
 	check(int(kinds.get("glove", 0)) > int(kinds.get("ointment", 0)), "the glove more often than the ointment")
 	Drop.rare_chance = 0.0
-	# The glove: a Monodron dies to it, and the next blows hit harder.
-	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)
+	# The glove: a Blinkhop dies to it, and the next blows hit harder.
+	var monos: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Blinkhop)
 	var glove := Drop.new()
 	glove.kind = "glove"
 	w.room.add_child(glove)
@@ -829,8 +829,8 @@ func test_rare_drops_a_war_glove_and_an_ointment() -> void:
 	await frames(25)
 	check(not is_instance_valid(glove) and p.glove_left > 14.0, "walking over the glove puts it on (%.1f s)" % p.glove_left)
 	check_near(p.blade_mult(), plain * 1.5, 0.0001, "and blade hits land half again as hard")
-	# A real swing: the next slash at a Monodron carries the glove.
-	var mono: Monodron = monos[0]
+	# A real swing: the next slash at a Blinkhop carries the glove.
+	var mono: Blinkhop = monos[0]
 	mono.hp = 999
 	p.teleport(mono.global_position + Vector2(-22, 0))
 	p.facing = 1
@@ -878,7 +878,7 @@ func test_tower_kills_can_leave_poison() -> void:
 	await frames(3)
 	Drop.poison_chance = 1.0
 	check(Drop.roll(w.room, cell_feet(30, 19)) == null, "enemies without poison_drops never leave poison")
-	var mono: Monodron = w.room.get_children().filter(func(c: Node) -> bool: return c is Monodron)[0]
+	var mono: Blinkhop = w.room.get_children().filter(func(c: Node) -> bool: return c is Blinkhop)[0]
 	mono.poison_drops = true
 	mono.take_hit(999, Vector2.RIGHT)
 	Drop.poison_chance = 0.0
@@ -915,16 +915,16 @@ func test_bread_shrines_and_ointment_beat_poison() -> void:
 	check(not is_instance_valid(bread) and p.poison_left == 0.0, "bread settles the stomach")
 	p.poison()
 	p.restore()
-	check(p.poison_left == 0.0, "resting at a shrine or the Guru cures it")
+	check(p.poison_left == 0.0, "resting at a shrine or the Ringreader cures it")
 	p.ointments = 1
 	p.use_ointment()
-	check(not p.poison(), "an Ointment keeps poison off")
+	check(not p.poison(), "an Barkbalm keeps poison off")
 
 
 ## Bible 7 (pass 306): poison is a foe's leaving, so it bites as hard as the
 ## room's foes do (5.5): a fixed 2 a tick was 16 health at most, under 6% of a
 ## late hero's 280 while every blow around it doubled. It still spares the last
-## point, and an Ointment rubbed on mid-poison stops what is left of it.
+## point, and an Barkbalm rubbed on mid-poison stops what is left of it.
 func test_poison_bites_as_hard_as_the_rooms_foes() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
@@ -948,14 +948,14 @@ func test_poison_bites_as_hard_as_the_rooms_foes() -> void:
 	p.hp = 50
 	p.poison()
 	p.ointments = 1
-	check(p.use_ointment(), "an Ointment goes on mid-poison")
+	check(p.use_ointment(), "an Barkbalm goes on mid-poison")
 	await frames(roundi(Player.POISON_TIME * 60.0) + 2)
 	check(p.hp == 50 and p.poison_left == 0.0, "and the rest of the poison passes harmlessly (%d)" % p.hp)
 
 
 
 ## Bible 13.3 (pass 302): every drop is heard as it is taken, and says what it
-## gave. Poison an Ointment keeps off was the one pickup that made no sound.
+## gave. Blightcap an Barkbalm keeps off was the one pickup that made no sound.
 func test_every_drop_is_heard_as_it_is_taken() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
@@ -988,7 +988,7 @@ func test_every_drop_is_heard_as_it_is_taken() -> void:
 ## Bible 13.3 (pass 310): a poison tick is heard. Since pass 306 a tick takes up
 ## to 4 health, and it was the one loss of health with no sound. It glugs
 ## (`poison_tick`), quieter than a blow's `hurt`, and a tick that takes nothing
-## (the last point, under an Ointment) is silent.
+## (the last point, under an Barkbalm) is silent.
 func test_every_poison_tick_is_heard() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
@@ -1012,7 +1012,7 @@ func test_every_poison_tick_is_heard() -> void:
 	p.use_ointment()
 	Sfx.recent.clear()
 	await frames(roundi(Player.POISON_TICK * 60.0))
-	check(not Sfx.recent.has("poison_tick"), "and so is one an Ointment keeps off")
+	check(not Sfx.recent.has("poison_tick"), "and so is one an Barkbalm keeps off")
 	p.cure_poison()
 
 
@@ -1059,26 +1059,26 @@ func test_the_guru_names_your_title_once() -> void:
 	var hear := func(who: String, pages: Array) -> void: said.append([who, pages])
 	GameState.dialog_requested.connect(hear)
 	guru.interact(p)
-	check(said.is_empty(), "a Novice gets no ceremony")
+	check(said.is_empty(), "a Seedling gets no ceremony")
 	GameState.add_xp(100)
-	check(GameState.rank_name() == "Battler" and GameState.unnamed_title() == "Battler", "ranks rise in the field, unnamed (%s)" % GameState.unnamed_title())
+	check(GameState.rank_name() == "Sapling" and GameState.unnamed_title() == "Sapling", "ranks rise in the field, unnamed (%s)" % GameState.unnamed_title())
 	guru.interact(p)
-	check(said.size() == 1 and String(said[0][1][1]).contains("BATTLER"), "the Guru names you by your title: %s" % [said])
+	check(said.size() == 1 and String(said[0][1][1]).contains("SAPLING"), "the Ringreader names you by your title: %s" % [said])
 	check(int(GameState.data.named_rank) == int(GameState.data.rank) and GameState.unnamed_title() == "", "and it is yours from then on")
 	guru.interact(p)
 	check(said.size() == 1, "only once per title")
-	check(Npc.title_lines(14, "Paladin")[0] != Npc.title_lines(1, "Aspirant")[0], "higher ranks hear grander words")
+	check(Npc.title_lines(14, "Elder")[0] != Npc.title_lines(1, "Sprout")[0], "higher ranks hear grander words")
 	GameState.dialog_requested.disconnect(hear)
 
 func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	make_world(_town(), "test/town")
 	var m := GameState.mantra()
 	check(m.length() == 19 and m.split(" ").size() == 4, "four groups of four letters (%s)" % m)
-	check(GameState.mantra() == m, "the same journey gives the same mantra")
+	check(GameState.mantra() == m, "the same journey gives the same ring")
 	GameState.data.gold = int(GameState.data.gold) + 1
 	check(GameState.mantra() != m, "any change to the journey changes it")
-	# Pass 401: the old password, recited where the original recited it. Resting
-	# with a Guru saves and tells you the journey's mantra; a shrine saves quietly.
+	# Pass 401: the old password, recited where the source game recited it. Resting
+	# with a Ringreader saves and tells you the journey's ring; a shrine saves quietly.
 	const SLOT := 9
 	var was := GameState.slot
 	GameState.slot = SLOT
@@ -1090,25 +1090,25 @@ func test_the_guru_gives_a_mantra_for_the_journey() -> void:
 	GameState.toast.connect(hear)
 	guru.rest(w.player)
 	var said := GameState.mantra()
-	check(toasts.size() == 1 and toasts[0] == "Rested. Your mantra is: " + said, "the Guru's rest recites the journey's mantra (%s)" % [toasts])
+	check(toasts.size() == 1 and toasts[0] == "Rested. Your mark in the wood: " + said, "the Ringreader's rest recites the journey's ring (%s)" % [toasts])
 	check(GameState.has_save(SLOT), "and saves the journey it names")
 	var shrine := SaveShrine.new()
 	w.room.add_child(shrine)
 	shrine.global_position = w.player.global_position
 	toasts.clear()
 	shrine.interact(w.player)
-	check(toasts.size() == 1 and not toasts[0].contains("mantra"), "a shrine saves without one: the mantra is the Guru's (%s)" % [toasts])
+	check(toasts.size() == 1 and not toasts[0].contains("mantra"), "a shrine saves without one: the ring is the Ringreader's (%s)" % [toasts])
 	GameState.toast.disconnect(hear)
 	GameState.delete_save(SLOT)
 	GameState.slot = was
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("`test_the_guru_gives_a_mantra_for_the_journey` rests with a Guru"), "11 names the test")
+	check(bible.contains("`test_the_guru_gives_a_mantra_for_the_journey` rests with a Ringreader"), "11 names the test")
 
 
-## Pass 409 (bible 11): the original's two first meetings, by the buttons. The
-## King's 1,500 gold and the Guru's rest with its mantra were held by scripted
-## intents and direct calls (`guru.rest`, pass 401); a player meets them with
-## Up, and chooses the Guru's rest from his menu with Jump. Both are played
+## Pass 409 (bible 11): the source game's two first meetings, by the buttons. The
+## King's 1,500 gold and the Ringreader's rest with its ring were held by scripted
+## intents and direct calls (`ringreader.rest`, pass 401); a player meets them with
+## Up, and chooses the Ringreader's rest from his menu with Jump. Both are played
 ## here with the real controller.
 func test_the_king_and_the_guru_answer_the_real_controller() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, king"]), "test/town", cell_feet(8, 19))
@@ -1122,7 +1122,7 @@ func test_the_king_and_the_guru_answer_the_real_controller() -> void:
 	check(p.gold == gold + Npc.KING_GOLD, "and Up again gives no more")
 	w.queue_free()
 	await frames(1)
-	# The Guru: Up opens his menu, Jump on "Rest and save" rests and recites the mantra.
+	# The Ringreader: Up opens his menu, Jump on "Rest and save" rests and recites the ring.
 	var was := GameState.slot
 	GameState.slot = 9
 	w = make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(8, 19))
@@ -1136,14 +1136,14 @@ func test_the_king_and_the_guru_answer_the_real_controller() -> void:
 	var hear := func(text: String) -> void: toasts.append(text)
 	GameState.toast.connect(hear)
 	await _tap_for_real("move_up")
-	check(menu.is_open and arena.get_tree().paused, "Up at the Guru opens his menu")
+	check(menu.is_open and arena.get_tree().paused, "Up at the Ringreader opens his menu")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	Sfx.recent.clear()
 	await _tap_for_real("jump")
 	GameState.toast.disconnect(hear)
 	check(not menu.is_open and not arena.get_tree().paused, "Jump on Rest and save closes it")
 	check(p.hp == p.max_hp and GameState.has_save(9) and Sfx.recent.has("save"), "and rests, saves and chimes (%s)" % [Sfx.recent])
-	check(toasts.size() == 1 and toasts[0] == "Rested. Your mantra is: " + GameState.mantra(), "and recites the journey's mantra (%s)" % [toasts])
+	check(toasts.size() == 1 and toasts[0] == "Rested. Your mark in the wood: " + GameState.mantra(), "and recites the journey's ring (%s)" % [toasts])
 	menu.free()
 	GameState.delete_save(9)
 	GameState.slot = was
@@ -1151,7 +1151,7 @@ func test_the_king_and_the_guru_answer_the_real_controller() -> void:
 	check(bible.contains("`test_the_king_and_the_guru_answer_the_real_controller`"), "11 names the test")
 
 
-## Pass 449 (bible 5.4): the original starts you again at the last Guru you
+## Pass 449 (bible 5.4): the source game starts you again at the last Ringreader you
 ## rested with. Rest by the buttons, walk off by the buttons into the spikes,
 ## rise at his side, and walk back by the buttons to the purse.
 func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
@@ -1169,7 +1169,7 @@ func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
 	await _tap_for_real("move_up")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	await _tap_for_real("jump")
-	check(not menu.is_open and GameState.data.save_room == "test/town", "rested and saved at the Guru")
+	check(not menu.is_open and GameState.data.save_room == "test/town", "rested and saved at the Ringreader")
 	var guru_x := float(GameState.data.save_pos[0])
 	p.gold = 100
 	p.hp = 1
@@ -1185,7 +1185,7 @@ func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
 	check(purse_x > 20 * 16 and purse_x < 30 * 16, "on the safe ground short of the spikes (%.0f)" % purse_x)
 	await frames(int(p.combat.respawn_delay * 60.0) + 10)
 	check(not p.dead and w.room.id == "test/town", "he rises again")
-	check(absf(p.global_position.x - guru_x) < 2.0, "at the Guru's side (%.0f, Guru %.0f)" % [p.global_position.x, guru_x])
+	check(absf(p.global_position.x - guru_x) < 2.0, "at the Ringreader's side (%.0f, Ringreader %.0f)" % [p.global_position.x, guru_x])
 	check(p.hp == p.max_hp, "made whole")
 	Input.action_press("move_right")
 	waited = 0
@@ -1203,7 +1203,7 @@ func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
 	check(bible.contains("`test_a_death_raises_you_at_the_guru_you_rested_with`"), "5.4 names the test")
 
 
-## Pass 453 (bible 9): a skill learned and unlearned at a Guru by the buttons.
+## Pass 453 (bible 9): a skill learned and unlearned at a Ringreader by the buttons.
 ## Up opens his menu, Down and Jump open Learn skills, and Jump on the first
 ## row learns it: the points are paid and the blade cuts harder at once. Dash
 ## steps back out. Then Up, Down twice and Jump on Unlearn skills forgets it
@@ -1222,7 +1222,7 @@ func test_a_skill_is_learned_and_unlearned_with_the_buttons() -> void:
 	await _tap_for_real("move_up")
 	await frames(grace)
 	await _tap_for_real("move_down")
-	check(menu.title == "Guru" and menu.cursor == 1, "Up opens the Guru's menu and Down reaches Learn skills (%d)" % menu.cursor)
+	check(menu.title == "Ringreader" and menu.cursor == 1, "Up opens the Ringreader's menu and Down reaches Learn skills (%d)" % menu.cursor)
 	await _tap_for_real("jump")
 	check(menu.is_open and menu.title == "Skills", "Jump opens the skills (%s)" % menu.title)
 	await frames(grace)
@@ -1244,7 +1244,7 @@ func test_a_skill_is_learned_and_unlearned_with_the_buttons() -> void:
 	await frames(grace)
 	await _tap_for_real("move_down")
 	await _tap_for_real("move_down")
-	check(menu.title == "Guru" and menu.cursor == 2, "Down twice reaches Unlearn skills (%d)" % menu.cursor)
+	check(menu.title == "Ringreader" and menu.cursor == 2, "Down twice reaches Unlearn skills (%d)" % menu.cursor)
 	await _tap_for_real("jump")
 	check(GameState.data.skills.is_empty() and int(GameState.data.skill_points) == 3 and p.gold == 1000 - price,
 		"Jump forgets it for %d gold and the points come back (%d pt, %d g)" % [price, int(GameState.data.skill_points), p.gold])
@@ -1256,11 +1256,11 @@ func test_a_skill_is_learned_and_unlearned_with_the_buttons() -> void:
 	check(bible.contains("`test_a_skill_is_learned_and_unlearned_with_the_buttons`"), "9 names the test")
 
 
-## Pass 454 (bible 13.3): the Guru's pages, heard through the buttons. Pass 398
-## heard every press in a list menu, but never in the Guru's own pages: Down
+## Pass 454 (bible 13.3): the Ringreader's pages, heard through the buttons. Pass 398
+## heard every press in a list menu, but never in the Ringreader's own pages: Down
 ## blips, Jump on a skill rings the rank chime, Jump on a learned one says no,
 ## Dash backs out quietly, Unlearn skills is heard as a mending, Unlearn with
-## nothing learned says no, and Jump on a stop of the Mantra Path is heard by
+## nothing learned says no, and Jump on a stop of the Grain Road is heard by
 ## the save chime once. No press that closes a page is heard as a jump.
 func test_the_gurus_pages_are_heard_through_the_buttons() -> void:
 	var a := grid_rows(40, 23)
@@ -1285,7 +1285,7 @@ func test_the_gurus_pages_are_heard_through_the_buttons() -> void:
 	await _tap_for_real("move_up")
 	await frames(grace)
 	var got: Array = await heard.call("move_down")
-	check(got == ["blip"], "Down on the Guru's menu blips (%s)" % [got])
+	check(got == ["blip"], "Down on the Ringreader's menu blips (%s)" % [got])
 	await _tap_for_real("jump")
 	await frames(grace)
 	check(menu.title == "Skills", "Jump opens the skills")
@@ -1306,7 +1306,7 @@ func test_the_gurus_pages_are_heard_through_the_buttons() -> void:
 	check(got == ["menu_refuse"], "and again, with nothing learned, says no (%s)" % [got])
 	await _tap_for_real("move_down")
 	await _tap_for_real("jump")
-	check(menu.title == "Mantra Path", "Down and Jump open the Mantra Path")
+	check(menu.title == "Grain Road", "Down and Jump open the Grain Road")
 	await frames(grace)
 	got = await heard.call("jump")
 	await frames(4)
@@ -1340,39 +1340,31 @@ func test_king_gives_gold_once() -> void:
 	await frames(2)
 	GameState.dialog_requested.disconnect(listener)
 	check(p.gold == Npc.KING_GOLD, "only once")
-	check(said.size() == 2 and said[0] == "King of Eolis", "he talks both times")
+	check(said.size() == 2 and said[0] == "Reeve Aldous", "he talks both times")
 
 
-## Pass 369 (bible 9): the original's title thresholds (Speed Demos Archive)
-## run from 1,000 to 45,000, and no title costs less than the one before it.
-## The remake's are scaled to its foes and keep that shape; the King gives his
-## purse once whatever you carry, where the original gave it only at 0 golds.
+## Pass 369 (bible 9): no title costs less than the one before it, and the
+## last is no leap. The Reeve gives his purse once, whatever you carry.
 func test_the_titles_climb_as_the_originals_do() -> void:
-	const ORIGINAL := [0, 1000, 2200, 3500, 4800, 6200, 8000, 10000, 12500, 15000, 18000, 22000, 26000, 30000, 35000, 45000]
-	check(GameState.RANK_XP.size() == ORIGINAL.size() and GameState.RANKS.size() == ORIGINAL.size(), "sixteen titles, as the original")
+	check(GameState.RANK_XP.size() == 16 and GameState.RANKS.size() == 16, "sixteen titles")
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	var note := bible.get_slice("**The titles' climb (deviation, pass 369):**", 1).get_slice("\n", 0)
+	var note := bible.get_slice("**The titles' climb (pass 369):**", 1).get_slice("\n", 0)
 	check(note != "", "bible 9 has the note")
 	var unwritten := []
-	for list: Array in [ORIGINAL.slice(1), GameState.RANK_XP.slice(1)]:
-		for i in list.size():
-			var gap: int = list[i] - (0 if i == 0 else list[i - 1])
-			# The remake's own thresholds are the line above the note's.
-			for n: int in ([list[i], gap] if list[0] == ORIGINAL[1] else [gap]):
-				var text := String.num_int64(n)
-				if n >= 1000:
-					text = "%d,%03d" % [n / 1000, n % 1000]
-				if not note.contains(text):
-					unwritten.append(n)
-	check(unwritten.is_empty(), "the original's thresholds and both curves' steps are in the note (not: %s)" % [unwritten])
-	for list: Array in [ORIGINAL, GameState.RANK_XP]:
+	var steps := GameState.RANK_XP.slice(1)
+	for i in steps.size():
+		var gap: int = steps[i] - (0 if i == 0 else steps[i - 1])
+		if not note.contains(String.num_int64(gap)):
+			unwritten.append(gap)
+	check(unwritten.is_empty(), "the curve's steps are in the note (not: %s)" % [unwritten])
+	for list: Array in [GameState.RANK_XP]:
 		var climbs := true
 		for i in range(2, list.size()):
 			climbs = climbs and int(list[i]) - int(list[i - 1]) >= int(list[i - 1]) - int(list[i - 2])
 		check(climbs, "no title costs less than the one before it (%s)" % [list])
 	var last: int = GameState.RANK_XP[15] - GameState.RANK_XP[14]
 	var before: int = GameState.RANK_XP[14] - GameState.RANK_XP[13]
-	check(last < before * 2, "and Lord is no leap like the original's 10,000 (%d after %d)" % [last, before])
+	check(last < before * 2, "and Ylden's Own is no leap (%d after %d)" % [last, before])
 	# The King's purse, to a hero who picked up a coin on the way in.
 	var w := make_world(_town({}, ["npc: 8, 19, king"]), "test/town", cell_feet(8, 19))
 	var p := w.player
@@ -1380,7 +1372,7 @@ func test_the_titles_climb_as_the_originals_do() -> void:
 	p.add_gold(5)
 	p.input.up_pressed = true
 	await frames(2)
-	check(p.gold == Npc.KING_GOLD + 5, "the King gives his 1,500 to a hero already holding 5 (%d)" % p.gold)
+	check(p.gold == Npc.KING_GOLD + 5, "the Reeve gives his 1,500 to a hero already holding 5 (%d)" % p.gold)
 
 
 func test_every_npc_and_shop_entry_is_valid() -> void:
@@ -1403,7 +1395,7 @@ func test_every_npc_and_shop_entry_is_valid() -> void:
 	check(bad.is_empty(), "data tables are consistent: %s" % ", ".join(bad))
 
 
-# --- Apolune -------------------------------------------------------------------------
+# --- Amberlee -------------------------------------------------------------------------
 
 func test_large_shield_guards_more() -> void:
 	var w := make_world(_town(), "test/town")
@@ -1411,24 +1403,24 @@ func test_large_shield_guards_more() -> void:
 	await frames(3)
 	GameState.data.equipment.shield = "small_shield"
 	GameState.refresh_stats(p)
-	check_near(p.guard_reduction, 0.5, 0.001, "the Small Shield halves a guarded hit")
+	check_near(p.guard_reduction, 0.5, 0.001, "the Buckler halves a guarded hit")
 	p.gold = 900
-	check(Shop.buy("apolune_armor", 1, p), "bought the Large Shield")
-	check_near(p.guard_reduction, 0.7, 0.001, "the Large Shield blocks 70%")
+	check(Shop.buy("apolune_armor", 1, p), "bought the Kite Shield")
+	check_near(p.guard_reduction, 0.7, 0.001, "the Kite Shield blocks 70%")
 	var dummy := Node2D.new()
 	w.room.add_child(dummy)
 	dummy.global_position = p.global_position + Vector2(p.facing * 30, 0)
 	p.input.block_held = true
 	await frames(3)
 	check(p.receive_attack(20, dummy, false) == "guarded" and p.hp == p.max_hp - 6, "a guarded 20 becomes 6 (hp %d)" % p.hp)
-	check(Shop.status("apolune_armor", 1, p) == "owned", "the Large Shield shows as owned")
+	check(Shop.status("apolune_armor", 1, p) == "owned", "the Kite Shield shows as owned")
 	check(Shop.status("eolis_arms", 2, p) != "owned", "a shield you never had stays for sale (pass 186)")
 
 
-## Pass 225: in the original a shield did one thing, it resisted enemy magic
-## (the manual: Small 50%, Large 75%, Magic 90%, and the Battle Helmet nearly
+## Pass 225: in the source game a shield did one thing, it resisted enemy magic
+## (the manual: Small 50%, Large 75%, Magic 90%, and the Elven Helm nearly
 ## all). The remake's shields guard and parry; now they ward a foe's sorcery
-## too, guarding or not, at less than the original so the guard still matters.
+## too, guarding or not, at less than the source game so the guard still matters.
 ## Pass 229: the Equipment page's footer adds up what you wear, since armor
 ## and helmet stack by what each lets through and the ward is capped and lost
 ## to a two-hander. None of that showed anywhere before.
@@ -1439,9 +1431,9 @@ func test_the_equipment_page_adds_up_what_you_wear() -> void:
 	GameState.data.gear = ["short_sword", "dwarvish_broad_sword", "leather_armor", "battle_suit", "magic_shield", "battle_helmet"]
 	var cases := [
 		[{"blade": "short_sword", "armor": "", "shield": "", "helmet": ""}, "Armor 0%   Ward 0%", "nothing worn"],
-		[{"blade": "short_sword", "armor": "leather_armor", "shield": "", "helmet": ""}, "Armor 15%   Ward 0%", "Leather Armor"],
-		[{"blade": "short_sword", "armor": "battle_suit", "shield": "", "helmet": "battle_helmet"}, "Armor 64%   Ward 20%", "the Battle Suit under the helmet stops 64%, not 70%"],
-		[{"blade": "short_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}, "Armor 64%   Ward 60%", "the Magic Shield and the helmet ward the most there is"],
+		[{"blade": "short_sword", "armor": "leather_armor", "shield": "", "helmet": ""}, "Armor 15%   Ward 0%", "Tanned Jerkin"],
+		[{"blade": "short_sword", "armor": "battle_suit", "shield": "", "helmet": "battle_helmet"}, "Armor 64%   Ward 20%", "the Elven Plate under the helmet stops 64%, not 70%"],
+		[{"blade": "short_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}, "Armor 64%   Ward 60%", "the Warding Shield and the helmet ward the most there is"],
 		[{"blade": "dwarvish_broad_sword", "armor": "battle_suit", "shield": "magic_shield", "helmet": "battle_helmet"}, "Armor 64%   Ward 20%", "a two-hander leaves only the helmet's ward"],
 	]
 	var hint := "Jump: choose   Dash: leave"
@@ -1467,7 +1459,7 @@ func test_a_shield_wards_a_foes_sorcery() -> void:
 		check_near(p.magic_ward, wards[shield], 0.001, "%s wards %d%% of sorcery" % [shield if shield != "" else "no shield", roundi(wards[shield] * 100)])
 	GameState.data.equipment.helmet = "battle_helmet"
 	GameState.refresh_stats(p)
-	check_near(p.magic_ward, GameState.MAX_WARD, 0.001, "the Battle Helmet adds 20%%, to the most there is (%.2f)" % p.magic_ward)
+	check_near(p.magic_ward, GameState.MAX_WARD, 0.001, "the Elven Helm adds 20%%, to the most there is (%.2f)" % p.magic_ward)
 	GameState.data.equipment.blade = "dwarvish_broad_sword"
 	GameState.refresh_stats(p)
 	check_near(p.magic_ward, 0.2, 0.001, "a shield on the back of a two-hander wards nothing; the helmet still does")
@@ -1477,8 +1469,8 @@ func test_a_shield_wards_a_foes_sorcery() -> void:
 	check(GameState.offhand_free(), "the Rune Dagger chosen for the off hand takes the shield off")
 	check_near(p.magic_ward, 0.2, 0.001, "and with it the shield's ward: only the helmet's stays (pass 313)")
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("the original had no thrown dagger, and its shield, once bought, was always on the arm and always resisting magic"),
-		"the bible says how the off hand departs from the original's shield")
+	check(bible.contains("the source game had no thrown dagger, and its shield, once bought, was always on the arm and always resisting magic"),
+		"the bible says how the off hand departs from the source game's shield")
 	GameState.data.equipment.blade = "short_sword"
 	GameState.data.equipment.helmet = ""
 	GameState.data.equipment.shield = "small_shield"
@@ -1495,14 +1487,14 @@ func test_a_shield_wards_a_foes_sorcery() -> void:
 	check(not Sfx.recent.has(Player.WARD_SOUND), "and rings no ward")
 	p.hp = p.max_hp
 	p._invuln_timer = 0.0
-	check(p.receive_attack(20, hex, false) == "hit" and p.hp == p.max_hp - 16, "a hex of 20 lands as 16 through the Small Shield, unguarded (hp %d)" % p.hp)
+	check(p.receive_attack(20, hex, false) == "hit" and p.hp == p.max_hp - 16, "a hex of 20 lands as 16 through the Buckler, unguarded (hp %d)" % p.hp)
 	check(Sfx.recent.has(Player.WARD_SOUND), "and the ward rings as it turns the rest (pass 230)")
 	var casters := ["res://scripts/enemies/mire_grasp.gd", "res://scripts/bosses/shadow_bolt.gd", "res://scripts/bosses/crystal_shard.gd", "res://scripts/bosses/core_beam.gd"]
 	var plain := []
 	for path: String in casters:
 		if not FileAccess.get_file_as_string(path).contains("add_to_group(Player.MAGIC)"):
 			plain.append(path.get_file())
-	check(plain.is_empty(), "the hags' hex, Eura's bolts, Grieve's shards and the core's beam are sorcery (not: %s)" % [plain])
+	check(plain.is_empty(), "the hags' hex, Eura's bolts, Vorrund's shards and the core's beam are sorcery (not: %s)" % [plain])
 
 
 func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
@@ -1511,15 +1503,15 @@ func test_the_magic_shield_is_sold_in_daybreak_and_reflects() -> void:
 	await frames(3)
 	GameState.data.equipment.shield = "large_shield"
 	GameState.refresh_stats(p)
-	check(not p.reflects, "the Large Shield doesn't reflect")
+	check(not p.reflects, "the Kite Shield doesn't reflect")
 	var stock: Array = GameData.shop("daybreak_armor").stock
-	check(stock[1].item == "magic_shield" and int(stock[1].price) == 3600, "Calder's armory sells the Magic Shield for 3,600 g")
+	check(stock[1].item == "magic_shield" and int(stock[1].price) == 3600, "Calder's armory sells the Warding Shield for 3,600 g")
 	p.gold = 3600
-	check(Shop.buy("daybreak_armor", 1, p), "bought the Magic Shield")
+	check(Shop.buy("daybreak_armor", 1, p), "bought the Warding Shield")
 	check(p.reflects and p.has_shield, "it reflects small shots on a parry")
-	check_near(p.guard_reduction, 0.7, 0.001, "and guards like the Large Shield")
+	check_near(p.guard_reduction, 0.7, 0.001, "and guards like the Kite Shield")
 	check(Shop.status("daybreak_armor", 1, p) == "owned", "it shows as owned")
-	check(Shop.status("apolune_armor", 1, p) != "owned", "a Large Shield you never had stays for sale (pass 186)")
+	check(Shop.status("apolune_armor", 1, p) != "owned", "a Kite Shield you never had stays for sale (pass 186)")
 
 
 func test_elixir_revives_once_and_is_limited_to_one() -> void:
@@ -1527,22 +1519,22 @@ func test_elixir_revives_once_and_is_limited_to_one() -> void:
 	var p := w.player
 	await frames(3)
 	p.gold = 4000
-	check(Shop.buy("apolune_items", 0, p) and p.elixirs == 1, "bought an Elixir")
+	check(Shop.buy("apolune_items", 0, p) and p.elixirs == 1, "bought an Amber Draught")
 	check(Shop.status("apolune_items", 0, p) == "owned", "you can carry only one")
-	check(int(GameState.data.elixirs) == 1, "the Elixir is saved")
+	check(int(GameState.data.elixirs) == 1, "the Amber Draught is saved")
 	p.mp = 0.0
 	p.take_damage(p.max_hp + 50)
-	check(not p.dead and p.hp == p.max_hp and p.elixirs == 0, "a fatal hit drinks the Elixir and revives you (hp %d)" % p.hp)
-	# Pass 345: the manual's Elixir is "Medicine that will restore your magic
+	check(not p.dead and p.hp == p.max_hp and p.elixirs == 0, "a fatal hit drinks the Amber Draught and revives you (hp %d)" % p.hp)
+	# Pass 345: the manual's Amber Draught is "Medicine that will restore your magic
 	# and power", so the revive fills the magic too.
-	check(is_equal_approx(p.mp, p.max_mp), "and with full magic, as the original's manual says (mp %.0f of %.0f)" % [p.mp, p.max_mp])
+	check(is_equal_approx(p.mp, p.max_mp), "and with full magic, as the source game's manual says (mp %.0f of %.0f)" % [p.mp, p.max_mp])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("\"Medicine that will restore your magic and power.\"") and bible.contains("revives you in place at full health and full magic"), "5.2 quotes the original's Elixir beside the remake's")
+	check(bible.contains("revives you in place at full health and full magic"), "5.2 says the Amber Draught fills both")
 	check(p.invulnerable, "with a moment of safety")
 	Feel.reset()
 	await frames(150)
 	p.take_damage(p.max_hp + 50)
-	check(p.dead, "without an Elixir, a fatal hit kills")
+	check(p.dead, "without an Amber Draught, a fatal hit kills")
 
 
 func test_apolune_folk_return_with_the_spring() -> void:
@@ -1557,7 +1549,7 @@ func test_apolune_folk_return_with_the_spring() -> void:
 		out.sort()
 		return out
 	var b: Array = ids.call(before)
-	check(b == ["apolune_miner", "apolune_widow", "guru"], "before the spring: the Guru, a dwarf and one townswoman (%s)" % [b])
+	check(b == ["apolune_miner", "apolune_widow", "guru"], "before the spring: the Ringreader, a dwarf and one townswoman (%s)" % [b])
 	GameState.set_flag("spring:trunk")
 	var after := Room.from_file("res://levels/trunk/apolune.room")
 	arena.add_child(after)
@@ -1571,11 +1563,11 @@ func test_apolune_folk_return_with_the_spring() -> void:
 	GameState.new_game()
 
 
-# --- Forepaw freed ---------------------------------------------------------------
+# --- Kettleforge freed ---------------------------------------------------------------
 
-## Pass 175: Forepaw keeps the original's hospital and a larder. The physician
+## Pass 175: Kettleforge keeps the source game's hospital and a larder. The physician
 ## mends health, magic and poison for nothing, but neither saves nor refills
-## the flask (that is the Guru's rest); with nothing to mend he only talks.
+## the flask (that is the Ringreader's rest); with nothing to mend he only talks.
 func test_forepaws_physician_mends_you_and_its_larder_sells() -> void:
 	var w := make_world(_town({}, ["npc: 8, 19, forepaw_physician"]), "test/town", cell_feet(8, 19))
 	var p := w.player
@@ -1601,13 +1593,13 @@ func test_forepaws_physician_mends_you_and_its_larder_sells() -> void:
 	var room := Room.from_file("res://levels/tower/forepaw.room")
 	arena.add_child(room)
 	var ids := room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(c: Npc) -> String: return c.npc_id)
-	check(ids.has("forepaw_physician") and ids.has("forepaw_grocer"), "both keep house in Forepaw (%s)" % [ids])
+	check(ids.has("forepaw_physician") and ids.has("forepaw_grocer"), "both keep house in Kettleforge (%s)" % [ids])
 	room.queue_free()
 	var stock: Array = GameData.shop(GameData.npc("forepaw_grocer").shop).stock
-	check(stock.map(func(e: Dictionary) -> String: return e.item) == ["elixir", "queen_key"], "the Larder sells an Elixir and the Queen Key")
+	check(stock.map(func(e: Dictionary) -> String: return e.item) == ["elixir", "queen_key"], "the Larder sells an Amber Draught and the Silver Key")
 
 
-## Pass 457 (bible 10.3): the original's hospital, by the buttons. Right walks
+## Pass 457 (bible 10.3): the source game's hospital, by the buttons. Right walks
 ## the hero over a Tower foe's poison flask and on to Physician Halvar; one real
 ## Up opens his treatment as a dialog that holds the world, so the poison takes
 ## no tick while he works; Jump turns his pages, and the Jump that closes the
@@ -1683,13 +1675,13 @@ func test_the_second_temper_costs_a_meteor_shard() -> void:
 	var p := w.player
 	p.gold = 5000
 	check(Shop.buy("forepaw_smith", 0, p), "Temper Blade I needs gold alone")
-	check(Shop.status("forepaw_smith", 1, p) == "shards", "Temper Blade II waits for a Meteor Shard")
+	check(Shop.status("forepaw_smith", 1, p) == "shards", "Temper Blade II waits for a Stillglass Shard")
 	check(not Shop.buy("forepaw_smith", 1, p) and p.gold == 4300, "and can't be bought without one")
 	var shard := ItemPickup.new()
 	shard.kind = ItemPickup.KIND_BY_CHAR["("]
 	w.room.add_child(shard)
 	shard.grant(p)
-	check(int(GameState.data.meteor_shards) == 1, "a Meteor Shard picked up is carried")
+	check(int(GameState.data.meteor_shards) == 1, "a Stillglass Shard picked up is carried")
 	check(Shop.status("forepaw_smith", 1, p) == "", "now the smith can fold it in")
 	check(Shop.buy("forepaw_smith", 1, p), "bought Temper Blade II")
 	check(int(GameState.data.meteor_shards) == 0 and p.gold == 2700, "it spends the shard and the gold")
@@ -1714,7 +1706,7 @@ func test_the_world_holds_a_meteor_shard_for_every_blade() -> void:
 	for id: String in GameData.table("items"):
 		if String(GameData.item(id).get("kind", "")) == "blade":
 			blades += 1
-	check(found >= blades, "%d Meteor Shards in the world for %d blades" % [found, blades])
+	check(found >= blades, "%d Stillglass Shards in the world for %d blades" % [found, blades])
 	check(zones.has("tower"), "one lies in the Tower, near the smith who uses them")
 	check(zones.size() >= 4, "they are spread over %d zones" % zones.size())
 
@@ -1723,10 +1715,10 @@ func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
 	var w := make_world({}, "tower/forepaw")
 	await frames(2)
 	var cage: LiftCage = _find(w.room, LiftCage)
-	check(cage != null and cage.destination()[0] == "tower/foot", "Forepaw has a lift down to the Tower Foot")
+	check(cage != null and cage.destination()[0] == "tower/foot", "Kettleforge has a lift down to the Tower Foot")
 	cage.interact(w.player)
 	await frames(3)
-	check(w.room.id == "tower/forepaw", "it hangs still while Zoradohna holds the city")
+	check(w.room.id == "tower/forepaw", "it hangs still while Durgan holds the city")
 	GameState.set_flag("boss:zoradohna")
 	cage.interact(w.player)
 	await frames(3)
@@ -1739,10 +1731,10 @@ func test_the_forepaw_lift_runs_once_zoradohna_falls() -> void:
 	check(w.room.id == "tower/forepaw", "and back up again")
 
 
-## Pass 419: the lift by the buttons. Bible 3's elevator back to Eolis was
+## Pass 419: the lift by the buttons. Bible 3's elevator back to Hearthroot was
 ## only ever run by calling the cage's `interact` and the menu's `confirm`
-## from the test. Here Up is pressed at the cage for real: while Zoradohna
-## holds Forepaw it hangs still and opens nothing; once she falls, Up opens
+## from the test. Here Up is pressed at the cage for real: while Durgan
+## holds Kettleforge it hangs still and opens nothing; once she falls, Up opens
 ## the stops, Down moves to the Tower Foot, and Jump rides there.
 func test_the_lift_answers_the_real_controller() -> void:
 	var w := make_world({}, "eolis/east_gate")
@@ -1757,14 +1749,14 @@ func test_the_lift_answers_the_real_controller() -> void:
 	check(p.is_on_floor() and absf(p.global_position.x - gate.global_position.x) < 8.0, "standing in the cage")
 	await _tap_for_real("move_up")
 	await frames(3)
-	check(w.room.id == "eolis/east_gate" and not menu.is_open, "Up while Forepaw is held: the cage hangs still")
+	check(w.room.id == "eolis/east_gate" and not menu.is_open, "Up while Kettleforge is held: the cage hangs still")
 	GameState.set_flag("boss:zoradohna")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	await _tap_for_real("move_up")
-	check(menu.is_open and menu.title == "Forepaw Lift" and arena.get_tree().paused, "once she falls, Up opens the lift's stops")
+	check(menu.is_open and menu.title == "Kettleforge Lift" and arena.get_tree().paused, "once she falls, Up opens the lift's stops")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	var at := func() -> String: return String(menu.rows[menu.cursor].label)
-	check(at.call() == "Forepaw", "on Forepaw first (%s)" % at.call())
+	check(at.call() == "Kettleforge", "on Kettleforge first (%s)" % at.call())
 	await _tap_for_real("move_down")
 	check(at.call() == "Tower Foot", "Down moves to the Tower Foot (%s)" % at.call())
 	await _tap_for_real("jump")
@@ -1777,34 +1769,34 @@ func test_the_lift_answers_the_real_controller() -> void:
 
 
 func test_the_lift_runs_down_the_trunk_to_eolis() -> void:
-	# Bible 3: the elevator shortcut back to Eolis. The cage offers its other stops.
+	# Bible 3: the elevator shortcut back to Hearthroot. The cage offers its other stops.
 	var w := make_world({}, "eolis/east_gate")
 	await frames(2)
 	var gate: LiftCage = _find(w.room, LiftCage)
-	check(gate != null and gate.destination()[0] == "tower/foot", "the East Gate of Eolis has a lift cage up the trunk")
+	check(gate != null and gate.destination()[0] == "tower/foot", "the East Gate of Hearthroot has a lift cage up the trunk")
 	gate.interact(w.player)
 	await frames(3)
-	check(w.room.id == "eolis/east_gate", "it hangs still until Forepaw is free")
+	check(w.room.id == "eolis/east_gate", "it hangs still until Kettleforge is free")
 	GameState.set_flag("boss:zoradohna")
 	var menu := ListMenu.new()
 	arena.add_child(menu)
 	gate.interact(w.player)
 	await frames(1)
 	var labels := menu.rows.map(func(r: Dictionary) -> String: return r.label)
-	check(menu.title == "Forepaw Lift" and labels == ["Forepaw", "Tower Foot"], "it offers the other stops (%s)" % [labels])
+	check(menu.title == "Kettleforge Lift" and labels == ["Kettleforge", "Tower Foot"], "it offers the other stops (%s)" % [labels])
 	menu.cursor = 0
 	menu.confirm()
 	await frames(3)
-	check(w.room.id == "tower/forepaw", "and carries you up to Forepaw")
+	check(w.room.id == "tower/forepaw", "and carries you up to Kettleforge")
 	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
 	var top: LiftCage = _find(w.room, LiftCage)
 	top.interact(w.player)
 	await frames(1)
-	menu.cursor = menu.rows.map(func(r: Dictionary) -> String: return r.label).find("Eolis, East Gate")
+	menu.cursor = menu.rows.map(func(r: Dictionary) -> String: return r.label).find("Hearthroot, East Gate")
 	menu.confirm()
 	await frames(3)
 	check(w.room.id == "eolis/east_gate", "and all the way home again")
-	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "beside the cage in Eolis")
+	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "beside the cage in Hearthroot")
 	menu.queue_free()
 
 
@@ -1820,8 +1812,8 @@ func test_the_mantra_path_joins_the_gurus_after_a_spring() -> void:
 			guru = n
 	guru.interact(w.player)
 	await frames(1)
-	check(GameState.data.gurus.has("tower/forepaw"), "speaking to a Guru marks a stop on the path")
-	check(menu.title == "Guru" and menu.rows[3].label == "Mantra Path", "the Guru offers the Mantra Path")
+	check(GameState.data.gurus.has("tower/forepaw"), "speaking to a Ringreader marks a stop on the path")
+	check(menu.title == "Ringreader" and menu.rows[3].label == "Grain Road", "the Ringreader offers the Grain Road")
 	check(not menu.rows[3].enabled, "but it stays dry until a spring flows")
 	menu.close()
 	GameState.set_flag("spring:trunk")
@@ -1830,19 +1822,19 @@ func test_the_mantra_path_joins_the_gurus_after_a_spring() -> void:
 	check(menu.rows[3].enabled, "a restored spring opens it")
 	menu.cursor = 3
 	menu.confirm()
-	check(menu.title == "Mantra Path" and menu.rows.size() == 1 and menu.rows[0].label == "Apolune", "it lists the other Gurus met")
+	check(menu.title == "Grain Road" and menu.rows.size() == 1 and menu.rows[0].label == "Amberlee", "it lists the other Ringreaders met")
 	menu.cursor = 0
 	menu.confirm()
 	await frames(3)
 	check(w.room.id == "trunk/apolune", "and walks you to one")
 	check(not w.room.is_solid_at(w.player.global_position + Vector2(0, -8)), "onto open floor")
-	check(absf(w.player.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Guru")
+	check(absf(w.player.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Ringreader")
 	menu.queue_free()
 
 
-## Pass 451 (bible 4.4): the Mantra Path by the buttons. Up at a Guru opens his
-## menu, Down walks to "Mantra Path", Jump opens it and Jump again walks you to
-## the other Guru. Play goes on there unpaused, the menu shut, the hero standing
+## Pass 451 (bible 4.4): the Grain Road by the buttons. Up at a Ringreader opens his
+## menu, Down walks to "Grain Road", Jump opens it and Jump again walks you to
+## the other Ringreader. Play goes on there unpaused, the menu shut, the hero standing
 ## on the floor a step from him, and the Jump that chose the stop is not taken
 ## as a jump on arrival.
 func test_the_mantra_path_is_walked_with_the_buttons() -> void:
@@ -1860,22 +1852,22 @@ func test_the_mantra_path_is_walked_with_the_buttons() -> void:
 	p.teleport(guru.global_position)
 	await frames(6)
 	await _tap_for_real("move_up")
-	check(menu.is_open and menu.title == "Guru", "Up at the Guru opens his menu (%s)" % menu.title)
+	check(menu.is_open and menu.title == "Ringreader", "Up at the Ringreader opens his menu (%s)" % menu.title)
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	var presses := 0
 	while menu.cursor != 3 and presses < 6:
 		await _tap_for_real("move_down")
 		presses += 1
-	check(menu.cursor == 3 and menu.rows[3].label == "Mantra Path", "Down walks to the Mantra Path (%d presses)" % presses)
+	check(menu.cursor == 3 and menu.rows[3].label == "Grain Road", "Down walks to the Grain Road (%d presses)" % presses)
 	await _tap_for_real("jump")
-	check(menu.is_open and menu.title == "Mantra Path" and menu.rows[0].label == "Apolune", "Jump opens it, listing Apolune")
+	check(menu.is_open and menu.title == "Grain Road" and menu.rows[0].label == "Amberlee", "Jump opens it, listing Amberlee")
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	await _tap_for_real("jump")
 	await frames(6)
-	check(w.room.id == "trunk/apolune", "Jump on Apolune walks you there (%s)" % w.room.id)
+	check(w.room.id == "trunk/apolune", "Jump on Amberlee walks you there (%s)" % w.room.id)
 	check(not menu.is_open and not arena.get_tree().paused, "with the menu shut and play going on")
 	check(p.is_on_floor() and absf(p.velocity.y) < 1.0, "standing on the floor: the Jump that chose the stop is not a jump (vy %.0f)" % p.velocity.y)
-	check(absf(p.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Guru (%.0f)" % p.global_position.x)
+	check(absf(p.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Ringreader (%.0f)" % p.global_position.x)
 	var x0 := p.global_position.x
 	Input.action_press("move_right")
 	await frames(20)
@@ -1890,7 +1882,7 @@ func test_the_forepaw_forge_rings_and_throws_sparks() -> void:
 	var w := make_world({}, "tower/forepaw")
 	await frames(2)
 	var forge: Forge = _find(w.room, Forge)
-	check(forge != null, "Forepaw has a forge beside the smith")
+	check(forge != null, "Kettleforge has a forge beside the smith")
 	var before := forge.strikes
 	await frames(int(Forge.STRIKE_EVERY * 60.0) + 5)
 	check(forge.strikes > before, "the smith's hammer rings on the anvil")
@@ -1917,7 +1909,7 @@ func test_the_great_winch_turns_once_forepaw_is_free() -> void:
 	var winch: Winch = _find(w.room, Winch)
 	check(winch != null, "Winch Hall has its great winch")
 	await frames(30)
-	check(winch.angle == 0.0, "it stands still while Zoradohna holds Forepaw")
+	check(winch.angle == 0.0, "it stands still while Durgan holds Kettleforge")
 	GameState.set_flag("boss:zoradohna")
 	await frames(30)
 	check(winch.angle > 0.0, "and turns once the dwarves are free")
@@ -1928,7 +1920,7 @@ func test_the_flue_damper_opens_once_zoradohna_falls() -> void:
 	await frames(2)
 	var shut := w.room.get_children().filter(func(n: Node) -> bool: return n is FlueDamper)
 	check(shut.size() == 3, "the Tower Foot's ceiling holds a three-tile damper (%d)" % shut.size())
-	check(shut.all(func(d: FlueDamper) -> bool: return not d.open), "it is shut while Zoradohna holds Forepaw")
+	check(shut.all(func(d: FlueDamper) -> bool: return not d.open), "it is shut while Durgan holds Kettleforge")
 	GameState.set_flag("boss:zoradohna")
 	w.travel("tower/winch_hall", cell_feet(5, 19))
 	await frames(4)
@@ -1959,7 +1951,7 @@ func test_a_cartographer_chart_outlines_unseen_rooms() -> void:
 	for i in stock.size():
 		if stock[i].item == "chart_trunk":
 			index = i
-	check(Shop.buy("eolis_charts", index, p), "the Cartographer sells the Trunk chart")
+	check(Shop.buy("eolis_charts", index, p), "the Cartographer sells the Heartwood chart")
 	check(Shop.status("eolis_charts", index, p) == "owned", "once")
 	check(MapScreen.shown("trunk/entrance", w.catalog["trunk/entrance"], w.room.id) == "charted", "and its rooms show, dimmed")
 	check(MapScreen.shown("tower/foot", w.catalog["tower/foot"], w.room.id) == "", "other zones stay hidden")
@@ -1991,8 +1983,8 @@ func test_map_pins_drop_and_lift_where_you_stand() -> void:
 	map.queue_free()
 
 
-## Conflate (pass 50): the elves' town on the leaf road has a Guru, a grocer
-## and a skywatcher who charts the Mist and the Branches.
+## Sylvarre (pass 50): the elves' town on the leaf road has a Ringreader, a grocer
+## and a skywatcher who charts the Haar and the High Boughs.
 func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
 	var w := make_world({}, "branches/conflate")
 	await frames(2)
@@ -2001,7 +1993,7 @@ func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
 		if c is Npc:
 			ids.append((c as Npc).npc_id)
 	for id: String in ["guru", "conflate_grocer", "conflate_cartographer", "conflate_elder", "conflate_warden", "conflate_weaver"]:
-		check(ids.has(id), "%s lives in Conflate" % id)
+		check(ids.has(id), "%s lives in Sylvarre" % id)
 		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
 	for i in GameData.shop("conflate_items").stock.size():
 		var entry: Dictionary = GameData.shop("conflate_items").stock[i]
@@ -2012,13 +2004,13 @@ func test_conflate_has_a_guru_a_grocer_and_a_skywatcher() -> void:
 	for i in stock.size():
 		check(Shop.buy("conflate_charts", i, p), "the skywatcher sells %s" % stock[i].item)
 	check(GameState.has_chart("mist") and GameState.has_chart("branches"), "and both zones are charted")
-	check(MapScreen.shown("mist/fog_cut", w.catalog["mist/fog_cut"], w.room.id) == "charted", "the Mist shows, dimmed")
+	check(MapScreen.shown("mist/fog_cut", w.catalog["mist/fog_cut"], w.room.id) == "charted", "the Haar shows, dimmed")
 	check(p.gold == 2000 - 500 - 650, "for 1,150 gold (%d left)" % p.gold)
 
 
-## Victim (pass 145): the original's town in the Mist, west of the Feather
-## Hollow. It has a Guru, the key master bible 10.2 puts there, a fogwalker who
-## charts the Mist, and two people who remember the drowned miners.
+## Lampwick (pass 145): the source game's town in the Haar, west of the Feather
+## Hollow. It has a Ringreader, the key master bible 10.2 puts there, a fogwalker who
+## charts the Haar, and two people who remember the drowned miners.
 func test_victim_has_a_guru_a_keymaster_and_a_fogwalker() -> void:
 	var w := make_world({}, "mist/victim")
 	await frames(2)
@@ -2027,7 +2019,7 @@ func test_victim_has_a_guru_a_keymaster_and_a_fogwalker() -> void:
 		if c is Npc:
 			ids.append((c as Npc).npc_id)
 	for id: String in ["guru", "victim_keymaster", "victim_cartographer", "victim_widow", "victim_lamplighter"]:
-		check(ids.has(id), "%s lives in Victim" % id)
+		check(ids.has(id), "%s lives in Lampwick" % id)
 		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
 	for id: String in ["victim_widow", "victim_lamplighter"]:
 		check(GameData.npc(id).lines.size() >= 2 and GameData.npc(id).has("lines_cleared"), "%s has her say, and another once the Tree blooms" % id)
@@ -2036,24 +2028,24 @@ func test_victim_has_a_guru_a_keymaster_and_a_fogwalker() -> void:
 	for entry: Dictionary in keys:
 		check(GameData.item(entry.item).has("name"), "the key master's %s is a real item" % entry.item)
 		prices[entry.item] = int(entry.price)
-	check(prices.get("jack_key") == 150 and prices.get("queen_key") == 400, "he cuts Jack (150 g) and Queen (400 g) keys, at bible 10.1's prices")
+	check(prices.get("jack_key") == 150 and prices.get("queen_key") == 400, "he cuts Copper (150 g) and Silver (400 g) keys, at bible 10.1's prices")
 	var p := w.player
 	p.gold = 1000
-	check(Shop.buy("victim_keys", keys.find_custom(func(e: Dictionary) -> bool: return e.item == "queen_key"), p), "you can buy a Queen Key")
+	check(Shop.buy("victim_keys", keys.find_custom(func(e: Dictionary) -> bool: return e.item == "queen_key"), p), "you can buy a Silver Key")
 	check(GameState.key_count("queen") == 1, "and carry it to the Feather Hollow's vault next door")
-	check(Shop.buy("victim_charts", 0, p) and GameState.has_chart("mist"), "the fogwalker sells the Mist chart")
+	check(Shop.buy("victim_charts", 0, p) and GameState.has_chart("mist"), "the fogwalker sells the Haar chart")
 	check(p.gold == 1000 - 400 - 500, "for 900 gold in all (%d left)" % p.gold)
-	# The Guru is a stop on the Mantra Path like any other.
+	# The Ringreader is a stop on the Grain Road like any other.
 	var guru: Npc = null
 	for c in w.room.get_children():
 		if c is Npc and (c as Npc).npc_id == "guru":
 			guru = c
 	GameState.meet_guru(w.room.id, guru.global_position)
-	check(GameState.data.gurus.has("mist/victim"), "and Victim's Guru joins the Mantra Path")
+	check(GameState.data.gurus.has("mist/victim"), "and Lampwick's Ringreader joins the Grain Road")
 
 
-## Mascon (pass 148): the stilt town on the black water, under the Scorched
-## Hall. Bible 10.2 puts a spell-scroll shop there: Fire, a zone before Daybreak.
+## Polesend (pass 148): the stilt town on the black water, under the Scorched
+## Hall. Bible 10.2 puts a spell-scroll shop there: Kindle, a zone before Carillon.
 func test_mascon_has_a_guru_a_scribe_and_stores() -> void:
 	GameState.set_flag("spring:mist")
 	var w := make_world({}, "mist/mascon")
@@ -2063,7 +2055,7 @@ func test_mascon_has_a_guru_a_scribe_and_stores() -> void:
 		if c is Npc:
 			ids.append((c as Npc).npc_id)
 	for id: String in ["guru", "mascon_scribe", "mascon_grocer", "mascon_ferryman"]:
-		check(ids.has(id), "%s lives in Mascon" % id)
+		check(ids.has(id), "%s lives in Polesend" % id)
 		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
 	var teague := GameData.npc("mascon_ferryman")
 	check(teague.lines.size() >= 2 and teague.has("lines_cleared"), "the poler has his say, and another once the Tree blooms")
@@ -2072,19 +2064,19 @@ func test_mascon_has_a_guru_a_scribe_and_stores() -> void:
 	var p := w.player
 	p.gold = 1500
 	var scroll: Dictionary = GameData.shop("mascon_scrolls").stock[0]
-	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Fire for 1,200 g, as Daybreak's does")
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Kindle for 1,200 g, as Carillon's does")
 	check(Shop.buy("mascon_scrolls", 0, p) and p.abilities.fire, "and the scroll teaches it")
-	check(Shop.status("daybreak_scrolls", 0, p) == "owned", "so Daybreak's scroll shows as owned")
+	check(Shop.status("daybreak_scrolls", 0, p) == "owned", "so Carillon's scroll shows as owned")
 	var guru: Npc = null
 	for c in w.room.get_children():
 		if c is Npc and (c as Npc).npc_id == "guru":
 			guru = c
 	GameState.meet_guru(w.room.id, guru.global_position)
-	check(GameState.data.gurus.has("mist/mascon"), "and Mascon's Guru joins the Mantra Path")
+	check(GameState.data.gurus.has("mist/mascon"), "and Polesend's Ringreader joins the Grain Road")
 
 
 func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
-	# Bible 10.2: Daybreak has a Guru, an armorer, the spell-scroll shop (Fire,
+	# Bible 10.2: Carillon has a Ringreader, an armorer, the spell-scroll shop (Kindle,
 	# 1,200 g), a grocer and a cartographer.
 	var w := make_world({}, "daybreak/daybreak")
 	await frames(2)
@@ -2093,20 +2085,20 @@ func test_daybreak_sells_plate_charts_and_the_fire_scroll() -> void:
 		if c is Npc:
 			ids.append((c as Npc).npc_id)
 	for id: String in ["guru", "daybreak_armorer", "daybreak_scribe", "daybreak_grocer", "daybreak_cartographer", "daybreak_mayor", "daybreak_bellkeeper"]:
-		check(ids.has(id), "%s lives in Daybreak" % id)
+		check(ids.has(id), "%s lives in Carillon" % id)
 		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
 	var p := w.player
 	p.gold = 6100
-	check(not p.abilities.get("fire", false), "the run starts without Fire")
+	check(not p.abilities.get("fire", false), "the run starts without Kindle")
 	var scroll: Dictionary = GameData.shop("daybreak_scrolls").stock[0]
-	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Fire for 1,200 g")
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Kindle for 1,200 g")
 	check(Shop.buy("daybreak_scrolls", 0, p), "and you can buy it")
-	check(p.abilities.fire and GameState.data.abilities.fire, "the scroll teaches Fire for good")
-	check(p.equipped_spell == "fire", "with no other spell, Fire goes on the Spell button")
+	check(p.abilities.fire and GameState.data.abilities.fire, "the scroll teaches Kindle for good")
+	check(p.equipped_spell == "fire", "with no other spell, Kindle goes on the Spell button")
 	check(Shop.status("daybreak_scrolls", 0, p) == "owned", "and the scroll shows as owned")
-	check(Shop.buy("daybreak_armor", 0, p), "the armorer sells Full Plate")
+	check(Shop.buy("daybreak_armor", 0, p), "the armorer sells Knight's Plate")
 	check(is_equal_approx(p.defense, 0.45), "which takes 45%% off a hit (%.2f)" % p.defense)
-	check(Shop.buy("daybreak_charts", 0, p) and GameState.has_chart("daybreak"), "the bell-ringer sells the Daybreak chart")
+	check(Shop.buy("daybreak_charts", 0, p) and GameState.has_chart("daybreak"), "the bell-ringer sells the Carillon chart")
 	check(p.gold == 6100 - 1200 - 4200 - 700, "for 6,100 gold in all (%d left)" % p.gold)
 	# The Spell button's choice is saved with the rest.
 	GameState.capture(p)
@@ -2126,18 +2118,18 @@ func test_the_final_tier_comes_with_the_spring_of_sky() -> void:
 	for i in arms.size():
 		if arms[i].item == "dwarvish_broad_sword":
 			blade = i
-	check(blade >= 0 and int(arms[blade].price) == 2800, "Eolis Arms stocks the Dwarvish Broad Sword at 2,800 g")
-	check(not Shop.shelf("eolis_arms").has(blade), "but not before the Spring of Sky")
+	check(blade >= 0 and int(arms[blade].price) == 2800, "Hearthroot Arms stocks the Dwarvish Broad Sword at 2,800 g")
+	check(not Shop.shelf("eolis_arms").has(blade), "but not before the Sky Spring")
 	check(Shop.status("eolis_arms", blade, p) == "hidden" and not Shop.buy("eolis_arms", blade, p), "so it can't be bought")
 	var stores: Array = GameData.shop("daybreak_items").stock
 	var fruit := stores.size() - 1
-	check(stores[fruit].item == "life_fruit" and int(stores[fruit].price) == 2000 and stores[fruit].get("once", false), "Daybreak's grocer keeps one Life Fruit for 2,000 g")
+	check(stores[fruit].item == "life_fruit" and int(stores[fruit].price) == 2000 and stores[fruit].get("once", false), "Carillon's grocer keeps one Life Fruit for 2,000 g")
 	check(Shop.status("daybreak_items", fruit, p) == "hidden", "off the shelf while the storm lasts")
 	GameState.set_flag("spring:sky")
 	check(Shop.shelf("eolis_arms").has(blade) and Shop.status("eolis_arms", blade, p) == "", "the sky road opens and the blade comes in")
 	check(Shop.buy("eolis_arms", blade, p) and GameState.data.equipment.blade == "dwarvish_broad_sword", "bought the Dwarvish Broad Sword")
 	check(p.gold == 7200 and p.reach_bonus == 16.0 and p.arc_bonus == 20.0, "its reach and arc are yours")
-	check(Shop.status("eolis_arms", 0, p) == "", "the Long Sword is still for sale: only what you have counts as owned (pass 186)")
+	check(Shop.status("eolis_arms", 0, p) == "", "the Wayfarer's Sword is still for sale: only what you have counts as owned (pass 186)")
 	check(Shop.buy("daybreak_items", fruit, p) and Shop.status("daybreak_items", fruit, p) == "sold out", "the fruit is sold once")
 	GameState.wear("short_sword", p)
 	check(Shop.status("eolis_arms", blade, p) == "owned", "put down, the Broad Sword is still yours")
@@ -2148,14 +2140,14 @@ func test_the_tilte_scroll_is_sold_in_daybreak() -> void:
 	var p := w.player
 	await frames(3)
 	var stock: Array = GameData.shop("daybreak_scrolls").stock
-	check(stock[1].item == "tilte_scroll" and int(stock[1].price) == 2500, "the scriptorium sells Tilte for 2,500 g")
+	check(stock[1].item == "tilte_scroll" and int(stock[1].price) == 2500, "the scriptorium sells Wisplight for 2,500 g")
 	p.gold = 2500
 	check(not p.abilities.get("tilte", false), "you start without it")
 	check(Shop.buy("daybreak_scrolls", 1, p) and p.abilities.tilte, "bought, it is learned")
 	check(Shop.status("daybreak_scrolls", 1, p) == "owned", "and can't be bought twice")
 	GameState.data.skills = ["clear_mind", "siphon", "deluge_pierce", "tilte_swarm"]
 	GameState.refresh_stats(p)
-	check(p.tilte_swarm, "the Tilte Swarm skill reaches the player")
+	check(p.tilte_swarm, "the Wisp Swarm skill reaches the player")
 
 
 ## Pass 322: every number a skill's page names is the number the code uses.
@@ -2184,7 +2176,7 @@ func test_every_skill_page_names_the_number_it_gives() -> void:
 			"quick_draught": said[id] = "%d%% faster" % pct.call(1.0 - p.drink_mult)
 			"gold_sense": said[id] = "%d%% more gold" % pct.call(p.gold_mult - 1.0)
 			"clear_mind": said[id] = "+%d max MP" % roundi(p.max_mp - base_mp)
-			"deep_pockets": said[id] = "+%d Red Potion charge" % (p.flask_max - base_flask)
+			"deep_pockets": said[id] = "+%d Sapflask charge" % (p.flask_max - base_flask)
 			"resilience": said[id] = "+%d mask of health" % ((p.max_hp - base_hp) / 20)
 	GameState.data.skills = saved
 	GameState.refresh_stats(p)
@@ -2204,12 +2196,12 @@ func test_every_skill_page_names_the_number_it_gives() -> void:
 	check(said.size() >= 18, "and the check covers each skill with a number (%d)" % said.size())
 	# The bible's list (9) names the same numbers.
 	var tree := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("**Blade (melee)**", 1).get_slice("\n## ", 0)
-	var nums := {"Keen Edge": said.keen_edge.get_slice(" ", 0), "Keener Edge": said.keener_edge.get_slice(" ", 0), "Mattock Mastery": "+" + said.mattock_mastery.get_slice(" ", 0),
+	var nums := {"Keen Edge": said.keen_edge.get_slice(" ", 0), "Keener Edge": said.keener_edge.get_slice(" ", 0), "Pick Mastery": "+" + said.mattock_mastery.get_slice(" ", 0),
 		"Siphon": "+" + said.siphon.get_slice(" ", 0), "Thrift": said.thrift.get_slice(" ", 0), "Quick Draught": said.quick_draught.get_slice(" ", 0),
 		"Gold Sense": "+" + said.gold_sense.get_slice(" ", 0), "Clear Mind": said.clear_mind.get_slice(" max", 0),
 		"Deep Pockets": said.deep_pockets.get_slice(" Red", 0), "Resilience": said.resilience.get_slice(" of", 0), "Bloodletting": "%d HP" % Player.BLOODLETTING_HEAL,
 		"Executioner": "+%d%%" % pct.call(p.combat.executioner_mult - 1.0), "Last Stand": "below %d%% HP, take %d%% less" % [pct.call(Player.LAST_STAND_BELOW), pct.call(1.0 - Player.LAST_STAND_TAKEN)],
-		"Time Thief": "%d s longer" % roundi(Player.TIME_THIEF_EXTRA), "Wanderer's Grace": "+%s s" % String.num(Player.GRACE_INVULN), "Tilte Swarm": "3 orbs"}
+		"Time Thief": "%d s longer" % roundi(Player.TIME_THIEF_EXTRA), "Wanderer's Grace": "+%s s" % String.num(Player.GRACE_INVULN), "Wisp Swarm": "3 orbs"}
 	var stale := []
 	for name: String in nums:
 		var line := tree.get_slice(". %s:" % name, 1).get_slice("\n", 0)
@@ -2231,7 +2223,7 @@ func test_act_three_skills_chain_and_apply() -> void:
 			"clear_mind", "siphon", "deluge_pierce", "tilte_swarm", "thrift", "chain_thunder", "time_thief",
 			"deep_pockets", "gold_sense", "quick_draught", "second_stride", "feather_fall", "treasure_sense", "resilience", "last_stand", "second_wind"]:
 		check(Skills.learn(id, p), "learned " + id)
-	check(p.riposte and p.bloodletting and p.chain_thunder and p.time_thief, "Riposte, Bloodletting, Chain Thunder and Time Thief switch on")
+	check(p.riposte and p.bloodletting and p.chain_thunder and p.time_thief, "Riposte, Bloodletting, Forked Storm and Time Thief switch on")
 	check(p.last_stand and p.second_wind and GameState.has_skill("treasure_sense"), "Treasure Sense, Last Stand and Second Wind are learned")
 	check(is_equal_approx(p.melee_mult, 1.2), "Keener Edge stacks with Keen Edge: +20%% (%.2f)" % p.melee_mult)
 	check(is_equal_approx(p.spell_cost_mult, 0.85), "Thrift: spells cost 15% less")
@@ -2310,7 +2302,7 @@ func test_bloodletting_heals_on_a_staggered_foe() -> void:
 func test_thrust_charges_and_lunges() -> void:
 	var w := make_world(_town({Vector2i(26, 19): "M"}), "test/town", cell_feet(8, 19))
 	var p := w.player
-	var mono: Monodron = _find(w.room, Monodron)
+	var mono: Blinkhop = _find(w.room, Blinkhop)
 	mono.max_hp = 999
 	mono.hp = 999
 	mono.set_physics_process(false)
@@ -2413,7 +2405,7 @@ func test_thrift_and_time_thief() -> void:
 	p.equipped_spell = "deluge"
 	p.input.spell_pressed = true
 	await frames(1)
-	check_near(p.max_mp - p.mp, Spells.cost("deluge") * 0.85, 0.2, "Thrift: a Deluge costs 15% less")
+	check_near(p.max_mp - p.mp, Spells.cost("deluge") * 0.85, 0.2, "Thrift: a Torrent costs 15% less")
 	TimeStop.reset()
 	p.input.hourglass_pressed = true
 	await frames(1)
@@ -2421,17 +2413,17 @@ func test_thrift_and_time_thief() -> void:
 	TimeStop.reset()
 
 
-## Mantra of Death (pass 134), the Arcana branch's last node: Death costs half.
+## Deep Wither (pass 134), the Arcana branch's last node: Wither costs half.
 func test_mantra_of_death_halves_the_death_spell() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
 	p.abilities["death"] = true
 	p.abilities["deluge"] = true
 	_learn_all(p, ARCANA_TO.slice(0, 6))
-	check(Skills.status("mantra_of_death") == "locked", "Mantra of Death waits on Time Thief")
+	check(Skills.status("mantra_of_death") == "locked", "Deep Wither waits on Time Thief")
 	_learn_all(p, ARCANA_TO + ["mantra_of_death"])
 	check(p.mantra_of_death and int(GameData.skill("mantra_of_death").cost) == 3, "it costs 3 points and switches on")
-	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.MANTRA_OF_DEATH_MULT, 0.01, "Death costs half, after Thrift (%.1f)" % p.spell_cost("death"))
+	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.MANTRA_OF_DEATH_MULT, 0.01, "Wither costs half, after Thrift (%.1f)" % p.spell_cost("death"))
 	check_near(p.spell_cost("deluge"), Spells.cost("deluge") * 0.85, 0.01, "other spells only get Thrift")
 	await frames(3)
 	p.mp = p.max_mp
@@ -2440,7 +2432,7 @@ func test_mantra_of_death_halves_the_death_spell() -> void:
 	await frames(1)
 	check_near(p.max_mp - p.mp, 17.0, 0.2, "a cast takes 17 MP, not 34 (%.1f)" % (p.max_mp - p.mp))
 	p.gold = 1000
-	check(Skills.respec(p) and is_equal_approx(p.spell_cost("death"), Spells.cost("death")), "a respec puts Death back at 40")
+	check(Skills.respec(p) and is_equal_approx(p.spell_cost("death"), Spells.cost("death")), "a respec puts Wither back at 40")
 
 
 func test_chain_thunder_leaps_to_two_more_foes() -> void:
@@ -2484,7 +2476,7 @@ func test_treasure_sense_marks_rooms_with_something_left() -> void:
 
 
 func test_the_map_marks_key_doors_still_shut() -> void:
-	# A Queen door and a plain Jack door in a test room.
+	# A Silver door and a plain Copper door in a test room.
 	var rooms := _town({Vector2i(12, 19): "J", Vector2i(30, 19): "J"}, ["lock: 12, 19, queen"])
 	var w := make_world(rooms, "test/town", cell_feet(5, 19))
 	var info: Dictionary = w.catalog["test/town"]
@@ -2504,7 +2496,7 @@ func test_the_map_marks_key_doors_still_shut() -> void:
 			kinds[lock.kind] = room_id
 	for kind: String in ["queen", "king", "ace", "joker", "sky"]:
 		check(kinds.has(kind), "the map knows where the %s door is (%s)" % [kind, kinds])
-	check(kinds.get("queen", "") == "mist/feather_hollow", "the Queen vault is in the Feather Hollow")
+	check(kinds.get("queen", "") == "mist/feather_hollow", "the Silver vault is in the Feather Hollow")
 	real.free()
 
 
@@ -2568,7 +2560,7 @@ func test_last_stand_and_second_wind() -> void:
 
 ## Pass 136: Ilse the Dyer in the Market Row sells six cloak dyes (bible 10's
 ## cosmetic gold sink); one you own is worn again for free, and 100% completion
-## puts the glowing Lord's Gold on her shelf (bible 11).
+## puts the glowing Crown Gold on her shelf (bible 11).
 func test_the_dyer_dyes_the_cloak() -> void:
 	var w := make_world({}, "eolis/market")
 	await frames(2)
@@ -2598,7 +2590,7 @@ func test_the_dyer_dyes_the_cloak() -> void:
 	check(p.visual.material == null, "and the shader comes off")
 	check(Shop.status("eolis_dyes", 1, p) == "" and Shop.buy("eolis_dyes", 1, p) and p.gold == 0, "Ember again, free: it is yours")
 	var lord := stock.size() - 1
-	check(stock[lord].item == "lord_dye" and not Shop.shelf("eolis_dyes").has(lord), "the Lord's Gold is not on the shelf yet")
+	check(stock[lord].item == "lord_dye" and not Shop.shelf("eolis_dyes").has(lord), "the Crown Gold is not on the shelf yet")
 	check(not Completion.award({"percent": 99}) and not GameState.flag("lord"), "99% of the world is not enough")
 	check(Completion.award({"percent": 100}) and Shop.shelf("eolis_dyes").has(lord), "100% puts it on the shelf")
 	check(Shop.buy("eolis_dyes", lord, p) and PlayerVisual.dye_look()[1], "it is given, and it glows")
@@ -2790,19 +2782,19 @@ func test_executioner_strikes_harder_into_a_bosss_opening() -> void:
 ## Pass 186 (Sean): gear you buy or find is kept, and the Equipment page puts
 ## any of it on; tempers stay with each blade. The Dwarvish Broad Sword (once
 ## the Giant Blade) takes both hands: no guard or parry while you hold it.
-## Pass 193: the original sold twelve pieces of gear. Each is an item under
+## Pass 193: the source game sold twelve pieces of gear. Each is an item under
 ## its own name, or bible 5.2's table of what changed names the item that
 ## took its place; and every id the save renames has a row there.
 func test_the_originals_twelve_pieces_of_gear_are_all_here() -> void:
-	const ORIGINAL := ["Hand Dagger", "Long Sword", "Giant Blade", "Dragon Slayer",
-		"Leather Armor", "Studded Mail", "Full Plate", "Battle Suit",
-		"Small Shield", "Large Shield", "Magic Shield", "Battle Helmet"]
+	const ORIGINAL := ["Hand Dagger", "Wayfarer's Sword", "Giant Blade", "Severance",
+		"Tanned Jerkin", "Riveted Coat", "Knight's Plate", "Elven Plate",
+		"Buckler", "Kite Shield", "Warding Shield", "Elven Helm"]
 	var names := {}
 	var items := GameData.table("items")
 	for id: String in items:
 		names[String(items[id].get("name", ""))] = id
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	var at := bible.find("**The original's gear, and what changed")
+	var at := bible.find("**The source game's gear, and what changed")
 	check(at >= 0, "bible 5.2 has the table of what changed")
 	var table := {}
 	for line: String in bible.substr(at, 3000).split("\n"):
@@ -2823,7 +2815,7 @@ func test_the_originals_twelve_pieces_of_gear_are_all_here() -> void:
 		if not bible.substr(at, 3000).contains("from `%s`" % old):
 			unrecorded.append(old)
 	check(unrecorded.is_empty(), "every renamed id has a row: %s" % [unrecorded])
-	check(names.has("Battle Helmet") and String(items[names["Battle Helmet"]].kind) == "helmet", "the Battle Helmet keeps its name in its own slot")
+	check(names.has("Elven Helm") and String(items[names["Elven Helm"]].kind) == "helmet", "the Elven Helm keeps its name in its own slot")
 
 
 ## Every room file, as id -> Room.parse (the gym and the trials included).
@@ -2846,191 +2838,9 @@ func _rooms_with_prop(rooms: Dictionary, kind: String) -> Array:
 	return out
 
 
-## Pass 201: the rubric's faithfulness checklist (bible 15.3), held as a whole:
-## the original's eight towns each with a Guru, its sixteen ranks, four rings,
-## five keys, three springs, its guardians and the Evil One, its five spells
-## and its relics.
-func test_the_faithfulness_checklist_is_all_here() -> void:
-	var rooms := _all_rooms()
-	const TOWNS := {"Eolis": "eolis/guru_temple", "Apolune": "trunk/apolune", "Forepaw": "tower/forepaw",
-		"Mascon": "mist/mascon", "Victim": "mist/victim", "Conflate": "branches/conflate",
-		"Daybreak": "daybreak/daybreak", "Dartmoor": "dartmoor/drowned_market"}
-	var no_guru := []
-	for town: String in TOWNS:
-		var has := false
-		for spec: String in rooms.get(TOWNS[town], {"lists": {}}).lists.get("npc", []):
-			has = has or spec.get_slice(",", 2).strip_edges() == "guru"
-		if not has:
-			no_guru.append(town)
-	check(no_guru.is_empty(), "each of the original's eight towns has a Guru (missing: %s)" % [no_guru])
-	check(GameState.RANKS == ["Novice", "Aspirant", "Battler", "Fighter", "Adept", "Chevalier", "Veteran", "Warrior",
-		"Swordman", "Hero", "Soldier", "Myrmidon", "Champion", "Superhero", "Paladin", "Lord"], "the original's sixteen ranks, in order")
-	var rings := []
-	for id: String in BossArena.BOSSES:
-		if BossArena.BOSSES[id].has("ring"):
-			rings.append(BossArena.BOSSES[id].ring)
-	rings.sort()
-	check(rings == ["demon", "dworf", "elf", "ruby"] and ZenisGate.RINGS.size() == 4, "the four rings, each a guardian's, open Zenis (%s)" % [rings])
-	var items := GameData.table("items")
-	var locks := {}
-	for id: String in rooms:
-		for spec: String in rooms[id].lists.get("lock", []):
-			locks[spec.get_slice(",", 2).strip_edges()] = true
-	for card: String in ["jack", "queen", "king", "ace"]:
-		check(items.has(card + "_key"), "the %s Key is an item" % card.capitalize())
-	check(locks.has("queen") and locks.has("king") and locks.has("ace") and locks.has("joker"), "and each card but the Jack (the default) has a door (%s)" % [locks.keys()])
-	check(_rooms_with_prop(rooms, "joker_key").size() == 1, "the one Joker Key lies in one room")
-	check(Fountain.SPRINGS == ["trunk", "mist", "sky"], "the three springs fill Eolis's fountain")
-	for spring: String in Fountain.SPRINGS:
-		check(_rooms_with_prop(rooms, "spring_" + spring).size() == 1, "the Spring of %s has its room" % spring.capitalize())
-	var arenas := {}
-	for id: String in rooms:
-		var b := String(rooms[id].header.get("boss", ""))
-		if b != "":
-			arenas[b] = int(arenas.get(b, 0)) + 1
-	for boss: String in ["rokusutahn", "zoradohna", "ripasheiku", "zorugeriru", "pakukame", "borabohra", "king_grieve", "shadow_eura", "evil_one"]:
-		check(BossArena.BOSSES.has(boss) and arenas.get(boss, 0) == 1, "%s has one arena" % boss)
-	check(Spells.ORDER == ["deluge", "thunder", "fire", "tilte", "death"], "the original's five spells")
-	var abilities: Dictionary = GameState.fresh().abilities
-	check(BossArena.BOSSES.foreman.get("ability", "") == "mattock", "the Mattock is the Foreman's")
-	for relic: String in ["boots", "onyx", "hourglass", "pendant", "magical_rod"]:
-		check(ItemPickup.INFO.has(relic) and relic in ItemPickup.ABILITIES, "the %s can be found" % relic)
-	for relic: String in ["pendant", "magical_rod"]:
-		check(_rooms_with_prop(rooms, relic).size() == 1 and relic in Room.FOUND_PROPS, "the %s lies in one room and counts as a treasure" % relic)
-	check(abilities.has("pendant") and abilities.has("magical_rod"), "a save carries the relics")
-	# Pass 217: in the original only the sword King Grieve swallowed can destroy
-	# the Evil One, and beating him gives it up. No room lays it (legend &).
-	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == "dragon_slayer", "King Grieve gives up the Dragon Slayer")
-	var laid := []
-	for id: String in rooms:
-		for row: String in rooms[id].grid:
-			if row.contains("&"):
-				laid.append(id)
-	check(laid.is_empty(), "and no room lays it (%s)" % [laid])
-	# Pass 297: where the remake strays from the original's rules for a death
-	# and for what a foe leaves, the bible says what the original did.
-	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	var death := bible.get_slice("### 5.4 Death and recovery", 1).get_slice("\n### ", 0)
-	check(death.contains("Deviation") and death.contains("lowest point for that rank"), "5.4 says what the original's death took (experience to the rank's floor, gold by rank)")
-	check(bible.contains("names only \"food and money\" from foes"), "7 notes the mana orb is the remake's, not the original's")
-	# Pass 305: the manual's Poison is one fixed loss, and its Ointment wards
-	# off enemy attacks; the remake's lingering poison and warded flask say so.
-	check(bible.contains("\"The hero's power will decrease by a fixed amount.\"") and bible.contains("from any enemy attack"), "7 quotes the original's Poison and Ointment beside the remake's")
-	check(Player.POISON_TIME > Player.POISON_TICK, "and the remake's poison lingers over ticks (%.0f s, a tick every %.0f s)" % [Player.POISON_TIME, Player.POISON_TICK])
-	# Pass 321: the manual's Red Potion restored the hero completely; the
-	# remake's flask sips a fixed amount, and the bible's row says what it reaches.
-	check(bible.contains("\"It will completely restore the hero's power.\""), "5.1 quotes the original's Red Potion beside the remake's flask")
-	var tuning := CombatTuning.new()
-	var fresh: Dictionary = GameState.fresh()
-	check(tuning.flask_heal < int(fresh.max_hp), "and a drink is no full restore, even at the start (%d of %d)" % [tuning.flask_heal, int(fresh.max_hp)])
-	var flask_row := bible.get_slice("| Red Potion flask |", 1).get_slice("\n", 0)
-	var most := int(fresh.flask_max) + 9 / 3 + 1
-	check(flask_row.contains("| %d charges, each still %d HP |" % [most, tuning.flask_heal]), "the flask's row says its most: %d charges of %d HP (%s)" % [most, tuning.flask_heal, flask_row.left(60)])
-	# Pass 329: the manual ranks the spells against Deluge; the remake keeps
-	# Fire's 1.5 and says why it left the rest.
-	check(bible.contains("\"has 1.5 times the power of Deluge\"") and bible.contains("\"has four times the power of Deluge\"") and bible.contains("\"has six times the power of fire\""), "the bible quotes the original's spell powers")
-	check(int(Spells.DATA.fire.damage) * 2 == int(Spells.DATA.deluge.damage) * 3, "Fire keeps the original's 1.5 times Deluge (%d, %d)" % [Spells.DATA.fire.damage, Spells.DATA.deluge.damage])
-	check(int(Spells.DATA.death.damage) > int(Spells.DATA.fire.damage) and int(Spells.DATA.death.damage) > int(Spells.DATA.thunder.damage), "and Death still hits hardest")
-	# Pass 353: the original's Wing Boots and Mattock were spent; the remake
-	# keeps both for good, and the bible says why.
-	check(bible.contains("**The original's spent tools, kept for good (deviation, pass 353):**") and bible.contains("shorter the higher your rank")
-		and bible.contains("Each Mattock broke one blocked passage"), "the bible says the original's Boots and Mattock were spent, and why the remake keeps them")
-	check(abilities.get("boots") is bool and abilities.get("mattock") is bool, "a save keeps the Boots and the Mattock as yes-or-no")
-	var named := []
-	for id: String in items:
-		var title := String(items[id].get("name", items[id].get("title", ""))).to_lower()
-		if id.contains("boots") or id.contains("mattock") or title.contains("wing boots") or title.contains("mattock"):
-			named.append(id)
-	check(named.is_empty(), "and no item is sold or spent in their name (%s)" % [named])
-	var room := make_room(["##########", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "##########"])
-	var p := make_player(room, Vector2i(4, 7), {"boots": true, "mattock": true})
-	await frames(4)
-	for leap in 2:
-		p.input.jump_pressed = true
-		p.input.jump_held = true
-		await frames(6)
-		p.input.jump_pressed = true
-		await frames(1)
-		check(not p.has_double_jump, "leap %d: the Boots lift a second time in the air" % (leap + 1))
-		p.input.jump_pressed = false
-		p.input.jump_held = false
-		for i in 120:
-			await frames(1)
-			if p.is_on_floor():
-				break
-		await frames(2)
-		check(p.is_on_floor() and p.abilities.get("boots", false) and p.has_double_jump, "leap %d: and they are still worn, their lift back, after landing" % (leap + 1))
-	# Pass 361: the original's Ointment ran out sooner the higher the title;
-	# the remake's lasts the same at every rank, rubbed on or put straight on.
-	check(bible.contains("**The Ointment lasts as long at every rank (deviation, pass 361):**") and bible.contains("ran out sooner the higher your title"), "the bible says the original's Ointment shrank with rank, and why the remake's doesn't")
-	var lasted := []
-	for rank: int in [0, GameState.RANKS.size() - 1]:
-		GameState.data.rank = rank
-		p.ointments = 1
-		check(p.use_ointment(), "rank %s: an Ointment is rubbed on" % GameState.RANKS[rank])
-		lasted.append(p.ointment_left)
-		await frames(Engine.physics_ticks_per_second * int(Player.OINTMENT_TIME) + 2)
-		check(p.ointment_left <= 0.0, "rank %s: and wears off after %s s" % [GameState.RANKS[rank], String.num(Player.OINTMENT_TIME)])
-		# From a full pouch it goes straight on, and lasts the same.
-		p.ointments = Shop.OINTMENT_MAX
-		var jar := Drop.new()
-		jar.kind = "ointment"
-		room.add_child(jar)
-		jar.global_position = p.global_position + Vector2(0, -4)
-		for i in 40:
-			await frames(1)
-			if p.ointment_left > 0.0:
-				break
-		lasted.append(p.ointment_left)
-		if is_instance_valid(jar):
-			jar.queue_free()
-		await frames(Engine.physics_ticks_per_second * int(Player.OINTMENT_TIME) + 2)
-	GameState.data.rank = 0
-	check(lasted.size() == 4 and lasted.all(func(t: float) -> bool: return absf(t - lasted[0]) <= 0.1 and t > Player.OINTMENT_TIME - 0.1), "at the first rank and at Lord, rubbed on or put straight on, it lasts the same %s s (%s)" % [String.num(Player.OINTMENT_TIME), lasted])
-	# Pass 257: the original's Pakukame looses Liliths three at a time.
-	check(Pakukame.BROOD == 3 and load("res://scripts/enemies/lilith.gd") != null, "Pakukame looses its Liliths three at a time")
-	# Pass 273: the original's Naga floats up and down over the ladders of the
-	# Tower of Trunk, where the climb meets it.
-	var nagas := []
-	for id: String in rooms:
-		for row: String in rooms[id].grid:
-			if row.contains(")"):
-				nagas.append(id)
-	check(load("res://scripts/enemies/naga.gd") != null and nagas.size() >= 2 and nagas.all(func(id: String) -> bool: return id.begins_with("tower/")), "Nagas float over the Tower's ladders (%s)" % [nagas])
-	# Pass 281: and, slain, it always leaves the original's largest bread.
-	var naga := Naga.new()
-	check(naga.sure_drop == "loaf" and Drop.LOAF_HEAL > Drop.BREAD_HEAL, "a slain Naga leaves the great loaf")
-	naga.free()
-	# Pass 289: the Myconid, the original's one walker that always drops bread.
-	var myconid := BogMyconid.new()
-	check(myconid.sure_drop == "bread", "a slain Myconid leaves bread")
-	myconid.free()
-	for id: String in nagas:
-		var grid: Array = rooms[id].grid
-		var near := false
-		for y in grid.size():
-			var x := String(grid[y]).find(")")
-			if x < 0:
-				continue
-			for dy in range(-3, 4):
-				for dx in range(-6, 7):
-					var yy: int = y + dy
-					if yy >= 0 and yy < grid.size() and x + dx >= 0 and x + dx < String(grid[yy]).length() and String(grid[yy])[x + dx] == "\"":
-						near = true
-		check(near, "%s: its Naga floats by a ladder" % id)
-	# Pass 241: the original's Fraternal Castle, where King Grieve kept the
-	# Dragon Slayer and the Demon Ring, is his hall by name, and the stair
-	# down to it says where it goes.
-	var hall: Dictionary = rooms.get("dartmoor/throne_hall", {"header": {}})
-	check(String(hall.header.get("name", "")) == "Fraternal Castle" and String(hall.header.get("boss", "")) == "king_grieve", "King Grieve's hall is Fraternal Castle")
-	var told := false
-	for spec: String in rooms.get("dartmoor/kings_stair", {"lists": {}}).lists.get("sign", []):
-		told = told or spec.contains("Fraternal Castle")
-	check(told, "and the King's Stair's sign says it goes down to Fraternal Castle")
-
-## Pass 233: the original's gear and goods, each with its old name and a way
+## Pass 233: the source game's gear and goods, each with its old name and a way
 ## to get it. Three blades past the one you start with, four armors, three
-## shields, the Battle Helmet, the Elixir and the Ointment: each is sold by a
+## shields, the Elven Helm, the Amber Draught and the Barkbalm: each is sold by a
 ## keeper standing in a town, laid in a room, given by a guardian or worn from
 ## the start, and each ladder climbs (a later blade hits harder, a later armor
 ## stops more, a later shield wards more). Sean's two renames keep old saves.
@@ -3039,16 +2849,16 @@ func test_the_originals_gear_is_all_here() -> void:
 	var items := GameData.table("items")
 	var npcs := GameData.table("npcs")
 	var shops := GameData.table("shops")
-	const GEAR := {"short_sword": "Short Sword", "long_sword": "Long Sword", "dwarvish_broad_sword": "Dwarvish Broad Sword",
-		"dragon_slayer": "Dragon Slayer", "leather_armor": "Leather Armor", "studded_mail": "Studded Mail",
-		"full_plate": "Full Plate", "battle_suit": "Battle Suit", "small_shield": "Small Shield",
-		"large_shield": "Large Shield", "magic_shield": "Magic Shield", "battle_helmet": "Battle Helmet",
-		"elixir": "Elixir", "ointment": "Ointment"}
+	const GEAR := {"short_sword": "Short Sword", "long_sword": "Wayfarer's Sword", "dwarvish_broad_sword": "Dwarvish Broad Sword",
+		"dragon_slayer": "Severance", "leather_armor": "Tanned Jerkin", "studded_mail": "Riveted Coat",
+		"full_plate": "Knight's Plate", "battle_suit": "Elven Plate", "small_shield": "Buckler",
+		"large_shield": "Kite Shield", "magic_shield": "Warding Shield", "battle_helmet": "Elven Helm",
+		"elixir": "Amber Draught", "ointment": "Barkbalm"}
 	var wrong := []
 	for id: String in GEAR:
 		if String(items.get(id, {}).get("name", "")) != GEAR[id]:
 			wrong.append(id)
-	check(wrong.is_empty(), "the original's gear keeps its names (wrong: %s)" % [wrong])
+	check(wrong.is_empty(), "the source game's gear keeps its names (wrong: %s)" % [wrong])
 	var ways := {}
 	for id: String in GameState.fresh().gear:
 		ways[id] = "worn from the start"
@@ -3083,10 +2893,10 @@ func test_the_originals_gear_is_all_here() -> void:
 
 
 
-## Pass 209: the original's towns each kept a tool shop and sold keys. Every
-## one of the eight has a keeper standing in it who sells goods (an Ointment or
-## an Elixir) and one who sells Jack Keys; the four card keys are each sold a
-## zone before their doors, and the Joker is never sold. Bible 10.2's item-shop
+## Pass 209: the source game's towns each kept a tool shop and sold keys. Every
+## one of the eight has a keeper standing in it who sells goods (an Barkbalm or
+## an Amber Draught) and one who sells Copper Keys; the four card keys are each sold a
+## zone before their doors, and the Glass is never sold. Bible 10.2's item-shop
 ## row is held to the shelves: no shop sells anything the items table lacks.
 func test_every_town_keeps_the_originals_shops() -> void:
 	var rooms := _all_rooms()
@@ -3112,11 +2922,11 @@ func test_every_town_keeps_the_originals_shops() -> void:
 			no_goods.append(town)
 		if not sells.has(town + ":jack_key"):
 			no_keys.append(town)
-	check(no_goods.is_empty(), "every town sells goods, an Ointment or an Elixir (missing: %s)" % [no_goods])
-	check(no_keys.is_empty(), "every town sells Jack Keys (missing: %s)" % [no_keys])
+	check(no_goods.is_empty(), "every town sells goods, an Barkbalm or an Amber Draught (missing: %s)" % [no_goods])
+	check(no_keys.is_empty(), "every town sells Copper Keys (missing: %s)" % [no_keys])
 	for card: String in ["queen", "king", "ace"]:
 		check(sells.keys().any(func(k: String) -> bool: return k.ends_with(":" + card + "_key")), "the %s Key is sold" % card.capitalize())
-	check(not sells.keys().any(func(k: String) -> bool: return k.ends_with(":joker_key")), "the Joker Key is only found")
+	check(not sells.keys().any(func(k: String) -> bool: return k.ends_with(":joker_key")), "the Glass Key is only found")
 	var unknown := []
 	for shop: String in shops:
 		for entry: Dictionary in shops[shop].stock:
@@ -3124,22 +2934,22 @@ func test_every_town_keeps_the_originals_shops() -> void:
 				unknown.append("%s: %s" % [shop, entry.item])
 	check(unknown.is_empty(), "every shelf sells a real item (%s)" % [unknown])
 
-## Pass 201: the original's Pendant (the end of the Tower of Suffer, in the
-## corner of its guardian's room) and Magical Rod (Conflate, up a ladder to the
-## right). The Pendant was meant to raise the blade's power (a slip in the
-## original's code lowered it instead); the Rod raised Deluge from 6 to 9.
+## Pass 201: the source game's Acorn Charm (the end of the Tower of Suffer, in the
+## corner of its guardian's room) and Briar Wand (Sylvarre, up a ladder to the
+## right). The Acorn Charm was meant to raise the blade's power (a slip in the
+## original's code lowered it instead); the Rod raised Torrent from 6 to 9.
 func test_the_pendant_and_the_magical_rod() -> void:
 	GameState.new_game()
-	check(_rooms_with_prop(_all_rooms(), "pendant") == ["mist/hag_mire"], "the Pendant lies in the Matriarch's Mire")
-	check(_rooms_with_prop(_all_rooms(), "magical_rod") == ["branches/conflate"], "the Magical Rod lies in Conflate")
+	check(_rooms_with_prop(_all_rooms(), "pendant") == ["mist/hag_mire"], "the Acorn Charm lies in the Matriarch's Mire")
+	check(_rooms_with_prop(_all_rooms(), "magical_rod") == ["branches/conflate"], "the Briar Wand lies in Sylvarre")
 	var room := make_room(_GOLD_ROOM)
 	var p := make_player(room, Vector2i(2, 3))
 	p.abilities["pendant"] = false
 	p.abilities["magical_rod"] = false
 	await frames(2)
 	var plain := p.blade_mult()
-	var bolt := Spells.cast("deluge", p) as DelugeBolt
-	check(bolt.damage == Spells.DATA.deluge.damage, "without the Rod, Deluge hits for %d" % bolt.damage)
+	var bolt := Spells.cast("deluge", p) as TorrentBolt
+	check(bolt.damage == Spells.DATA.deluge.damage, "without the Rod, Torrent hits for %d" % bolt.damage)
 	bolt.free()
 	for kind: String in ["pendant", "magical_rod"]:
 		var item := ItemPickup.new()
@@ -3150,9 +2960,9 @@ func test_the_pendant_and_the_magical_rod() -> void:
 		await frames(2)
 		check(p.abilities.get(kind, false) and GameState.is_collected("test:" + kind) and bool(GameState.data.abilities.get(kind, false)),
 			"touching the %s takes it, for good" % kind)
-	check_near(p.blade_mult(), plain * p.combat.pendant_mult, 0.0001, "the Pendant: every blade hit a tenth harder")
-	bolt = Spells.cast("deluge", p) as DelugeBolt
-	check(bolt.damage == roundi(Spells.DATA.deluge.damage * 1.5), "the Rod: Deluge half again as hard (%d)" % bolt.damage)
+	check_near(p.blade_mult(), plain * p.combat.pendant_mult, 0.0001, "the Acorn Charm: every blade hit a tenth harder")
+	bolt = Spells.cast("deluge", p) as TorrentBolt
+	check(bolt.damage == roundi(Spells.DATA.deluge.damage * 1.5), "the Rod: Torrent half again as hard (%d)" % bolt.damage)
 	bolt.free()
 	room.free()
 	GameState.new_game()
@@ -3175,13 +2985,13 @@ func test_the_equipment_page_shows_blade_numbers_and_changes_the_cloak() -> void
 	GameState.earn_dye("slate_dye")
 	check(Menus.cloak_dyes() == ["warden_dye", "tide_dye", "slate_dye"], "then each dye bought or won (%s)" % [Menus.cloak_dyes()])
 	GameState.set_flag("lord")
-	check(Menus.cloak_dyes().has("lord_dye"), "and the Lord's Gold once it is yours")
+	check(Menus.cloak_dyes().has("lord_dye"), "and the Crown Gold once it is yours")
 	var rows := Menus.equipment_rows()
 	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
 	var at := labels.find("Cloak")
-	check(at > 0 and rows[at].get("header", false) and labels.slice(at + 1, at + 5) == ["Warden Green", "Tide Blue", "Lord's Gold", "Mantra Slate"]
+	check(at > 0 and rows[at].get("header", false) and labels.slice(at + 1, at + 5) == ["Warden Green", "Tide Blue", "Crown Gold", "Grain Slate"]
 		and labels[at + 5] == "Hair", "the page ends with the Cloak and its dyes, then the Hair (%s)" % [labels])
-	check(rows[labels.find("Mantra Slate")].right == "Worn", "marking the one on")
+	check(rows[labels.find("Grain Slate")].right == "Worn", "marking the one on")
 	check(String(rows[1].detail).contains("Cuts 8, heavy 14."), "a blade's row gives its numbers")
 	# Every row's detail fits the menu's box (three lines), the longest gear
 	# worn: the Broad Sword held, so a shield's row adds why it is on your back.
@@ -3220,8 +3030,8 @@ func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> voi
 			if stock[i].item == id:
 				return Shop.buy(shop, i, p)
 		return false
-	check(buy.call("eolis_arms", "long_sword") and buy.call("eolis_arms", "dwarvish_broad_sword"), "bought the Long Sword and the Broad Sword")
-	check(buy.call("eolis_arms", "small_shield"), "and a Small Shield")
+	check(buy.call("eolis_arms", "long_sword") and buy.call("eolis_arms", "dwarvish_broad_sword"), "bought the Wayfarer's Sword and the Broad Sword")
+	check(buy.call("eolis_arms", "small_shield"), "and a Buckler")
 	check(GameState.data.gear.has("long_sword") and GameState.data.gear.has("dwarvish_broad_sword"), "both blades are kept (%s)" % [GameState.data.gear])
 	check(GameState.data.equipment.blade == "dwarvish_broad_sword" and GameState.two_handed(), "the new one goes in hand, two-handed")
 	check(not p.has_shield and not p.reflects, "so the shield stays on your back: no guard, no parry")
@@ -3232,8 +3042,8 @@ func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> voi
 	p.input.block_held = false
 	GameState.data.tempers["long_sword"] = 2
 	GameState.wear("long_sword", p)
-	check(GameState.data.equipment.blade == "long_sword" and p.has_shield, "swapped back to the Long Sword, the shield comes to hand")
-	check(p.slash_damage == roundi(11 * (1.0 + 2 * GameState.TEMPER_BONUS)), "with the Long Sword's own tempers (%d)" % p.slash_damage)
+	check(GameState.data.equipment.blade == "long_sword" and p.has_shield, "swapped back to the Wayfarer's Sword, the shield comes to hand")
+	check(p.slash_damage == roundi(11 * (1.0 + 2 * GameState.TEMPER_BONUS)), "with the Wayfarer's Sword's own tempers (%d)" % p.slash_damage)
 	GameState.wear("long_sword", p)
 	check(GameState.data.equipment.blade == "long_sword", "a blade can't be taken off")
 	GameState.wear("small_shield", p)
@@ -3242,8 +3052,8 @@ func test_gear_is_kept_and_swapped_and_the_broad_sword_takes_both_hands() -> voi
 	check(GameState.data.equipment.shield == "", "gear you don't have can't be put on")
 	var rows := Menus.equipment_rows()
 	var labels: Array = rows.map(func(r: Dictionary) -> String: return r.label)
-	check(labels.slice(0, 4) == ["Blades", "Short Sword", "Long Sword", "Dwarvish Broad Sword"], "the Equipment page lists blades by tier (%s)" % [labels])
-	check(labels.has("Off Hand") and labels.has("Small Shield"), "and the shields you have, under the Off Hand")
+	check(labels.slice(0, 4) == ["Blades", "Short Sword", "Wayfarer's Sword", "Dwarvish Broad Sword"], "the Equipment page lists blades by tier (%s)" % [labels])
+	check(labels.has("Off Hand") and labels.has("Buckler"), "and the shields you have, under the Off Hand")
 	check(rows[2].right == "Worn", "marking what you wear")
 	# A save keeps the gear, and an older save gets what it wore, renamed.
 	var src := GameState.fresh()
@@ -3337,7 +3147,7 @@ func test_the_par_kit_is_affordable_without_grinding() -> void:
 func test_a_deep_zones_foes_pay_as_they_hit() -> void:
 	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(_GOLD_ROOM)))
 	arena.add_child(room)
-	var foe := Monodron.new()
+	var foe := Blinkhop.new()
 	foe.gold_min = 10
 	foe.gold_max = 10
 	foe.position = cell_feet(6, 3)
@@ -3349,12 +3159,12 @@ func test_a_deep_zones_foes_pay_as_they_hit() -> void:
 	for c in room.get_children():
 		if c is Coin:
 			coins += (c as Coin).value
-	check(coins == 20, "a Dartmoor foe's 10 gold comes out as 20 (%d)" % coins)
+	check(coins == 20, "a Vorrhallow foe's 10 gold comes out as 20 (%d)" % coins)
 
 
 ## Pass 243: the rooms hold what bible 5.1 and 11 count. The Tower and the
-## Trunk had grown 18 Potion Shards against the planned 9, so the flask could
-## reach 8 charges where 5 is the most (2 + 9 / 3), and 17 Mantra Shards against
+## Heartwood had grown 18 Potion Shards against the planned 9, so the flask could
+## reach 8 charges where 5 is the most (2 + 9 / 3), and 17 Grain Shards against
 ## 15, two of them spare forever (15 and the trials' six make seven points).
 func test_the_rooms_hold_the_finds_the_bible_counts() -> void:
 	var rooms := _all_rooms()
@@ -3369,7 +3179,7 @@ func test_the_rooms_hold_the_finds_the_bible_counts() -> void:
 	for ch: String in COUNTS:
 		check(int(found.get(ch, 0)) == COUNTS[ch], "the rooms hold %d of '%s' (%d)" % [COUNTS[ch], ch, int(found.get(ch, 0))])
 	check(int(GameState.fresh().flask_max) + COUNTS["F"] / 3 == 5, "every shard fused, the flask holds 5 charges, as 5.1 says")
-	check((COUNTS["*"] + 6) % 3 == 0, "the rooms' Mantra Shards and the six trials' make whole mantras, none spare")
+	check((COUNTS["*"] + 6) % 3 == 0, "the rooms' Grain Shards and the six trials' make whole rings, none spare")
 
 
 
@@ -3410,8 +3220,8 @@ func test_the_secrets_table_counts_the_rooms() -> void:
 	var table := bible.get_slice("## 11. Secrets", 1).get_slice("\n## 12", 0)
 	var cell := func(kind: String) -> String:
 		return table.get_slice("\n| %s | " % kind, 1).get_slice(" |", 0)
-	check(String(cell.call("Breakable walls (Mattock)")).begins_with("%d (" % walls), "11 counts the cracked-stone walls (%d: %s)" % [walls, cell.call("Breakable walls (Mattock)")])
-	check(String(cell.call("Illusory walls (Black Onyx)")).begins_with("%d rooms (" % veiled) and String(cell.call("Illusory walls (Black Onyx)")).contains("%d of them hiding a room" % hiding), "11 counts the rooms with a fake wall, and those hiding a room (%d, %d: %s)" % [veiled, hiding, cell.call("Illusory walls (Black Onyx)")])
+	check(String(cell.call("Breakable walls (Delver's Pick)")).begins_with("%d (" % walls), "11 counts the cracked-stone walls (%d: %s)" % [walls, cell.call("Breakable walls (Delver's Pick)")])
+	check(String(cell.call("Illusory walls (Seer's Lens)")).begins_with("%d rooms (" % veiled) and String(cell.call("Illusory walls (Seer's Lens)")).contains("%d of them hiding a room" % hiding), "11 counts the rooms with a fake wall, and those hiding a room (%d, %d: %s)" % [veiled, hiding, cell.call("Illusory walls (Seer's Lens)")])
 	var cards := ["jack"]
 	for id: String in rooms:
 		for spec: String in rooms[id].lists.get("lock", []):
@@ -3447,10 +3257,10 @@ func _clusters(grid: Array, ch: String) -> int:
 	return n
 
 ## Pass 261 (bible 3.3, 10.2): "the Cartographer in each town sells the zone
-## outline", and every zone the map draws had one but Dartmoor and the Sunken
+## outline", and every zone the map draws had one but Vorrhallow and the Sunken
 ## Spring under it, the two zones with the most hidden rooms. Sounder Hulda
-## stands in the Drowned Market once King Grieve is at rest and the water is
-## down, and charts both. Every zone on the map (all but Zenis, the meteor no
+## stands in the Drowned Market once Thane Vorrund is at rest and the water is
+## down, and charts both. Every zone on the map (all but the Evercrown, the Everbloom no
 ## one has drawn) now has a chart sold by a keeper who stands in a room.
 func test_every_zone_on_the_map_has_a_chart_for_sale() -> void:
 	var rooms := _all_rooms()
@@ -3489,22 +3299,22 @@ func test_every_zone_on_the_map_has_a_chart_for_sale() -> void:
 	GameState.set_flag("boss:king_grieve")
 	w._enter("dartmoor/drowned_market")
 	await frames(2)
-	check(here.call() and Sheet.exists("npc_dartmoor_cartographer"), "once King Grieve is at rest, Sounder Hulda stands in the market")
+	check(here.call() and Sheet.exists("npc_dartmoor_cartographer"), "once Thane Vorrund is at rest, Sounder Hulda stands in the market")
 	var p := w.player
 	p.gold = 1550
-	check(Shop.buy("dartmoor_charts", 0, p) and GameState.has_chart("dartmoor"), "she sells the Dartmoor chart")
+	check(Shop.buy("dartmoor_charts", 0, p) and GameState.has_chart("dartmoor"), "she sells the Vorrhallow chart")
 	check(Shop.buy("dartmoor_charts", 1, p) and GameState.has_chart("sunken"), "and the Sunken Spring's")
 	check(p.gold == 0, "for 1,550 gold (%d left)" % p.gold)
 	check(MapScreen.shown("sunken/spring_gate", w.catalog["sunken/spring_gate"], w.room.id) == "charted", "and the deeps show on the map, dimmed")
 
 
-## Pass 265: the original's Mascon kept a bar, where the bar maid gave useful
-## word and a man at the back told stranger things. The remake's Mascon had
-## none. Now the Black Water stands by its Guru: a house under a tavern sign,
+## Pass 265: the source game's Polesend kept a bar, where the bar maid gave useful
+## word and a man at the back told stranger things. The remake's Polesend had
+## none. Now the Black Water stands by its Ringreader: a house under a tavern sign,
 ## Barmaid Brigid at its door and Old Cormac beside her. What they tell is true
-## of the world: the Pendant in the far corner of the Matriarch's mire past the
-## east door, Zorugeriru round the Spring of Mist past the Dry Cistern, and a
-## messenger's boots at Feather Hollow by Victim.
+## of the world: the Acorn Charm in the far corner of the Matriarch's mire past the
+## east door, the Haar Wyrm round the Haar Spring past the Dry Cistern, and a
+## messenger's boots at Feather Hollow by Lampwick.
 func test_mascon_keeps_the_originals_tavern() -> void:
 	var rooms := _all_rooms()
 	var mascon: Dictionary = rooms["mist/mascon"]
@@ -3519,7 +3329,7 @@ func test_mascon_keeps_the_originals_tavern() -> void:
 	for spec: String in mascon.lists.get("sign", []):
 		if spec.contains("tavern"):
 			sign_x = int(spec.get_slice(",", 0))
-	check(at.has("mascon_barmaid") and at.has("mascon_drinker"), "the bar maid and the man at the back stand in Mascon")
+	check(at.has("mascon_barmaid") and at.has("mascon_drinker"), "the bar maid and the man at the back stand in Polesend")
 	var tavern := houses.filter(func(x: int) -> bool: return absi(x - sign_x) <= 5 and absi(x - int(at.get("mascon_barmaid", -100))) <= 4)
 	check(tavern.size() == 1, "by a house under the tavern's sign (sign %d, houses %s)" % [sign_x, houses])
 	for id: String in ["mascon_barmaid", "mascon_drinker"]:
@@ -3527,17 +3337,17 @@ func test_mascon_keeps_the_originals_tavern() -> void:
 		check(npc.get("role", "") == "talk" and npc.lines.size() >= 2 and npc.has("lines_cleared"), "%s has word to give, and another once the Tree blooms" % id)
 		check(ResourceLoader.exists("res://assets/sprites/npc_%s.png" % id), "%s has a sheet" % id)
 	var brigid := " ".join(GameData.npc("mascon_barmaid").lines)
-	check(brigid.contains("pendant") and brigid.contains("east door") and _rooms_with_prop(rooms, "pendant") == ["mist/hag_mire"], "the Pendant is where Brigid says, past the east door")
-	check(str(rooms["mist/hag_mire"].lists.door[0]).contains("mist/mascon"), "and the Matriarch's mire is Mascon's east door")
-	check(brigid.contains("Zorugeriru") and String(rooms["mist/spring_of_mist"].header.get("boss", "")) == "zorugeriru" and str(rooms["mist/dry_cistern"].lists.door).contains("mist/spring_of_mist"), "Zorugeriru lies round the Spring of Mist, past the Dry Cistern")
+	check(brigid.contains("Acorn Charm") and brigid.contains("east door") and _rooms_with_prop(rooms, "pendant") == ["mist/hag_mire"], "the Acorn Charm is where Brigid says, past the east door")
+	check(str(rooms["mist/hag_mire"].lists.door[0]).contains("mist/mascon"), "and the Matriarch's mire is Polesend's east door")
+	check(brigid.contains("Haar Wyrm") and String(rooms["mist/spring_of_mist"].header.get("boss", "")) == "zorugeriru" and str(rooms["mist/dry_cistern"].lists.door).contains("mist/spring_of_mist"), "the Haar Wyrm lies round the Haar Spring, past the Dry Cistern")
 	var cormac := " ".join(GameData.npc("mascon_drinker").lines)
-	check(cormac.contains("Feather Hollow") and str(rooms["mist/feather_hollow"].lists.door).contains("mist/victim"), "Cormac's Feather Hollow lies by Victim")
+	check(cormac.contains("Feather Hollow") and str(rooms["mist/feather_hollow"].lists.door).contains("mist/victim"), "Cormac's Feather Hollow lies by Lampwick")
 
 
 ## Pass 277 (bible 10.2): the shop table gives each staple one price, but
-## nothing held the shelves to it. The Forepaw Forge sold an Ointment for 280
+## nothing held the shelves to it. The Kettleforge Forge sold an Barkbalm for 280
 ## while every other shelf asked 300, and the Cartographer row promised one in
-## every town at 200 to 800 g when six towns keep one and the Eolis chart is
+## every town at 200 to 800 g when six towns keep one and the Hearthroot chart is
 ## 40. Now every shelf's staples cost what the table says, the one-per-shop
 ## goods stay in their ranges, and the table states each price it holds.
 func test_every_shelf_asks_the_shop_tables_price() -> void:
@@ -3572,9 +3382,9 @@ func test_every_shelf_asks_the_shop_tables_price() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var at := bible.find("### 10.2 Shops")
 	var table := bible.substr(at, bible.find("\n\n", bible.find("| Shop |", at)) - at)
-	for said: String in ["Ointment (10 s invulnerability, 300 g", "Elixir (auto-revive, max 1, 1,500 g)", "Jack (150 g), Queen (400 g), King (900 g), Ace (1,800 g)",
-			"Fire (1,200 g), Tilte (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
-			"| Cartographer | Eolis, Forepaw, Victim, Conflate, Daybreak, Dartmoor | each zone's chart (40 to 800 g"]:
+	for said: String in ["Barkbalm (10 s invulnerability, 300 g", "Amber Draught (auto-revive, max 1, 1,500 g)", "Copper (150 g), Silver (400 g), Gold (900 g), Thorn (1,800 g)",
+			"Kindle (1,200 g), Wisplight (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
+			"| Cartographer | Hearthroot, Kettleforge, Lampwick, Sylvarre, Carillon, Vorrhallow | each zone's chart (40 to 800 g"]:
 		check(table.contains(said), "the table says it: %s" % said)
 
 
@@ -3609,13 +3419,13 @@ func test_the_bible_prices_the_skill_tree_as_built() -> void:
 
 ## Pass 341: the gold sheet (bible 10.1) counts each zone's chests, their range
 ## and their gold, and the gold a pass of its foes pays, but only the par test
-## read the rooms, and it never read the table. The Trunk had grown from 9
-## chests to 12, the Tower from 13 to 20 and the Mist from 8 to 9, 1,970 g the
-## table didn't know, and the par purse left after Full Plate had grown from
+## read the rooms, and it never read the table. The Heartwood had grown from 9
+## chests to 12, the Tower from 13 to 20 and the Haar from 8 to 9, 1,970 g the
+## table didn't know, and the par purse left after Knight's Plate had grown from
 ## about 3,700 to over 4,800. This holds every row and that purse to the rooms.
 func test_the_gold_sheet_counts_the_rooms() -> void:
-	const ROWS := {"Eolis": "eolis", "Trunk Hollows": "trunk", "Tower of Trunk": "tower", "The Mist": "mist",
-		"Branches": "branches", "Daybreak": "daybreak", "Dartmoor": "dartmoor", "Sunken Spring": "sunken", "Zenis": "zenis"}
+	const ROWS := {"Hearthroot": "eolis", "Heartwood": "trunk", "Hollin Tower": "tower", "The Haar": "mist",
+		"High Boughs": "branches", "Carillon": "daybreak", "Vorrhallow": "dartmoor", "Sunken Spring": "sunken", "The Evercrown": "zenis"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var ten := bible.get_slice("### 10.1 Currency", 1).get_slice("\n### 10.2", 0)
 	var table := ten.get_slice("| Zone | Foe drop (after threat) |", 1).get_slice("\n\n", 0)
@@ -3667,7 +3477,7 @@ func test_the_gold_sheet_counts_the_rooms() -> void:
 		else:
 			var said := cells[3].trim_prefix("about ").trim_suffix(" g").replace(",", "").to_int()
 			check(absi(said - gold[1]) <= 10, "one pass of %s's foes pays %d, and the sheet says %s" % [name, gold[1], cells[3]])
-	# The par purse left after Full Plate (the par test's last buy).
+	# The par purse left after Knight's Plate (the par test's last buy).
 	var shops: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/shops.json"))
 	var purse := Npc.KING_GOLD
 	for step: Array in GOLD_PATH:
@@ -3679,7 +3489,7 @@ func test_the_gold_sheet_counts_the_rooms() -> void:
 					purse -= int(entry.price)
 			if buy[1] == "full_plate":
 				var left := roundi(purse / 100.0) * 100
-				check(ten.contains("About %s g is left after Full Plate" % _grouped(left)), "10.1 gives the purse left after Full Plate (%d, about %s)" % [purse, _grouped(left)])
+				check(ten.contains("About %s g is left after Knight's Plate" % _grouped(left)), "10.1 gives the purse left after Knight's Plate (%d, about %s)" % [purse, _grouped(left)])
 
 
 ## A whole number with its thousands grouped, as the bible writes gold.

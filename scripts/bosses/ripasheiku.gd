@@ -1,7 +1,7 @@
-class_name Ripasheiku
+class_name Gloamweaver
 extends Enemy
-## Ripasheiku, the Lantern Widow (design bible 8.3): a spider-wraith that
-## carries the souls of the drowned as lanterns on her legs. In the Mist's fog
+## Gloamweaver, the Lantern Widow (design bible 8.3): a spider-wraith that
+## carries the souls of the drowned as lanterns on her legs. In the Haar's fog
 ## she is all but invisible; she shows only where light reaches her, and her
 ## own lanterns are the light. Each lantern you break frees a soul that clings
 ## to her as pale fire, so she shows a little more.
@@ -22,7 +22,7 @@ extends Enemy
 
 signal defeated
 
-const DISPLAY_NAME := "Ripasheiku"
+const DISPLAY_NAME := "Gloamweaver"
 const SHEET := "ripasheiku"
 const EPITHET := "The Lantern Widow"
 const MAX_HP := 260

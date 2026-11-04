@@ -1,6 +1,6 @@
 class_name SporeCloud
 extends Node2D
-## The cloud a Bog Myconid bursts into: it billows out to RADIUS, drifts up and
+## The cloud a Bog Puffcap bursts into: it billows out to RADIUS, drifts up and
 ## thins away. Anyone inside is stung for DAMAGE at once and again every TICK.
 ## Spores can't be parried. Drawn at 2x: puffs land on half-pixels.
 
@@ -42,7 +42,7 @@ func stinging() -> bool:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	_tick -= delta
 	global_position.y -= RISE * delta

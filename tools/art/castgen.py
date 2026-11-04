@@ -2,8 +2,8 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Rokusutahn. Each frame's metadata gives the points
-the game draws on top (the Monodron's eye, which tracks the player).
+Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
 color snapped to the master palette.
@@ -24,7 +24,7 @@ EYE_WHITE = PAL["stone-7"]
 DARK = PAL["night-1"]
 
 
-# --- Monodron: a one-eyed hopper ----------------------------------------------
+# --- Blinkhop: a one-eyed hopper ----------------------------------------------
 
 MONO_BODY = mat("night", 4, 3, 2, 0)
 MONO_BELLY = mat("crystal", 6, 5, 4, 2)
@@ -199,7 +199,7 @@ ROT_DWARF = [
 ]
 
 
-# --- Iron Dwarf: a Forepaw dwarf in iron plate with a two-handed hammer --------
+# --- Iron Dwarf: a Kettleforge dwarf in iron plate with a two-handed hammer --------
 # Drawn at the 2x render density (Canvas scale 2): world-pixel geometry, half-pixel detail.
 
 I_PLATE = mat("stone", 5, 3, 2, 0)
@@ -302,7 +302,7 @@ IRON_DWARF = [
 ]
 
 
-# --- Minecart Rider: a Forepaw dwarf hunched in an ore cart, riding the rails --------
+# --- Minecart Rider: a Kettleforge dwarf hunched in an ore cart, riding the rails --------
 # Drawn at 2x like the Iron Dwarf. The cart tips forward when it crashes into a wall.
 
 MC_TUB = mat("ember", 4, 3, 2, 0)
@@ -505,7 +505,7 @@ GEAR_BAT = [
 
 # --- The Foreman: a rock golem the dwarves set to work the tower -------------------
 # A boulder body with ore veins, a dwarf foreman's brass lamp-helm jammed on its head
-# and the Mattock wedged in its back (the reward). 2x render density.
+# and the Delver's Pick wedged in its back (the reward). 2x render density.
 
 FM_ROCK = mat("bark", 4, 3, 2, 0)
 FM_ROCK_BACK = mat("bark", 3, 2, 1, 0)
@@ -539,7 +539,7 @@ def foreman(lean=0.0, crouch=0.0, fist_f=(22, -22), fist_b=(-20, -24), feet=((9,
             cv.part(cv.ellipse(fist, 7.5, 6.8), m, deep=True)
             cv.part(cv.capsule((fist[0] - 3, fist[1] - 1), (fist[0] + 3, fist[1] - 1), 0.6), vein)
 
-        # Back arm and leg, then the Mattock wedged in the back.
+        # Back arm and leg, then the Delver's Pick wedged in the back.
         arm(sh_b, fist_b, FM_ROCK_BACK, 5.5)
         bf = reach((cx - 7, hip_y), feet[1], 17)
         cv.part(cv.capsule((cx - 7, hip_y), bf, 6.5), FM_ROCK_BACK)
@@ -609,11 +609,11 @@ FOREMAN = [
 ]
 
 
-# --- Zoradohna: the Hammer of Forepaw (design bible 8.2) ------------------------
+# --- Durgan: the Hammer of Kettleforge (design bible 8.2) ------------------------
 # A dwarf champion fused with a walking siege drill: an iron hull on two piston
 # legs, a bronze drill out front, two exhaust stacks behind (the pogo vents) and
 # a glass cockpit with the dwarf inside. "open_" frames show the hatch thrown
-# back and the meteor-crystal harness that binds him. 2x render density.
+# back and the Everbloom-crystal harness that binds him. 2x render density.
 
 ZD_HULL = mat("ember", 4, 3, 2, 0)
 ZD_HULL_BACK = mat("ember", 2, 1, 1, 0)
@@ -744,7 +744,7 @@ ZORADOHNA = zoradohna_anims(False) + zoradohna_anims(True) + [
 ]
 
 
-# --- Rokusutahn: the body parts the boss script chains together ----------------
+# --- Gnarlmaw: the body parts the boss script chains together ----------------
 
 R_BARK = mat("bark", 3, 2, 1, 0)
 R_CROWN = mat("bark", 5, 4, 3, 1)
@@ -978,7 +978,7 @@ GRUB_LUMP = [
 ]
 
 
-# --- Bog Myconid: a squat marsh mushroom that bursts into a spore cloud ----------
+# --- Bog Puffcap: a squat marsh mushroom that bursts into a spore cloud ----------
 # Drawn at 2x like the Iron Dwarf. Its gills glow when it swells (the telegraph);
 # spent, the cap sags open and soft.
 
@@ -1038,7 +1038,7 @@ BOG_MYCONID = [
 ]
 
 
-# --- Drowned Dwarf: a Victim miner the marsh took, risen with his anchor -------
+# --- Drowned Dwarf: a Lampwick miner the marsh took, risen with his anchor -------
 # Drawn at the 2x render density. `depth` sinks the whole body below the ground
 # line (y = 0) and clips it there, for lying in wait and rising out of the mire.
 
@@ -1162,7 +1162,7 @@ DROWNED_DWARF = [
 ]
 
 
-# --- Bark Knight: a knight of living bark from the Branches, with a growing lance -----
+# --- Bark Knight: a knight of living bark from the High Boughs, with a growing lance -----
 # Drawn at the 2x render density. `armored` False strips the bark plates to the pale
 # heartwood beneath; `lance` is the length of the living branch it carries (it grows
 # to its full reach in the thrust); `roots` spreads roots from the feet into the bough.
@@ -1463,7 +1463,7 @@ MARSH_HAG = [
 
 
 def autosprite_only(_):
-    """An empty frame, for a sheet drawn only from Autosprite poses (Ripasheiku): every
+    """An empty frame, for a sheet drawn only from Autosprite poses (Gloamweaver): every
     animation it names is swapped for the imported frames."""
     blank = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
     return blank, blank.copy(), {}

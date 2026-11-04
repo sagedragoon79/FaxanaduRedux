@@ -1,7 +1,7 @@
 name: Heartwood Rise
 zone: trunk
 map: 14, 0
-sign: 4, 42, The heartwood climbs here in rings older than Eolis.
+sign: 4, 42, The heartwood climbs here in rings older than Hearthroot.
 door: 1, trunk/sap_cistern, 4
 door: 2, trunk/taproot_vault, 2
 ---

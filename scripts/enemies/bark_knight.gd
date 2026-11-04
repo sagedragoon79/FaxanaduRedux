@@ -1,6 +1,6 @@
 class_name BarkKnight
 extends Enemy
-## A Bark Knight of the Branches (design bible 7): a knight the World Tree grew
+## A Bark Knight of the High Boughs (design bible 7): a knight the Ylden grew
 ## for itself, armored in living bark, with a lance of green bough. He paces the
 ## branch roads. Come level with him within about five tiles in front and he
 ## braces, lance back and eyes lit, for 0.6 s (the telegraph), then drives it out
@@ -97,7 +97,7 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return ceili(damage * GUARD)
 
 
-## Fire burns the whole bark coat off at once (pass 177): what's left is bare
+## Kindle burns the whole bark coat off at once (pass 177): what's left is bare
 ## heartwood until he roots and regrows a plate.
 func burn_bark() -> void:
 	if bark <= 0 or dead:

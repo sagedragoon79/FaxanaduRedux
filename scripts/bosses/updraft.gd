@@ -1,6 +1,6 @@
 class_name Updraft
 extends Node2D
-## The wind under Borabohra's wings in its third phase (design bible 8.6): a
+## The wind under Skyrend's wings in its third phase (design bible 8.6): a
 ## column of rising air from the floor up past the hovering roc. While `active`
 ## and the centre of the player's body is in it, the player rides it up
 ## (Player.updraft; holding Down drops out) and their air moves come back.

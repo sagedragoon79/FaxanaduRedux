@@ -1,6 +1,6 @@
 class_name Fountain
 extends Node2D
-## The Fountain of Eolis: its water level shows how many of the three springs
+## The Fountain of Hearthroot: its water level shows how many of the three springs
 ## are restored (design bible 4.4). The origin is the bottom center.
 ## Drawn from Sean's PixelLab sheet (one state per spring, packed by
 ## tools/art/pixellab_objects.py); the code drawing below is the fallback.

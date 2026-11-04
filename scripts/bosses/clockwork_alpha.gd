@@ -1,8 +1,8 @@
 class_name ClockworkAlpha
 extends Enemy
-## The Clockwork Alpha (design bible 7 and 8): the first of King Grieve's brass
+## The Clockwork Alpha (design bible 7 and 8): the first of Thane Vorrund's brass
 ## hounds, as big as a pony, wound by the king's own hand with a key the size of
-## a shield. The mini-boss of Dartmoor, in its den under the King's Kennels
+## a shield. The mini-boss of Vorrhallow, in its den under the Thane's Kennels
 ## (legend: room header `boss: clockwork_alpha`).
 ##
 ## It trots after the player and picks one of two attacks:
@@ -16,13 +16,13 @@ extends Enemy
 ## Enemy.MIN_TELEGRAPH) and it can howl (tell): its key winds two brass pups
 ## out of the kennel grates, never more than two at once.
 ## Its plating turns half of every blow except while it is on its back, jammed,
-## or stopped: it is clockwork, so the Hour Glass stops it dead where it stands,
+## or stopped: it is clockwork, so the Stillstone stops it dead where it stands,
 ## and a stopped Alpha takes every blow in full.
 
 signal defeated
 
 const DISPLAY_NAME := "The Clockwork Alpha"
-const EPITHET := "First Hound of King Grieve"
+const EPITHET := "First Hound of Thane Vorrund"
 const MAX_HP := 260
 const PHASES := [0.5]
 const TROT := 70.0
@@ -120,7 +120,7 @@ func jammed() -> bool:
 	return state == "jammed"
 
 
-## Held by the Hour Glass: clockwork stops dead.
+## Held by the Stillstone: clockwork stops dead.
 func stopped() -> bool:
 	return TimeStop.active() and not dead and state != "dormant"
 

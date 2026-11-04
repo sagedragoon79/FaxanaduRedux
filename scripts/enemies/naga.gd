@@ -1,6 +1,6 @@
-class_name Naga
+class_name SiltAdder
 extends Enemy
-## A Naga (design bible 7, pass 273): the original's serpent that floats up and
+## A Silt Adder (design bible 7, pass 273): the original's serpent that floats up and
 ## down, most often over the ladders. A sea-green hooded serpent the length of
 ## a man, it rises and sinks along its own column, so a climb past it is timed
 ## to its swing. When you are level with it and in front, within about seven
@@ -8,7 +8,7 @@ extends Enemy
 ## then strikes straight out along that level, and glides back to its column.
 ## The strike is a bite, and a shield's parry meets it like any blade's: no
 ## harm, and the serpent reels (pass 274). Code-drawn at 2x.
-## As in the original, a slain Naga always leaves the largest bread there is,
+## As in the original, a slain Silt Adder always leaves the largest bread there is,
 ## a great loaf (pass 281).
 
 ## How far it floats above and below its home, and how long one swing takes.
@@ -44,7 +44,7 @@ var _dir := Vector2.ZERO
 var _cooldown := 0.0
 ## Whether this strike has bitten (or been parried) already.
 var _bit := false
-## Where in its swing it starts (0 to 1), so a room's Nagas need not swing
+## Where in its swing it starts (0 to 1), so a room's Silt Adders need not swing
 ## together, and the game time it has floated (the swing follows game time,
 ## not the wall clock, so hitstop and slow motion hold it).
 var _phase := 0.0

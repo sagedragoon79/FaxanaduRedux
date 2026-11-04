@@ -1,7 +1,7 @@
 class_name HouseFront
 extends Node2D
-## A house carved into the living wood (Apolune): a plank front under a bark
-## arch, a door and a window. The windows are boarded until the Spring of Trunk
+## A house carved into the living wood (Amberlee): a plank front under a bark
+## arch, a door and a window. The windows are boarded until the Heartwood Spring
 ## is restored and the townsfolk come home, then they glow. Scenery only. The
 ## origin is the bottom center.
 
@@ -18,7 +18,7 @@ const LIT_CORE := Color("f7f1de")
 const BOARD := Color("8d4e16")
 const OUTLINE := Color("120f19")
 
-## Weathered boardwalk houses for the towns of the Mist (Victim): reed-grey
+## Weathered boardwalk houses for the towns of the Haar (Lampwick): reed-grey
 ## planks under a dark, damp frame. Their windows burn always: the people there
 ## never left.
 const MIST := {"bark": Color("2e3430"), "bark_light": Color("4a5650"), "plank": Color("6e7466"), "plank_dark": Color("4a5048"), "frame": Color("9a8a5a")}

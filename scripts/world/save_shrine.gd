@@ -11,7 +11,7 @@ const STONE_DARK := Color("4a4458")
 const STONE_LIGHT := Color("8d84a3")
 const RUNE := Color("7ee0d6")
 
-## How far its glow clears the Mist's fog.
+## How far its glow clears the Haar's fog.
 var light_radius := 80.0
 var _glow := 0.0
 
@@ -20,7 +20,7 @@ func _ready() -> void:
 	super()
 	prompt_height = 34.0
 	z_index = -1
-	# Its rune burns through the Mist's fog (see Fog).
+	# Its rune burns through the Haar's fog (see Fog).
 	add_to_group("light")
 
 
@@ -37,10 +37,10 @@ func interact(p: Player) -> void:
 	if BossRush.active():
 		# The rush allows no rest: a shrine on the way would refill you and
 		# save in the middle of it.
-		GameState.toast.emit("The mantra allows no rest in the rush.")
+		GameState.toast.emit("The ring allows no rest in the rush.")
 		return
 	if BossArena.any_fighting(get_tree()):
-		# Nor while a guardian stands (bible 8, pass 455): Shadow Eura's gate
+		# Nor while a guardian stands (bible 8, pass 455): The Likeness's gate
 		# has a shrine inside her arena, and a rest there mid-fight made you
 		# whole, refilled the flask and saved with her still up.
 		Sfx.play("menu_refuse", 0.0, -4.0)

@@ -1,7 +1,7 @@
 class_name LightningArc
 extends Node2D
 ## A brief jagged arc of lightning between two points (world space), flickering
-## as it fades. Used by the Thunder spell when it leaps to a conduit or a foe.
+## as it fades. Used by the Stormcall spell when it leaps to a conduit or a foe.
 
 const LIFE := 0.22
 const CORE := Color("f8f0b0")

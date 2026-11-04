@@ -41,9 +41,9 @@ static func tally(catalog: Dictionary) -> Dictionary:
 
 
 ## The skill points a save has earned against every one the game gives (pass
-## 253, design bible 9): one a rank past Novice, one from each guardian whose
-## reward names one, and one a whole mantra, from the rooms' Mantra Shards and
-## a shard for each Guru Trial's first clear. Earned is what is held plus what
+## 253, design bible 9): one a rank past Seedling, one from each guardian whose
+## reward names one, and one a whole ring, from the rooms' Grain Shards and
+## a shard for each Ringreader Trial's first clear. Earned is what is held plus what
 ## the learned skills cost, so learning or unlearning never moves it.
 static func skill_points(catalog: Dictionary) -> Dictionary:
 	var total := GameState.RANK_XP.size() - 1
@@ -94,12 +94,12 @@ static func stat_items(catalog: Dictionary) -> Dictionary:
 ## Every guardian in the order the climb meets them, with the name the
 ## Journey page gives it (the mini-bosses among them).
 const GUARDIANS := [
-	["rokusutahn", "Rokusutahn"], ["foreman", "The Foreman"], ["zoradohna", "Zoradohna"],
-	["ripasheiku", "Ripasheiku"], ["hag_matriarch", "The Marsh Hag Matriarch"], ["zorugeriru", "Zorugeriru"], ["pakukame", "Pakukame"],
-	["bark_captain", "The Bark Knight Captain"], ["borabohra", "Borabohra"], ["king_grieve", "King Grieve"],
-	["clockwork_alpha", "The Clockwork Alpha"], ["shadow_eura", "Shadow Eura"], ["drowned_warden", "The Drowned Warden"],
-	["evil_avatar", "The Evil One, on the throne"], ["evil_veins", "The Evil One, in the veins"],
-	["evil_one", "The Evil One, at the heart"],
+	["rokusutahn", "Gnarlmaw"], ["foreman", "The Foreman"], ["zoradohna", "Durgan"],
+	["ripasheiku", "Gloamweaver"], ["hag_matriarch", "The Marsh Hag Matriarch"], ["zorugeriru", "The Haar Wyrm"], ["pakukame", "Snapcrown"],
+	["bark_captain", "The Bark Knight Captain"], ["borabohra", "Skyrend"], ["king_grieve", "Thane Vorrund"],
+	["clockwork_alpha", "The Clockwork Alpha"], ["shadow_eura", "the Likeness"], ["drowned_warden", "The Drowned Warden"],
+	["evil_avatar", "The Everbloom, on the throne"], ["evil_veins", "The Everbloom, in the veins"],
+	["evil_one", "The Everbloom, at the heart"],
 ]
 
 
@@ -129,14 +129,14 @@ static func journey_rows(stats: Dictionary, found: Array) -> Array:
 		return {"label": label, "right": "%d / %d" % [n, total], "detail": detail}
 	var out := [
 		{"label": "Of the world", "right": "%d%%" % int(stats.get("percent", 0)),
-			"detail": "The whole world seen earns the Lord's Gold at Ilse's Dyeworks, and opens the Guru's rush."},
+			"detail": "The whole world seen earns the Crown Gold at Ilse's Dyeworks, and opens the Ringreader's rush."},
 		share.call("Rooms explored", "rooms", "Every room on the Tree, the hidden ones too."),
-		share.call("Hidden rooms", "secrets", "Rooms behind false walls. The Black Onyx shows their seams."),
+		share.call("Hidden rooms", "secrets", "Rooms behind false walls. The Seer's Lens shows their seams."),
 		share.call("Treasures", "treasures", "Chests and finds that lie in the rooms. Treasure Sense marks the map."),
 		share.call("Guardians beaten", "bosses", "The great foes and their lesser kin, each in an arena of its own."),
 		share.call("Life Fruits", "fruits", "In the rooms, on each grocer's shelf, and in a guardian's keeping. Two grow a mask."),
 		share.call("Mana Dew", "dews", "In the rooms, on each grocer's shelf, and in the guardians' keeping."),
-		share.call("Skill points", "points", "From ranks, guardians and whole mantras. The tree costs more than all of them."),
+		share.call("Skill points", "points", "From ranks, guardians and whole rings. The tree costs more than all of them."),
 	]
 	if not found.is_empty():
 		out.append({"label": "Guardians found", "header": true})
@@ -161,7 +161,7 @@ static func percent(stats: Dictionary) -> int:
 	return int(floor(sum / parts * 100.0 + 0.0001)) if parts > 0 else 0
 
 
-## The whole world seen (100%): the "lord" flag puts the Lord's Gold on the
+## The whole world seen (100%): the "lord" flag puts the Crown Gold on the
 ## shelf at Ilse's Dyeworks, the cloak's glow (design bible 11). True if earned.
 static func award(stats: Dictionary) -> bool:
 	if int(stats.get("percent", 0)) < 100:

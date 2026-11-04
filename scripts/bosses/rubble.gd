@@ -45,7 +45,7 @@ func hit_rect() -> Rect2:
 
 func _physics_process(delta: float) -> void:
 	if TimeStop.active():
-		return  # held still by the Hour Glass
+		return  # held still by the Stillstone
 	_t += delta
 	_spin += delta * 6.0
 	if mode == "fall":

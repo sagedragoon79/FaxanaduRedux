@@ -8,7 +8,7 @@ Systems, Audio, Stability and Faithfulness were tied at 98.75. Systems weighs th
 | Mini-boss rewards (passes 169, 171) | the Life Fruit and the Mana Dew go through `GameState.grant_stat_item` like any find, and no skill point is given | fine |
 | The Proving Scar (pass 170) | its shrine is a Mantra Path stop like any other; the map shows it, and the throne's move east | fine |
 | Completion (bible 11) | the two new mini-bosses count among the guardians (15), and the Scar's and the yard's rooms count among the rooms | fine |
-| **Completion in play** | The percent and its four shares were shown only on the ending's card. Yet 100% is what earns the Lord's Gold and opens the boss rush, and with each new mini-boss and room the target moves. A player hunting the last few percent had no way to see what was missing until they beat the game again. | **built** |
+| **Completion in play** | The percent and its four shares were shown only on the ending's card. Yet 100% is what earns the Crown Gold and opens the boss rush, and with each new mini-boss and room the target moves. A player hunting the last few percent had no way to see what was missing until they beat the game again. | **built** |
 
 ## As built
 

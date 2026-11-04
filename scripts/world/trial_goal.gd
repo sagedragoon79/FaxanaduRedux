@@ -1,14 +1,14 @@
 class_name TrialGoal
 extends Node2D
-## The bell at the end of a Guru Trial (design bible 3.1; `prop: x, y, trial_goal`).
+## The bell at the end of a Ringreader Trial (design bible 3.1; `prop: x, y, trial_goal`).
 ## It runs the trial's clock while you are in the room, and touching it clears
-## the trial: it rings, shows your time, and the mantra carries you back to the
-## Guru. A pale bell on a thin frame, drawn in the mantra-space's greys, with a
+## the trial: it rings, shows your time, and the ring carries you back to the
+## Ringreader. A pale bell on a thin frame, drawn in the inner rings's greys, with a
 ## slow glow so it reads across the room.
 
 ## How close (px) the middle of the player's body must come.
 const REACH := 16.0
-## Seconds the bell rings before the mantra carries you back.
+## Seconds the bell rings before the ring carries you back.
 const RING := 1.2
 const PALE := Color("e8e4dc")
 const MID := Color("a8a49c")
@@ -54,9 +54,9 @@ func ring(p: Player) -> void:
 		elif not result.record:
 			line += ". Best %s." % Trials.format_time(result.best)
 		if result.first:
-			line += " A Mantra Shard rings out of the bell."
+			line += " A Grain Shard rings out of the bell."
 		if result.dye != "":
-			line += " Within the mantra: your cloak takes %s." % GameData.item(result.dye).name
+			line += " Within the ring: your cloak takes %s." % GameData.item(result.dye).name
 			Sfx.play("dye_won", 0.0)
 		GameState.toast.emit(line)
 		if result.record and not result.first:
@@ -65,7 +65,7 @@ func ring(p: Player) -> void:
 		p.velocity = Vector2.ZERO
 
 
-## Back a step from the Guru, where the trial began.
+## Back a step from the Ringreader, where the trial began.
 func _return() -> void:
 	var back_room := Trials.TEMPLE
 	var back_pos := Vector2.INF

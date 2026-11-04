@@ -1,6 +1,6 @@
 class_name DrownedDwarf
 extends Enemy
-## A Drowned Dwarf of the Mist (design bible 7): one of the Victim miners the
+## A Drowned Dwarf of the Haar (design bible 7): one of the Lampwick miners the
 ## marsh took, risen with the anchor he was drowned on. He lies sunk in the mire
 ## with only his helm's crest and a trickle of bubbles showing; he can't be hit
 ## and does no harm there. Come within about five tiles and he hauls himself
