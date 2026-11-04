@@ -1066,6 +1066,59 @@ func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
 	check(bible.contains("`test_a_death_raises_you_at_the_guru_you_rested_with`"), "5.4 names the test")
 
 
+## Pass 453 (bible 9): a skill learned and unlearned at a Guru by the buttons.
+## Up opens his menu, Down and Jump open Learn skills, and Jump on the first
+## row learns it: the points are paid and the blade cuts harder at once. Dash
+## steps back out. Then Up, Down twice and Jump on Unlearn skills forgets it
+## for its gold: the points come back and the blade is as it was.
+func test_a_skill_is_learned_and_unlearned_with_the_buttons() -> void:
+	var w := make_world(_town({}, ["npc: 8, 19, guru"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	GameState.data.skill_points = 3
+	p.gold = 1000
+	var cut0 := p.blade_mult()
+	var grace := int(ListMenu.INPUT_GRACE * 60.0) + 2
+	await _tap_for_real("move_up")
+	await frames(grace)
+	await _tap_for_real("move_down")
+	check(menu.title == "Guru" and menu.cursor == 1, "Up opens the Guru's menu and Down reaches Learn skills (%d)" % menu.cursor)
+	await _tap_for_real("jump")
+	check(menu.is_open and menu.title == "Skills", "Jump opens the skills (%s)" % menu.title)
+	await frames(grace)
+	var row: Dictionary = menu.rows[menu.cursor]
+	var id := String(row.get("id", ""))
+	var cost := int(GameData.skill(id).cost)
+	check(id == "keen_edge" and not row.get("header", false), "the cursor waits on the first skill, past its branch's name (%s)" % id)
+	await _tap_for_real("jump")
+	check(GameState.data.skills.has(id) and int(GameState.data.skill_points) == 3 - cost, "Jump learns it for its %d pt (%d left)" % [cost, int(GameState.data.skill_points)])
+	check(p.blade_mult() > cut0 + 0.05, "and the blade cuts harder at once (x%.2f -> x%.2f)" % [cut0, p.blade_mult()])
+	await _tap_for_real("jump")
+	check(int(GameState.data.skill_points) == 3 - cost, "Jump again on a learned skill spends nothing")
+	await _tap_for_real("dash")
+	await frames(2)
+	check(not menu.is_open and not arena.get_tree().paused, "Dash steps back out to play (%s)" % menu.title)
+	var price := Skills.respec_cost()
+	await frames(grace)
+	await _tap_for_real("move_up")
+	await frames(grace)
+	await _tap_for_real("move_down")
+	await _tap_for_real("move_down")
+	check(menu.title == "Guru" and menu.cursor == 2, "Down twice reaches Unlearn skills (%d)" % menu.cursor)
+	await _tap_for_real("jump")
+	check(GameState.data.skills.is_empty() and int(GameState.data.skill_points) == 3 and p.gold == 1000 - price,
+		"Jump forgets it for %d gold and the points come back (%d pt, %d g)" % [price, int(GameState.data.skill_points), p.gold])
+	check(is_equal_approx(p.blade_mult(), cut0), "and the blade is as it was (x%.2f)" % p.blade_mult())
+	menu.close()
+	await frames(2)
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_a_skill_is_learned_and_unlearned_with_the_buttons`"), "9 names the test")
+
+
 func _tap_for_real(action: String) -> void:
 	Input.action_press(action)
 	await frames(2)
