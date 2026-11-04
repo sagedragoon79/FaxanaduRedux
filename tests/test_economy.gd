@@ -166,6 +166,72 @@ func test_a_card_door_answers_the_real_controller() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("A card door by the buttons (pass 417)"), "bible 4.5 says so")
 
+## Pass 459 (bible 4.5, 10.2): the original's first steps in Eolis, by the
+## buttons. The King's purse, the key shop and a key door were each played with
+## the real controller on their own (passes 413 and 417), or by a scripted Up
+## (the King), but never one after another as a new player meets them. Up at
+## the King, Jump through his words; Right to the Merchant, Up, Jump on the
+## Jack Key, Dash; Right held into the Jack door, which opens on the touch.
+func test_the_kings_gold_buys_the_key_that_opens_the_door() -> void:
+	GameState.new_game()
+	var rooms := _town({Vector2i(20, 19): "J"}, ["npc: 6, 19, king", "npc: 12, 19, merchant"])
+	var w := make_world(rooms, "test/town", cell_feet(6, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var box := DialogBox.new()
+	arena.add_child(box)
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	var door := _find(w.room, KeyDoor) as KeyDoor
+	await frames(3)
+	p.gold = 0
+	Sfx.recent.clear()
+	await _tap_for_real("move_up")
+	check(p.gold == Npc.KING_GOLD and Sfx.recent.has("coin"), "Up at the King: his purse, with a clink (%d, %s)" % [p.gold, Sfx.recent])
+	check(box.is_open, "and his words open")
+	var presses := 0
+	while box.is_open and presses < 12:
+		await frames(int(DialogBox.INPUT_GRACE * 60.0) + 2)
+		await _tap_for_real("jump")
+		presses += 1
+	check(not box.is_open and not p.frozen, "Jump turns his pages and puts them away (%d presses)" % presses)
+	await frames(20)
+	Input.action_press("move_right")
+	var waited := 0
+	while p.global_position.x < 11.6 * Room.TILE and waited < 240:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	await frames(20)
+	await _tap_for_real("move_up")
+	check(menu.is_open, "Right to the Merchant and Up opens his shop (x %.0f)" % p.global_position.x)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var stock: Array = GameData.shop("eolis_items").stock
+	var shelf := Shop.shelf("eolis_items")
+	var downs := 0
+	while String(stock[shelf[menu.cursor]].item) != "jack_key" and downs < shelf.size():
+		await _tap_for_real("move_down")
+		downs += 1
+	check(String(stock[shelf[menu.cursor]].item) == "jack_key", "Down finds the Jack Key (%d presses)" % downs)
+	Sfx.recent.clear()
+	await _tap_for_real("jump")
+	check(GameState.key_count("jack") == 1 and p.gold == Npc.KING_GOLD - 150, "Jump buys it with the King's gold (%d g)" % p.gold)
+	await _tap_for_real("dash")
+	check(not menu.is_open and not arena.get_tree().paused, "Dash leaves the shop")
+	await frames(10)
+	Sfx.recent.clear()
+	Input.action_press("move_right")
+	waited = 0
+	while p.global_position.x < 21 * Room.TILE and waited < 300:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	check(not is_instance_valid(door) or door.is_queued_for_deletion(), "Right held into the Jack door opens it")
+	check(Sfx.recent.has("key_turn") and not Sfx.recent.has("door_locked"), "the key turns, no rattle (%s)" % [Sfx.recent])
+	check(p.global_position.x >= 21 * Room.TILE and GameState.key_count("jack") == 0, "he walks through and the key is spent (x %.0f)" % p.global_position.x)
+	box.free()
+	menu.free()
+
 
 func test_card_doors_take_only_their_own_key() -> void:
 	# A `lock:` line turns a J into a Queen door; a `chest:` line sets one chest's gold.
