@@ -2771,6 +2771,62 @@ func test_a_sign_and_the_pause_menu_take_turns() -> void:
 	check(note.contains("`test_a_sign_and_the_pause_menu_take_turns`"), "the bible names the test")
 
 
+## Pass 441: the Ointment by the buttons. The original's Ointment is rubbed on
+## from the menu and turns every blow aside for a while. It was only ever used
+## by a call (`use_ointment`), never from the pause menu with the buttons, nor
+## against a real blow. The whole game, a Rot Dwarf beside the hero: Pause,
+## Down to "Use Ointment", Jump. The menu closes, the dwarf's blows land
+## nothing for the Ointment's ten seconds, and the next after it lands.
+func test_the_ointment_is_rubbed_on_with_the_buttons() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	var p: Player = g.player
+	await frames(30)
+	p.ointments = 1
+	p.hp = 200
+	p.max_hp = 200
+	var menu: ListMenu = g.menu
+	await _tap("pause")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_down")
+	check(menu.is_open and String(menu.rows[menu.cursor].label) == "Use Ointment", "Pause, then Down to Use Ointment (%s)" % menu.rows[menu.cursor].label)
+	await _tap("jump")
+	check(not menu.is_open and not arena.get_tree().paused and p.ointments == 0, "Jump rubs it on, and the menu closes")
+	check(p.ointment_left > Player.OINTMENT_TIME - 0.1, "a full %d seconds of it, none spent in the menu (%.2f s left)" % [int(Player.OINTMENT_TIME), p.ointment_left])
+	var dwarf := RotDwarf.new()
+	dwarf.position = p.position + Vector2(p.facing * 48.0, 0)
+	g.world.room.add_child(dwarf)
+	var hp := p.hp
+	var swings := 0
+	var was := ""
+	for i in roundi(Player.OINTMENT_TIME * 60.0) - 30:
+		await frames(1)
+		if dwarf.state == "swing" and was != "swing":
+			swings += 1
+		was = dwarf.state
+	check(swings >= 2 and p.hp == hp, "the dwarf swings %d times while it lasts, and nothing lands (HP %d)" % [swings, p.hp])
+	var hurt := false
+	for i in 300:
+		await frames(1)
+		if p.hp < hp:
+			hurt = true
+			break
+	check(p.ointment_left == 0.0 and hurt, "worn off, his next blow lands (HP %d)" % p.hp)
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_ointment_is_rubbed_on_with_the_buttons`"), "the bible names the test")
+
+
 
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
