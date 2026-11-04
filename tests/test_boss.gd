@@ -2357,6 +2357,60 @@ func _eura_world() -> Array:
 	return [w, arena, b]
 
 
+## Pass 452 (bible 8): a fight lost in the room you rest in starts over.
+## Shadow Eura's gate has a Meditation Shrine of its own. Rest there by the
+## real Up, walk in by the real Right and wound her, then fall: until now the
+## hero rose beside the shrine with the doors still sealed and Eura still up,
+## her wounds kept and the fight's music still lifted. Now the room is built
+## afresh: no guardian, the way in open, the zone's music as written, and the
+## real Right wakes her again whole.
+func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
+	var was := GameState.slot
+	GameState.slot = 9
+	var w := make_world({}, "dartmoor/zenis_gate")
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var shrine: SaveShrine = null
+	for c in w.room.get_children():
+		if c is SaveShrine:
+			shrine = c
+	check(shrine != null, "the Zenis Gate has a shrine of its own")
+	var shrine_x := shrine.global_position.x
+	p.teleport(shrine.global_position)
+	await frames(2)
+	Input.action_press("move_up")
+	await frames(2)
+	Input.action_release("move_up")
+	await frames(2)
+	check(GameState.data.save_room == "dartmoor/zenis_gate", "Up at it rests and saves there")
+	var arena := _arena(w)
+	Input.action_press("move_right")
+	var woke := await _until(func() -> bool: return arena.fighting, 300)
+	Input.action_release("move_right")
+	var b := get_tree_boss()
+	check(woke and b != null and arena.seals.size() == 2, "Right walks in, wakes Shadow Eura and seals both doors")
+	b.hp = roundi(b.max_hp * 0.4)
+	await frames(30)
+	check(Music.intensity > 0, "wounded past her marks, the fight's music rises (%d)" % Music.intensity)
+	p.take_damage(9999)
+	await frames(int(p.combat.respawn_delay * 60.0) + 20)
+	check(not p.dead and w.room.id == "dartmoor/zenis_gate" and absf(p.global_position.x - shrine_x) < 2.0, "he rises at the shrine")
+	arena = _arena(w)
+	check(get_tree_boss() == null and not arena.fighting, "and the fight is over: no Eura waits beside him (%s)" % [get_tree_boss()])
+	check(not arena.seals.has(1), "the way in is open again (%s)" % [arena.seals.keys()])
+	check(Music.intensity == 0 and Music.track != "eura", "and the music is the zone's again (%s, %d)" % [Music.track, Music.intensity])
+	Input.action_press("move_right")
+	woke = await _until(func() -> bool: return arena.fighting, 300)
+	Input.action_release("move_right")
+	b = get_tree_boss()
+	check(woke and b != null and b.hp == b.max_hp, "Right wakes her again, whole (%d of %d)" % [(b.hp if b else -1), (b.max_hp if b else -1)])
+	GameState.delete_save(9)
+	GameState.slot = was
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
+	check(note.contains("`test_a_fight_lost_beside_its_own_shrine_starts_over`"), "bible 8 names the test")
+
+
 func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
 	var setup := await _eura_world()
 	var w: World = setup[0]

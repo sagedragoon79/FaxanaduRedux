@@ -550,6 +550,14 @@ func _on_player_respawn() -> void:
 	call_deferred("_respawn_player")
 
 
+## Whether a guardian's fight is going on in the current room.
+func _fight_under_way() -> bool:
+	for c in room.get_children():
+		if c is BossArena and (c as BossArena).fighting:
+			return true
+	return false
+
+
 func _respawn_player() -> void:
 	var target := start_room
 	var pos := player.spawn_point
@@ -558,7 +566,11 @@ func _respawn_player() -> void:
 		if String(GameState.data.save_room) != "":
 			target = GameState.data.save_room
 			pos = Vector2(float(GameState.data.save_pos[0]), float(GameState.data.save_pos[1]))
-	if target != room.id:
+	# A fight lost in the room you rest in starts over (bible 8, pass 452):
+	# the room is built afresh, so the guardian is whole and the doors open.
+	# Shadow Eura's own gate has a shrine; until now you rose beside her
+	# still sealed in, her wounds kept, mid-swing.
+	if target != room.id or _fight_under_way():
 		_enter(target)
 	if pos == Vector2.INF:
 		pos = room.spawn_position
