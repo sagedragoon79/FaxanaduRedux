@@ -213,7 +213,7 @@ func _on_blocked(dir: Vector2) -> void:
 	Sfx.play("guard")
 	var p := player()
 	if p:
-		p.velocity.x = -signf(dir.x) * 200.0
+		p.blade_turned()
 
 
 ## Rising Cut (skill tree): an up-slash throws a small foe into the air, helpless
