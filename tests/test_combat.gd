@@ -2542,3 +2542,37 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	room.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("Spells by the buttons (pass 442)"), "5.3 says so")
+
+
+
+## Pass 446 (bible 13.3): a slash a guard turns is heard as a guard. Since pass
+## 442 it pushes back as a clang, but every swing that met a foe still played
+## the cut's `hit` over the shield's `guard`, so a turned blade sounded like a
+## blade that landed. A swing that only meets guards is heard by the guard's
+## thud alone; one that lands is heard as a cut, with no thud.
+func test_a_turned_blade_is_heard_as_a_guard() -> void:
+	var room := _arena_with("D", Vector2i(5, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	var dwarf: RotDwarf = _find(room, RotDwarf)
+	await frames(4)
+	# Held on patrol facing the hero, shield up.
+	dwarf.set_physics_process(false)
+	dwarf.state = "patrol"
+	dwarf.facing = -1
+	var heard := func() -> Array:
+		Sfx.recent.clear()
+		await press_for_real(p, ["attack"])
+		release_for_real(["attack"])
+		await frames(6)
+		return Sfx.recent.filter(func(n: String) -> bool: return n in ["hit", "guard"])
+	var hp0 := dwarf.hp
+	var turned: Array = await heard.call()
+	check(dwarf.hp == hp0 and turned == ["guard"], "a slash his shield turns is heard by its thud alone (%s)" % [turned])
+	# Turned away, his back is bare.
+	dwarf.facing = 1
+	await frames(30)
+	var landed: Array = await heard.call()
+	check(dwarf.hp < hp0 and landed == ["hit"], "a slash that lands is heard as a cut, with no thud (%s)" % [landed])
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_turned_blade_is_heard_as_a_guard`"), "the bible names the test")
