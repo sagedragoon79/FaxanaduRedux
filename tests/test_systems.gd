@@ -3372,3 +3372,83 @@ func test_the_equipment_page_changes_hands_mid_guard() -> void:
 	_restore()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_the_equipment_page_changes_hands_mid_guard`"), "the bible names the test")
+
+
+## Pass 447 (bible 5.2): the off hand changed while the Rune Dagger is in the
+## air. Sean's rule puts a shield or the dagger in the off hand; a player can
+## throw, open the pause menu before it lands, and strap on a shield. Through
+## the real controller: the dagger in flight is left to finish its flight and
+## come home, the shield then guards and Throw does nothing, and the dagger put
+## back in the off hand throws again. Nothing is left behind or doubled.
+func test_the_off_hand_changes_while_the_dagger_flies() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	GameState.data.gear.append("small_shield")
+	GameState.data.abilities["rune_dagger"] = true
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	var p: Player = g.player
+	p.abilities["rune_dagger"] = true
+	await frames(30)
+	GameState.refresh_stats(p)
+	var menu: ListMenu = g.menu
+	var wear := func(id: String) -> bool:
+		await _tap("pause")
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		for i in 8:
+			if String(menu.rows[menu.cursor].label) == "Equipment":
+				break
+			await _tap("move_down")
+		await _tap("jump")
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		for i in 20:
+			if String(menu.rows[menu.cursor].get("id", "")) == id:
+				break
+			await _tap("move_down")
+		var on := String(menu.rows[menu.cursor].get("id", "")) == id
+		await _tap("jump")
+		for i in 4:
+			if not menu.is_open:
+				break
+			await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+			await _tap("pause")
+		await frames(1)
+		return on and not menu.is_open and not arena.get_tree().paused
+	var daggers := func() -> int:
+		return g.world.room.get_children().filter(func(n: Node) -> bool: return n is RuneDagger).size()
+	check(GameState.offhand_free() and not p.has_shield, "the off hand is free for the dagger")
+	await _tap("throw")
+	var flying: RuneDagger = p.rune_dagger
+	check(is_instance_valid(flying) and daggers.call() == 1, "Throw lets it fly")
+	var put_on: bool = await wear.call("small_shield")
+	check(put_on and p.has_shield and not GameState.offhand_free(), "with it still in the air, the buttons strap the Small Shield on")
+	check(is_instance_valid(flying) and daggers.call() == 1, "the dagger is still in flight, alone (%d)" % daggers.call())
+	for i in 90:
+		await frames(1)
+		if p.dagger_ready():
+			break
+	check(not is_instance_valid(flying) and daggers.call() == 0 and p.dagger_ready(), "it ends its flight and comes home")
+	await _tap("throw")
+	await frames(2)
+	check(daggers.call() == 0 and p.dagger_ready(), "with the shield on the arm Throw does nothing")
+	Input.action_press("block")
+	await frames(3)
+	check(p.is_blocking, "and Block guards")
+	Input.action_release("block")
+	await frames(2)
+	var back: bool = await wear.call(Menus.OFFHAND_DAGGER)
+	check(back and GameState.offhand_free() and not p.has_shield, "the dagger back in the off hand, the shield comes off")
+	await _tap("throw")
+	check(daggers.call() == 1, "and Throw lets it fly again")
+	await frames(60)
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_off_hand_changes_while_the_dagger_flies`"), "the bible names the test")
