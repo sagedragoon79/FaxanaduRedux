@@ -3307,3 +3307,68 @@ func test_rests_and_pins_are_heard_through_the_buttons() -> void:
 	map.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 13. ", 1).get_slice("\n## 14. ", 0)
 	check(note.contains("`test_rests_and_pins_are_heard_through_the_buttons`"), "bible 13 names the test")
+
+
+## Pass 445 (bible 5.2): the off hand changed on the Equipment page, by the
+## buttons, mid-guard. Sean's off-hand rule (a shield or the Rune Dagger, and the
+## Broad Sword takes both hands) was only ever swapped by a script. Here Block is
+## held the whole time while the real controller walks the pause menu to the
+## Equipment page and back: the Broad Sword put in hand drops the guard though
+## Block is still held, and the Short Sword back in hand raises it again, the
+## held button guarding as it always does, with no fresh press and so no parry.
+func test_the_equipment_page_changes_hands_mid_guard() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	GameState.data.gear.append_array(["small_shield", "dwarvish_broad_sword"])
+	GameState.data.equipment.shield = "small_shield"
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("eolis/west_gate")
+	g.world.use_game_state = false
+	var p: Player = g.player
+	await frames(30)
+	GameState.refresh_stats(p)
+	var menu: ListMenu = g.menu
+	var wear := func(id: String) -> bool:
+		await _tap("pause")
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		for i in 8:
+			if String(menu.rows[menu.cursor].label) == "Equipment":
+				break
+			await _tap("move_down")
+		await _tap("jump")
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		for i in 20:
+			if String(menu.rows[menu.cursor].get("id", "")) == id:
+				break
+			await _tap("move_down")
+		var on := String(menu.rows[menu.cursor].get("id", "")) == id
+		await _tap("jump")
+		for i in 4:
+			if not menu.is_open:
+				break
+			await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+			await _tap("pause")
+		await frames(3)
+		return on and not menu.is_open and not arena.get_tree().paused
+	Input.action_press("block")
+	await frames(3)
+	check(p.is_blocking, "Block held raises the Small Shield")
+	var went: bool = await wear.call("dwarvish_broad_sword")
+	check(went and GameState.data.equipment.blade == "dwarvish_broad_sword", "the buttons put the Broad Sword in hand (%s)" % GameState.data.equipment.blade)
+	check(not p.has_shield and not p.is_blocking, "two hands on the hilt, the guard is down though Block is still held")
+	went = await wear.call("short_sword")
+	check(went and GameState.data.equipment.blade == "short_sword" and p.has_shield, "the Short Sword back in hand, the shield comes back to the arm")
+	check(p.is_blocking and p._parry_timer <= 0.0, "and the held Block guards at once, with no parry window (%.2f s)" % p._parry_timer)
+	Input.action_release("block")
+	await frames(2)
+	check(not p.is_blocking, "let go, the guard drops")
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_equipment_page_changes_hands_mid_guard`"), "the bible names the test")
