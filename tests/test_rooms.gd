@@ -3156,3 +3156,53 @@ func test_a_dash_through_a_door_goes_on_in_the_next_room() -> void:
 	await frames(2)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.5 ", 1).get_slice("\n### 6.6 ", 0)
 	check(note.contains("Through a door (pass 443)"), "6.5 says so")
+
+
+
+## Pass 448 (bible 3.3): every door hands the hero their air moves back.
+## `Player.teleport` refreshes the double jump and the air dash, and every door
+## arrives through it, so a hero who spent both on the way up a shaft comes up
+## through the next room's floor door with both again. Neither was written or
+## tested. Here the hero rises through a ceiling door with both spent, and in
+## the room above the real Jump double jumps and the real Dash air dashes.
+func test_a_door_gives_back_the_air_moves() -> void:
+	var w := make_world(_rooms(), "test/b", cell_feet(21, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	p.abilities.stride = true
+	p.abilities.boots = true
+	await frames(5)
+	# Rising under B's ceiling door, the double jump and the air dash spent.
+	p.teleport(cell_feet(21, 4))
+	p.velocity = Vector2(0, -420)
+	await frames(1)
+	p.has_double_jump = false
+	p.air_dash_charges = 0
+	var rose := false
+	for i in 30:
+		await frames(1)
+		if w.room.id == "test/a":
+			rose = true
+			break
+	check(rose and p.velocity.y < 0.0, "rising through the ceiling door, the hero comes up into A still rising (%s, vy %.0f)" % [w.room.id, p.velocity.y])
+	check(p.has_double_jump and p.air_dash_charges == p.tuning.air_dash_charges, "with the double jump and the air dash given back (%s, %d)" % [p.has_double_jump, p.air_dash_charges])
+	# Near the top of the rise, the double jump sets a fresh rise (6.3).
+	for i in 40:
+		if p.velocity.y > -60.0:
+			break
+		await frames(1)
+	var vy0 := p.velocity.y
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("jump")
+	check(not p.has_double_jump and p.velocity.y < vy0 - 150.0, "the real Jump double jumps in A (vy %.0f -> %.0f)" % [vy0, p.velocity.y])
+	Input.action_press("move_right")
+	Input.action_press("dash")
+	await frames(2)
+	Input.action_release("dash")
+	check(p.is_dashing and p.air_dash_charges == 0, "and the real Dash air dashes (%d left)" % p.air_dash_charges)
+	Input.action_release("move_right")
+	w.queue_free()
+	await frames(2)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_a_door_gives_back_the_air_moves`"), "the bible names the test")
