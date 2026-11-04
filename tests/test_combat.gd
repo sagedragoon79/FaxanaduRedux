@@ -2545,6 +2545,66 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 
 
 
+## Pass 450 (bible 5.3): the Thrust, held and let go with the real Attack, at a
+## shielded foe. Into his shield it is turned like a cut: no harm, the guard's
+## thud and no cut, the lunge stopped and the hero pushed back at the turned
+## blade's 200 px/s. Into his back it bites for the heavy hit times 1.5, is
+## heard as a cut, and the lunge stops at him instead of carrying the hero in.
+func _real_thrust_at_dwarf(dwarf_faces: int) -> Dictionary:
+	var room := _arena_with("D", Vector2i(8, 6))
+	var p := make_player(room, Vector2i(3, 6))
+	p.thrust = true
+	var dwarf: RotDwarf = _find(room, RotDwarf)
+	await frames(4)
+	dwarf.set_physics_process(false)
+	dwarf.state = "patrol"
+	dwarf.facing = dwarf_faces
+	p.facing = 1
+	var hp0 := dwarf.hp
+	Sfx.recent.clear()
+	await press_for_real(p, ["attack"])
+	var cut_hits := dwarf.hits_taken
+	for i in int(p.combat.thrust_charge * 60.0) + 4:
+		await frames(1)
+	var ready := p.thrust_ready()
+	Sfx.recent.clear()
+	release_for_real(["attack"])
+	var shove := 0.0
+	var nearest := INF
+	var met := -1
+	for i in 30:
+		await frames(1)
+		shove = minf(shove, p.velocity.x)
+		nearest = minf(nearest, dwarf.global_position.x - p.global_position.x)
+		if met < 0 and dwarf.hits_taken > cut_hits:
+			met = i
+	var out := {"ready": ready, "cut_hits": cut_hits, "thrusts": p.thrusts, "hits": dwarf.hits_taken - cut_hits,
+		"harm": hp0 - dwarf.hp, "want": roundi(p.heavy_damage * p.combat.thrust_mult * p.blade_mult()),
+		"guard": Sfx.recent.has("guard"), "hit": Sfx.recent.has("hit"), "shove": shove, "nearest": nearest,
+		"lunging": p._thrust_lunge, "met": met}
+	release_for_real(["attack"])
+	room.free()
+	return out
+
+
+func test_the_thrust_answers_the_real_controller_at_a_shield() -> void:
+	var c := CombatTuning.new()
+	var front: Dictionary = await _real_thrust_at_dwarf(-1)
+	check(front.ready and front.cut_hits == 0, "Attack held charges the Thrust, and the first cut falls short of him (%s)" % [front])
+	check(front.thrusts == 1 and front.hits == 1 and front.met >= 0, "let go, the Thrust lunges and meets his shield (%d hits)" % front.hits)
+	check(front.harm == 0, "his shield turns it: no harm (%d)" % front.harm)
+	check(front.guard and not front.hit, "heard as the guard's thud, never a cut")
+	check(front.shove <= -c.turned_blade_push + 1.0, "and the hero is pushed back at %.0f px/s (%.0f)" % [c.turned_blade_push, front.shove])
+	check(not front.lunging, "the lunge stops at the shield")
+	var back: Dictionary = await _real_thrust_at_dwarf(1)
+	check(back.thrusts == 1 and back.hits == 1, "into his back the Thrust lands once (%d)" % back.hits)
+	check(back.harm == back.want, "for the heavy hit times %.1f (%d, want %d)" % [c.thrust_mult, back.harm, back.want])
+	check(back.hit and not back.guard, "heard as a cut, with no thud")
+	check(back.nearest > 8.0 and not back.lunging, "and the lunge stops at him, never carrying the hero into his body (%.0f px apart at most)" % back.nearest)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("`test_the_thrust_answers_the_real_controller_at_a_shield`"), "5.3 names the test")
+
+
 ## Pass 446 (bible 13.3): a slash a guard turns is heard as a guard. Since pass
 ## 442 it pushes back as a clang, but every swing that met a foe still played
 ## the cut's `hit` over the shield's `guard`, so a turned blade sounded like a
