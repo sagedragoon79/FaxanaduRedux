@@ -21,6 +21,9 @@ extends Resource
 ## An up-slash that connects in midair holds you up: a fall is turned into
 ## this much rise (px/s), about 7 px. Once per swing; it never adds to a jump.
 @export var up_slash_pop := 150.0
+## A side blow a foe's guard turns pushes you back this hard (px/s), in place
+## of `slash_recoil` (pass 442). A spell or a thrown blade turned pushes nothing.
+@export var turned_blade_push := 200.0
 
 @export_group("Shield")
 @export var parry_window := 0.12

@@ -1093,7 +1093,7 @@ func test_every_combat_number_is_written_in_bible_5_3() -> void:
 ## holds each number to its own row (or move) and to its exact form.
 func test_every_combat_number_is_written_in_its_own_row() -> void:
 	const HOME := {
-		"- **Slash:**": ["ground_combo_length", "air_combo_length"],
+		"- **Slash:**": ["ground_combo_length", "air_combo_length", "turned_blade_push"],
 		"- **Up-slash:**": ["up_slash_pop"],
 		"| Light hit / heavy third hit |": ["slash_damage", "heavy_damage"],
 		"| Combo window, cooldowns |": ["combo_window", "combo_cooldowns"],
@@ -2436,3 +2436,109 @@ func test_the_fight_is_heard_through_the_buttons() -> void:
 		"held with too little MP, the guard cracks and the whole blow lands (%s, %d)" % [broke[3], broke[1]])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("The fight, heard through the buttons (pass 422)"), "bible 13.3 says so")
+
+
+## Pass 442 (bible 5.3): spells, by the buttons, at a real foe. Pass 386 found
+## Spell answered on its frame (the MP spent, a bolt out), but no bolt cast
+## through `Input` was ever seen to meet a foe, Next Spell was never followed
+## by a cast, and casting's rules (not while guarding; a press inside the
+## 0.35 s cooldown casts nothing and is not saved) were only ever scripted.
+## Cast at the Rot Dwarf, the bolt met his shield, and the shield's push meant
+## for a blade at arm's length shoved the hero back from across the room.
+func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
+	var c := CombatTuning.new()
+	var room := _arena_with("D", Vector2i(16, 6))
+	var p := make_player(room, Vector2i(3, 6), {"thunder": true})
+	p.has_shield = true
+	var dwarf: RotDwarf = _find(room, RotDwarf)
+	await frames(6)
+	# Deluge, pressed for real, meets the dwarf's shield across the room.
+	var hp0 := dwarf.hp
+	var mp0 := p.mp
+	var x0 := p.global_position.x
+	Sfx.recent.clear()
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	var bolt: DelugeBolt = _find(room, DelugeBolt)
+	check(bolt != null and absf(mp0 - p.mp - p.spell_cost("deluge")) < 0.5,
+		"Spell casts the Deluge and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("deluge"), mp0, p.mp])
+	var dmg := bolt.damage if bolt != null else -1
+	var most := 0.0
+	for i in 60:
+		await frames(1)
+		most = maxf(most, absf(p.global_position.x - x0))
+	check(dwarf.hits_taken == 1 and dwarf.hp == hp0 and Sfx.recent.has("guard"),
+		"the bolt meets the Rot Dwarf's shield with its thud, and does nothing (%d hits, %d -> %d)" % [dwarf.hits_taken, hp0, dwarf.hp])
+	check(most < 0.5, "and the hero, %d px away, is not pushed back (moved %.1f px)" % [roundi(dwarf.global_position.x - x0), most])
+	# Cast as his axe goes up, his shield is down and the bolt lands.
+	for i in 400:
+		if dwarf.state == "windup":
+			break
+		await frames(1)
+	check(dwarf.state == "windup", "the dwarf comes and raises his axe")
+	hp0 = dwarf.hp
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	for i in 20:
+		await frames(1)
+		if dwarf.hp < hp0:
+			break
+	check(hp0 - dwarf.hp == dmg, "cast then, the Deluge strikes him for its %d (%d -> %d)" % [dmg, hp0, dwarf.hp])
+	room.free()
+	# Next Spell turns to Thunder; Spell then casts it, and a press inside
+	# the cooldown casts nothing, then or once the cooldown is over.
+	room = make_room(ARENA)
+	p = make_player(room, Vector2i(3, 6), {"thunder": true})
+	p.has_shield = true
+	await frames(6)
+	await press_for_real(p, ["spell_next"])
+	release_for_real(["spell_next"])
+	check(p.equipped_spell == "thunder", "Next Spell readies Thunder (%s)" % p.equipped_spell)
+	mp0 = p.mp
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	check(_find(room, ThunderBolt) != null and absf(mp0 - p.mp - p.spell_cost("thunder")) < 0.5,
+		"Spell now casts Thunder for %.0f MP (%.1f -> %.1f)" % [p.spell_cost("thunder"), mp0, p.mp])
+	await frames(4)
+	var mp1 := p.mp
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	await frames(int(c.cast_cooldown * 60.0) + 10)
+	check(p.mp >= mp1 - 0.5,
+		"a press inside the %.2f s cooldown casts nothing, then or after (MP %.1f -> %.1f)" % [c.cast_cooldown, mp1, p.mp])
+	# Block held: Spell casts nothing and spends nothing.
+	await press_for_real(p, ["block"])
+	check(p.is_blocking, "Block held raises the guard")
+	mp1 = p.mp
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	await frames(2)
+	check(p.mp >= mp1 - 0.5, "behind the guard, Spell casts nothing (MP %.1f -> %.1f)" % [mp1, p.mp])
+	release_for_real(["block"])
+	await frames(2)
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	check(p.mp < mp1 - p.spell_cost("thunder") + 1.0, "and the guard lowered, the next press casts (MP %.1f)" % p.mp)
+	room.free()
+	# The blade, turned by the same shield at arm's length, still pushes back.
+	room = _arena_with("D", Vector2i(5, 6))
+	p = make_player(room, Vector2i(3, 6))
+	dwarf = _find(room, RotDwarf)
+	await frames(4)
+	# Held on patrol facing the hero, shield up (this close he would raise
+	# his axe and lower it).
+	dwarf.set_physics_process(false)
+	dwarf.state = "patrol"
+	dwarf.facing = -1
+	hp0 = dwarf.hp
+	await press_for_real(p, ["attack"])
+	release_for_real(["attack"])
+	var shove := 0.0
+	for i in 6:
+		shove = minf(shove, p.velocity.x)
+		await frames(1)
+	check(dwarf.hp == hp0 and dwarf.hits_taken == 1 and shove <= -c.turned_blade_push + 1.0,
+		"a slash his shield turns pushes the hero back at %.0f px/s, harder than a cut that lands (%.0f px/s, %d -> %d)" % [c.turned_blade_push, shove, hp0, dwarf.hp])
+	room.free()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("Spells by the buttons (pass 442)"), "5.3 says so")

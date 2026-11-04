@@ -229,6 +229,10 @@ var frozen := false:
 			# not in the frozen step, since a hold may end before a step runs.
 			forget_buffers()
 		frozen = on
+## True only while the blade's own blow is dealt, so a foe whose guard turns
+## it can tell a blade at arm's length from a bolt or a thrown blade (pass 442).
+var _striking := false
+var _blade_turned := false
 ## Set by a screen that read this frame's press (the dialog box, pass 431):
 ## the hero's next step drops its presses, so the press is not read twice.
 var drop_next_presses := false
@@ -1170,6 +1174,7 @@ func _process_attack_hits() -> void:
 	var bounced := false
 	var hit_something := false
 	var hit_foe := false
+	_blade_turned = false
 	for collider: Variant in _query_rect(rect, LAYER_WORLD | LAYER_HAZARD | LAYER_ENEMY):
 		var id: int = collider.get_instance_id()
 		if _attack_hits.has(id):
@@ -1187,7 +1192,9 @@ func _process_attack_hits() -> void:
 			if executioner and open and _is_boss(collider):
 				damage = roundi(damage * combat.executioner_mult)
 				Sfx.play("execute", 0.05, -3.0)
+			_striking = true
 			collider.take_hit(damage, dir * (1.8 if is_heavy_swing else 1.0))
+			_striking = false
 			hit_foe = true
 			if bloodletting and open and hp < max_hp:
 				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
@@ -1214,7 +1221,7 @@ func _process_attack_hits() -> void:
 		Feel.rumble(0.3, 0.2 if is_heavy_swing else 0.0, 0.08)
 		Sfx.play("hit", 0.08, 2.0 if is_heavy_swing else 0.0)
 		if attack_kind in ["side", "thrust"]:
-			velocity.x = -facing * tuning.slash_recoil
+			velocity.x = -facing * (combat.turned_blade_push if _blade_turned else tuning.slash_recoil)
 			# A thrust's lunge stops at what it strikes; it doesn't carry you into it.
 			_thrust_lunge = false
 	if attack_kind == "down" and bounced:
@@ -1561,6 +1568,16 @@ func _field_cues(delta: float) -> void:
 		_drift_cue_wait = FIELD_CUE_GAP
 	_was_in_wind = in_wind
 	_was_drifting = drifting
+
+
+## A foe's guard turned a blow (`Enemy._on_blocked`). Only the blade's own
+## blow pushes you back, harder than a landed cut (pass 442): until then the
+## push met every turned blow, so a Deluge cast at a Rot Dwarf's shield across
+## the room shoved the caster, while a turned slash was pushed only by its
+## ordinary recoil, which overwrote it.
+func blade_turned() -> void:
+	if _striking:
+		_blade_turned = true
 
 
 ## The MP a spell costs you now: Thrift for every spell, and Mantra of Death
