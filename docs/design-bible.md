@@ -1849,8 +1849,9 @@ as a fallback.
 Market Row's four shops (Eolis Arms, Ilse's Dyeworks, Eolis Sundries and the Cartographer's house) are
 `SetPiece`s, room props named in `SetPiece.NAMES`, each standing behind its keeper.
 A set piece's building is one still frame: PixelLab redraws a whole object per animation frame, so its walls shift
-(Sean tried it on the smithy). What lives in it is drawn in code over the still sprite (`SetPiece.EFFECTS`): the
-smithy's forge glows and throws embers, its chimney smokes, and the lanterns flicker.
+(Sean tried it on the smithy). The smithy is Sean's own hand edit in Pixelorama (2026-11-04): 8 frames at 6 fps where only the chimney smoke, the
+forge fire and the lantern move, so the walls hold still. Light is drawn in code over the sprite (`SetPiece.EFFECTS`):
+the forge and lanterns cast a flickering glow, and a piece without drawn fire or smoke can have code embers and puffs.
 **Eolis's ground** is Sean's town-ground tileset for the edges only (the flagstone lip, the rims), built by
 `tools/art/pixellab_tileset.py` from its 16 corner tiles into the 47 blob tiles with their insides cleared; the inside
 of every wall is one seamless 128 px PixelLab texture (stone carved into roots, moss in the cracks,

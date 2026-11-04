@@ -5,18 +5,19 @@ extends Node2D
 ## people in front of it. The origin is the bottom center, on the floor.
 ##
 ## The building itself never moves: PixelLab redraws a whole object for each
-## frame, so its animations shift the walls (Sean, 2026-11-03). What lives in it
-## (a forge's fire, chimney smoke, a lantern) is drawn here instead, over the
-## still sprite, at points in world pixels from the origin.
+## frame, so its animations shift the walls (Sean, 2026-11-03). A sheet may still
+## animate when Sean hand-edits the frames so only the living parts move (the
+## smithy's smoke, forge and lantern, 2026-11-04). Light (a forge's glow, a
+## lantern's) is drawn here, over the sprite, at points in world pixels from the origin.
 
 ## Room prop names that are set pieces; each is a sheet in assets/sprites/.
 const NAMES := ["shop_arms", "shop_sundries", "shop_dyeworks", "shop_cartographer"]
 ## Living parts per set piece: "fire" (a flickering glow with rising embers),
-## "smoke" (puffs that rise, swell and fade) and "lamp" (a soft, slow flicker).
+## "smoke" (puffs that rise, swell and fade), "lamp" (a soft, slow flicker) and
+## "light" (only a fire's glow, for a fire the sheet already animates).
 const EFFECTS := {
 	"shop_arms": [
-		{"kind": "fire", "at": Vector2(18.5, -27.5)},
-		{"kind": "smoke", "at": Vector2(20.5, -67.5)},
+		{"kind": "light", "at": Vector2(18.5, -27.5)},
 		{"kind": "lamp", "at": Vector2(-7.0, -39.5)},
 	],
 	"shop_sundries": [{"kind": "lamp", "at": Vector2(38.5, -56.5)}],
@@ -81,7 +82,7 @@ func _draw_glow() -> void:
 	for e: Dictionary in effects():
 		var at: Vector2 = e.at
 		match String(e.kind):
-			"fire":
+			"fire", "light":
 				var f := flicker(_t, at.x)
 				_glow.draw_circle(at + Vector2(0, -3), 9.0 * f, Color(FIRE, 0.18 * f))
 				_glow.draw_circle(at + Vector2(0, -2), 4.5 * f, Color(FIRE, 0.3 * f))

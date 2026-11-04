@@ -3307,12 +3307,31 @@ func test_a_set_pieces_fire_and_smoke_move_while_the_building_stays_still() -> v
 	for name: String in SetPiece.EFFECTS:
 		check(name in SetPiece.NAMES, "%s has living parts and is a set piece" % name)
 		for e: Dictionary in SetPiece.EFFECTS[name]:
-			check(String(e.kind) in ["fire", "smoke", "lamp"], "%s: %s is a kind the piece draws" % [name, e.kind])
+			check(String(e.kind) in ["fire", "smoke", "lamp", "light"], "%s: %s is a kind the piece draws" % [name, e.kind])
 	var piece := SetPiece.new()
 	piece.sheet = "shop_arms"
 	arena.add_child(piece)
 	check(piece.get_node_or_null("Glow") != null, "the smithy's forge glows")
-	check(Sheet.get_sheet("shop_arms").animations.idle.seq.size() == 1, "and the building is one still frame")
+	# Sean's hand-edited smithy animates only its smoke (above the roof), forge and lantern
+	# (near their lights): the walls hold still.
+	var s := Sheet.get_sheet("shop_arms")
+	var img: Image = (s.tex as Texture2D).get_image()
+	var cell: Vector2i = Vector2i(s.cell)
+	var moved := 0
+	var lights: Array[Vector2] = []
+	for e: Dictionary in SetPiece.EFFECTS.shop_arms:
+		lights.append((s.origin as Vector2) + (e.at as Vector2) * s.density)
+	for f in range(1, s.animations.idle.seq.size()):
+		for y in range(cell.y * 2 / 5, cell.y):
+			for x in cell.x:
+				var c := img.get_pixel(f * cell.x + x, y)
+				var c0 := img.get_pixel(x, y)
+				var near := lights.any(func(p: Vector2) -> bool: return p.distance_to(Vector2(x, y)) <= 22.0)
+				# Transparent pixels only differ by the importer's alpha-border fix.
+				if (c.a > 0.0 or c0.a > 0.0) and c != c0 and not near:
+					moved += 1
+	check(s.animations.idle.seq.size() > 1, "the smithy is Sean's animation")
+	check(moved == 0, "the smithy's walls hold still in every frame (%d pixels moved)" % moved)
 	var lo := 9.0
 	var hi := 0.0
 	for i in 60:

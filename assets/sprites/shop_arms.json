@@ -1,25 +1,39 @@
 {
  "cell": [
   186,
-  162
+  169
  ],
  "origin": [
   93,
-  162
+  169
  ],
- "columns": 1,
+ "columns": 8,
  "density": 2,
  "own_palette": true,
  "animations": {
   "idle": {
    "row": 0,
    "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
-    0
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
    ],
-   "fps": 1,
+   "fps": 6,
    "loop": true
   }
  }

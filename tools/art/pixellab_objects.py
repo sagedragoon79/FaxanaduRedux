@@ -33,7 +33,9 @@ OBJECTS = {
         ("full", "full", 10),
     ]),
     # Market Row's four shops, each behind its keeper (scripts/world/set_piece.gd).
-    "shop_arms": ("art/pixellab/eolis/shops", [("idle", "arms", 1)]),
+    # The smithy's frames are Sean's hand edit in Pixelorama (arms/forge_animation.pxo):
+    # the building holds still and only the chimney smoke moves.
+    "shop_arms": ("art/pixellab/eolis/shops", [("idle", "arms", 6)]),
     "shop_sundries": ("art/pixellab/eolis/shops", [("idle", "sundries", 1)]),
     "shop_dyeworks": ("art/pixellab/eolis/shops", [("idle", "dyeworks", 1)]),
     "shop_cartographer": ("art/pixellab/eolis/shops", [("idle", "cartographer", 1)]),
