@@ -3165,6 +3165,67 @@ func test_a_dash_through_a_door_goes_on_in_the_next_room() -> void:
 ## through the next room's floor door with both again. Neither was written or
 ## tested. Here the hero rises through a ceiling door with both spent, and in
 ## the room above the real Jump double jumps and the real Dash air dashes.
+## Pass 456 (bible 5.4): the rise, by the buttons. A player falls holding a
+## direction and often keeps holding it. Right held through the fall moves
+## nothing while the hero lies dead, and once he rises the same held Right,
+## never pressed again, walks him on at a run; a Jump pressed in the first
+## step after the rise jumps; and for 1.0 s spikes touched do no harm, then
+## they do.
+func test_the_rise_answers_the_real_controller() -> void:
+	var was := GameState.slot
+	GameState.slot = SAVE_SLOT
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 4, 19, "S")
+	put_tiles(rows, 30, 19, "^", 2)
+	var w := make_world({"test/r": room_text(["name: R", "zone: test"], rows)}, "test/r", cell_feet(4, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	w.save_at(p.global_position)
+	p.teleport(cell_feet(12, 19))
+	await frames(2)
+	Input.action_press("move_right")
+	await frames(4)
+	p.take_damage(99999)
+	var x_dead := p.global_position.x
+	var moved_dead := 0.0
+	while p.dead:
+		await frames(1)
+		if p.dead:
+			moved_dead = maxf(moved_dead, absf(p.global_position.x - x_dead))
+	check(moved_dead < 0.5, "Right held does nothing while he lies dead (%.1f px)" % moved_dead)
+	var x0 := p.global_position.x
+	check(absf(x0 - cell_feet(4, 19).x) < 2.0, "he rises at the shrine")
+	await frames(20)
+	var walked := p.global_position.x - x0
+	Input.action_release("move_right")
+	check(walked > 20.0 and absf(p.velocity.x - p.tuning.run_speed) < 1.0, "the same held Right walks him on at a run (%.0f px, %.0f px/s)" % [walked, p.velocity.x])
+	await frames(10)
+	# Again, and Jump in the first step after the rise.
+	p.take_damage(99999)
+	while p.dead:
+		await frames(1)
+	Input.action_press("jump")
+	await frames(2)
+	Input.action_release("jump")
+	check(p.velocity.y < -100.0, "Jump in the first step after the rise jumps (%.0f px/s)" % p.velocity.y)
+	await frames(60)
+	# The rise's 1.0 s of i-frames: spikes touched at once do no harm.
+	p.take_damage(99999)
+	while p.dead:
+		await frames(1)
+	p.teleport(cell_feet(30, 19))
+	var hp0 := p.hp
+	await frames(30)
+	check(p.hp == hp0, "spikes touched in the rise's first half second do no harm (%d)" % p.hp)
+	await frames(40)
+	check(p.hp < hp0 or p.dead, "and after 1.0 s they do (%d)" % p.hp)
+	GameState.delete_save(SAVE_SLOT)
+	GameState.slot = was
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.4 ", 1).get_slice("\n### 5.5 ", 0)
+	check(note.contains("`test_the_rise_answers_the_real_controller`"), "5.4 names the test")
+
+
 func test_a_door_gives_back_the_air_moves() -> void:
 	var w := make_world(_rooms(), "test/b", cell_feet(21, 19))
 	var p := w.player
