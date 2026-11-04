@@ -4937,3 +4937,60 @@ func test_the_fountain_sheet_has_a_state_for_each_spring() -> void:
 		check(Sheet.has_anim(Fountain.SHEET, s), "the sheet has the %s state" % s)
 	check(Sheet.get_sheet(Fountain.SHEET).density == 2.0, "drawn at the hero's 2x density")
 	check(Fountain.state() == "dry", "a new game starts dry")
+
+
+## Pass 444 (bible 5.3, 8): pass 442 made a blade a guard turns push the hero
+## back at `turned_blade_push`, through `Enemy._on_blocked`. Four guardians turn
+## blows with guards of their own and never called it: King Grieve warded on
+## his throne, Zoradohna's open cockpit from the side, the Evil One's core, and
+## the Evil Heart without the Dragon Slayer. A slash each turned was pushed
+## back only as a landed cut is, so the guardian's guard read like a hit.
+func test_a_guardians_guard_turns_the_blade_back() -> void:
+	var c := CombatTuning.new()
+	var rows := grid_rows(30, 12)
+	for which: String in ["king_grieve", "zoradohna", "evil_core", "evil_heart"]:
+		var room := make_room(rows)
+		var p := make_player(room, Vector2i(6, 8))
+		p.max_hp = 9999
+		p.hp = 9999
+		await frames(4)
+		var b: Enemy
+		match which:
+			"king_grieve":
+				b = KingGrieve.new()
+			"zoradohna":
+				b = Zoradohna.new()
+			"evil_core":
+				b = EvilCore.new()
+			"evil_heart":
+				b = EvilHeart.new()
+		room.add_child(b)
+		b.global_position = p.global_position + Vector2(30, -20 if b.body_centered else 0)
+		await frames(1)
+		b.set_physics_process(false)
+		b.contact_damage = 0
+		match which:
+			"king_grieve":
+				b.phase = 2
+				b.state = "ward"
+			"zoradohna":
+				b.phase = 3
+				b.state = "idle"
+			"evil_heart":
+				b.state = "bound"
+		var hp0 := b.hp
+		var hits0 := b.hits_taken
+		p.input = PlayerInput.new()
+		await press_for_real(p, ["attack"])
+		release_for_real(["attack"])
+		var push := 0.0
+		for i in 4:
+			push = minf(push, p.velocity.x)
+			await frames(1)
+		check(b.hits_taken == hits0 + 1 and b.hp == hp0,
+			"%s's guard turns a slash pressed for real (%d hits, %d -> %d)" % [which, b.hits_taken - hits0, hp0, b.hp])
+		check(push <= -c.turned_blade_push + 1.0, "and pushes the hero back at %.0f px/s, as an ordinary foe's guard does (%.0f)" % [c.turned_blade_push, push])
+		room.free()
+		await frames(1)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("A guardian's guard, too (pass 444)"), "5.3 says so")

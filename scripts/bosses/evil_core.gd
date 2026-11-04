@@ -105,6 +105,7 @@ func _on_blocked(_dir: Vector2) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, SIZE.y * 0.5)
 	Sfx.play("guard")
+	turn_blade()
 
 
 func stagger() -> void:

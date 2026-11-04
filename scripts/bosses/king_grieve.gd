@@ -482,6 +482,7 @@ func _on_blocked(_dir: Vector2) -> void:
 	get_parent().add_child(d)
 	d.global_position = center()
 	Sfx.play("guard")
+	turn_blade()
 
 
 func die() -> void:

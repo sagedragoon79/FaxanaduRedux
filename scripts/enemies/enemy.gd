@@ -211,6 +211,13 @@ func _on_blocked(dir: Vector2) -> void:
 	get_parent().add_child(d)
 	d.global_position = center() - Vector2(dir.x * 10.0, 0)
 	Sfx.play("guard")
+	turn_blade()
+
+
+## A blade turned at arm's length pushes the hero back; a bolt, a burst or a
+## thrown blade turned from across the room does not (pass 442). Every guard
+## that turns a blow calls this, a guardian's own too (pass 444).
+func turn_blade() -> void:
 	var p := player()
 	if p:
 		p.blade_turned()
