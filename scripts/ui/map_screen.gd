@@ -116,7 +116,7 @@ static func locked_doors(info: Dictionary) -> Array[Dictionary]:
 static func lock_color(kind: String) -> Color:
 	if kind == "sky":
 		return KeyDoor.SHRINE
-	return KeyDoor.CARDS.get(kind, KeyDoor.CARDS.jack).panel
+	return KeyDoor.CARDS.get(kind, KeyDoor.CARDS.copper).panel
 
 
 static func room_rect(info: Dictionary) -> Rect2:

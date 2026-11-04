@@ -323,7 +323,7 @@ func _draw_coin(c: Vector2) -> void:
 
 
 func _glass_shown() -> bool:
-	return player.abilities.get("hourglass", false)
+	return player.abilities.get("stillstone", false)
 
 
 ## The Stillstone once owned: full and bright when it can be turned, sand

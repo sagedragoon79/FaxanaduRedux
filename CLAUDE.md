@@ -9,7 +9,8 @@ bible changes substantially (link in the project memory).
 
 Yldenfall is an original game (design bible 1 and 2). It began as a remake of another game, and every
 name from that game was retired in pass 461: `data/rename_map.json` lists each with its new name, and
-`test_no_retired_name_is_left` fails if one comes back. Give anything new a name of its own.
+`test_no_retired_name_is_left` fails if one comes back. Pass 462 renamed the internal ids and files the
+same way (`ids` in that file; `GameState.migrate_ids` brings older saves over). Give anything new a name of its own.
 
 ## Engine and commands
 

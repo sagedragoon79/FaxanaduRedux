@@ -97,5 +97,376 @@
 		"Guru": "Ringreader",
 		"Mantra": "Ring"
 	},
-	"user_dir_before": "Faxanadu Redux"
+	"user_dir_before": "Faxanadu Redux",
+	"ids": {
+		"_about": "Internal ids renamed in pass 462: each old word inside an id (a room, zone, item, ability, npc, boss or flag id, or a file name) becomes the new one. tools/rename/ids.py applied it to the code; GameState.migrate_ids applies it to an old save, with the key and seed ids in exact. \"example_save\" is a save written before it, which test_an_old_save_comes_over_to_the_new_ids loads.",
+		"segments": [
+			[
+				"king_grieves",
+				"thane_vorrunds"
+			],
+			[
+				"king_grieve",
+				"thane_vorrund"
+			],
+			[
+				"grieve",
+				"vorrund"
+			],
+			[
+				"shadow_euras",
+				"likenesses"
+			],
+			[
+				"shadow_eura",
+				"likeness"
+			],
+			[
+				"eura",
+				"likeness"
+			],
+			[
+				"evil_ones",
+				"everblooms"
+			],
+			[
+				"evil_one",
+				"everbloom"
+			],
+			[
+				"evil",
+				"everbloom"
+			],
+			[
+				"elf_ring",
+				"thaw_seed"
+			],
+			[
+				"ruby_ring",
+				"sun_seed"
+			],
+			[
+				"dworf_ring",
+				"fall_seed"
+			],
+			[
+				"demon_ring",
+				"frost_seed"
+			],
+			[
+				"jack_key",
+				"copper_key"
+			],
+			[
+				"queen_key",
+				"silver_key"
+			],
+			[
+				"king_key",
+				"gold_key"
+			],
+			[
+				"ace_key",
+				"thorn_key"
+			],
+			[
+				"joker_key",
+				"glass_key"
+			],
+			[
+				"dragon_slayer",
+				"severance"
+			],
+			[
+				"studded_mail",
+				"riveted_coat"
+			],
+			[
+				"studded",
+				"riveted"
+			],
+			[
+				"battle_suit",
+				"elven_plate"
+			],
+			[
+				"battle_helmet",
+				"elven_helm"
+			],
+			[
+				"wing_boots",
+				"featherstep_boots"
+			],
+			[
+				"black_onyx",
+				"seers_lens"
+			],
+			[
+				"onyx",
+				"seers_lens"
+			],
+			[
+				"magical_rod",
+				"briar_wand"
+			],
+			[
+				"hour_glass",
+				"stillstone"
+			],
+			[
+				"hourglass",
+				"stillstone"
+			],
+			[
+				"mattock",
+				"delvers_pick"
+			],
+			[
+				"deluge",
+				"torrent"
+			],
+			[
+				"tilte",
+				"wisplight"
+			],
+			[
+				"mantra_path",
+				"grain_road"
+			],
+			[
+				"mantra_of",
+				"ring_of"
+			],
+			[
+				"mantras",
+				"grains"
+			],
+			[
+				"mantra",
+				"grain"
+			],
+			[
+				"guru_trials",
+				"inner_rings"
+			],
+			[
+				"gurus",
+				"ringreaders"
+			],
+			[
+				"guru",
+				"ringreader"
+			],
+			[
+				"eolis",
+				"hearthroot"
+			],
+			[
+				"apolune",
+				"amberlee"
+			],
+			[
+				"forepaw",
+				"kettleforge"
+			],
+			[
+				"mascon",
+				"polesend"
+			],
+			[
+				"conflate",
+				"sylvarre"
+			],
+			[
+				"daybreak",
+				"spires"
+			],
+			[
+				"dartmoor",
+				"vorrhallow"
+			],
+			[
+				"zenis",
+				"evercrown"
+			],
+			[
+				"fraternal",
+				"stillwater"
+			],
+			[
+				"rokusutahn",
+				"gnarlmaw"
+			],
+			[
+				"zoradohna",
+				"durgan"
+			],
+			[
+				"ripasheiku",
+				"gloamweaver"
+			],
+			[
+				"zorugeriru",
+				"haar_wyrm"
+			],
+			[
+				"pakukame",
+				"snapcrown"
+			],
+			[
+				"borabohra",
+				"skyrend"
+			],
+			[
+				"monodron",
+				"blinkhop"
+			],
+			[
+				"myconid",
+				"puffcap"
+			],
+			[
+				"nagas",
+				"silt_adders"
+			],
+			[
+				"naga",
+				"silt_adder"
+			],
+			[
+				"lilith",
+				"mothling"
+			],
+			[
+				"dworf",
+				"fall"
+			],
+			[
+				"mist",
+				"haar"
+			],
+			[
+				"trunk",
+				"heartwood"
+			],
+			[
+				"branches",
+				"boughs"
+			],
+			[
+				"victim",
+				"lampwick"
+			],
+			[
+				"faxanadu",
+				"yldenfall"
+			]
+		],
+		"unique": [
+			"eolis",
+			"apolune",
+			"forepaw",
+			"mascon",
+			"conflate",
+			"dartmoor",
+			"zenis",
+			"rokusutahn",
+			"zoradohna",
+			"ripasheiku",
+			"zorugeriru",
+			"pakukame",
+			"borabohra",
+			"eura",
+			"monodron",
+			"myconid",
+			"naga",
+			"nagas",
+			"lilith",
+			"dworf",
+			"tilte",
+			"mattock",
+			"faxanadu"
+		],
+		"exact": {
+			"keys": {
+				"jack": "copper",
+				"queen": "silver",
+				"king": "gold",
+				"ace": "thorn",
+				"joker": "glass"
+			},
+			"rings": {
+				"elf": "thaw",
+				"ruby": "sun",
+				"dworf": "fall",
+				"demon": "frost"
+			}
+		},
+		"example_save": {
+			"version": 2,
+			"save_room": "trunk/spring_of_trunk",
+			"save_pos": [
+				10,
+				20
+			],
+			"abilities": {
+				"mattock": true,
+				"deluge": true,
+				"tilte": true,
+				"onyx": true,
+				"hourglass": true,
+				"dragon_slayer": true,
+				"magical_rod": true,
+				"glove": true
+			},
+			"spell": "tilte",
+			"equipment": {
+				"blade": "dragon_slayer",
+				"armor": "studded_mail",
+				"shield": "",
+				"helmet": "battle_helmet"
+			},
+			"gear": [
+				"short_sword",
+				"dragon_slayer",
+				"studded_mail",
+				"battle_helmet"
+			],
+			"keys": {
+				"jack": 1,
+				"king": 2,
+				"joker": 1,
+				"sky": true
+			},
+			"rings": [
+				"elf",
+				"ruby",
+				"dworf",
+				"demon"
+			],
+			"flags": {
+				"boss:king_grieve": true,
+				"boss:zoradohna": true,
+				"spring:mist": true,
+				"trunk_restored": true
+			},
+			"collected": {
+				"dartmoor/drowned_nave:31,6": true
+			},
+			"visited": {
+				"eolis/plaza": true,
+				"daybreak/sky_spring": true
+			},
+			"gurus": {
+				"tower/forepaw": [
+					168,
+					320
+				]
+			},
+			"mantra_shards": 2,
+			"charts": {
+				"branches": true
+			}
+		}
+	}
 }

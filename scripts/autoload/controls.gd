@@ -30,16 +30,16 @@ const BINDINGS := {
 	"spell": {"keys": [KEY_F, KEY_U], "buttons": [JOY_BUTTON_Y]},
 	"spell_next": {"keys": [KEY_G, KEY_O], "buttons": [JOY_BUTTON_RIGHT_STICK]},
 	"heal": {"keys": [KEY_Q, KEY_H], "trigger": JOY_AXIS_TRIGGER_LEFT},
-	"hourglass": {"keys": [KEY_T, KEY_E], "buttons": [JOY_BUTTON_LEFT_STICK]},
+	"stillstone": {"keys": [KEY_T, KEY_E], "buttons": [JOY_BUTTON_LEFT_STICK]},
 	"map": {"keys": [KEY_TAB, KEY_M], "buttons": [JOY_BUTTON_BACK]},
 	"pause": {"keys": [KEY_ESCAPE, KEY_P], "buttons": [JOY_BUTTON_START]},
 	"debug_glove": {"keys": [KEY_F1]},
-	"debug_mattock": {"keys": [KEY_F2]},
+	"debug_delvers_pick": {"keys": [KEY_F2]},
 	"debug_boots": {"keys": [KEY_F3]},
 	"debug_stride": {"keys": [KEY_F4]},
 	"debug_reset": {"keys": [KEY_F5, KEY_R]},
 	"debug_hud": {"keys": [KEY_F6]},
-	"debug_deluge": {"keys": [KEY_F7]},
+	"debug_torrent": {"keys": [KEY_F7]},
 }
 
 

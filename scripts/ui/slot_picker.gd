@@ -17,9 +17,9 @@ var slots: Array = [1, 2, 3]
 ## The three springs' colors: amber Heartwood, pale Haar, blue Sky.
 const COLORS := [Color("e8a23c"), Color("8fd8c4"), Color("8fb4ff")]
 ## Each spring's mark, etched on its flask's glass (pass 357), so the three are
-## told apart by shape as well as color: a leaf for the Heartwood, a ripple of mist
+## told apart by shape as well as color: a leaf for the Heartwood, a ripple of haar
 ## for the Haar, a bolt for the Sky. A mark, never a number or a letter.
-const MARKS := ["leaf", "mist", "bolt"]
+const MARKS := ["leaf", "haar", "bolt"]
 const GLASS := Color(0.75, 0.82, 0.9, 0.55)
 const GLASS_DARK := Color(0.08, 0.07, 0.12, 0.8)
 const CORK := Color("8a5a32")
@@ -340,7 +340,7 @@ static func mark(i: int) -> Array[PackedVector2Array]:
 				leaf.append(Vector2(cos(a) * 8.0, sin(a) * 4.5).rotated(-0.6) + Vector2(1, -1))
 			out.append(leaf)
 			out.append(PackedVector2Array([Vector2(-9, 6), Vector2(-5, 3), Vector2(7, -5)]))
-		"mist":
+		"haar":
 			# Three ripples of drifting mist.
 			for row in 3:
 				var wave := PackedVector2Array()

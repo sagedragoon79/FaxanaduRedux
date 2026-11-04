@@ -2,7 +2,7 @@ extends TestSuite
 ## Gnarlmaw and its arena (design bible 8 and 8.1), the Heartwood Spring and
 ## the world-state change it makes (4.4).
 
-const ARENA_ROOM := "trunk/root_chamber"
+const ARENA_ROOM := "heartwood/root_chamber"
 
 
 func _until(cond: Callable, max_frames: int) -> bool:
@@ -23,7 +23,7 @@ func _arena(w: World) -> BossArena:
 ## A boss dropped straight into the Root Chamber, without the arena.
 func _boss_world() -> Array:
 	var w := make_world({}, ARENA_ROOM, cell_feet(4, 19))
-	GameState.set_flag("boss:rokusutahn")  # keep the arena from starting its own fight
+	GameState.set_flag("boss:gnarlmaw")  # keep the arena from starting its own fight
 	var boss := Gnarlmaw.new()
 	boss.room = w.room
 	w.room.add_child(boss)
@@ -189,7 +189,7 @@ func test_sap_clump_hurts() -> void:
 ## Pass 228: the Stillstone holds every hazard a foe looses, not only the ones
 ## that fly. Gnarlmaw's sap and the Haar Wyrm's mist breath (and a Puffcap's
 ## spores) went on falling, rolling and stinging in stopped time.
-func test_the_hour_glass_holds_every_loosed_hazard() -> void:
+func test_the_stillstone_holds_every_loosed_hazard() -> void:
 	var setup := _boss_world()
 	var w: World = setup[0]
 	var p := w.player
@@ -244,8 +244,8 @@ func test_defeat_gives_the_reward_once() -> void:
 	check(boss.dead and boss.state == "dying", "the last hit starts the death")
 	var gone := await _until(func() -> bool: return boss.state == "dead", 900)
 	check(gone, "every segment shatters")
-	check(GameState.data.rings.has("elf"), "the Thaw Seed is won")
-	check(GameState.flag("boss:rokusutahn"), "the boss is marked beaten")
+	check(GameState.data.rings.has("thaw"), "the Thaw Seed is won")
+	check(GameState.flag("boss:gnarlmaw"), "the boss is marked beaten")
 	check(int(GameState.data.xp) == Gnarlmaw.XP, "boss XP (%d)" % int(GameState.data.xp))
 	var expected_points := 1 + int(GameState.data.rank)
 	check(int(GameState.data.skill_points) == expected_points, "one skill point plus the rank-ups (%d)" % int(GameState.data.skill_points))
@@ -264,7 +264,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 	put_tiles(rows, 20, 20, "#", 4, 1)
 	put_tiles(rows, 20, 21, "#", 4, 1)
 	put_tiles(rows, 20, 19, "~", 4, 1)
-	var rooms := {"test/spring": room_text(["name: Spring", "zone: trunk", "prop: 8, 19, spring_trunk"], rows)}
+	var rooms := {"test/spring": room_text(["name: Spring", "zone: heartwood", "prop: 8, 19, spring_heartwood"], rows)}
 	var w := make_world(rooms, "test/spring")
 	var p := w.player
 	var sap_at := Vector2(21 * Room.TILE + 8, 19 * Room.TILE + 8)
@@ -274,7 +274,7 @@ func test_spring_hardens_sap_and_fills_the_fountain() -> void:
 	await frames(3)
 	p.input.up_pressed = true
 	await frames(2)
-	check(GameState.flag("spring:trunk"), "pressing Up restores the spring")
+	check(GameState.flag("spring:heartwood"), "pressing Up restores the spring")
 	check(Fountain.level() == 1, "the fountain is a third full")
 	check(Fountain.state() == "third", "and shows its third-full state")
 	w._enter("test/spring")
@@ -286,7 +286,7 @@ func test_a_spring_answers_the_real_controller() -> void:
 	# a scripted Up, which lasts one step; here the real Up is held for many.
 	var rows := grid_rows(40, 23)
 	put_tiles(rows, 3, 19, "P")
-	var rooms := {"test/spring": room_text(["name: Spring", "zone: mist", "prop: 8, 19, spring_mist"], rows)}
+	var rooms := {"test/spring": room_text(["name: Spring", "zone: haar", "prop: 8, 19, spring_haar"], rows)}
 	var w := make_world(rooms, "test/spring", cell_feet(8, 19))
 	var p := w.player
 	p.input = PlayerInput.new()
@@ -300,9 +300,9 @@ func test_a_spring_answers_the_real_controller() -> void:
 	await frames(3)
 	Input.action_release("move_up")
 	await frames(2)
-	check(not GameState.flag("spring:mist") and banners.is_empty() and not Sfx.recent.has("secret"),
+	check(not GameState.flag("spring:haar") and banners.is_empty() and not Sfx.recent.has("secret"),
 		"Up at the Haar Spring while the Haar Wyrm lives does nothing (%s)" % [banners])
-	GameState.set_flag("boss:zorugeriru")
+	GameState.set_flag("boss:haar_wyrm")
 	await frames(2)
 	# Up pressed in the air is no use, and held down to the landing it is not pressed again.
 	Input.action_press("jump")
@@ -312,7 +312,7 @@ func test_a_spring_answers_the_real_controller() -> void:
 	Input.action_press("move_up")
 	await _until(func() -> bool: return p.is_on_floor(), 90)
 	await frames(6)
-	check(not GameState.flag("spring:mist") and banners.is_empty(),
+	check(not GameState.flag("spring:haar") and banners.is_empty(),
 		"Up pressed in the air and held to the landing does not restore it")
 	Input.action_release("move_up")
 	await frames(2)
@@ -321,7 +321,7 @@ func test_a_spring_answers_the_real_controller() -> void:
 	await frames(2)
 	Input.action_release("move_up")
 	await frames(2)
-	check(GameState.flag("spring:mist") and Fountain.level() == 1, "a tap of Up on the ground restores it and fills a third of the fountain")
+	check(GameState.flag("spring:haar") and Fountain.level() == 1, "a tap of Up on the ground restores it and fills a third of the fountain")
 	check(banners == ["Haar Spring restored"] and Sfx.recent.has("secret"), "with one banner and the chime (%s, %s)" % [banners, Sfx.recent])
 	Input.action_press("move_up")
 	await frames(3)
@@ -332,14 +332,14 @@ func test_a_spring_answers_the_real_controller() -> void:
 
 
 func test_music_follows_rooms_and_bosses() -> void:
-	for name: String in ["title", "eolis", "trunk", "tower", "boss", "miniboss", "zoradohna", "forepaw", "ripasheiku", "zorugeriru", "amb_trunk", "amb_eolis", "amb_tower", "amb_heights", "amb_mine", "mist", "amb_mist", "victim", "mascon", "branches", "amb_branches", "conflate", "pakukame", "daybreak", "amb_daybreak", "daybreak_town", "borabohra", "dartmoor", "amb_dartmoor", "grieve", "eura", "zenis", "amb_zenis", "evil_one", "sunken", "amb_sunken", "warden"]:
+	for name: String in ["title", "hearthroot", "heartwood", "tower", "boss", "miniboss", "durgan", "kettleforge", "gloamweaver", "haar_wyrm", "amb_heartwood", "amb_hearthroot", "amb_tower", "amb_heights", "amb_mine", "haar", "amb_haar", "lampwick", "polesend", "boughs", "amb_boughs", "sylvarre", "snapcrown", "spires", "amb_spires", "spires_town", "skyrend", "vorrhallow", "amb_vorrhallow", "vorrund", "likeness", "evercrown", "amb_evercrown", "everbloom", "sunken", "amb_sunken", "warden"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
-	var w := make_world({}, "trunk/boss_gate")
-	check(Music.track == "trunk" and Music.ambience_track == "amb_trunk", "the Heartwood plays its theme and ambience (%s)" % Music.track)
+	var w := make_world({}, "heartwood/boss_gate")
+	check(Music.track == "heartwood" and Music.ambience_track == "amb_heartwood", "the Heartwood plays its theme and ambience (%s)" % Music.track)
 	w.use_door(2)
 	await frames(3)
-	check(Music.track == "trunk", "the arena keeps the zone theme until the fight")
+	check(Music.track == "heartwood", "the arena keeps the zone theme until the fight")
 	var arena := _arena(w)
 	w.player.teleport(cell_feet(12, 19))
 	await _until(func() -> bool: return arena.fighting, 20)
@@ -350,34 +350,34 @@ func test_tower_rooms_pick_their_ambience_and_theme() -> void:
 	# Bible 11: each part of the Tower has its own bed; Kettleforge has its own theme.
 	var w := make_world({}, "tower/winch_hall")
 	check(Music.track == "tower" and Music.ambience_track == "amb_tower", "the Tower's halls hum with machinery")
-	GameState.set_flag("boss:zoradohna")
+	GameState.set_flag("boss:durgan")
 	for stop: Array in [["tower/old_flue", "tower", "amb_heights"], ["tower/rafters", "tower", "amb_heights"],
-			["tower/forepaw", "forepaw", "amb_tower"], ["tower/mine_mouth", "tower", "amb_mine"], ["tower/smelter", "tower", "amb_mine"], ["mist/fog_cut", "mist", "amb_mist"], ["mist/victim", "victim", "amb_mist"], ["mist/mascon", "mascon", "amb_mist"], ["branches/sunlit_bough", "branches", "amb_branches"], ["branches/conflate", "conflate", "amb_branches"]]:
+			["tower/kettleforge", "kettleforge", "amb_tower"], ["tower/mine_mouth", "tower", "amb_mine"], ["tower/smelter", "tower", "amb_mine"], ["haar/fog_cut", "haar", "amb_haar"], ["haar/lampwick", "lampwick", "amb_haar"], ["haar/polesend", "polesend", "amb_haar"], ["boughs/sunlit_bough", "boughs", "amb_boughs"], ["boughs/sylvarre", "sylvarre", "amb_boughs"]]:
 		w._enter(stop[0])
 		await frames(1)
 		check(Music.track == stop[1] and Music.ambience_track == stop[2], "%s plays %s over %s (%s, %s)" % [stop[0], stop[1], stop[2], Music.track, Music.ambience_track])
 
 
-func test_after_the_end_eolis_feasts_and_the_meteor_goes_still() -> void:
-	for name: String in ["eolis_bloom", "zenis_still", "amb_zenis_still"]:
+func test_after_the_end_hearthroot_feasts_and_the_meteor_goes_still() -> void:
+	for name: String in ["hearthroot_bloom", "evercrown_still", "amb_evercrown_still"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
-	var w := make_world({}, "eolis/plaza")
-	check(Music.track == "eolis", "before the end, Hearthroot plays its theme (%s)" % Music.track)
-	w._enter("zenis/threshold")
+	var w := make_world({}, "hearthroot/plaza")
+	check(Music.track == "hearthroot", "before the end, Hearthroot plays its theme (%s)" % Music.track)
+	w._enter("evercrown/threshold")
 	await frames(1)
-	check(Music.track == "zenis" and Music.ambience_track == "amb_zenis", "and the Everbloom its heartbeat (%s, %s)" % [Music.track, Music.ambience_track])
+	check(Music.track == "evercrown" and Music.ambience_track == "amb_evercrown", "and the Everbloom its heartbeat (%s, %s)" % [Music.track, Music.ambience_track])
 	GameState.set_flag("cleared")
-	w._enter("zenis/heart_stair")
+	w._enter("evercrown/heart_stair")
 	await frames(1)
-	check(Music.track == "zenis_still" and Music.ambience_track == "amb_zenis_still",
+	check(Music.track == "evercrown_still" and Music.ambience_track == "amb_evercrown_still",
 		"after it, the dead stillglass goes still (%s, %s)" % [Music.track, Music.ambience_track])
-	w._enter("eolis/market")
+	w._enter("hearthroot/market")
 	await frames(1)
-	check(Music.track == "eolis_bloom" and Music.ambience_track == "amb_eolis", "and Hearthroot plays its festival (%s, %s)" % [Music.track, Music.ambience_track])
-	w._enter("trunk/entrance")
+	check(Music.track == "hearthroot_bloom" and Music.ambience_track == "amb_hearthroot", "and Hearthroot plays its festival (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("heartwood/entrance")
 	await frames(1)
-	check(Music.track == "trunk", "other zones keep their own themes (%s)" % Music.track)
+	check(Music.track == "heartwood", "other zones keep their own themes (%s)" % Music.track)
 	check(Music.after_the_end("boss") == "boss", "and a fight still plays its fight")
 	GameState.new_game()
 
@@ -390,22 +390,22 @@ func test_after_the_end_eolis_feasts_and_the_meteor_goes_still() -> void:
 ## replaces the placeholder's file) still plays.
 func test_a_supplied_track_replaces_its_placeholder() -> void:
 	var dir := Music.DIR
-	var files := {dir + "mist.ogg": true, dir + "mist.mp3": true, dir + "tower.ogg": true, dir + "eolis.wav": true, dir + "eolis.ogg": true}
+	var files := {dir + "haar.ogg": true, dir + "haar.mp3": true, dir + "tower.ogg": true, dir + "hearthroot.wav": true, dir + "hearthroot.ogg": true}
 	var has := func(path: String) -> bool: return files.has(path)
-	check(Music.path_for("mist", has) == dir + "mist.mp3", "a supplied .mp3 plays over the placeholder (%s)" % Music.path_for("mist", has))
-	check(Music.path_for("eolis", has) == dir + "eolis.wav", "and so does a supplied .wav (%s)" % Music.path_for("eolis", has))
+	check(Music.path_for("haar", has) == dir + "haar.mp3", "a supplied .mp3 plays over the placeholder (%s)" % Music.path_for("haar", has))
+	check(Music.path_for("hearthroot", has) == dir + "hearthroot.wav", "and so does a supplied .wav (%s)" % Music.path_for("hearthroot", has))
 	check(Music.path_for("tower", has) == dir + "tower.ogg", "an .ogg alone plays (%s)" % Music.path_for("tower", has))
 	check(Music.path_for("nowhere", has) == "", "a track with no file plays nothing")
-	check(Music.path_for("mist") == dir + "mist.ogg" and Music.stream_for("mist") != null, "the real placeholder is found")
+	check(Music.path_for("haar") == dir + "haar.ogg" and Music.stream_for("haar") != null, "the real placeholder is found")
 
 
 func test_restored_springs_change_their_zones_music() -> void:
-	for name: String in ["trunk_restored", "mist_restored", "daybreak_restored", "amb_daybreak_restored"]:
+	for name: String in ["heartwood_restored", "haar_restored", "spires_restored", "amb_spires_restored"]:
 		var stream := Music.stream_for(name)
 		check(stream is AudioStreamOggVorbis and (stream as AudioStreamOggVorbis).loop, "%s is a looping track" % name)
-	var w := make_world({}, "trunk/spring_of_trunk")
+	var w := make_world({}, "heartwood/spring_of_heartwood")
 	await frames(1)
-	check(Music.track == "trunk", "before the spring, the Heartwood plays its theme (%s)" % Music.track)
+	check(Music.track == "heartwood", "before the spring, the Heartwood plays its theme (%s)" % Music.track)
 	var spring: Spring = null
 	for c in w.room.get_children():
 		if c is Spring:
@@ -413,26 +413,26 @@ func test_restored_springs_change_their_zones_music() -> void:
 	check(spring != null, "(the Heartwood Spring)")
 	spring.interact(w.player)
 	await frames(1)
-	check(Music.track == "trunk_restored", "restoring the spring turns the music at once (%s)" % Music.track)
-	w._enter("mist/drowned_stair")
+	check(Music.track == "heartwood_restored", "restoring the spring turns the music at once (%s)" % Music.track)
+	w._enter("haar/drowned_stair")
 	await frames(1)
-	check(Music.track == "mist" and Music.ambience_track == "amb_mist", "the Haar waits on its own spring (%s)" % Music.track)
-	GameState.set_flag("spring:mist")
-	w._enter("mist/dry_cistern")
+	check(Music.track == "haar" and Music.ambience_track == "amb_haar", "the Haar waits on its own spring (%s)" % Music.track)
+	GameState.set_flag("spring:haar")
+	w._enter("haar/dry_cistern")
 	await frames(1)
-	check(Music.track == "mist_restored" and Music.ambience_track == "amb_mist", "then plays through the thinner fog (%s, %s)" % [Music.track, Music.ambience_track])
-	w._enter("daybreak/broken_shrine")
+	check(Music.track == "haar_restored" and Music.ambience_track == "amb_haar", "then plays through the thinner fog (%s, %s)" % [Music.track, Music.ambience_track])
+	w._enter("spires/broken_shrine")
 	await frames(1)
-	check(Music.track == "daybreak" and Music.ambience_track == "amb_daybreak", "the storm rages over Carillon (%s, %s)" % [Music.track, Music.ambience_track])
+	check(Music.track == "spires" and Music.ambience_track == "amb_spires", "the storm rages over Carillon (%s, %s)" % [Music.track, Music.ambience_track])
 	GameState.set_flag("spring:sky")
-	w._enter("daybreak/fallen_bridge")
+	w._enter("spires/fallen_bridge")
 	await frames(1)
-	check(Music.track == "daybreak_restored" and Music.ambience_track == "amb_daybreak_restored",
+	check(Music.track == "spires_restored" and Music.ambience_track == "amb_spires_restored",
 		"until the Sky Spring breaks it (%s, %s)" % [Music.track, Music.ambience_track])
-	w._enter("mist/victim")
+	w._enter("haar/lampwick")
 	await frames(1)
-	check(Music.track == "victim", "a town keeps its own theme (%s)" % Music.track)
-	check(Music.restored("boss") == "boss" and Music.restored("branches") == "branches", "and only the springs' zones change")
+	check(Music.track == "lampwick", "a town keeps its own theme (%s)" % Music.track)
+	check(Music.restored("boss") == "boss" and Music.restored("boughs") == "boughs", "and only the springs' zones change")
 	GameState.new_game()
 
 
@@ -595,11 +595,11 @@ func test_foreman_throws_a_boulder_at_the_player() -> void:
 	check(hit, "it lands on the player standing still")
 
 
-func test_foreman_defeat_gives_the_mattock() -> void:
+func test_foreman_defeat_gives_the_delvers_pick() -> void:
 	var w := make_world({}, FOREMAN_ROOM)
 	var p := w.player
 	await frames(3)
-	check(not p.abilities.mattock, "no Delver's Pick before the fight")
+	check(not p.abilities.delvers_pick, "no Delver's Pick before the fight")
 	var arena := _arena(w)
 	p.teleport(cell_feet(10, 19))
 	await _until(func() -> bool: return arena.fighting, 20)
@@ -611,7 +611,7 @@ func test_foreman_defeat_gives_the_mattock() -> void:
 	check(f.state == "dying", "the last blow topples him")
 	var gone := await _until(func() -> bool: return GameState.flag("boss:foreman"), 600)
 	check(gone, "the Foreman is marked beaten")
-	check(p.abilities.mattock and bool(GameState.data.abilities.mattock), "the Delver's Pick is the player's")
+	check(p.abilities.delvers_pick and bool(GameState.data.abilities.delvers_pick), "the Delver's Pick is the player's")
 	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
 	check(opened, "the way out opens")
 	w._enter(FOREMAN_ROOM)
@@ -621,13 +621,13 @@ func test_foreman_defeat_gives_the_mattock() -> void:
 
 # --- Durgan (Hollin Tower boss) ---------------------------------------------------
 
-const LIFT_ROOM := "tower/forepaw_lift"
+const LIFT_ROOM := "tower/kettleforge_lift"
 
 
 ## Durgan dropped onto the lift without the arena, awake.
 func _zora_world(cell := Vector2i(30, 19)) -> Array:
 	var w := make_world({}, LIFT_ROOM, cell_feet(4, 19))
-	GameState.set_flag("boss:zoradohna")  # keep the arena from starting its own fight
+	GameState.set_flag("boss:durgan")  # keep the arena from starting its own fight
 	await frames(1)
 	var arena := _arena(w)
 	for n: int in w.room.doors:
@@ -643,11 +643,11 @@ func _zora_world(cell := Vector2i(30, 19)) -> Array:
 	return [w, z]
 
 
-func test_forepaw_lift_wakes_zoradohna() -> void:
+func test_kettleforge_lift_wakes_durgan() -> void:
 	var w := make_world({}, LIFT_ROOM)
 	await frames(3)
 	var arena := _arena(w)
-	check(arena != null and arena.boss_id == "zoradohna", "the Kettleforge Lift is a boss arena")
+	check(arena != null and arena.boss_id == "durgan", "the Kettleforge Lift is a boss arena")
 	w.player.teleport(cell_feet(10, 19))
 	var woke := await _until(func() -> bool: return arena.fighting, 20)
 	var z := get_tree_boss() as Durgan
@@ -657,7 +657,7 @@ func test_forepaw_lift_wakes_zoradohna() -> void:
 	check(arena.seals.has(1), "the way in seals behind the player")
 
 
-func test_zoradohna_telegraphs_are_fair() -> void:
+func test_durgan_telegraphs_are_fair() -> void:
 	var z := Durgan.new()
 	for ph in [1, 2, 3]:
 		z.phase = ph
@@ -666,7 +666,7 @@ func test_zoradohna_telegraphs_are_fair() -> void:
 	z.free()
 
 
-func test_zoradohna_hull_shrugs_off_side_blows_but_not_the_vents() -> void:
+func test_durgan_hull_shrugs_off_side_blows_but_not_the_vents() -> void:
 	var r := await _zora_world()
 	var z: Durgan = r[1]
 	var hp0 := z.hp
@@ -677,7 +677,7 @@ func test_zoradohna_hull_shrugs_off_side_blows_but_not_the_vents() -> void:
 	check(z.is_in_group("pogo"), "and the player bounces off it")
 
 
-func test_zoradohna_drills_into_the_wall_and_sticks() -> void:
+func test_durgan_drills_into_the_wall_and_sticks() -> void:
 	var r := await _zora_world(Vector2i(20, 19))
 	var w: World = r[0]
 	var z: Durgan = r[1]
@@ -697,7 +697,7 @@ func test_zoradohna_drills_into_the_wall_and_sticks() -> void:
 	check(z.hp == hp0 - 8, "stuck, it takes a side blow in full")
 
 
-func test_zoradohna_drill_hurts_the_player_in_its_path() -> void:
+func test_durgan_drill_hurts_the_player_in_its_path() -> void:
 	var r := await _zora_world(Vector2i(24, 19))
 	var w: World = r[0]
 	var z: Durgan = r[1]
@@ -710,7 +710,7 @@ func test_zoradohna_drill_hurts_the_player_in_its_path() -> void:
 	check(hit, "the charge runs the player down")
 
 
-func test_zoradohna_slam_sends_shockwaves() -> void:
+func test_durgan_slam_sends_shockwaves() -> void:
 	var r := await _zora_world()
 	var w: World = r[0]
 	var z: Durgan = r[1]
@@ -726,7 +726,7 @@ func test_zoradohna_slam_sends_shockwaves() -> void:
 	check(dirs.has(-1) and dirs.has(1), "a shockwave rolls each way (%s)" % [dirs.keys()])
 
 
-func test_zoradohna_phase_two_raises_the_lift_and_climbs() -> void:
+func test_durgan_phase_two_raises_the_lift_and_climbs() -> void:
 	var r := await _zora_world()
 	var w: World = r[0]
 	var z: Durgan = r[1]
@@ -753,7 +753,7 @@ func test_zoradohna_phase_two_raises_the_lift_and_climbs() -> void:
 	check(landed and z.is_on_floor(), "then dives and buries the drill in the floor")
 
 
-func test_zoradohna_phase_three_opens_the_cockpit() -> void:
+func test_durgan_phase_three_opens_the_cockpit() -> void:
 	var r := await _zora_world()
 	var z: Durgan = r[1]
 	z.phase = 2
@@ -770,7 +770,7 @@ func test_zoradohna_phase_three_opens_the_cockpit() -> void:
 	check(z.hp == hp0 - 12, "but a strike on the harness from above lands hard (%d)" % (hp0 - z.hp))
 
 
-func test_zoradohna_defeat_gives_the_ruby_ring() -> void:
+func test_durgan_defeat_gives_the_sun_seed() -> void:
 	var w := make_world({}, LIFT_ROOM)
 	var p := w.player
 	await frames(3)
@@ -785,9 +785,9 @@ func test_zoradohna_defeat_gives_the_ruby_ring() -> void:
 	var rank := int(GameState.data.rank)
 	z.take_hit(8, Vector2(0, 1))
 	check(z.state == "dying", "the last blow shatters the harness")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:zoradohna"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:durgan"), 600)
 	check(gone, "Durgan is marked beaten")
-	check((GameState.data.rings as Array).has("ruby"), "the Sun Seed is the player's")
+	check((GameState.data.rings as Array).has("sun"), "the Sun Seed is the player's")
 	var ranks := int(GameState.data.rank) - rank
 	check(int(GameState.data.skill_points) == points + 1 + ranks, "with a skill point (plus %d from rank-ups)" % ranks)
 	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
@@ -799,7 +799,7 @@ func test_zoradohna_defeat_gives_the_ruby_ring() -> void:
 
 # --- Gloamweaver (the Haar's first boss) ------------------------------------------------
 
-const CHAPEL_ROOM := "mist/sunken_chapel"
+const CHAPEL_ROOM := "haar/sunken_chapel"
 
 
 ## The chapel with the arena awake: [world, arena, widow].
@@ -821,7 +821,7 @@ func test_sunken_chapel_wakes_the_lantern_widow() -> void:
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
 	var r: Gloamweaver = setup[2]
-	check(arena.boss_id == "ripasheiku" and r != null, "walking into the chapel wakes Gloamweaver")
+	check(arena.boss_id == "gloamweaver" and r != null, "walking into the chapel wakes Gloamweaver")
 	check(r.global_position.x > w.player.global_position.x + 200.0, "she waits across the chapel")
 	check(r.lanterns.size() == Gloamweaver.LANTERNS, "she carries %d lanterns" % Gloamweaver.LANTERNS)
 	var lit := 0
@@ -829,14 +829,14 @@ func test_sunken_chapel_wakes_the_lantern_widow() -> void:
 		if l.is_in_group("light"):
 			lit += 1
 	check(lit == Gloamweaver.LANTERNS, "each lantern is a light in the fog")
-	check(Music.track == "ripasheiku", "the fight plays her own theme (%s)" % Music.track)
+	check(Music.track == "gloamweaver", "the fight plays her own theme (%s)" % Music.track)
 	await _until(func() -> bool: return r.state == "stalk", 120)
 	w.player.teleport(r.global_position + Vector2(-120, 18))
 	await frames(3)
 	check(w.fog.clear_at(r.lanterns[0].global_position) == 1.0, "her lanterns clear the fog around them")
 
 
-func test_ripasheiku_telegraphs_are_fair() -> void:
+func test_gloamweaver_telegraphs_are_fair() -> void:
 	var r := Gloamweaver.new()
 	for ph in [1, 2, 3]:
 		r.phase = ph
@@ -886,7 +886,7 @@ func test_her_last_lantern_breaks_the_phase_as_her_health_would() -> void:
 	check(breaks == [2], "her health crossing the marks after it rings nothing more (%s)" % [breaks])
 
 
-func test_ripasheiku_climbs_and_reels_you_in_on_a_web() -> void:
+func test_gloamweaver_climbs_and_reels_you_in_on_a_web() -> void:
 	var setup := await _widow_world()
 	var w: World = setup[0]
 	var r: Gloamweaver = setup[2]
@@ -918,7 +918,7 @@ func test_a_slash_cuts_ripasheikus_web() -> void:
 	var r: Gloamweaver = setup[2]
 	var p := w.player
 	for k: String in p.abilities:
-		p.abilities[k] = k in ["glove", "mattock"]
+		p.abilities[k] = k in ["glove", "delvers_pick"]
 	check(not p.abilities.get("stride", false), "at her chapel the player has no Stride")
 	await _until(func() -> bool: return r.state == "stalk", 120)
 	r.hp = roundi(r.max_hp * 0.6)
@@ -939,7 +939,7 @@ func test_a_slash_cuts_ripasheikus_web() -> void:
 	await frames(20)
 	check(absf(p.global_position.x - x) < 24.0, "and the pull stops (%.1f px)" % absf(p.global_position.x - x))
 
-func test_ripasheiku_drops_and_lies_open() -> void:
+func test_gloamweaver_drops_and_lies_open() -> void:
 	var setup := await _widow_world()
 	var r: Gloamweaver = setup[2]
 	await _until(func() -> bool: return r.state == "stalk", 120)
@@ -965,7 +965,7 @@ func test_ripasheiku_drops_and_lies_open() -> void:
 	check(hp0 - r.hp == roundi(10 * Gloamweaver.DROPPED_BONUS), "stunned where she lands she takes extra damage (%d)" % (hp0 - r.hp))
 
 
-func test_ripasheiku_defeat_gives_the_lantern_key() -> void:
+func test_gloamweaver_defeat_gives_the_lantern_key() -> void:
 	var setup := await _widow_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
@@ -975,7 +975,7 @@ func test_ripasheiku_defeat_gives_the_lantern_key() -> void:
 	r.hp = 1
 	r.take_hit(5, Vector2.RIGHT)
 	check(r.state == "dying", "the last blow ends her")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:ripasheiku"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:gloamweaver"), 600)
 	check(gone, "Gloamweaver is marked beaten")
 	check(GameState.key_count("lantern") == 1, "the Lantern Key is the player's")
 	check(float(GameState.data.max_mp) == mp0 + GameState.MANA_DEW_MP, "and the Mana Dew she guarded")
@@ -989,7 +989,7 @@ func test_ripasheiku_defeat_gives_the_lantern_key() -> void:
 	check(opened, "the way out opens")
 
 
-const SPRING_ROOM := "mist/spring_of_mist"
+const SPRING_ROOM := "haar/spring_of_haar"
 
 
 ## The Haar Spring with the arena awake: [world, arena, hydra].
@@ -1014,13 +1014,13 @@ func _basins(w: World) -> Array:
 	return out
 
 
-func test_spring_of_mist_wakes_the_hydra() -> void:
+func test_spring_of_haar_wakes_the_hydra() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
 	var z: HaarWyrm = setup[2]
-	check(arena.boss_id == "zorugeriru" and z != null, "walking into the spring wakes the Haar Wyrm")
-	check(Music.track == "zorugeriru", "the fight plays his own theme (%s)" % Music.track)
+	check(arena.boss_id == "haar_wyrm" and z != null, "walking into the spring wakes the Haar Wyrm")
+	check(Music.track == "haar_wyrm", "the fight plays his own theme (%s)" % Music.track)
 	check(_basins(w).size() == 3, "three dry tanks feed the spring (%d)" % _basins(w).size())
 	for b: DryBasin in _basins(w):
 		check(b.flag_id == "" and not b.filled, "an arena tank starts dry and keeps no flag")
@@ -1029,12 +1029,12 @@ func test_spring_of_mist_wakes_the_hydra() -> void:
 	for c in w.room.get_children():
 		if c is Spring:
 			spring = c
-	check(spring != null and spring.spring_id == "mist", "the Haar Spring lies under the coil")
+	check(spring != null and spring.spring_id == "haar", "the Haar Spring lies under the coil")
 	await frames(2)
 	check(not spring.is_in_group("interactable"), "and can't be cleared while he lives")
 
 
-func test_zorugeriru_telegraphs_are_fair() -> void:
+func test_haar_wyrm_telegraphs_are_fair() -> void:
 	var z := HaarWyrm.new()
 	for ph in [1, 2, 3]:
 		z.phase = ph
@@ -1048,11 +1048,11 @@ func test_only_the_solid_head_takes_damage() -> void:
 	var z: HaarWyrm = setup[2]
 	await _until(func() -> bool: return z.state == "fight", 180)
 	var solid := z.heads[z.solid_index]
-	var mist := z.heads[(z.solid_index + 1) % 3]
+	var haar := z.heads[(z.solid_index + 1) % 3]
 	check(solid.solid and solid.active and solid.collision_layer != 0, "one head is solid and can be struck")
-	check(not mist.solid and mist.collision_layer == 0, "the others are mist the blade passes through")
+	check(not haar.solid and haar.collision_layer == 0, "the others are mist the blade passes through")
 	var hp0 := z.hp
-	mist.take_hit(10, Vector2.RIGHT)
+	haar.take_hit(10, Vector2.RIGHT)
 	check(z.hp == hp0, "a blow on a mist head does nothing")
 	solid.take_hit(10, Vector2.RIGHT)
 	check(z.hp == hp0 - 10, "a blow on the solid head hurts him (%d)" % (hp0 - z.hp))
@@ -1063,7 +1063,7 @@ func test_only_the_solid_head_takes_damage() -> void:
 	check(turned and not solid.solid and z.heads[z.solid_index].solid, "the heads take turns being solid")
 
 
-func test_zorugeriru_bites_then_lies_open() -> void:
+func test_haar_wyrm_bites_then_lies_open() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
 	var z: HaarWyrm = setup[2]
@@ -1085,7 +1085,7 @@ func test_zorugeriru_bites_then_lies_open() -> void:
 	check(w.player.hp < 9999, "the bite lands on a player standing still")
 
 
-func test_mist_breath_rolls_along_the_floor() -> void:
+func test_haar_breath_rolls_along_the_floor() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
 	var z: HaarWyrm = setup[2]
@@ -1121,7 +1121,7 @@ func test_fourth_head_shows_only_when_the_tanks_are_full() -> void:
 	z.heads[z.solid_index].take_hit(10, Vector2.RIGHT)
 	check(z.phase == 2, "below 60%% he enters phase 2 (%d hp)" % z.hp)
 	for i in 3:
-		check(not z.heads[i].solid, "head %d turns to mist" % i)
+		check(not z.heads[i].solid, "head %d turns to haar" % i)
 	var h4 := z.heads[3]
 	await frames(30)
 	check(h4.coiled and h4.collision_layer == 0, "the fourth head stays hidden while the tanks are dry")
@@ -1158,8 +1158,8 @@ func test_each_full_tank_douses_its_head() -> void:
 	check(heads.size() == 3, "each tank has its own head above it")
 	# A real Torrent bolt from the floor beside the first tank fills it.
 	var p := w.player
-	p.abilities.deluge = true
-	p.equipped_spell = "deluge"
+	p.abilities.torrent = true
+	p.equipped_spell = "torrent"
 	p.mp = p.max_mp
 	p.teleport(cell_feet(7, 19))
 	await frames(10)
@@ -1176,7 +1176,7 @@ func test_each_full_tank_douses_its_head() -> void:
 	var h := z.head_over(first)
 	var doused := await _until(func() -> bool: return h.doused, 10)
 	check(doused and not first.beckon, "and douses the head over it, and stops shimmering")
-	check(z.rest_point(h).y > HaarWyrm.MIST_Y + 20.0, "the doused head hangs low")
+	check(z.rest_point(h).y > HaarWyrm.HAAR_Y + 20.0, "the doused head hangs low")
 	var others := 0
 	for i in 3:
 		if z.heads[i] != h and not z.heads[i].doused:
@@ -1227,7 +1227,7 @@ func test_phase_three_floods_the_floor() -> void:
 	check(w.player.hp == hp1, "a raft keeps you clear of the water")
 
 
-func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
+func test_haar_wyrm_defeat_gives_the_fall_seed() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
@@ -1237,9 +1237,9 @@ func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
 	z.hp = 1
 	z.heads[z.solid_index].take_hit(5, Vector2.RIGHT)
 	check(z.state == "dying", "the last blow ends him")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:zorugeriru"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:haar_wyrm"), 600)
 	check(gone, "the Haar Wyrm is marked beaten")
-	check((GameState.data.rings as Array).has("dworf"), "the Fall Seed is the player's")
+	check((GameState.data.rings as Array).has("fall"), "the Fall Seed is the player's")
 	await frames(2)
 	var heads := 0
 	for c in w.room.get_children():
@@ -1255,7 +1255,7 @@ func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
 	await frames(2)
 	check(spring.is_in_group("interactable"), "the spring can be cleared now")
 	spring.interact(w.player)
-	check(GameState.flag("spring:mist"), "clearing it restores the Haar Spring")
+	check(GameState.flag("spring:haar"), "clearing it restores the Haar Spring")
 	w._enter(SPRING_ROOM)
 	await frames(3)
 	var full := 0
@@ -1268,7 +1268,7 @@ func test_zorugeriru_defeat_gives_the_dworf_ring() -> void:
 # --- Snapcrown, the Devouring Bloom (bible 8.5) ---------------------------------
 
 func _bloom_world() -> Array:
-	var w := make_world({}, "branches/crown_leaf")
+	var w := make_world({}, "boughs/crown_leaf")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
 	await frames(3)
@@ -1295,17 +1295,17 @@ func _provoke(w: World, k: Snapcrown, dx: float, move: String) -> int:
 	return tell_frames
 
 
-func test_crown_leaf_wakes_pakukame() -> void:
+func test_crown_leaf_wakes_snapcrown() -> void:
 	var setup := await _bloom_world()
 	var arena: BossArena = setup[1]
 	var k: Snapcrown = setup[2]
-	check(arena.boss_id == "pakukame" and k != null, "walking onto the crown-leaf wakes the Bloom")
-	check(Music.track == "pakukame", "the fight plays its own theme (%s)" % Music.track)
+	check(arena.boss_id == "snapcrown" and k != null, "walking onto the crown-leaf wakes the Bloom")
+	check(Music.track == "snapcrown", "the fight plays its own theme (%s)" % Music.track)
 	check(k.head != null and k.head.active, "its head is out and can be struck")
 	check(k.collision_layer == 0, "the stem itself is scenery")
 
 
-func test_pakukame_telegraphs_are_fair() -> void:
+func test_snapcrown_telegraphs_are_fair() -> void:
 	var k := Snapcrown.new()
 	for ph in [1, 2, 3]:
 		k.phase = ph
@@ -1314,7 +1314,7 @@ func test_pakukame_telegraphs_are_fair() -> void:
 	k.free()
 
 
-func test_pakukame_shell_turns_blows_until_the_jaws_hang_open() -> void:
+func test_snapcrown_shell_turns_blows_until_the_jaws_hang_open() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
 	var k: Snapcrown = setup[2]
@@ -1362,7 +1362,7 @@ func test_a_parried_bite_holds_the_jaws_open() -> void:
 	check(frames_open / 60.0 > Snapcrown.GAPE_TIME + 0.5, "and the jaws hang open longer (%.2f s)" % (frames_open / 60.0))
 
 
-func test_pakukame_whip_lashes_along_the_leaf() -> void:
+func test_snapcrown_whip_lashes_along_the_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
 	var k: Snapcrown = setup[2]
@@ -1375,7 +1375,7 @@ func test_pakukame_whip_lashes_along_the_leaf() -> void:
 	check(w.player.hp < hp, "and catches a player standing on the leaf")
 
 
-func test_pakukame_spits_seeds_in_arcs() -> void:
+func test_snapcrown_spits_seeds_in_arcs() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
 	var k: Snapcrown = setup[2]
@@ -1620,7 +1620,7 @@ func test_a_drop_never_rests_in_the_thorns() -> void:
 	check(p.hp == p.max_hp, "without a blow (%d)" % p.hp)
 
 
-func test_pakukame_defeat_opens_the_crown_leaf() -> void:
+func test_snapcrown_defeat_opens_the_crown_leaf() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
 	var k: Snapcrown = setup[2]
@@ -1630,12 +1630,12 @@ func test_pakukame_defeat_opens_the_crown_leaf() -> void:
 	k.set_state("gape")
 	k.head.take_hit(5, Vector2.RIGHT)
 	check(k.state == "dying", "the last blow ends it")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:pakukame"), 300)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:snapcrown"), 300)
 	check(gone, "Snapcrown is marked beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "and gives a skill point")
 	await frames(90)
 	check(get_tree_boss() == null, "the Bloom is gone")
-	w._enter("branches/crown_leaf")
+	w._enter("boughs/crown_leaf")
 	await frames(10)
 	check(get_tree_boss() == null, "and never returns")
 
@@ -1659,7 +1659,7 @@ func _uprooted_bloom() -> Array:
 	return setup
 
 
-func test_pakukame_uproots_below_a_quarter() -> void:
+func test_snapcrown_uproots_below_a_quarter() -> void:
 	var setup := await _bloom_world()
 	var w: World = setup[0]
 	var k: Snapcrown = setup[2]
@@ -1746,7 +1746,7 @@ func test_the_falling_leaf_lightens_you() -> void:
 # --- Skyrend, the Storm Roc (bible 8.6) --------------------------------------
 
 func _roc_world() -> Array:
-	var w := make_world({}, "daybreak/roost")
+	var w := make_world({}, "spires/roost")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
 	await frames(3)
@@ -1781,27 +1781,27 @@ func _roc_provoke(b: Skyrend, move: String) -> int:
 	return tell_frames
 
 
-func test_the_roost_wakes_borabohra() -> void:
+func test_the_roost_wakes_skyrend() -> void:
 	var setup := await _roc_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
 	var b: Skyrend = setup[2]
-	check(arena.boss_id == "borabohra" and b != null and b.state == "circle", "walking into the roost brings the Storm Roc down")
-	check(Music.track == "borabohra", "the fight plays its own theme (%s)" % Music.track)
+	check(arena.boss_id == "skyrend" and b != null and b.state == "circle", "walking into the roost brings the Storm Roc down")
+	check(Music.track == "skyrend", "the fight plays its own theme (%s)" % Music.track)
 	check(b.airborne() and b.global_position.y < b.floor_y() - 4 * Room.TILE, "it circles high over the islands")
 	var cs := _conduits(w)
 	check(cs.size() == 3 and cs.all(func(c: Conduit) -> bool: return c.flag_id == "" and not c.powered),
 		"three dead conduits stand on the islands, part of the fight rather than the world")
 
 
-func test_borabohra_telegraphs_are_fair() -> void:
+func test_skyrend_telegraphs_are_fair() -> void:
 	var b := Skyrend.new()
 	for t: float in [Skyrend.VOLLEY_TELL, Skyrend.DIVE_TELL]:
 		check(b.tell(t) >= Enemy.MIN_TELEGRAPH, "tell %.2f s is at least %.2f s" % [b.tell(t), Enemy.MIN_TELEGRAPH])
 	b.free()
 
 
-func test_borabohra_flings_a_fan_of_feathers() -> void:
+func test_skyrend_flings_a_fan_of_feathers() -> void:
 	var setup := await _roc_world()
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
@@ -1812,7 +1812,7 @@ func test_borabohra_flings_a_fan_of_feathers() -> void:
 	check(n == Skyrend.VOLLEY_FEATHERS, "then flings %d storm feathers (%d)" % [Skyrend.VOLLEY_FEATHERS, n])
 
 
-func test_borabohra_dives_through_where_you_stood() -> void:
+func test_skyrend_dives_through_where_you_stood() -> void:
 	var setup := await _roc_world()
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
@@ -1825,7 +1825,7 @@ func test_borabohra_dives_through_where_you_stood() -> void:
 	check(back, "then it climbs back into the storm")
 
 
-func test_conduits_ground_borabohra() -> void:
+func test_conduits_ground_skyrend() -> void:
 	var setup := await _roc_world()
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
@@ -1840,7 +1840,7 @@ func test_conduits_ground_borabohra() -> void:
 	cs[2].power()
 	var down := await _until(func() -> bool: return b.grounded(), 60)
 	check(down and absf(b.global_position.y + b.body_size.y * 0.5 - b.floor_y()) < 4.0, "the third grounds it on the floor (%s)" % b.state)
-	check(not GameState.flag("conduits:daybreak/roost"), "and leaves no world flag behind")
+	check(not GameState.flag("conduits:spires/roost"), "and leaves no world flag behind")
 	hp0 = b.hp
 	b.take_hit(10, Vector2.RIGHT)
 	check(hp0 - b.hp == 10, "grounded, every blow lands in full (%d)" % (hp0 - b.hp))
@@ -1850,7 +1850,7 @@ func test_conduits_ground_borabohra() -> void:
 	check(flying, "and it climbs back into the sky")
 
 
-func test_borabohra_defeat_gives_the_sky_key() -> void:
+func test_skyrend_defeat_gives_the_sky_key() -> void:
 	var setup := await _roc_world()
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
@@ -1858,18 +1858,18 @@ func test_borabohra_defeat_gives_the_sky_key() -> void:
 	b.hp = 1
 	b.take_hit(5, Vector2.RIGHT)
 	check(b.state == "dying", "the last blow ends it")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:borabohra"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:skyrend"), 600)
 	check(gone, "Skyrend is marked beaten")
 	check(GameState.key_count("sky") == 1, "it leaves the Sky Key")
 	check(int(GameState.data.skill_points) >= points + 1, "and a skill point")
 	await frames(90)
 	check(get_tree_boss() == null, "the roc is gone")
-	w._enter("daybreak/roost")
+	w._enter("spires/roost")
 	await frames(10)
 	check(get_tree_boss() == null, "and never returns")
 
 
-func test_borabohra_storm_breaks_below_half() -> void:
+func test_skyrend_storm_breaks_below_half() -> void:
 	var setup := await _roc_world()
 	var b: Skyrend = setup[2]
 	check(b.phase == 1, "it starts in phase 1")
@@ -1959,7 +1959,7 @@ func _roc_duel() -> Array:
 	return setup
 
 
-func test_borabohra_duel_begins_below_a_quarter() -> void:
+func test_skyrend_duel_begins_below_a_quarter() -> void:
 	var setup := await _roc_world()
 	var b: Skyrend = setup[2]
 	b.hp = roundi(b.max_hp * Skyrend.PHASE_2) + 2
@@ -1975,7 +1975,7 @@ func test_borabohra_duel_begins_below_a_quarter() -> void:
 	check(b.state == "gale_tell", "its next move is the gale (%s)" % b.state)
 
 
-func test_borabohra_holds_a_gale_over_an_open_lane() -> void:
+func test_skyrend_holds_a_gale_over_an_open_lane() -> void:
 	var setup := await _roc_duel()
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
@@ -2009,7 +2009,7 @@ func test_the_updraft_carries_you_up_to_pogo_its_head() -> void:
 	var w: World = setup[0]
 	var b: Skyrend = setup[2]
 	var p := w.player
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	await _until(func() -> bool: return b.holding_gale(), 90)
 	var rose := await _until(func() -> bool: return p.body_rect().end.y < b.body_rect().position.y, 120)
 	check(rose, "the wind carries you up past its head")
@@ -2047,11 +2047,11 @@ func test_holding_down_drops_out_of_the_updraft() -> void:
 # --- Thane Vorrund, the Unweeping (bible 8.7) -----------------------------
 
 func _king_world() -> Array:
-	var w := make_world({}, "dartmoor/throne_hall")
+	var w := make_world({}, "vorrhallow/throne_hall")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
-	w.player.abilities["hourglass"] = true
-	w.player.abilities["mattock"] = true
+	w.player.abilities["stillstone"] = true
+	w.player.abilities["delvers_pick"] = true
 	await frames(3)
 	var arena := _arena(w)
 	w.player.teleport(cell_feet(10, 19))
@@ -2061,16 +2061,16 @@ func _king_world() -> Array:
 	return [w, arena, b]
 
 
-func test_the_throne_hall_wakes_king_grieve() -> void:
+func test_the_throne_hall_wakes_thane_vorrund() -> void:
 	var setup := await _king_world()
 	var arena: BossArena = setup[1]
 	var b: ThaneVorrund = setup[2]
-	check(arena.boss_id == "king_grieve" and b != null and b.state == "walk", "walking into the throne hall wakes the king")
+	check(arena.boss_id == "thane_vorrund" and b != null and b.state == "walk", "walking into the throne hall wakes the king")
 	check(b.phase == 1 and absf(b.global_position.y - b.floor_y()) < 2.0, "he comes down off his throne to duel on the floor")
-	check(Music.track == "grieve", "the fight plays his own theme (%s)" % Music.track)
+	check(Music.track == "vorrund", "the fight plays his own theme (%s)" % Music.track)
 
 
-func test_king_grieve_telegraphs_are_fair() -> void:
+func test_thane_vorrund_telegraphs_are_fair() -> void:
 	var b := ThaneVorrund.new()
 	for p in [1, 2]:
 		b.phase = p
@@ -2080,7 +2080,7 @@ func test_king_grieve_telegraphs_are_fair() -> void:
 	b.free()
 
 
-func test_king_grieve_chops_then_sweeps_and_a_parry_opens_him() -> void:
+func test_thane_vorrund_chops_then_sweeps_and_a_parry_opens_him() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -2145,7 +2145,7 @@ func _real_block_against_the_chop(frames_before: int) -> Array:
 	return [opened, took, heard]
 
 
-func test_king_grieve_is_parried_through_the_real_controller() -> void:
+func test_thane_vorrund_is_parried_through_the_real_controller() -> void:
 	var c := CombatTuning.new()
 	var late: Array = await _real_block_against_the_chop(3)
 	check(late[0] and late[2], "Block pressed just before the axe falls parries it, and he reels (%s)" % [late])
@@ -2154,7 +2154,7 @@ func test_king_grieve_is_parried_through_the_real_controller() -> void:
 	check(not early[0] and not early[2], "pressed at the start of the wind-up, past the %.2f s window by the blow, it does not parry (%s)" % [c.parry_window, early])
 	check(early[1] > 0 and early[1] <= ceili(40 * (1.0 - c.guard_reduction)), "the shield still held up guards half the chop (%d)" % early[1])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("`test_king_grieve_is_parried_through_the_real_controller`"), "bible 8 names the test")
+	check(bible.contains("`test_thane_vorrund_is_parried_through_the_real_controller`"), "bible 8 names the test")
 
 
 ## Pass 428 (bible 8): a guardian's blow dodged with the buttons. The parry
@@ -2190,7 +2190,7 @@ func _real_jump_over_the_sweep(jump_left: int) -> Array:
 	return [chop, sweep]
 
 
-func test_king_grieves_sweep_is_jumped_through_the_real_controller() -> void:
+func test_thane_vorrunds_sweep_is_jumped_through_the_real_controller() -> void:
 	var still: Array = await _real_jump_over_the_sweep(-1)
 	check(still[0] == 0, "62 px off, the chop falls short (%d)" % still[0])
 	check(still[1] > 0, "and the low sweep finds a player standing still (%d)" % still[1])
@@ -2199,10 +2199,10 @@ func test_king_grieves_sweep_is_jumped_through_the_real_controller() -> void:
 	var late: Array = await _real_jump_over_the_sweep(-12)
 	check(late[1] == still[1], "pressed once the axe is already sweeping, it is too late (%d)" % late[1])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	check(bible.contains("`test_king_grieves_sweep_is_jumped_through_the_real_controller`"), "bible 8 names the test")
+	check(bible.contains("`test_thane_vorrunds_sweep_is_jumped_through_the_real_controller`"), "bible 8 names the test")
 
 
-func test_king_grieve_takes_the_throne_below_half_and_falls_to_a_crown_blow() -> void:
+func test_thane_vorrund_takes_the_throne_below_half_and_falls_to_a_crown_blow() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -2226,7 +2226,7 @@ func test_king_grieve_takes_the_throne_below_half_and_falls_to_a_crown_blow() ->
 	check(hp0 - b.hp == 10, "where every blow lands (%d)" % (hp0 - b.hp))
 
 
-func test_king_grieves_shards_are_a_stair_while_time_stands_still() -> void:
+func test_thane_vorrunds_shards_are_a_stair_while_time_stands_still() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -2254,7 +2254,7 @@ func test_king_grieves_shards_are_a_stair_while_time_stands_still() -> void:
 
 ## Pass 217: as in the source game, the Severance is the sword Thane Vorrund
 ## swallowed, so beating him gives it up, straight into your hand.
-func test_king_grieve_defeat_gives_the_demon_ring_and_the_dragon_slayer() -> void:
+func test_thane_vorrund_defeat_gives_the_frost_seed_and_the_severance() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -2262,21 +2262,21 @@ func test_king_grieve_defeat_gives_the_demon_ring_and_the_dragon_slayer() -> voi
 	var banners: Array = []
 	var on_banner := func(title: String, _text: String) -> void: banners.append(title)
 	GameState.banner.connect(on_banner)
-	check(not w.player.abilities.get("dragon_slayer", false), "no one holds the Severance before him")
+	check(not w.player.abilities.get("severance", false), "no one holds the Severance before him")
 	b.hp = 1
 	b.take_hit(5, Vector2.RIGHT)
 	check(b.state == "dying", "the last blow ends it")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:king_grieve"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:thane_vorrund"), 600)
 	check(gone, "Thane Vorrund is marked beaten")
-	check(GameState.data.rings.has("demon"), "he leaves the Frost Seed")
+	check(GameState.data.rings.has("frost"), "he leaves the Frost Seed")
 	check(int(GameState.data.skill_points) >= points + 1, "and a skill point")
 	GameState.banner.disconnect(on_banner)
-	check(w.player.abilities.get("dragon_slayer", false) and GameState.has_ability("dragon_slayer"), "he gives up the Severance")
-	check(GameState.data.equipment.blade == "dragon_slayer" and Array(GameState.data.gear).has("dragon_slayer"), "and it goes straight into your hand")
-	check(w.player.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts as the Severance (%d)" % w.player.slash_damage)
+	check(w.player.abilities.get("severance", false) and GameState.has_ability("severance"), "he gives up the Severance")
+	check(GameState.data.equipment.blade == "severance" and Array(GameState.data.gear).has("severance"), "and it goes straight into your hand")
+	check(w.player.slash_damage == int(GameData.item("severance").slash), "it cuts as the Severance (%d)" % w.player.slash_damage)
 	check(banners.has("Severance"), "and the banner names it (%s)" % [banners])
 	await frames(90)
-	w._enter("dartmoor/throne_hall")
+	w._enter("vorrhallow/throne_hall")
 	await frames(10)
 	check(get_tree_boss() == null, "and he never returns")
 
@@ -2295,12 +2295,12 @@ func test_a_guardians_fall_rings_a_fanfare_of_its_own() -> void:
 	b.hp = 1
 	Sfx.recent.clear()
 	b.take_hit(5, Vector2.RIGHT)
-	await _until(func() -> bool: return GameState.flag("boss:king_grieve"), 600)
+	await _until(func() -> bool: return GameState.flag("boss:thane_vorrund"), 600)
 	check(Sfx.recent.has(BossArena.WIN_SOUND), "Thane Vorrund's fall rings it (%s)" % [Sfx.recent])
 	check(Music.track == "", "and the fight's music stops for it (%s)" % Music.track)
 
 
-func test_the_meteor_takes_king_grieve_below_a_fifth() -> void:
+func test_the_meteor_takes_thane_vorrund_below_a_fifth() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -2340,12 +2340,12 @@ func test_the_water_clock_drains_with_the_king() -> void:
 	b.hp = roundi(b.max_hp * 0.6)
 	await frames(120)
 	check(clock.level < 0.95 and clock.level >= 0.6 - 0.01, "it drains as he weakens (%.2f)" % clock.level)
-	GameState.set_flag("boss:king_grieve")
+	GameState.set_flag("boss:thane_vorrund")
 	check(is_equal_approx(clock.target_level(), 0.0), "and stands empty once he is beaten")
 
 
-func _eura_world() -> Array:
-	var w := make_world({}, "dartmoor/zenis_gate")
+func _likeness_world() -> Array:
+	var w := make_world({}, "vorrhallow/evercrown_gate")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
 	await frames(3)
@@ -2360,14 +2360,14 @@ func _eura_world() -> Array:
 ## Pass 452 (bible 8): a fight lost in the room you rest in starts over.
 ## the Likeness's gate has a Meditation Shrine of its own. Rest there by the
 ## real Up, walk in by the real Right and wound her, then fall: until now the
-## hero rose beside the shrine with the doors still sealed and Eura still up,
+## hero rose beside the shrine with the doors still sealed and the Likeness still up,
 ## her wounds kept and the fight's music still lifted. Now the room is built
 ## afresh: no guardian, the way in open, the zone's music as written, and the
 ## real Right wakes her again whole.
 func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
 	var was := GameState.slot
 	GameState.slot = 9
-	var w := make_world({}, "dartmoor/zenis_gate")
+	var w := make_world({}, "vorrhallow/evercrown_gate")
 	var p := w.player
 	p.input = PlayerInput.new()
 	await frames(3)
@@ -2383,7 +2383,7 @@ func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
 	await frames(2)
 	Input.action_release("move_up")
 	await frames(2)
-	check(GameState.data.save_room == "dartmoor/zenis_gate", "Up at it rests and saves there")
+	check(GameState.data.save_room == "vorrhallow/evercrown_gate", "Up at it rests and saves there")
 	var arena := _arena(w)
 	Input.action_press("move_right")
 	var woke := await _until(func() -> bool: return arena.fighting, 300)
@@ -2395,11 +2395,11 @@ func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
 	check(Music.intensity > 0, "wounded past her marks, the fight's music rises (%d)" % Music.intensity)
 	p.take_damage(9999)
 	await frames(int(p.combat.respawn_delay * 60.0) + 20)
-	check(not p.dead and w.room.id == "dartmoor/zenis_gate" and absf(p.global_position.x - shrine_x) < 2.0, "he rises at the shrine")
+	check(not p.dead and w.room.id == "vorrhallow/evercrown_gate" and absf(p.global_position.x - shrine_x) < 2.0, "he rises at the shrine")
 	arena = _arena(w)
-	check(get_tree_boss() == null and not arena.fighting, "and the fight is over: no Eura waits beside him (%s)" % [get_tree_boss()])
+	check(get_tree_boss() == null and not arena.fighting, "and the fight is over: no Likeness waits beside him (%s)" % [get_tree_boss()])
 	check(not arena.seals.has(1), "the way in is open again (%s)" % [arena.seals.keys()])
-	check(Music.intensity == 0 and Music.track != "eura", "and the music is the zone's again (%s, %d)" % [Music.track, Music.intensity])
+	check(Music.intensity == 0 and Music.track != "likeness", "and the music is the zone's again (%s, %d)" % [Music.track, Music.intensity])
 	Input.action_press("move_right")
 	woke = await _until(func() -> bool: return arena.fighting, 300)
 	Input.action_release("move_right")
@@ -2419,7 +2419,7 @@ func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
 func test_no_rest_while_a_guardian_stands() -> void:
 	var was := GameState.slot
 	GameState.slot = 9
-	var w := make_world({}, "dartmoor/zenis_gate")
+	var w := make_world({}, "vorrhallow/evercrown_gate")
 	var p := w.player
 	p.input = PlayerInput.new()
 	await frames(3)
@@ -2432,7 +2432,7 @@ func test_no_rest_while_a_guardian_stands() -> void:
 	await frames(2)
 	p.hp = 10
 	await _tap_up()
-	check(p.hp == p.max_hp and GameState.data.save_room == "dartmoor/zenis_gate", "before the fight, Up at the shrine rests and saves")
+	check(p.hp == p.max_hp and GameState.data.save_room == "vorrhallow/evercrown_gate", "before the fight, Up at the shrine rests and saves")
 	GameState.data.save_room = ""
 	p.teleport(cell_feet(14, 19))
 	var woke := await _until(func() -> bool: return arena.fighting, 60)
@@ -2454,7 +2454,7 @@ func test_no_rest_while_a_guardian_stands() -> void:
 	arena._open_doors()
 	await frames(2)
 	await _tap_up()
-	check(p.hp == p.max_hp and GameState.data.save_room == "dartmoor/zenis_gate", "once the doors open again, it rests and saves")
+	check(p.hp == p.max_hp and GameState.data.save_room == "vorrhallow/evercrown_gate", "once the doors open again, it rests and saves")
 	GameState.delete_save(9)
 	GameState.slot = was
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
@@ -2468,12 +2468,12 @@ func _tap_up() -> void:
 	await frames(2)
 
 
-func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
-	var setup := await _eura_world()
+func test_likeness_waits_before_the_gate_as_your_reflection() -> void:
+	var setup := await _likeness_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
 	var b: Likeness = setup[2]
-	check(arena.boss_id == "shadow_eura" and b != null and b.state == "mirror", "walking up to the gate wakes your shadow")
+	check(arena.boss_id == "likeness" and b != null and b.state == "mirror", "walking up to the gate wakes your shadow")
 	check(absf(b.axis() - w.room.size_tiles.x * Room.TILE * 0.5) < 1.0, "the mirror runs down the middle of the hall")
 	var p := w.player
 	check(absf(b.global_position.x - b.mirrored(p.global_position).x) < 2.0 and b.facing == -p.facing, "it stands where you stand, across the glass (%s vs %s)" % [b.global_position, p.global_position])
@@ -2495,10 +2495,10 @@ func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
 	check(p.visual.anim == "throw" and b._history.back().anim == "cast", "a throw is reflected as the cast (%s, %s)" % [p.visual.anim, b._history.back().anim])
 
 
-func test_shadow_eura_echoes_your_swing_and_a_parry_breaks_it() -> void:
+func test_likeness_echoes_your_swing_and_a_parry_breaks_it() -> void:
 	check(Likeness.SWING_TELL >= Enemy.MIN_TELEGRAPH and Likeness.SWING_TELL <= Likeness.DELAY, "an echo glints at least %.2f s before it lands" % Enemy.MIN_TELEGRAPH)
 	check(Likeness.RISE_TELL >= Enemy.MIN_TELEGRAPH, "and so does its cut from behind")
-	var setup := await _eura_world()
+	var setup := await _likeness_world()
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var p := w.player
@@ -2541,8 +2541,8 @@ func test_shadow_eura_echoes_your_swing_and_a_parry_breaks_it() -> void:
 	check(back, "then it slips back behind the glass")
 
 
-func test_shadow_eura_comes_through_the_mirror_if_you_hold_still() -> void:
-	var setup := await _eura_world()
+func test_likeness_comes_through_the_mirror_if_you_hold_still() -> void:
+	var setup := await _likeness_world()
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var p := w.player
@@ -2564,26 +2564,26 @@ func test_shadow_eura_comes_through_the_mirror_if_you_hold_still() -> void:
 	check(back and absf(b.global_position.x - b.mirrored(p.global_position).x) < 2.0, "then it returns to the glass")
 
 
-func test_beating_shadow_eura_breaks_the_mirror() -> void:
-	var setup := await _eura_world()
+func test_beating_likeness_breaks_the_mirror() -> void:
+	var setup := await _likeness_world()
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var points := int(GameState.data.skill_points)
 	b.hp = 1
 	b.take_hit(5, Vector2.RIGHT)
 	check(b.state == "dying", "the last blow ends it")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:shadow_eura"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:likeness"), 600)
 	check(gone, "the Likeness is marked beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "for a skill point")
 	await frames(90)
-	w._enter("dartmoor/zenis_gate")
+	w._enter("vorrhallow/evercrown_gate")
 	await frames(10)
 	check(get_tree_boss() == null, "and it never returns")
 
 
-func _eura_free(skills: Array) -> Array:
+func _likeness_free(skills: Array) -> Array:
 	GameState.new_game()
-	var setup := await _eura_world()
+	var setup := await _likeness_world()
 	var b: Likeness = setup[2]
 	GameState.data.skills = skills
 	b.hp = roundi(b.max_hp * 0.5) + 2
@@ -2591,7 +2591,7 @@ func _eura_free(skills: Array) -> Array:
 	return setup
 
 
-func test_shadow_eura_fights_with_your_strongest_branch() -> void:
+func test_likeness_fights_with_your_strongest_branch() -> void:
 	GameState.new_game()
 	check(Likeness.strongest_branch() == "Blade", "with an empty tree it fights with the blade")
 	GameState.data.skills = ["clear_mind", "siphon", "keen_edge"]
@@ -2603,12 +2603,12 @@ func test_shadow_eura_fights_with_your_strongest_branch() -> void:
 	GameState.new_game()
 
 
-func test_shadow_eura_breaks_the_mirror_at_half() -> void:
-	var setup := await _eura_free([])
+func test_likeness_breaks_the_mirror_at_half() -> void:
+	var setup := await _likeness_free([])
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	check(b.phase == 2 and b.state == "shatter" and b.branch == "Blade", "below half the mirror shatters (%s, %s)" % [b.state, b.branch])
-	check(Music.track == "eura", "the fight plays its own theme (%s)" % Music.track)
+	check(Music.track == "likeness", "the fight plays its own theme (%s)" % Music.track)
 	var hp0 := b.hp
 	b.take_hit(10, Vector2.RIGHT)
 	check(b.hp == hp0, "untouchable while the glass breaks")
@@ -2636,8 +2636,8 @@ func test_shadow_eura_breaks_the_mirror_at_half() -> void:
 	check(back, "until it comes on again")
 
 
-func test_shadow_eura_casts_your_arcana_back_at_you() -> void:
-	var setup := await _eura_free(["clear_mind", "siphon"])
+func test_likeness_casts_your_arcana_back_at_you() -> void:
+	var setup := await _likeness_free(["clear_mind", "siphon"])
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var p := w.player
@@ -2673,8 +2673,8 @@ func test_shadow_eura_casts_your_arcana_back_at_you() -> void:
 	check(hurt, "back into the shadow that cast it (%d)" % (hp0 - b.hp))
 
 
-func test_shadow_eura_wanders_dashes_and_drinks() -> void:
-	var setup := await _eura_free(["deep_pockets", "gold_sense"])
+func test_likeness_wanders_dashes_and_drinks() -> void:
+	var setup := await _likeness_free(["deep_pockets", "gold_sense"])
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var p := w.player
@@ -2706,8 +2706,8 @@ func test_shadow_eura_wanders_dashes_and_drinks() -> void:
 	check(b.state != "drink" and b.hp == hp0 - 5, "a blow spills the draught")
 
 
-func _eura_split() -> Array:
-	var setup := await _eura_free([])
+func _likeness_split() -> Array:
+	var setup := await _likeness_free([])
 	var b: Likeness = setup[2]
 	await _until(func() -> bool: return b.state == "stalk", 150)
 	b.hp = roundi(b.max_hp * 0.2) + 2
@@ -2715,8 +2715,8 @@ func _eura_split() -> Array:
 	return setup
 
 
-func test_shadow_eura_splits_in_two_below_a_fifth() -> void:
-	var setup := await _eura_split()
+func test_likeness_splits_in_two_below_a_fifth() -> void:
+	var setup := await _likeness_split()
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	check(b.phase == 3 and b.state == "split", "below a fifth it splits (%s)" % b.state)
@@ -2735,7 +2735,7 @@ func test_shadow_eura_splits_in_two_below_a_fifth() -> void:
 
 func test_striking_the_false_shadow_makes_it_burst() -> void:
 	check(Likeness.BURST_TELL >= Enemy.MIN_TELEGRAPH, "the false one swells for at least %.2f s before it bursts" % Enemy.MIN_TELEGRAPH)
-	var setup := await _eura_split()
+	var setup := await _likeness_split()
 	var w: World = setup[0]
 	var b: Likeness = setup[2]
 	var d := b.double
@@ -2761,7 +2761,7 @@ func test_striking_the_false_shadow_makes_it_burst() -> void:
 
 
 func test_beating_the_real_shadow_ends_the_false_one() -> void:
-	var setup := await _eura_split()
+	var setup := await _likeness_split()
 	var b: Likeness = setup[2]
 	var d := b.double
 	await _until(func() -> bool: return b.state == "stalk", 120)
@@ -2769,14 +2769,14 @@ func test_beating_the_real_shadow_ends_the_false_one() -> void:
 	b.take_hit(5, Vector2.RIGHT)
 	await frames(2)
 	check(not is_instance_valid(d), "the false one goes with the real one")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:shadow_eura"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:likeness"), 600)
 	check(gone, "and the fight is won")
 
 
 # --- The Everbloom, phase 1: the Avatar on the Throne (bible 8.9) -----------------
 
 func _avatar_world() -> Array:
-	var w := make_world({}, "zenis/throne")
+	var w := make_world({}, "evercrown/throne")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
 	w.player.has_shield = true
@@ -2789,16 +2789,16 @@ func _avatar_world() -> Array:
 	return [w, arena, b]
 
 
-func test_the_throne_wakes_the_evil_ones_avatar() -> void:
+func test_the_throne_wakes_the_everblooms_avatar() -> void:
 	var setup := await _avatar_world()
 	var arena: BossArena = setup[1]
 	var b: EvilAvatar = setup[2]
-	check(arena.boss_id == "evil_avatar" and b != null and b.state == "walk", "walking into the throne hall wakes the avatar")
+	check(arena.boss_id == "everbloom_avatar" and b != null and b.state == "walk", "walking into the throne hall wakes the avatar")
 	check(b.phase == 1 and absf(b.global_position.y - b.floor_y()) < 2.0, "it comes down to duel on the floor")
-	check(Music.track == "evil_one", "the fight plays the Everbloom's theme (%s)" % Music.track)
+	check(Music.track == "everbloom", "the fight plays the Everbloom's theme (%s)" % Music.track)
 
 
-func test_evil_avatar_telegraphs_are_fair() -> void:
+func test_everbloom_avatar_telegraphs_are_fair() -> void:
 	var b := EvilAvatar.new()
 	for p in [1, 2]:
 		b.phase = p
@@ -2807,7 +2807,7 @@ func test_evil_avatar_telegraphs_are_fair() -> void:
 	b.free()
 
 
-func test_evil_avatar_cleaves_and_a_parry_opens_its_plate() -> void:
+func test_everbloom_avatar_cleaves_and_a_parry_opens_its_plate() -> void:
 	var setup := await _avatar_world()
 	var w: World = setup[0]
 	var b: EvilAvatar = setup[2]
@@ -2839,7 +2839,7 @@ func test_evil_avatar_cleaves_and_a_parry_opens_its_plate() -> void:
 	check(hp0 - b.hp == 10, "and open to every blow (%d)" % (hp0 - b.hp))
 
 
-func test_evil_avatar_pulls_you_in_then_bursts() -> void:
+func test_everbloom_avatar_pulls_you_in_then_bursts() -> void:
 	var setup := await _avatar_world()
 	var w: World = setup[0]
 	var b: EvilAvatar = setup[2]
@@ -2860,7 +2860,7 @@ func test_evil_avatar_pulls_you_in_then_bursts() -> void:
 	check(b.state == "burst" and p.hp < hp, "and the burst catches you close (%d)" % (hp - p.hp))
 
 
-func test_evil_avatar_rains_crystal_in_a_line() -> void:
+func test_everbloom_avatar_rains_crystal_in_a_line() -> void:
 	var setup := await _avatar_world()
 	var w: World = setup[0]
 	var b: EvilAvatar = setup[2]
@@ -2875,7 +2875,7 @@ func test_evil_avatar_rains_crystal_in_a_line() -> void:
 	check(spikes.all(func(s: CrystalSpike) -> bool: return s.global_position.x < b.global_position.x), "on your side")
 
 
-func test_evil_avatar_swings_twice_below_half() -> void:
+func test_everbloom_avatar_swings_twice_below_half() -> void:
 	var setup := await _avatar_world()
 	var w: World = setup[0]
 	var b: EvilAvatar = setup[2]
@@ -2898,7 +2898,7 @@ func test_evil_avatar_swings_twice_below_half() -> void:
 	check(cleaves == 2, "and its cleave comes back for a second swing (%d)" % cleaves)
 
 
-func test_evil_avatar_defeat_shatters_it_for_good() -> void:
+func test_everbloom_avatar_defeat_shatters_it_for_good() -> void:
 	var setup := await _avatar_world()
 	var w: World = setup[0]
 	var b: EvilAvatar = setup[2]
@@ -2907,11 +2907,11 @@ func test_evil_avatar_defeat_shatters_it_for_good() -> void:
 	b.facing = -1
 	b.take_hit(5, Vector2.LEFT)
 	check(b.state == "dying", "the last blow ends it")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_avatar"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:everbloom_avatar"), 600)
 	check(gone, "the avatar is marked beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
 	await frames(90)
-	w._enter("zenis/throne")
+	w._enter("evercrown/throne")
 	await frames(10)
 	check(get_tree_boss() == null, "and it never returns")
 
@@ -2919,10 +2919,10 @@ func test_evil_avatar_defeat_shatters_it_for_good() -> void:
 # --- The Everbloom, phase 2: the Veins (bible 8.9) -------------------------------
 
 func _veins_world() -> Array:
-	var w := make_world({}, "zenis/veins")
+	var w := make_world({}, "evercrown/veins")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
-	w.player.abilities["hourglass"] = true
+	w.player.abilities["stillstone"] = true
 	await frames(3)
 	var arena := _arena(w)
 	w.player.teleport(cell_feet(8, 65))
@@ -2946,9 +2946,9 @@ func test_the_veins_wake_the_core() -> void:
 	var setup := await _veins_world()
 	var arena: BossArena = setup[1]
 	var c: EvilCore = setup[2]
-	check(arena.boss_id == "evil_veins" and c != null and c.state == "watch", "climbing into the Veins wakes the core")
+	check(arena.boss_id == "everbloom_veins" and c != null and c.state == "watch", "climbing into the Veins wakes the core")
 	check(c.veins.size() == 6 and c.max_hp == 6 * EvilCore.VEIN_HP and c.hp == c.max_hp, "it feeds through six veins (%d)" % c.veins.size())
-	check(Music.track == "evil_one", "to the Everbloom's theme (%s)" % Music.track)
+	check(Music.track == "everbloom", "to the Everbloom's theme (%s)" % Music.track)
 	var hp := c.hp
 	c.take_hit(50, Vector2.UP)
 	check(c.hp == hp, "no blade reaches the core itself")
@@ -3006,7 +3006,7 @@ func test_a_cores_beam_sears_as_it_fires() -> void:
 	check(CoreBeam.FIRE_SOUND in Sfx.recent, "and the lance sears as it fires (%s)" % [Sfx.recent])
 
 
-func test_the_hour_glass_holds_the_cores_beams() -> void:
+func test_the_stillstone_holds_the_cores_beams() -> void:
 	var setup := await _veins_world()
 	var w: World = setup[0]
 	var c: EvilCore = setup[2]
@@ -3037,11 +3037,11 @@ func test_cutting_the_veins_starves_the_core() -> void:
 	check(w.room.get_children().filter(func(n: Node) -> bool: return n is CoreBeam and not n.is_queued_for_deletion()).size() == 2, "and fans its beams in pairs")
 	_cut_veins(c, 3)
 	check(c.state == "dying", "the last vein cut, its light gutters out")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_veins"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:everbloom_veins"), 600)
 	check(gone, "the Veins are marked beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
 	await frames(90)
-	w._enter("zenis/veins")
+	w._enter("evercrown/veins")
 	await frames(10)
 	check(get_tree_boss() == null, "the core never fights here again")
 	check(w.room.get_children().filter(func(n: Node) -> bool: return n is LightVein).all(func(v: LightVein) -> bool: return v.is_cut), "and its veins stay dark")
@@ -3053,7 +3053,7 @@ func test_a_pogo_bounces_off_a_vein() -> void:
 	var c: EvilCore = setup[2]
 	var v: LightVein = c.veins[0]
 	var p := w.player
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	p.teleport(v.global_position + Vector2(0, -40))
 	var bounced := false
 	for i in 60:
@@ -3069,11 +3069,11 @@ func test_a_pogo_bounces_off_a_vein() -> void:
 
 
 func _heart_world() -> Array:
-	var w := make_world({}, "zenis/heart")
+	var w := make_world({}, "evercrown/heart")
 	w.player.max_hp = 9999
 	w.player.hp = 9999
-	w.player.abilities["hourglass"] = true
-	GameState.data.equipment["blade"] = "dragon_slayer"
+	w.player.abilities["stillstone"] = true
+	GameState.data.equipment["blade"] = "severance"
 	await frames(3)
 	var arena := _arena(w)
 	w.player.teleport(cell_feet(14, 20))
@@ -3107,9 +3107,9 @@ func test_the_heart_wakes_above_any_blade() -> void:
 	var setup := await _heart_world()
 	var arena: BossArena = setup[1]
 	var h: EvilHeart = setup[2]
-	check(arena.boss_id == "evil_one" and h != null and h.state == "float", "the heart of the Everbloom wakes in its chamber")
+	check(arena.boss_id == "everbloom" and h != null and h.state == "float", "the heart of the Everbloom wakes in its chamber")
 	check(h.lights.size() == 3 and h.lights_freed() == 0, "three springs' stolen light are caught in its vault")
-	check(Music.track == "evil_one", "to the Everbloom's theme (%s)" % Music.track)
+	check(Music.track == "everbloom", "to the Everbloom's theme (%s)" % Music.track)
 	check(h.floor_y() - h.global_position.y > 10 * Room.TILE, "it hangs far above the floor (%.0f px)" % (h.floor_y() - h.global_position.y))
 	var hp := h.hp
 	_slash(setup[0], h, 50)
@@ -3136,7 +3136,7 @@ func test_the_trees_roots_bind_the_heart_after_a_tell() -> void:
 	check(h.state == "float" and h.binds == 1, "then lets it rise again")
 
 
-func test_only_the_dragon_slayer_cuts_the_bound_heart() -> void:
+func test_only_the_severance_cuts_the_bound_heart() -> void:
 	var setup := await _heart_world()
 	var w: World = setup[0]
 	var h: EvilHeart = setup[2]
@@ -3146,7 +3146,7 @@ func test_only_the_dragon_slayer_cuts_the_bound_heart() -> void:
 	GameState.data.equipment["blade"] = "long_sword"
 	_slash(w, h, 20)
 	check(h.hp == hp, "another blade glances off it, even held down")
-	GameState.data.equipment["blade"] = "dragon_slayer"
+	GameState.data.equipment["blade"] = "severance"
 	h.take_hit(20, Vector2.RIGHT)
 	check(h.hp == hp, "and so does magic")
 	_slash(w, h, 20)
@@ -3223,7 +3223,7 @@ func test_the_heart_bursts_as_the_root_lets_go_at_the_end() -> void:
 	check(p.hp < hp, "then bursts as the root lets go (%d)" % (hp - p.hp))
 
 
-func test_the_hour_glass_holds_the_heart_and_its_roots() -> void:
+func test_the_stillstone_holds_the_heart_and_its_roots() -> void:
 	var setup := await _heart_world()
 	var w: World = setup[0]
 	var h: EvilHeart = setup[2]
@@ -3246,7 +3246,7 @@ func test_the_heart_of_the_meteor_dies_for_good() -> void:
 	await frames(2)
 	_slash(w, h, h.hp)
 	check(h.state == "dying" and h.lights_freed() == 3, "its last life cut, every light goes home")
-	var gone := await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600)
+	var gone := await _until(func() -> bool: return GameState.flag("boss:everbloom"), 600)
 	check(gone, "the Everbloom is beaten")
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
 	var started := [false]
@@ -3255,7 +3255,7 @@ func test_the_heart_of_the_meteor_dies_for_good() -> void:
 	var ended := await _until(func() -> bool: return started[0], int(BossArena.ENDING_DELAY * 60) + 30)
 	GameState.ending_started.disconnect(on_end)
 	check(ended and GameState.flag("cleared") and int(GameState.data.clears) == 1, "and once its banner has shown, the ending begins and the save is marked cleared")
-	w._enter("zenis/heart")
+	w._enter("evercrown/heart")
 	await frames(10)
 	check(get_tree_boss() == null, "and its heart never fights again")
 
@@ -3270,7 +3270,7 @@ func test_the_ending_waits_out_a_pause_and_dies_with_its_world() -> void:
 	_bind(h)
 	await frames(2)
 	_slash(w, h, h.hp)
-	check(await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600), "the Everbloom is beaten")
+	check(await _until(func() -> bool: return GameState.flag("boss:everbloom"), 600), "the Everbloom is beaten")
 	var started := [false]
 	var on_end := func() -> void: started[0] = true
 	GameState.ending_started.connect(on_end)
@@ -3292,7 +3292,7 @@ func test_the_ending_waits_out_a_pause_and_dies_with_its_world() -> void:
 	_bind(h)
 	await frames(2)
 	_slash(w, h, h.hp)
-	check(await _until(func() -> bool: return GameState.flag("boss:evil_one"), 600), "beaten again")
+	check(await _until(func() -> bool: return GameState.flag("boss:everbloom"), 600), "beaten again")
 	w.queue_free()
 	await frames(int(BossArena.ENDING_DELAY * 60) + 60)
 	GameState.ending_started.disconnect(on_end)
@@ -3488,7 +3488,7 @@ func test_drowned_warden_roars_into_each_phase() -> void:
 	check(b.phase == 3, "at a third, the third")
 
 
-func test_the_drowned_warden_gives_up_the_battle_suit() -> void:
+func test_the_drowned_warden_gives_up_the_elven_plate() -> void:
 	var setup := await _warden_world()
 	var w: World = setup[0]
 	var arena: BossArena = setup[1]
@@ -3500,11 +3500,11 @@ func test_the_drowned_warden_gives_up_the_battle_suit() -> void:
 	b.take_hit(5, Vector2.DOWN)
 	await _until(func() -> bool: return GameState.flag("boss:drowned_warden"), 480)
 	check(GameState.flag("boss:drowned_warden"), "the Warden falls")
-	check(GameState.data.equipment.armor == "battle_suit" and absf(w.player.defense - 0.6) < 0.001, "and its Elven Plate goes straight on (%s, %.2f)" % [GameState.data.equipment.armor, w.player.defense])
+	check(GameState.data.equipment.armor == "elven_plate" and absf(w.player.defense - 0.6) < 0.001, "and its Elven Plate goes straight on (%s, %.2f)" % [GameState.data.equipment.armor, w.player.defense])
 	check(int(GameState.data.skill_points) >= points + 1, "with a skill point")
 	await _until(func() -> bool: return not arena.fighting, 400)
 	check(not arena.fighting, "and the way back opens")
-	check(GameState.data.gear.has("battle_suit"), "and it is kept with your gear (pass 186)")
+	check(GameState.data.gear.has("elven_plate"), "and it is kept with your gear (pass 186)")
 
 
 func test_every_boss_marks_its_phases_on_the_health_bar() -> void:
@@ -3525,7 +3525,7 @@ func test_a_phase_break_stings_and_lifts_the_music() -> void:
 	var b: Skyrend = setup[2]
 	var breaks: Array[int] = []
 	arena.phase_broken.connect(func(level: int) -> void: breaks.append(level))
-	check(Music.track == "borabohra" and Music.intensity == 0, "the fight opens on its theme as written")
+	check(Music.track == "skyrend" and Music.intensity == 0, "the fight opens on its theme as written")
 	b.hp = roundi(b.max_hp * 0.45)
 	await frames(2)
 	check(breaks == [1] and arena.phases_passed == 1, "crossing the first mark is a phase break (%s)" % [breaks])
@@ -3547,7 +3547,7 @@ func test_a_phase_break_stings_and_lifts_the_music() -> void:
 
 # --- The Clockwork Alpha (pass 169), Vorrhallow's mini-boss --------------------------
 
-const ALPHA_ROOM := "dartmoor/alpha_den"
+const ALPHA_ROOM := "vorrhallow/alpha_den"
 
 
 ## The Alpha dropped into its den without the arena, awake.
@@ -3566,7 +3566,7 @@ func _alpha_world(cell := Vector2i(30, 20)) -> Array:
 
 
 func test_the_alpha_waits_in_a_den_under_the_kings_kennels() -> void:
-	var kennels := Room.from_file(World.room_path("dartmoor/kings_kennels"))
+	var kennels := Room.from_file(World.room_path("vorrhallow/kings_kennels"))
 	check(kennels.doors.has(3) and String(kennels.doors[3].target) == ALPHA_ROOM, "a shaft in the kennels' floor drops to the den")
 	kennels.free()
 	var w := make_world({}, ALPHA_ROOM, cell_feet(8, 3))
@@ -3607,7 +3607,7 @@ func test_the_alphas_plating_turns_blows_until_it_opens() -> void:
 	check(not a.flipped() and a.state == "trot", "and it rights itself")
 
 
-func test_the_hour_glass_stops_the_alpha_dead() -> void:
+func test_the_stillstone_stops_the_alpha_dead() -> void:
 	var r := await _alpha_world()
 	var w: World = r[0]
 	var a: ClockworkAlpha = r[1]
@@ -3700,7 +3700,7 @@ func test_the_alpha_gives_a_life_fruit() -> void:
 	check(int(GameState.data.skill_points) == points + ranks, "a mini-boss gives no skill point beyond its rank-ups (%d)" % ranks)
 
 
-const CAPTAIN_ROOM := "branches/thorn_yard"
+const CAPTAIN_ROOM := "boughs/thorn_yard"
 
 
 ## The Captain dropped into his yard without the arena, awake.
@@ -3718,8 +3718,8 @@ func _captain_world(cell := Vector2i(30, 19)) -> Array:
 	return [w, c]
 
 
-func test_the_captain_keeps_the_thorn_yard_east_of_conflate() -> void:
-	var town := Room.from_file(World.room_path("branches/conflate"))
+func test_the_captain_keeps_the_thorn_yard_east_of_sylvarre() -> void:
+	var town := Room.from_file(World.room_path("boughs/sylvarre"))
 	check(town.doors.has(3) and String(town.doors[3].target) == CAPTAIN_ROOM, "Sylvarre's east gate opens on the Thorn Yard")
 	town.free()
 	var w := make_world({}, CAPTAIN_ROOM, cell_feet(2, 19))
@@ -3812,7 +3812,7 @@ func test_the_captains_bough_holds_your_weight_until_he_pulls_free() -> void:
 	await hold.call(40)
 	p.input.down = false
 	check(p.is_on_floor() and p.global_position.y > top + 20.0, "Down + Jump drops you through it to the floor (feet %.1f)" % p.global_position.y)
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	p.teleport(Vector2(mid, top - 70.0))
 	var bounced := false
 	for i in 60:
@@ -3917,7 +3917,7 @@ func test_the_captain_gives_mana_dew() -> void:
 
 # --- The Marsh Hag Matriarch (pass 179), the Haar's mini-boss ---------------------
 
-const MATRIARCH_ROOM := "mist/hag_mire"
+const MATRIARCH_ROOM := "haar/hag_mire"
 
 
 ## The Matriarch dropped into her mire without the arena, awake.
@@ -3935,10 +3935,10 @@ func _matriarch_world(cell := Vector2i(30, 16)) -> Array:
 	return [w, m]
 
 
-func test_the_matriarch_keeps_a_mire_east_of_mascon() -> void:
-	var mascon := Room.from_file(World.room_path("mist/mascon"))
-	check(mascon.doors.has(2) and String(mascon.doors[2].target) == MATRIARCH_ROOM, "Polesend's east end opens on her mire")
-	mascon.free()
+func test_the_matriarch_keeps_a_mire_east_of_polesend() -> void:
+	var polesend := Room.from_file(World.room_path("haar/polesend"))
+	check(polesend.doors.has(2) and String(polesend.doors[2].target) == MATRIARCH_ROOM, "Polesend's east end opens on her mire")
+	polesend.free()
 	var w := make_world({}, MATRIARCH_ROOM, cell_feet(1, 16))
 	await frames(3)
 	var arena := _arena(w)
@@ -4054,7 +4054,7 @@ func test_a_thrown_dagger_glances_off_the_bound_heart() -> void:
 	var h: EvilHeart = setup[2]
 	_bind(h)
 	await frames(2)
-	GameState.data.equipment["blade"] = "dragon_slayer"
+	GameState.data.equipment["blade"] = "severance"
 	var hp := h.hp
 	w.player._attack_timer = 0.2
 	h.take_throw(RuneDagger.DAMAGE, Vector2.RIGHT)
@@ -4143,8 +4143,8 @@ func test_a_guardians_win_cant_be_lost_while_it_falls() -> void:
 	p.receive_attack(500, b, false)
 	check(not p.dead and p.hp == hp, "a blow still in the air while he falls can't kill the hero (hp %d, dead %s)" % [p.hp, p.dead])
 	await _until(func() -> bool: return not arena.fighting, 400)
-	check(GameState.flag("boss:king_grieve"), "the win is kept")
-	check("dragon_slayer" in GameState.data.gear, "and so is the Severance")
+	check(GameState.flag("boss:thane_vorrund"), "the win is kept")
+	check("severance" in GameState.data.gear, "and so is the Severance")
 	check(not arena.falling(), "once the doors open nothing is shielded any more")
 
 
@@ -4154,7 +4154,7 @@ func test_a_guardians_win_cant_be_lost_while_it_falls() -> void:
 ## you; never a second while one stands, the next two waves after it falls, and
 ## no more than two in a fight. The guard will not serve the Everbloom: it goes
 ## down when the Everbloom takes him, and it pays nothing.
-func test_king_grieve_calls_his_household_guard_from_the_throne() -> void:
+func test_thane_vorrund_calls_his_household_guard_from_the_throne() -> void:
 	var setup := await _king_world()
 	var w: World = setup[0]
 	var b: ThaneVorrund = setup[2]
@@ -4201,8 +4201,8 @@ func test_king_grieve_calls_his_household_guard_from_the_throne() -> void:
 func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
 	const BY_NAME := {
 		"The Bark Knight Captain": "bark_captain", "The Marsh Hag Matriarch": "hag_matriarch",
-		"The Clockwork Alpha": "clockwork_alpha", "Thane Vorrund": "king_grieve", "The Likeness": "shadow_eura",
-		"The Everbloom, phase 1": "evil_avatar", "The Foreman": "foreman",
+		"The Clockwork Alpha": "clockwork_alpha", "Thane Vorrund": "thane_vorrund", "The Likeness": "likeness",
+		"The Everbloom, phase 1": "everbloom_avatar", "The Foreman": "foreman",
 	}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var at := bible.find("**The openings, as built (pass 163):**")
@@ -4220,7 +4220,7 @@ func test_every_opening_the_table_names_a_parry_for_opens_on_a_parry() -> void:
 	check(rows >= 15, "the table names every guardian's opening (%d rows)" % rows)
 	check(parried.keys().all(func(n: String) -> bool: return BY_NAME.has(n)), "each row naming a parry is checked (%s)" % [parried.keys()])
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -4269,14 +4269,14 @@ func test_every_guardian_opens_without_a_shield() -> void:
 			parry_only.append(cells[1].strip_edges())
 	check(parry_only.is_empty(), "no guardian opens only on a parry (%s)" % [parry_only])
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
 			rooms[b] = id
 	w0.queue_free()
 	await frames(2)
-	const SPENT := {"shadow_eura": ["recover", "f_recover"], "evil_avatar": ["burst"]}
+	const SPENT := {"likeness": ["recover", "f_recover"], "everbloom_avatar": ["burst"]}
 	for id: String in SPENT:
 		GameState.new_game()
 		var w := make_world({}, rooms[id])
@@ -4291,9 +4291,9 @@ func test_every_guardian_opens_without_a_shield() -> void:
 		for st: String in SPENT[id]:
 			boss.set_state(st)
 			check(boss.punishable(), "%s is open while spent (%s), no parry needed" % [id, st])
-		boss.set_state("walk" if id == "evil_avatar" else "mirror")
+		boss.set_state("walk" if id == "everbloom_avatar" else "mirror")
 		check(not boss.punishable(), "%s is shut again once it moves on (%s)" % [id, boss.state])
-		if id == "evil_avatar":
+		if id == "everbloom_avatar":
 			boss.set_state("burst")
 			check(boss._modify_damage(10, Vector2(-boss.facing, 0)) == 10, "the Everbloom's plate is bare while it is spent")
 		w.queue_free()
@@ -4310,15 +4310,15 @@ func test_every_guardian_opens_without_a_shield() -> void:
 const DRIVEN_TELLS := {
 	"foreman": [["_choose", {"_last": "", "_since_charge": 0}, [100.0]]],
 	"drowned_warden": [["_choose", {"phase": 3, "_count": 3}, [300.0]]],
-	"king_grieve": [["_open", {}, ["burst_tell", "burst"]]],
-	"shadow_eura": [["_tell", {}, ["cast_tell"]], ["_tell", {}, ["dash_tell"]]],
+	"thane_vorrund": [["_open", {}, ["burst_tell", "burst"]]],
+	"likeness": [["_tell", {}, ["cast_tell"]], ["_tell", {}, ["dash_tell"]]],
 }
 
 
 func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 	var tell_re := RegEx.create_from_string("windup|tell|^wind$|^coil$|^rev$|^unfold$|^gather$")
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -4420,7 +4420,7 @@ func test_every_guardian_tell_is_heard_as_it_starts() -> void:
 ## that a blade does". With Sean's off hand it is a whole build's ranged tool, so
 ## each guardian of the rush is thrown at in its own arena until a throw stings it.
 func test_the_rune_dagger_reaches_every_guardian() -> void:
-	const SKIP := {"evil_veins": "the veins are cut where they run, not thrown at", "evil_one": "the bound Heart takes only the Severance"}
+	const SKIP := {"everbloom_veins": "the veins are cut where they run, not thrown at", "everbloom": "the bound Heart takes only the Severance"}
 	var missed := []
 	for pair: Array in BossRush.ORDER:
 		var id: String = pair[0]
@@ -4498,9 +4498,9 @@ func _boss_target(boss: Variant, attempt: int) -> Vector2:
 ## them gives, which the banners have told since pass 220.
 func test_every_guardians_reward_line_names_its_prize() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
-	const HEADINGS := {"rokusutahn": "8.1", "zoradohna": "8.2", "ripasheiku": "8.3", "zorugeriru": "8.4",
-		"pakukame": "8.5", "borabohra": "8.6", "king_grieve": "8.7", "shadow_eura": "8.8",
-		"evil_avatar": "8.9", "evil_veins": "8.9", "evil_one": "8.9", "drowned_warden": "8.10"}
+	const HEADINGS := {"gnarlmaw": "8.1", "durgan": "8.2", "gloamweaver": "8.3", "haar_wyrm": "8.4",
+		"snapcrown": "8.5", "skyrend": "8.6", "thane_vorrund": "8.7", "likeness": "8.8",
+		"everbloom_avatar": "8.9", "everbloom_veins": "8.9", "everbloom": "8.9", "drowned_warden": "8.10"}
 	const PARAGRAPHS := {"bark_captain": "**The Bark Knight Captain (built pass 171).**",
 		"hag_matriarch": "**The Marsh Hag Matriarch (built pass 179).**",
 		"clockwork_alpha": "**The Clockwork Alpha (built pass 169).**",
@@ -4543,13 +4543,13 @@ func test_every_guardians_reward_line_names_its_prize() -> void:
 ## holds every row to the script, and every "Phase N (below ...)" line in a
 ## guardian's own section to the same mark.
 func test_every_guardians_numbers_are_written_in_bible_8() -> void:
-	const GUARDIANS := {"Gnarlmaw": "rokusutahn", "Durgan": "zoradohna", "Gloamweaver": "ripasheiku",
-		"The Haar Wyrm": "zorugeriru", "Snapcrown": "pakukame", "Skyrend": "borabohra", "Thane Vorrund": "king_grieve",
-		"The Likeness": "shadow_eura", "The Everbloom's avatar": "evil_avatar", "The Everbloom's veins": "evil_core",
-		"The Everbloom's heart": "evil_heart", "The Foreman": "foreman", "The Marsh Hag Matriarch": "hag_matriarch",
+	const GUARDIANS := {"Gnarlmaw": "gnarlmaw", "Durgan": "durgan", "Gloamweaver": "gloamweaver",
+		"The Haar Wyrm": "haar_wyrm", "Snapcrown": "snapcrown", "Skyrend": "skyrend", "Thane Vorrund": "thane_vorrund",
+		"The Likeness": "likeness", "The Everbloom's avatar": "everbloom_avatar", "The Everbloom's veins": "everbloom_core",
+		"The Everbloom's heart": "everbloom_heart", "The Foreman": "foreman", "The Marsh Hag Matriarch": "hag_matriarch",
 		"The Bark Knight Captain": "bark_captain", "The Clockwork Alpha": "clockwork_alpha", "The Drowned Warden": "drowned_warden"}
-	const SECTIONS := {"8.1": "rokusutahn", "8.2": "zoradohna", "8.3": "ripasheiku", "8.4": "zorugeriru",
-		"8.5": "pakukame", "8.6": "borabohra", "8.7": "king_grieve", "8.8": "shadow_eura"}
+	const SECTIONS := {"8.1": "gnarlmaw", "8.2": "durgan", "8.3": "gloamweaver", "8.4": "haar_wyrm",
+		"8.5": "snapcrown", "8.6": "skyrend", "8.7": "thane_vorrund", "8.8": "likeness"}
 	const WORDS := {"half": 50, "a quarter": 25, "a fifth": 20, "two thirds": 66, "a third": 33}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var eight := bible.get_slice("\n## 8. Bosses", 1).get_slice("\n## 9. ", 0)
@@ -4640,7 +4640,7 @@ func test_every_guardians_numbers_are_written_in_bible_8() -> void:
 ## real one, never its false double.
 func test_every_guardians_bar_shows_its_phase_marks() -> void:
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -4711,7 +4711,7 @@ func test_every_guardians_bar_shows_its_phase_marks() -> void:
 	await frames(2)
 	# the Likeness's third phase: the bar follows the real one.
 	GameState.new_game()
-	var ew := make_world({}, rooms["shadow_eura"])
+	var ew := make_world({}, rooms["likeness"])
 	ew.player.max_hp = 99999
 	ew.player.hp = 99999
 	var eh := GameHud.new()
@@ -4721,21 +4721,21 @@ func test_every_guardians_bar_shows_its_phase_marks() -> void:
 	var ear := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
 	ear._start()
 	await frames(2)
-	var eura := ear.boss as Likeness
-	await _until(func() -> bool: return not (eura.state in ["intro", "dormant", "reveal", "lurk", ""]), 600)
-	eura.phase = 2
-	eura.hp = int(eura.MAX_HP * 0.2) + 4
+	var likeness := ear.boss as Likeness
+	await _until(func() -> bool: return not (likeness.state in ["intro", "dormant", "reveal", "lurk", ""]), 600)
+	likeness.phase = 2
+	likeness.hp = int(likeness.MAX_HP * 0.2) + 4
 	var split := false
 	for tries in 20:
-		eura.take_hit(10, Vector2.RIGHT)
+		likeness.take_hit(10, Vector2.RIGHT)
 		await frames(15)
-		if is_instance_valid(eura.double):
+		if is_instance_valid(likeness.double):
 			split = true
 			break
 	check(split, "below a fifth the mirror splits")
 	if split:
 		await frames(5)
-		check(eh.boss_bar().get("boss") == eura and not eura.double.is_in_group("boss"), "and the bar follows the real one, not its double")
+		check(eh.boss_bar().get("boss") == likeness and not likeness.double.is_in_group("boss"), "and the bar follows the real one, not its double")
 	eh.queue_free()
 	Feel.reset()
 	ew.queue_free()
@@ -4752,7 +4752,7 @@ func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var said := bible.get_slice("**A won fight stays won (pass 239).**", 1).get_slice("\n", 0)
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -4817,7 +4817,7 @@ func test_every_guardian_falls_within_the_bibles_dying_window() -> void:
 ## (the guardian, or its segments where those are its only hitbox) does nothing.
 func test_every_guardian_opens_with_its_reveal() -> void:
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -4878,7 +4878,7 @@ func test_every_guardian_opens_with_its_reveal() -> void:
 ## Ringreader's room. The Everbloom's veins and heart, the final climb past the
 ## throne's shrine, are the written exceptions.
 func test_every_guardian_is_a_door_from_a_rest() -> void:
-	const FAR := {"evil_veins": 2, "evil_one": 3}
+	const FAR := {"everbloom_veins": 2, "everbloom": 3}
 	var doors := {}
 	var rests: Array[String] = []
 	var arenas := {}
@@ -4894,7 +4894,7 @@ func test_every_guardian_is_a_door_from_a_rest() -> void:
 			for line: String in head.split("\n"):
 				if line.begins_with("door:"):
 					doors[id].append(line.get_slice(",", 1).strip_edges())
-				elif line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "guru":
+				elif line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "ringreader":
 					rest = true
 				elif line.begins_with("boss:"):
 					arenas[id] = line.trim_prefix("boss:").strip_edges()
@@ -4974,14 +4974,14 @@ func test_a_guardian_falls_to_the_real_controller() -> void:
 	var gone := await _until(func() -> bool: return boss.state == "dead", 900)
 	var opened := await _until(func() -> bool: return arena.seals.is_empty() and _count(w, ArenaSeal) == 0, 1200)
 	check(gone and opened, "it shatters and the doors open again")
-	check(GameState.data.rings.has("elf") and GameState.flag("boss:rokusutahn"), "the Thaw Seed is won")
+	check(GameState.data.rings.has("thaw") and GameState.flag("boss:gnarlmaw"), "the Thaw Seed is won")
 	# And the way on, high in the east wall, is walked through with Right held.
 	var exit: Rect2i = w.catalog[ARENA_ROOM].doors[2].rect
 	p.teleport(cell_feet(exit.position.x - 1, exit.end.y - 1))
 	Input.action_press("move_right")
 	var left := await _until(func() -> bool: return w.room.id != ARENA_ROOM, 600)
 	Input.action_release("move_right")
-	check(left and w.room.id == "trunk/spring_of_trunk", "Right walks out through the opened door to the spring (%s)" % w.room.id)
+	check(left and w.room.id == "heartwood/spring_of_heartwood", "Right walks out through the opened door to the spring (%s)" % w.room.id)
 	GameState.delete_save(9)
 	GameState.slot = was
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
@@ -5016,7 +5016,7 @@ func test_the_foremans_rock_answers_the_real_controller() -> void:
 	# Over its helm, Down + Attack pressed for real as the hero falls.
 	await frames(int(p.tuning.attack_cooldown * 60.0) + 10)
 	# The down-strike is the Delver's Pick's (it is won here, so a revisit has it).
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	p.teleport(Vector2(f.global_position.x, f.global_position.y - 120.0))
 	p.velocity = Vector2.ZERO
 	hp0 = f.hp
@@ -5059,7 +5059,7 @@ func test_the_fountain_sheet_has_a_state_for_each_spring() -> void:
 func test_a_guardians_guard_turns_the_blade_back() -> void:
 	var c := CombatTuning.new()
 	var rows := grid_rows(30, 12)
-	for which: String in ["king_grieve", "zoradohna", "evil_core", "evil_heart"]:
+	for which: String in ["thane_vorrund", "durgan", "everbloom_core", "everbloom_heart"]:
 		var room := make_room(rows)
 		var p := make_player(room, Vector2i(6, 8))
 		p.max_hp = 9999
@@ -5067,13 +5067,13 @@ func test_a_guardians_guard_turns_the_blade_back() -> void:
 		await frames(4)
 		var b: Enemy
 		match which:
-			"king_grieve":
+			"thane_vorrund":
 				b = ThaneVorrund.new()
-			"zoradohna":
+			"durgan":
 				b = Durgan.new()
-			"evil_core":
+			"everbloom_core":
 				b = EvilCore.new()
-			"evil_heart":
+			"everbloom_heart":
 				b = EvilHeart.new()
 		room.add_child(b)
 		b.global_position = p.global_position + Vector2(30, -20 if b.body_centered else 0)
@@ -5081,13 +5081,13 @@ func test_a_guardians_guard_turns_the_blade_back() -> void:
 		b.set_physics_process(false)
 		b.contact_damage = 0
 		match which:
-			"king_grieve":
+			"thane_vorrund":
 				b.phase = 2
 				b.state = "ward"
-			"zoradohna":
+			"durgan":
 				b.phase = 3
 				b.state = "idle"
-			"evil_heart":
+			"everbloom_heart":
 				b.state = "bound"
 		var hp0 := b.hp
 		var hits0 := b.hits_taken

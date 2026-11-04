@@ -4,7 +4,7 @@ extends RefCounted
 ## returns false when there is no menu (tests, headless runs).
 
 ## How far from the Ringreader the Grain Road sets you down, in pixels.
-const MANTRA_STEP := 32.0
+const GRAIN_STEP := 32.0
 
 
 static func _menu(tree: SceneTree) -> ListMenu:
@@ -81,7 +81,7 @@ static func open_shop(tree: SceneTree, shop_id: String, p: Player) -> bool:
 	return true
 
 
-static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node2D) -> bool:
+static func open_ringreader(tree: SceneTree, greeting: String, p: Player, shrine: Node2D) -> bool:
 	var menu := _menu(tree)
 	if menu == null:
 		return false
@@ -95,7 +95,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 			{"label": "Learn skills", "right": "%d pt" % pts, "detail": "Spend skill points. You earn them from ranks, bosses and Grain Shards."},
 			{"label": "Unlearn skills", "right": "%d g" % Skills.respec_cost(), "detail": "Forget every skill and get the points back, for a price that rises each time.",
 				"enabled": not GameState.data.skills.is_empty() and p.gold >= Skills.respec_cost()},
-			_mantra_row(tree),
+			_grain_row(tree),
 			{"label": "Leave", "detail": "Walk in the light, wanderer."},
 		]
 		if _here(tree) == Trials.TEMPLE:
@@ -129,7 +129,7 @@ static func open_guru(tree: SceneTree, greeting: String, p: Player, shrine: Node
 					Sfx.play("heal", 0.0)
 					GameState.toast.emit("Skills forgotten. Points returned.")
 			3:
-				open_mantra_path(tree, p)
+				open_grain_road(tree, p)
 			4:
 				menu.close()
 	menu.open("Ringreader", greeting, provider, on_select, _gold_footer(p))
@@ -186,11 +186,11 @@ static func open_trials(tree: SceneTree, p: Player) -> bool:
 				row.right = "Open"
 				row.detail += "  Clear it for a Grain Shard."
 			# Its ring time and the dye it gives (pass 164).
-			if t.has("mantra") and Trials.ready(t):
+			if t.has("grain") and Trials.ready(t):
 				if GameState.owns_dye(String(t.dye)):
 					row.detail += "  Within the ring: %s is yours." % GameData.item(t.dye).name
 				else:
-					row.detail += "  Ring it within %s for %s." % [Trials.format_time(float(t.mantra)), GameData.item(t.dye).name]
+					row.detail += "  Ring it within %s for %s." % [Trials.format_time(float(t.grain)), GameData.item(t.dye).name]
 			out.append(row)
 		return out
 	var on_select := func(i: int) -> void:
@@ -216,10 +216,10 @@ static func _here(tree: SceneTree) -> String:
 	return world.room.id if world != null and world.room != null else ""
 
 
-static func _mantra_row(tree: SceneTree) -> Dictionary:
+static func _grain_row(tree: SceneTree) -> Dictionary:
 	var row := {"label": "Grain Road", "detail": "Follow the grain to another Ringreader you have met.",
-		"enabled": GameState.mantra_path_open() and not GameState.mantra_stops(_here(tree)).is_empty()}
-	if not GameState.mantra_path_open():
+		"enabled": GameState.grain_road_open() and not GameState.grain_stops(_here(tree)).is_empty()}
+	if not GameState.grain_road_open():
 		row.detail = "The path between Ringreaders is dry. Restore a spring to walk it."
 	elif not row.enabled:
 		row.detail = "You have met no other Ringreader yet."
@@ -227,12 +227,12 @@ static func _mantra_row(tree: SceneTree) -> Dictionary:
 
 
 ## Ringreader-to-Ringreader travel (design bible 3.3). You arrive a step from the Ringreader.
-static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
+static func open_grain_road(tree: SceneTree, p: Player) -> bool:
 	var menu := _menu(tree)
 	var world := tree.get_first_node_in_group("world") as World
 	if menu == null or world == null:
 		return false
-	var stops := GameState.mantra_stops(_here(tree))
+	var stops := GameState.grain_stops(_here(tree))
 	var provider := func() -> Array:
 		var out := []
 		for id: String in stops:
@@ -242,10 +242,10 @@ static func open_mantra_path(tree: SceneTree, p: Player) -> bool:
 		return out
 	var on_select := func(i: int) -> void:
 		menu.close()
-		var at: Array = GameState.data.gurus[stops[i]]
+		var at: Array = GameState.data.ringreaders[stops[i]]
 		Sfx.play("save", 0.0)
 		GameState.flash.emit(0.2)
-		world.travel(stops[i], Vector2(float(at[0]) + MANTRA_STEP, float(at[1])))
+		world.travel(stops[i], Vector2(float(at[0]) + GRAIN_STEP, float(at[1])))
 		p.velocity = Vector2.ZERO
 	menu.open("Grain Road", "Every Ringreader hears every other.", provider, on_select)
 	return true
@@ -526,19 +526,19 @@ static func open_journey(tree: SceneTree, back: Callable) -> bool:
 ## for the gate of the Evercrown, keys and shards, each with what it does, so a found
 ## thing is never known only by its banner. Read only; Back returns.
 const INVENTORY_GROUPS := [
-	["Abilities", ["glove", "mattock", "boots", "stride", "onyx", "hourglass", "rune_dagger"]],
-	["Spells", ["deluge", "fire", "tilte", "thunder", "death"]],
-	["Relics", ["pendant", "magical_rod"]],
+	["Abilities", ["glove", "delvers_pick", "boots", "stride", "seers_lens", "stillstone", "rune_dagger"]],
+	["Spells", ["torrent", "fire", "wisplight", "thunder", "death"]],
+	["Relics", ["pendant", "briar_wand"]],
 ]
-const RING_NAMES := {"elf": "Thaw Seed", "ruby": "Sun Seed", "dworf": "Fall Seed", "demon": "Frost Seed"}
-const KEY_ORDER := ["jack", "queen", "king", "ace", "joker", "lantern", "sky"]
+const RING_NAMES := {"thaw": "Thaw Seed", "sun": "Sun Seed", "fall": "Fall Seed", "frost": "Frost Seed"}
+const KEY_ORDER := ["copper", "silver", "gold", "thorn", "glass", "lantern", "sky"]
 
 
 ## The name and the line of a found ability, spell or relic.
 static func ability_info(id: String) -> Array:
 	if ItemPickup.INFO.has(id):
 		return [String(ItemPickup.INFO[id].title), String(ItemPickup.INFO[id].text)]
-	if id == "mattock":
+	if id == "delvers_pick":
 		return [String(BossArena.BOSSES.foreman.title), String(BossArena.BOSSES.foreman.text)]
 	var scroll := GameData.item(id + "_scroll")
 	var name := String(Spells.DATA[id].name)
@@ -548,12 +548,12 @@ static func ability_info(id: String) -> Array:
 
 ## The name and the line of a key.
 static func key_info(kind: String) -> Array:
-	if kind == "joker":
-		return [String(ItemPickup.INFO.joker_key.title), String(ItemPickup.INFO.joker_key.text)]
+	if kind == "glass":
+		return [String(ItemPickup.INFO.glass_key.title), String(ItemPickup.INFO.glass_key.text)]
 	if kind == "lantern":
-		return [String(BossArena.BOSSES.ripasheiku.title), "Gloamweaver's light. It opens the way to the Haar Spring."]
+		return [String(BossArena.BOSSES.gloamweaver.title), "Gloamweaver's light. It opens the way to the Haar Spring."]
 	if kind == "sky":
-		return [String(BossArena.BOSSES.borabohra.title), "Skyrend's key. It opens Vorrhallow's upper gate."]
+		return [String(BossArena.BOSSES.skyrend.title), "Skyrend's key. It opens Vorrhallow's upper gate."]
 	var item := GameData.item(kind + "_key")
 	return [String(item.get("name", KeyDoor.label(kind) + " Key")), String(item.get("desc", ""))]
 
@@ -598,12 +598,12 @@ static func inventory_rows(p: Player) -> Array:
 		out.append_array(charts)
 	var shards := []
 	var potion := int(GameState.data.get("potion_shards", 0)) % 3
-	var mantra := int(GameState.data.get("mantra_shards", 0)) % 3
+	var grain := int(GameState.data.get("grain_shards", 0)) % 3
 	var meteor := int(GameState.data.get("meteor_shards", 0))
 	if potion > 0:
 		shards.append({"label": "Potion Shards", "right": "%d of 3" % potion, "detail": "Three fuse into a new Sapflask charge."})
-	if mantra > 0:
-		shards.append({"label": "Grain Shards", "right": "%d of 3" % mantra, "detail": "Three complete a ring and give a skill point."})
+	if grain > 0:
+		shards.append({"label": "Grain Shards", "right": "%d of 3" % grain, "detail": "Three complete a ring and give a skill point."})
 	if meteor > 0:
 		shards.append({"label": "Stillglass Shards", "right": "x%d" % meteor, "detail": "The Kettleforge smith folds one into a blade's second temper."})
 	if not shards.is_empty():
@@ -703,7 +703,7 @@ static func open_options(tree: SceneTree, back: Callable) -> bool:
 const ACTION_NAMES := {
 	"move_left": "Move left", "move_right": "Move right", "move_up": "Look up / enter", "move_down": "Crouch / drop",
 	"jump": "Jump", "attack": "Attack", "dash": "Dash", "block": "Block / parry", "spell": "Cast spell", "spell_next": "Next spell",
-	"heal": "Drink potion", "hourglass": "Stillstone", "throw": "Throw dagger", "map": "Map",
+	"heal": "Drink potion", "stillstone": "Stillstone", "throw": "Throw dagger", "map": "Map",
 }
 
 

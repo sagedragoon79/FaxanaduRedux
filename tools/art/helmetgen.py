@@ -10,11 +10,11 @@ head's hair would show through the opening).
 
 It is scaled as the importer scales the hero sets (their 46 px figure at the 2x render
 density, design bible 12.1), hardened to a 1-bit alpha, given the dark sprite outline,
-reduced to a small palette and written to assets/sprites/battle_helmet.png. The player draws
+reduced to a small palette and written to assets/sprites/elven_helm.png. The player draws
 it with its top-left PlayerVisual.HELMET_OFFSET from the frame's crown; this prints that
 offset, measured on the bare Elven Plate's idle, whose head lies where the helm's does.
 
-The earlier layer, Sean's pixel helmet for the Autosprite hero, stays in art/battle_helmet/.
+The earlier layer, Sean's pixel helmet for the Autosprite hero, stays in art/elven_helm/.
 
 Usage: python3 tools/art/helmetgen.py
 """
@@ -31,7 +31,7 @@ from autosprite_import import head_point  # noqa: E402
 
 HELMED = ROOT / "art/pixellab/hero/battle_helm_cloak/idle/00.png"
 BARE = ROOT / "art/pixellab/hero/battle_cloak/idle/00.png"
-OUT = ROOT / "assets/sprites/battle_helmet.png"
+OUT = ROOT / "assets/sprites/elven_helm.png"
 ## The hero sets' figure height in sheet pixels (46 world px at density 2).
 FIGURE = 92
 ## The helm reaches no lower than this source row (its cheek guards); below is the collar.

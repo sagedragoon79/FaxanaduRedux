@@ -33,7 +33,7 @@ animations of which sheet they replace:
                                          "fixed": the reference frame's feet (jumps, deaths);
                                          "center": the reference frame's middle (fliers)
                "lower": 58,              source pixels the figure is moved down after anchoring: the
-                                         pogo's mattock reaches below the feet (hero sheets are 84
+                                         pogo's delvers_pick reaches below the feet (hero sheets are 84
                                          world px tall, 23 under the origin, for it)
                "feet_x": "self",         "self": find the feet in this sheet's first picked frame
                                          (attack moves come in 512 px cells, figure bottom-centre);
@@ -454,7 +454,7 @@ class Importer:
 
     def frame(self, src, anchor, ref_x=None, lower=0.0):
         """One source frame -> (RGBA image, white mask image, palette key grid). `lower` moves
-        the figure down by that many source pixels (a pogo's mattock reaching under the feet)."""
+        the figure down by that many source pixels (a pogo's delvers_pick reaching under the feet)."""
         s = self.scale
         rgb, alpha = self.small(src)
         # Where the frame lands in the cell: the reference feet (scaled) on the origin.

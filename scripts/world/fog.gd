@@ -8,11 +8,11 @@ extends Node2D
 ## density (0 turns it off).
 
 const SHADER := preload("res://shaders/fog.gdshader")
-const ZONES := {"mist": 0.88}
+const ZONES := {"haar": 0.88}
 const MAX_LIGHTS := 48
 const VISION := 112.0
 const LANTERN_RADIUS := 64.0
-const SPRING_FLAG := "spring:mist"
+const SPRING_FLAG := "spring:haar"
 const SPRING_VISION := 1.5
 const SPRING_DENSITY := 0.5
 

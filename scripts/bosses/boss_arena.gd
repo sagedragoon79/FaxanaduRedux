@@ -12,26 +12,26 @@ signal phase_broken(level: int)
 
 ## Boss id -> how to make it and what it gives.
 const BOSSES := {
-	"rokusutahn": {"ring": "elf", "ring_name": "Thaw Seed", "skill_points": 1},
-	"foreman": {"ability": "mattock", "title": "Delver's Pick",
+	"gnarlmaw": {"ring": "thaw", "ring_name": "Thaw Seed", "skill_points": 1},
+	"foreman": {"ability": "delvers_pick", "title": "Delver's Pick",
 		"text": "Strike down in midair to bounce off foes and spikes. Breaks cracked stone.", "music": "miniboss"},
-	"zoradohna": {"ring": "ruby", "ring_name": "Sun Seed", "skill_points": 1, "music": "zoradohna"},
-	"ripasheiku": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
-		"text": "Its light opens the way to the Haar Spring. Your magic grows.", "music": "ripasheiku"},
-	"zorugeriru": {"ring": "dworf", "ring_name": "Fall Seed", "skill_points": 1, "music": "zorugeriru"},
-	"pakukame": {"title": "The Bloom Wilts", "skill_points": 1, "music": "pakukame"},
-	"borabohra": {"key": "sky", "title": "Sky Key", "skill_points": 1,
-		"text": "The storm breaks over the Spires. Its key opens Vorrhallow's upper gate.", "music": "borabohra"},
-	"king_grieve": {"ring": "demon", "ring_name": "Frost Seed", "skill_points": 1, "music": "grieve",
-		"blade": "dragon_slayer", "title": "Severance",
+	"durgan": {"ring": "sun", "ring_name": "Sun Seed", "skill_points": 1, "music": "durgan"},
+	"gloamweaver": {"key": "lantern", "title": "Lantern Key", "skill_points": 1, "mana_dew": true,
+		"text": "Its light opens the way to the Haar Spring. Your magic grows.", "music": "gloamweaver"},
+	"haar_wyrm": {"ring": "fall", "ring_name": "Fall Seed", "skill_points": 1, "music": "haar_wyrm"},
+	"snapcrown": {"title": "The Bloom Wilts", "skill_points": 1, "music": "snapcrown"},
+	"skyrend": {"key": "sky", "title": "Sky Key", "skill_points": 1,
+		"text": "The storm breaks over the Spires. Its key opens Vorrhallow's upper gate.", "music": "skyrend"},
+	"thane_vorrund": {"ring": "frost", "ring_name": "Frost Seed", "skill_points": 1, "music": "vorrund",
+		"blade": "severance", "title": "Severance",
 		"text": "His grafting blade, the one edge that can part the bloom from the tree. With it, the Frost Seed."},
-	"shadow_eura": {"title": "The Mirror Breaks", "skill_points": 1, "music": "eura",
+	"likeness": {"title": "The Mirror Breaks", "skill_points": 1, "music": "likeness",
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of the Evercrown but its four sockets."},
-	"evil_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "evil_one",
+	"everbloom_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "everbloom",
 		"text": "Its borrowed body breaks apart, and the light that wore it flees up the veins of the Everbloom."},
-	"evil_veins": {"title": "The Veins Go Dark", "skill_points": 1, "music": "evil_one",
+	"everbloom_veins": {"title": "The Veins Go Dark", "skill_points": 1, "music": "everbloom",
 		"text": "Starved of its light, the core gutters. Above, the heart of the Everbloom lies open."},
-	"evil_one": {"title": "The Heart of the Bloom Dies", "skill_points": 1, "music": "evil_one",
+	"everbloom": {"title": "The Heart of the Bloom Dies", "skill_points": 1, "music": "everbloom",
 		"text": "The Tree's roots close over the dead heart, and the light of its springs runs home down the trunk."},
 	"clockwork_alpha": {"stat_item": "life_fruit", "title": "Life Fruit", "music": "miniboss",
 		"text": "A Life Fruit was locked in the Alpha's winding-chest, the king's own reward for his first hound."},
@@ -39,7 +39,7 @@ const BOSSES := {
 		"text": "Dew gathered in the Captain's leaf-crown all the centuries it stood guard. Your magic grows."},
 	"hag_matriarch": {"stat_item": "mana_dew", "title": "Mana Dew", "music": "miniboss",
 		"text": "The wisp in her staff gutters out into a single drop of bog light. Your magic grows."},
-	"drowned_warden": {"armor": "battle_suit", "title": "Elven Plate", "skill_points": 1, "music": "warden",
+	"drowned_warden": {"armor": "elven_plate", "title": "Elven Plate", "skill_points": 1, "music": "warden",
 		"text": "The Warden's own harness, bronze and spring-stone: take 60% less damage. The Source is free."},
 }
 ## How far the player must be from the entry door before the fight starts.
@@ -148,7 +148,7 @@ func _start() -> void:
 	fighting = true
 	_seal(entry_door)
 	match boss_id:
-		"rokusutahn":
+		"gnarlmaw":
 			var r := Gnarlmaw.new()
 			r.room = room
 			boss = r
@@ -162,7 +162,7 @@ func _start() -> void:
 			f.position = Vector2(w - 6 * Room.TILE if px < w * 0.5 else 6 * Room.TILE, f.arena.end.y)
 			boss = f
 			f.defeated.connect(_on_defeated)
-		"zoradohna":
+		"durgan":
 			# The drill waits across the lift from the way in, the shaft behind it.
 			var z := Durgan.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -175,7 +175,7 @@ func _start() -> void:
 			room.add_child(shaft)
 			boss = z
 			z.defeated.connect(_on_defeated)
-		"ripasheiku":
+		"gloamweaver":
 			# The widow waits in the dark across the chapel from the way in.
 			var r := Gloamweaver.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -184,7 +184,7 @@ func _start() -> void:
 			r.position = Vector2(w - 8 * Room.TILE if px < w * 0.5 else 8 * Room.TILE, r.floor_y())
 			boss = r
 			r.defeated.connect(_on_defeated)
-		"zorugeriru":
+		"haar_wyrm":
 			# The hydra lies coiled around the spring on its shelf in the middle.
 			var z := HaarWyrm.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -192,7 +192,7 @@ func _start() -> void:
 			z.position = Vector2(w * 0.5, 9 * Room.TILE - 10)
 			boss = z
 			z.defeated.connect(_on_defeated)
-		"pakukame":
+		"snapcrown":
 			# The bloom is rooted in the middle of the crown-leaf.
 			var k := Snapcrown.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -200,7 +200,7 @@ func _start() -> void:
 			k.position = Vector2(w * 0.5, k.arena.end.y)
 			boss = k
 			k.defeated.connect(_on_defeated)
-		"borabohra":
+		"skyrend":
 			# The roc comes down out of the storm over the middle island.
 			var b := Skyrend.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -210,7 +210,7 @@ func _start() -> void:
 			b.arena = Rect2(Room.TILE, top, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = b
 			b.defeated.connect(_on_defeated)
-		"king_grieve":
+		"thane_vorrund":
 			# The king waits before his throne, the dais at the hall's east end.
 			var k := ThaneVorrund.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -219,14 +219,14 @@ func _start() -> void:
 			k.position = Vector2(40 * Room.TILE, k.arena.end.y)
 			boss = k
 			k.defeated.connect(_on_defeated)
-		"shadow_eura":
+		"likeness":
 			# Your reflection, on the far side of the mirror down the middle of the hall.
 			var e := Likeness.new()
 			var w := float(room.size_tiles.x * Room.TILE)
 			e.arena = Rect2(Room.TILE, 4 * Room.TILE, w - 2 * Room.TILE, 16 * Room.TILE)
 			boss = e
 			e.defeated.connect(_on_defeated)
-		"evil_avatar":
+		"everbloom_avatar":
 			# The Everbloom's avatar comes down off its throne at the hall's east end.
 			var a := EvilAvatar.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -234,7 +234,7 @@ func _start() -> void:
 			a.position = Vector2(46 * Room.TILE, a.arena.end.y)
 			boss = a
 			a.defeated.connect(_on_defeated)
-		"evil_veins":
+		"everbloom_veins":
 			# The core hangs in the vault at the top of the shaft; its veins are in the room.
 			var c := EvilCore.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -243,7 +243,7 @@ func _start() -> void:
 			c.position = Vector2(w * 0.5, 6 * Room.TILE)
 			boss = c
 			c.defeated.connect(_on_defeated)
-		"evil_one":
+		"everbloom":
 			# The heart hangs high over the middle of its chamber, out of any blade's reach.
 			var e := EvilHeart.new()
 			var w := float(room.size_tiles.x * Room.TILE)
@@ -363,7 +363,7 @@ func _on_defeated() -> void:
 	_open_timer = OPEN_DELAY
 	Music.play("", WIN_FADE)
 	won.emit()
-	if boss_id == "evil_one":
+	if boss_id == "everbloom":
 		# The last fight: the ending follows once the banner has had its moment.
 		# The wait stops while the game is paused (pass 247: it ran on under the
 		# pause menu and the ending shut it), and it belongs to the arena, so a
@@ -429,7 +429,7 @@ func _seal(n: int) -> void:
 		_:
 			return
 	var seal := ArenaSeal.new()
-	seal.style = "iron" if room.zone in ["tower", "daybreak", "dartmoor", "zenis", "sunken"] else "roots"
+	seal.style = "iron" if room.zone in ["tower", "spires", "vorrhallow", "evercrown", "sunken"] else "roots"
 	seal.size = area.size
 	seal.position = area.position
 	room.add_child(seal)

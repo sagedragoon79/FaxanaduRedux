@@ -72,7 +72,11 @@ func _mash(p: Player, rng: RandomNumberGenerator, hold: Dictionary) -> void:
 		p.input.jump_pressed = p.input.jump_held
 		hold.jump = rng.randi_range(3, 30)
 	if hold.block <= 0:
-		p.input.block_held = rng.randf() < 0.1
+		# With a shield on, guard often enough that every shielded room is
+		# sure to test the guard; how often the mash guarded used to ride on the
+		# seed, which is the room's id (the ids were renamed in pass 462).
+		var guard_rate := 0.25 if String(GameState.data.equipment.get("shield", "")) != "" else 0.1
+		p.input.block_held = rng.randf() < guard_rate
 		p.input.block_pressed = p.input.block_held
 		hold.block = rng.randi_range(5, 40)
 	# Attack is held for spans too (pass 151), most of them long enough to
@@ -124,35 +128,35 @@ func test_random_input_soak_in_every_tower_room() -> void:
 
 ## The same soak over every Hearthroot and Heartwood room, so the first two zones keep up
 ## with changes made for later ones.
-func test_random_input_soak_in_every_eolis_and_trunk_room() -> void:
-	await _soak_zone("eolis", "Hearthroot")
-	await _soak_zone("trunk", "Heartwood")
+func test_random_input_soak_in_every_hearthroot_and_heartwood_room() -> void:
+	await _soak_zone("hearthroot", "Hearthroot")
+	await _soak_zone("heartwood", "Heartwood")
 
 
 ## The Haar under its fog: the same soak, and the fog never runs out of lights.
-func test_random_input_soak_in_every_mist_room() -> void:
-	await _soak_zone("mist", "Haar")
+func test_random_input_soak_in_every_haar_room() -> void:
+	await _soak_zone("haar", "Haar")
 
 
 ## The High Boughs: the canopy's rooms, bounce-pods and all.
-func test_random_input_soak_in_every_branches_room() -> void:
-	await _soak_zone("branches", "High Boughs")
+func test_random_input_soak_in_every_boughs_room() -> void:
+	await _soak_zone("boughs", "High Boughs")
 
 
 ## Carillon: storm rain, sky islands and crystal-thorned cliffs.
-func test_random_input_soak_in_every_daybreak_room() -> void:
-	await _soak_zone("daybreak", "Carillon")
+func test_random_input_soak_in_every_spires_room() -> void:
+	await _soak_zone("spires", "Carillon")
 
 
 ## Vorrhallow, with the Stillstone turned whenever it is ready: frozen water,
 ## projectiles held in the air, and time running on again, room after room.
-func test_random_input_soak_in_every_dartmoor_room() -> void:
-	await _soak_zone("dartmoor", "Vorrhallow", true)
+func test_random_input_soak_in_every_vorrhallow_room() -> void:
+	await _soak_zone("vorrhallow", "Vorrhallow", true)
 
 
 ## the Evercrown: spores, flesh and the Everbloom's light, room after room.
-func test_random_input_soak_in_every_zenis_room() -> void:
-	await _soak_zone("zenis", "The Evercrown")
+func test_random_input_soak_in_every_evercrown_room() -> void:
+	await _soak_zone("evercrown", "The Evercrown")
 
 
 ## The Sunken Spring: swimming, eels and the water drawn over everything.
@@ -172,12 +176,12 @@ func test_random_input_soak_in_every_trial_room() -> void:
 ## Carillon's storm: rain streaks on the wind over the lightning backdrop,
 ## the player running and dashing about. The rain stays on screen, keeps its
 ## count, and the frame stays well inside budget.
-func test_daybreak_rain_stays_cheap() -> void:
-	var w := make_world({}, "daybreak/sky_steps")
+func test_spires_rain_stays_cheap() -> void:
+	var w := make_world({}, "spires/sky_steps")
 	var p := w.player
 	p.abilities["stride"] = true
 	await frames(2)
-	check(w.motes.zone == "daybreak" and w.motes._motes.size() == int(Motes.ZONES["daybreak"][0]), "the rain is falling (%d drops)" % w.motes._motes.size())
+	check(w.motes.zone == "spires" and w.motes._motes.size() == int(Motes.ZONES["spires"][0]), "the rain is falling (%d drops)" % w.motes._motes.size())
 	var total_usec := 0
 	var worst := 0
 	const RAIN_FRAMES := 600
@@ -198,11 +202,11 @@ func test_daybreak_rain_stays_cheap() -> void:
 		var at: Vector2 = m[0]
 		inside = inside and at.x >= 0.0 and at.x < Motes.VIEW.x and at.y >= 0.0 and at.y < Motes.VIEW.y
 	check(inside, "every drop wraps back onto the screen")
-	check(w.motes._motes.size() == int(Motes.ZONES["daybreak"][0]), "and none are lost or added")
+	check(w.motes._motes.size() == int(Motes.ZONES["spires"][0]), "and none are lost or added")
 	check(avg_ms < 8.0, "a storm frame averages well under budget (%.2f ms)" % avg_ms)
-	w._enter("branches/crown_leaf")
+	w._enter("boughs/crown_leaf")
 	await frames(2)
-	check(w.motes.zone == "branches", "back in the High Boughs the rain stops")
+	check(w.motes.zone == "boughs", "back in the High Boughs the rain stops")
 	w.queue_free()
 	await frames(2)
 
@@ -210,14 +214,14 @@ func test_daybreak_rain_stays_cheap() -> void:
 ## The fog's CPU side in every Haar room: the player walked across the room,
 ## the light list rebuilt each frame. It must stay cheap and never hit
 ## Fog.MAX_LIGHTS (the shader would drop lanterns).
-func test_fog_stays_cheap_in_every_mist_room() -> void:
-	var dir := DirAccess.open("res://levels/mist")
+func test_fog_stays_cheap_in_every_haar_room() -> void:
+	var dir := DirAccess.open("res://levels/haar")
 	var problems: Array[String] = []
 	var report: Array[String] = []
 	for f in dir.get_files():
 		if not f.ends_with(".room"):
 			continue
-		var id := "mist/" + f.trim_suffix(".room")
+		var id := "haar/" + f.trim_suffix(".room")
 		var w := make_world({}, id)
 		await frames(2)
 		var fog := w.fog
@@ -250,7 +254,7 @@ func test_fog_stays_cheap_in_every_mist_room() -> void:
 ## die: under the fog, with her lanterns as lights. Effects clean up after
 ## themselves and a frame stays well inside the 60 fps budget.
 func test_widow_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "mist/sunken_chapel", cell_feet(10, 19))
+	var w := make_world({}, "haar/sunken_chapel", cell_feet(10, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	await frames(30)
@@ -299,7 +303,7 @@ func test_widow_fight_soak_stays_lean() -> void:
 ## can't die: breaths, bites, the fourth head and the flood clean up after
 ## themselves, and a frame stays well inside the 60 fps budget.
 func test_hydra_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "mist/spring_of_mist", cell_feet(7, 19))
+	var w := make_world({}, "haar/spring_of_haar", cell_feet(7, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	await frames(30)
@@ -396,7 +400,7 @@ func _soak_zone(zone: String, label: String, glass := false) -> void:
 		for f in (GLASS_FRAMES if glass else TOWER_FRAMES):
 			_mash(w.player, rng, hold)
 			if glass and f % 45 == 0 and TimeStop.ready_to_turn():
-				w.player.input.hourglass_pressed = true
+				w.player.input.stillstone_pressed = true
 				turns += 1
 			var t0 := Time.get_ticks_usec()
 			await frames(1)
@@ -506,7 +510,7 @@ func test_hud_soak_draws_every_frame_and_stays_lean() -> void:
 	hud.player = w.player
 	arena.add_child(hud)
 	w.player.max_hp = 110
-	w.player.abilities["hourglass"] = true
+	w.player.abilities["stillstone"] = true
 	await frames(2)
 	var start := hud.draws
 	var total_usec := 0
@@ -539,23 +543,23 @@ func _count_nodes(w: World) -> int:
 
 ## Grain Road hops and lift rides, back and forth, with mashing in between:
 ## every arrival is in the right room, on open floor.
-func test_mantra_path_and_lift_travel_soak() -> void:
-	var w := make_world({}, "tower/forepaw")
+func test_grain_road_and_lift_travel_soak() -> void:
+	var w := make_world({}, "tower/kettleforge")
 	await frames(2)
 	var menu := ListMenu.new()
 	arena.add_child(menu)
-	GameState.set_flag("spring:trunk")
-	GameState.set_flag("boss:zoradohna")
-	for stop: Array in [["eolis/guru_temple", 22], ["trunk/apolune", 12], ["tower/forepaw", 10]]:
-		GameState.meet_guru(stop[0], Vector2(int(stop[1]) * Room.TILE + 8, 20 * Room.TILE))
+	GameState.set_flag("spring:heartwood")
+	GameState.set_flag("boss:durgan")
+	for stop: Array in [["hearthroot/ringreader_temple", 22], ["heartwood/amberlee", 12], ["tower/kettleforge", 10]]:
+		GameState.meet_ringreader(stop[0], Vector2(int(stop[1]) * Room.TILE + 8, 20 * Room.TILE))
 	var problems: Array[String] = []
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7
 	var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
 	w.player.input.scripted = true
 	for hop in 9:
-		var stops := GameState.mantra_stops(w.room.id)
-		Menus.open_mantra_path(arena.get_tree(), w.player)
+		var stops := GameState.grain_stops(w.room.id)
+		Menus.open_grain_road(arena.get_tree(), w.player)
 		menu.cursor = hop % stops.size()
 		var to: String = stops[menu.cursor]
 		menu.confirm()
@@ -570,7 +574,7 @@ func test_mantra_path_and_lift_travel_soak() -> void:
 			await frames(1)
 		w.player.input.move_x = 0
 	# The lift, down and up three times, picking the stop from its menu.
-	w.travel("tower/forepaw", Vector2(71 * Room.TILE + 8, 20 * Room.TILE))
+	w.travel("tower/kettleforge", Vector2(71 * Room.TILE + 8, 20 * Room.TILE))
 	await frames(3)
 	for ride in 6:
 		var cage: LiftCage = null
@@ -592,7 +596,7 @@ func test_mantra_path_and_lift_travel_soak() -> void:
 
 
 func test_bloom_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "branches/crown_leaf", cell_feet(9, 19))
+	var w := make_world({}, "boughs/crown_leaf", cell_feet(9, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.abilities["stride"] = true
@@ -681,7 +685,7 @@ func test_bloom_fight_soak_stays_lean() -> void:
 ## The Storm Roc fight at full tilt: a mashing player who can't die, 30 seconds,
 ## with the conduits woken every ten seconds so it is grounded and rises again.
 func test_roc_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "daybreak/roost", cell_feet(9, 25))
+	var w := make_world({}, "spires/roost", cell_feet(9, 25))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.abilities["stride"] = true
@@ -736,8 +740,8 @@ func test_roc_fight_soak_stays_lean() -> void:
 ## The Waterfall Stair's two falls, flowing and frozen in turn: their streaks
 ## are two scrolled textures each, so a frame stays cheap.
 func test_waterfalls_stay_cheap() -> void:
-	var w := make_world({}, "dartmoor/waterfall_stair")
-	w.player.abilities["hourglass"] = true
+	var w := make_world({}, "vorrhallow/waterfall_stair")
+	w.player.abilities["stillstone"] = true
 	await frames(2)
 	var falls: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
 	check(falls.size() == 2 and falls.all(func(f: Waterfall) -> bool: return f._streaks.size() == 2), "each fall draws from two streak textures")
@@ -760,11 +764,11 @@ func test_waterfalls_stay_cheap() -> void:
 
 ## Thane Vorrund's fight at full tilt: a mashing player who can't die, 30 seconds,
 ## the second half on his throne with the Stillstone turned whenever it is ready.
-func test_king_grieve_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "dartmoor/throne_hall", cell_feet(10, 19))
+func test_thane_vorrund_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "vorrhallow/throne_hall", cell_feet(10, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
-	w.player.abilities["hourglass"] = true
+	w.player.abilities["stillstone"] = true
 	await frames(30)
 	var boss := runner.get_tree().get_first_node_in_group("boss") as ThaneVorrund
 	check(boss != null, "Thane Vorrund wakes")
@@ -848,8 +852,8 @@ func test_king_grieve_fight_soak_stays_lean() -> void:
 	check(settled <= start_nodes, "the hall settles after the fall (%d -> %d nodes, dust and gold aside: %s)" % [start_nodes, settled, kinds])
 
 
-func test_shadow_eura_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "dartmoor/zenis_gate", cell_feet(14, 19))
+func test_likeness_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "vorrhallow/evercrown_gate", cell_feet(14, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.has_shield = true
@@ -894,7 +898,7 @@ func test_shadow_eura_fight_soak_stays_lean() -> void:
 		states[boss.state] = true
 		peak = maxi(peak, _count_nodes(w))
 	var avg_ms := total_usec / 1000.0 / FIGHT_FRAMES
-	print("  Eura soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
+	print("  Likeness soak: %.2f ms a frame on average, slowest %.1f ms, nodes %d -> %d, states %s" % [avg_ms, slowest / 1000.0, start_nodes, peak, states.keys()])
 	check(peak < start_nodes + 60, "effects never pile up (%d -> %d nodes)" % [start_nodes, peak])
 	check(avg_ms < 16.6, "a frame averages under the 60 fps budget (%.2f ms)" % avg_ms)
 	check(states.has("echo") and states.has("rise"), "the soak saw it echo your swings and come through the mirror (%s)" % [states.keys()])
@@ -904,8 +908,8 @@ func test_shadow_eura_fight_soak_stays_lean() -> void:
 	check(boss._history.size() < 60, "its memory of you stays short (%d frames)" % boss._history.size())
 
 
-func test_evil_avatar_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "zenis/throne", cell_feet(10, 19))
+func test_everbloom_avatar_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "evercrown/throne", cell_feet(10, 19))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	w.player.has_shield = true
@@ -944,11 +948,11 @@ func test_evil_avatar_fight_soak_stays_lean() -> void:
 	check(boss.state != "dead" and is_instance_valid(boss), "the fight ran its course")
 
 
-func test_evil_core_fight_soak_stays_lean() -> void:
-	var w := make_world({}, "zenis/veins", cell_feet(8, 65))
+func test_everbloom_core_fight_soak_stays_lean() -> void:
+	var w := make_world({}, "evercrown/veins", cell_feet(8, 65))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
-	w.player.abilities["hourglass"] = true
+	w.player.abilities["stillstone"] = true
 	await frames(30)
 	var boss := runner.get_tree().get_first_node_in_group("boss") as EvilCore
 	check(boss != null, "the core wakes")
@@ -987,14 +991,14 @@ func test_evil_core_fight_soak_stays_lean() -> void:
 	check(beams > 10, "it fired beams all the while (%d)" % beams)
 
 
-func test_evil_heart_fight_soak_stays_lean() -> void:
+func test_everbloom_heart_fight_soak_stays_lean() -> void:
 	GameState.new_game()
-	GameState.data.equipment["blade"] = "dragon_slayer"
-	var w := make_world({}, "zenis/heart", cell_feet(14, 20))
+	GameState.data.equipment["blade"] = "severance"
+	var w := make_world({}, "evercrown/heart", cell_feet(14, 20))
 	w.player.max_hp = 99999
 	w.player.hp = 99999
-	w.player.abilities["hourglass"] = true
-	GameState.data.equipment["blade"] = "dragon_slayer"
+	w.player.abilities["stillstone"] = true
+	GameState.data.equipment["blade"] = "severance"
 	await frames(30)
 	var boss := runner.get_tree().get_first_node_in_group("boss") as EvilHeart
 	check(boss != null, "the heart wakes")
@@ -1036,10 +1040,10 @@ func test_evil_heart_fight_soak_stays_lean() -> void:
 ## halfway so its later moves come too. Effects must not pile up, the room must
 ## settle back once the mashing stops, and a frame must stay inside the budget.
 func test_every_other_guardian_fight_soak_stays_lean() -> void:
-	const GUARDIANS := ["rokusutahn", "clockwork_alpha", "bark_captain", "hag_matriarch", "zoradohna", "drowned_warden"]
+	const GUARDIANS := ["gnarlmaw", "clockwork_alpha", "bark_captain", "hag_matriarch", "durgan", "drowned_warden"]
 	const FIGHT_FRAMES := 1200
 	var rooms := {}
-	var w0 := make_world({}, "eolis/west_gate")
+	var w0 := make_world({}, "hearthroot/west_gate")
 	for id: String in w0.catalog:
 		var b := String(w0.catalog[id].get("boss", ""))
 		if b != "":
@@ -1144,7 +1148,7 @@ func _clear_foes(w: World) -> void:
 ## inside the room and out of the walls, standing (side doors) and unhurt, and a
 ## lap of the whole game must leave no nodes behind.
 func test_every_door_in_the_game_lands_you_safely() -> void:
-	var w := make_world({}, "eolis/west_gate")
+	var w := make_world({}, "hearthroot/west_gate")
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	for a: String in w.player.abilities:
@@ -1180,7 +1184,7 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 				problems.append(where + ": inside a wall at %s" % p.global_position)
 			elif String(d.edge) in ["left", "right"] and not p.is_on_floor() and not p.swimming:
 				problems.append(where + ": not standing at %s" % p.global_position)
-	w.start("eolis/west_gate")
+	w.start("hearthroot/west_gate")
 	await frames(10)
 	var end_count := runner.get_tree().get_node_count()
 	print("  Door walk: %d doors, nodes %d -> %d" % [walked, start_count, end_count])
@@ -1199,7 +1203,7 @@ func test_every_door_in_the_game_lands_you_safely() -> void:
 ## player's time to see the new room and react.
 ## Its gates stand open, as they do whenever the far side can be reached.
 func test_every_door_up_or_down_lands_you_on_footing() -> void:
-	var w := make_world({}, "eolis/west_gate")
+	var w := make_world({}, "hearthroot/west_gate")
 	w.player.max_hp = 99999
 	w.player.hp = 99999
 	for a: String in w.player.abilities:
@@ -1209,7 +1213,7 @@ func test_every_door_up_or_down_lands_you_on_footing() -> void:
 	# The flue damper (Durgan) and the bound fog over the Veiled Rise (the
 	# Lantern Key) stand open before you can reach the rooms above them.
 	GameState.set_flag(FlueDamper.FLAG)
-	GameState.set_flag("curtain:mist/lantern_landing")
+	GameState.set_flag("curtain:haar/lantern_landing")
 	w.player.input.scripted = true
 	await frames(5)
 	var problems: Array[String] = []
@@ -1294,7 +1298,7 @@ func _ride_door(w: World, id: String, n: int, side: int, wait := 0) -> String:
 ## the way Continue does: you wake in the shrine's room, standing, out of the walls.
 func test_every_shrine_saves_and_continues_where_you_rested() -> void:
 	var slot_was := GameState.slot
-	var w := make_world({}, "eolis/west_gate")
+	var w := make_world({}, "hearthroot/west_gate")
 	await frames(2)
 	const SLOT := 9
 	GameState.slot = SLOT
@@ -1380,11 +1384,11 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	GameState.slot = JOURNEY_SLOT
 	var errors := ErrorCatcher.start()
 	# Each lap walks out of Hearthroot and, separately, out of the dead stillglass.
-	var first: Dictionary = _merge(await _journey(1987, true, POSTGAME_DOORS), await _journey(1987, true, POSTGAME_DOORS / 2, "zenis/threshold"))
+	var first: Dictionary = _merge(await _journey(1987, true, POSTGAME_DOORS), await _journey(1987, true, POSTGAME_DOORS / 2, "evercrown/threshold"))
 	var obj0 := Performance.get_monitor(Performance.OBJECT_COUNT)
 	var orphans0 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	var nodes0 := runner.get_tree().get_node_count()
-	var second: Dictionary = _merge(await _journey(2026, true, POSTGAME_DOORS), await _journey(2026, true, POSTGAME_DOORS / 2, "zenis/threshold"))
+	var second: Dictionary = _merge(await _journey(2026, true, POSTGAME_DOORS), await _journey(2026, true, POSTGAME_DOORS / 2, "evercrown/threshold"))
 	# The second lap walks new ground, and the first sight of a zone's music,
 	# sheets and tiles is cached for good. So the leak check walks it again:
 	# the same lap, retraced, must leave nothing behind (pass 151).
@@ -1392,7 +1396,7 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 	orphans0 = Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	nodes0 = runner.get_tree().get_node_count()
 	await _journey(2026, true, POSTGAME_DOORS)
-	await _journey(2026, true, POSTGAME_DOORS / 2, "zenis/threshold")
+	await _journey(2026, true, POSTGAME_DOORS / 2, "evercrown/threshold")
 	var obj1 := Performance.get_monitor(Performance.OBJECT_COUNT)
 	var orphans1 := Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	var nodes1 := runner.get_tree().get_node_count()
@@ -1420,13 +1424,13 @@ func test_a_journey_after_the_end_stays_lean() -> void:
 ## A boss fight starts mid-play, so its arena loads the boss's sheet and music
 ## while the room loads (pass 99): the fight's first frame must not hitch.
 func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
-	Sheet._cache.erase("zoradohna")
-	Music._streams.erase("zoradohna")
-	var w := make_world({}, "tower/forepaw_lift")
+	Sheet._cache.erase("durgan")
+	Music._streams.erase("durgan")
+	var w := make_world({}, "tower/kettleforge_lift")
 	await frames(2)
 	var a := runner.get_tree().get_first_node_in_group("boss_arena") as BossArena
 	check(a != null and a.warmed, "the arena warmed up with the room")
-	check(Sheet._cache.has("zoradohna") and Music._streams.has("zoradohna"), "the drill's sheet and theme are loaded before the fight")
+	check(Sheet._cache.has("durgan") and Music._streams.has("durgan"), "the drill's sheet and theme are loaded before the fight")
 	w.player.input.move_x = 1
 	var worst := 0
 	var started := false
@@ -1441,7 +1445,7 @@ func test_a_boss_arena_loads_the_fight_before_it_starts() -> void:
 	await frames(2)
 
 
-func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "eolis/west_gate") -> Dictionary:
+func _journey(seed: int, postgame := false, doors := JOURNEY_DOORS, start := "hearthroot/west_gate") -> Dictionary:
 	var w := make_world({}, start)
 	GameState.data.rings = CrownGate.RINGS.duplicate()
 	GameState.set_flag(CrownGate.FLAG)
@@ -1594,9 +1598,9 @@ func test_the_journey_frame_budget_forgives_one_lone_frame() -> void:
 func _tally_bloom(w: World, r: Dictionary) -> void:
 	if not w.blossom.get("_motes").is_empty():
 		r.bloomed += 1
-	if Music.track == "zenis_still":
+	if Music.track == "evercrown_still":
 		r.still += 1
-	if Music.track == "eolis_bloom":
+	if Music.track == "hearthroot_bloom":
 		r.festival += 1
 
 
@@ -1621,7 +1625,7 @@ func _merge(a: Dictionary, b: Dictionary) -> Dictionary:
 func _clear_the_game(w: World) -> void:
 	for id: String in BossArena.BOSSES:
 		GameState.set_flag("boss:" + id)
-	for spring: String in ["trunk", "mist", "sky"]:
+	for spring: String in ["heartwood", "haar", "sky"]:
 		GameState.set_flag("spring:" + spring)
 	GameState.set_flag("cleared")
 	var skills: Array = GameState.data.skills
@@ -1663,7 +1667,7 @@ func _close_menus() -> void:
 ## sound with the game (`Sfx.load_all`). The arenas are read from the rooms
 ## (pass 174): a hand-kept list had missed both mini-bosses of passes 169 and 171.
 func _boss_rooms() -> Dictionary:
-	var w := make_world({}, "eolis/west_gate")
+	var w := make_world({}, "hearthroot/west_gate")
 	var out := {}
 	for id: String in _all_room_ids(w):
 		var boss := String(w.catalog[id].get("boss", ""))
@@ -1766,7 +1770,7 @@ func test_every_beaten_guardian_stays_beaten_through_a_save() -> void:
 	var won := 0
 	for id: String in rooms:
 		var boss_id: String = rooms[id]
-		if boss_id == "evil_one":
+		if boss_id == "everbloom":
 			continue  # its win starts the ending; the ending's own tests cover it
 		var w := make_world({}, id)
 		GameState.slot = SLOT
@@ -1830,11 +1834,11 @@ func _prize(boss_id: String) -> Dictionary:
 ## must load quickly behind its fade; and a flurry of damage numbers frees itself
 ## and keeps the frame inside budget.
 func test_the_boss_rush_and_damage_numbers_stay_lean() -> void:
-	var w := make_world({}, "eolis/guru_temple")
+	var w := make_world({}, "hearthroot/ringreader_temple")
 	await frames(5)
 	for pair: Array in BossRush.ORDER:
 		GameState.set_flag("boss:" + String(pair[0]))
-	BossRush.begin("eolis/guru_temple", w.player.global_position)
+	BossRush.begin("hearthroot/ringreader_temple", w.player.global_position)
 	var worst := 0.0
 	var worst_room := ""
 	var lines: Array[String] = []
@@ -1998,7 +2002,7 @@ func test_every_guardians_win_says_what_it_gave() -> void:
 	var told := 0
 	for id: String in rooms:
 		var boss_id: String = rooms[id]
-		if boss_id == "evil_one":
+		if boss_id == "everbloom":
 			continue  # its win starts the ending; its line is held by the width check above
 		var reward: Dictionary = BossArena.BOSSES[boss_id]
 		var w := make_world({}, id)
@@ -2040,7 +2044,7 @@ func test_every_guardians_win_says_what_it_gave() -> void:
 ## and the empty one to its right was read, so standing there never kept a safe
 ## spot (150 of 63,792 floor frames walking these rooms both ways). Both cells
 ## beside the line are read now.
-const CORNER_ROOMS := ["tower/winch_hall", "trunk/deep_roots", "trunk/taproot_vault", "mist/mascon", "dartmoor/alpha_den"]
+const CORNER_ROOMS := ["tower/winch_hall", "heartwood/deep_roots", "heartwood/taproot_vault", "haar/polesend", "vorrhallow/alpha_den"]
 
 
 func test_a_ledge_corner_is_footing_for_the_set_back() -> void:
@@ -2193,10 +2197,10 @@ func test_the_minimap_stays_cheap_on_a_full_map() -> void:
 	GameState.data.charts["test"] = true
 	check(not Minimap.layout(w).cached, "so does a chart")
 	GameState.data.charts.erase("test")
-	w.travel("tower/forepaw", cell_feet(30, 19))
+	w.travel("tower/kettleforge", cell_feet(30, 19))
 	await frames(2)
 	var there := Minimap.layout(w)
-	check(not there.cached and there.rooms.any(func(r: Dictionary) -> bool: return r.id == "tower/forepaw" and r.how == "here"), "and so does going through a door")
+	check(not there.cached and there.rooms.any(func(r: Dictionary) -> bool: return r.id == "tower/kettleforge" and r.how == "here"), "and so does going through a door")
 	# The cost: a frame's minimap on a full map, as the HUD asks for it.
 	const FRAMES := 600
 	var t0 := Time.get_ticks_usec()

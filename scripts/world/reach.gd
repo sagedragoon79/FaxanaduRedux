@@ -180,12 +180,12 @@ func _solid_char(room_id: String, c: String) -> bool:
 		return not keys
 	if c == "f":
 		# Falling water beats you back down; only the Stillstone stills it.
-		return not abilities.get("hourglass", false)
+		return not abilities.get("stillstone", false)
 	if c == "g":
 		# Vorrhallow's upper gate opens with the Sky Key (Skyrend's reward).
 		return not abilities.get("sky_key", false)
 	if c == "C":
-		return not abilities.get("mattock", false)
+		return not abilities.get("delvers_pick", false)
 	if c == "R":
 		# A root-gate opens once the room's Root Heart can be struck.
 		return not _roots_open.has(room_id)
@@ -200,13 +200,13 @@ func _solid_char(room_id: String, c: String) -> bool:
 		return not abilities.get("lantern", false)
 	if c == "Z":
 		# A fire seal goes out for good once a Torrent bolt strikes it.
-		return not abilities.get("deluge", false)
+		return not abilities.get("torrent", false)
 	if c == "k":
 		# A conduit gate slides open once Stormcall powers the room's conduits.
 		return not abilities.get("thunder", false)
 	if c == "+":
 		# The heart's flesh parts only for the Severance.
-		return not abilities.get("dragon_slayer", false)
+		return not abilities.get("severance", false)
 	if c == "w":
 		# A bramble wall burns away for good under a Kindle spell.
 		return not abilities.get("fire", false)
@@ -227,14 +227,14 @@ func body_clear(room_id: String, x: int, y: int) -> bool:
 
 func supported(room_id: String, x: int, y: int) -> bool:
 	var below := ch(room_id, x, y + 1)
-	return solid(room_id, x, y + 1) or below == "-" or below == "i" or below == LADDER or _foothold(room_id, x, y + 1) or (below == "=" and abilities.get("deluge", false)) \
-		or (below == "b" and abilities.get("spring_mist", false))
+	return solid(room_id, x, y + 1) or below == "-" or below == "i" or below == LADDER or _foothold(room_id, x, y + 1) or (below == "=" and abilities.get("torrent", false)) \
+		or (below == "b" and abilities.get("spring_haar", false))
 
 
 ## Time-locked water (`f`): with the Stillstone it freezes into footholds every
 ## Waterfall.STEP rows up from the bottom of its run.
 func _foothold(room_id: String, x: int, y: int) -> bool:
-	if ch(room_id, x, y) != "f" or not abilities.get("hourglass", false):
+	if ch(room_id, x, y) != "f" or not abilities.get("stillstone", false):
 		return false
 	var bottom := y
 	while ch(room_id, x, bottom + 1) == "f":
@@ -279,7 +279,7 @@ func _drop(room_id: String, x: int, y: int) -> int:
 		if not clear(room_id, x, yy):
 			return -1
 		if HAZARD.contains(ch(room_id, x, yy)):
-			if abilities.get("mattock", false) and yy > y:
+			if abilities.get("delvers_pick", false) and yy > y:
 				return yy - 1
 			return -1
 		if supported(room_id, x, yy) or WATER.contains(ch(room_id, x, yy)):

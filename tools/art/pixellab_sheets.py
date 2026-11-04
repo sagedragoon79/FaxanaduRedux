@@ -20,11 +20,11 @@ CELL = 256
 
 # sheet -> {strip file: clip folder under art/pixellab/ (frames 00.png, 01.png ...)}
 CLIPS = (("idle.png", "idle"), ("run.png", "run"), ("walk.png", "walk"), ("jump.png", "jump"),
-         ("pogo.png", "pogo"), ("mattock_swing.png", "swing"), ("slash1.png", "slash1"),
+         ("pogo.png", "pogo"), ("delvers_pick_swing.png", "swing"), ("slash1.png", "slash1"),
          ("slash2.png", "slash2"), ("slash3.png", "slash3"), ("slash_up.png", "slash_up"),
          ("dash.png", "dash"), ("wall.png", "wall"), ("hurt.png", "hurt"), ("death.png", "death"),
          ("drink.png", "drink"), ("cast.png", "cast"), ("throw.png", "lthrow_l1"), ("throw_up.png", "lthrow_up_l1"))
-SETS = ("base", "leather", "studded", "plate", "battle", "battle_helm")
+SETS = ("base", "leather", "riveted", "plate", "battle", "battle_helm")
 
 # The bare elf and the armor tiers (character states of Sean's elf, design bible 13.5), each with
 # the cloak drawn in a key green the game dyes: clips made from the set's cloaked state, its state
@@ -34,7 +34,7 @@ SHEETS = {"hero_" + s: {strip: f"hero/{s}_cloak/{clip}" for strip, clip in CLIPS
 # Each set's four attacks again with the other blades (Sean: swords are drawn into the attacks),
 # from its state holding that blade: sheet "hero_<set>_<blade>".
 for _set in SETS:
-    for _blade in ("long_sword", "broad_sword", "dragon_slayer"):
+    for _blade in ("long_sword", "broad_sword", "severance"):
         # The set's own idle too, as the importer's reference for scale (it never plays from here).
         SHEETS[f"hero_{_set}_{_blade}"] = {"idle.png": SHEETS[f"hero_{_set}"]["idle.png"], **{
             f"{clip}.png": f"hero/{_set}_cloak/{_blade}/{clip}" for clip in ("slash1", "slash2", "slash3", "slash_up")}}
@@ -53,12 +53,12 @@ for _set in SETS:
 SHEETS["hero_plate"].update({"run.png": "hero/plate_cloak/run_r1", "walk.png": "hero/plate_cloak/walk_r1",
                              "drink.png": "hero/plate_cloak/drink_r2", "hurt.png": "hero/plate_cloak/hurt_r1",
                              "slash1.png": "hero/plate_cloak/slash1_r1"})
-SHEETS["hero_studded"]["walk.png"] = "hero/studded_cloak/walk_r2"
+SHEETS["hero_riveted"]["walk.png"] = "hero/riveted_cloak/walk_r2"
 SHEETS["hero_battle_helm"].update({"walk.png": "hero/battle_helm_cloak/walk_r2", "slash2.png": "hero/battle_helm_cloak/slash2_r1"})
-SHEETS["hero_battle_helm_dragon_slayer"]["slash1.png"] = "hero/battle_helm_cloak/dragon_slayer/slash1_r1"
+SHEETS["hero_battle_helm_severance"]["slash1.png"] = "hero/battle_helm_cloak/severance/slash1_r1"
 # The Kite Shield again on every set but the base, to match its crimson face and silver rim
 # (the first takes drew it plain steel or dark), and blocks whose cloak dropped out.
-for _set in ("leather", "studded", "plate", "battle", "battle_helm"):
+for _set in ("leather", "riveted", "plate", "battle", "battle_helm"):
     SHEETS[f"hero_{_set}_large_shield"]["block.png"] = f"hero/{_set}_cloak/large_shield/block_r1"
 for _set in ("leather", "battle"):
     SHEETS[f"hero_{_set}_magic_shield"]["block.png"] = f"hero/{_set}_cloak/magic_shield/block_r1"

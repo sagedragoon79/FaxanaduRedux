@@ -45,7 +45,7 @@ that blocks you, and say so in the report.
 ## Launch options
 
 Make a shortcut to the exe and add options after ` -- ` in its Target, for example
-`Yldenfall.exe -- --room=mist/victim`.
+`Yldenfall.exe -- --room=haar/lampwick`.
 
 | Option | What |
 | --- | --- |

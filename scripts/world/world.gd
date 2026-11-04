@@ -26,14 +26,14 @@ const TOP_ARRIVE_FALL := 120.0
 const FALL_RESCUE := 64.0
 
 const ZONES := {
-	"eolis": {"name": "Hearthroot", "color": Color("c9a25a")},
-	"trunk": {"name": "Heartwood", "color": Color("6fb0a0")},
+	"hearthroot": {"name": "Hearthroot", "color": Color("c9a25a")},
+	"heartwood": {"name": "Heartwood", "color": Color("6fb0a0")},
 	"tower": {"name": "Hollin Tower", "color": Color("c8784a")},
-	"mist": {"name": "The Haar", "color": Color("8fa596")},
-	"branches": {"name": "High Boughs", "color": Color("8cc070")},
-	"daybreak": {"name": "Storm Spires", "color": Color("a58cd0")},
-	"dartmoor": {"name": "Vorrhallow", "color": Color("4a9aa8")},
-	"zenis": {"name": "The Evercrown", "color": Color("8a3a5a")},
+	"haar": {"name": "The Haar", "color": Color("8fa596")},
+	"boughs": {"name": "High Boughs", "color": Color("8cc070")},
+	"spires": {"name": "Storm Spires", "color": Color("a58cd0")},
+	"vorrhallow": {"name": "Vorrhallow", "color": Color("4a9aa8")},
+	"evercrown": {"name": "The Evercrown", "color": Color("8a3a5a")},
 	"sunken": {"name": "Sunken Spring", "color": Color("3a8a9a")},
 	"trials": {"name": "Inner Rings", "color": Color("b8b4ac")},
 	"gym": {"name": "Movement Gym", "color": Color("8d84a3")},
@@ -145,7 +145,7 @@ static func locks_in(room_id: String, parsed: Dictionary) -> Array[Dictionary]:
 		for x in grid[y].length():
 			if grid[y][x] in ["J", "g"]:
 				var cell := Vector2i(x, y)
-				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "jack")
+				var kind: String = "sky" if grid[y][x] == "g" else kinds.get(cell, "copper")
 				out.append({"cell": cell, "kind": kind, "id": "%s:%d,%d" % [room_id, x, y]})
 	return out
 
@@ -192,7 +192,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 	var treasures: Array[String] = []
 	var fruits := 0
 	var dews := 0
-	var mantras := 0
+	var grains := 0
 	var locks := locks_in(room_id, parsed)
 	# Finds laid by a `prop:` line count too (pass 187): the Elven Helm and the
 	# Glass Key, under the id Room gives them (the prop's own cell).
@@ -204,7 +204,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 	# marks where he stands too (pass 403).
 	for spec: String in parsed.lists.get("npc", []):
 		var np := spec.split(",")
-		if np.size() >= 3 and String(GameData.npc(np[2].strip_edges()).get("role", "")) == "guru":
+		if np.size() >= 3 and String(GameData.npc(np[2].strip_edges()).get("role", "")) == "ringreader":
 			shrines.append(Vector2i(int(np[0]), int(np[1])))
 	for y in grid.size():
 		for x in grid[y].length():
@@ -217,7 +217,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 				elif grid[y][x] == "W":
 					dews += 1
 				elif grid[y][x] == "*":
-					mantras += 1
+					grains += 1
 	catalog[room_id] = {
 		"name": header.get("name", room_id),
 		"zone": header.get("zone", ""),
@@ -232,7 +232,7 @@ func _catalog_room(room_id: String, text: String) -> void:
 		"fruits": fruits,
 		"dews": dews,
 		## And Grain Shards (the Journey page counts the skill points they make).
-		"mantras": mantras,
+		"grains": grains,
 		## Has a hidden room (a `secret:` line); finding it sets the flag `secret:<room id>`.
 		"secret": not parsed.lists.get("secret", []).is_empty(),
 		## Its key doors, `{cell, kind, id}`; the map marks the ones still shut.

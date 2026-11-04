@@ -258,7 +258,7 @@ def track_title():
     return s.render(reverb=0.5)
 
 
-def track_eolis():
+def track_hearthroot():
     rng = np.random.default_rng(23)
     s = Song(bpm=92, bars=16)
     root, scale = 53, SCALES["lydian"]  # F lydian: warm, a little wistful
@@ -279,7 +279,7 @@ def track_eolis():
     return s.render(reverb=0.3)
 
 
-def track_trunk():
+def track_heartwood():
     rng = np.random.default_rng(37)
     s = Song(bpm=100, bars=16)
     root, scale = 45, SCALES["dorian"]  # A dorian: green, mysterious
@@ -382,7 +382,7 @@ def track_miniboss():
     return s.render(reverb=0.3)
 
 
-def track_zoradohna():
+def track_durgan():
     """Durgan: the drill engine. A relentless sixteenth-note bass in E minor
     that churns like a gearbox, kick on every beat, the anvil on every
     off-beat, and a minor-key lead from bar 5. The tower's boss theme."""
@@ -410,7 +410,7 @@ def track_zoradohna():
     return s.render(reverb=0.28)
 
 
-def track_ripasheiku():
+def track_gloamweaver():
     """Gloamweaver, the Lantern Widow: The Haar's drowned waltz turned hunter. B
     phrygian in a fast 3/4, a creeping bass that climbs a half step, skittering
     ticks like many legs on stone, lantern bells tolling the chord, a heartbeat
@@ -442,7 +442,7 @@ def track_ripasheiku():
     return s.render(reverb=0.5)
 
 
-def track_zorugeriru():
+def track_haar_wyrm():
     """the Haar Wyrm, the Haar Wyrm: a heavy surge in C# minor. The bass swells and
     falls like water in a tank, a war-drum pattern rolls under it, and three
     voices (the heads) trade one motif left, centre and right, a bar each, while
@@ -482,7 +482,7 @@ def track_zorugeriru():
     return s.render(reverb=0.4)
 
 
-def track_forepaw():
+def track_kettleforge():
     """Kettleforge freed: the dwarves' city breathes again. A warm work song in G
     major, anvils ringing in time, a plucked tune over a slow pad."""
     rng = np.random.default_rng(67)
@@ -501,7 +501,7 @@ def track_forepaw():
     return s.render(reverb=0.35)
 
 
-def track_mist():
+def track_haar():
     """The Haar: slow and drifting, a music box heard through fog, with a lantern-bell
     melody and no drums, only a heartbeat thump now and then."""
     rng = np.random.default_rng(97)
@@ -524,7 +524,7 @@ def track_mist():
     return s.render(reverb=0.65)
 
 
-def track_victim():
+def track_lampwick():
     """Lampwick, the lamp town in the fog: The Haar's drowned waltz come in out of
     the cold. D major (the relative of the Haar's B minor) in 3/4 at 84: the
     same music-box pluck on two and three, but dry and near, warm pads instead of
@@ -548,7 +548,7 @@ def track_victim():
     return s.render(reverb=0.45)
 
 
-def track_mascon():
+def track_polesend():
     """Polesend, the stilt town on the black water: the fishers' town, lower and
     slower than Lampwick. E dorian in 3/4 at 72: a poler's song, plucked low like
     a cittern, a drone on the open fifth that never moves, a soft frame-drum
@@ -572,7 +572,7 @@ def track_mascon():
     return s.render(reverb=0.5)
 
 
-def amb_mist():
+def amb_haar():
     """Fog on a drowned marsh: a damp hush, water lapping at the boardwalks, frogs
     and far-off bird calls, and now and then the creak of a lantern on its cord."""
     rng = np.random.default_rng(101)
@@ -629,7 +629,7 @@ def amb_mist():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
-def track_branches():
+def track_boughs():
     """High Boughs: sunlight high in the canopy. D lydian at a lilting 104,
     bright plucks rippling like leaves in the wind, a warm pad, a light shaker
     and kick, and an airy bell lead. The first open sky of the game."""
@@ -656,7 +656,7 @@ def track_branches():
     return s.render(reverb=0.45)
 
 
-def amb_branches():
+def amb_boughs():
     """Wind through the high canopy: a long airy gust that swells and fades, leaves
     rustling in bursts, a far bird trill, and a bough creaking under the wind."""
     rng = np.random.default_rng(117)
@@ -704,7 +704,7 @@ def amb_branches():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
-def amb_trunk():
+def amb_heartwood():
     rng = np.random.default_rng(71)
     dur = 24.0
     n = int(dur * RATE)
@@ -735,7 +735,7 @@ def amb_trunk():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.6
 
 
-def amb_eolis():
+def amb_hearthroot():
     rng = np.random.default_rng(73)
     dur = 20.0
     n = int(dur * RATE)
@@ -873,7 +873,7 @@ def amb_mine():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.55
 
 
-def track_conflate():
+def track_sylvarre():
     """Sylvarre, the elves' town in the boughs: a wistful harp waltz in E dorian,
     rippling arpeggios over a soft pad, a breathy lead, no drums. Warm, but the
     town is afraid of the Bloom above, so it leans minor."""
@@ -894,7 +894,7 @@ def track_conflate():
     return s.render(reverb=0.55)
 
 
-def track_pakukame():
+def track_snapcrown():
     """Snapcrown, the Devouring Bloom: a hungry, lurching fight in A phrygian at 140.
     A snapping bass on the offbeats (the jaws), chomp-chomp double kicks, a
     shaker like rustling leaves, and the High Boughs' bell lead turned sour, a
@@ -922,7 +922,7 @@ def track_pakukame():
     return s.render(reverb=0.35)
 
 
-def track_daybreak():
+def track_spires():
     """Storm Spires: the storm over the Tree's crown. E dorian at a driving
     116, a low pulsing bass under tense open-fifth pads, toms like distant thunder,
     plucks blown about in the wind, and a bell lead that reaches for the light."""
@@ -957,7 +957,7 @@ def track_daybreak():
     return s.render(reverb=0.5)
 
 
-def amb_daybreak():
+def amb_spires():
     """Storm at the top of the world: a hard, gusting wind, rain hissing in waves,
     and thunder rolling in from far off now and then."""
     rng = np.random.default_rng(137)
@@ -989,7 +989,7 @@ def amb_daybreak():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
-def track_daybreak_town():
+def track_spires_town():
     """Carillon, the bell town: a calm under the storm. G mixolydian at a gentle
     92, a carillon ringing the chord down from the top on every bar, warm pads,
     a walking bass and a soft harp lead. Hopeful, but the bells are a little
@@ -1012,7 +1012,7 @@ def track_daybreak_town():
     return s.render(reverb=0.5)
 
 
-def track_borabohra():
+def track_skyrend():
     """Skyrend, the Storm Roc: the Carillon storm theme turned into a fight.
     E minor at a galloping 150, a pounding eighth-note bass, thunder-roll toms
     every other bar, bright stabbed fifths like lightning, and the bell lead
@@ -1046,7 +1046,7 @@ def track_borabohra():
     return s.render(reverb=0.4)
 
 
-def track_dartmoor():
+def track_vorrhallow():
     """Vorrhallow: the drowned dwarf capital. A slow dirge in D phrygian at 70, deep
     hall pads and an octave bass like a dwarf choir under water, a low bell tolling
     each bar, and crystal chimes ringing high and far apart, as if the Everbloom's
@@ -1075,7 +1075,7 @@ def track_dartmoor():
     return s.render(reverb=0.75)
 
 
-def track_grieve():
+def track_vorrund():
     """Thane Vorrund, the Unweeping: the Vorrhallow dirge risen into a duel.
     D phrygian at 112, a heavy march: a dwarf-choir pad and octave bass on every
     beat, war drums and a tolling bell on the downbeat, crystal stabs on the
@@ -1121,7 +1121,7 @@ class _Mirror:
         self.song.add(note, at_beats + self.lag, -pan, gain * 0.55)
 
 
-def track_eura():
+def track_likeness():
     """the Likeness, the Mirror: the hero's own theme turned dark. E minor at 132,
     swelling reversed pads (sound drawn backwards out of the glass), a driving
     octave bass, tight hats, and a lead whose every note is echoed a beat late
@@ -1148,7 +1148,7 @@ def track_eura():
     return s.render(reverb=0.45)
 
 
-def track_zenis():
+def track_evercrown():
     """the Evercrown, inside the Everbloom: no tune the Tree would know. B locrian at 84 over a
     heartbeat (two kicks, a rest), a throbbing low pulse, pads detuned against each
     other so they beat and shimmer, and a far bell picking out the tritone, the
@@ -1175,7 +1175,7 @@ def track_zenis():
     return s.render(reverb=0.7)
 
 
-def track_evil_one():
+def track_everbloom():
     """The Everbloom's avatar on its throne: The Evercrown heartbeat quickened into a
     march. B locrian at 120, a pounding double-kick heartbeat, a bass that drops
     a tritone every other bar, detuned pads that beat against each other, and a
@@ -1204,7 +1204,7 @@ def track_evil_one():
     return s.render(reverb=0.55)
 
 
-def amb_zenis():
+def amb_evercrown():
     """The stillglass's insides: a deep living drone that swells and ebbs like breath,
     a slow heartbeat under everything, and now and then a glassy whine as light
     moves through the veins."""
@@ -1244,7 +1244,7 @@ def amb_zenis():
     return loop / (np.max(np.abs(loop)) + 1e-9) * 0.5
 
 
-def amb_dartmoor():
+def amb_vorrhallow():
     """A drowned hall: a deep, still drone of water in stone, drops falling into
     pools at uneven intervals, a slow trickle somewhere, and the faint glassy hum
     of stillglass rising and falling."""
@@ -1397,7 +1397,7 @@ def track_ending():
     return s.render(reverb=0.6)
 
 
-def track_eolis_bloom():
+def track_hearthroot_bloom():
     """Hearthroot after the ending, the Tree in flower: the town theme in F lydian
     lifted into a festival. A touch quicker (100), the arpeggio doubled by a bell
     an octave up, a frame drum and shaker under it, and the lead with a bell
@@ -1426,7 +1426,7 @@ def track_eolis_bloom():
     return s.render(reverb=0.35)
 
 
-def track_zenis_still():
+def track_evercrown_still():
     """the Evercrown after the ending: the Everbloom is dead. The same B and the same far bell,
     but no heartbeat and no pulse, and the pads in tune now, not beating against
     each other: B minor at 60, slow chords that hang and fade into a long hall, and
@@ -1448,7 +1448,7 @@ def track_zenis_still():
     return s.render(reverb=0.85)
 
 
-def amb_zenis_still():
+def amb_evercrown_still():
     """The dead stillglass: the breath has gone out of the drone, there is no heartbeat,
     and the stone ticks as it cools. A thin hollow wind through emptied veins, and
     now and then a soft glassy chime as a crystal cracks."""
@@ -1507,10 +1507,10 @@ def track_trials():
                   0.4 if k % 2 else -0.4, 0.14 if k % 2 else 0.22)
         s.add(kick(0.25), b * 4, 0, 0.35)
         s.add(kick(0.25), b * 4 + 2, 0, 0.25)
-    mantra = [(0, 1.5, 4), (1.5, 0.5, 3), (2, 2, 1), (4, 1, 4), (5, 1, 6), (6, 2, 4),
+    grain = [(0, 1.5, 4), (1.5, 0.5, 3), (2, 2, 1), (4, 1, 4), (5, 1, 6), (6, 2, 4),
               (8, 1.5, 7), (9.5, 0.5, 6), (10, 2, 4), (12, 3, 1), (15, 1, 0)]
     for start in range(4, 16, 4):
-        for beat, dur, deg in mantra:
+        for beat, dur, deg in grain:
             s.add(bell(midi_hz(scale_note(root + 12, scale, deg)), dur * s.beat * 1.6), start * 4 + beat, 0.25, 0.5)
     return s.render(reverb=0.6)
 
@@ -1553,7 +1553,7 @@ def amb_trials():
 # spring returns." Each mirrors its zone track's random draws in the same order, so
 # the melody is the same tune, and changes only the arrangement around it.
 
-def track_trunk_restored():
+def track_heartwood_restored():
     """The Heartwood with its spring flowing: the sap has gone to amber and the hollows
     breathe. The same A dorian theme with the plucks opened up bright, a shaker
     over the hand drum, and the bell melody doubled by a warm lead an octave down."""
@@ -1586,7 +1586,7 @@ def track_trunk_restored():
     return s.render(reverb=0.4)
 
 
-def track_mist_restored():
+def track_haar_restored():
     """The Haar with its spring flowing: the fog has lifted by half. The same B minor
     waltz, a touch quicker, heard clearly now: the pads and the music box are no
     longer muffled, the heartbeat thump gives way to a lantern-bell on the
@@ -1609,7 +1609,7 @@ def track_mist_restored():
     return s.render(reverb=0.4)
 
 
-def track_daybreak_restored():
+def track_spires_restored():
     """Carillon with the Sky Spring flowing: the storm has broken. The same E
     dorian theme at an easy 100. The pulsing bass and the thunder rolls are gone;
     full chords hold under it, a walking bass steps through, the plucks fall like
@@ -1643,7 +1643,7 @@ def track_daybreak_restored():
     return s.render(reverb=0.45)
 
 
-def amb_daybreak_restored():
+def amb_spires_restored():
     """The crown after the storm: a soft wind that comes and goes, a fine drizzle,
     and water dripping off the leaves, with no thunder at all."""
     rng = np.random.default_rng(139)
@@ -1708,7 +1708,7 @@ def chip_noise(seed, dur, pitch=1, decay=30.0):
     return x * e * 0.16
 
 
-def track_old_eolis():
+def track_old_hearthroot():
     """Old Hearthroot, the hidden room behind the Temple (design bible 11): the town as
     it sounded on a cartridge. A new tune, not the original's: F major at 132 on the
     2A03's four voices only, a 12.5% pulse lead, a 25% pulse answering in arpeggio, the
@@ -1745,53 +1745,53 @@ def track_old_eolis():
 
 TRACKS = {
     "title": track_title,
-    "eolis": track_eolis,
-    "trunk": track_trunk,
+    "hearthroot": track_hearthroot,
+    "heartwood": track_heartwood,
     "tower": track_tower,
     "boss": track_boss,
     "miniboss": track_miniboss,
-    "zoradohna": track_zoradohna,
-    "ripasheiku": track_ripasheiku,
-    "zorugeriru": track_zorugeriru,
-    "forepaw": track_forepaw,
-    "mist": track_mist,
-    "victim": track_victim,
-    "mascon": track_mascon,
-    "branches": track_branches,
-    "conflate": track_conflate,
-    "pakukame": track_pakukame,
-    "borabohra": track_borabohra,
-    "grieve": track_grieve,
-    "eura": track_eura,
-    "zenis": track_zenis,
-    "evil_one": track_evil_one,
+    "durgan": track_durgan,
+    "gloamweaver": track_gloamweaver,
+    "haar_wyrm": track_haar_wyrm,
+    "kettleforge": track_kettleforge,
+    "haar": track_haar,
+    "lampwick": track_lampwick,
+    "polesend": track_polesend,
+    "boughs": track_boughs,
+    "sylvarre": track_sylvarre,
+    "snapcrown": track_snapcrown,
+    "skyrend": track_skyrend,
+    "vorrund": track_vorrund,
+    "likeness": track_likeness,
+    "evercrown": track_evercrown,
+    "everbloom": track_everbloom,
     "ending": track_ending,
-    "amb_zenis": amb_zenis,
-    "dartmoor": track_dartmoor,
-    "daybreak": track_daybreak,
-    "daybreak_town": track_daybreak_town,
-    "amb_trunk": amb_trunk,
-    "amb_eolis": amb_eolis,
+    "amb_evercrown": amb_evercrown,
+    "vorrhallow": track_vorrhallow,
+    "spires": track_spires,
+    "spires_town": track_spires_town,
+    "amb_heartwood": amb_heartwood,
+    "amb_hearthroot": amb_hearthroot,
     "amb_tower": amb_tower,
     "amb_heights": amb_heights,
     "amb_mine": amb_mine,
-    "amb_mist": amb_mist,
-    "amb_branches": amb_branches,
-    "amb_daybreak": amb_daybreak,
-    "amb_dartmoor": amb_dartmoor,
+    "amb_haar": amb_haar,
+    "amb_boughs": amb_boughs,
+    "amb_spires": amb_spires,
+    "amb_vorrhallow": amb_vorrhallow,
     "sunken": track_sunken,
     "amb_sunken": amb_sunken,
     "warden": track_warden,
     "trials": track_trials,
     "amb_trials": amb_trials,
-    "eolis_bloom": track_eolis_bloom,
-    "zenis_still": track_zenis_still,
-    "amb_zenis_still": amb_zenis_still,
-    "trunk_restored": track_trunk_restored,
-    "mist_restored": track_mist_restored,
-    "daybreak_restored": track_daybreak_restored,
-    "amb_daybreak_restored": amb_daybreak_restored,
-    "old_eolis": track_old_eolis,
+    "hearthroot_bloom": track_hearthroot_bloom,
+    "evercrown_still": track_evercrown_still,
+    "amb_evercrown_still": amb_evercrown_still,
+    "heartwood_restored": track_heartwood_restored,
+    "haar_restored": track_haar_restored,
+    "spires_restored": track_spires_restored,
+    "amb_spires_restored": amb_spires_restored,
+    "old_hearthroot": track_old_hearthroot,
 }
 
 

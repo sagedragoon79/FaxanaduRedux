@@ -19,19 +19,19 @@ extends RefCounted
 ## Boss id and its arena, in the order of the critical path (bible 4.2), the
 ## Drowned Warden of the optional Sunken Spring before the Evercrown.
 const ORDER := [
-	["rokusutahn", "trunk/root_chamber"],
+	["gnarlmaw", "heartwood/root_chamber"],
 	["foreman", "tower/foreman_hall"],
-	["zoradohna", "tower/forepaw_lift"],
-	["ripasheiku", "mist/sunken_chapel"],
-	["zorugeriru", "mist/spring_of_mist"],
-	["pakukame", "branches/crown_leaf"],
-	["borabohra", "daybreak/roost"],
-	["king_grieve", "dartmoor/throne_hall"],
-	["shadow_eura", "dartmoor/zenis_gate"],
+	["durgan", "tower/kettleforge_lift"],
+	["gloamweaver", "haar/sunken_chapel"],
+	["haar_wyrm", "haar/spring_of_haar"],
+	["snapcrown", "boughs/crown_leaf"],
+	["skyrend", "spires/roost"],
+	["thane_vorrund", "vorrhallow/throne_hall"],
+	["likeness", "vorrhallow/evercrown_gate"],
 	["drowned_warden", "sunken/wellspring"],
-	["evil_avatar", "zenis/throne"],
-	["evil_veins", "zenis/veins"],
-	["evil_one", "zenis/heart"],
+	["everbloom_avatar", "evercrown/throne"],
+	["everbloom_veins", "evercrown/veins"],
+	["everbloom", "evercrown/heart"],
 ]
 ## The door of each arena the rush brings you through.
 const ENTRY_DOOR := 1

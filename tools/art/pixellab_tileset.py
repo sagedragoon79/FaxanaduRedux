@@ -162,7 +162,7 @@ def atlas(set_dir: str, fill_png: Path, out_png: Path, ledge_png: Path | None = 
         for k in range(0, T, ledge.width):
             img.alpha_composite(ledge.crop((0, top, ledge.width, T)), (k, 6 * T))
     else:
-        tilegen.paint_one_way(img, 0, 6 * T, "eolis")
+        tilegen.paint_one_way(img, 0, 6 * T, "hearthroot")
     tilegen.paint_amber(img, T, 6 * T)
     # Wall interiors away from open air: a veil of night over the fill.
     for k, alpha in enumerate([60, 60, 110, 110]):

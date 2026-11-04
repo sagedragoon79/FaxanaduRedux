@@ -73,7 +73,7 @@ func test_every_hero_frame_marks_the_crown_for_the_helmet() -> void:
 				bad.append("%s:%d %s" % [n, i, f.head])
 	check(bad.is_empty(), "every frame marks a crown on the head (bad %s)" % [bad])
 	GameState.new_game()
-	GameState.data.equipment.helmet = "battle_helmet"
+	GameState.data.equipment.helmet = "elven_helm"
 	var room := make_room(["#####", "#...#", "#####"])
 	var p := make_player(room, Vector2i(2, 1))
 	await frames(2)
@@ -118,7 +118,7 @@ func test_sheets_use_the_master_palette() -> void:
 
 
 func test_cast_has_sheets() -> void:
-	var want := {"monodron": ["idle", "windup", "hop"], "hornet": ["fly", "windup", "swoop"],
+	var want := {"blinkhop": ["idle", "windup", "hop"], "hornet": ["fly", "windup", "swoop"],
 		"rot_dwarf": ["walk", "windup", "swing", "recover", "stagger"], "sap_spitter": ["idle", "windup", "spit"], "grub_lump": ["crawl", "windup", "drop"],
 		"iron_dwarf": ["walk", "windup", "slam", "stuck", "recover", "stagger"],
 		"gear_bat": ["roost", "fly", "windup", "bare", "stagger"],
@@ -132,7 +132,7 @@ func test_cast_has_sheets() -> void:
 		if not Sheet.exists("npc_" + npc_id):
 			missing.append("npc_" + npc_id)
 	check(missing.is_empty(), "every enemy state and every person has a sheet (missing %s)" % [missing])
-	check(Sheet.info("monodron", "idle", 0).has("eye"), "the Blinkhop's frames mark its eye for the pupil")
+	check(Sheet.info("blinkhop", "idle", 0).has("eye"), "the Blinkhop's frames mark its eye for the pupil")
 	check(Sheet.info("sap_spitter", "windup", 1).has("mouth"), "the Sap Spitter's frames mark its mouth for the glob")
 
 
@@ -221,7 +221,7 @@ func test_a_worn_blade_swings_from_its_own_clips() -> void:
 	# Swords are drawn into the attacks (design bible 13.5): with any blade but
 	# the Short Sword, a set's attacks play from "<set>_<blade>"; the rest of
 	# its clips stay the set's own.
-	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+	for sheet in ["hero_base", "hero_leather", "hero_riveted", "hero_plate", "hero_battle", "hero_battle_helm"]:
 		for blade: String in PlayerVisual.BLADE_SHEETS.values():
 			for clip in PlayerVisual.BLADE_CLIPS:
 				check(Sheet.has_anim(sheet + "_" + blade, clip), "%s_%s has %s" % [sheet, blade, clip])
@@ -245,7 +245,7 @@ func test_a_worn_blade_swings_from_its_own_clips() -> void:
 func test_a_worn_shield_is_drawn_into_the_block() -> void:
 	# Shields are drawn into the block pose (design bible 13.5): with a shield on,
 	# a set blocks from "<set>_<shield>" and the code-drawn shield is not added.
-	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+	for sheet in ["hero_base", "hero_leather", "hero_riveted", "hero_plate", "hero_battle", "hero_battle_helm"]:
 		for shield: String in PlayerVisual.SHIELD_SHEETS:
 			check(Sheet.has_anim(sheet + "_" + shield, "block"), "%s_%s has block" % [sheet, shield])
 	GameState.data.equipment["armor"] = "leather_armor"
@@ -279,7 +279,7 @@ func test_a_worn_shield_is_drawn_into_the_block() -> void:
 func test_a_rune_dagger_throw_plays_its_flick() -> void:
 	# The Rune Dagger's throw (design bible 13.5): each set flicks it forward, or
 	# up when thrown up, over the legs' poses; the old hero has no flick.
-	for sheet in ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]:
+	for sheet in ["hero_base", "hero_leather", "hero_riveted", "hero_plate", "hero_battle", "hero_battle_helm"]:
 		for clip in ["throw", "throw_up"]:
 			check(Sheet.has_anim(sheet, clip), "%s has %s" % [sheet, clip])
 			# Flicked from the left hand, so each blade's sheet has it too, the sword kept in hand.
@@ -376,8 +376,8 @@ func test_armor_picks_its_body_set() -> void:
 	check(p.visual.anim == "block" and p.visual.sheet == PlayerVisual.SHEET_NAME, "a clip the set lacks plays from the old sheet (%s %s)" % [p.visual.anim, p.visual.sheet])
 	p.input.block_held = false
 	# The Elven Plate worn with the Elven Helm has a body of its own, drawn helmed.
-	GameState.data.equipment.armor = "battle_suit"
-	GameState.data.equipment.helmet = "battle_helmet"
+	GameState.data.equipment.armor = "elven_plate"
+	GameState.data.equipment.helmet = "elven_helm"
 	p.input.jump_pressed = false
 	p.input.jump_held = false
 	await frames(90)
@@ -409,7 +409,7 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 	await frames(int(Cloak.HOOD_TIME * 60.0) + 2)
 	check(p.cloak.hood == 0.0, "and stays down")
 	p.reparent(wild)
-	GameState.data.equipment["helmet"] = "battle_helmet"
+	GameState.data.equipment["helmet"] = "elven_helm"
 	await frames(int(Cloak.HOOD_TIME * 60.0) + 2)
 	check(p.cloak.hood == 0.0, "under a helmet it stays down outside too")
 	GameState.data.equipment["helmet"] = ""
@@ -427,7 +427,7 @@ func test_the_hood_is_down_in_town_and_up_outside() -> void:
 ## The PixelLab hero (design bible 13.5): the Delver's Pick is drawn on a pogo,
 ## its iron head reaching under the feet into the strike's hitbox, and the blow
 ## plays out over the bounce (a pogo ends the attack the frame it lands).
-func test_the_mattock_pogo_reaches_under_the_feet_and_plays_out() -> void:
+func test_the_delvers_pick_pogo_reaches_under_the_feet_and_plays_out() -> void:
 	var s := Sheet.get_sheet("hero_base")
 	check(Sheet.has_anim("hero_base", "strike_down"), "the base hero has a Delver's Pick pogo")
 	var img := (s.tex as Texture2D).get_image()

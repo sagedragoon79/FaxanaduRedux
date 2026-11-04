@@ -49,7 +49,7 @@ func is_open() -> bool:
 func take_hit(_damage: int, dir: Vector2) -> void:
 	if _torn:
 		return
-	if String(GameState.data.equipment.get("blade", "")) != "dragon_slayer":
+	if String(GameState.data.equipment.get("blade", "")) != "severance":
 		_shudder = 0.3
 		var d := Dust.new()
 		d.setup("guard")

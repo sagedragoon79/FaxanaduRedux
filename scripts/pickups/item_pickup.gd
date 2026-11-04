@@ -6,16 +6,16 @@ extends Node2D
 const KIND_BY_CHAR := {
 	"G": "glove",
 	"X": "boots",
-	"O": "deluge",
+	"O": "torrent",
 	"d": "stride",
 	"h": "thunder",
-	"n": "onyx",
-	"z": "hourglass",
+	"n": "seers_lens",
+	"z": "stillstone",
 	"L": "life_fruit",
 	"W": "mana_dew",
 	"F": "potion_shard",
-	"*": "mantra_shard",
-	"&": "dragon_slayer",
+	"*": "grain_shard",
+	"&": "severance",
 	"{": "death",
 	"(": "meteor_shard",
 	"}": "rune_dagger",
@@ -23,28 +23,28 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
-	"deluge": {"title": "Torrent", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"torrent": {"title": "Torrent", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
 	"death": {"title": "Wither", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
 	"thunder": {"title": "Stormcall", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
-	"hourglass": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
-	"onyx": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
+	"stillstone": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
+	"seers_lens": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
 	"boots": {"title": "Featherstep Boots", "text": "Jump again in mid-air. A pogo or a wall gives it back.", "color": Color("7fb0d8")},
 	"life_fruit": {"title": "Life Fruit", "text": "", "color": Color("e0404a")},
 	"mana_dew": {"title": "Mana Dew", "text": "", "color": Color("4aa3df")},
 	"potion_shard": {"title": "Potion Shard", "text": "", "color": Color("ff6a6a")},
-	"mantra_shard": {"title": "Grain Shard", "text": "", "color": Color("b58cff")},
+	"grain_shard": {"title": "Grain Shard", "text": "", "color": Color("b58cff")},
 	"meteor_shard": {"title": "Stillglass Shard", "text": "", "color": Color("e04aa8")},
-	"battle_helmet": {"title": "Elven Helm", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
-	"joker_key": {"title": "Glass Key", "text": "Opens the Glass door. There is only one.", "color": Color("9a6ad8")},
+	"elven_helm": {"title": "Elven Helm", "text": "One more mask, and 10% less damage on top of your armor. Your shield stays in hand.", "color": Color("a8d4cc")},
+	"glass_key": {"title": "Glass Key", "text": "Opens the Glass door. There is only one.", "color": Color("9a6ad8")},
 	"rune_dagger": {"title": "Rune Dagger", "text": "Throw (B) flicks it from your off hand; Up throws it high. It takes the shield's hand: choose one on the Equipment page.", "color": Color("7ff0e0")},
 	"pendant": {"title": "Acorn Charm", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
-	"magical_rod": {"title": "Briar Wand", "text": "Torrent's bolts strike half again as hard.", "color": Color("6ac8f0")},
-	"dragon_slayer": {"title": "Severance", "text": "The only blade that can wound the Everbloom. Stillglass flesh parts before it.", "color": Color("8af0e8")},
+	"briar_wand": {"title": "Briar Wand", "text": "Torrent's bolts strike half again as hard.", "color": Color("6ac8f0")},
+	"severance": {"title": "Severance", "text": "The only blade that can wound the Everbloom. Stillglass flesh parts before it.", "color": Color("8af0e8")},
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "deluge", "stride", "thunder", "onyx", "hourglass", "death", "rune_dagger", "pendant", "magical_rod"]
+const ABILITIES := ["glove", "boots", "torrent", "stride", "thunder", "seers_lens", "stillstone", "death", "rune_dagger", "pendant", "briar_wand"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -56,7 +56,7 @@ var _t := 0.0
 
 func _ready() -> void:
 	z_index = 1
-	if kind in ABILITIES or kind in ["dragon_slayer", "battle_helmet"]:
+	if kind in ABILITIES or kind in ["severance", "elven_helm"]:
 		add_to_group("light")
 
 
@@ -82,17 +82,17 @@ func grant(p: Player) -> void:
 			GameState.data.equipment.shield = ""
 			GameState.refresh_stats(p)
 			subtitle += " Your shield is on your back for now."
-	elif kind == "dragon_slayer":
+	elif kind == "severance":
 		# Found, not bought: it goes straight into your hand (design bible 5.2, A10).
 		p.abilities[kind] = true
 		GameState.obtain_gear(kind, p)
-	elif kind == "battle_helmet":
+	elif kind == "elven_helm":
 		# Found, not bought: it goes straight on, in its own slot (bible 5.2).
 		GameState.obtain_gear(kind, p)
 		p.hp = p.max_hp
 		p.health_changed.emit(p.hp, p.max_hp)
-	elif kind == "joker_key":
-		GameState.add_key("joker")
+	elif kind == "glass_key":
+		GameState.add_key("glass")
 	else:
 		subtitle = GameState.grant_stat_item(kind, p)
 	if pickup_id != "":
@@ -167,7 +167,7 @@ func _draw() -> void:
 			_hp(o, -3, -4, 2, 2, Color("e4dccc"))
 			_hp(o, 1, -4, 2, 2, Color("e4dccc"))
 			_hp(o, -1, 2, 2, 2, Color("e4dccc"))
-		"deluge":
+		"torrent":
 			# A spell scroll bound in blue ribbon, a wave glyph glowing on it.
 			_poly(o, [Vector2(-12, -10), Vector2(12, -10), Vector2(12, 10), Vector2(-12, 10)], Color("120f19"), 2.0)
 			_hp(o, -12, -10, 24, 20, Color("efe4c8"))
@@ -212,7 +212,7 @@ func _draw() -> void:
 				_hp(o, -10 + i * 3, 10 - i * 4, 2, 2, light)
 			_hp(o, -14, 12, 6, 4, Color("120f19"))
 			_hp(o, -13, 13, 4, 2, Color("ffd24a"))
-		"hourglass":
+		"stillstone":
 			# A dwarf-made hour glass in a brass frame, the sand caught mid-fall.
 			var sand := fmod(_t * 0.4, 1.0)
 			_poly(o, [Vector2(-10, -16), Vector2(10, -16), Vector2(10, 16), Vector2(-10, 16)], Color("120f19"), 2.0)
@@ -230,7 +230,7 @@ func _draw() -> void:
 			var bot_h := roundi(8.0 * sand)
 			_hp(o, -5, 12 - bot_h, 10, bot_h, c)
 			_hp(o, -5, -11, 2, 4, Color("ffffff"))
-		"dragon_slayer":
+		"severance":
 			# A long blade of pale stillglass steel, point down, a cyan light running
 			# up its fuller; a dragon's-wing guard in gold and a dark grip.
 			var run := fmod(_t * 0.8, 1.0)
@@ -248,7 +248,7 @@ func _draw() -> void:
 			_hp(o, -1, -17, 2, 7, Color("4a2a3a"))
 			_hp(o, -3, -21, 6, 4, Color("120f19"))
 			_hp(o, -2, -20, 4, 2, c)
-		"onyx":
+		"seers_lens":
 			# A black stone cut in facets, a violet light sliding over it as it turns.
 			var spin := sin(_t * 2.0)
 			var wx := 9.0 + absf(spin) * 2.0
@@ -292,7 +292,7 @@ func _draw() -> void:
 			_poly(o + Vector2(0.5, 1), [Vector2(-5, 0), Vector2(5, -2), Vector2(4, 1), Vector2(-5, 3)], light)
 			_hp(o, -4, -12, 2, 8, Color("f7f1de"))
 			_hp(o, 3, 6, 2, 3, dark)
-		"mantra_shard":
+		"grain_shard":
 			# A violet crystal turning slowly: the lit facet sweeps across it.
 			var spin := sin(_t * 3.0)
 			var wx := 6.0 + absf(spin) * 3.0
@@ -323,7 +323,7 @@ func _draw() -> void:
 			_hp(o, 0, -13, 2, 12, light)
 			_hp(o, -1, 2, 3, 7, Color(Color("8af0e8"), 0.55 + 0.45 * beat))
 			_hp(o, 0, 3, 1, 5, Color("e8fffc"))
-		"battle_helmet":
+		"elven_helm":
 			# The elf kings' war-helm (Sean's reference): sea-green steel, a domed crown,
 			# cheek guards, an eye slit under a gold brow band, swept wings and cyan runes.
 			var helm := [Vector2(-11, 12), Vector2(-12, -2), Vector2(-8, -11), Vector2(0, -14), Vector2(8, -11), Vector2(12, -2), Vector2(11, 12), Vector2(5, 12), Vector2(4, 4), Vector2(-4, 4), Vector2(-5, 12)]
@@ -361,7 +361,7 @@ func _draw() -> void:
 			_hp(o, -1, -9, 2, 1, Color("8a6a40"))
 			draw_circle(o + Vector2(0, -9), 2.5, Color("120f19"))
 			draw_circle(o + Vector2(0, -9), 1.5, Color(c, k))
-		"joker_key":
+		"glass_key":
 			# A violet key: a star in its bow, two teeth on its bit.
 			_hp(o, -2, -4, 4, 18, Color("120f19"))
 			_hp(o, -1, -3, 2, 16, c)
@@ -392,7 +392,7 @@ func _draw() -> void:
 			draw_circle(o + Vector2(0, 0.75), 1.6, Color("1e4a2a"))
 			draw_circle(o + Vector2(0, 0.5), 1.1, glint)
 			_hp(o, -4, -3, 2, 2, Color("fff4c0"))
-		"magical_rod":
+		"briar_wand":
 			# A slim wand of pale Tree-wood with a water-blue orb at its head and a
 			# drop of light rising off it.
 			var rod := [Vector2(-1, -6), Vector2(2, -6), Vector2(3, 18), Vector2(0, 20)]

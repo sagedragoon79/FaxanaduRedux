@@ -188,7 +188,7 @@ func test_potion_interrupted_keeps_charge() -> void:
 	check(p.flask_charges == p.combat.flask_charges, "interrupted drink keeps the charge")
 
 
-func test_deluge_costs_mp_and_hits() -> void:
+func test_torrent_costs_mp_and_hits() -> void:
 	var room := _arena_with("E", Vector2i(12, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
@@ -196,12 +196,12 @@ func test_deluge_costs_mp_and_hits() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(p.mp < mp0 - Spells.cost("deluge") + 0.5, "Torrent costs %.0f MP" % Spells.cost("deluge"))
+	check(p.mp < mp0 - Spells.cost("torrent") + 0.5, "Torrent costs %.0f MP" % Spells.cost("torrent"))
 	await frames(40)
 	check(dummy.hits_taken == 1, "water bolt hits the dummy")
 
 
-func test_deluge_needs_mp_and_ability() -> void:
+func test_torrent_needs_mp_and_ability() -> void:
 	var room := make_room(ARENA)
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
@@ -210,7 +210,7 @@ func test_deluge_needs_mp_and_ability() -> void:
 	await frames(1)
 	check(runner.get_tree().get_nodes_in_group("projectile").is_empty(), "no cast without enough MP")
 	p.mp = p.combat.max_mp
-	p.abilities["deluge"] = false
+	p.abilities["torrent"] = false
 	p.input.spell_pressed = true
 	await frames(1)
 	check(runner.get_tree().get_nodes_in_group("projectile").is_empty(), "no cast without the spell")
@@ -348,19 +348,19 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	await frames(6)
 	p.abilities["fire"] = false
 	p.abilities["thunder"] = false
-	p.abilities["tilte"] = false
-	p.equipped_spell = "deluge"
+	p.abilities["wisplight"] = false
+	p.equipped_spell = "torrent"
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "deluge", "with only Torrent, Next Spell keeps it")
+	check(p.equipped_spell == "torrent", "with only Torrent, Next Spell keeps it")
 	p.abilities["fire"] = true
 	p.input.spell_next_pressed = true
 	await frames(1)
 	check(p.equipped_spell == "fire", "with Kindle owned it switches to Kindle")
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "deluge", "and back round to Torrent")
-	p.abilities["deluge"] = false
+	check(p.equipped_spell == "torrent", "and back round to Torrent")
+	p.abilities["torrent"] = false
 	p.input.spell_next_pressed = true
 	await frames(1)
 	check(p.equipped_spell == "fire", "it skips a spell you don't own")
@@ -394,8 +394,8 @@ func test_every_swing_reaches_as_far_as_5_3_says() -> void:
 	check(row != "", "5.3 has its Swing reach row")
 	var blades_row := bible.get_slice("### 5.2 ", 1).get_slice("\n| Blade |", 1).get_slice("\n", 0)
 	var items := GameData.table("items")
-	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"]:
-		var cell := blades_row.get_slice("|", ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"].find(id))
+	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "severance"]:
+		var cell := blades_row.get_slice("|", ["short_sword", "long_sword", "dwarvish_broad_sword", "severance"].find(id))
 		var reach := int(items[id].get("reach", 0))
 		var arc := int(items[id].get("arc", 0))
 		check(cell.contains("reach %d" % reach) and (arc == 0 or cell.contains("arc %d" % arc)), "5.2 gives the %s's reach %d%s (%s)" % [id, reach, " and arc %d" % arc if arc else "", cell.strip_edges().left(80)])
@@ -403,7 +403,7 @@ func test_every_swing_reaches_as_far_as_5_3_says() -> void:
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
 	var front := Player.BODY_SIZE.x * 0.5
-	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "dragon_slayer"]:
+	for id: String in ["short_sword", "long_sword", "dwarvish_broad_sword", "severance"]:
 		GameState.data.equipment.blade = id
 		GameState.data.equipment.offhand = ""
 		GameState.refresh_stats(p)
@@ -511,24 +511,24 @@ func test_the_wide_camera_never_shows_past_a_small_room() -> void:
 
 
 func test_the_roost_frames_the_storm_wide() -> void:
-	var w := make_world({}, "daybreak/roost")
+	var w := make_world({}, "spires/roost")
 	await frames(3)
 	check(w.room.wide_camera(), "the Roost asks for the wide camera")
 	check_near(w.camera.frame_goal, GameCamera.WIDE, 0.001, "and has the sky to frame it (%.3f)" % w.camera.frame_goal)
 	check(w.room.pixel_rect().size.y >= w.camera.view_size.y / GameCamera.WIDE, "it is tall enough for the wide view")
 
 
-func test_tilte_wakes_then_seeks_the_nearest_foe() -> void:
+func test_wisplight_wakes_then_seeks_the_nearest_foe() -> void:
 	# Bible 4.1: Wisplight is a homing spirit orb.
 	var room := _arena_with("E", Vector2i(12, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
 	var dummy: TrainingDummy = _find(room, TrainingDummy)
-	p.equipped_spell = "tilte"
+	p.equipped_spell = "wisplight"
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "Wisplight costs %.0f MP" % Spells.cost("tilte"))
+	check(absf(p.mp - (mp0 - Spells.cost("wisplight"))) < 0.5, "Wisplight costs %.0f MP" % Spells.cost("wisplight"))
 	var orbs := runner.get_tree().get_nodes_in_group("projectile")
 	check(orbs.size() == 1 and orbs[0] is WispOrb, "one spirit orb leaves the hand")
 	if orbs.is_empty():
@@ -542,7 +542,7 @@ func test_tilte_wakes_then_seeks_the_nearest_foe() -> void:
 	check(dummy.hits_taken == 1 and dummy.hp == TrainingDummy.HP - 14, "and strikes it for 14 (hp %d)" % dummy.hp)
 
 
-func test_tilte_turns_back_for_a_foe_behind() -> void:
+func test_wisplight_turns_back_for_a_foe_behind() -> void:
 	var rows := ARENA.duplicate()
 	for i in 4:
 		rows.insert(1, "#..................#")
@@ -552,26 +552,26 @@ func test_tilte_turns_back_for_a_foe_behind() -> void:
 	await frames(6)
 	var dummy: TrainingDummy = _find(room, TrainingDummy)
 	p.facing = 1
-	p.equipped_spell = "tilte"
+	p.equipped_spell = "wisplight"
 	p.input.spell_pressed = true
 	await frames(1)
 	var hit := await _until(func() -> bool: return dummy.hits_taken > 0, 120)
 	check(hit, "an orb cast away from the only foe wheels round and finds it")
 
 
-func test_tilte_swarm_fans_three_orbs() -> void:
+func test_wisplight_swarm_fans_three_orbs() -> void:
 	var room := _arena_with("E", Vector2i(12, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
 	var dummy: TrainingDummy = _find(room, TrainingDummy)
-	p.tilte_swarm = true
-	p.equipped_spell = "tilte"
+	p.wisplight_swarm = true
+	p.equipped_spell = "wisplight"
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
 	var orbs := runner.get_tree().get_nodes_in_group("projectile")
 	check(orbs.size() == 3, "Wisp Swarm throws three orbs (%d)" % orbs.size())
-	check(absf(p.mp - (mp0 - Spells.cost("tilte"))) < 0.5, "for the cost of one")
+	check(absf(p.mp - (mp0 - Spells.cost("wisplight"))) < 0.5, "for the cost of one")
 	if orbs.size() == 3:
 		var a := [(orbs[0] as WispOrb).heading.angle(), (orbs[1] as WispOrb).heading.angle(), (orbs[2] as WispOrb).heading.angle()]
 		a.sort()
@@ -625,7 +625,7 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 
 func test_the_death_scroll_is_a_late_secret() -> void:
 	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Wither scroll")
-	var text := FileAccess.get_file_as_string("res://levels/dartmoor/kings_kennels.room")
+	var text := FileAccess.get_file_as_string("res://levels/vorrhallow/kings_kennels.room")
 	check(text.contains("{"), "it lies in the Thane's Kennels' loft, up the hidden planks")
 	GameState.new_game()
 	check(GameState.data.abilities.has("death") and not GameState.data.abilities.death, "a new game starts without it")
@@ -970,13 +970,13 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check_near(c.mp_per_melee_hit, 4.0, 0.0001, "+4 MP per melee hit")
 	check(c.flask_charges == 2 and c.flask_heal == 40, "Sapflask: 2 charges of 40")
 	check_near(c.drink_time, 0.7, 0.0001, "0.7 s to drink")
-	var deluge: Dictionary = Spells.DATA.deluge
-	check(deluge.cost == 15.0 and deluge.damage == 12 and deluge.speed == 300.0, "Torrent: 15 MP, 12 damage, 300 px/s")
+	var torrent: Dictionary = Spells.DATA.torrent
+	check(torrent.cost == 15.0 and torrent.damage == 12 and torrent.speed == 300.0, "Torrent: 15 MP, 12 damage, 300 px/s")
 	check(c.war_glove_mult == 1.5 and c.war_glove_time == 15.0, "War Glove: x1.5 for 15 s")
 	check_near(c.thrust_charge, 0.4, 0.0001, "Thrust: hold 0.4 s")
 	check_near(c.thrust_mult, 1.5, 0.0001, "Thrust: heavy hit x1.5")
 	check(c.thrust_speed == 320.0 and c.thrust_time == 0.16 and c.thrust_cooldown == 0.35, "Thrust: 320 px/s for 0.16 s, 0.35 s cooldown")
-	check(c.pendant_mult == 1.1 and c.rod_deluge_mult == 1.5, "relics: the Acorn Charm x1.1, the Briar Wand's Torrent x1.5")
+	check(c.pendant_mult == 1.1 and c.rod_torrent_mult == 1.5, "relics: the Acorn Charm x1.1, the Briar Wand's Torrent x1.5")
 	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
 	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
 	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
@@ -1004,7 +1004,7 @@ func test_every_spell_carries_as_far_as_5_3_says() -> void:
 	var p := make_player(room, Vector2i(3, 9))
 	await frames(6)
 	var flown := {}
-	for id: String in ["deluge", "thunder", "fire", "tilte"]:
+	for id: String in ["torrent", "thunder", "fire", "wisplight"]:
 		p.abilities[id] = true
 		p.equipped_spell = id
 		p.mp = p.combat.max_mp
@@ -1029,13 +1029,13 @@ func test_every_spell_carries_as_far_as_5_3_says() -> void:
 	if not check(row != "", "5.3 has the row"):
 		return
 	# What the row says each one does, measured.
-	for said: Array in [["deluge", 355.0, TorrentBolt.LIFE], ["thunder", 260.0, ThunderBolt.LIFE], ["fire", 113.0, -1.0]]:
+	for said: Array in [["torrent", 355.0, TorrentBolt.LIFE], ["thunder", 260.0, ThunderBolt.LIFE], ["fire", 113.0, -1.0]]:
 		var got: Array = flown.get(said[0], [0.0, 0.0])
 		check(absf(float(got[0]) - float(said[1])) <= 8.0, "%s carries about %d px (%.0f)" % [said[0], said[1], got[0]])
 		if float(said[2]) > 0.0:
 			check(absf(float(got[1]) - float(said[2])) <= 0.05, "for its %.1f s (%.2f)" % [said[2], got[1]])
 		check(written_exactly_in(row, float(said[1])), "the row writes %s's %d px" % [said[0], said[1]])
-	check(float(flown.thunder[0]) < float(flown.deluge[0]) * 0.8, "Stormcall pays for its speed in reach")
+	check(float(flown.thunder[0]) < float(flown.torrent[0]) * 0.8, "Stormcall pays for its speed in reach")
 	# The numbers the classes keep.
 	var kept := {"Torrent's life": TorrentBolt.LIFE, "Stormcall's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
 		"Kindle's burst": Fireball.BURST, "Kindle's life": Fireball.LIFE, "Wisplight's life": WispOrb.LIFE, "Wisplight's speed": WispOrb.SPEED,
@@ -1109,7 +1109,7 @@ func test_every_combat_number_is_written_in_its_own_row() -> void:
 		"| War Glove": ["war_glove_mult", "war_glove_time"],
 		"| Thrust (skill, 9) |": ["thrust_charge", "thrust_mult", "thrust_speed", "thrust_time", "thrust_cooldown"],
 		"| Executioner (skill, 9) |": ["executioner_mult"],
-		"| Relics": ["pendant_mult", "rod_deluge_mult"],
+		"| Relics": ["pendant_mult", "rod_torrent_mult"],
 		"| Death (5.4) |": ["death_gold_fraction", "respawn_delay"],
 		"| Spikes and thorns": ["hazard_damage"],
 		"| Casting": ["cast_cooldown"],
@@ -1294,7 +1294,7 @@ func test_a_foe_that_falls_out_pays_without_a_kills_freeze() -> void:
 ## pressed inside its cooldown stays silent: the cast just sounded.
 func test_a_refused_drink_cast_or_glass_is_heard_once() -> void:
 	var room := make_room(ARENA)
-	var p := make_player(room, Vector2i(3, 6), {"hourglass": true})
+	var p := make_player(room, Vector2i(3, 6), {"stillstone": true})
 	p.max_hp = 100
 	p.hp = 50
 	await frames(4)
@@ -1334,13 +1334,13 @@ func test_a_refused_drink_cast_or_glass_is_heard_once() -> void:
 	await frames(1)
 	check(not Sfx.recent.has("fizzle") and not Sfx.recent.has("cast"), "a press inside the cooldown is silent (%s)" % [Sfx.recent])
 	# The glass, turned while it runs back.
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(2)
 	check(TimeStop.active(), "the glass turns")
 	Sfx.recent.clear()
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(1)
-	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("hourglass"), "turned again while it runs back, it fizzles, once (%s)" % [Sfx.recent])
+	check(Sfx.recent.count("fizzle") == 1 and not Sfx.recent.has("stillstone"), "turned again while it runs back, it fizzles, once (%s)" % [Sfx.recent])
 	TimeStop.reset()
 	room.free()
 
@@ -1566,7 +1566,7 @@ func test_the_dagger_the_broad_sword_and_the_equipment_page_have_voices() -> voi
 	for sound: String in ["dagger_hit", "broad_slash", "broad_heavy", "sheathe", "gear_on"]:
 		check(FileAccess.file_exists("res://assets/sfx/%s.wav" % sound), "%s.wav exists" % sound)
 	check(Menus.equipment_sound("long_sword") == "sheathe", "a blade taken in hand slides from its sheath")
-	for id: String in ["leather_armor", "small_shield", "battle_helmet"]:
+	for id: String in ["leather_armor", "small_shield", "elven_helm"]:
 		check(Menus.equipment_sound(id) == "gear_on", "%s buckles on" % id)
 	check(Menus.equipment_sound("tide_dye") == "cloth", "and a dye is cloth")
 	Sfx.recent.clear()
@@ -1739,21 +1739,21 @@ func test_the_rune_dagger_breaks_on_walls_and_at_the_end_of_its_reach() -> void:
 ## path has put in your hands by each zone, as [blade, tempers, armor, shield].
 ## The shield joined in pass 226: since pass 225 it wards a foe's sorcery.
 const PAR_KIT := {
-	"trunk": ["long_sword", 0, "leather_armor", "small_shield"],
+	"heartwood": ["long_sword", 0, "leather_armor", "small_shield"],
 	"tower": ["long_sword", 0, "leather_armor", "small_shield"],
-	"mist": ["long_sword", 1, "studded_mail", "large_shield"],
-	"branches": ["long_sword", 1, "studded_mail", "large_shield"],
-	"daybreak": ["long_sword", 2, "studded_mail", "large_shield"],
-	"dartmoor": ["long_sword", 2, "full_plate", "magic_shield"],
-	"sunken": ["dragon_slayer", 0, "full_plate", "magic_shield"],
-	"zenis": ["dragon_slayer", 0, "full_plate", "magic_shield"],
+	"haar": ["long_sword", 1, "riveted_coat", "large_shield"],
+	"boughs": ["long_sword", 1, "riveted_coat", "large_shield"],
+	"spires": ["long_sword", 2, "riveted_coat", "large_shield"],
+	"vorrhallow": ["long_sword", 2, "full_plate", "magic_shield"],
+	"sunken": ["severance", 0, "full_plate", "magic_shield"],
+	"evercrown": ["severance", 0, "full_plate", "magic_shield"],
 }
 ## Pass 218: Thane Vorrund gives up the Severance (pass 217), so everything
 ## past his throne is fought with it: the Glass Rise, the Crown Gate and its
 ## mirror, and the Sunken Spring below the Rise.
-const PAST_GRIEVE_KIT := ["dragon_slayer", 0, "full_plate", "magic_shield"]
-const PAST_GRIEVE_ROOMS := ["dartmoor/meteor_rise", "dartmoor/zenis_gate"]
-const PAST_GRIEVE_BOSSES := ["Likeness"]
+const PAST_VORRUND_KIT := ["severance", 0, "full_plate", "magic_shield"]
+const PAST_VORRUND_ROOMS := ["vorrhallow/meteor_rise", "vorrhallow/evercrown_gate"]
+const PAST_VORRUND_BOSSES := ["Likeness"]
 ## Each room legend's foe, and the shot it fires (null for none).
 var sheet_foes := {
 	"M": [Blinkhop, null], "H": [Hornet, null], "D": [RotDwarf, null],
@@ -1810,13 +1810,13 @@ func _zone_foes(zone: String) -> Dictionary:
 
 
 func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
-	var order := ["trunk", "tower", "mist", "branches", "daybreak", "dartmoor", "zenis"]
+	var order := ["heartwood", "tower", "haar", "boughs", "spires", "vorrhallow", "evercrown"]
 	var last := 0.0
 	for zone: String in order:
 		var t := float(CombatTuning.ZONE_THREAT[zone])
 		check(t >= last, "%s is no softer than the zone before it (%.1f)" % [zone, t])
 		last = t
-	check(CombatTuning.ZONE_THREAT.trunk == 1.0 and CombatTuning.ZONE_THREAT.tower == 1.0, "the first two zones hit as written")
+	check(CombatTuning.ZONE_THREAT.heartwood == 1.0 and CombatTuning.ZONE_THREAT.tower == 1.0, "the first two zones hit as written")
 	var checked := 0
 	for zone: String in PAR_KIT:
 		var kit: Array = PAR_KIT[zone]
@@ -1830,7 +1830,7 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 			var pair: Array = sheet_foes[ch]
 			var foe: Enemy = pair[0].new()
 			var hp := foe.max_hp
-			if zone == "zenis":
+			if zone == "evercrown":
 				hp = ceili(hp * Enemy.CORRUPT_HP)
 			var blows := _blows(foe.get_script())
 			if foe.contact_damage > 0:
@@ -1852,8 +1852,8 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 	check(checked >= 40, "the sheet covers every zone's foes (%d rows)" % checked)
 	# Past Thane Vorrund the Severance is in hand: the Rise's foes still take
 	# two slashes or more (pass 218).
-	var slayer := int(GameData.item(PAST_GRIEVE_KIT[0]).slash)
-	for id: String in PAST_GRIEVE_ROOMS:
+	var slayer := int(GameData.item(PAST_VORRUND_KIT[0]).slash)
+	for id: String in PAST_VORRUND_ROOMS:
 		for row: String in Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % id)).grid:
 			for ch in row:
 				if sheet_foes.has(ch):
@@ -1869,7 +1869,7 @@ func test_the_damage_balance_sheet_stays_within_its_targets() -> void:
 ## held them; Snapcrown's Mothlings (pass 257) stand nowhere else, and fell to a
 ## single slash of the High Boughs' par blade. Every Enemy a guardian's script
 ## makes must be a room foe on the sheet or listed here with its zone.
-const SUMMONED := {"Mothling": "branches"}
+const SUMMONED := {"Mothling": "boughs"}
 
 func test_a_guardians_brood_answers_to_the_sheet() -> void:
 	var classes := {}
@@ -1921,27 +1921,27 @@ func test_a_guardians_brood_answers_to_the_sheet() -> void:
 
 
 ## Pass 218: the sheet's kit past Thane Vorrund is the one the game gives there.
-func test_the_sheet_past_king_grieve_holds_the_dragon_slayer() -> void:
-	check(String(BossArena.BOSSES.king_grieve.get("blade", "")) == PAST_GRIEVE_KIT[0], "Thane Vorrund gives the blade the sheet expects past him")
-	check(PAR_KIT.sunken == PAST_GRIEVE_KIT and PAR_KIT.zenis == PAST_GRIEVE_KIT, "the Sunken Spring and the Evercrown are fought with it")
-	var rise: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/dartmoor/throne_hall.room"))
+func test_the_sheet_past_thane_vorrund_holds_the_severance() -> void:
+	check(String(BossArena.BOSSES.thane_vorrund.get("blade", "")) == PAST_VORRUND_KIT[0], "Thane Vorrund gives the blade the sheet expects past him")
+	check(PAR_KIT.sunken == PAST_VORRUND_KIT and PAR_KIT.evercrown == PAST_VORRUND_KIT, "the Sunken Spring and the Evercrown are fought with it")
+	var rise: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/vorrhallow/throne_hall.room"))
 	var past := []
 	for spec: String in rise.lists.get("door", []):
 		past.append(spec.get_slice(",", 1).strip_edges())
-	check(past.has("dartmoor/meteor_rise"), "the Glass Rise lies behind his throne (%s)" % [past])
+	check(past.has("vorrhallow/meteor_rise"), "the Glass Rise lies behind his throne (%s)" % [past])
 	var rooms := {}
-	for id: String in PAST_GRIEVE_ROOMS:
+	for id: String in PAST_VORRUND_ROOMS:
 		rooms[id] = Room.parse(FileAccess.get_file_as_string("res://levels/%s.room" % id))
-	check(String(rooms["dartmoor/zenis_gate"].header.get("boss", "")) == "shadow_eura", "and the Likeness waits past it, at the Crown Gate")
+	check(String(rooms["vorrhallow/evercrown_gate"].header.get("boss", "")) == "likeness", "and the Likeness waits past it, at the Crown Gate")
 	var down := []
-	for spec: String in rooms["dartmoor/meteor_rise"].lists.get("door", []):
+	for spec: String in rooms["vorrhallow/meteor_rise"].lists.get("door", []):
 		down.append(spec.get_slice(",", 1).strip_edges())
-	check(down.has("sunken/spring_gate") and down.has("dartmoor/zenis_gate"), "the Rise leads on to the Crown Gate and down to the Sunken Spring (%s)" % [down])
+	check(down.has("sunken/spring_gate") and down.has("vorrhallow/evercrown_gate"), "the Rise leads on to the Crown Gate and down to the Sunken Spring (%s)" % [down])
 
 
 func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 	var rows := ARENA.duplicate()
-	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(rows)))
+	var room := Room.from_text("zone: vorrhallow\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(room)
 	var p := make_player(room, Vector2i(3, 6))
 	var foe := Blinkhop.new()
@@ -1963,24 +1963,24 @@ func test_a_foe_hits_as_hard_as_its_zone_is_deep() -> void:
 	room.header["boss"] = "test"
 	check(room.threat() == 2.0, "a Vorrhallow arena's threat is its zone's")
 	room.header.erase("boss")
-	room.zone = "trunk"
+	room.zone = "heartwood"
 	check(room.threat() == 1.0, "the Heartwood hits as written")
-	room.zone = "eolis"
+	room.zone = "hearthroot"
 	check(room.threat() == 1.0, "a zone off the sheet hits as written")
 
 
 ## The guardians' sheet (design bible 5.5, pass 196): each boss, its zone, and
 ## the shots it fires.
 var sheet_bosses := [
-	[Gnarlmaw, "trunk", [SapClump]], [Durgan, "tower", [Rubble]],
-	[Foreman, "tower", [Rubble]], [Gloamweaver, "mist", []],
-	[HagMatriarch, "mist", [MireGrasp]], [HaarWyrm, "mist", [MistBreath]],
-	[Snapcrown, "branches", [SeedShot]], [BarkCaptain, "branches", []],
-	[Skyrend, "daybreak", [StormStrike, HarpyFeather]],
-	[ThaneVorrund, "dartmoor", [CrystalShard, Shockwave, CrystalSpike]],
-	[ClockworkAlpha, "dartmoor", []], [Likeness, "dartmoor", [ShadowBolt]],
-	[DrownedWarden, "sunken", [TidalWave]], [EvilAvatar, "zenis", [CrystalSpike]],
-	[EvilCore, "zenis", [CoreBeam]], [EvilHeart, "zenis", [CoreBeam, CrystalSpike, MeteorSeed]],
+	[Gnarlmaw, "heartwood", [SapClump]], [Durgan, "tower", [Rubble]],
+	[Foreman, "tower", [Rubble]], [Gloamweaver, "haar", []],
+	[HagMatriarch, "haar", [MireGrasp]], [HaarWyrm, "haar", [MistBreath]],
+	[Snapcrown, "boughs", [SeedShot]], [BarkCaptain, "boughs", []],
+	[Skyrend, "spires", [StormStrike, HarpyFeather]],
+	[ThaneVorrund, "vorrhallow", [CrystalShard, Shockwave, CrystalSpike]],
+	[ClockworkAlpha, "vorrhallow", []], [Likeness, "vorrhallow", [ShadowBolt]],
+	[DrownedWarden, "sunken", [TidalWave]], [EvilAvatar, "evercrown", [CrystalSpike]],
+	[EvilCore, "evercrown", [CoreBeam]], [EvilHeart, "evercrown", [CoreBeam, CrystalSpike, MeteorSeed]],
 ]
 
 
@@ -2024,7 +2024,7 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 		var name := script.get_global_name()
 		if name in ["Gnarlmaw", "EvilCore"]:
 			continue
-		var kit: Array = PAST_GRIEVE_KIT if name in PAST_GRIEVE_BOSSES else PAR_KIT[row[1]]
+		var kit: Array = PAST_VORRUND_KIT if name in PAST_VORRUND_BOSSES else PAR_KIT[row[1]]
 		var cut := roundi(int(GameData.item(kit[0]).slash) * (1.0 + GameState.TEMPER_BONUS * int(kit[1])))
 		var boss: Enemy = script.new()
 		slashes[name] = ceili(float(boss.max_hp) / cut)
@@ -2071,12 +2071,12 @@ func test_the_guardians_last_as_long_as_their_place() -> void:
 	# slashes, so the fights grow (or hold) as the game goes on.
 	var zones := PAR_KIT.keys()
 	for name: String in slashes:
-		if name in MINI_BOSSES or name in OPTIONAL_BOSSES or zone_of[name] == "zenis":
+		if name in MINI_BOSSES or name in OPTIONAL_BOSSES or zone_of[name] == "evercrown":
 			continue
 		var later := 0
 		for other: String in slashes:
 			var z: String = zone_of[other]
-			if zones.find(z) > zones.find(zone_of[name]) and z != "zenis" and not other in MINI_BOSSES and not other in OPTIONAL_BOSSES:
+			if zones.find(z) > zones.find(zone_of[name]) and z != "evercrown" and not other in MINI_BOSSES and not other in OPTIONAL_BOSSES:
 				later = maxi(later, slashes[other])
 		if later > 0:
 			check(slashes[name] <= later + 2, "%s (%d) is no longer than a later zone's longest guardian (%d) by more than two" % [name, slashes[name], later])
@@ -2147,7 +2147,7 @@ func test_a_brood_that_dies_with_its_guardian_pays_nothing() -> void:
 			for m in strikes.search_all(FileAccess.get_file_as_string("res://scripts/bosses/" + f)):
 				found.append("%s: %s" % [f, m.get_string()])
 	check(found.is_empty(), "every guardian's brood perishes with it (%s)" % [found])
-	for f in ["pakukame", "hag_matriarch", "clockwork_alpha"]:
+	for f in ["snapcrown", "hag_matriarch", "clockwork_alpha"]:
 		check(FileAccess.get_file_as_string("res://scripts/bosses/%s.gd" % f).contains(".perish()"), "%s's brood perishes with it" % f)
 
 
@@ -2193,7 +2193,7 @@ func test_the_guard_stands_while_block_is_held() -> void:
 
 func test_every_combat_button_answers_on_its_frame() -> void:
 	var c := CombatTuning.new()
-	for button: String in ["block", "spell", "spell_next", "heal", "hourglass", "throw"]:
+	for button: String in ["block", "spell", "spell_next", "heal", "stillstone", "throw"]:
 		var room := make_room(ARENA)
 		var p := make_player(room, Vector2i(9, 6))
 		p.abilities["rune_dagger"] = true
@@ -2205,13 +2205,13 @@ func test_every_combat_button_answers_on_its_frame() -> void:
 			"block":
 				check(p.is_blocking and p._parry_timer > c.parry_window - 0.02, "Block guards and opens the parry window on its frame (%.2f s)" % p._parry_timer)
 			"spell":
-				check(mp0 - p.mp > p.spell_cost("deluge") - 0.5 and _find(room, TorrentBolt) != null,
+				check(mp0 - p.mp > p.spell_cost("torrent") - 0.5 and _find(room, TorrentBolt) != null,
 					"Spell casts on its frame (MP %.1f -> %.1f)" % [mp0, p.mp])
 			"spell_next":
 				check(p.equipped_spell == "thunder", "Next Spell turns from Torrent to Stormcall on its frame (%s)" % p.equipped_spell)
 			"heal":
 				check(p.is_drinking, "Sapflask starts the drink on its frame")
-			"hourglass":
+			"stillstone":
 				check(TimeStop.active(), "the Stillstone stops time on its frame")
 			"throw":
 				check(is_instance_valid(p.rune_dagger), "Throw lets the Rune Dagger fly on its frame")
@@ -2460,8 +2460,8 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	await press_for_real(p, ["spell"])
 	release_for_real(["spell"])
 	var bolt: TorrentBolt = _find(room, TorrentBolt)
-	check(bolt != null and absf(mp0 - p.mp - p.spell_cost("deluge")) < 0.5,
-		"Spell casts the Torrent and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("deluge"), mp0, p.mp])
+	check(bolt != null and absf(mp0 - p.mp - p.spell_cost("torrent")) < 0.5,
+		"Spell casts the Torrent and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("torrent"), mp0, p.mp])
 	var dmg := bolt.damage if bolt != null else -1
 	var most := 0.0
 	for i in 60:

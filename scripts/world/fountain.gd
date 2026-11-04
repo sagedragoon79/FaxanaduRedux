@@ -5,7 +5,7 @@ extends Node2D
 ## Drawn from Sean's PixelLab sheet (one state per spring, packed by
 ## tools/art/pixellab_objects.py); the code drawing below is the fallback.
 
-const SPRINGS := ["trunk", "mist", "sky"]
+const SPRINGS := ["heartwood", "haar", "sky"]
 const WIDTH := 140.0
 const STONE := Color("8d84a3")
 const STONE_DARK := Color("4a4458")

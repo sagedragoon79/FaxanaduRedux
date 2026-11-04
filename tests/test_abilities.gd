@@ -236,7 +236,7 @@ func test_double_jump_adds_height() -> void:
 	check(not p.has_double_jump, "double jump is spent")
 
 
-func test_double_jump_needs_wing_boots() -> void:
+func test_double_jump_needs_featherstep_boots() -> void:
 	var room := make_room(SHAFT)
 	var p := make_player(room, Vector2i(7, 10), {"boots": false, "glove": false})
 	await frames(10)
@@ -345,9 +345,9 @@ func test_an_elven_veil_lets_only_a_dash_through() -> void:
 ## The North Bough's warden cache sits behind a veil: from the porch, walking
 ## and jumping get nowhere, and a stride takes you in to the Life Fruit.
 func test_the_warden_cache_needs_the_stride() -> void:
-	var fruit := "branches/north_bough:2,6"
+	var fruit := "boughs/north_bough:2,6"
 	for stride: bool in [false, true]:
-		var w := make_world({}, "branches/north_bough", cell_feet(6, 6))
+		var w := make_world({}, "boughs/north_bough", cell_feet(6, 6))
 		var p := w.player
 		p.abilities["stride"] = stride
 		await frames(4)
@@ -371,7 +371,7 @@ func test_the_warden_cache_needs_the_stride() -> void:
 ## "out of reach"): straight up, from a run, off the entry ledge, and leaping
 ## off the far wall with the Glove, never without the Boots; with them, a jump
 ## and a second jump under it take it.
-func test_the_stride_in_the_windloft_needs_the_wing_boots() -> void:
+func test_the_stride_in_the_windloft_needs_the_featherstep_boots() -> void:
 	for mode: String in ["floor", "run", "ledge", "wall"]:
 		var reached := 0
 		for k in range(2, 40, 3):
@@ -390,11 +390,11 @@ func test_the_stride_in_the_windloft_needs_the_wing_boots() -> void:
 ## the vault), `k` the frames before the second press.
 func _try_the_windloft_stride(boots: bool, mode: String, k: int) -> bool:
 	var start := {"floor": cell_feet(24, 19), "run": cell_feet(14, 19), "ledge": cell_feet(3, 10), "wall": cell_feet(38, 6)}
-	var w := make_world({}, "branches/windloft", start[mode])
+	var w := make_world({}, "boughs/windloft", start[mode])
 	var p := w.player
 	p.abilities["boots"] = boots
 	p.abilities["glove"] = true
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	await frames(4)
 	match mode:
 		"floor":
@@ -411,7 +411,7 @@ func _try_the_windloft_stride(boots: bool, mode: String, k: int) -> bool:
 	await frames(k if mode in ["floor", "wall"] else 14)
 	p.input.jump_pressed = true
 	await frames(90)
-	var got := GameState.is_collected("branches/windloft:24,11")
+	var got := GameState.is_collected("boughs/windloft:24,11")
 	w.queue_free()
 	await frames(1)
 	return got
@@ -422,7 +422,7 @@ func _try_the_windloft_stride(boots: bool, mode: String, k: int) -> bool:
 ## The perch is now a row higher: its fruit's cell starts 128 px over that
 ## plank, past the plain jump's reach, and the Boots' second jump still lands on
 ## it. Leaping off the west wall with the Glove falls ten tiles short.
-func test_the_feather_hollow_perch_needs_the_wing_boots() -> void:
+func test_the_feather_hollow_perch_needs_the_featherstep_boots() -> void:
 	for boots: bool in [false, true]:
 		var reached := 0
 		for k in range(0, 40, 3):
@@ -445,14 +445,14 @@ func test_the_feather_hollow_perch_needs_the_wing_boots() -> void:
 ## east; `k` sets the run or the frames before the second press.
 func _try_the_feather_perch(boots: bool, mode: String, k: int) -> bool:
 	var start := {"plank": cell_feet(26, 13), "under": cell_feet(18, 22), "wall": cell_feet(1, 6)}
-	var w := make_world({}, "mist/feather_hollow", start[mode])
+	var w := make_world({}, "haar/feather_hollow", start[mode])
 	for e in w.room.get_children():
 		if e is Enemy:
 			e.queue_free()
 	var p := w.player
 	p.abilities["boots"] = boots
 	p.abilities["glove"] = true
-	p.abilities["mattock"] = true
+	p.abilities["delvers_pick"] = true
 	await frames(4)
 	match mode:
 		"plank":
@@ -469,7 +469,7 @@ func _try_the_feather_perch(boots: bool, mode: String, k: int) -> bool:
 	await frames(25)
 	p.input.move_x = 0
 	await frames(60)
-	var got := GameState.is_collected("mist/feather_hollow:18,6")
+	var got := GameState.is_collected("haar/feather_hollow:18,6")
 	w.queue_free()
 	await frames(1)
 	return got
@@ -479,9 +479,9 @@ func _try_the_feather_perch(boots: bool, mode: String, k: int) -> bool:
 ## island stood four rows over the one below, and a plain running jump off
 ## that island's edge landed on it. Raised to five rows (80 px, past the 72 px
 ## apex), it takes the Featherstep Boots, as BOOT_SECRETS says.
-func test_the_sky_steps_purse_needs_the_wing_boots() -> void:
+func test_the_sky_steps_purse_needs_the_featherstep_boots() -> void:
 	for boots: bool in [false, true]:
-		var w := make_world({}, "daybreak/sky_steps", cell_feet(18, 24))
+		var w := make_world({}, "spires/sky_steps", cell_feet(18, 24))
 		for e in w.room.get_children():
 			if e is Enemy:
 				e.queue_free()
@@ -530,7 +530,7 @@ func test_the_wind_niche_needs_the_spring_of_sky() -> void:
 ## From the shelf under the band: jump west, jump again at frame k1, air dash
 ## west at k2 (none if negative). True if you come to stand in the niche.
 func _try_the_wind_niche(spring: bool, k1: int, k2: int) -> bool:
-	var w := make_world({}, "branches/thicket_road", cell_feet(55, 12))
+	var w := make_world({}, "boughs/thicket_road", cell_feet(55, 12))
 	GameState.set_flag(WindCurrent.FLAG, spring)
 	for e in w.room.get_children():
 		if e is Enemy:
@@ -577,7 +577,7 @@ func test_the_sky_steps_exit_needs_the_stride() -> void:
 ## `k1` frames later and dash `k2` frames later (none if negative). True if you
 ## come to stand on the exit ledge.
 func _try_the_sky_steps_ledge(stride: bool, jx: float, k1: int, k2: int) -> bool:
-	var w := make_world({}, "daybreak/sky_steps", cell_feet(24, 12))
+	var w := make_world({}, "spires/sky_steps", cell_feet(24, 12))
 	for e in w.room.get_children():
 		if e is Enemy:
 			e.queue_free()
@@ -640,8 +640,8 @@ func test_spikes_hurt_without_pogo() -> void:
 	check(p.invulnerable, "brief invulnerability after a hit")
 
 
-func test_no_pogo_without_mattock() -> void:
-	var p := _drop_onto_spikes({"mattock": false})
+func test_no_pogo_without_delvers_pick() -> void:
+	var p := _drop_onto_spikes({"delvers_pick": false})
 	for i in 60:
 		if p.velocity.y > 0.0 and p.global_position.y > SPIKE_TOP - 28.0 and not p.is_attacking:
 			p.input.down = true
@@ -726,25 +726,25 @@ func test_walking_into_a_bounce_pod_does_nothing_but_a_hop_launches() -> void:
 
 
 ## Bible A8: the Stillstone stops time for 2.5 s and runs back for 8 s.
-func test_hour_glass_stops_time_then_runs_back() -> void:
+func test_stillstone_stops_time_then_runs_back() -> void:
 	var room := make_room(SHAFT)
-	var p := make_player(room, Vector2i(7, 18), {"hourglass": true})
+	var p := make_player(room, Vector2i(7, 18), {"stillstone": true})
 	await frames(5)
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(2)
 	check(TimeStop.active(), "turning the glass stops time")
 	await frames(int(TimeStop.DURATION * 60) + 4)
 	check(not TimeStop.active(), "for %.1f s" % TimeStop.DURATION)
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(2)
 	check(not TimeStop.active(), "it can't be turned again while it runs back")
 	await frames(int((TimeStop.COOLDOWN - TimeStop.DURATION) * 60) + 4)
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(2)
 	check(TimeStop.active(), "after %.0f s it can" % TimeStop.COOLDOWN)
-	p.abilities["hourglass"] = false
+	p.abilities["stillstone"] = false
 	TimeStop.reset()
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(2)
 	check(not TimeStop.active(), "without the glass nothing happens")
 
@@ -752,11 +752,11 @@ func test_hour_glass_stops_time_then_runs_back() -> void:
 
 ## Pass 230: the glass runs out by ear. Its last three quarter-seconds tick,
 ## and time running again rushes, so you know when held shots fly on.
-func test_the_hour_glass_ticks_before_time_runs_again() -> void:
+func test_the_stillstone_ticks_before_time_runs_again() -> void:
 	var room := make_room(SHAFT)
-	var p := make_player(room, Vector2i(7, 18), {"hourglass": true})
+	var p := make_player(room, Vector2i(7, 18), {"stillstone": true})
 	await frames(5)
-	p.input.hourglass_pressed = true
+	p.input.stillstone_pressed = true
 	await frames(1)
 	check(TimeStop.active(), "the glass is turned")
 	var ticks: Array[float] = []
@@ -782,7 +782,7 @@ func test_the_hour_glass_ticks_before_time_runs_again() -> void:
 
 func test_stopped_time_holds_projectiles_in_the_air() -> void:
 	var room := make_room(SHAFT)
-	make_player(room, Vector2i(2, 18), {"hourglass": true})
+	make_player(room, Vector2i(2, 18), {"stillstone": true})
 	var f := HarpyFeather.new()
 	f.velocity = Vector2(200, 0)
 	room.add_child(f)
@@ -802,7 +802,7 @@ func test_falling_water_beats_you_down_until_time_stops() -> void:
 		var row: String = rows[y]
 		rows[y] = row.substr(0, 6) + "fff" + row.substr(9)
 	var room := make_room(rows)
-	var p := make_player(room, Vector2i(7, 18), {"hourglass": true, "boots": false, "glove": false})
+	var p := make_player(room, Vector2i(7, 18), {"stillstone": true, "boots": false, "glove": false})
 	await frames(5)
 	var falls: Array = room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
 	check(falls.size() == 1 and (falls[0] as Waterfall).cells == Rect2i(6, 4, 3, 15), "one waterfall over the column")
@@ -1404,7 +1404,7 @@ func test_pogo_numbers_match_the_bible() -> void:
 ## and with it a dash passes the veil and the door leads on to the Bloom.
 func test_the_windloft_veil_keeps_the_bloom_for_the_stride() -> void:
 	for stride: bool in [false, true]:
-		var w := make_world({}, "branches/windloft", cell_feet(30, 19))
+		var w := make_world({}, "boughs/windloft", cell_feet(30, 19))
 		var p := w.player
 		p.abilities["stride"] = stride
 		await frames(3)
@@ -1416,12 +1416,12 @@ func test_the_windloft_veil_keeps_the_bloom_for_the_stride() -> void:
 				p.input.dash_pressed = true
 				dashed = true
 			await frames(1)
-			if w.room.id != "branches/windloft":
+			if w.room.id != "boughs/windloft":
 				break
 		if stride:
-			check(w.room.id == "branches/crown_leaf", "with the Stride a dash passes the veil and the door leads to the Crown-Leaf (%s)" % w.room.id)
+			check(w.room.id == "boughs/crown_leaf", "with the Stride a dash passes the veil and the door leads to the Crown-Leaf (%s)" % w.room.id)
 		else:
-			check(w.room.id == "branches/windloft" and p.global_position.x < 36.0 * Room.TILE,
+			check(w.room.id == "boughs/windloft" and p.global_position.x < 36.0 * Room.TILE,
 				"without the Stride the veil stops you short of the door (x %.0f)" % p.global_position.x)
 		w.queue_free()
 		await frames(1)

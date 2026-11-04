@@ -18,7 +18,7 @@ const CRYSTAL := Color("e05ad0")
 
 const WIDTH := 28.0
 const HEIGHT := 112.0
-const FLAG := "boss:king_grieve"
+const FLAG := "boss:thane_vorrund"
 ## How fast the shown level follows the real one (fraction per second).
 const FOLLOW := 0.6
 

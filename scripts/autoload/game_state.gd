@@ -18,7 +18,10 @@ signal ending_started
 const MAX_WARD := 0.6
 const SAVE_PATH := "user://save_%d.json"
 ## 2 (pass 317): saves from before the off hand (Sean, 2026-10-31) are told of it.
-const VERSION := 2
+## 3 (pass 462): ids renamed for Yldenfall; older saves come over (migrate_ids).
+const VERSION := 3
+## The first save version written with the Yldenfall ids.
+const IDS_VERSION := 3
 ## The first save version written under the off-hand rule.
 const OFFHAND_VERSION := 2
 ## Flag set on an older save that found the Rune Dagger and wears a shield:
@@ -32,11 +35,11 @@ const RENAMED_ITEMS := {"hand_dagger": "short_sword", "giant_blade": "dwarvish_b
 ## Pickups a newer build moved: old id -> new id. A pickup's id is its room and
 ## cell, so a save that took it at the old cell would find it again (pass 213).
 const MOVED_PICKUPS := {
-	"dartmoor/drowned_nave:31,5": "dartmoor/drowned_nave:31,6",  # pass 67
-	"branches/north_bough:8,7": "branches/north_bough:2,6",  # pass 211, then 216
-	"branches/north_bough:9,6": "branches/north_bough:2,6",  # pass 216
-	"daybreak/sky_steps:6,20": "daybreak/sky_steps:6,19",  # pass 219
-	"mist/feather_hollow:18,7": "mist/feather_hollow:18,6",  # pass 235
+	"vorrhallow/drowned_nave:31,5": "vorrhallow/drowned_nave:31,6",  # pass 67
+	"boughs/north_bough:8,7": "boughs/north_bough:2,6",  # pass 211, then 216
+	"boughs/north_bough:9,6": "boughs/north_bough:2,6",  # pass 216
+	"spires/sky_steps:6,20": "spires/sky_steps:6,19",  # pass 219
+	"haar/feather_hollow:18,7": "haar/feather_hollow:18,6",  # pass 235
 }
 ## The equipment slots, in the order the Equipment page lists them.
 const GEAR_SLOTS := ["blade", "armor", "shield", "helmet"]
@@ -56,7 +59,7 @@ const RESPEC_MAX := 2000
 
 ## Persistent game data. Keys are documented in `fresh()`.
 ## The original's password alphabet, more or less: letters, digits, ? and !.
-const MANTRA_LETTERS := "ABCDEFGHJKLMNPQRSTUVWXYZabdefghkmnpqrtwy23456789?!"
+const MARK_LETTERS := "ABCDEFGHJKLMNPQRSTUVWXYZabdefghkmnpqrtwy23456789?!"
 
 var data := {}
 var slot := 1
@@ -82,9 +85,9 @@ func _process(delta: float) -> void:
 static func fresh() -> Dictionary:
 	return {
 		"version": VERSION,
-		"abilities": {"glove": false, "mattock": false, "boots": false, "stride": false, "deluge": false, "fire": false, "thunder": false, "tilte": false, "onyx": false, "hourglass": false, "death": false, "rune_dagger": false, "pendant": false, "magical_rod": false, "dragon_slayer": false},
+		"abilities": {"glove": false, "delvers_pick": false, "boots": false, "stride": false, "torrent": false, "fire": false, "thunder": false, "wisplight": false, "seers_lens": false, "stillstone": false, "death": false, "rune_dagger": false, "pendant": false, "briar_wand": false, "severance": false},
 		## The spell on the Spell button (an id in `Spells.ORDER`).
-		"spell": "deluge",
+		"spell": "torrent",
 		"max_hp": 100,
 		"max_mp": 60.0,
 		"flask_max": 2,
@@ -102,7 +105,7 @@ static func fresh() -> Dictionary:
 		"keys": {},
 		"rings": [],
 		"potion_shards": 0,
-		"mantra_shards": 0,
+		"grain_shards": 0,
 		## Stillglass Shards carried: the Kettleforge smith folds one into each second temper.
 		"meteor_shards": 0,
 		## Amber Draughts carried (at most Shop.ELIXIR_MAX): one revives the player in place on death.
@@ -112,7 +115,7 @@ static func fresh() -> Dictionary:
 		"collected": {},
 		"visited": {},
 		## Room id -> [x, y] of each Ringreader you have spoken to: the Grain Road's stops.
-		"gurus": {},
+		"ringreaders": {},
 		## Zones whose outline the Cartographer sold you (zone -> true): the map shows their unseen rooms dimmed.
 		"charts": {},
 		## Map pins: [room id, x, y] in room pixels (at most MAX_PINS).
@@ -260,7 +263,7 @@ func begin_ending() -> void:
 ## The secret ending (design bible 11): the Everbloom reached without a single
 ## death, wearing the Drowned Warden's Elven Plate.
 func secret_ending() -> bool:
-	return int(data.get("deaths", 0)) == 0 and String(data.equipment.get("armor", "")) == "battle_suit"
+	return int(data.get("deaths", 0)) == 0 and String(data.equipment.get("armor", "")) == "elven_plate"
 
 
 func total_play_time() -> float:
@@ -293,21 +296,21 @@ func toggle_pin(room_id: String, pos: Vector2) -> String:
 
 ## The Grain Road (design bible 3.3): Ringreader-to-Ringreader travel, open once any
 ## spring flows again.
-func mantra_path_open() -> bool:
+func grain_road_open() -> bool:
 	for k: String in data.flags:
 		if k.begins_with("spring:") and bool(data.flags[k]):
 			return true
 	return false
 
 
-func meet_guru(room_id: String, pos: Vector2) -> void:
-	data.gurus[room_id] = [pos.x, pos.y]
+func meet_ringreader(room_id: String, pos: Vector2) -> void:
+	data.ringreaders[room_id] = [pos.x, pos.y]
 
 
 ## The Ringreaders you could walk the Grain Road to from `here` (room ids, sorted).
-func mantra_stops(here: String) -> Array:
+func grain_stops(here: String) -> Array:
 	var out := []
-	for k: String in data.gurus:
+	for k: String in data.ringreaders:
 		if k != here:
 			out.append(k)
 	out.sort()
@@ -329,7 +332,7 @@ func has_skill(id: String) -> bool:
 ## The mark a Ringreader carves for the journey so far: sixteen letters cut
 ## into the wood (design bible 11, easter eggs). It is never typed back in; saving is
 ## automatic. The same progress always gives the same ring.
-func mantra() -> String:
+func carved_mark() -> String:
 	var rooms: Array = data.get("visited", {}).keys()
 	rooms.sort()
 	var taken: Array = data.get("collected", {}).keys()
@@ -341,7 +344,7 @@ func mantra() -> String:
 	for i in 16:
 		if i > 0 and i % 4 == 0:
 			out += " "
-		out += MANTRA_LETTERS[h[i] % MANTRA_LETTERS.length()]
+		out += MARK_LETTERS[h[i] % MARK_LETTERS.length()]
 	return out
 
 
@@ -401,7 +404,7 @@ func say(speaker: String, pages: Array) -> void:
 func apply(p: Player) -> void:
 	for k: String in data.abilities:
 		p.abilities[k] = bool(data.abilities[k])
-	p.equipped_spell = String(data.get("spell", "deluge"))
+	p.equipped_spell = String(data.get("spell", "torrent"))
 	p.gold = int(data.gold)
 	p.elixirs = int(data.elixirs)
 	p.ointments = int(data.ointments)
@@ -442,7 +445,7 @@ func refresh_stats(p: Player) -> void:
 	p.spell_cost_mult = 0.85 if has_skill("thrift") else 1.0
 	p.chain_thunder = has_skill("chain_thunder")
 	p.time_thief = has_skill("time_thief")
-	p.mantra_of_death = has_skill("mantra_of_death")
+	p.ring_of_death = has_skill("ring_of_death")
 	p.last_stand = has_skill("last_stand")
 	p.second_wind = has_skill("second_wind")
 	p.wanderers_grace = has_skill("wanderers_grace")
@@ -452,9 +455,9 @@ func refresh_stats(p: Player) -> void:
 	p.gold_mult = 1.1 if has_skill("gold_sense") else 1.0
 	p.magnet_mult = 1.6 if has_skill("gold_sense") else 1.0
 	p.rising_cut = has_skill("rising_cut")
-	p.down_strike_mult = 1.5 if has_skill("mattock_mastery") else 1.0
-	p.spell_pierce = has_skill("deluge_pierce")
-	p.tilte_swarm = has_skill("tilte_swarm")
+	p.down_strike_mult = 1.5 if has_skill("delvers_pick_mastery") else 1.0
+	p.spell_pierce = has_skill("torrent_pierce")
+	p.wisplight_swarm = has_skill("wisplight_swarm")
 	p.drink_mult = 0.6 if has_skill("quick_draught") else 1.0
 	p.bonus_air_dashes = 1 if has_skill("second_stride") else 0
 	# The Elven Helm is worth one mask on top (bible 5.2).
@@ -501,9 +504,9 @@ func grant_stat_item(kind: String, p: Player) -> String:
 				p.flask_charges = p.flask_max
 				return "Three shards fuse. Your flask holds one more Sapflask."
 			return "%d of 3. Three fuse into a new potion charge." % (n % 3)
-		"mantra_shard":
-			data.mantra_shards = int(data.mantra_shards) + 1
-			var n := int(data.mantra_shards)
+		"grain_shard":
+			data.grain_shards = int(data.grain_shards) + 1
+			var n := int(data.grain_shards)
 			if n % 3 == 0:
 				data.skill_points = int(data.skill_points) + 1
 				return "The ring is whole. You gain a skill point."
@@ -533,6 +536,69 @@ func save_game(to_slot := -1) -> bool:
 ## settings over from the old folder (its name is in data/rename_map.json), so
 ## no journey is lost. Never overwrites a file the new folder already has.
 ## Returns how many files it copied. The game calls it at start; tests don't.
+## Old id -> new id, word by word (data/rename_map.json "ids", pass 462).
+static var _id_words: Array = []
+## Exact renames of the key and seed ids, which are plain words elsewhere.
+static var _id_exact: Dictionary = {}
+
+
+static func _load_id_table() -> void:
+	if not _id_words.is_empty():
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/rename_map.json"))
+	var ids: Dictionary = (parsed as Dictionary).get("ids", {}) if parsed is Dictionary else {}
+	var pairs: Array = (ids.get("segments", []) as Array).duplicate()
+	pairs.sort_custom(func(a: Array, b: Array) -> bool: return String(a[0]).length() > String(b[0]).length())
+	for pair: Array in pairs:
+		for cased: Array in [[String(pair[0]), String(pair[1])], [String(pair[0]).to_upper(), String(pair[1]).to_upper()]]:
+			var re := RegEx.new()
+			re.compile("(?<![A-Za-z0-9])%s(?![A-Za-z0-9])" % cased[0])
+			_id_words.append([re, cased[1]])
+	_id_exact = ids.get("exact", {})
+
+
+## An id written before pass 462 under its new name: "trunk/spring_of_trunk"
+## is "heartwood/spring_of_heartwood". A new id comes back as it is.
+static func rename_id(id: String) -> String:
+	_load_id_table()
+	for pair: Array in _id_words:
+		id = (pair[0] as RegEx).sub(id, pair[1], true)
+	return id
+
+
+## A save written before pass 462 with every id renamed: room, zone, item,
+## ability, npc, boss and flag ids wherever they are (values and map keys),
+## then the card keys (by their old card names) and the four seeds.
+static func migrate_ids(save: Variant) -> Variant:
+	var out: Variant = _rename_ids_deep(save)
+	if out is Dictionary:
+		var keys: Variant = out.get("keys")
+		var key_names: Dictionary = _id_exact.get("keys", {})
+		if keys is Dictionary:
+			var renamed := {}
+			for k: Variant in keys:
+				renamed[key_names.get(k, k)] = keys[k]
+			out.keys = renamed
+		var rings: Variant = out.get("rings")
+		var ring_names: Dictionary = _id_exact.get("rings", {})
+		if rings is Array:
+			out.rings = (rings as Array).map(func(r: Variant) -> Variant: return ring_names.get(r, r))
+	return out
+
+
+static func _rename_ids_deep(v: Variant) -> Variant:
+	if v is String:
+		return rename_id(v)
+	if v is Array:
+		return (v as Array).map(func(e: Variant) -> Variant: return _rename_ids_deep(e))
+	if v is Dictionary:
+		var out := {}
+		for k: Variant in v:
+			out[_rename_ids_deep(k) if k is String else k] = _rename_ids_deep(v[k])
+		return out
+	return v
+
+
 static func bring_old_saves(user_dir := OS.get_user_data_dir()) -> int:
 	var map: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/rename_map.json"))
 	if not map is Dictionary or not String(map.get("user_dir_before", "")):
@@ -628,6 +694,9 @@ func load_game(from_slot: int) -> bool:
 static func sanitize(src: Variant) -> Dictionary:
 	if not src is Dictionary or not (src as Dictionary).has("save_room"):
 		return {}
+	var from: Variant = (src as Dictionary).get("version", 1)
+	if (int(from) if _is_number(from) else 1) < IDS_VERSION:
+		src = migrate_ids(src)
 	var out := fresh()
 	for k: Variant in src:
 		if k is String:
@@ -655,14 +724,14 @@ static func sanitize(src: Variant) -> Dictionary:
 	# Thane Vorrund has given up the Severance since pass 217; before, it lay
 	# on the Heart Gate's altar, which is now bare. A save past him that never
 	# took it from the altar gets it in hand, so the heart can still be cut.
-	if bool(out.flags.get("boss:king_grieve", false)) and not bool(out.abilities.get("dragon_slayer", false)):
-		out.abilities.dragon_slayer = true
-		out.equipment.blade = "dragon_slayer"
+	if bool(out.flags.get("boss:thane_vorrund", false)) and not bool(out.abilities.get("severance", false)):
+		out.abilities.severance = true
+		out.equipment.blade = "severance"
 	# The Elven Helm left the shield slot for its own (pass 185). It had
 	# guarded and turned shots like the Warding Shield, and with it on every
 	# shield showed as owned, so the hand it held gets the Warding Shield.
-	if String(out.equipment.get("shield", "")) == "battle_helmet":
-		out.equipment.helmet = "battle_helmet"
+	if String(out.equipment.get("shield", "")) == "elven_helm":
+		out.equipment.helmet = "elven_helm"
 		out.equipment.shield = "magic_shield"
 	# A slot holds its own kind (pass 191): a known item worn in the wrong
 	# slot (a sword as a helmet) comes off, and a blade falls back to the
@@ -684,10 +753,10 @@ static func sanitize(src: Variant) -> Dictionary:
 	out.gear = gear
 	# The Severance is both an ability (the reach checker's gate) and gear;
 	# a save holds both or neither (pass 221).
-	if gear.has("dragon_slayer") or bool(out.abilities.get("dragon_slayer", false)):
-		out.abilities.dragon_slayer = true
-		if not gear.has("dragon_slayer"):
-			gear.append("dragon_slayer")
+	if gear.has("severance") or bool(out.abilities.get("severance", false)):
+		out.abilities.severance = true
+		if not gear.has("severance"):
+			gear.append("severance")
 	# Containers whose entries the game reads by shape.
 	out.skills = _unique_strings(out.skills)
 	out.dyes = _unique_strings(out.dyes)
@@ -714,9 +783,9 @@ static func sanitize(src: Variant) -> Dictionary:
 	for id: Variant in out.trials.keys():
 		if not _is_number(out.trials[id]) or float(out.trials[id]) < 0.0:
 			out.trials.erase(id)
-	for room: Variant in out.gurus.keys():
-		if not _is_point(out.gurus[room]):
-			out.gurus.erase(room)
+	for room: Variant in out.ringreaders.keys():
+		if not _is_point(out.ringreaders[room]):
+			out.ringreaders.erase(room)
 	# The purse dropped on the last death holds its gold as "value", the name
 	# World writes. Until pass 250 this asked for "gold", so every purse was
 	# thrown away on load; a save that names it "gold" is read as well.

@@ -10,7 +10,7 @@ const WATER := Color("7cc4f0")
 const WATER_LIGHT := Color("d8f1ff")
 const SLUDGE := Color("6e4a2c")
 
-var spring_id := "trunk"
+var spring_id := "heartwood"
 var spring_name := "Heartwood Spring"
 var text := "The sap hardens to amber. Water returns to Hearthroot."
 ## A flag that must be set before the spring can be cleared ("" = none).

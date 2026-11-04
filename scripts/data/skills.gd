@@ -32,9 +32,9 @@ static func waits_on(id: String) -> String:
 ## The name an ability or spell id goes by in the tree.
 static func uses_name(uses: String) -> String:
 	match uses:
-		"mattock":
+		"delvers_pick":
 			return "Delver's Pick"
-		"tilte":
+		"wisplight":
 			return "Wisplight scroll"
 		"death":
 			return "Wither scroll"

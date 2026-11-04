@@ -22,7 +22,7 @@ var block_held := false
 var spell_pressed := false
 var spell_next_pressed := false
 var heal_pressed := false
-var hourglass_pressed := false
+var stillstone_pressed := false
 var throw_pressed := false
 ## Up was held last frame as a stick's sideways drift, too level to count.
 var _up_drifting := false
@@ -55,7 +55,7 @@ func poll(tuning: MovementTuning = null) -> void:
 	spell_pressed = Input.is_action_just_pressed("spell")
 	spell_next_pressed = Input.is_action_just_pressed("spell_next")
 	heal_pressed = Input.is_action_just_pressed("heal")
-	hourglass_pressed = Input.is_action_just_pressed("hourglass")
+	stillstone_pressed = Input.is_action_just_pressed("stillstone")
 	throw_pressed = Input.is_action_just_pressed("throw")
 
 
@@ -83,7 +83,7 @@ func drop_presses() -> void:
 	spell_pressed = false
 	spell_next_pressed = false
 	heal_pressed = false
-	hourglass_pressed = false
+	stillstone_pressed = false
 	throw_pressed = false
 
 

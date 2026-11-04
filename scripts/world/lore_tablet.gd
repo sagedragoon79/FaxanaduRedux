@@ -8,7 +8,7 @@ const GLYPH := Color("c9b98f")
 
 var text := ""
 ## [conditions, text] pairs from the room's sign lines, in the order written.
-## A line may open with world flags in brackets ("[spring:trunk !boss:x]",
+## A line may open with world flags in brackets ("[spring:heartwood !boss:x]",
 ## the same as a person's fourth field): the first line whose flags all hold
 ## is the one read, and a line with none always holds (pass 251).
 var variants: Array = []

@@ -48,8 +48,8 @@ extends Resource
 ## hard against the armor you will have by then as the Heartwood does against
 ## Leather. Zones not listed (Hearthroot, the gym, the trials) stay at 1.
 const ZONE_THREAT := {
-	"trunk": 1.0, "tower": 1.0, "mist": 1.4, "branches": 1.5,
-	"daybreak": 1.6, "dartmoor": 2.0, "sunken": 2.0, "zenis": 2.0,
+	"heartwood": 1.0, "tower": 1.0, "haar": 1.4, "boughs": 1.5,
+	"spires": 1.6, "vorrhallow": 2.0, "sunken": 2.0, "evercrown": 2.0,
 }
 
 @export_group("Magic")
@@ -89,7 +89,7 @@ const ZONE_THREAT := {
 ## The original's Acorn Charm and Briar Wand (design bible 5.2, pass 201), found
 ## once and kept: every blade hit, and every Torrent bolt, lands this much more.
 @export var pendant_mult := 1.1
-@export var rod_deluge_mult := 1.5
+@export var rod_torrent_mult := 1.5
 
 @export_group("Wither")
 @export var death_gold_fraction := 0.6

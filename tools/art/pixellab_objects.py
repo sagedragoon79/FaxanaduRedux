@@ -26,7 +26,7 @@ OUT = ROOT / "assets" / "sprites"
 # name: (source dir, [(anim, state dir, fps)]). A state without frames is a still.
 OBJECTS = {
     # The Fountain of Hearthroot, one state per restored spring (scripts/world/fountain.gd).
-    "fountain": ("art/pixellab/eolis/fountain", [
+    "fountain": ("art/pixellab/hearthroot/fountain", [
         ("dry", "dry", 1),
         ("third", "third", 8),
         ("two_thirds", "two_thirds", 8),
@@ -35,10 +35,10 @@ OBJECTS = {
     # Market Row's four shops, each behind its keeper (scripts/world/set_piece.gd).
     # The smithy's frames are Sean's hand edit in Pixelorama (arms/forge_animation.pxo):
     # the building holds still and only the chimney smoke moves.
-    "shop_arms": ("art/pixellab/eolis/shops", [("idle", "arms", 6)]),
-    "shop_sundries": ("art/pixellab/eolis/shops", [("idle", "sundries", 1)]),
-    "shop_dyeworks": ("art/pixellab/eolis/shops", [("idle", "dyeworks", 1)]),
-    "shop_cartographer": ("art/pixellab/eolis/shops", [("idle", "cartographer", 1)]),
+    "shop_arms": ("art/pixellab/hearthroot/shops", [("idle", "arms", 6)]),
+    "shop_sundries": ("art/pixellab/hearthroot/shops", [("idle", "sundries", 1)]),
+    "shop_dyeworks": ("art/pixellab/hearthroot/shops", [("idle", "dyeworks", 1)]),
+    "shop_cartographer": ("art/pixellab/hearthroot/shops", [("idle", "cartographer", 1)]),
 }
 PAD = 2
 # Pixel-art sheets keep a limited palette (bible 12.2; test_sheets_use_the_master_palette).

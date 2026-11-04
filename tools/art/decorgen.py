@@ -104,7 +104,7 @@ def blade(c, x, h, lean, dark, light, tip):
 
 # --- Heartwood -------------------------------------------------------------
 
-def trunk_tuft(rng):
+def heartwood_tuft(rng):
     c = Cell()
     for i in range(rng.randint(8, 12)):
         x = rng.randint(5, 25)
@@ -120,7 +120,7 @@ def trunk_tuft(rng):
     return c
 
 
-def trunk_fungus(rng, big):
+def heartwood_fungus(rng, big):
     """Cyan glowing caps on thin stems: the zone's light sources."""
     c = Cell()
     caps = 3 if big else 2
@@ -149,7 +149,7 @@ def trunk_fungus(rng, big):
     return c
 
 
-def trunk_mushroom(rng):
+def heartwood_mushroom(rng):
     c = Cell()
     x = rng.randint(12, 18)
     h = rng.randint(8, 12)
@@ -169,7 +169,7 @@ def trunk_mushroom(rng):
     return c
 
 
-def trunk_twig(rng):
+def heartwood_twig(rng):
     c = Cell()
     y = H - 2
     x0 = rng.randint(2, 7)
@@ -183,7 +183,7 @@ def trunk_twig(rng):
     return c
 
 
-def trunk_roots(rng, glow):
+def heartwood_roots(rng, glow):
     c = Cell()
     strands = rng.randint(2, 3)
     for s in range(strands):
@@ -211,7 +211,7 @@ def trunk_roots(rng, glow):
     return c
 
 
-def trunk_moss(rng):
+def heartwood_moss(rng):
     c = Cell()
     for x in range(W):
         h = rng.randint(2, 8) if 4 < x < 28 else rng.randint(0, 2)
@@ -226,7 +226,7 @@ def trunk_moss(rng):
     return c
 
 
-def trunk_shelf(rng, glow):
+def heartwood_shelf(rng, glow):
     """A bracket fungus growing out of a wall on the left."""
     c = Cell()
     y = rng.randint(24, 44)
@@ -248,7 +248,7 @@ def trunk_shelf(rng, glow):
 
 # --- Hearthroot ---------------------------------------------------------------------
 
-def eolis_weeds(rng):
+def hearthroot_weeds(rng):
     c = Cell()
     for i in range(rng.randint(6, 9)):
         x = rng.randint(4, 26)
@@ -264,7 +264,7 @@ def eolis_weeds(rng):
     return c
 
 
-def eolis_stones(rng):
+def hearthroot_stones(rng):
     c = Cell()
     for _ in range(2):
         x = rng.randint(3, 20)
@@ -278,7 +278,7 @@ def eolis_stones(rng):
     return c
 
 
-def eolis_crate(rng):
+def hearthroot_crate(rng):
     c = Cell()
     x0 = rng.randint(4, 8)
     w, h = 18, 16
@@ -300,7 +300,7 @@ def eolis_crate(rng):
     return c
 
 
-def eolis_ivy(rng):
+def hearthroot_ivy(rng):
     c = Cell()
     for _ in range(rng.randint(2, 3)):
         x = rng.randint(4, 26)
@@ -317,7 +317,7 @@ def eolis_ivy(rng):
     return c
 
 
-def eolis_chain(rng):
+def hearthroot_chain(rng):
     c = Cell()
     x = rng.randint(13, 18)
     length = rng.randint(12, 24)
@@ -338,7 +338,7 @@ def eolis_chain(rng):
     return c
 
 
-def eolis_banner(rng):
+def hearthroot_banner(rng):
     c = Cell()
     color, shade = rng.choice((("ember-2", "ember-1"), ("sky-2", "sky-1")))
     for y in range(2, 26):
@@ -357,7 +357,7 @@ def eolis_banner(rng):
     return c
 
 
-def eolis_sconce(rng):
+def hearthroot_sconce(rng):
     c = Cell()
     y = 28
     c.rect(0, y, 7, 2, "stone-2")
@@ -409,7 +409,7 @@ def tower_lantern(rng):
 
 
 def tower_pick(rng):
-    """A worn mattock leaning on a crate of ore."""
+    """A worn delvers_pick leaning on a crate of ore."""
     c = Cell()
     c.rect(14, H - 9, 12, 9, "bark-3")
     c.rect(14, H - 9, 12, 1, "bark-4")
@@ -486,7 +486,7 @@ def tower_gear_plate(rng):
 
 # --- The Haar ------------------------------------------------------------------
 
-def mist_reeds(rng):
+def haar_reeds(rng):
     """Marsh reeds, grey-green, a few with seed heads like bone beads."""
     c = Cell()
     for i in range(rng.randint(7, 11)):
@@ -502,7 +502,7 @@ def mist_reeds(rng):
     return c
 
 
-def mist_toadstools(rng):
+def haar_toadstools(rng):
     """Pale bone-white toadstools with gold-flecked gills."""
     c = Cell()
     for i in range(rng.randint(2, 3)):
@@ -517,7 +517,7 @@ def mist_toadstools(rng):
     return c
 
 
-def mist_lantern_post(rng):
+def haar_lantern_post(rng):
     """A boardwalk post with a soul-lantern hooked to it: the zone's light."""
     c = Cell()
     x = rng.randint(10, 14)
@@ -536,7 +536,7 @@ def mist_lantern_post(rng):
     return c
 
 
-def mist_stake(rng):
+def haar_stake(rng):
     """A rotted boardwalk stake, snapped, with a rag of moss."""
     c = Cell()
     x = rng.randint(8, 18)
@@ -550,7 +550,7 @@ def mist_stake(rng):
     return c
 
 
-def mist_beard(rng):
+def haar_beard(rng):
     """A beard of grey moss hanging from a limb."""
     c = Cell()
     for _ in range(rng.randint(5, 8)):
@@ -566,7 +566,7 @@ def mist_beard(rng):
     return c
 
 
-def mist_hanging_lantern(rng):
+def haar_hanging_lantern(rng):
     """A lantern on a long cord, the light of a drowned soul inside."""
     c = Cell()
     x = rng.randint(13, 18)
@@ -583,7 +583,7 @@ def mist_hanging_lantern(rng):
     return c
 
 
-def mist_drip(rng):
+def haar_drip(rng):
     """Dead rootlets with a bead of water at the tip."""
     c = Cell()
     for s in range(rng.randint(2, 3)):
@@ -594,7 +594,7 @@ def mist_drip(rng):
     return c
 
 
-def mist_bracket(rng):
+def haar_bracket(rng):
     """A pale bracket fungus on a wall, ringed like old bone."""
     c = Cell()
     y = rng.randint(24, 44)
@@ -607,7 +607,7 @@ def mist_bracket(rng):
     return c
 
 
-def mist_wall_lantern(rng):
+def haar_wall_lantern(rng):
     c = Cell()
     y = 30
     c.rect(0, y, 9, 2, "bark-2")
@@ -621,7 +621,7 @@ def mist_wall_lantern(rng):
     return c
 
 
-def branches_litter(rng):
+def boughs_litter(rng):
     """Fallen leaves on the bough, green and gold, one curled up."""
     c = Cell()
     for _ in range(rng.randint(3, 5)):
@@ -634,7 +634,7 @@ def branches_litter(rng):
     return c
 
 
-def branches_flowers(rng):
+def boughs_flowers(rng):
     """Small sky-blue canopy flowers on thin stems among grass."""
     c = Cell()
     for i in range(rng.randint(5, 8)):
@@ -649,7 +649,7 @@ def branches_flowers(rng):
     return c
 
 
-def branches_sprout(rng):
+def boughs_sprout(rng):
     """A young shoot unfurling from the bark: two broad leaves."""
     c = Cell()
     x = rng.randint(12, 18)
@@ -662,7 +662,7 @@ def branches_sprout(rng):
     return c
 
 
-def branches_hanging_leaves(rng):
+def boughs_hanging_leaves(rng):
     """A spray of leaves hanging from the bough above."""
     c = Cell()
     for _ in range(rng.randint(3, 5)):
@@ -675,7 +675,7 @@ def branches_hanging_leaves(rng):
     return c
 
 
-def branches_vine(rng):
+def boughs_vine(rng):
     """A creeper vine trailing down, leaves every few pixels."""
     c = Cell()
     x = rng.randint(8, 22)
@@ -689,7 +689,7 @@ def branches_vine(rng):
     return c
 
 
-def branches_wall_shelf(rng):
+def boughs_wall_shelf(rng):
     """A sun-yellow bracket fungus on a wall of bark."""
     c = Cell()
     y = rng.randint(24, 44)
@@ -700,7 +700,7 @@ def branches_wall_shelf(rng):
     return c
 
 
-def branches_wall_sprig(rng):
+def boughs_wall_sprig(rng):
     """A sprig of leaves growing out of a crack in the bark."""
     c = Cell()
     y = rng.randint(20, 44)
@@ -711,7 +711,7 @@ def branches_wall_sprig(rng):
     return c
 
 
-def daybreak_rubble(rng):
+def spires_rubble(rng):
     """Fallen shrine stone: pale blocks, one with a run of gold inlay."""
     c = Cell()
     for _ in range(rng.randint(2, 3)):
@@ -726,7 +726,7 @@ def daybreak_rubble(rng):
     return c
 
 
-def daybreak_grass(rng):
+def spires_grass(rng):
     """Wind-bent sky grass, pale and gold-tipped, all leaning one way."""
     c = Cell()
     lean = rng.uniform(3, 6)
@@ -735,7 +735,7 @@ def daybreak_grass(rng):
     return c
 
 
-def daybreak_pillar(rng):
+def spires_pillar(rng):
     """The broken stump of a shrine pillar, fluted, its top sheared off."""
     c = Cell()
     x, h = rng.randint(9, 13), rng.randint(20, 34)
@@ -754,7 +754,7 @@ def daybreak_pillar(rng):
     return c
 
 
-def daybreak_conduit(rng):
+def spires_conduit(rng):
     """A dead lightning conduit: a bronze rod on a stone foot, a dull crystal at its tip."""
     c = Cell()
     x = rng.randint(13, 17)
@@ -771,7 +771,7 @@ def daybreak_conduit(rng):
     return c
 
 
-def daybreak_roots(rng):
+def spires_roots(rng):
     """Pale air-roots trailing from an island's underside."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
@@ -783,7 +783,7 @@ def daybreak_roots(rng):
     return c
 
 
-def daybreak_crystals(rng):
+def spires_crystals(rng):
     """Storm crystals grown down from the stone, faintly lit."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
@@ -798,7 +798,7 @@ def daybreak_crystals(rng):
     return c
 
 
-def daybreak_wall_rune(rng):
+def spires_wall_rune(rng):
     """A gold rune plaque set into the shrine wall, still warm with light."""
     c = Cell()
     y = rng.randint(22, 40)
@@ -811,7 +811,7 @@ def daybreak_wall_rune(rng):
     return c
 
 
-def daybreak_wall_ledge(rng):
+def spires_wall_ledge(rng):
     """A cracked cornice jutting from the wall, grass along its top."""
     c = Cell()
     y = rng.randint(24, 44)
@@ -824,7 +824,7 @@ def daybreak_wall_ledge(rng):
     return c
 
 
-def dartmoor_shards(rng):
+def vorrhallow_shards(rng):
     """Stillglass crystal shards pushing up through the floor, lit from within."""
     c = Cell()
     base = rng.randint(8, 22)
@@ -842,7 +842,7 @@ def dartmoor_shards(rng):
     return c
 
 
-def dartmoor_rubble(rng):
+def vorrhallow_rubble(rng):
     """Dark dwarf masonry fallen in the flood, slick with teal weed."""
     c = Cell()
     for _ in range(rng.randint(2, 3)):
@@ -857,7 +857,7 @@ def dartmoor_rubble(rng):
     return c
 
 
-def dartmoor_helm(rng):
+def vorrhallow_helm(rng):
     """A drowned dwarf helm, horned and rusted, half sunk in silt."""
     c = Cell()
     x = rng.randint(10, 18)
@@ -871,7 +871,7 @@ def dartmoor_helm(rng):
     return c
 
 
-def dartmoor_weed(rng):
+def vorrhallow_weed(rng):
     """Teal waterweed left standing when the flood went down."""
     c = Cell()
     for _ in range(rng.randint(5, 9)):
@@ -879,7 +879,7 @@ def dartmoor_weed(rng):
     return c
 
 
-def dartmoor_stalactites(rng):
+def vorrhallow_stalactites(rng):
     """Crystal stalactites hanging from the vault, dripping."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
@@ -896,7 +896,7 @@ def dartmoor_stalactites(rng):
     return c
 
 
-def dartmoor_drip(rng):
+def vorrhallow_drip(rng):
     """Water seeping from the vault joints, a bead at each tip."""
     c = Cell()
     for k in range(rng.randint(2, 3)):
@@ -907,7 +907,7 @@ def dartmoor_drip(rng):
     return c
 
 
-def dartmoor_wall_crystal(rng):
+def vorrhallow_wall_crystal(rng):
     """A crystal cluster grown out of the wall, glowing."""
     c = Cell()
     y = rng.randint(22, 42)
@@ -921,7 +921,7 @@ def dartmoor_wall_crystal(rng):
     return c
 
 
-def dartmoor_wall_brazier(rng):
+def vorrhallow_wall_brazier(rng):
     """A dwarf wall brazier, drowned and dark, weed hanging from its lip."""
     c = Cell()
     y = rng.randint(24, 42)
@@ -934,7 +934,7 @@ def dartmoor_wall_brazier(rng):
     return c
 
 
-def zenis_polyps(rng):
+def evercrown_polyps(rng):
     """Polyps of stillglass flesh budding from the floor, each tipped with a cyan eye."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
@@ -951,7 +951,7 @@ def zenis_polyps(rng):
     return c
 
 
-def zenis_shards(rng):
+def evercrown_shards(rng):
     """Black-violet crystal splinters, red light deep inside them."""
     c = Cell()
     base = rng.randint(8, 22)
@@ -968,7 +968,7 @@ def zenis_shards(rng):
     return c
 
 
-def zenis_veins(rng):
+def evercrown_veins(rng):
     """Veins of light crawling over the floor, pulsing toward the core."""
     c = Cell()
     x, y = 0, H - 2
@@ -981,7 +981,7 @@ def zenis_veins(rng):
     return c
 
 
-def zenis_tendrils(rng):
+def evercrown_tendrils(rng):
     """Tendrils hanging from the vault, each ending in a red bead."""
     c = Cell()
     for _ in range(rng.randint(2, 4)):
@@ -997,7 +997,7 @@ def zenis_tendrils(rng):
     return c
 
 
-def zenis_eyes(rng):
+def evercrown_eyes(rng):
     """A cluster of lidless cyan eyes in the vault, watching."""
     c = Cell()
     for _ in range(rng.randint(2, 3)):
@@ -1010,7 +1010,7 @@ def zenis_eyes(rng):
     return c
 
 
-def zenis_wall_eye(rng):
+def evercrown_wall_eye(rng):
     """One great eye opening in the wall, red-veined."""
     c = Cell()
     y = rng.randint(22, 42)
@@ -1023,7 +1023,7 @@ def zenis_wall_eye(rng):
     return c
 
 
-def zenis_wall_growth(rng):
+def evercrown_wall_growth(rng):
     """A shelf of stillglass flesh grown out of the wall."""
     c = Cell()
     y = rng.randint(24, 42)
@@ -1099,57 +1099,57 @@ def sunken_wall_flowstone(rng):
 
 
 ZONES = {
-    "trunk": {
-        "floor": [trunk_tuft, trunk_tuft, lambda r: trunk_fungus(r, False), lambda r: trunk_fungus(r, True),
-                  trunk_mushroom, trunk_twig],
-        "ceiling": [lambda r: trunk_roots(r, False), lambda r: trunk_roots(r, False),
-                    lambda r: trunk_roots(r, True), trunk_moss],
-        "wall": [lambda r: trunk_shelf(r, False), lambda r: trunk_shelf(r, True)],
+    "heartwood": {
+        "floor": [heartwood_tuft, heartwood_tuft, lambda r: heartwood_fungus(r, False), lambda r: heartwood_fungus(r, True),
+                  heartwood_mushroom, heartwood_twig],
+        "ceiling": [lambda r: heartwood_roots(r, False), lambda r: heartwood_roots(r, False),
+                    lambda r: heartwood_roots(r, True), heartwood_moss],
+        "wall": [lambda r: heartwood_shelf(r, False), lambda r: heartwood_shelf(r, True)],
     },
-    "eolis": {
-        "floor": [eolis_weeds, eolis_weeds, eolis_stones, eolis_weeds, eolis_stones, eolis_crate],
-        "ceiling": [eolis_ivy, eolis_chain, eolis_banner],
-        "wall": [eolis_sconce],
+    "hearthroot": {
+        "floor": [hearthroot_weeds, hearthroot_weeds, hearthroot_stones, hearthroot_weeds, hearthroot_stones, hearthroot_crate],
+        "ceiling": [hearthroot_ivy, hearthroot_chain, hearthroot_banner],
+        "wall": [hearthroot_sconce],
     },
     "tower": {
-        "floor": [tower_rubble, tower_rubble, tower_lantern, tower_pick, tower_rubble, eolis_crate],
-        "ceiling": [eolis_chain, tower_hanging_lamp, tower_pipe, eolis_chain],
+        "floor": [tower_rubble, tower_rubble, tower_lantern, tower_pick, tower_rubble, hearthroot_crate],
+        "ceiling": [hearthroot_chain, tower_hanging_lamp, tower_pipe, hearthroot_chain],
         "wall": [tower_wall_lamp, tower_gear_plate],
     },
-    "mist": {
-        "floor": [mist_reeds, mist_reeds, mist_toadstools, mist_lantern_post, mist_stake, mist_reeds],
-        "ceiling": [mist_beard, mist_beard, mist_hanging_lantern, mist_drip],
-        "wall": [mist_bracket, mist_wall_lantern],
+    "haar": {
+        "floor": [haar_reeds, haar_reeds, haar_toadstools, haar_lantern_post, haar_stake, haar_reeds],
+        "ceiling": [haar_beard, haar_beard, haar_hanging_lantern, haar_drip],
+        "wall": [haar_bracket, haar_wall_lantern],
     },
-    "branches": {
-        "floor": [branches_litter, branches_flowers, branches_sprout, branches_litter, branches_flowers, branches_litter],
-        "ceiling": [branches_hanging_leaves, branches_vine, branches_hanging_leaves, branches_vine],
-        "wall": [branches_wall_shelf, branches_wall_sprig],
+    "boughs": {
+        "floor": [boughs_litter, boughs_flowers, boughs_sprout, boughs_litter, boughs_flowers, boughs_litter],
+        "ceiling": [boughs_hanging_leaves, boughs_vine, boughs_hanging_leaves, boughs_vine],
+        "wall": [boughs_wall_shelf, boughs_wall_sprig],
     },
-    "daybreak": {
-        "floor": [daybreak_grass, daybreak_rubble, daybreak_grass, daybreak_pillar, daybreak_conduit, daybreak_grass],
-        "ceiling": [daybreak_roots, daybreak_crystals, daybreak_roots, daybreak_crystals],
-        "wall": [daybreak_wall_rune, daybreak_wall_ledge],
+    "spires": {
+        "floor": [spires_grass, spires_rubble, spires_grass, spires_pillar, spires_conduit, spires_grass],
+        "ceiling": [spires_roots, spires_crystals, spires_roots, spires_crystals],
+        "wall": [spires_wall_rune, spires_wall_ledge],
     },
-    "dartmoor": {
-        "floor": [dartmoor_weed, dartmoor_rubble, dartmoor_shards, dartmoor_weed, dartmoor_helm, dartmoor_weed],
-        "ceiling": [dartmoor_drip, dartmoor_stalactites, eolis_chain, dartmoor_stalactites],
-        "wall": [dartmoor_wall_crystal, dartmoor_wall_brazier],
+    "vorrhallow": {
+        "floor": [vorrhallow_weed, vorrhallow_rubble, vorrhallow_shards, vorrhallow_weed, vorrhallow_helm, vorrhallow_weed],
+        "ceiling": [vorrhallow_drip, vorrhallow_stalactites, hearthroot_chain, vorrhallow_stalactites],
+        "wall": [vorrhallow_wall_crystal, vorrhallow_wall_brazier],
     },
-    "zenis": {
-        "floor": [zenis_veins, zenis_polyps, zenis_shards, zenis_veins, zenis_polyps, zenis_veins],
-        "ceiling": [zenis_tendrils, zenis_eyes, zenis_tendrils, zenis_tendrils],
-        "wall": [zenis_wall_eye, zenis_wall_growth],
+    "evercrown": {
+        "floor": [evercrown_veins, evercrown_polyps, evercrown_shards, evercrown_veins, evercrown_polyps, evercrown_veins],
+        "ceiling": [evercrown_tendrils, evercrown_eyes, evercrown_tendrils, evercrown_tendrils],
+        "wall": [evercrown_wall_eye, evercrown_wall_growth],
     },
     # The inner rings keeps only stone: rubble, a hanging chain, a cold sconce.
     "trials": {
-        "floor": [eolis_stones, dartmoor_rubble, eolis_stones, dartmoor_rubble, eolis_stones, eolis_stones],
-        "ceiling": [eolis_chain, eolis_chain, sunken_straws, eolis_chain],
-        "wall": [eolis_sconce, sunken_wall_flowstone],
+        "floor": [hearthroot_stones, vorrhallow_rubble, hearthroot_stones, vorrhallow_rubble, hearthroot_stones, hearthroot_stones],
+        "ceiling": [hearthroot_chain, hearthroot_chain, sunken_straws, hearthroot_chain],
+        "wall": [hearthroot_sconce, sunken_wall_flowstone],
     },
     "sunken": {
-        "floor": [sunken_rimstone, dartmoor_weed, sunken_pearls, sunken_rimstone, dartmoor_weed, sunken_rimstone],
-        "ceiling": [sunken_straws, dartmoor_drip, sunken_straws, sunken_straws],
+        "floor": [sunken_rimstone, vorrhallow_weed, sunken_pearls, sunken_rimstone, vorrhallow_weed, sunken_rimstone],
+        "ceiling": [sunken_straws, vorrhallow_drip, sunken_straws, sunken_straws],
         "wall": [sunken_wall_seep, sunken_wall_flowstone],
     },
 }

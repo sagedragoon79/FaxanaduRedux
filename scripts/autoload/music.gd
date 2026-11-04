@@ -117,7 +117,7 @@ func ambience(name: String, fade := FADE) -> void:
 
 
 ## Tracks that change once the game is cleared: track -> its post-game self.
-const AFTER_THE_END := {"eolis": "eolis_bloom", "zenis": "zenis_still", "amb_zenis": "amb_zenis_still"}
+const AFTER_THE_END := {"hearthroot": "hearthroot_bloom", "evercrown": "evercrown_still", "amb_evercrown": "amb_evercrown_still"}
 
 
 ## Picks the music and ambience for a room. A spring restored in the room calls
@@ -148,10 +148,10 @@ static func after_the_end(track: String) -> String:
 ## Tracks that change once their zone's spring flows again (design bible 13.3,
 ## pass 150): track -> [the spring's flag, the restored track].
 const RESTORED := {
-	"trunk": ["spring:trunk", "trunk_restored"],
-	"mist": ["spring:mist", "mist_restored"],
-	"daybreak": ["spring:sky", "daybreak_restored"],
-	"amb_daybreak": ["spring:sky", "amb_daybreak_restored"],
+	"heartwood": ["spring:heartwood", "heartwood_restored"],
+	"haar": ["spring:haar", "haar_restored"],
+	"spires": ["spring:sky", "spires_restored"],
+	"amb_spires": ["spring:sky", "amb_spires_restored"],
 }
 
 

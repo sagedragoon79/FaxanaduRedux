@@ -8,7 +8,7 @@ sign: 4, 19, The great crucible of Kettleforge. The dwarves say it was cast in t
 sign: 74, 19, The rails run on into a wall of fog. The cut beyond is drowned in Haar.|The dwarves who followed the ore that way never came back.
 door: 1, tower/rail_gallery, 3
 door: 2, tower/slag_heap, 1
-door: 3, mist/fog_cut, 1
+door: 3, haar/fog_cut, 1
 ---
 ################################################################################
 ################################################################################

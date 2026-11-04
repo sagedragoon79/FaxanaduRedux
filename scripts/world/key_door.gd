@@ -17,22 +17,22 @@ const SHRINE_DARK := Color("8d84a3")
 const SKY := Color("b8a8ff")
 ## The card doors: their panel, its shade, the bands and the suit's glyph.
 ## What each card key is called in the game (pass 461): ids stay, names are the metal's.
-const NAMES := {"jack": "Copper", "queen": "Silver", "king": "Gold", "ace": "Thorn", "joker": "Glass"}
+const NAMES := {"copper": "Copper", "silver": "Silver", "gold": "Gold", "thorn": "Thorn", "glass": "Glass"}
 
-## A key's name for the player: "jack" is "Copper".
+## A key's name for the player: "copper" is "Copper".
 static func label(kind: String) -> String:
 	return String(NAMES.get(kind, kind.capitalize()))
 
 
 const CARDS := {
-	"jack": {"panel": Color("8a5a34"), "dark": Color("5e3b22"), "band": Color("6b6380"), "glyph": Color("ffd24a"), "suit": "spade"},
-	"queen": {"panel": Color("a8323e"), "dark": Color("6a1e28"), "band": Color("d8b060"), "glyph": Color("ffe6ea"), "suit": "heart"},
-	"king": {"panel": Color("3a3848"), "dark": Color("1e1c28"), "band": Color("d8b060"), "glyph": Color("ffd24a"), "suit": "club"},
-	"ace": {"panel": Color("b8c4d8"), "dark": Color("7a86a0"), "band": Color("eef4ff"), "glyph": Color("4aa3df"), "suit": "diamond"},
-	"joker": {"panel": Color("5a3a8a"), "dark": Color("34205a"), "band": Color("8af0b0"), "glyph": Color("ffd24a"), "suit": "star"},
+	"copper": {"panel": Color("8a5a34"), "dark": Color("5e3b22"), "band": Color("6b6380"), "glyph": Color("ffd24a"), "suit": "spade"},
+	"silver": {"panel": Color("a8323e"), "dark": Color("6a1e28"), "band": Color("d8b060"), "glyph": Color("ffe6ea"), "suit": "heart"},
+	"gold": {"panel": Color("3a3848"), "dark": Color("1e1c28"), "band": Color("d8b060"), "glyph": Color("ffd24a"), "suit": "club"},
+	"thorn": {"panel": Color("b8c4d8"), "dark": Color("7a86a0"), "band": Color("eef4ff"), "glyph": Color("4aa3df"), "suit": "diamond"},
+	"glass": {"panel": Color("5a3a8a"), "dark": Color("34205a"), "band": Color("8af0b0"), "glyph": Color("ffd24a"), "suit": "star"},
 }
 
-var kind := "jack"
+var kind := "copper"
 var persist_id := ""
 
 var _told := false
@@ -54,7 +54,7 @@ func _physics_process(_delta: float) -> void:
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p == null or p.dead:
 		return
-	if kind == "sky" or kind == "joker":
+	if kind == "sky" or kind == "glass":
 		queue_redraw()
 	var touching := absf(p.global_position.x - global_position.x) < SIZE.x * 0.5 + 8.0 and absf(p.global_position.y - global_position.y) < 8.0
 	if not touching:
@@ -86,7 +86,7 @@ func _draw() -> void:
 	if kind == "sky":
 		_draw_sky_gate()
 		return
-	var card: Dictionary = CARDS.get(kind, CARDS.jack)
+	var card: Dictionary = CARDS.get(kind, CARDS.copper)
 	draw_rect(Rect2(-8, -48, 16, 48), card.dark)
 	draw_rect(Rect2(-7, -47, 14, 47), card.panel)
 	for y in [-40, -24, -8]:

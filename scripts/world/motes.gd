@@ -10,17 +10,17 @@ const VIEW := Vector2(640, 360)
 ## draws each mote as a short line along its drift, for rain), petal (optional:
 ## draws each mote as a tumbling petal)]
 const ZONES := {
-	"trunk": [46, Color("84cbd6"), Vector2(0, -7), 7.0, 0.25],
-	"eolis": [28, Color("f0dfa8"), Vector2(3, 4), 4.0, 0.1],
+	"heartwood": [46, Color("84cbd6"), Vector2(0, -7), 7.0, 0.25],
+	"hearthroot": [28, Color("f0dfa8"), Vector2(3, 4), 4.0, 0.1],
 	"tower": [34, Color("f0a050"), Vector2(-2, -12), 3.0, 0.15],
-	"mist": [40, Color("b8c8b0"), Vector2(6, 1), 9.0, 0.12],
-	"branches": [30, Color("d8f0a0"), Vector2(14, 3), 6.0, 0.1],
+	"haar": [40, Color("b8c8b0"), Vector2(6, 1), 9.0, 0.12],
+	"boughs": [30, Color("d8f0a0"), Vector2(14, 3), 6.0, 0.1],
 	# Carillon: rain driven hard on the storm wind.
-	"daybreak": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
+	"spires": [52, Color("c8c0f0"), Vector2(-60, 140), 1.0, 0.05, 6.0],
 	# Vorrhallow: motes of stillglass dust hanging over the drowned halls.
-	"dartmoor": [36, Color("e0a0f0"), Vector2(2, -5), 5.0, 0.15],
+	"vorrhallow": [36, Color("e0a0f0"), Vector2(2, -5), 5.0, 0.15],
 	# the Evercrown: cyan spores drifting up out of the Everbloom's flesh.
-	"zenis": [32, Color("70e8f0"), Vector2(0, -9), 6.0, 0.18],
+	"evercrown": [32, Color("70e8f0"), Vector2(0, -9), 6.0, 0.18],
 	# The Sunken Spring: specks of the spring's light rising through the dark.
 	"sunken": [28, Color("a0f0e8"), Vector2(0, -6), 4.0, 0.12],
 	# The inner rings: pale flecks hanging almost still.
@@ -32,15 +32,15 @@ const ZONES := {
 ## with the Everbloom dead (`cleared`) the Everbloom's dust settles out of Vorrhallow
 ## and its spores out of the Evercrown (design bible 4.4).
 const SETTLES := {
-	"daybreak": ["spring:sky", 0.3],
-	"dartmoor": ["cleared", 0.35],
-	"zenis": ["cleared", 0.2],
+	"spires": ["spring:sky", 0.3],
+	"vorrhallow": ["cleared", 0.35],
+	"evercrown": ["cleared", 0.2],
 }
 
 ## The Tree blooms (design bible 4.4, pass 141): on a cleared save a second
 ## layer of blossom drifts down through every zone of the living Tree.
 const BLOSSOM := [40, Color("ff9ec8"), Vector2(9, 16), 12.0, 0.6, 0.0, true]
-const BLOOMS := ["eolis", "trunk", "tower", "mist", "branches", "daybreak"]
+const BLOOMS := ["hearthroot", "heartwood", "tower", "haar", "boughs", "spires"]
 
 ## The table this layer reads its zone from: ZONES, or a blossom table.
 var table: Dictionary = ZONES

@@ -261,9 +261,9 @@ ANIMATIONS = [
 
 # The hero's body sets (paper doll, design bible 13.4): one sheet per armor, each holding only
 # the clips imported for it (art/autosprite/manifest.json); the game falls back to "player".
-BODY_SETS = ["hero_base", "hero_leather", "hero_studded", "hero_plate", "hero_battle", "hero_battle_helm"]
+BODY_SETS = ["hero_base", "hero_leather", "hero_riveted", "hero_plate", "hero_battle", "hero_battle_helm"]
 # Each set's attacks with the other blades (design bible 13.5), e.g. hero_plate_long_sword.
-BLADES = ["long_sword", "broad_sword", "dragon_slayer"]
+BLADES = ["long_sword", "broad_sword", "severance"]
 SHIELDS = ["small_shield", "large_shield", "magic_shield"]
 ARMOR_SHEETS = BODY_SETS + [f"{s}_{b}" for s in BODY_SETS for b in BLADES] + [f"{s}_{h}" for s in BODY_SETS for h in SHIELDS]
 # Their cells run 20 px deeper under the feet than the code rig's, for the Delver's Pick's head on a pogo.
