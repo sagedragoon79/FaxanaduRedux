@@ -152,6 +152,7 @@ func take_hit(damage: int, dir: Vector2) -> void:
 
 func _on_blocked(_dir: Vector2) -> void:
 	Sfx.play("guard", 0.1, -4.0)
+	turn_blade()
 
 
 ## Iron never staggers from a parry.
