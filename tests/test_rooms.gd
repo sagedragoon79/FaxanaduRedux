@@ -3083,3 +3083,76 @@ func test_eolis_walls_fill_from_one_large_texture() -> void:
 	var gym := make_room(["####", "####"])
 	check(gym.tiles.get_node_or_null("GroundFill") == null, "a zone without a texture keeps its painted tiles")
 	gym.queue_free()
+
+
+
+
+
+## Pass 443 (bible 6.5): a dash taken through a side door, by the buttons.
+## The door's `teleport` cut the dash at the door with no cooldown, and the
+## World gave its 380 px/s back, so the hero skidded into the next room at dash
+## speed for 8 frames without the dash, and could dash again at once.
+func test_a_dash_through_a_door_goes_on_in_the_next_room() -> void:
+	var tuning := MovementTuning.new()
+	var seen := {}
+	for where: String in ["open", "door"]:
+		var w := make_world(_rooms(), "test/a", cell_feet(36, 19) if where == "door" else cell_feet(12, 19))
+		var p := w.player
+		p.input = PlayerInput.new()
+		p.abilities.stride = true
+		await frames(5)
+		var x0 := p.global_position.x
+		Input.action_press("move_right")
+		Input.action_press("dash")
+		await frames(1)
+		Input.action_release("dash")
+		# Steps the dash ran (its clock moved, or it ended): the door's hold
+		# stops the clock, so the hold's own step is not counted.
+		var dash_steps := 0
+		var dashed_in_b := false
+		var skid := 0.0
+		var was := p._dash_timer
+		var was_dashing := p.is_dashing
+		for i in 14:
+			await frames(1)
+			if (p.is_dashing and p._dash_timer < was) or (was_dashing and not p.is_dashing):
+				dash_steps += 1
+			if p.is_dashing:
+				dashed_in_b = dashed_in_b or w.room.id == "test/b"
+			else:
+				skid = maxf(skid, absf(p.velocity.x))
+			was = p._dash_timer
+			was_dashing = p.is_dashing
+		var cooldown := p._dash_cooldown
+		# A press now, on the cooldown: held, not dashed at once.
+		Input.action_press("dash")
+		await frames(2)
+		var again_at_once := p.is_dashing
+		Input.action_release("dash")
+		Input.action_release("move_right")
+		seen[where] = [dash_steps, dashed_in_b, skid, cooldown, again_at_once, w.room.id]
+		w.queue_free()
+		await frames(2)
+	var o: Array = seen.open
+	var d: Array = seen.door
+	check(d[5] == "test/b" and d[1], "dashed into the side door, the hero is still dashing in B (%s)" % [d])
+	check(d[0] == o[0], "and the dash lasts its %d steps, as on open ground (%d)" % [o[0], d[0]])
+	check(d[2] <= tuning.run_speed + 0.5, "once it ends the hero runs at %.0f px/s, no skid at dash speed (%.0f)" % [tuning.run_speed, d[2]])
+	check(d[3] > 0.0 and not d[4], "the dash's cooldown runs after it, so a press then is held (%.2f s)" % d[3])
+	# Any other door ends a dash as a dash ends: at a run, on its cooldown.
+	var w2 := make_world(_rooms(), "test/a", cell_feet(12, 19))
+	var p2 := w2.player
+	p2.abilities.stride = true
+	await frames(5)
+	p2.input.dash_pressed = true
+	p2.input.move_x = 1
+	await frames(2)
+	check(p2.is_dashing, "a dash is under way")
+	p2.arrive_through_door(cell_feet(14, 19), p2.velocity, false)
+	check(not p2.is_dashing and absf(p2.velocity.x) <= tuning.run_speed + 0.5 and p2._dash_cooldown > 0.0,
+		"through a floor or inner door it ends at a run, on its cooldown (%.0f px/s, %.2f s)" % [p2.velocity.x, p2._dash_cooldown])
+	p2.input.move_x = 0
+	w2.queue_free()
+	await frames(2)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.5 ", 1).get_slice("\n### 6.6 ", 0)
+	check(note.contains("Through a door (pass 443)"), "6.5 says so")

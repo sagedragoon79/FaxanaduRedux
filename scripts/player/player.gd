@@ -2018,6 +2018,25 @@ func teleport(pos: Vector2) -> void:
 	_refresh_air_moves()
 
 
+## Puts you in the next room at a door's far side, moving at `vel` (pass 443).
+## A dash taken through a side door goes on there for the time it had left.
+## Any other door ends it as a dash ends, at a run and on its cooldown.
+## `teleport` alone had cut the dash at the door with no cooldown, and the
+## World then gave back its 380 px/s, so the hero skidded into the room at
+## dash speed for 8 frames without the dash, and could dash again at once.
+func arrive_through_door(pos: Vector2, vel: Vector2, side: bool) -> void:
+	var dash_left := _dash_timer if is_dashing else 0.0
+	teleport(pos)
+	velocity = vel
+	if dash_left <= 0.0:
+		return
+	if side:
+		_dash_timer = dash_left
+	else:
+		_dash_cooldown = tuning.ground_dash_cooldown
+		velocity.x = clampf(velocity.x, -tuning.run_speed, tuning.run_speed)
+
+
 # --- Effects --------------------------------------------------------------------
 
 func _spawn_run_dust() -> void:

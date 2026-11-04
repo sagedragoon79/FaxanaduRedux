@@ -494,8 +494,7 @@ func _place_at_door(door: Dictionary, vel: Vector2) -> void:
 			vel.y = RISE_SPEED
 		"inner":
 			vel = Vector2.ZERO
-	player.teleport(pos)
-	player.velocity = vel
+	player.arrive_through_door(pos, vel, door.edge in ["left", "right"])
 	# The arrival is the room's first safe spot, through any door: through a
 	# floor or ceiling door it is the point under or over the opening (pass
 	# 151). It had been left as the last room's footing until the first
