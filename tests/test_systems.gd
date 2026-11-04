@@ -2827,6 +2827,88 @@ func test_the_ointment_is_rubbed_on_with_the_buttons() -> void:
 	check(note.contains("`test_the_ointment_is_rubbed_on_with_the_buttons`"), "the bible names the test")
 
 
+## Pass 460 (bible 3.1): the Boss Rush entered and left by the buttons. Every
+## rush test began it with `BossRush.start` and left by a call. The whole game,
+## in the Guru's temple with every guardian down: Up at the Guru, Down to Boss
+## Rush, Jump, and the mantra carries the hero into the first arena; then Pause,
+## Down to "Leave the rush", Jump, and he is back by the Guru, the clock stopped,
+## the guardian's music gone and no arena still fighting.
+func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
+	Settings.path = TEMP_SETTINGS
+	GameState.new_game()
+	GameState.set_flag("lord")
+	for pair: Array in BossRush.ORDER:
+		GameState.set_flag("boss:" + String(pair[0]))
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start(Trials.TEMPLE)
+	g.world.use_game_state = false
+	var p: Player = g.player
+	var menu: ListMenu = g.menu
+	await frames(30)
+	p.teleport(cell_feet(21, 19))
+	await frames(10)
+	var flags_before: Dictionary = GameState.data.flags.duplicate()
+	var by_guru := p.global_position
+	p.hp = 5
+	await _tap("move_up")
+	check(menu.is_open, "Up at the Guru opens his menu")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var downs := 0
+	while String(menu.rows[menu.cursor].label) != "Boss Rush" and downs < 10:
+		await _tap("move_down")
+		downs += 1
+	check(String(menu.rows[menu.cursor].label) == "Boss Rush", "Down finds Boss Rush (%d presses)" % downs)
+	Sfx.recent.clear()
+	await _tap("jump")
+	check(BossRush.active() and not menu.is_open and Sfx.recent.has("trial_begin"), "Jump begins the rush (%s)" % [Sfx.recent])
+	check(p.hp == p.max_hp, "whole")
+	var first := String(BossRush.ORDER[0][1])
+	var waited := 0
+	while (g.world.room.id != first or g.world.busy) and waited < 240:
+		await frames(1)
+		waited += 1
+	check(g.world.room.id == first, "and the mantra carries him into the first arena (%s)" % g.world.room.id)
+	await frames(20)
+	Input.action_press("move_right")
+	waited = 0
+	while not BossArena.any_fighting(arena.get_tree()) and waited < 240:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	await frames(30)
+	var fight_track := String(Music.track)
+	check(BossArena.any_fighting(arena.get_tree()) and fight_track != "", "Right walks him in: the doors seal and the guardian's music plays (%s)" % fight_track)
+	await _tap("pause")
+	check(menu.is_open and arena.get_tree().paused, "Pause opens the menu in the arena")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	downs = 0
+	while String(menu.rows[menu.cursor].label) != "Leave the rush" and downs < 12:
+		await _tap("move_down")
+		downs += 1
+	check(String(menu.rows[menu.cursor].label) == "Leave the rush", "Down finds Leave the rush (%d presses)" % downs)
+	await _tap("jump")
+	waited = 0
+	while (g.world.room.id != Trials.TEMPLE or g.world.busy) and waited < 240:
+		await frames(1)
+		waited += 1
+	await frames(30)
+	check(g.world.room.id == Trials.TEMPLE and p.global_position.distance_to(by_guru) < 24.0, "Jump takes him back by the Guru (%s, %.0f px)" % [g.world.room.id, p.global_position.distance_to(by_guru)])
+	check(not BossRush.active() and not menu.is_open and not arena.get_tree().paused, "the rush is over and the game runs")
+	check(not BossArena.any_fighting(arena.get_tree()), "no arena is still fighting")
+	check(String(Music.track) != fight_track, "and the guardian's music is gone (%s)" % Music.track)
+	check(GameState.data.flags == flags_before, "the world is as he left it")
+	g.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_boss_rush_is_entered_and_left_with_the_buttons`"), "the bible names the test")
+
+
 
 ## Pass 351 (bible 15.3, Sanitizing): a hand-edited save with a flag of
 ## "yes" stopped the title's flask with a script error, so a full flask read
