@@ -1119,6 +1119,67 @@ func test_a_skill_is_learned_and_unlearned_with_the_buttons() -> void:
 	check(bible.contains("`test_a_skill_is_learned_and_unlearned_with_the_buttons`"), "9 names the test")
 
 
+## Pass 454 (bible 13.3): the Guru's pages, heard through the buttons. Pass 398
+## heard every press in a list menu, but never in the Guru's own pages: Down
+## blips, Jump on a skill rings the rank chime, Jump on a learned one says no,
+## Dash backs out quietly, Unlearn skills is heard as a mending, Unlearn with
+## nothing learned says no, and Jump on a stop of the Mantra Path is heard by
+## the save chime once. No press that closes a page is heard as a jump.
+func test_the_gurus_pages_are_heard_through_the_buttons() -> void:
+	var a := grid_rows(40, 23)
+	put_tiles(a, 5, 19, "P")
+	var rooms := {"test/town": room_text(["name: Town", "zone: test", "npc: 8, 19, guru"], a),
+		"test/far": room_text(["name: Far", "zone: test", "npc: 8, 19, guru"], a)}
+	var w := make_world(rooms, "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	GameState.data.skill_points = 3
+	GameState.meet_guru("test/far", Vector2(8 * Room.TILE + 8, 20 * Room.TILE))
+	GameState.set_flag("spring:trunk")
+	p.gold = 1000
+	var grace := int(ListMenu.INPUT_GRACE * 60.0) + 2
+	var heard := func(action: String) -> Array:
+		Sfx.recent.clear()
+		await _tap_for_real(action)
+		return Sfx.recent.duplicate()
+	await _tap_for_real("move_up")
+	await frames(grace)
+	var got: Array = await heard.call("move_down")
+	check(got == ["blip"], "Down on the Guru's menu blips (%s)" % [got])
+	await _tap_for_real("jump")
+	await frames(grace)
+	check(menu.title == "Skills", "Jump opens the skills")
+	got = await heard.call("jump")
+	check(got == ["rank"], "Jump on a skill learns it with the rank chime (%s)" % [got])
+	got = await heard.call("jump")
+	check(got == ["menu_refuse"], "Jump on it again says no (%s)" % [got])
+	got = await heard.call("dash")
+	check(got.is_empty() and not menu.is_open, "Dash backs out to play quietly (%s)" % [got])
+	await frames(grace)
+	await _tap_for_real("move_up")
+	await frames(grace)
+	await _tap_for_real("move_down")
+	await _tap_for_real("move_down")
+	got = await heard.call("jump")
+	check(got == ["heal"], "Jump on Unlearn skills is heard as a mending (%s)" % [got])
+	got = await heard.call("jump")
+	check(got == ["menu_refuse"], "and again, with nothing learned, says no (%s)" % [got])
+	await _tap_for_real("move_down")
+	await _tap_for_real("jump")
+	check(menu.title == "Mantra Path", "Down and Jump open the Mantra Path")
+	await frames(grace)
+	got = await heard.call("jump")
+	await frames(4)
+	check(got.count("save") == 1 and not got.has("jump"), "Jump on a stop is heard by the save chime once, never as a jump (%s)" % [got])
+	check(w.room.id == "test/far", "and walks you there")
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_gurus_pages_are_heard_through_the_buttons`"), "13.3 names the test")
+
+
 func _tap_for_real(action: String) -> void:
 	Input.action_press(action)
 	await frames(2)
