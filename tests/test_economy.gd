@@ -1537,6 +1537,52 @@ func test_the_mantra_path_joins_the_gurus_after_a_spring() -> void:
 	menu.queue_free()
 
 
+## Pass 451 (bible 4.4): the Mantra Path by the buttons. Up at a Guru opens his
+## menu, Down walks to "Mantra Path", Jump opens it and Jump again walks you to
+## the other Guru. Play goes on there unpaused, the menu shut, the hero standing
+## on the floor a step from him, and the Jump that chose the stop is not taken
+## as a jump on arrival.
+func test_the_mantra_path_is_walked_with_the_buttons() -> void:
+	var w := make_world({}, "tower/forepaw")
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	GameState.meet_guru("trunk/apolune", Vector2(12 * Room.TILE + 8, 20 * Room.TILE))
+	GameState.set_flag("spring:trunk")
+	var guru: Npc = null
+	for n in w.room.get_children():
+		if n is Npc and (n as Npc).npc_id == "guru":
+			guru = n
+	p.teleport(guru.global_position)
+	await frames(6)
+	await _tap_for_real("move_up")
+	check(menu.is_open and menu.title == "Guru", "Up at the Guru opens his menu (%s)" % menu.title)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var presses := 0
+	while menu.cursor != 3 and presses < 6:
+		await _tap_for_real("move_down")
+		presses += 1
+	check(menu.cursor == 3 and menu.rows[3].label == "Mantra Path", "Down walks to the Mantra Path (%d presses)" % presses)
+	await _tap_for_real("jump")
+	check(menu.is_open and menu.title == "Mantra Path" and menu.rows[0].label == "Apolune", "Jump opens it, listing Apolune")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap_for_real("jump")
+	await frames(6)
+	check(w.room.id == "trunk/apolune", "Jump on Apolune walks you there (%s)" % w.room.id)
+	check(not menu.is_open and not arena.get_tree().paused, "with the menu shut and play going on")
+	check(p.is_on_floor() and absf(p.velocity.y) < 1.0, "standing on the floor: the Jump that chose the stop is not a jump (vy %.0f)" % p.velocity.y)
+	check(absf(p.global_position.x - (12 * Room.TILE + 8 + Menus.MANTRA_STEP)) < 4.0, "a step from the Guru (%.0f)" % p.global_position.x)
+	var x0 := p.global_position.x
+	Input.action_press("move_right")
+	await frames(20)
+	Input.action_release("move_right")
+	check(p.global_position.x > x0 + 20.0, "and the real Right walks on at once (%.0f px)" % (p.global_position.x - x0))
+	menu.queue_free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_mantra_path_is_walked_with_the_buttons`"), "the bible names the test")
+
+
 func test_the_forepaw_forge_rings_and_throws_sparks() -> void:
 	var w := make_world({}, "tower/forepaw")
 	await frames(2)
