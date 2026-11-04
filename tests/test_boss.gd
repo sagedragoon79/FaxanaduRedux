@@ -4981,12 +4981,16 @@ func test_a_guardians_guard_turns_the_blade_back() -> void:
 		var hp0 := b.hp
 		var hits0 := b.hits_taken
 		p.input = PlayerInput.new()
+		Sfx.recent.clear()
 		await press_for_real(p, ["attack"])
 		release_for_real(["attack"])
 		var push := 0.0
 		for i in 4:
 			push = minf(push, p.velocity.x)
 			await frames(1)
+		# Pass 446: heard as a guard, not as a cut.
+		var heard: Array = Sfx.recent.filter(func(n: String) -> bool: return n in ["hit", "guard"])
+		check(heard == ["guard"], "%s's turned slash is heard by the guard's thud alone (%s)" % [which, heard])
 		check(b.hits_taken == hits0 + 1 and b.hp == hp0,
 			"%s's guard turns a slash pressed for real (%d hits, %d -> %d)" % [which, b.hits_taken - hits0, hp0, b.hp])
 		check(push <= -c.turned_blade_push + 1.0, "and pushes the hero back at %.0f px/s, as an ordinary foe's guard does (%.0f)" % [c.turned_blade_push, push])

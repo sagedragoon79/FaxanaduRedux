@@ -233,6 +233,7 @@ var frozen := false:
 ## it can tell a blade at arm's length from a bolt or a thrown blade (pass 442).
 var _striking := false
 var _blade_turned := false
+var _turned_now := false
 ## Set by a screen that read this frame's press (the dialog box, pass 431):
 ## the hero's next step drops its presses, so the press is not read twice.
 var drop_next_presses := false
@@ -1174,6 +1175,10 @@ func _process_attack_hits() -> void:
 	var bounced := false
 	var hit_something := false
 	var hit_foe := false
+	# Something gave way: a blow a guard did not turn, or stone broken. A
+	# swing that only met guards clangs (the guard's thud) and is not heard
+	# as a cut (pass 446).
+	var cut := false
 	_blade_turned = false
 	for collider: Variant in _query_rect(rect, LAYER_WORLD | LAYER_HAZARD | LAYER_ENEMY):
 		var id: int = collider.get_instance_id()
@@ -1183,6 +1188,7 @@ func _process_attack_hits() -> void:
 		if collider.is_in_group("breakable") and abilities.mattock:
 			collider.break_block()
 			hit_something = true
+			cut = true
 			continue
 		if collider.has_method("take_hit"):
 			var dir := Vector2(facing, 0) if attack_kind in ["side", "thrust"] else Vector2(0, 1 if attack_kind == "down" else -1)
@@ -1193,8 +1199,10 @@ func _process_attack_hits() -> void:
 				damage = roundi(damage * combat.executioner_mult)
 				Sfx.play("execute", 0.05, -3.0)
 			_striking = true
+			_turned_now = false
 			collider.take_hit(damage, dir * (1.8 if is_heavy_swing else 1.0))
 			_striking = false
+			cut = cut or not _turned_now
 			hit_foe = true
 			if bloodletting and open and hp < max_hp:
 				hp = mini(hp + BLOODLETTING_HEAL, max_hp)
@@ -1219,7 +1227,8 @@ func _process_attack_hits() -> void:
 		Feel.hitstop(combat.heavy_hitstop if is_heavy_swing else combat.hit_hitstop)
 		Feel.add_trauma(0.3 if is_heavy_swing else 0.15)
 		Feel.rumble(0.3, 0.2 if is_heavy_swing else 0.0, 0.08)
-		Sfx.play("hit", 0.08, 2.0 if is_heavy_swing else 0.0)
+		if cut:
+			Sfx.play("hit", 0.08, 2.0 if is_heavy_swing else 0.0)
 		if attack_kind in ["side", "thrust"]:
 			velocity.x = -facing * (combat.turned_blade_push if _blade_turned else tuning.slash_recoil)
 			# A thrust's lunge stops at what it strikes; it doesn't carry you into it.
@@ -1578,6 +1587,7 @@ func _field_cues(delta: float) -> void:
 func blade_turned() -> void:
 	if _striking:
 		_blade_turned = true
+		_turned_now = true
 
 
 ## The MP a spell costs you now: Thrift for every spell, and Mantra of Death
