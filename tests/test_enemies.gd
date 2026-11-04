@@ -28,7 +28,7 @@ func _find(room: Room, type: Variant) -> Node:
 	return null
 
 
-func test_monodron_telegraphs_then_hops_toward_player() -> void:
+func test_blinkhop_telegraphs_then_hops_toward_player() -> void:
 	var room := _room_with({Vector2i(12, 6): "M"})
 	var p := make_player(room, Vector2i(5, 6))
 	p.max_hp = 9999
@@ -354,7 +354,7 @@ func test_lantern_ghost_shows_only_near_light_and_lunges_through_walls() -> void
 	put_tiles(rows, 6, 19, "P")
 	put_tiles(rows, 14, 4, "#", 1, 16)
 	put_tiles(rows, 16, 16, "A")
-	var w := make_world({"test/a": room_text(["name: Fog", "zone: mist"], rows)}, "test/a")
+	var w := make_world({"test/a": room_text(["name: Fog", "zone: haar"], rows)}, "test/a")
 	var p := w.player
 	p.max_hp = 9999
 	p.hp = 9999
@@ -391,7 +391,7 @@ func test_lantern_ghost_shows_only_near_light_and_lunges_through_walls() -> void
 ## Bible 7: the Bog Puffcap swells with glowing gills (a telegraph that lights
 ## the fog), bursts into a spore cloud that stings and can't be parried, and is soft
 ## while spent.
-func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
+func test_bog_puffcap_swells_bursts_spores_and_is_soft_when_spent() -> void:
 	var room := _room_with({Vector2i(20, 6): "V"})
 	var p := make_player(room, Vector2i(18, 6))
 	p.max_hp = 9999
@@ -432,7 +432,7 @@ func test_bog_myconid_swells_bursts_spores_and_is_soft_when_spent() -> void:
 		if not is_instance_valid(cloud):
 			break
 	check(not is_instance_valid(cloud), "the cloud thins away")
-	check(firm, "and the myconid firms up again")
+	check(firm, "and the puffcap firms up again")
 	m.set_state("idle")
 	before = m.hp
 	m.take_hit(10, Vector2.RIGHT)
@@ -1031,7 +1031,7 @@ func test_clockwork_hound_stops_dead_in_stopped_time() -> void:
 
 
 ## Bible 8.9: everything in the Evercrown is a corrupted remix: tougher, richer, crystal grown through it.
-func test_zenis_foes_are_corrupted_with_meteor_crystal() -> void:
+func test_evercrown_foes_are_corrupted_with_meteor_crystal() -> void:
 	var rows := _room_rows({Vector2i(5, 6): "s", Vector2i(12, 6): "q", Vector2i(20, 6): "e"})
 	var plain := Room.from_text("\n".join(PackedStringArray(rows)))
 	arena.add_child(plain)
@@ -1040,14 +1040,14 @@ func test_zenis_foes_are_corrupted_with_meteor_crystal() -> void:
 	var base_hp := slug.max_hp
 	plain.queue_free()
 	await frames(1)
-	var room := Room.from_text("zone: zenis\n---\n" + "\n".join(PackedStringArray(rows)))
+	var room := Room.from_text("zone: evercrown\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(room)
 	var foes := room.get_children().filter(func(c: Node) -> bool: return c is Enemy)
 	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "in the Evercrown every foe is corrupted")
 	var cslug: GlassSlug = _find(room, GlassSlug)
 	check(cslug.max_hp == ceili(base_hp * Enemy.CORRUPT_HP) and cslug.hp == cslug.max_hp, "and tougher (%d vs %d)" % [cslug.max_hp, base_hp])
 	check(cslug.get_children().any(func(c: Node) -> bool: return c is CorruptionGrowth), "with the Everbloom's crystal grown through it")
-	var off := Room.from_text("zone: zenis\ncorrupted: false\n---\n" + "\n".join(PackedStringArray(rows)))
+	var off := Room.from_text("zone: evercrown\ncorrupted: false\n---\n" + "\n".join(PackedStringArray(rows)))
 	arena.add_child(off)
 	check(not (_find(off, GlassSlug) as Enemy).corrupted, "a room can say otherwise")
 	await frames(30)
@@ -1870,7 +1870,7 @@ func test_the_marsh_hag_backs_away_when_you_close_in() -> void:
 
 ## Pass 120: every enemy shot and ground hazard the Stillstone should hold
 ## checks it, the Marsh Hag's hex among them (it was missed in pass 119).
-func test_every_enemy_shot_honours_the_hour_glass() -> void:
+func test_every_enemy_shot_honours_the_stillstone() -> void:
 	var missing: Array[String] = []
 	var shots := 0
 	for dir in ["res://scripts/enemies", "res://scripts/bosses"]:
@@ -2061,10 +2061,10 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 		"bark_captain": ["bough_vault", "lance_plant"],
 		"hag_matriarch": ["matriarch_cackle", "bog_sink", "bog_rise"],
 		# The Bloom and its brood (pass 262).
-		"lilith": ["lilith_screech", "lilith_dive"],
-		"pakukame": ["bloom_brood", "brood_loose"],
+		"mothling": ["mothling_screech", "mothling_dive"],
+		"snapcrown": ["bloom_brood", "brood_loose"],
 		# The source game's Silt Adder (pass 273).
-		"naga": ["naga_hiss", "naga_strike"],
+		"silt_adder": ["silt_adder_hiss", "silt_adder_strike"],
 	}
 	# A family's mini-boss speaks with its kin's voice, only louder (pass 171).
 	var kin := {"bark_knight": ["bark_captain"], "marsh_hag": ["hag_matriarch"]}
@@ -2093,18 +2093,18 @@ func test_the_newer_foes_have_voices_of_their_own() -> void:
 ## Each the Evercrown room is loaded for real: every foe in it is corrupted, and the
 ## families found cover the Heartwood, the Tower, the Haar, the High Boughs, Carillon
 ## and Vorrhallow.
-func test_zenis_holds_a_remix_of_every_zones_foes() -> void:
+func test_evercrown_holds_a_remix_of_every_zones_foes() -> void:
 	var homes := {
-		"trunk": ["RotDwarf", "Blinkhop", "GrubLump", "SapSpitter"],
+		"heartwood": ["RotDwarf", "Blinkhop", "GrubLump", "SapSpitter"],
 		"tower": ["IronDwarf", "GearBat", "MinecartRider"],
-		"mist": ["LanternGhost", "BogPuffcap", "DrownedDwarf", "MarshHag"],
-		"branches": ["LeafMantis", "BarkKnight", "SeedBomber"],
-		"daybreak": ["StormHarpy", "ThunderBeetle", "SpireSentinel"],
-		"dartmoor": ["CrystalDwarf", "ClockworkHound", "ShadeKnight", "GlassSlug"],
+		"haar": ["LanternGhost", "BogPuffcap", "DrownedDwarf", "MarshHag"],
+		"boughs": ["LeafMantis", "BarkKnight", "SeedBomber"],
+		"spires": ["StormHarpy", "ThunderBeetle", "SpireSentinel"],
+		"vorrhallow": ["CrystalDwarf", "ClockworkHound", "ShadeKnight", "GlassSlug"],
 	}
 	var found := {}
 	var total := 0
-	for id: String in ["zenis/threshold", "zenis/heart_stair", "zenis/drift_well", "zenis/heart_gate"]:
+	for id: String in ["evercrown/threshold", "evercrown/heart_stair", "evercrown/drift_well", "evercrown/heart_gate"]:
 		GameState.new_game()
 		var room := Room.from_text(FileAccess.get_file_as_string(World.room_path(id)), id)
 		arena.add_child(room)
@@ -2189,7 +2189,7 @@ func test_every_wind_up_in_the_game_is_fair() -> void:
 	check(short.is_empty(), "each lasts at least %.2f s: %s" % [Enemy.MIN_TELEGRAPH, short])
 	check(unclamped.is_empty(), "each quickened tell is clamped to it: %s" % [unclamped])
 	spawners.sort()
-	check(spawners == ["crystal_dwarf.gd", "evil_avatar.gd", "evil_heart.gd", "king_grieve.gd"], "the crystal spikes have four casters (%s)" % [spawners])
+	check(spawners == ["crystal_dwarf.gd", "everbloom_avatar.gd", "everbloom_heart.gd", "thane_vorrund.gd"], "the crystal spikes have four casters (%s)" % [spawners])
 	# Each caster's tell before an eruption, at its quickest phase.
 	check(CrystalDwarf.WINDUP >= Enemy.MIN_TELEGRAPH, "the Crystal Dwarf winds up first")
 	var avatar := EvilAvatar.new()
@@ -2209,7 +2209,7 @@ func test_every_wind_up_in_the_game_is_fair() -> void:
 ## most often over the ladders. It keeps its column while it swings; level
 ## with it and in front, it hoods and hisses for at least the telegraph, then
 ## strikes straight out along that level, and glides back to its column.
-func test_the_naga_floats_its_column_and_strikes_level() -> void:
+func test_the_silt_adder_floats_its_column_and_strikes_level() -> void:
 	var rows: Array = ["##############################"]
 	for i in 12:
 		rows.append("#............................#")
@@ -2257,7 +2257,7 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 		if p.hp < hp and n.state != "strike" and not struck_y.is_empty():
 			break
 	check(coil / 60.0 >= Enemy.MIN_TELEGRAPH, "it hoods before it strikes (%d frames)" % coil)
-	check(Sfx.recent.has("naga_hiss") and Sfx.recent.has("naga_strike"), "with a hiss, then the strike (%s)" % [Sfx.recent])
+	check(Sfx.recent.has("silt_adder_hiss") and Sfx.recent.has("silt_adder_strike"), "with a hiss, then the strike (%s)" % [Sfx.recent])
 	check(not struck_y.is_empty() and (struck_y.max() - struck_y.min()) < 1.0, "the strike runs straight along its level")
 	check(p.hp < hp, "and bites (%d)" % (hp - p.hp))
 	# Out of line, above its swing, it only floats; and it glides back to its column.
@@ -2286,7 +2286,7 @@ func test_the_naga_floats_its_column_and_strikes_level() -> void:
 ## level with a hero on the ground never reached them.
 ## Bible 7 (pass 281): as in the source game, a slain Silt Adder always leaves the
 ## largest bread there is, a great loaf, and eating it heals LOAF_HEAL.
-func test_a_slain_naga_leaves_a_great_loaf() -> void:
+func test_a_slain_silt_adder_leaves_a_great_loaf() -> void:
 	var rows: Array = ["##############################"]
 	for i in 12:
 		rows.append("#............................#")
@@ -2325,7 +2325,7 @@ func test_a_slain_naga_leaves_a_great_loaf() -> void:
 
 ## Pass 289: as in the source game, a slain Puffcap always leaves bread, even
 ## with every drop chance at zero, and eating it heals a bread's worth.
-func test_a_slain_myconid_leaves_bread() -> void:
+func test_a_slain_puffcap_leaves_bread() -> void:
 	var room := make_room(["##############################", "#............................#", "#............................#", "#............................#", "#............................#", "##############################"])
 	var p := make_player(room, Vector2i(3, 4))
 	await frames(5)
@@ -2356,7 +2356,7 @@ func test_a_slain_myconid_leaves_bread() -> void:
 	room.free()
 
 
-func test_the_nagas_bite_can_be_parried() -> void:
+func test_the_silt_adders_bite_can_be_parried() -> void:
 	var rows: Array = ["##############################"]
 	for i in 12:
 		rows.append("#............................#")
@@ -2406,7 +2406,7 @@ func test_the_nagas_bite_can_be_parried() -> void:
 ## stop the movement of the enemy for a fixed period of time". The remake's
 ## stops what foes loose and time-locked water, and only clockwork foes stop
 ## dead; the rest go on, so a turn of the glass is a tool, not a pause.
-func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
+func test_the_stillstone_stops_clockwork_and_lets_other_foes_go_on() -> void:
 	var room := _room_with({Vector2i(14, 6): "D", Vector2i(24, 6): "j"})
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(30)
@@ -2433,7 +2433,7 @@ func test_the_hour_glass_stops_clockwork_and_lets_other_foes_go_on() -> void:
 func test_every_foes_numbers_are_written_in_bible_7() -> void:
 	# Foe: [script, wind-up constant, blow: [script, constant] or "contact"].
 	const FOES := {
-		"Blinkhop": ["monodron", "WINDUP", "contact"],
+		"Blinkhop": ["blinkhop", "WINDUP", "contact"],
 		"Hornet": ["hornet", "WINDUP", "contact"],
 		"Rot Dwarf": ["rot_dwarf", "WINDUP", ["rot_dwarf", "SWING_DAMAGE"]],
 		"Grub Lump": ["grub_lump", "WINDUP", ["grub_lump", "DROP_DAMAGE"]],
@@ -2441,15 +2441,15 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 		"Iron Dwarf": ["iron_dwarf", "WINDUP", ["iron_dwarf", "SLAM_DAMAGE"]],
 		"Minecart Rider": ["minecart_rider", "REV", ["minecart_rider", "CHARGE_CONTACT"]],
 		"Gear Bat": ["gear_bat", "WINDUP", ["gear_blade", "DAMAGE"]],
-		"Silt Adder": ["naga", "WINDUP", ["naga", "BITE_DAMAGE"]],
+		"Silt Adder": ["silt_adder", "WINDUP", ["silt_adder", "BITE_DAMAGE"]],
 		"Lantern Ghost": ["lantern_ghost", "WINDUP", ["lantern_ghost", "LUNGE_DAMAGE"]],
-		"Bog Puffcap": ["bog_myconid", "WINDUP", ["spore_cloud", "DAMAGE"]],
+		"Bog Puffcap": ["bog_puffcap", "WINDUP", ["spore_cloud", "DAMAGE"]],
 		"Drowned Dwarf": ["drowned_dwarf", "HEAVE", ["drowned_dwarf", "SLAM_DAMAGE"]],
 		"Marsh Hag": ["marsh_hag", "HEX", ["mire_grasp", "DAMAGE"]],
 		"Leaf Mantis": ["leaf_mantis", "UNFOLD", ["leaf_mantis", "SLASH_DAMAGE"]],
 		"Bark Knight": ["bark_knight", "BRACE", ["bark_knight", "THRUST_DAMAGE"]],
 		"Seed Bomber": ["seed_bomber", "WINDUP", ["bomber_seed", "DAMAGE"]],
-		"Mothling": ["lilith", "WINDUP", ["lilith", "TOUCH_DAMAGE"]],
+		"Mothling": ["mothling", "WINDUP", ["mothling", "TOUCH_DAMAGE"]],
 		"Storm Harpy": ["storm_harpy", "WINDUP", ["harpy_feather", "DAMAGE"]],
 		"Thunder Beetle": ["thunder_beetle", "CHARGE", ["thunder_beetle", "DISCHARGE_DAMAGE"]],
 		"Spire Sentinel": ["spire_sentinel", "RAISE", ["spire_sentinel", "SLAM_DAMAGE"]],
@@ -2515,7 +2515,7 @@ func test_every_foes_numbers_are_written_in_bible_7() -> void:
 	rot.free()
 	# A real kill pays what the row says: its experience as written, and its
 	# gold times its room's threat (a Vorrhallow room, threat 2).
-	var room := Room.from_text("zone: dartmoor\n---\n" + "\n".join(PackedStringArray(WIDE)))
+	var room := Room.from_text("zone: vorrhallow\n---\n" + "\n".join(PackedStringArray(WIDE)))
 	arena.add_child(room)
 	var p := make_player(room, Vector2i(3, 6))
 	p.max_hp = 9999

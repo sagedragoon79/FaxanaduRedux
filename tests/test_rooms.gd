@@ -198,25 +198,25 @@ func test_a_dropped_purse_survives_a_save_and_load() -> void:
 func test_act_one_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
 	GameState.slot = SAVE_SLOT
-	GameState.set_flag("spring:trunk")
-	GameState.set_flag("boss:zoradohna")
-	GameState.meet_guru("trunk/apolune", Vector2(200, 320))
-	GameState.meet_guru("tower/forepaw", Vector2(168, 320))
+	GameState.set_flag("spring:heartwood")
+	GameState.set_flag("boss:durgan")
+	GameState.meet_ringreader("heartwood/amberlee", Vector2(200, 320))
+	GameState.meet_ringreader("tower/kettleforge", Vector2(168, 320))
 	GameState.data.tempers["short_sword"] = 2
 	GameState.data.named_rank = 3
-	GameState.data.mantra_shards = 2
-	GameState.data.abilities["mattock"] = true
+	GameState.data.grain_shards = 2
+	GameState.data.abilities["delvers_pick"] = true
 	check(GameState.save_game(), "the save writes")
 	GameState.new_game()
-	check(GameState.mantra_stops("").is_empty() and not GameState.mantra_path_open(), "a new game forgets it all")
+	check(GameState.grain_stops("").is_empty() and not GameState.grain_road_open(), "a new game forgets it all")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
-	check(GameState.mantra_path_open() and GameState.flag("boss:zoradohna"), "spring and boss flags survive")
-	check(GameState.mantra_stops("trunk/apolune") == ["tower/forepaw"], "Grain Road stops survive")
-	var at: Array = GameState.data.gurus["tower/forepaw"]
+	check(GameState.grain_road_open() and GameState.flag("boss:durgan"), "spring and boss flags survive")
+	check(GameState.grain_stops("heartwood/amberlee") == ["tower/kettleforge"], "Grain Road stops survive")
+	var at: Array = GameState.data.ringreaders["tower/kettleforge"]
 	check(is_equal_approx(float(at[0]), 168.0), "with their positions")
 	check(GameState.temper_level("short_sword") == 2, "the blade's temper survives")
-	check(int(GameState.data.named_rank) == 3 and int(GameState.data.mantra_shards) == 2, "title and shards survive")
-	check(GameState.has_ability("mattock"), "the Delver's Pick survives")
+	check(int(GameState.data.named_rank) == 3 and int(GameState.data.grain_shards) == 2, "title and shards survive")
+	check(GameState.has_ability("delvers_pick"), "the Delver's Pick survives")
 	GameState.delete_save(SAVE_SLOT)
 	GameState.slot = slot_was
 
@@ -227,30 +227,30 @@ func test_act_one_state_survives_a_save_round_trip() -> void:
 ## card vaults opened. A damaged key entry is dropped, never a crash.
 func test_late_additions_survive_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
-	var w := make_world({}, "zenis/threshold")
+	var w := make_world({}, "evercrown/threshold")
 	var p := w.player
 	await frames(2)
 	GameState.slot = SAVE_SLOT
-	GameState.add_key("queen", 2)
-	GameState.add_key("joker")
+	GameState.add_key("silver", 2)
+	GameState.add_key("glass")
 	GameState.data.keys["lantern"] = true
-	GameState.data.equipment.helmet = "battle_helmet"
+	GameState.data.equipment.helmet = "elven_helm"
 	GameState.refresh_stats(p)
 	var top := p.max_hp
 	GameState.data.trials["walls"] = 31.5
-	GameState.collect("mist/feather_hollow:4,19")
+	GameState.collect("haar/feather_hollow:4,19")
 	check(GameState.save_game(), "the save writes")
 	GameState.new_game()
 	check(GameState.load_game(SAVE_SLOT), "and loads")
-	check(GameState.key_count("queen") == 2 and GameState.key_count("joker") == 1, "the card keys survive")
+	check(GameState.key_count("silver") == 2 and GameState.key_count("glass") == 1, "the card keys survive")
 	check(GameState.data.keys.get("lantern") == true, "and the Lantern Key, kept for good")
 	GameState.apply(p)
-	check(GameState.data.equipment.helmet == "battle_helmet" and p.max_hp == top, "the Elven Helm and its mask survive, health full (%d)" % p.max_hp)
+	check(GameState.data.equipment.helmet == "elven_helm" and p.max_hp == top, "the Elven Helm and its mask survive, health full (%d)" % p.max_hp)
 	check(p.hp == p.max_hp, "loading fills the new top, not the old one (%d/%d)" % [p.hp, p.max_hp])
 	check(is_equal_approx(float(GameState.data.trials["walls"]), 31.5), "a trial's best survives")
-	check(GameState.is_collected("mist/feather_hollow:4,19"), "an opened card door stays open")
-	var bad := GameState.sanitize({"save_room": "eolis/plaza", "keys": {"jack": "two", "queen": -3, "king": [1], "ace": 1, "sky": true}})
-	check(bad.keys == {"ace": 1, "sky": true}, "a damaged key entry is dropped (%s)" % [bad.keys])
+	check(GameState.is_collected("haar/feather_hollow:4,19"), "an opened card door stays open")
+	var bad := GameState.sanitize({"save_room": "hearthroot/plaza", "keys": {"copper": "two", "silver": -3, "gold": [1], "thorn": 1, "sky": true}})
+	check(bad.keys == {"thorn": 1, "sky": true}, "a damaged key entry is dropped (%s)" % [bad.keys])
 	GameState.delete_save(SAVE_SLOT)
 	GameState.slot = slot_was
 
@@ -260,38 +260,38 @@ func test_late_additions_survive_a_save_round_trip() -> void:
 ## and the rooms rebuild in their changed state.
 func test_act_two_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
-	var w := make_world({}, "mist/lantern_landing")
+	var w := make_world({}, "haar/lantern_landing")
 	GameState.slot = SAVE_SLOT
-	for f: String in ["boss:ripasheiku", "boss:zorugeriru", "spring:mist", "curtain:mist/lantern_landing",
-			"seal:mist/marsh_road", "basin:mist/dry_cistern:7"]:
+	for f: String in ["boss:gloamweaver", "boss:haar_wyrm", "spring:haar", "curtain:haar/lantern_landing",
+			"seal:haar/marsh_road", "basin:haar/dry_cistern:7"]:
 		GameState.set_flag(f)
-	(GameState.data.rings as Array).append_array(["elf", "ruby", "dworf"])
+	(GameState.data.rings as Array).append_array(["thaw", "sun", "fall"])
 	GameState.add_key("lantern")
 	GameState.data.abilities["boots"] = true
-	GameState.data.abilities["deluge"] = true
+	GameState.data.abilities["torrent"] = true
 	check(GameState.save_game(), "the save writes")
 	GameState.new_game()
-	check(not GameState.flag("spring:mist") and (GameState.data.rings as Array).is_empty(), "a new game forgets it all")
+	check(not GameState.flag("spring:haar") and (GameState.data.rings as Array).is_empty(), "a new game forgets it all")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
-	check(GameState.flag("boss:zorugeriru") and GameState.flag("spring:mist"), "boss and spring flags survive")
-	check((GameState.data.rings as Array) == ["elf", "ruby", "dworf"], "the three rings survive")
+	check(GameState.flag("boss:haar_wyrm") and GameState.flag("spring:haar"), "boss and spring flags survive")
+	check((GameState.data.rings as Array) == ["thaw", "sun", "fall"], "the three rings survive")
 	check(GameState.key_count("lantern") == 1, "the Lantern Key survives")
-	check(GameState.has_ability("boots") and GameState.has_ability("deluge"), "the Featherstep Boots and Torrent survive")
+	check(GameState.has_ability("boots") and GameState.has_ability("torrent"), "the Featherstep Boots and Torrent survive")
 	var found := {}
-	for stop: Array in [["mist/lantern_landing", MistCurtain], ["mist/marsh_road", FireSeal], ["mist/dry_cistern", DryBasin],
-			["mist/spring_of_mist", DryBasin]]:
+	for stop: Array in [["haar/lantern_landing", MistCurtain], ["haar/marsh_road", FireSeal], ["haar/dry_cistern", DryBasin],
+			["haar/spring_of_haar", DryBasin]]:
 		w._enter(stop[0])
 		await frames(2)
 		for c in w.room.get_children():
 			if is_instance_of(c, stop[1]):
 				var open: bool = c.parted if c is MistCurtain else (c.doused if c is FireSeal else c.filled)
 				found[stop[0]] = found.get(stop[0], true) and open
-	check(found.get("mist/lantern_landing", false), "the bound fog stays parted")
-	check(found.get("mist/marsh_road", false), "the fire seal stays out")
-	check(found.get("mist/dry_cistern", false), "the cistern stays full")
-	check(found.get("mist/spring_of_mist", false), "the hydra's tanks stay full")
+	check(found.get("haar/lantern_landing", false), "the bound fog stays parted")
+	check(found.get("haar/marsh_road", false), "the fire seal stays out")
+	check(found.get("haar/dry_cistern", false), "the cistern stays full")
+	check(found.get("haar/spring_of_haar", false), "the hydra's tanks stay full")
 	check(_arena_quiet(w), "and the Haar Wyrm doesn't come back")
-	w._enter("mist/victim_causeway")
+	w._enter("haar/lampwick_causeway")
 	await frames(2)
 	check(w.room.is_one_way_at(Vector2(17 * Room.TILE + 4, 20 * Room.TILE + 4)), "the drowned boardwalks stay risen")
 	GameState.delete_save(SAVE_SLOT)
@@ -301,9 +301,9 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 
 ## Act II (the High Boughs): the Elven Stride, Sylvarre's charts, Snapcrown's fall
 ## and the skills bought with its point all come back after a save.
-func test_branches_state_survives_a_save_round_trip() -> void:
+func test_boughs_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
-	var w := make_world({}, "branches/windloft")
+	var w := make_world({}, "boughs/windloft")
 	GameState.slot = SAVE_SLOT
 	await frames(2)
 	var stride_id := ""
@@ -313,26 +313,26 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 	check(stride_id != "", "the Elven Stride waits in the Windloft")
 	GameState.collect(stride_id)
 	GameState.data.abilities["stride"] = true
-	GameState.set_flag("boss:pakukame")
-	GameState.data.charts["branches"] = true
-	GameState.meet_guru("branches/conflate", Vector2(400, 320))
+	GameState.set_flag("boss:snapcrown")
+	GameState.data.charts["boughs"] = true
+	GameState.meet_ringreader("boughs/sylvarre", Vector2(400, 320))
 	GameState.data.skills = ["deep_pockets", "gold_sense", "quick_draught", "second_stride"]
 	check(GameState.save_game(), "the save writes")
 	GameState.new_game()
 	check(not GameState.has_ability("stride") and GameState.data.skills.is_empty(), "a new game forgets it all")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
-	check(GameState.has_ability("stride") and GameState.flag("boss:pakukame"), "the Stride and Snapcrown's fall survive")
-	check(GameState.has_chart("branches"), "the High Boughs chart survives")
-	check(GameState.data.gurus.has("branches/conflate"), "Sylvarre's ringreader is still met")
+	check(GameState.has_ability("stride") and GameState.flag("boss:snapcrown"), "the Stride and Snapcrown's fall survive")
+	check(GameState.has_chart("boughs"), "the High Boughs chart survives")
+	check(GameState.data.ringreaders.has("boughs/sylvarre"), "Sylvarre's ringreader is still met")
 	GameState.apply(w.player)
 	check(w.player.bonus_air_dashes == 1 and w.player.abilities.get("stride", false), "Second Stride is back on the player")
-	w._enter("branches/windloft")
+	w._enter("boughs/windloft")
 	await frames(2)
 	var left := false
 	for c in w.room.get_children():
 		left = left or (c is ItemPickup and (c as ItemPickup).kind == "stride")
 	check(not left, "the Stride doesn't come back to its plinth")
-	w._enter("branches/crown_leaf")
+	w._enter("boughs/crown_leaf")
 	await frames(2)
 	check(_arena_quiet(w), "and Snapcrown doesn't come back")
 	GameState.delete_save(SAVE_SLOT)
@@ -342,9 +342,9 @@ func test_branches_state_survives_a_save_round_trip() -> void:
 
 ## Carillon: rest at the Broken Shrine with the Life Fruit taken and the Sky
 ## Steps chest opened; the save brings it all back, and the rooms rebuild that way.
-func test_daybreak_state_survives_a_save_round_trip() -> void:
+func test_spires_state_survives_a_save_round_trip() -> void:
 	var slot_was := GameState.slot
-	var w := make_world({}, "daybreak/sky_steps")
+	var w := make_world({}, "spires/sky_steps")
 	GameState.slot = SAVE_SLOT
 	w.player.abilities["stride"] = true
 	await frames(2)
@@ -354,7 +354,7 @@ func test_daybreak_state_survives_a_save_round_trip() -> void:
 			chest = c
 	check(chest != null, "the Sky Steps chest is there")
 	chest.interact(w.player)
-	w._enter("daybreak/broken_shrine")
+	w._enter("spires/broken_shrine")
 	await frames(2)
 	var fruit: ItemPickup = null
 	var shrine: SaveShrine = null
@@ -374,16 +374,16 @@ func test_daybreak_state_survives_a_save_round_trip() -> void:
 	GameState.new_game()
 	check(int(GameState.data.max_hp) == hp0, "a new game starts without the fruit")
 	check(GameState.load_game(SAVE_SLOT), "and the save loads")
-	check(GameState.data.save_room == "daybreak/broken_shrine", "the save room is the Broken Shrine (%s)" % GameState.data.save_room)
+	check(GameState.data.save_room == "spires/broken_shrine", "the save room is the Broken Shrine (%s)" % GameState.data.save_room)
 	check(GameState.has_ability("stride"), "the Stride survives")
 	check(int(GameState.data.max_hp) > hp0, "the Life Fruit's health survives")
-	w._enter("daybreak/broken_shrine")
+	w._enter("spires/broken_shrine")
 	await frames(2)
 	var left := false
 	for c in w.room.get_children():
 		left = left or (c is ItemPickup and (c as ItemPickup).kind == "life_fruit")
 	check(not left, "the fruit doesn't grow back")
-	w._enter("daybreak/sky_steps")
+	w._enter("spires/sky_steps")
 	await frames(2)
 	var open := false
 	for c in w.room.get_children():
@@ -442,7 +442,7 @@ func test_life_fruit_and_shards() -> void:
 	await frames(10)
 	check(w.player.max_hp == hp0 + GameState.LIFE_FRUIT_HP, "Life Fruit adds half a mask (%d)" % w.player.max_hp)
 	check(w.player.flask_max == flask0 + 1, "three Potion Shards add a flask charge")
-	check(int(GameState.data.mantra_shards) == 1, "one Grain Shard counted")
+	check(int(GameState.data.grain_shards) == 1, "one Grain Shard counted")
 	check(int(GameState.data.max_hp) == w.player.max_hp, "stats captured into the game state")
 	w.player.input.move_x = 0
 	w.use_door(1)
@@ -456,7 +456,7 @@ func test_life_fruit_and_shards() -> void:
 	check(items == 0, "collected items don't come back")
 
 
-func test_mantra_shards_give_a_skill_point() -> void:
+func test_grain_shards_give_a_skill_point() -> void:
 	var w := make_world(_rooms({Vector2i(8, 19): "*", Vector2i(10, 18): "*", Vector2i(12, 19): "*"}), "test/a", cell_feet(6, 19))
 	await frames(5)
 	w.player.input.move_x = 1
@@ -557,18 +557,18 @@ func test_fake_wall_is_passable() -> void:
 
 ## Seer's Lens (bible A7): illusory walls shimmer at their seams and hidden
 ## planks (legend `i`) show faintly, but only while you carry it.
-func test_black_onyx_shows_seams_and_hidden_planks() -> void:
+func test_seers_lens_shows_seams_and_hidden_planks() -> void:
 	var extra := {}
 	for y in range(14, 20):
 		extra[Vector2i(14, y)] = "%"
 	for x in range(24, 30):
 		extra[Vector2i(x, 15)] = "i"
 	var w := make_world(_rooms(extra), "test/a", cell_feet(12, 19))
-	w.player.abilities["onyx"] = false
+	w.player.abilities["seers_lens"] = false
 	await frames(30)
 	check(w.room.sheen != null and w.room.phantoms != null, "the room has a sheen and a hidden plank layer")
 	check(w.room.sheen.strength == 0.0 and w.room.phantoms.modulate.a == 0.0, "without the Lens nothing shows")
-	w.player.abilities["onyx"] = true
+	w.player.abilities["seers_lens"] = true
 	await frames(40)
 	check(w.room.sheen.strength == 1.0, "with it the seams shimmer (strength %.2f)" % w.room.sheen.strength)
 	check(w.room.phantoms.modulate.a > 0.2 and w.room.phantoms.modulate.a < 0.6, "and the hidden planks show faintly (alpha %.2f)" % w.room.phantoms.modulate.a)
@@ -579,38 +579,38 @@ func test_hidden_planks_hold_you_up_unseen() -> void:
 	for x in range(8, 14):
 		extra[Vector2i(x, 14)] = "i"
 	var w := make_world(_rooms(extra), "test/a", cell_feet(11, 12))
-	w.player.abilities["onyx"] = false
+	w.player.abilities["seers_lens"] = false
 	await frames(40)
 	check(w.player.is_on_floor() and absf(w.player.global_position.y - 14 * 16) < 2.0,
 		"stood on an unseen plank (y %.0f)" % w.player.global_position.y)
 	check(w.room.is_one_way_at(Vector2(11 * 16 + 8, 14 * 16 + 4)), "it is a one-way plank")
 
 
-func test_the_onyx_waits_in_the_crypt_below_the_flooded_hall() -> void:
+func test_the_seers_lens_waits_in_the_crypt_below_the_flooded_hall() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/onyx_crypt")
-	w.player.abilities["onyx"] = false
+	var w := make_world({}, "vorrhallow/seers_lens_crypt")
+	w.player.abilities["seers_lens"] = false
 	await frames(2)
-	var onyx: ItemPickup = null
+	var seers_lens: ItemPickup = null
 	for c in w.room.get_children():
-		if c is ItemPickup and (c as ItemPickup).kind == "onyx":
-			onyx = c
-	check(onyx != null, "the Seer's Lens lies on the crypt's dais")
-	if onyx == null:
+		if c is ItemPickup and (c as ItemPickup).kind == "seers_lens":
+			seers_lens = c
+	check(seers_lens != null, "the Seer's Lens lies on the crypt's dais")
+	if seers_lens == null:
 		return
-	onyx.grant(w.player)
-	check(w.player.abilities.get("onyx", false) and GameState.has_ability("onyx"), "taking it gives the Lens for good")
+	seers_lens.grant(w.player)
+	check(w.player.abilities.get("seers_lens", false) and GameState.has_ability("seers_lens"), "taking it gives the Lens for good")
 	var way_on: Rect2 = w.room.doors[2].rect
-	check(w.room.doors[2].target == "dartmoor/drowned_nave" and w.room.is_secret_at(way_on.get_center()),
+	check(w.room.doors[2].target == "vorrhallow/drowned_nave" and w.room.is_secret_at(way_on.get_center()),
 		"the way on to the lower halls is behind an illusory wall")
-	var hall := Room.from_file("res://levels/dartmoor/flooded_hall.room")
-	check(hall.doors[2].target == "dartmoor/sunken_stair", "the flooded hall's west door leads down the stair")
+	var hall := Room.from_file("res://levels/vorrhallow/flooded_hall.room")
+	check(hall.doors[2].target == "vorrhallow/sunken_stair", "the flooded hall's west door leads down the stair")
 	hall.free()
 
 
 func test_cracked_wall_stays_broken() -> void:
 	var w := make_world(_rooms({Vector2i(12, 19): "C"}), "test/a", cell_feet(10, 19))
-	w.player.abilities.mattock = true
+	w.player.abilities.delvers_pick = true
 	await frames(5)
 	var block: CrackedBlock = null
 	for c in w.room.get_children():
@@ -884,7 +884,7 @@ func test_a_press_made_with_the_up_that_reads_a_sign_is_dropped() -> void:
 ## tablet, and it reads the first whose flags hold at the moment it is read.
 func test_a_tablet_reads_what_the_world_has_become() -> void:
 	var rooms := _rooms()
-	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, [spring:trunk boss:rokusutahn] Both|Done\nsign: 8, 19, [spring:trunk] After\nsign: 8, 19, Before\n---")
+	rooms["test/a"] = rooms["test/a"].replace("---", "sign: 8, 19, [spring:heartwood boss:gnarlmaw] Both|Done\nsign: 8, 19, [spring:heartwood] After\nsign: 8, 19, Before\n---")
 	var w := make_world(rooms, "test/a", cell_feet(8, 19))
 	await frames(3)
 	var tablets: Array[LoreTablet] = []
@@ -898,9 +898,9 @@ func test_a_tablet_reads_what_the_world_has_become() -> void:
 	var listener := func(_who: String, pages: Array) -> void: got.append(pages)
 	GameState.dialog_requested.connect(listener)
 	tablets[0].interact(w.player)
-	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:heartwood")
 	tablets[0].interact(w.player)
-	GameState.set_flag("boss:rokusutahn")
+	GameState.set_flag("boss:gnarlmaw")
 	tablets[0].interact(w.player)
 	GameState.dialog_requested.disconnect(listener)
 	check(got == [["Before"], ["After"], ["Both", "Done"]], "it reads Before, then After, then Both as the flags are set, without leaving the room (%s)" % [got])
@@ -936,7 +936,7 @@ func test_every_world_change_rewrites_its_sign() -> void:
 				if c.begins_with("boss:"):
 					known = bosses.has(c.trim_prefix("boss:"))
 				elif c.begins_with("spring:"):
-					known = c.trim_prefix("spring:") in ["trunk", "mist", "sky"]
+					known = c.trim_prefix("spring:") in ["heartwood", "haar", "sky"]
 				elif c.begins_with("conduits:"):
 					var r = catalog.get(c.trim_prefix("conduits:"))
 					known = r != null and "\n".join(r.grid).contains("c")
@@ -947,14 +947,14 @@ func test_every_world_change_rewrites_its_sign() -> void:
 				bad.append("%s %s: no plain line to fall back on" % [id, cell])
 	check(bad.is_empty(), "every bracketed sign line names a real flag and falls back: %s" % [bad])
 	# The signs that said "when the spring runs" or "something waits" each learn otherwise.
-	var told := [["eolis/plaza", "40,19", "spring:trunk"], ["eolis/plaza", "40,19", "spring:sky"],
-		["trunk/amber_falls", "18,36", "spring:trunk"], ["trunk/spring_of_trunk", "34,16", "spring:trunk"],
-		["trunk/boss_gate", "16,19", "boss:rokusutahn"], ["mist/scorched_hall", "5,19", "spring:mist"],
-		["mist/victim_causeway", "6,19", "spring:mist"], ["mist/spring_of_mist", "3,19", "spring:mist"],
-		["tower/forepaw_gate", "28,19", "boss:zoradohna"], ["daybreak/spire_foot", "30,19", "conduits:daybreak/spire_foot"],
-		["daybreak/spire_stair", "3,41", "boss:borabohra"], ["daybreak/sky_spring", "8,19", "spring:sky"],
-		["dartmoor/kings_kennels", "76,16", "boss:king_grieve"], ["sunken/source_hall", "26,14", "boss:drowned_warden"],
-		["branches/windloft", "22,19", "boss:pakukame"]]
+	var told := [["hearthroot/plaza", "40,19", "spring:heartwood"], ["hearthroot/plaza", "40,19", "spring:sky"],
+		["heartwood/amber_falls", "18,36", "spring:heartwood"], ["heartwood/spring_of_heartwood", "34,16", "spring:heartwood"],
+		["heartwood/boss_gate", "16,19", "boss:gnarlmaw"], ["haar/scorched_hall", "5,19", "spring:haar"],
+		["haar/lampwick_causeway", "6,19", "spring:haar"], ["haar/spring_of_haar", "3,19", "spring:haar"],
+		["tower/kettleforge_gate", "28,19", "boss:durgan"], ["spires/spire_foot", "30,19", "conduits:spires/spire_foot"],
+		["spires/spire_stair", "3,41", "boss:skyrend"], ["spires/sky_spring", "8,19", "spring:sky"],
+		["vorrhallow/kings_kennels", "76,16", "boss:thane_vorrund"], ["sunken/source_hall", "26,14", "boss:drowned_warden"],
+		["boughs/windloft", "22,19", "boss:snapcrown"]]
 	var missing := []
 	for t: Array in told:
 		var found := false
@@ -1019,9 +1019,9 @@ func test_sap_never_holds_a_dash_and_lets_go_at_its_edge() -> void:
 ## of the remake's three has one: there while it is dry (at the Haar's and the
 ## Sky's once their guardian is beaten, never mid-fight), glad once it flows.
 func test_every_spring_has_its_keeper() -> void:
-	var springs := {"trunk/spring_of_trunk": ["trunk", "", "trunk_keeper"],
-		"mist/spring_of_mist": ["mist", "boss:zorugeriru", "mist_keeper"],
-		"daybreak/sky_spring": ["sky", "boss:borabohra", "sky_keeper"]}
+	var springs := {"heartwood/spring_of_heartwood": ["heartwood", "", "heartwood_keeper"],
+		"haar/spring_of_haar": ["haar", "boss:haar_wyrm", "haar_keeper"],
+		"spires/sky_spring": ["sky", "boss:skyrend", "sky_keeper"]}
 	var people := func(w: World) -> Array:
 		return w.room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(n: Npc) -> String: return n.npc_id)
 	for room: String in springs:
@@ -1053,7 +1053,7 @@ func test_autotiles_match_their_neighbours() -> void:
 	var rows := grid_rows(30, 23)
 	put_tiles(rows, 10, 10, "#")
 	put_tiles(rows, 3, 19, "P")
-	var room := Room.from_text(room_text(["name: T", "zone: trunk"], rows), "t/tiles")
+	var room := Room.from_text(room_text(["name: T", "zone: heartwood"], rows), "t/tiles")
 	arena.add_child(room)
 	var lone := room.tiles.get_cell_atlas_coords(Vector2i(10, 10))
 	check(lone == TilesetFactory.ground(0), "a lone block uses the all-edges tile (%s)" % lone)
@@ -1074,9 +1074,9 @@ func test_autotiles_match_their_neighbours() -> void:
 ## stand on, nor which rooms name their own. The table gives every zone's
 ## theme, bed and ground; the list names every room that overrides one.
 func test_every_zone_sounds_as_the_bible_says() -> void:
-	const NAMES := {"eolis": "Hearthroot", "trunk": "Heartwood", "tower": "Hollin Tower", "mist": "The Haar",
-		"branches": "High Boughs", "daybreak": "Storm Spires", "dartmoor": "Vorrhallow",
-		"sunken": "Sunken Spring", "zenis": "The Evercrown", "trials": "Inner Rings"}
+	const NAMES := {"hearthroot": "Hearthroot", "heartwood": "Heartwood", "tower": "Hollin Tower", "haar": "The Haar",
+		"boughs": "High Boughs", "spires": "Storm Spires", "vorrhallow": "Vorrhallow",
+		"sunken": "Sunken Spring", "evercrown": "The Evercrown", "trials": "Inner Rings"}
 	const COUNTS := {20: "Twenty", 21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four", 25: "Twenty-five"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var note := bible.get_slice("- **Every zone's sound, as built (pass 382):**", 1).get_slice("\n- **", 0)
@@ -1138,24 +1138,24 @@ func test_footsteps_follow_the_surface_underfoot() -> void:
 	check(heard.size() >= 2 and heard.has("iron"), "running plays iron footsteps (%s)" % [heard])
 	room.queue_free()
 	await frames(1)
-	var trunk := Room.from_text(room_text(["name: T", "zone: trunk"], grid_rows(10, 23)), "t/moss")
-	var paved := Room.from_text(room_text(["name: T", "zone: trunk", "surface: stone"], grid_rows(10, 23)), "t/paved")
-	arena.add_child(trunk)
+	var heartwood := Room.from_text(room_text(["name: T", "zone: heartwood"], grid_rows(10, 23)), "t/moss")
+	var paved := Room.from_text(room_text(["name: T", "zone: heartwood", "surface: stone"], grid_rows(10, 23)), "t/paved")
+	arena.add_child(heartwood)
 	arena.add_child(paved)
-	check(trunk.surface_at(below.call(5, 19)) == "moss", "the Heartwood is soft moss")
+	check(heartwood.surface_at(below.call(5, 19)) == "moss", "the Heartwood is soft moss")
 	check(paved.surface_at(below.call(5, 19)) == "stone", "a room's surface header overrides its zone")
-	trunk.queue_free()
+	heartwood.queue_free()
 	paved.queue_free()
 	# Pass 181: The Haar's marsh squelches as mud, and its dwarf-built halls stay stone.
-	var marsh := Room.from_text(room_text(["name: T", "zone: mist"], grid_rows(10, 23)), "t/mud")
+	var marsh := Room.from_text(room_text(["name: T", "zone: haar"], grid_rows(10, 23)), "t/mud")
 	arena.add_child(marsh)
 	check(marsh.surface_at(below.call(5, 19)) == "mud", "the Haar's marsh is mud (%s)" % marsh.surface_at(below.call(5, 19)))
 	marsh.queue_free()
-	for id: String in ["mist/scorched_hall", "mist/dry_cistern", "mist/sunken_chapel", "mist/spring_of_mist"]:
+	for id: String in ["haar/scorched_hall", "haar/dry_cistern", "haar/sunken_chapel", "haar/spring_of_haar"]:
 		var r := Room.from_file(World.room_path(id))
 		check(String(r.header.get("surface", "")) == "stone", "%s, built by dwarves, rings as stone" % id)
 		r.free()
-	var mire := Room.from_file(World.room_path("mist/hag_mire"))
+	var mire := Room.from_file(World.room_path("haar/hag_mire"))
 	check(not mire.header.has("surface"), "the Matriarch's mire is marsh mud underfoot")
 	mire.free()
 
@@ -1185,7 +1185,7 @@ func test_tiles_are_drawn_at_double_density() -> void:
 
 
 func test_decor_and_backgrounds_are_drawn_at_double_density() -> void:
-	for zone in ["trunk", "eolis"]:
+	for zone in ["heartwood", "hearthroot"]:
 		var meta: Dictionary = (load(Decor.DIR + zone + ".json") as JSON).data
 		var tex: Texture2D = load(Decor.DIR + zone + ".png")
 		var density := int(meta.get("density", 1))
@@ -1193,7 +1193,7 @@ func test_decor_and_backgrounds_are_drawn_at_double_density() -> void:
 		check(tex.get_height() == 4 * int(meta.cell[1]) * density, "%s decor atlas holds 4 rows of %dx cells" % [zone, density])
 	var backdrop := Backdrop.new()
 	arena.add_child(backdrop)
-	backdrop.set_zone("trunk")
+	backdrop.set_zone("heartwood")
 	check(backdrop.get_child_count() == 2, "the trunk has two parallax layers")
 	for layer in backdrop.get_children():
 		var sprite := layer.get_child(0) as Sprite2D
@@ -1223,7 +1223,7 @@ func test_decor_dresses_open_surfaces_only() -> void:
 	put_tiles(rows, 3, 19, "P")
 	put_tiles(rows, 20, 19, "^")
 	put_tiles(rows, 39, 17, "1", 1, 3)
-	var text := room_text(["name: T", "zone: trunk", "door: 1, t/x, 1"], rows)
+	var text := room_text(["name: T", "zone: heartwood", "door: 1, t/x, 1"], rows)
 	var room := Room.from_text(text, "t/decor")
 	arena.add_child(room)
 	var decor: Decor = room.get_node("Decor")
@@ -1252,13 +1252,13 @@ func test_decor_dresses_open_surfaces_only() -> void:
 func test_motes_wrap_around_the_view() -> void:
 	var motes := Motes.new()
 	arena.add_child(motes)
-	motes.set_zone("trunk")
+	motes.set_zone("heartwood")
 	await frames(120)
 	var inside := true
 	for m: Array in motes._motes:
 		var p: Vector2 = m[0]
 		inside = inside and p.x >= 0.0 and p.x < Motes.VIEW.x and p.y >= 0.0 and p.y < Motes.VIEW.y
-	check(motes._motes.size() == Motes.ZONES.trunk[0] and inside, "trunk spores stay within the screen as they drift")
+	check(motes._motes.size() == Motes.ZONES.heartwood[0] and inside, "heartwood spores stay within the screen as they drift")
 	motes.set_zone("gym")
 	check(motes._motes.is_empty(), "no motes in the gym")
 
@@ -1306,7 +1306,7 @@ func test_taproot_is_bitten_until_the_spring_returns() -> void:
 	var bitten := root.edges(h)
 	var whole := root.edges(h + float(bite[2]) + 6.0)
 	check(bitten.y < whole.y - 10.0, "a bite is taken out of the root (%.0f vs %.0f)" % [bitten.y, whole.y])
-	GameState.set_flag("spring:trunk")
+	GameState.set_flag("spring:heartwood")
 	check(root.edges(h).y > bitten.y + 10.0, "the spring heals the bite")
 
 
@@ -1463,27 +1463,27 @@ func test_a_sound_with_no_file_is_caught_at_runtime() -> void:
 	var lost := names.filter(func(n: String) -> bool: return not ResourceLoader.exists("res://assets/sfx/%s.wav" % n))
 	check(names.size() > 10 and lost.is_empty(), "every sound the helpers can pick exists (%d names; missing %s)" % [names.size(), lost])
 
-func test_the_hour_glass_waits_by_the_stopped_water_clock() -> void:
+func test_the_stillstone_waits_by_the_stopped_water_clock() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/drowned_nave")
+	var w := make_world({}, "vorrhallow/drowned_nave")
 	await frames(2)
 	var glass: ItemPickup = null
 	for c in w.room.get_children():
-		if c is ItemPickup and (c as ItemPickup).kind == "hourglass":
+		if c is ItemPickup and (c as ItemPickup).kind == "stillstone":
 			glass = c
 	check(glass != null, "the Stillstone stands by the water-clock in the Drowned Nave")
-	check(w.room.doors[2].target == "dartmoor/waterfall_stair", "and the nave's west door leads to the Waterfall Stair")
-	w._enter("dartmoor/waterfall_stair")
+	check(w.room.doors[2].target == "vorrhallow/waterfall_stair", "and the nave's west door leads to the Waterfall Stair")
+	w._enter("vorrhallow/waterfall_stair")
 	await frames(2)
 	check(w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall).size() == 2, "where two falls bar the way up")
 
 
 func test_the_waterfall_stair_gallery_opens_on_the_drowned_market() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/waterfall_stair")
+	var w := make_world({}, "vorrhallow/waterfall_stair")
 	await frames(2)
-	check(w.room.doors[2].target == "dartmoor/drowned_market", "the stair's top gallery leads on to the Drowned Market")
-	w._enter("dartmoor/drowned_market")
+	check(w.room.doors[2].target == "vorrhallow/drowned_market", "the stair's top gallery leads on to the Drowned Market")
+	w._enter("vorrhallow/drowned_market")
 	await frames(2)
 	var falls: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall)
 	check(falls.size() == 1, "where one fall pours down into a spiked pit")
@@ -1493,14 +1493,14 @@ func test_the_waterfall_stair_gallery_opens_on_the_drowned_market() -> void:
 
 func test_the_kings_stair_runs_down_from_the_market_to_the_kennels() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/drowned_market")
+	var w := make_world({}, "vorrhallow/drowned_market")
 	await frames(2)
-	check(w.room.doors[2].edge == "inner" and w.room.doors[2].target == "dartmoor/kings_stair", "the market's cracked stair is a doorway down")
-	w._enter("dartmoor/kings_stair")
+	check(w.room.doors[2].edge == "inner" and w.room.doors[2].target == "vorrhallow/kings_stair", "the market's cracked stair is a doorway down")
+	w._enter("vorrhallow/kings_stair")
 	await frames(2)
 	check(w.room.get_children().filter(func(c: Node) -> bool: return c is Waterfall).size() == 1, "where the king's fall pours down the stair-well")
-	check(w.room.doors[2].target == "dartmoor/kings_kennels", "and the stair's foot opens on the kennels")
-	w._enter("dartmoor/kings_kennels")
+	check(w.room.doors[2].target == "vorrhallow/kings_kennels", "and the stair's foot opens on the kennels")
+	w._enter("vorrhallow/kings_kennels")
 	await frames(2)
 	var hounds := w.room.get_children().filter(func(c: Node) -> bool: return c is ClockworkHound).size()
 	check(hounds == 3, "where the king's hounds still run (%d)" % hounds)
@@ -1508,70 +1508,70 @@ func test_the_kings_stair_runs_down_from_the_market_to_the_kennels() -> void:
 
 func test_the_way_past_the_throne_opens_once_the_king_is_at_rest() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/throne_hall")
+	var w := make_world({}, "vorrhallow/throne_hall")
 	await frames(3)
-	check(w.room.doors[2].target == "dartmoor/meteor_rise", "a door behind the throne leads on to the Glass Rise")
+	check(w.room.doors[2].target == "vorrhallow/meteor_rise", "a door behind the throne leads on to the Glass Rise")
 	var arena: BossArena = null
 	for c in w.room.get_children():
 		if c is BossArena:
 			arena = c
 	check(arena != null and arena.seals.has(2), "and it is barred while the king still sits his throne")
 	var npcs := func(world: World) -> Array: return world.room.get_children().filter(func(c: Node) -> bool: return c is Npc).map(func(n: Npc) -> String: return n.npc_id)
-	check(not npcs.call(w).has("dartmoor_steward"), "no steward wakes while he lives")
-	GameState.set_flag("boss:king_grieve")
-	w._enter("dartmoor/drowned_market")
+	check(not npcs.call(w).has("vorrhallow_steward"), "no steward wakes while he lives")
+	GameState.set_flag("boss:thane_vorrund")
+	w._enter("vorrhallow/drowned_market")
 	await frames(2)
-	check(npcs.call(w).has("dartmoor_mason"), "once he is at rest the drowned dwarves wake: a mason in the market")
+	check(npcs.call(w).has("vorrhallow_mason"), "once he is at rest the drowned dwarves wake: a mason in the market")
 	w.queue_free()
 	await frames(2)
-	w = make_world({}, "dartmoor/kings_kennels")
-	GameState.set_flag("boss:king_grieve")
-	w._enter("dartmoor/throne_hall")
+	w = make_world({}, "vorrhallow/kings_kennels")
+	GameState.set_flag("boss:thane_vorrund")
+	w._enter("vorrhallow/throne_hall")
 	w.player.teleport(cell_feet(30, 19))
 	await frames(3)
-	check(npcs.call(w).has("dartmoor_steward"), "and his steward by the empty throne")
+	check(npcs.call(w).has("vorrhallow_steward"), "and his steward by the empty throne")
 	check(w.room.get_children().all(func(c: Node) -> bool: return not c is ArenaSeal), "and nothing bars the way on")
 
 
-func test_the_gate_of_zenis_waits_for_four_rings() -> void:
+func test_the_gate_of_evercrown_waits_for_four_rings() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/meteor_rise")
+	var w := make_world({}, "vorrhallow/meteor_rise")
 	await frames(2)
-	check(w.room.doors[2].target == "dartmoor/zenis_gate", "the Glass Rise climbs to the gate of the Evercrown")
-	w._enter("dartmoor/zenis_gate")
+	check(w.room.doors[2].target == "vorrhallow/evercrown_gate", "the Glass Rise climbs to the gate of the Evercrown")
+	w._enter("vorrhallow/evercrown_gate")
 	await frames(2)
 	var gates: Array = w.room.get_children().filter(func(c: Node) -> bool: return c is CrownGate)
 	check(gates.size() == 1, "where the gate stands")
 	var gate: CrownGate = gates[0]
-	GameState.data.rings = ["elf", "demon"]
-	check(gate.lit() == ["elf", "demon"], "its sockets glow for the rings you hold (%s)" % [gate.lit()])
+	GameState.data.rings = ["thaw", "frost"]
+	check(gate.lit() == ["thaw", "frost"], "its sockets glow for the rings you hold (%s)" % [gate.lit()])
 	check(gate.message().contains("2 of them"), "and it says how many")
-	GameState.data.rings = ["elf", "ruby", "dworf", "demon"]
+	GameState.data.rings = ["thaw", "sun", "fall", "frost"]
 	check(gate.lit().size() == 4 and gate.message().contains("does not open"), "with all four it still waits on the shadow before it")
-	GameState.set_flag("boss:shadow_eura")
+	GameState.set_flag("boss:likeness")
 	check(gate.message().contains("nothing watches"), "and once the shadow is broken it says so")
 
 
-func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
+func test_the_gate_of_evercrown_opens_onto_the_meteor() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/meteor_rise")
+	var w := make_world({}, "vorrhallow/meteor_rise")
 	await frames(2)
 	# The shadow is beaten (else walking in starts the fight).
-	GameState.set_flag("boss:shadow_eura")
-	w._enter("dartmoor/zenis_gate")
+	GameState.set_flag("boss:likeness")
+	w._enter("vorrhallow/evercrown_gate")
 	await frames(2)
 	var gate: CrownGate = w.room.get_children().filter(func(c: Node) -> bool: return c is CrownGate)[0]
-	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/threshold", "the way into the Evercrown lies behind the gate")
-	GameState.data.rings = ["elf", "ruby", "dworf"]
+	check(w.room.doors.has(2) and w.room.doors[2].target == "evercrown/threshold", "the way into the Evercrown lies behind the gate")
+	GameState.data.rings = ["thaw", "sun", "fall"]
 	check(not gate.is_open(), "three rings do not open it")
 	# Shut, it bars the way: walk at it and you stop at its face.
 	var p := w.player
 	p.teleport(Vector2(gate.global_position.x - 80.0, gate.global_position.y))
 	p.input.move_x = 1
 	await frames(90)
-	check(w.room.id == "dartmoor/zenis_gate" and p.global_position.x < gate.global_position.x - 20.0, "shut, it bars the way (%s)" % p.global_position)
+	check(w.room.id == "vorrhallow/evercrown_gate" and p.global_position.x < gate.global_position.x - 20.0, "shut, it bars the way (%s)" % p.global_position)
 	p.input.move_x = 0
-	GameState.data.rings = ["elf", "ruby", "dworf", "demon"]
+	GameState.data.rings = ["thaw", "sun", "fall", "frost"]
 	check(gate.is_open(), "four rings and the shadow beaten open it")
 	await frames(90)
 	check(gate.swing >= 1.0, "its leaves swing wide")
@@ -1579,24 +1579,24 @@ func test_the_gate_of_zenis_opens_onto_the_meteor() -> void:
 	var through := false
 	for i in 180:
 		await frames(1)
-		if w.room.id == "zenis/threshold":
+		if w.room.id == "evercrown/threshold":
 			through = true
 			break
 	p.input.move_x = 0
 	check(through, "and you walk through into the Evercrown")
-	check(w.room.zone == "zenis" and Music.track == "zenis" and Music.ambience_track == "amb_zenis", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
-	check(World.ZONES.has("zenis") and w.motes.zone == "zenis", "the map knows the zone, and spores drift in the air")
-	check(w.room.doors[2].target == "zenis/heart_stair", "the Threshold leads on to the Heart Stair")
+	check(w.room.zone == "evercrown" and Music.track == "evercrown" and Music.ambience_track == "amb_evercrown", "with its own theme and ambience (%s, %s)" % [Music.track, Music.ambience_track])
+	check(World.ZONES.has("evercrown") and w.motes.zone == "evercrown", "the map knows the zone, and spores drift in the air")
+	check(w.room.doors[2].target == "evercrown/heart_stair", "the Threshold leads on to the Heart Stair")
 
 
 ## Bible 8.9: the Heart Stair leads up into the Drift Well, where wrong gravity
 ## carries a plain jump up ledges no jump could reach.
 func test_the_drift_well_lifts_you_up_its_ledges() -> void:
 	GameState.new_game()
-	var w := make_world({}, "zenis/heart_stair")
+	var w := make_world({}, "evercrown/heart_stair")
 	await frames(2)
-	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/drift_well", "the Heart Stair leads on to the Drift Well")
-	w._enter("zenis/drift_well")
+	check(w.room.doors.has(2) and w.room.doors[2].target == "evercrown/drift_well", "the Heart Stair leads on to the Drift Well")
+	w._enter("evercrown/drift_well")
 	await frames(2)
 	check(w.room.get_children().filter(func(c: Node) -> bool: return c is GravityDrift).size() == 3, "three pockets of wrong gravity")
 	for e in w.room.get_children():
@@ -1626,12 +1626,12 @@ func test_the_drift_well_lifts_you_up_its_ledges() -> void:
 ## Bible 8.9, A10: past the Drift Well the heart's flesh turns every blade but
 ## the Severance. Since pass 217 Thane Vorrund gives it up, and the altar a
 ## drift pocket lifts you to is bare.
-func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
+func test_the_severance_cuts_the_flesh_of_the_heart() -> void:
 	GameState.new_game()
-	var w := make_world({}, "zenis/drift_well")
+	var w := make_world({}, "evercrown/drift_well")
 	await frames(2)
-	check(w.room.doors.has(2) and w.room.doors[2].target == "zenis/heart_gate", "the Drift Well leads on to the Heart Gate")
-	w._enter("zenis/heart_gate")
+	check(w.room.doors.has(2) and w.room.doors[2].target == "evercrown/heart_gate", "the Drift Well leads on to the Heart Gate")
+	w._enter("evercrown/heart_gate")
 	await frames(2)
 	for e in w.room.get_children():
 		if e is Enemy:
@@ -1654,9 +1654,9 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 	check(not seal.is_open(), "a long sword glances off it")
 	check(w.room.get_children().filter(func(c: Node) -> bool: return c is ItemPickup).is_empty(), "the altar is bare: Thane Vorrund had the sword")
 	# The Severance, as Thane Vorrund gives it up (test_boss.gd).
-	p.abilities["dragon_slayer"] = true
-	GameState.obtain_gear("dragon_slayer", p)
-	check(p.slash_damage == int(GameData.item("dragon_slayer").slash), "it cuts harder than any bought blade (%d)" % p.slash_damage)
+	p.abilities["severance"] = true
+	GameState.obtain_gear("severance", p)
+	check(p.slash_damage == int(GameData.item("severance").slash), "it cuts harder than any bought blade (%d)" % p.slash_damage)
 	p.teleport(cell_feet(48, 20))
 	await frames(10)
 	p.facing = 1
@@ -1678,8 +1678,8 @@ func test_the_dragon_slayer_cuts_the_flesh_of_the_heart() -> void:
 ## a flooded shaft drops into the Sunken Spring, a zone of its own, and the
 ## water carries you back up the way you came.
 func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
-	var w := make_world({}, "dartmoor/meteor_rise", cell_feet(14, 59))
-	w.player.abilities["mattock"] = true
+	var w := make_world({}, "vorrhallow/meteor_rise", cell_feet(14, 59))
+	w.player.abilities["delvers_pick"] = true
 	var p := w.player
 	p.max_hp = 9999
 	p.hp = 9999
@@ -1708,7 +1708,7 @@ func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
 	var back := false
 	for i in 900:
 		await frames(1)
-		if w.room.id == "dartmoor/meteor_rise":
+		if w.room.id == "vorrhallow/meteor_rise":
 			back = true
 			break
 	check(back, "the water floats you back up into the Rise")
@@ -1721,7 +1721,7 @@ func test_the_sunken_spring_opens_under_the_last_stone_of_the_rise() -> void:
 		await frames(1)
 		p.input.jump_held = true
 	p.input.move_x = 0
-	check(w.room.id == "dartmoor/meteor_rise" and p.is_on_floor() and p.global_position.y <= 60 * Room.TILE + 0.5, "and a jump from the surface lands you back on the Rise's floor (%s)" % p.global_position)
+	check(w.room.id == "vorrhallow/meteor_rise" and p.is_on_floor() and p.global_position.y <= 60 * Room.TILE + 0.5, "and a jump from the surface lands you back on the Rise's floor (%s)" % p.global_position)
 
 
 ## Bible 11 (pass 131): every zone of five rooms or more hides at least one
@@ -1739,7 +1739,7 @@ func test_every_large_zone_hides_a_room() -> void:
 	for zone: String in rooms:
 		if rooms[zone] >= 5:
 			check(hidden.get(zone, 0) >= 1, "%s (%d rooms) hides a room (%d)" % [zone, rooms[zone], hidden.get(zone, 0)])
-	for zone: String in ["mist", "branches", "daybreak"]:
+	for zone: String in ["haar", "boughs", "spires"]:
 		check(rooms.has(zone), "the catalog has %s" % zone)
 	w.free()
 
@@ -1750,9 +1750,9 @@ func test_every_large_zone_hides_a_room() -> void:
 ## counts (hidden rooms and catalogued treasures), every zone's row is the
 ## rooms', every zone but the Evercrown holds three, and the total is the rooms'.
 func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
-	const NAMES := {"eolis": "Hearthroot", "trunk": "Heartwood", "tower": "Hollin Tower", "mist": "The Haar",
-		"branches": "High Boughs", "daybreak": "Storm Spires", "dartmoor": "Vorrhallow",
-		"sunken": "Sunken Spring", "zenis": "The Evercrown"}
+	const NAMES := {"hearthroot": "Hearthroot", "heartwood": "Heartwood", "tower": "Hollin Tower", "haar": "The Haar",
+		"boughs": "High Boughs", "spires": "Storm Spires", "vorrhallow": "Vorrhallow",
+		"sunken": "Sunken Spring", "evercrown": "The Evercrown"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var note := bible.get_slice("**Secrets per zone, as built (pass 379).**", 1)
 	var table := note.get_slice("| Zone | Rooms | Hidden rooms | Treasures | In all |", 1).get_slice("\n\n", 0)
@@ -1779,7 +1779,7 @@ func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
 		var said := row.trim_suffix(" |").split(" | ")
 		var want := "%d | %d | %d | %d" % [c[0], c[1], c[2], c[1] + c[2]]
 		check(" | ".join(said) == want, "%s: the bible says %s, the rooms %s" % [zone, " | ".join(said), want])
-		if zone != "zenis":
+		if zone != "evercrown":
 			check(c[1] + c[2] >= 3, "%s holds at least three secrets (%d)" % [zone, c[1] + c[2]])
 	check(note.get_slice("\n\n", 0).contains("**%d hidden rooms and %d treasures, %d in all**" % [hidden, treasures, hidden + treasures]),
 		"bible 11 gives the world's total (%d hidden rooms, %d treasures)" % [hidden, treasures])
@@ -1789,7 +1789,7 @@ func test_every_zone_holds_the_secrets_the_bible_counts() -> void:
 ## holds no side treasure at all by design.
 func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
 	for zone: String in DirAccess.get_directories_at("res://levels"):
-		if zone in ["gym", "test", "trials", "zenis"]:
+		if zone in ["gym", "test", "trials", "evercrown"]:
 			continue
 		var rooms := 0
 		var cracked := 0
@@ -1807,9 +1807,9 @@ func test_every_large_zone_hides_something_behind_cracked_stone() -> void:
 ## Pass 159: Vorrhallow wakes a town, as the source game's last town was. Once King
 ## Vorrund falls, the Drowned Market's foes are gone (`calm:`), and a Ringreader and
 ## Keymaster Sigrun stand there, the last Ringreader and key master before the Evercrown.
-func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
+func test_vorrhallow_wakes_with_a_ringreader_and_a_key_master() -> void:
 	GameState.new_game()
-	var w := make_world({}, "dartmoor/drowned_market")
+	var w := make_world({}, "vorrhallow/drowned_market")
 	await frames(2)
 	var kinds := func() -> Dictionary:
 		var out := {"enemies": 0, "npcs": []}
@@ -1821,18 +1821,18 @@ func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
 		return out
 	var before: Dictionary = kinds.call()
 	check(before.enemies > 0 and before.npcs.is_empty(), "under the flood the market is the slugs' and the crystal dwarf's (%d foes)" % before.enemies)
-	GameState.set_flag("boss:king_grieve")
-	w._enter("dartmoor/drowned_market")
+	GameState.set_flag("boss:thane_vorrund")
+	w._enter("vorrhallow/drowned_market")
 	await frames(2)
 	var after: Dictionary = kinds.call()
 	check(after.enemies == 0, "with the king at rest, the market is a town again: no foes (%d)" % after.enemies)
-	check(after.npcs.has("guru") and after.npcs.has("dartmoor_keymaster") and after.npcs.has("dartmoor_mason"),
+	check(after.npcs.has("ringreader") and after.npcs.has("vorrhallow_keymaster") and after.npcs.has("vorrhallow_mason"),
 		"a Ringreader, Keymaster Sigrun and the mason stand in it (%s)" % [after.npcs])
-	var shop: Dictionary = GameData.shop("dartmoor_keys")
+	var shop: Dictionary = GameData.shop("vorrhallow_keys")
 	var stock: Array = []
 	for s: Dictionary in shop.get("stock", []):
 		stock.append(String(s.item))
-	check(stock.has("jack_key") and stock.has("queen_key") and stock.has("king_key") and stock.has("ace_key") and not stock.has("joker_key"),
+	check(stock.has("copper_key") and stock.has("silver_key") and stock.has("gold_key") and stock.has("thorn_key") and not stock.has("glass_key"),
 		"Sigrun cuts every key but the Glass (%s)" % [stock])
 	w.queue_free()
 
@@ -1842,12 +1842,12 @@ func test_dartmoor_wakes_with_a_guru_and_a_key_master() -> void:
 ## test_reachability.gd), and a shrine waits at its end.
 func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
 	GameState.new_game()
-	var w := make_world({}, "zenis/heart_gate")
+	var w := make_world({}, "evercrown/heart_gate")
 	await frames(2)
-	check(w.room.doors[2].target == "zenis/proving_scar", "past the flesh, the Heart Gate opens on the Proving Scar")
-	w._enter("zenis/proving_scar")
+	check(w.room.doors[2].target == "evercrown/proving_scar", "past the flesh, the Heart Gate opens on the Proving Scar")
+	w._enter("evercrown/proving_scar")
 	await frames(2)
-	check(w.room.doors[1].target == "zenis/heart_gate" and w.room.doors[2].target == "zenis/throne", "and the Scar leads on to the throne")
+	check(w.room.doors[1].target == "evercrown/heart_gate" and w.room.doors[2].target == "evercrown/throne", "and the Scar leads on to the throne")
 	var kids := w.room.get_children()
 	var count := func(t: Variant) -> int: return kids.filter(func(c: Node) -> bool: return is_instance_of(c, t)).size()
 	check(count.call(FireSeal) > 0 and count.call(ConduitGate) > 0 and count.call(CrackedBlock) > 0 and count.call(Waterfall) > 0,
@@ -1856,9 +1856,9 @@ func test_the_proving_scar_lies_between_the_slayer_and_the_throne() -> void:
 	check(shrines.size() == 1 and (shrines[0] as Node2D).position.x > 66 * 16, "a shrine stands in its last hall, before the throne")
 	var foes := kids.filter(func(c: Node) -> bool: return c is Enemy)
 	check(foes.size() == 3 and foes.all(func(e: Enemy) -> bool: return e.corrupted), "its three foes are the Everbloom's, corrupted")
-	w._enter("zenis/throne")
+	w._enter("evercrown/throne")
 	await frames(2)
-	check(w.room.doors[1].target == "zenis/proving_scar", "the throne's west door leads back into the Scar")
+	check(w.room.doors[1].target == "evercrown/proving_scar", "the throne's west door leads back into the Scar")
 
 
 ## Pass 199: a fat purse sprays a few big coins, not a thousand small ones
@@ -1912,8 +1912,8 @@ func test_a_big_coin_rings_lower_and_longer() -> void:
 ## them. Now the Flooded Hall and the Drowned Nave stand a tile deep (the
 ## `tide:` header) and fill their spike pits, you wade with a splash, and once
 ## Thane Vorrund is at rest the water is gone and only its mark is left.
-func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
-	for id: String in ["dartmoor/flooded_hall", "dartmoor/drowned_nave"]:
+func test_vorrhallow_drains_when_thane_vorrund_is_at_rest() -> void:
+	for id: String in ["vorrhallow/flooded_hall", "vorrhallow/drowned_nave"]:
 		var w := make_world({}, id)
 		await frames(3)
 		var tide: Tide = w.room.tide
@@ -1951,7 +1951,7 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 			if f.ends_with(".room"):
 				var head: Dictionary = Room.parse(FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f])).header
 				if head.has("tide"):
-					check(zone == "dartmoor", "%s/%s: only Vorrhallow drowned" % [zone, f])
+					check(zone == "vorrhallow", "%s/%s: only Vorrhallow drowned" % [zone, f])
 
 
 ## Pass 267 (bible 4.4): a guardian's hall answers its fall. Most arenas' signs
@@ -1964,7 +1964,7 @@ func test_dartmoor_drains_when_king_grieve_is_at_rest() -> void:
 func test_every_guardians_hall_answers_its_fall() -> void:
 	var missing := []
 	for zone in DirAccess.get_directories_at("res://levels"):
-		if zone == "zenis":
+		if zone == "evercrown":
 			continue
 		for f in DirAccess.get_files_at("res://levels/" + zone):
 			if not f.ends_with(".room"):
@@ -1982,7 +1982,7 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 					missing.append("%s/%s (%s)" % [zone, f.get_basename(), cell])
 	check(missing.is_empty(), "every arena sign has a word for after its guardian (missing: %s)" % [missing])
 	# The doorways, read for real: before and after.
-	for case: Array in [["mist/lantern_landing", "ripasheiku", "sings in there", "Nothing sings"], ["tower/foreman_gate", "foreman", "foreman's mattock", "mattock is yours"], ["mist/sunken_chapel", "ripasheiku", "still burn", "gone out"]]:
+	for case: Array in [["haar/lantern_landing", "gloamweaver", "sings in there", "Nothing sings"], ["tower/foreman_gate", "foreman", "foreman's delvers_pick", "delvers_pick is yours"], ["haar/sunken_chapel", "gloamweaver", "still burn", "gone out"]]:
 		var w := make_world({}, case[0])
 		await frames(2)
 		var tablet: LoreTablet = null
@@ -2011,7 +2011,7 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 ## serpent dies, and whichever way the loaf pops, it must come to rest on a
 ## floor inside the room, where you can walk to it, not fall out through the
 ## gap in the shaft's floor to the room below.
-func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
+func test_a_silt_adders_loaf_lands_where_you_can_reach_it() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
@@ -2054,7 +2054,7 @@ func test_a_nagas_loaf_lands_where_you_can_reach_it() -> void:
 		await frames(2)
 
 
-func test_a_nagas_gold_lands_where_you_can_reach_it() -> void:
+func test_a_silt_adders_gold_lands_where_you_can_reach_it() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
@@ -2159,7 +2159,7 @@ func test_a_foe_knocked_out_of_its_room_falls_to_its_death() -> void:
 	check(unpaid.is_empty(), "and a fallen foe's coins rest on a floor in the room: %s" % [unpaid.slice(0, 8)])
 
 
-func test_a_climb_past_a_naga_is_timed_to_its_strike() -> void:
+func test_a_climb_past_a_silt_adder_is_timed_to_its_strike() -> void:
 	for id: String in ["tower/foot", "tower/mine_shaft"]:
 		var w := make_world({}, id)
 		await frames(2)
@@ -2271,7 +2271,7 @@ func test_a_drop_never_rests_in_a_doorway() -> void:
 ## you can stand on (no thorns): straight up for a hornet, along the floor for the
 ## spitter. Each is thrown at for real from the nearest such spot.
 func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
-	var text := FileAccess.get_file_as_string("res://levels/trunk/hornet_gallery.room")
+	var text := FileAccess.get_file_as_string("res://levels/heartwood/hornet_gallery.room")
 	var grid: PackedStringArray = text.split("---\n")[1].strip_edges().split("\n")
 	var spots: Array[Vector2i] = []
 	for y in range(grid.size() - 1):
@@ -2288,7 +2288,7 @@ func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
 	check(foes.size() == 4, "three hornets and a spitter (%s)" % [foes])
 	for foe_cell: Vector2i in foes:
 		var hornet := grid[foe_cell.y][foe_cell.x] == "H"
-		var w := make_world({}, "trunk/hornet_gallery")
+		var w := make_world({}, "heartwood/hornet_gallery")
 		var p := w.player
 		p.abilities["rune_dagger"] = true
 		GameState.data.equipment.shield = ""
@@ -2334,9 +2334,9 @@ func test_the_hornet_gallery_can_be_cleared_with_the_dagger() -> void:
 ## Pass 323: the bible's zone table (3.2) and overview (3.1) count the rooms
 ## the game has. Until then they carried the plan's counts (about 190 rooms).
 func test_the_bible_counts_each_zones_rooms() -> void:
-	const ZONES := {"Hearthroot": "eolis", "Heartwood": "trunk", "Hollin Tower": "tower", "The Haar": "mist",
-		"High Boughs": "branches", "Storm Spires": "daybreak", "Vorrhallow": "dartmoor",
-		"The Evercrown": "zenis", "Sunken Spring": "sunken", "Inner Rings": "trials"}
+	const ZONES := {"Hearthroot": "hearthroot", "Heartwood": "heartwood", "Hollin Tower": "tower", "The Haar": "haar",
+		"High Boughs": "boughs", "Storm Spires": "spires", "Vorrhallow": "vorrhallow",
+		"The Evercrown": "evercrown", "Sunken Spring": "sunken", "Inner Rings": "trials"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var table := bible.get_slice("### 3.2 Zones", 1).get_slice("\n\n**", 0)
 	var total := 0
@@ -2453,9 +2453,9 @@ func test_every_room_keeps_the_bibles_size() -> void:
 ## bible quoting the old one. Every chart sold must be written there with its
 ## price, and the count of towns with a cartographer must be the shops'.
 func test_the_bibles_chart_prices_are_the_shops() -> void:
-	const ZONE := {"chart_eolis": "Hearthroot", "chart_trunk": "Heartwood", "chart_tower": "Tower",
-		"chart_mist": "Haar", "chart_branches": "High Boughs", "chart_daybreak": "Carillon",
-		"chart_dartmoor": "Vorrhallow", "chart_sunken": "Sunken Spring"}
+	const ZONE := {"chart_hearthroot": "Hearthroot", "chart_heartwood": "Heartwood", "chart_tower": "Tower",
+		"chart_haar": "Haar", "chart_boughs": "High Boughs", "chart_spires": "Carillon",
+		"chart_vorrhallow": "Vorrhallow", "chart_sunken": "Sunken Spring"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var line := bible.get_slice("### 3.3 Room and map rules", 1).get_slice("- **Map:**", 1).get_slice("\n", 0)
 	var shops := GameData.table("shops")
@@ -2481,9 +2481,9 @@ func test_the_bibles_chart_prices_are_the_shops() -> void:
 
 
 func test_every_zone_has_the_shrines_the_bible_counts() -> void:
-	const ZONES := {"Heartwood": "trunk", "Hollin Tower": "tower", "The Haar": "mist",
-		"High Boughs": "branches", "Storm Spires": "daybreak", "Vorrhallow": "dartmoor",
-		"Sunken Spring": "sunken", "The Evercrown": "zenis", "Hearthroot": "eolis"}
+	const ZONES := {"Heartwood": "heartwood", "Hollin Tower": "tower", "The Haar": "haar",
+		"High Boughs": "boughs", "Storm Spires": "spires", "Vorrhallow": "vorrhallow",
+		"Sunken Spring": "sunken", "The Evercrown": "evercrown", "Hearthroot": "hearthroot"}
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	var rule := bible.get_slice("- **Save points:**", 1).get_slice("\n", 0).get_slice("**As built (pass 331):**", 1)
 	var total := 0
@@ -2584,10 +2584,10 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 	var lamp := TownLamp.new()
 	var radius := lamp.light_radius
 	lamp.free()
-	check(bible.contains("(0.88 out in the marsh)") and is_equal_approx(Fog.ZONES["mist"], 0.88), "3.2 gives the marsh's fog (%s)" % Fog.ZONES["mist"])
+	check(bible.contains("(0.88 out in the marsh)") and is_equal_approx(Fog.ZONES["haar"], 0.88), "3.2 gives the marsh's fog (%s)" % Fog.ZONES["haar"])
 	check(bible.contains("clears an %d px pocket of fog" % radius), "3.2 gives a town lamp's pocket (%d px)" % radius)
-	for town: String in ["victim", "mascon"]:
-		var text := FileAccess.get_file_as_string("res://levels/mist/%s.room" % town)
+	for town: String in ["lampwick", "polesend"]:
+		var text := FileAccess.get_file_as_string("res://levels/haar/%s.room" % town)
 		var lamps := 0
 		var density := ""
 		for line: String in text.get_slice("\n---\n", 0).split("\n"):
@@ -2596,7 +2596,7 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 			elif line.begins_with("fog: "):
 				density = line.trim_prefix("fog: ")
 		var words: String = ["", "one", "two", "three", "four", "five"][mini(lamps, 5)]
-		var para := bible.get_slice("**%s (pass " % {"victim": "Lampwick", "mascon": "Polesend"}[town], 1).get_slice("\n\n**", 0)
+		var para := bible.get_slice("**%s (pass " % {"lampwick": "Lampwick", "polesend": "Polesend"}[town], 1).get_slice("\n\n**", 0)
 		check(para.contains("%s lamp posts" % words), "3.2 counts %s's lamp posts (%d)" % [town, lamps])
 		check(para.contains("at %s" % density) or para.contains("fog at %s" % density), "3.2 gives %s's fog (%s)" % [town, density])
 
@@ -2638,15 +2638,15 @@ func _thousands(n: int) -> String:
 ## a guardian's arena, a town's houses, or a person who stands there), and the
 ## bible's paragraph to the rooms' names.
 const LANDMARKS := {
-	"eolis": [["plaza", "prop:fountain"], ["king_hall", "npc:king"], ["east_gate", "prop:lift"]],
-	"trunk": [["taproot_vault", "prop:taproot"], ["spring_of_trunk", "prop:spring_trunk"], ["apolune", "town"]],
-	"tower": [["winch_hall", "prop:winch"], ["forepaw", "prop:forge"], ["smelter", "prop:crucible"]],
-	"mist": [["spring_of_mist", "prop:spring_mist"], ["victim", "town"], ["sunken_chapel", "boss:ripasheiku"]],
-	"branches": [["crown_leaf", "boss:pakukame"], ["thorn_yard", "boss:bark_captain"], ["conflate", "town"]],
-	"daybreak": [["sky_spring", "prop:spring_sky"], ["roost", "boss:borabohra"], ["daybreak", "town"]],
-	"dartmoor": [["throne_hall", "prop:water_clock"], ["zenis_gate", "prop:zenis_gate"], ["alpha_den", "boss:clockwork_alpha"]],
+	"hearthroot": [["plaza", "prop:fountain"], ["king_hall", "npc:king"], ["east_gate", "prop:lift"]],
+	"heartwood": [["taproot_vault", "prop:taproot"], ["spring_of_heartwood", "prop:spring_heartwood"], ["amberlee", "town"]],
+	"tower": [["winch_hall", "prop:winch"], ["kettleforge", "prop:forge"], ["smelter", "prop:crucible"]],
+	"haar": [["spring_of_haar", "prop:spring_haar"], ["lampwick", "town"], ["sunken_chapel", "boss:gloamweaver"]],
+	"boughs": [["crown_leaf", "boss:snapcrown"], ["thorn_yard", "boss:bark_captain"], ["sylvarre", "town"]],
+	"spires": [["sky_spring", "prop:spring_sky"], ["roost", "boss:skyrend"], ["spires", "town"]],
+	"vorrhallow": [["throne_hall", "prop:water_clock"], ["evercrown_gate", "prop:evercrown_gate"], ["alpha_den", "boss:clockwork_alpha"]],
 	"sunken": [["spring_gate", "prop:drowned_statue"], ["drowned_aqueduct", "prop:aqueduct_spill"], ["wellspring", "boss:drowned_warden"]],
-	"zenis": [["heart", "boss:evil_one"], ["throne", "boss:evil_avatar"], ["veins", "boss:evil_veins"]],
+	"evercrown": [["heart", "boss:everbloom"], ["throne", "boss:everbloom_avatar"], ["veins", "boss:everbloom_veins"]],
 }
 
 
@@ -2802,6 +2802,20 @@ func test_no_retired_name_is_left() -> void:
 			if re.search(texts[path]) != null:
 				found.append("%s in %s" % [old, path])
 	check(found.is_empty(), "no retired name is left (%s)" % ", ".join(found.slice(0, 12)))
+	# Pass 462: the ids too. A word that is not English may not stand in any id,
+	# file name or line, and no zone keeps its old folder.
+	var ids: Dictionary = map.ids
+	var left := []
+	for word: String in ids.unique:
+		var re := RegEx.create_from_string("(?i)(?<![a-z0-9])%s(?![a-z0-9])" % word)
+		for path: String in texts:
+			if re.search(path) != null or re.search(texts[path]) != null:
+				left.append("%s in %s" % [word, path])
+	check(left.is_empty(), "no retired word is left in an id (%s)" % ", ".join(left.slice(0, 12)))
+	var zones := DirAccess.get_directories_at("res://levels")
+	for pair: Array in ids.segments:
+		check(not String(pair[0]) in zones, "no zone folder is still called %s" % pair[0])
+		check(GameState.rename_id(String(pair[0])) == String(pair[1]).to_lower() or String(pair[0]).contains("_"), "the save migration reads the same table (%s)" % pair[0])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("`data/rename_map.json`") and bible.contains("`test_no_retired_name_is_left`"), "bible 1 names the map and this test")
 
@@ -2823,19 +2837,19 @@ func _read_texts(dir: String, out: Dictionary) -> void:
 ## Pass 395 (bible 3.1): the zones from the Haar up stay trees, so a dead end
 ## costs the walk back to a Ringreader. Each zone's farthest room from a Ringreader's room,
 ## in doors walked, is written in 3.1 and held to the rooms.
-func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
-	var w := make_world({}, "eolis/west_gate")
-	var gurus: Array[String] = []
+func test_the_walk_back_to_a_ringreader_is_as_3_1_says() -> void:
+	var w := make_world({}, "hearthroot/west_gate")
+	var ringreaders: Array[String] = []
 	for id: String in w.catalog:
 		var head := FileAccess.get_file_as_string("res://levels/%s.room" % id).get_slice("\n---\n", 0)
 		for line: String in head.split("\n"):
-			if line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "guru":
-				gurus.append(id)
+			if line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == "ringreader":
+				ringreaders.append(id)
 				break
-	check(gurus.size() == 8, "eight rooms hold a Ringreader (%s)" % [gurus])
+	check(ringreaders.size() == 8, "eight rooms hold a Ringreader (%s)" % [ringreaders])
 	var dist := {}
 	var queue: Array[String] = []
-	for g: String in gurus:
+	for g: String in ringreaders:
 		dist[g] = 0
 		queue.append(g)
 	while not queue.is_empty():
@@ -2873,7 +2887,7 @@ func test_the_walk_back_to_a_guru_is_as_3_1_says() -> void:
 
 
 func test_the_zones_meet_as_the_bible_draws() -> void:
-	var w := make_world({}, "eolis/west_gate")
+	var w := make_world({}, "hearthroot/west_gate")
 	var crossings := {}
 	var links := {}
 	var rooms := {}
@@ -2920,14 +2934,14 @@ func test_the_zones_meet_as_the_bible_draws() -> void:
 		if zone == "trials":
 			continue
 		loops[zone] = Dictionary(links.get(zone, {})).size() - (int(rooms[zone]) - 1)
-	check(loops.trunk == 8 and section.contains("Heartwood has 8 loops (%d links among %d rooms)" % [links.trunk.size(), rooms.trunk]),
-		"Heartwood loops %d times, as 3.1 says" % loops.trunk)
+	check(loops.heartwood == 8 and section.contains("Heartwood has 8 loops (%d links among %d rooms)" % [links.heartwood.size(), rooms.heartwood]),
+		"Heartwood loops %d times, as 3.1 says" % loops.heartwood)
 	check(loops.tower == 4 and section.contains("the Hollin Tower 4 (%d among %d)" % [links.tower.size(), rooms.tower]),
 		"the Tower loops %d times, as 3.1 says" % loops.tower)
 	for zone: String in loops:
-		if zone not in ["trunk", "tower"]:
+		if zone not in ["heartwood", "tower"]:
 			check(loops[zone] == 0, "%s's rooms form a tree, as 3.1 says (%d loops)" % [zone, loops[zone]])
-	for id: String in ["tower/foot", "tower/forepaw", "eolis/east_gate"]:
+	for id: String in ["tower/foot", "tower/kettleforge", "hearthroot/east_gate"]:
 		check(LiftCage.STOPS.any(func(s: Array) -> bool: return s[0] == id), "the Kettleforge lift stops at %s, a way back that is not a door" % id)
 
 
@@ -2941,7 +2955,7 @@ func test_the_map_marks_every_rest() -> void:
 	arena.add_child(w)
 	w.build_catalog()
 	var missing: Array[String] = []
-	var gurus := 0
+	var ringreaders := 0
 	for zone in DirAccess.get_directories_at("res://levels"):
 		if zone == "gym" or zone == "trials":
 			continue
@@ -2957,18 +2971,18 @@ func test_the_map_marks_every_rest() -> void:
 						rests.append(Vector2i(x, y))
 			for spec: String in parsed.lists.get("npc", []):
 				var np := spec.split(",")
-				if String(GameData.npc(np[2].strip_edges()).get("role", "")) == "guru":
+				if String(GameData.npc(np[2].strip_edges()).get("role", "")) == "ringreader":
 					rests.append(Vector2i(int(np[0]), int(np[1])))
-					gurus += 1
+					ringreaders += 1
 			var shown: Array = w.catalog.get(id, {}).get("shrines", [])
 			for cell: Vector2i in rests:
 				if not shown.has(cell):
 					missing.append("%s %s" % [id, cell])
 			if shown.size() != rests.size():
 				missing.append("%s marks %d of %d" % [id, shown.size(), rests.size()])
-	check(gurus >= 8, "the eight towns' Ringreaders are counted (%d)" % gurus)
+	check(ringreaders >= 8, "the eight towns' Ringreaders are counted (%d)" % ringreaders)
 	check(missing.is_empty(), "every shrine and every Ringreader is marked on the map (missing: %s)" % [missing])
-	check(not (w.catalog["eolis/guru_temple"].shrines as Array).is_empty(), "Hearthroot, which has no shrine, shows its Ringreader's rest")
+	check(not (w.catalog["hearthroot/ringreader_temple"].shrines as Array).is_empty(), "Hearthroot, which has no shrine, shows its Ringreader's rest")
 	w.free()
 	check(FileAccess.get_file_as_string("res://scripts/ui/map_screen.gd").contains("[\"Rest\", SHRINE"), "the legend calls the mark a rest")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 3.3 ", 1).get_slice("\n### ", 0)
@@ -2976,11 +2990,11 @@ func test_the_map_marks_every_rest() -> void:
 
 
 ## Bible 13.6: Hearthroot's walls are filled from one large texture, not one tile repeated.
-func test_eolis_walls_fill_from_one_large_texture() -> void:
-	check(ResourceLoader.exists(GroundFill.path("eolis")), "Hearthroot has a fill texture")
-	var tex: Texture2D = load(GroundFill.path("eolis"))
+func test_hearthroot_walls_fill_from_one_large_texture() -> void:
+	check(ResourceLoader.exists(GroundFill.path("hearthroot")), "Hearthroot has a fill texture")
+	var tex: Texture2D = load(GroundFill.path("hearthroot"))
 	check(tex.get_width() >= 4 * TilesetFactory.TILE * TilesetFactory.DENSITY, "it spans at least four tiles")
-	var room := Room.from_text("name: T\nzone: eolis\n---\n" + "\n".join(PackedStringArray(["##########", "#........#", "#........#", "##########", "##########"])), "t/fill")
+	var room := Room.from_text("name: T\nzone: hearthroot\n---\n" + "\n".join(PackedStringArray(["##########", "#........#", "#........#", "##########", "##########"])), "t/fill")
 	arena.add_child(room)
 	var fill := room.tiles.get_node_or_null("GroundFill") as GroundFill
 	check(fill != null and fill.show_behind_parent, "the ground layer draws it behind its edges")

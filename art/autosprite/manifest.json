@@ -29,8 +29,8 @@
    "death": {"file": "death.png", "frame_size": 256, "columns": 10, "count": 97, "pick": [12, 24, 44, 52, 56, 60, 64, 68, 72, 84], "seq": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "fps": 12, "loop": false, "autosprite": "character cmvkgu36o002f1g8yyrxrwqbp (hero v3), pro 4s"}
   }
  },
- "monodron": {
-  "dir": "monodron",
+ "blinkhop": {
+  "dir": "blinkhop",
   "colors": 40,
   "density": 2,
   "ramps": ["night", "crystal", "gold", "stone"],
@@ -110,8 +110,8 @@
    "recover": {"file": "poses.png", "frame_size": 256, "columns": 8, "count": 8, "pick": [0], "feet_x": 128, "autosprite": "character cmvklxzbu002ulij0ilwj38wd (pro prompt base), generate_pose stills packed by autosprite_poses.py"}
   }
  },
- "zoradohna": {
-  "dir": "zoradohna",
+ "durgan": {
+  "dir": "durgan",
   "colors": 56,
   "density": 2,
   "ramps": ["night", "gold", "stone"],
@@ -135,8 +135,8 @@
    "freed": {"file": "poses.png", "frame_size": 256, "columns": 16, "count": 16, "pick": [13], "feet_x": 128, "autosprite": "character cmvkpc31k01ik142gqdu3roft (pro prompt base), cockpit change carried from the open-hatch still by autosprite_transplant.py"}
   }
  },
- "rokusutahn": {
-  "dir": "rokusutahn",
+ "gnarlmaw": {
+  "dir": "gnarlmaw",
   "colors": 40,
   "ramps": ["night", "gold"],
   "height": 60,
@@ -149,8 +149,8 @@
    "tail": {"file": "tail.png", "frame_size": 512, "columns": 2, "count": 2, "anchor": "center", "height": 30, "autosprite": "character cmvki8x2y00941g8yjbshrtxp (pro still), states by tools/art/autosprite_parts.py --box 130,0,910,780 --cut 615 --states plain,glow"}
   }
  },
- "ripasheiku": {
-  "dir": "ripasheiku",
+ "gloamweaver": {
+  "dir": "gloamweaver",
   "colors": 48,
   "density": 2,
   "ramps": ["night", "stone", "crystal", "gold"],
@@ -232,8 +232,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, the Short Sword kept in the right, pixminimax"}
   }
  },
- "hero_studded": {
-  "dir": "../pixellab/sheets/hero_studded",
+ "hero_riveted": {
+  "dir": "../pixellab/sheets/hero_riveted",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -406,8 +406,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Long Sword kept in the right, pixminimax"}
   }
  },
- "hero_studded_long_sword": {
-  "dir": "../pixellab/sheets/hero_studded_long_sword",
+ "hero_riveted_long_sword": {
+  "dir": "../pixellab/sheets/hero_riveted_long_sword",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -532,8 +532,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Broad Sword kept in the right, pixminimax"}
   }
  },
- "hero_studded_broad_sword": {
-  "dir": "../pixellab/sheets/hero_studded_broad_sword",
+ "hero_riveted_broad_sword": {
+  "dir": "../pixellab/sheets/hero_riveted_broad_sword",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -616,8 +616,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, battle_helm set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Broad Sword kept in the right, pixminimax"}
   }
  },
- "hero_base_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_base_dragon_slayer",
+ "hero_base_severance": {
+  "dir": "../pixellab/sheets/hero_base_severance",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -637,8 +637,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, base set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Dragon Slayer kept in the right, pixminimax"}
   }
  },
- "hero_leather_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_leather_dragon_slayer",
+ "hero_leather_severance": {
+  "dir": "../pixellab/sheets/hero_leather_severance",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -658,8 +658,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Dragon Slayer kept in the right, pixminimax"}
   }
  },
- "hero_studded_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_studded_dragon_slayer",
+ "hero_riveted_severance": {
+  "dir": "../pixellab/sheets/hero_riveted_severance",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -679,8 +679,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Dragon Slayer kept in the right, pixminimax"}
   }
  },
- "hero_plate_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_plate_dragon_slayer",
+ "hero_plate_severance": {
+  "dir": "../pixellab/sheets/hero_plate_severance",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -700,8 +700,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, plate set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Dragon Slayer kept in the right, pixminimax"}
   }
  },
- "hero_battle_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_battle_dragon_slayer",
+ "hero_battle_severance": {
+  "dir": "../pixellab/sheets/hero_battle_severance",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -721,8 +721,8 @@
    "throw_up": {"file": "throw_up.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6], "fps": 20, "loop": false, "pixellab": "PixelLab, battle set with the key-green cloak flicking a Rune Dagger straight up from the left hand like a ninja star, Dragon Slayer kept in the right, pixminimax"}
   }
  },
- "hero_battle_helm_dragon_slayer": {
-  "dir": "../pixellab/sheets/hero_battle_helm_dragon_slayer",
+ "hero_battle_helm_severance": {
+  "dir": "../pixellab/sheets/hero_battle_helm_severance",
   "head": "top",
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -838,8 +838,8 @@
    "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, leather set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
   }
  },
- "hero_studded_small_shield": {
-  "dir": "../pixellab/sheets/hero_studded_small_shield",
+ "hero_riveted_small_shield": {
+  "dir": "../pixellab/sheets/hero_riveted_small_shield",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -854,8 +854,8 @@
    "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak holding the Small Shield up to guard, pixminimax"}
   }
  },
- "hero_studded_large_shield": {
-  "dir": "../pixellab/sheets/hero_studded_large_shield",
+ "hero_riveted_large_shield": {
+  "dir": "../pixellab/sheets/hero_riveted_large_shield",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],
@@ -870,8 +870,8 @@
    "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7, 8], "fps": 14, "loop": false, "pixellab": "PixelLab, studded set with the key-green cloak holding the Large Shield (crimson, retaken) up to guard, pixminimax"}
   }
  },
- "hero_studded_magic_shield": {
-  "dir": "../pixellab/sheets/hero_studded_magic_shield",
+ "hero_riveted_magic_shield": {
+  "dir": "../pixellab/sheets/hero_riveted_magic_shield",
   "head": true,
   "colors": 56,
   "ramps": ["night", "stone"],

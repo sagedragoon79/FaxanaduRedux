@@ -4,8 +4,8 @@ extends Control
 ## drifting by, falling spores, and the logo. The menu itself is the shared
 ## ListMenu, drawn on top.
 
-const FAR := "res://assets/bg/eolis_far.png"
-const MID := "res://assets/bg/trunk_mid.png"
+const FAR := "res://assets/bg/hearthroot_far.png"
+const MID := "res://assets/bg/heartwood_mid.png"
 const GOLD := Color("f0c02e")
 const GOLD_LIGHT := Color("f7f1de")
 const OUTLINE := Color("120f19")

@@ -1813,7 +1813,7 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 	check(d != null and d.surface == "" and d._color == Dust.KINDS["land"]["color"], "a landing on stone puffs pale dust")
 	stone.queue_free()
 	await frames(1)
-	var marsh := Room.from_text(room_text(["name: T", "zone: mist"], grid_rows(10, 23)), "t/marsh")
+	var marsh := Room.from_text(room_text(["name: T", "zone: haar"], grid_rows(10, 23)), "t/marsh")
 	arena.add_child(marsh)
 	p = make_player(marsh, Vector2i(5, 12))
 	d = await landing.call(marsh)
@@ -1830,7 +1830,7 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 	check(kicked == "mud", "and the run kicks up mud too (%s)" % kicked)
 	marsh.queue_free()
 	await frames(1)
-	var w := make_world({}, "dartmoor/flooded_hall")
+	var w := make_world({}, "vorrhallow/flooded_hall")
 	await frames(3)
 	var tide: Tide = w.room.tide
 	var wade := Vector2(w.room.size_tiles.x * 0.5 * Room.TILE, (tide.row + 1) * Room.TILE)
@@ -1846,7 +1846,7 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 				up += 1
 		check(up == d._particles.size() and d._rise > 0.0, "thrown up, every drop, to fall back (%d of %d)" % [up, d._particles.size()])
 	GameState.set_flag(Tide.DRAIN_FLAG)
-	w._enter("dartmoor/flooded_hall")
+	w._enter("vorrhallow/flooded_hall")
 	await frames(3)
 	w.player.teleport(wade - Vector2(0, Room.TILE * 5))
 	d = await landing.call(w.room)
@@ -1861,7 +1861,7 @@ func test_what_the_feet_kick_up_takes_the_ground_s_look() -> void:
 ## reaches full speed, a jump rises its full height, and the spike pit under
 ## the surface still bites, all without a stroke of swimming.
 func test_wading_neither_slows_nor_floats_nor_hides_the_spikes() -> void:
-	var w := make_world({}, "dartmoor/flooded_hall", cell_feet(10, 19))
+	var w := make_world({}, "vorrhallow/flooded_hall", cell_feet(10, 19))
 	for c in w.room.get_children():
 		if c is Enemy:
 			c.queue_free()

@@ -23,13 +23,13 @@ const LAMP := Color("ffb347")
 const LAMP_CORE := Color("fff2b0")
 ## Every stop, top to bottom: [room, display name, tile the rider steps out on].
 const STOPS := [
-	["tower/forepaw", "Kettleforge", Vector2i(71, 19)],
+	["tower/kettleforge", "Kettleforge", Vector2i(71, 19)],
 	["tower/foot", "Tower Foot", Vector2i(24, 41)],
-	["eolis/east_gate", "Hearthroot, East Gate", Vector2i(4, 19)],
+	["hearthroot/east_gate", "Hearthroot, East Gate", Vector2i(4, 19)],
 ]
 ## Room id -> the stop a ride goes to by default.
-const USUAL := {"tower/forepaw": "tower/foot", "tower/foot": "tower/forepaw", "eolis/east_gate": "tower/foot"}
-const FLAG := "boss:zoradohna"
+const USUAL := {"tower/kettleforge": "tower/foot", "tower/foot": "tower/kettleforge", "hearthroot/east_gate": "tower/foot"}
+const FLAG := "boss:durgan"
 const W := 28.0
 const H := 44.0
 

@@ -4,14 +4,14 @@ extends RefCounted
 ## Spells are unlocked through `Player.abilities` (the key matches the spell id).
 
 const DATA := {
-	"deluge": {"name": "Torrent", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
+	"torrent": {"name": "Torrent", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
 	"thunder": {"name": "Stormcall", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
 	"fire": {"name": "Kindle", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
-	"tilte": {"name": "Wisplight", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
+	"wisplight": {"name": "Wisplight", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
 	"death": {"name": "Wither", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
 }
 ## The order the Next Spell button cycles through.
-const ORDER := ["deluge", "thunder", "fire", "tilte", "death"]
+const ORDER := ["torrent", "thunder", "fire", "wisplight", "death"]
 ## How far apart (radians) Wisp Swarm fans its three orbs.
 const SWARM_SPREAD := 0.5
 
@@ -21,7 +21,7 @@ static func cost(id: String) -> float:
 
 
 static func color(id: String) -> Color:
-	return DATA.get(id, DATA.deluge)["color"]
+	return DATA.get(id, DATA.torrent)["color"]
 
 
 ## The spell after `current` that the player owns, or `current` if there is none.
@@ -37,7 +37,7 @@ static func next_owned(current: String, abilities: Dictionary) -> String:
 ## Everything one cast throws: one projectile, or Wisp Swarm's three orbs.
 static func cast_all(id: String, caster: Player) -> Array[Node2D]:
 	var out: Array[Node2D] = []
-	if id == "tilte" and caster.tilte_swarm:
+	if id == "wisplight" and caster.wisplight_swarm:
 		for i in 3:
 			var orb := cast(id, caster) as WispOrb
 			orb.damage = DATA[id]["swarm_damage"]
@@ -52,12 +52,12 @@ static func cast_all(id: String, caster: Player) -> Array[Node2D]:
 
 static func cast(id: String, caster: Player) -> Node2D:
 	match id:
-		"deluge":
+		"torrent":
 			var bolt := TorrentBolt.new()
 			bolt.damage = DATA[id]["damage"]
-			if caster.abilities.get("magical_rod", false):
+			if caster.abilities.get("briar_wand", false):
 				# The original's Briar Wand (pass 201): Torrent half again as hard.
-				bolt.damage = roundi(bolt.damage * caster.combat.rod_deluge_mult)
+				bolt.damage = roundi(bolt.damage * caster.combat.rod_torrent_mult)
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			bolt.pierce = caster.spell_pierce
 			return bolt
@@ -66,7 +66,7 @@ static func cast(id: String, caster: Player) -> Node2D:
 			ball.damage = DATA[id]["damage"]
 			ball.velocity = Vector2(caster.facing * DATA[id]["speed"], -DATA[id]["lift"])
 			return ball
-		"tilte":
+		"wisplight":
 			var orb := WispOrb.new()
 			orb.damage = DATA[id]["damage"]
 			# It leaves the hand drifting up and forward.

@@ -51,7 +51,7 @@ static func skill_points(catalog: Dictionary) -> Dictionary:
 		total += int(BossArena.BOSSES[id].get("skill_points", 0))
 	var shards := Trials.LIST.size()
 	for room_id: String in catalog:
-		shards += int(catalog[room_id].get("mantras", 0))
+		shards += int(catalog[room_id].get("grains", 0))
 	total += shards / 3
 	var earned := int(GameState.data.skill_points)
 	for id: String in GameState.data.skills:
@@ -94,12 +94,12 @@ static func stat_items(catalog: Dictionary) -> Dictionary:
 ## Every guardian in the order the climb meets them, with the name the
 ## Journey page gives it (the mini-bosses among them).
 const GUARDIANS := [
-	["rokusutahn", "Gnarlmaw"], ["foreman", "The Foreman"], ["zoradohna", "Durgan"],
-	["ripasheiku", "Gloamweaver"], ["hag_matriarch", "The Marsh Hag Matriarch"], ["zorugeriru", "The Haar Wyrm"], ["pakukame", "Snapcrown"],
-	["bark_captain", "The Bark Knight Captain"], ["borabohra", "Skyrend"], ["king_grieve", "Thane Vorrund"],
-	["clockwork_alpha", "The Clockwork Alpha"], ["shadow_eura", "the Likeness"], ["drowned_warden", "The Drowned Warden"],
-	["evil_avatar", "The Everbloom, on the throne"], ["evil_veins", "The Everbloom, in the veins"],
-	["evil_one", "The Everbloom, at the heart"],
+	["gnarlmaw", "Gnarlmaw"], ["foreman", "The Foreman"], ["durgan", "Durgan"],
+	["gloamweaver", "Gloamweaver"], ["hag_matriarch", "The Marsh Hag Matriarch"], ["haar_wyrm", "The Haar Wyrm"], ["snapcrown", "Snapcrown"],
+	["bark_captain", "The Bark Knight Captain"], ["skyrend", "Skyrend"], ["thane_vorrund", "Thane Vorrund"],
+	["clockwork_alpha", "The Clockwork Alpha"], ["likeness", "the Likeness"], ["drowned_warden", "The Drowned Warden"],
+	["everbloom_avatar", "The Everbloom, on the throne"], ["everbloom_veins", "The Everbloom, in the veins"],
+	["everbloom", "The Everbloom, at the heart"],
 ]
 
 

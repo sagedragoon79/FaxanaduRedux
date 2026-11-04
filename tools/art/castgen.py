@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: monodron, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_myconid, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and zoradohna (drawn at 2x); ripasheiku (Autosprite poses only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
 the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -32,7 +32,7 @@ MONO_HORN = mat("gold", 6, 5, 4, 2)
 MONO_FEET = mat("night", 2, 1, 1, 0)
 
 
-def monodron(rx, ry, lift=0.0, horn_tilt=0.0):
+def blinkhop(rx, ry, lift=0.0, horn_tilt=0.0):
     def render(_):
         cv = Canvas(40, 32, (20, 30))
         cy = -ry - lift
@@ -50,10 +50,10 @@ def monodron(rx, ry, lift=0.0, horn_tilt=0.0):
     return render
 
 
-MONODRON = [
-    ("idle", [monodron(9.0, 7.5), monodron(9.3, 7.2)], [0, 1], 3, True),
-    ("windup", [monodron(10.5, 6.0, horn_tilt=-1), monodron(11.0, 5.6, horn_tilt=-1)], [0, 1], 8, True),
-    ("hop", [monodron(8.0, 9.0, lift=2.0, horn_tilt=1)], [0], 1, False),
+BLINKHOP = [
+    ("idle", [blinkhop(9.0, 7.5), blinkhop(9.3, 7.2)], [0, 1], 3, True),
+    ("windup", [blinkhop(10.5, 6.0, horn_tilt=-1), blinkhop(11.0, 5.6, horn_tilt=-1)], [0, 1], 8, True),
+    ("hop", [blinkhop(8.0, 9.0, lift=2.0, horn_tilt=1)], [0], 1, False),
 ]
 
 
@@ -639,7 +639,7 @@ def _rot(p, c, deg):
     return (c[0] + x * math.cos(a) - y * math.sin(a), c[1] + x * math.sin(a) + y * math.cos(a))
 
 
-def zoradohna(crouch=0.0, lean=0.0, spin=0.0, drill_angle=0.0, extend=0.0, feet=((10, 0), (-16, 0)),
+def durgan(crouch=0.0, lean=0.0, spin=0.0, drill_angle=0.0, extend=0.0, feet=((10, 0), (-16, 0)),
               hot=True, open_=False, slump=False):
     """Points are relative to the feet. drill_angle: degrees, + points the drill down."""
     def render(_):
@@ -714,33 +714,33 @@ def zoradohna(crouch=0.0, lean=0.0, spin=0.0, drill_angle=0.0, extend=0.0, feet=
     return render
 
 
-def zoradohna_walk(i, **kw):
+def durgan_walk(i, **kw):
     t = i / 4 * math.tau
     fx = 6 * math.cos(t)
-    return zoradohna(crouch=1 if i % 2 else 0, spin=i * 0.25,
+    return durgan(crouch=1 if i % 2 else 0, spin=i * 0.25,
                      feet=((fx + 10, -max(0, 3 * math.sin(t))), (-fx - 16, -max(0, -3 * math.sin(t)))), **kw)
 
 
-def zoradohna_anims(open_):
+def durgan_anims(open_):
     o = {"open_": open_}
     p = "open_" if open_ else ""
     return [
-        (p + "idle", [zoradohna(**o), zoradohna(crouch=1, spin=0.5, **o)], [0, 1], 3, True),
-        (p + "walk", [zoradohna_walk(i, **o) for i in range(4)], [0, 1, 2, 3], 7, True),
-        (p + "drill_tell", [zoradohna(crouch=3, lean=-4, spin=s, feet=((12, 0), (-19, 0)), **o) for s in (0.0, 0.33, 0.66)],
+        (p + "idle", [durgan(**o), durgan(crouch=1, spin=0.5, **o)], [0, 1], 3, True),
+        (p + "walk", [durgan_walk(i, **o) for i in range(4)], [0, 1, 2, 3], 7, True),
+        (p + "drill_tell", [durgan(crouch=3, lean=-4, spin=s, feet=((12, 0), (-19, 0)), **o) for s in (0.0, 0.33, 0.66)],
          [0, 1, 2], 18, True),
-        (p + "drill", [zoradohna(crouch=2, lean=4, spin=s, extend=4, feet=((14, -2), (-12, 0)), **o) for s in (0.0, 0.5)],
+        (p + "drill", [durgan(crouch=2, lean=4, spin=s, extend=4, feet=((14, -2), (-12, 0)), **o) for s in (0.0, 0.5)],
          [0, 1], 16, True),
-        (p + "stuck", [zoradohna(crouch=6, lean=6, drill_angle=24, extend=2, hot=False, slump=True, **o),
-                       zoradohna(crouch=7, lean=6, drill_angle=26, extend=2, hot=False, slump=True, **o)], [0, 1], 2, True),
-        (p + "slam_tell", [zoradohna(crouch=-7, lean=-3, drill_angle=-30, feet=((9, -3), (-15, 0)), **o),
-                           zoradohna(crouch=-8, lean=-4, drill_angle=-32, feet=((9, -4), (-15, 0)), **o)], [0, 1], 10, True),
-        (p + "slam", [zoradohna(crouch=8, lean=4, drill_angle=18, feet=((13, 0), (-17, 0)), **o)], [0], 1, False),
+        (p + "stuck", [durgan(crouch=6, lean=6, drill_angle=24, extend=2, hot=False, slump=True, **o),
+                       durgan(crouch=7, lean=6, drill_angle=26, extend=2, hot=False, slump=True, **o)], [0, 1], 2, True),
+        (p + "slam_tell", [durgan(crouch=-7, lean=-3, drill_angle=-30, feet=((9, -3), (-15, 0)), **o),
+                           durgan(crouch=-8, lean=-4, drill_angle=-32, feet=((9, -4), (-15, 0)), **o)], [0, 1], 10, True),
+        (p + "slam", [durgan(crouch=8, lean=4, drill_angle=18, feet=((13, 0), (-17, 0)), **o)], [0], 1, False),
     ]
 
 
-ZORADOHNA = zoradohna_anims(False) + zoradohna_anims(True) + [
-    ("freed", [zoradohna(crouch=9, drill_angle=30, hot=False, open_=True, slump=True)], [0], 1, False),
+DURGAN = durgan_anims(False) + durgan_anims(True) + [
+    ("freed", [durgan(crouch=9, drill_angle=30, hot=False, open_=True, slump=True)], [0], 1, False),
 ]
 
 
@@ -818,7 +818,7 @@ def roku_head(step):
     return render
 
 
-ROKUSUTAHN = [
+GNARLMAW = [
     ("head", [roku_head(i) for i in range(6)], list(range(6)), 12, True),
     ("plate", [roku_plate(False), roku_plate(True)], [0], 1, False),
     ("tail", [roku_tail(False), roku_tail(True)], [0], 1, False),
@@ -993,7 +993,7 @@ BM_ROOT = mat("bark", 3, 2, 1, 0)
 BM_SCALE = 2
 
 
-def bog_myconid(swell=0.0, sag=0.0, hot=False, sway=0.0):
+def bog_puffcap(swell=0.0, sag=0.0, hot=False, sway=0.0):
     """swell: 0 resting, 1 about to burst; sag: 0 firm, 1 spent and drooping; sway tilts the cap."""
     def render(_):
         cv = Canvas(40, 40, (20, 38), BM_SCALE)
@@ -1030,11 +1030,11 @@ def bog_myconid(swell=0.0, sag=0.0, hot=False, sway=0.0):
     return render
 
 
-BOG_MYCONID = [
-    ("idle", [bog_myconid(0.0, sway=-0.5), bog_myconid(0.15, sway=0.5)], [0, 1], 2, True),
-    ("windup", [bog_myconid(0.7, hot=True), bog_myconid(1.0, hot=True, sway=0.4)], [0, 1], 10, True),
-    ("burst", [bog_myconid(-0.3, 0.3)], [0], 1, False),
-    ("spent", [bog_myconid(0.0, 1.0, sway=-0.4), bog_myconid(0.0, 0.9, sway=0.4)], [0, 1], 3, True),
+BOG_PUFFCAP = [
+    ("idle", [bog_puffcap(0.0, sway=-0.5), bog_puffcap(0.15, sway=0.5)], [0, 1], 2, True),
+    ("windup", [bog_puffcap(0.7, hot=True), bog_puffcap(1.0, hot=True, sway=0.4)], [0, 1], 10, True),
+    ("burst", [bog_puffcap(-0.3, 0.3)], [0], 1, False),
+    ("spent", [bog_puffcap(0.0, 1.0, sway=-0.4), bog_puffcap(0.0, 0.9, sway=0.4)], [0, 1], 3, True),
 ]
 
 
@@ -1469,7 +1469,7 @@ def autosprite_only(_):
     return blank, blank.copy(), {}
 
 
-RIPASHEIKU = [
+GLOAMWEAVER = [
     ("idle", [None, None], [0, 1], 2, True),
     ("walk", [None, None], [0, 1], 5, True),
     ("sweep_tell", [None, None], [0, 1], 6, True),
@@ -1481,23 +1481,23 @@ RIPASHEIKU = [
 
 
 def main():
-    write_sheet("monodron", (40, 32), (20, 30), MONODRON, lambda r: r(None))
+    write_sheet("blinkhop", (40, 32), (20, 30), BLINKHOP, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
     write_sheet("rot_dwarf", (48, 48), (24, 45), ROT_DWARF, lambda r: r(None))
-    write_sheet("rokusutahn", (64, 64), (32, 32), ROKUSUTAHN, lambda r: r(None))
+    write_sheet("gnarlmaw", (64, 64), (32, 32), GNARLMAW, lambda r: r(None))
     write_sheet("sap_spitter", (32, 32), (16, 30), SAP_SPITTER, lambda r: r(None))
     write_sheet("grub_lump", (32, 24), (16, 21), GRUB_LUMP, lambda r: r(None))
     write_sheet("iron_dwarf", (72, 64), (32, 61), IRON_DWARF, lambda r: r(None), density=ID_SCALE)
     write_sheet("gear_bat", (56, 40), (28, 20), GEAR_BAT, lambda r: r(None), density=GB_SCALE)
     write_sheet("minecart_rider", (72, 56), (36, 53), MINECART_RIDER, lambda r: r(None), density=MC_SCALE)
     write_sheet("foreman", (96, 80), (48, 76), FOREMAN, lambda r: r(None), density=FM_SCALE)
-    write_sheet("zoradohna", (128, 88), (60, 84), ZORADOHNA, lambda r: r(None), density=ZD_SCALE)
-    write_sheet("bog_myconid", (40, 40), (20, 38), BOG_MYCONID, lambda r: r(None), density=BM_SCALE)
+    write_sheet("durgan", (128, 88), (60, 84), DURGAN, lambda r: r(None), density=ZD_SCALE)
+    write_sheet("bog_puffcap", (40, 40), (20, 38), BOG_PUFFCAP, lambda r: r(None), density=BM_SCALE)
     write_sheet("drowned_dwarf", (72, 64), (32, 61), DROWNED_DWARF, lambda r: r(None), density=DD_SCALE)
     write_sheet("bark_knight", (112, 64), (36, 61), BARK_KNIGHT, lambda r: r(None), density=BK_SCALE)
     write_sheet("seed_bomber", (56, 44), (28, 22), SEED_BOMBER, lambda r: r(None), density=SB_SCALE)
     write_sheet("marsh_hag", (56, 52), (24, 49), MARSH_HAG, lambda r: r(None), density=MH_SCALE)
-    write_sheet("ripasheiku", (104, 76), (52, 74), RIPASHEIKU, autosprite_only, density=2)
+    write_sheet("gloamweaver", (104, 76), (52, 74), GLOAMWEAVER, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

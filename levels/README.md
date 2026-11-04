@@ -7,30 +7,30 @@ One character is one 16x16 tile. The room's size is the grid's size.
 name: Movement Gym
 zone: gym
 map: 0, 0          (the room's top-left on the map, in screens)
-door: 1, trunk/hollow_02, 3   (door 1 here leads to door 3 of that room)
+door: 1, heartwood/hollow_02, 3   (door 1 here leads to door 3 of that room)
 label: 3, 33, Some text placed at tile (3, 33)
 sign: 8, 19, First page|Second page   (a lore tablet at tile (8, 19); | splits pages)
-sign: 8, 19, [spring:trunk] Later   (lines on one cell are one tablet; it reads the first whose
+sign: 8, 19, [spring:heartwood] Later   (lines on one cell are one tablet; it reads the first whose
                    bracketed flags hold, so put the plain line last, as the default)
-npc: 12, 19, guru  (a person from data/npcs.json standing on tile (12, 19); an optional
+npc: 12, 19, ringreader  (a person from data/npcs.json standing on tile (12, 19); an optional
                    fourth field shows them only once a flag is set, or with !flag until then;
                    several conditions, space-separated, must all hold)
 secret: 57, 5, 62, 7   (covers tiles 57,5 to 62,7 with fake wall so a hidden room's
                         contents can't be seen until the player walks in)
 enemy_respawn: 5   (optional: seconds until defeated enemies return; 0 = never)
-corrupted: true    (optional: foes are grown through with meteor crystal; default true in zone zenis)
+corrupted: true    (optional: foes are grown through with meteor crystal; default true in zone evercrown)
 chest_gold: 100    (optional: gold in each chest in this room)
 chest: 2, 19, 900   (optional, repeatable: the chest on tile (2, 19) holds 900 gold instead)
-lock: 4, 19, queen   (optional, repeatable: the `J` on tile (4, 19) is a queen, king, ace or joker door)
-prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_trunk, spring_mist (clears only after boss:zorugeriru), house, lamp (a lamp post whose lantern lights the fog), taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Ringreader Trial), joker_key (the one Glass Key), battle_helmet (the found helmet, in its own slot since pass 185), pendant and magical_rod (the original's two relics, pass 201); and Sean's PixelLab buildings, `SetPiece.NAMES`: shop_arms, shop_sundries, shop_dyeworks, shop_cartographer)
-boss: rokusutahn   (a boss arena: doors seal until the boss is beaten)
+lock: 4, 19, silver   (optional, repeatable: the `J` on tile (4, 19) is a silver, gold, thorn or glass door)
+prop: 40, 19, fountain   (a set piece standing on tile (40, 19): fountain, spring_heartwood, spring_haar (clears only after boss:haar_wyrm), house, lamp (a lamp post whose lantern lights the fog), taproot, lift, forge, winch, crucible, trial_goal (the bell at the end of a Ringreader Trial), glass_key (the one Glass Key), elven_helm (the found helmet, in its own slot since pass 185), pendant and briar_wand (the original's two relics, pass 201); and Sean's PixelLab buildings, `SetPiece.NAMES`: shop_arms, shop_sundries, shop_dyeworks, shop_cartographer)
+boss: gnarlmaw   (a boss arena: doors seal until the boss is beaten)
 music: title       (optional: a track other than the zone's, from assets/music/)
 ambience: heights  (optional: an ambience bed other than the zone's; plays assets/music/amb_heights)
 fog: 0.5           (optional: The Haar's fog density over this room, 0 for none; the zone's otherwise)
 surface: stone     (optional: the ground's footstep sound if not the zone's: stone, moss, mud, plank, iron, sap)
 retro: true        (optional: the world is drawn through the NES filter, RetroFilter: chunky pixels in a 4:3 frame, NES palette only. Old Hearthroot)
 tide: 19          (optional: Vorrhallow's standing water: from this row down to the floor in every column open at it, a tile deep on the floors and filling the pits; wading splashes. It drains once Thane Vorrund is at rest, leaving a tide mark)
-calm: boss:king_grieve   (optional: once this world flag is set the room spawns no foes; a town woken again. The Drowned Market)
+calm: boss:thane_vorrund   (optional: once this world flag is set the room spawns no foes; a town woken again. The Drowned Market)
 camera: wide       (optional: the camera eases out to show 25% more each way, for big arenas and sky rooms; never past the room's edges, so make the room at least 50x29 tiles to get all of it)
 ---
 ##########
@@ -75,7 +75,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `w` | Bramble wall tile (dry thorn-vine: solid; a Kindle spell burns the whole knot to ash for good. Kindle is optional, so hide only secrets behind it) |
 | `u` | Dry basin mud bed (solid ground, cracked) |
 | `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Torrent bolt across the tank fills it and the run becomes a one-way raft for good |
-| `b` | Drowned boardwalk (the Haar): nothing until the Haar Spring flows (`spring:mist`), then a one-way platform. Lay it over a spiked dip |
+| `b` | Drowned boardwalk (the Haar): nothing until the Haar Spring flows (`spring:haar`), then a one-way platform. Lay it over a spiked dip |
 | `@` | Bounce-pod (High Boughs): stands on the floor of its cell; land on it and it throws you about nine tiles up. Not solid |
 | `r` | Stride seed (bible 6.4): floats at the cell's center; touched in the air with a double jump or dash spent, it bursts and gives both back, and grows again after 2.5 s. Seeds only help: the checker ignores them, so never make one the only way to a pickup or exit |
 | `>` `<` | Wind current (High Boughs): a band of wind blowing east (`>`) or west (`<`) that carries an airborne player and bears up a fall; holding Down drops out. Once the Sky Spring is restored every current blows the other way. Draw them as whole rectangles over open sky
@@ -120,7 +120,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 
 ## Rooms and doors
 
-A room's id is its path under `levels/` without `.room`, e.g. `eolis/gate`. The file's
+A room's id is its path under `levels/` without `.room`, e.g. `hearthroot/gate`. The file's
 directory is its zone folder; set `zone:` to match (it picks the map color and the area name).
 
 Rooms are at least one screen and at most 4x3 screens (design bible 3.3, pass 331): a screen

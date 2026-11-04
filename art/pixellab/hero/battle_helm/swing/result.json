@@ -9,7 +9,7 @@
  "last_response": {
   "seed": 443060402,
   "type": "done",
-  "action": "a heavy overhead mattock swing to break stone: he raises the mattock high behind his head with both hands, steps forward and brings it down hard in a big arc in front of him to knee height, the pick biting into the stone with a jolt, then wrenches it free and returns to ready. He faces right in strict side profile the whole time and never turns toward the camera. The mattock stays the same size and shape in every frame.",
+  "action": "a heavy overhead delvers_pick swing to break stone: he raises the delvers_pick high behind his head with both hands, steps forward and brings it down hard in a big arc in front of him to knee height, the pick biting into the stone with a jolt, then wrenches it free and returns to ready. He faces right in strict side profile the whole time and never turns toward the camera. The delvers_pick stays the same size and shape in every frame.",
   "images": [
    "00.png",
    "01.png",
@@ -54,7 +54,7 @@
    "generations": 2
   },
   "generation_id": "63a1effb-5308-4c26-90e0-b9a57dfa2186",
-  "animation_name": "custom-a heavy overhead mattock swing",
+  "animation_name": "custom-a heavy overhead delvers_pick swing",
   "queue_position": 0,
   "target_palette": null,
   "billing_charged": true,

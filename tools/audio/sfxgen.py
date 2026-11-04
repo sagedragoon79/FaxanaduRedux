@@ -439,12 +439,12 @@ def main():
     clack = highpass(noise(0.03), 1500) * env(int(RATE * 0.03), 0.0005, 2.5)
     save("hydra_bite", mix(growl, clack), 0.6)
 
-    # A head breathing mist: a long throaty exhale, darker than the spores.
+    # A head breathing haar: a long throaty exhale, darker than the spores.
     d = 1.0
     n = int(RATE * d)
     exhale = lowpass(highpass(noise(d), 200), slide(2400, 700, d, 0.6)) * 0.7
     throat = lowpass(osc(np.full(n, 55.0), "square", 0.5), 300) * 0.25
-    save("mist_breath", mix(exhale, throat) * env(n, 0.15, 1.1), 0.5)
+    save("haar_breath", mix(exhale, throat) * env(n, 0.15, 1.1), 0.5)
 
     # The coil bursting and the arena flooding: a rushing roar of water.
     d = 1.6
@@ -521,7 +521,7 @@ def main():
     n = int(RATE * d)
     chime = (osc(np.full(n, 1318.0), "sine") + osc(np.full(n, 1976.0), "sine") * 0.6) * env(n, 0.002, 2.4) * 0.5
     puff = lowpass(noise(d), slide(4000, 600, d, 0.6)) * env(n, 0.004, 2.0) * 0.5
-    save("tilte_hit", mix(chime, puff), 0.55)
+    save("wisplight_hit", mix(chime, puff), 0.55)
 
     # A boss crossing into its next phase: a deep impact, a reversed swell and a
     # bright ringing fifth over it, so the moment lands even under the music.
@@ -616,7 +616,7 @@ def main():
     out[: len(tick)] += tick
     out[: len(swell)] += swell
     out += chime
-    save("hourglass", out, 0.5)
+    save("stillstone", out, 0.5)
 
     # The glass running out (pass 230): a dry clock tick for each of its last
     # quarter-seconds, so you hear when stopped time is about to end.
@@ -1356,14 +1356,14 @@ def main():
     cry = osc(slide(820, 1700, d, 0.7) * (1 + 0.03 * np.sin(2 * np.pi * 9 * t)), "saw")
     cry = lowpass(highpass(cry, 500), 3200) * wings * env(n, 0.06, 1.2)
     flap = lowpass(highpass(noise(d), 900), 2600) * wings * env(n, 0.02, 1.0) * 0.35
-    save("lilith_screech", mix(cry, flap), 0.55)
+    save("mothling_screech", mix(cry, flap), 0.55)
 
     # Its dive: a falling whistle and the air torn past folded wings.
     d = 0.42
     n = int(RATE * d)
     whistle = osc(slide(1500, 480, d, 0.8), "sine") * env(n, 0.01, 1.3)
     rush = lowpass(highpass(noise(d), 600), slide(4200, 1100, d)) * env(n, 0.12, 1.1) * 0.7
-    save("lilith_dive", mix(whistle * 0.6, rush), 0.45)
+    save("mothling_dive", mix(whistle * 0.6, rush), 0.45)
 
     # The Bloom's petals flaring to loose its brood (pass 262): a dry rustle
     # swelling under a low, rising, many-winged hum.
@@ -1396,7 +1396,7 @@ def main():
     hiss = highpass(lowpass(noise(d), slide(5200, 7600, d)), 2400) * np.clip(t / 0.18, 0, 1) * env(n, 0.001, 0.7)
     rasp = 0.75 + 0.25 * np.sign(np.sin(2 * np.pi * 38 * t))
     scales = lowpass(highpass(noise(d), 900), 2600) * (0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 11 * t))) * env(n, 0.01, 1.6) * 0.35
-    save("naga_hiss", mix(hiss * rasp, scales), 0.6)
+    save("silt_adder_hiss", mix(hiss * rasp, scales), 0.6)
 
     # Its strike: the body lashing through the air and the jaws snapping shut.
     d = 0.3
@@ -1408,7 +1408,7 @@ def main():
     out = lash * 0.8
     at = int(RATE * 0.2)
     out[at:at + sn] += snap
-    save("naga_strike", out, 0.8)
+    save("silt_adder_strike", out, 0.8)
 
     # An empty flask (pass 286): the cork pulls on nothing. A dry pop, then the
     # hollow glass rings twice, small and high, with no swallow after it.

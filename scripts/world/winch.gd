@@ -23,7 +23,7 @@ const DRUM_R := 16.0
 const AXLE := Vector2(0, -58)
 ## Turns per second once it runs.
 const SPEED := 0.06
-const FLAG := "boss:zoradohna"
+const FLAG := "boss:durgan"
 
 var angle := 0.0
 

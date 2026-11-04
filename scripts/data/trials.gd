@@ -16,21 +16,21 @@ extends RefCounted
 ## by its springs every one of them is in hand. A trial whose room isn't
 ## built yet isn't offered.
 const LIST := [
-	{"id": "walls", "mantra": 12, "dye": "slate_dye", "name": "Ring of Walls", "room": "trials/walls", "springs": 1,
+	{"id": "walls", "grain": 12, "dye": "slate_dye", "name": "Ring of Walls", "room": "trials/walls", "springs": 1,
 		"desc": "Three pillars over spikes, thorned on their far sides. Climb each from the ledge at its foot."},
-	{"id": "edges", "mantra": 14, "dye": "coral_dye", "name": "Ring of Edges", "room": "trials/edges", "springs": 1,
+	{"id": "edges", "grain": 14, "dye": "coral_dye", "name": "Ring of Edges", "room": "trials/edges", "springs": 1,
 		"desc": "Narrow footholds over spikes. Leave every ledge as late as you dare."},
-	{"id": "thorns", "mantra": 15, "dye": "thorn_dye", "name": "Ring of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "mattock"],
+	{"id": "thorns", "grain": 15, "dye": "thorn_dye", "name": "Ring of Thorns", "room": "trials/thorns", "springs": 2, "needs": ["glove", "delvers_pick"],
 		"desc": "Spikes, and thorns in the air. Strike down on every one; never touch the ground."},
-	{"id": "winds", "mantra": 14, "dye": "jade_dye", "name": "Ring of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
+	{"id": "winds", "grain": 14, "dye": "jade_dye", "name": "Ring of Winds", "room": "trials/winds", "springs": 2, "needs": ["glove", "boots"],
 		"desc": "Wind across the void. Ride it, climb out of it, and let go over the bell."},
-	{"id": "stillness", "mantra": 32, "dye": "frost_dye", "name": "Ring of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "hourglass"],
+	{"id": "stillness", "grain": 32, "dye": "frost_dye", "name": "Ring of Stillness", "room": "trials/stillness", "springs": 3, "needs": ["glove", "stillstone"],
 		"desc": "Water that falls forever. Still it, climb it, and wait where it is dry."},
-	{"id": "falling", "mantra": 10, "dye": "plummet_dye", "name": "Ring of Falling", "room": "trials/falling", "springs": 3,
+	{"id": "falling", "grain": 10, "dye": "plummet_dye", "name": "Ring of Falling", "room": "trials/falling", "springs": 3,
 		"desc": "Ledges falling away, planks to let go of, and a needle of thorns. Steer every fall."},
 ]
 ## Where the trials are opened from: the Ringreader's menu offers them only here.
-const TEMPLE := "eolis/guru_temple"
+const TEMPLE := "hearthroot/ringreader_temple"
 
 ## The trial under way: {"id", "time", "back_room", "back_pos"}, or empty.
 static var run := {}
@@ -111,10 +111,10 @@ static func finish() -> Dictionary:
 	if record:
 		GameState.data.trials[id] = snappedf(t, 0.01)
 	if first:
-		GameState.grant_stat_item("mantra_shard", null)
+		GameState.grant_stat_item("grain_shard", null)
 	var dye := ""
 	var trial := find(id)
-	if not trial.is_empty() and trial.has("mantra") and t <= float(trial.mantra) and not GameState.owns_dye(String(trial.dye)):
+	if not trial.is_empty() and trial.has("grain") and t <= float(trial.grain) and not GameState.owns_dye(String(trial.dye)):
 		dye = String(trial.dye)
 		GameState.earn_dye(dye)
 	return {"time": t, "best": minf(t, old), "first": first, "record": record, "dye": dye}

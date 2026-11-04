@@ -7,7 +7,7 @@ extends Node2D
 ## under it still show. Once he is at rest Vorrhallow drains, and all that is left
 ## is the tide mark where the surface stood, and silt on the floor.
 
-const DRAIN_FLAG := "boss:king_grieve"
+const DRAIN_FLAG := "boss:thane_vorrund"
 const WATER := Color(0.16, 0.38, 0.44, 0.55)
 const DEEP := Color(0.06, 0.14, 0.2, 0.35)
 const SURFACE := Color("a8e4e8")

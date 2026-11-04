@@ -21,11 +21,11 @@ const OUTLINE := Color("120f19")
 ## Weathered boardwalk houses for the towns of the Haar (Lampwick): reed-grey
 ## planks under a dark, damp frame. Their windows burn always: the people there
 ## never left.
-const MIST := {"bark": Color("2e3430"), "bark_light": Color("4a5650"), "plank": Color("6e7466"), "plank_dark": Color("4a5048"), "frame": Color("9a8a5a")}
+const HAAR := {"bark": Color("2e3430"), "bark_light": Color("4a5650"), "plank": Color("6e7466"), "plank_dark": Color("4a5048"), "frame": Color("9a8a5a")}
 const BARK_LOOK := {"bark": BARK, "bark_light": BARK_LIGHT, "plank": PLANK, "plank_dark": PLANK_DARK, "frame": FRAME}
 
 ## The world flag that lights the windows ("" for always lit).
-var lit_flag := "spring:trunk"
+var lit_flag := "spring:heartwood"
 ## "bark" (the living wood) or "mist" (weathered boardwalk planks).
 var style := "bark"
 var _t := 0.0
@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var c: Dictionary = MIST if style == "mist" else BARK_LOOK
+	var c: Dictionary = HAAR if style == "haar" else BARK_LOOK
 	var w := WIDTH
 	var h := HEIGHT
 	# The bark arch around the front, a little wider than the planks.

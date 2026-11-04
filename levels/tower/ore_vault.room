@@ -2,7 +2,7 @@ name: Ore Vault
 zone: tower
 map: 13, -2
 chest_gold: 260
-sign: 33, 15, The ore vault of Kettleforge. What the dwarves dug, they kept.|The floor is cut stone. A mattock will open it.
+sign: 33, 15, The ore vault of Kettleforge. What the dwarves dug, they kept.|The floor is cut stone. A delvers_pick will open it.
 door: 1, tower/foot, 4
 ---
 ########################################

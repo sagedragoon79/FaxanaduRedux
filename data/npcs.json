@@ -1,5 +1,5 @@
 {
-	"eolis_dyer": {"name": "Ilse the Dyer", "role": "shop", "shop": "eolis_dyes", "look": {"robe": "#8a3a5a", "trim": "#e3a72c", "skin": "#e8c9a0", "hair": "#3f7fc0", "hat": "none"}},
+	"hearthroot_dyer": {"name": "Ilse the Dyer", "role": "shop", "shop": "hearthroot_dyes", "look": {"robe": "#8a3a5a", "trim": "#e3a72c", "skin": "#e8c9a0", "hair": "#3f7fc0", "hat": "none"}},
 	"king": {
 		"lines_cleared": ["The leaves came down, stranger. Nine years of them, red and gold, and now the Tree flowers from roots to crown.", "Hearthroot owes you its water and its fields. I was wrong about strangers. Every door in my town is yours."],
 		"name": "Reeve Aldous", "role": "king",
@@ -15,17 +15,17 @@
 			"If the spring flows again, Hearthroot will know. The fountain will tell us."
 		]
 	},
-	"guru": {
-		"name": "Ringreader", "role": "guru",
+	"ringreader": {
+		"name": "Ringreader", "role": "ringreader",
 		"look": {"robe": "#d8cfb4", "trim": "#7ee0d6", "skin": "#c9a27a", "hair": "#f1ead2", "hat": "hood"},
 		"greeting": "Rest, wanderer. Let me read your ring into the wood, or teach your body what your mind already knows."
 	},
 	"arms_dealer": {
-		"name": "Arms Dealer", "role": "shop", "shop": "eolis_arms",
+		"name": "Arms Dealer", "role": "shop", "shop": "hearthroot_arms",
 		"look": {"robe": "#5e3b22", "trim": "#c08a1e", "skin": "#e8c9a0", "hair": "#3a2a1e", "hat": "none"}
 	},
 	"merchant": {
-		"name": "Merchant", "role": "shop", "shop": "eolis_items",
+		"name": "Merchant", "role": "shop", "shop": "hearthroot_items",
 		"look": {"robe": "#3f6b4a", "trim": "#d8cfb4", "skin": "#d9b08c", "hair": "#8a5a34", "hat": "cap"}
 	},
 	"townsfolk_well": {
@@ -63,15 +63,15 @@
 			"The rot dwarves carry shields. Get behind them, or wait for the swing and hit back."
 		]
 	},
-	"apolune_armorer": {
-		"name": "Brannoc the Armorer", "role": "shop", "shop": "apolune_armor",
+	"amberlee_armorer": {
+		"name": "Brannoc the Armorer", "role": "shop", "shop": "amberlee_armor",
 		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm", "build": "dwarf"}
 	},
-	"apolune_grocer": {
-		"name": "Grocer Tilde", "role": "shop", "shop": "apolune_items",
+	"amberlee_grocer": {
+		"name": "Grocer Tilde", "role": "shop", "shop": "amberlee_items",
 		"look": {"robe": "#2b782c", "trim": "#f0dfa8", "skin": "#e3cdb5", "hair": "#aa6336", "hat": "cap"}
 	},
-	"apolune_widow": {
+	"amberlee_widow": {
 		"name": "Hesk", "role": "talk",
 		"look": {"robe": "#5d4997", "trim": "#aca1ba", "skin": "#e3cdb5", "hair": "#cec5d3", "hat": "hood"},
 		"lines": [
@@ -80,7 +80,7 @@
 			"If you mean to go deeper, the shrine below keeps you safe. Past it, a shaft climbs east to the dwarves' old hall."
 		]
 	},
-	"apolune_widow_glad": {
+	"amberlee_widow_glad": {
 		"lines_cleared": ["Blossom down the well-shaft! It comes through every crack in the trunk. Amberlee smells of honey.", "Brannoc says he'll sell nothing but garlands now. Tilde says he won't last the week."],
 		"name": "Hesk", "role": "talk",
 		"look": {"robe": "#5d4997", "trim": "#aca1ba", "skin": "#e3cdb5", "hair": "#cec5d3", "hat": "hood"},
@@ -89,7 +89,7 @@
 			"Brannoc and Tilde came back the next morning. Shops open, lamps lit. It almost feels like a town."
 		]
 	},
-	"apolune_miner": {
+	"amberlee_miner": {
 		"lines_cleared": ["The light's gone out of the crown. Not the sun: the other one. The glass's.", "We'll dig the old galleries again. Honest stone, no glass in it. You'll find us down there."],
 		"name": "Dwarf Orrin", "role": "talk",
 		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#cd8c51", "hair": "#48201e", "hat": "helm", "build": "dwarf"},
@@ -98,7 +98,7 @@
 			"Those of us who kept away from the glass kept our heads. The Hollin Tower is ours, or was. Durgan holds it now. Bring a Delver's Pick if you go: the old walls only crack for one."
 		]
 	},
-	"dartmoor_steward": {
+	"vorrhallow_steward": {
 		"lines_cleared": ["The water has gone, and the light from the crown has gone with it. Vorrhallow wakes under an honest sky.", "We buried the king on the dais where he fell. You may visit him. He would have wanted to thank you himself."],
 		"name": "Steward Hrafna", "role": "talk",
 		"look": {"robe": "#2e4f5a", "trim": "#e0b050", "skin": "#cd8c51", "hair": "#b8b8c0", "hat": "none", "build": "dwarf", "beard": true},
@@ -108,7 +108,7 @@
 			"His seed is yours. The gate of the Evercrown is up the Glass Rise, east of here. And below us, under the last stone, the Sunken Spring still holds its water. Let it lie, for now."
 		]
 	},
-	"dartmoor_mason": {
+	"vorrhallow_mason": {
 		"lines_cleared": ["Dry stone! I've not laid a course on dry stone in three years.", "The crystal in the walls has gone grey and soft as chalk. We chip it out by the bucket. The masonry under it is sound."],
 		"name": "Mason Brokk", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#8a96a0", "skin": "#d6ae84", "hair": "#783c2b", "hat": "helm", "build": "dwarf"},
@@ -117,11 +117,11 @@
 			"We'll have the lower city dry by spring. Mind the water-clocks, though: they still hold their hour."
 		]
 	},
-	"forepaw_smith": {
-		"name": "Hrothgar the Smith", "role": "shop", "shop": "forepaw_smith",
+	"kettleforge_smith": {
+		"name": "Hrothgar the Smith", "role": "shop", "shop": "kettleforge_smith",
 		"look": {"robe": "#3a2a1e", "trim": "#e0703a", "skin": "#cd8c51", "hair": "#2a1a14", "hat": "none", "build": "dwarf"}
 	},
-	"forepaw_elder": {
+	"kettleforge_elder": {
 		"lines_cleared": ["Vorrund wept at the last, they say, and the flower he planted is dead. Kettleforge can mourn him now, as a king, and her with him.", "The forge burns day and night. Hrothgar says the dead glass folds into steel better than anything he's struck. A last gift, he calls it. I call it a warning."],
 		"name": "Elder Basalt", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#cb8d16", "skin": "#d6ae84", "hair": "#e8e2d0", "hat": "helm", "build": "dwarf"},
@@ -131,7 +131,7 @@
 			"He has not come back as himself. Take the Sun Seed, elf. It was the summer Durgan carried, and the gate of the Evercrown will know it."
 		]
 	},
-	"forepaw_miner": {
+	"kettleforge_miner": {
 		"lines_cleared": ["Three years in the deep galleries, and now I can't stay out of the sun.", "Have you seen the crown from the Lookout? All flowers. The dwarves of Kettleforge never thought to look up."],
 		"name": "Dwarf Tamsin", "role": "talk",
 		"look": {"robe": "#783c2b", "trim": "#867ba2", "skin": "#e8c9a0", "hair": "#aa6336", "hat": "helm", "build": "dwarf"},
@@ -140,7 +140,7 @@
 			"The lift runs again. Ride it down to the Tower Foot and you'll be back in the Heartwood in a breath."
 		]
 	},
-	"forepaw_digger": {
+	"kettleforge_digger": {
 		"lines_cleared": ["Hrothgar's still at the anvil. Bring him a Stillglass Shard and he'll beat it into your blade. Best steel in the Tree, he says.", "Up the trunk the mist is thin as breath now. I went up and came back dry. First dwarf in three years."],
 		"name": "Dwarf Okko", "role": "talk",
 		"look": {"robe": "#2a5e3e", "trim": "#cec5d3", "skin": "#cd8c51", "hair": "#48201e", "hat": "none", "build": "dwarf"},
@@ -149,11 +149,11 @@
 			"Up the trunk the mist begins. Nobody who went into it came back dry."
 		]
 	},
-	"forepaw_grocer": {
-		"name": "Provisioner Dagny", "role": "shop", "shop": "forepaw_items",
+	"kettleforge_grocer": {
+		"name": "Provisioner Dagny", "role": "shop", "shop": "kettleforge_items",
 		"look": {"robe": "#6a4a2a", "trim": "#d8b46a", "skin": "#d6ae84", "hair": "#8a3a22", "hat": "none", "build": "dwarf"}
 	},
-	"forepaw_physician": {
+	"kettleforge_physician": {
 		"name": "Physician Halvar", "role": "physician",
 		"look": {"robe": "#e8e2d0", "trim": "#b03a3a", "skin": "#cd8c51", "hair": "#9a9aa0", "hat": "cap", "build": "dwarf", "beard": true},
 		"lines": [
@@ -166,7 +166,7 @@
 		],
 		"lines_cleared": ["My cots are empty for the first time in three years. I have taken up the harp. Badly.", "Still, if the climb opens you up, come here first. Old habits."]
 	},
-	"dartmoor_houndkeeper": {
+	"vorrhallow_houndkeeper": {
 		"name": "Houndkeeper Brand", "role": "talk",
 		"look": {"robe": "#4a3a2e", "trim": "#b08a3a", "skin": "#d6ae84", "hair": "#5a4a3a", "hat": "helm", "build": "dwarf", "beard": true},
 		"lines": [
@@ -175,7 +175,7 @@
 		],
 		"lines_cleared": ["I melted the last of the hound-keys into a bell for the market. It rings on the hour. Nobody needs winding.", "The kennels are a garden now. Brass flowers, the children call them. They're gears. I let them think what they like."]
 	},
-	"dartmoor_houndkeeper_glad": {
+	"vorrhallow_houndkeeper_glad": {
 		"name": "Houndkeeper Brand", "role": "talk",
 		"look": {"robe": "#4a3a2e", "trim": "#b08a3a", "skin": "#d6ae84", "hair": "#5a4a3a", "hat": "helm", "build": "dwarf", "beard": true},
 		"lines": [
@@ -184,15 +184,15 @@
 		],
 		"lines_cleared": ["I melted the last of the hound-keys into a bell for the market. It rings on the hour. Nobody needs winding.", "The kennels are a garden now. Brass flowers, the children call them. They're gears. I let them think what they like."]
 	},
-	"eolis_cartographer": {
-		"name": "Cartographer Pell", "role": "shop", "shop": "eolis_charts",
+	"hearthroot_cartographer": {
+		"name": "Cartographer Pell", "role": "shop", "shop": "hearthroot_charts",
 		"look": {"robe": "#4a6a8a", "trim": "#e8d9a8", "skin": "#e8c9a0", "hair": "#b0a090", "hat": "cap", "beard": true}
 	},
-	"forepaw_cartographer": {
-		"name": "Surveyor Brin", "role": "shop", "shop": "forepaw_charts",
+	"kettleforge_cartographer": {
+		"name": "Surveyor Brin", "role": "shop", "shop": "kettleforge_charts",
 		"look": {"robe": "#5a4a3a", "trim": "#7ee0d6", "skin": "#d6ae84", "hair": "#e0703a", "hat": "helm", "build": "dwarf"}
 	},
-	"conflate_elder": {
+	"sylvarre_elder": {
 		"lines_cleared": ["The crown-leaf bears flowers again, not one Devouring Bloom. White and pink, as far as the eye goes.", "Some of us wanted the summer to last forever. I was one. Our wardens stand at the bridge out of habit now. Rest with us, elf."],
 		"name": "Elder Aelwen", "role": "talk",
 		"look": {"robe": "#2f6b4f", "trim": "#e8d9a8", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true},
@@ -202,7 +202,7 @@
 			"Our wardens crossed the sky-gaps with the Elven Stride. Its shrine is in the Windloft, up the north bough. If you mean to face the Bloom, go there first."
 		]
 	},
-	"conflate_warden": {
+	"sylvarre_warden": {
 		"lines_cleared": ["Still here, still watching. Somebody has to. The mantises haven't heard the news.", "The petals fall all day. Hard to see a leaf mantis in a blossom storm. Keep your blade out, same as before."],
 		"name": "Warden Faelan", "role": "talk",
 		"look": {"robe": "#4a5a2a", "trim": "#c9b98f", "skin": "#d9b08c", "hair": "#3a2a1e", "hat": "cap", "ears": true},
@@ -211,7 +211,7 @@
 			"The north bough climbs to the crown-leaf. Nobody goes up there now. The last warden who tried, the Bloom swallowed whole."
 		]
 	},
-	"conflate_squire": {
+	"sylvarre_squire": {
 		"name": "Squire Ithil", "role": "talk",
 		"look": {"robe": "#5a6a3a", "trim": "#9a7444", "skin": "#e8c9a0", "hair": "#c9a060", "hat": "none", "ears": true},
 		"lines": [
@@ -220,7 +220,7 @@
 		],
 		"lines_cleared": ["The Thorn Yard is all briar-roses now. I go in to sit where the Captain stood. It feels like the right thing.", "Fire was the answer, my father said. He never saw how it ended. I tell him about it anyway."]
 	},
-	"conflate_squire_glad": {
+	"sylvarre_squire_glad": {
 		"name": "Squire Ithil", "role": "talk",
 		"look": {"robe": "#5a6a3a", "trim": "#9a7444", "skin": "#e8c9a0", "hair": "#c9a060", "hat": "none", "ears": true},
 		"lines": [
@@ -229,7 +229,7 @@
 		],
 		"lines_cleared": ["The Thorn Yard is all briar-roses now. I go in to sit where the Captain stood. It feels like the right thing.", "Fire was the answer, my father said. He never saw how it ended. I tell him about it anyway."]
 	},
-	"mascon_reedcutter": {
+	"polesend_reedcutter": {
 		"name": "Reedcutter Siobhe", "role": "talk",
 		"look": {"robe": "#4a5a4a", "trim": "#7a8a4a", "skin": "#d8b890", "hair": "#8a8a8a", "hat": "none"},
 		"lines": [
@@ -239,7 +239,7 @@
 		],
 		"lines_cleared": ["The mire is only a mire now. I cut reeds where she stood, and nothing reaches up out of the mud for my ankles.", "Every hag in the fog was her daughter, they say. The fog is thinning. Perhaps they have all gone home to her."]
 	},
-	"mascon_reedcutter_glad": {
+	"polesend_reedcutter_glad": {
 		"name": "Reedcutter Siobhe", "role": "talk",
 		"look": {"robe": "#4a5a4a", "trim": "#7a8a4a", "skin": "#d8b890", "hair": "#8a8a8a", "hat": "none"},
 		"lines": [
@@ -248,7 +248,7 @@
 		],
 		"lines_cleared": ["The mire is only a mire now. I cut reeds where she stood, and nothing reaches up out of the mud for my ankles.", "Every hag in the fog was her daughter, they say. The fog is thinning. Perhaps they have all gone home to her."]
 	},
-	"conflate_weaver": {
+	"sylvarre_weaver": {
 		"lines_cleared": ["Petal-silk! The blossom spins finer than the leaves ever did. Pink, if you like that sort of thing.", "The dwarves climbed up yesterday with iron to trade. Real dwarves, with beards and bad jokes. I'd forgotten how much I missed them."],
 		"name": "Weaver Imra", "role": "talk",
 		"look": {"robe": "#7a4a6a", "trim": "#f0dfa8", "skin": "#efd6b8", "hair": "#aa6336", "hat": "none", "ears": true},
@@ -257,35 +257,35 @@
 			"The dwarves used to climb up to trade iron for silk. Then the Everbloom came, and the dwarves stopped climbing, and some stopped being dwarves."
 		]
 	},
-	"conflate_grocer": {
-		"name": "Grocer Thessaly", "role": "shop", "shop": "conflate_items",
+	"sylvarre_grocer": {
+		"name": "Grocer Thessaly", "role": "shop", "shop": "sylvarre_items",
 		"look": {"robe": "#3f6b4a", "trim": "#e8d9a8", "skin": "#e3cdb5", "hair": "#c9a27a", "hat": "cap", "ears": true}
 	},
-	"conflate_cartographer": {
-		"name": "Skywatcher Orin", "role": "shop", "shop": "conflate_charts",
+	"sylvarre_cartographer": {
+		"name": "Skywatcher Orin", "role": "shop", "shop": "sylvarre_charts",
 		"look": {"robe": "#4a6a8a", "trim": "#7ee0d6", "skin": "#efd6b8", "hair": "#f1ead2", "hat": "hood", "ears": true}
 	},
-	"daybreak_armorer": {
-		"name": "Calder the Armorer", "role": "shop", "shop": "daybreak_armor",
+	"spires_armorer": {
+		"name": "Calder the Armorer", "role": "shop", "shop": "spires_armor",
 		"look": {"robe": "#4a3a7a", "trim": "#e8c04a", "skin": "#d9b08c", "hair": "#2e2350", "hat": "helm", "ears": true}
 	},
-	"daybreak_scribe": {
-		"name": "Scribe Ysolde", "role": "shop", "shop": "daybreak_scrolls",
+	"spires_scribe": {
+		"name": "Scribe Ysolde", "role": "shop", "shop": "spires_scrolls",
 		"look": {"robe": "#6a3a5a", "trim": "#f08a2a", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true}
 	},
-	"daybreak_grocer": {
-		"name": "Grocer Wenna", "role": "shop", "shop": "daybreak_items",
+	"spires_grocer": {
+		"name": "Grocer Wenna", "role": "shop", "shop": "spires_items",
 		"look": {"robe": "#5a6a3a", "trim": "#e8d9a8", "skin": "#e3cdb5", "hair": "#8a5a3a", "hat": "cap", "ears": true}
 	},
-	"daybreak_cartographer": {
-		"name": "Bell-Ringer Tamsin", "role": "shop", "shop": "daybreak_charts",
+	"spires_cartographer": {
+		"name": "Bell-Ringer Tamsin", "role": "shop", "shop": "spires_charts",
 		"look": {"robe": "#3a4a7a", "trim": "#b8a8ff", "skin": "#d9b08c", "hair": "#c9a27a", "hat": "cap", "ears": true}
 	},
-	"dartmoor_cartographer": {
-		"name": "Sounder Hulda", "role": "shop", "shop": "dartmoor_charts",
+	"vorrhallow_cartographer": {
+		"name": "Sounder Hulda", "role": "shop", "shop": "vorrhallow_charts",
 		"look": {"robe": "#2f4a52", "trim": "#7ab8c0", "skin": "#c9a27a", "hair": "#9a9a9a", "hat": "hood", "build": "dwarf", "beard": true}
 	},
-	"daybreak_mayor": {
+	"spires_mayor": {
 		"lines_cleared": ["The rods sing again and the bells ring on their own. No storm needed: the Tree's light runs down the copper now.", "Carillon will cast you a bell, hero. Your name on it. It is the least we can do, and the loudest."],
 		"name": "Mayor Halloran", "role": "talk",
 		"look": {"robe": "#2e2350", "trim": "#e8c04a", "skin": "#e3cdb5", "hair": "#e8e2d0", "hat": "crown", "ears": true},
@@ -295,7 +295,7 @@
 			"Skyrend, we call it. It nests in the Spires above the town. Nothing that flies is safe, and nothing that climbs.", "Our oldest bell names the year of the Withering, and the one who swore it would be the last loss: Thane Vorrund, who planted the flower."
 		]
 	},
-	"daybreak_bellkeeper": {
+	"spires_bellkeeper": {
 		"lines_cleared": ["Forty years I rang the bells by hand. This morning they rang themselves, the whole peal, for an hour.", "I sat on the step and listened. Bramble's still in the old cellar, mind. Some things the flowers don't fix."],
 		"name": "Old Bellkeeper Rusk", "role": "talk",
 		"look": {"robe": "#4a465d", "trim": "#c9b98f", "skin": "#c9a27a", "hair": "#b0a090", "hat": "none", "beard": true, "ears": true},
@@ -304,15 +304,15 @@
 			"Ysolde sells a scroll of Kindle. Dry bramble goes up like tinder. I'd do it myself, but I'm too old to aim."
 		]
 	},
-	"victim_keymaster": {
-		"name": "Keymaster Odo", "role": "shop", "shop": "victim_keys",
+	"lampwick_keymaster": {
+		"name": "Keymaster Odo", "role": "shop", "shop": "lampwick_keys",
 		"look": {"robe": "#4a4f3a", "trim": "#c9a24a", "skin": "#d9b08c", "hair": "#6a5a4a", "hat": "cap", "beard": true}
 	},
-	"victim_cartographer": {
-		"name": "Fogwalker Bram", "role": "shop", "shop": "victim_charts",
+	"lampwick_cartographer": {
+		"name": "Fogwalker Bram", "role": "shop", "shop": "lampwick_charts",
 		"look": {"robe": "#3a5050", "trim": "#9ad0c8", "skin": "#c9a27a", "hair": "#3a2a20", "hat": "hood"}
 	},
-	"victim_widow": {
+	"lampwick_widow": {
 		"lines_cleared": ["The mire gave up its men this morning. They walked out of the water dry, sat on the boardwalk, and asked for bread.", "Garrick does not remember the stair, nor the stone, nor me at first. He remembers the road home. That is enough."],
 		"name": "Marta", "role": "talk",
 		"look": {"robe": "#3d3448", "trim": "#a89cb8", "skin": "#e3cdb5", "hair": "#9a9088", "hat": "hood"},
@@ -322,7 +322,7 @@
 			"If you strike one down, be quick. Whatever is left of him in there, I hope it is tired."
 		]
 	},
-	"victim_lamplighter": {
+	"lampwick_lamplighter": {
 		"lines_cleared": ["Sun on the boardwalks! Real sun, not lamp-light. I stood in it so long my neck burned.", "I will keep lighting the lamps, mind. Habit. If the fog ever comes back, I will be ready."],
 		"name": "Lamplighter Nell", "role": "talk",
 		"look": {"robe": "#5a4430", "trim": "#f0c02e", "skin": "#efd6b8", "hair": "#a05a2a", "hat": "cap"},
@@ -332,15 +332,15 @@
 			"East is the Feather Hollow, where the elves' messengers roosted. A pair of winged boots still sits on the perch. No one here can reach it."
 		]
 	},
-	"mascon_scribe": {
-		"name": "Scribe Orla", "role": "shop", "shop": "mascon_scrolls",
+	"polesend_scribe": {
+		"name": "Scribe Orla", "role": "shop", "shop": "polesend_scrolls",
 		"look": {"robe": "#3a3a5a", "trim": "#e07a3a", "skin": "#e3cdb5", "hair": "#c9c0b0", "hat": "hood"}
 	},
-	"mascon_grocer": {
-		"name": "Eelwife Brannagh", "role": "shop", "shop": "mascon_items",
+	"polesend_grocer": {
+		"name": "Eelwife Brannagh", "role": "shop", "shop": "polesend_items",
 		"look": {"robe": "#3d4a3a", "trim": "#9ad0c8", "skin": "#d9b08c", "hair": "#5a3a2a", "hat": "cap"}
 	},
-	"mascon_ferryman": {
+	"polesend_ferryman": {
 		"lines_cleared": ["The black water's gone clear. I can see the old road under it, every stone, all the way to the Tower.", "I've a mind to pole a barge again. Bread down to Kettleforge, flowers back. Will you ride with me, one day?"],
 		"name": "Old Teague the Poler", "role": "talk",
 		"look": {"robe": "#4a3e30", "trim": "#c9a24a", "skin": "#c9a27a", "hair": "#b0a090", "hat": "cap", "beard": true},
@@ -350,16 +350,16 @@
 			"The spring's back, so the boardwalks are back. Lampwick lies west beyond the Lantern Landing, if you are going visiting."
 		]
 	},
-	"dartmoor_keymaster": {
-		"name": "Keymaster Sigrun", "role": "shop", "shop": "dartmoor_keys",
+	"vorrhallow_keymaster": {
+		"name": "Keymaster Sigrun", "role": "shop", "shop": "vorrhallow_keys",
 		"look": {"robe": "#3a4a52", "trim": "#e0b050", "skin": "#cd8c51", "hair": "#8a6a4a", "hat": "cap", "build": "dwarf", "beard": true}
 	},
-	"trunk_keeper": {"lines_cleared": ["The Tree blooms, and my spring still sleeps. Two of three will do, they say. Clear the spout anyway, for an old dwarf."], "name": "Odran", "role": "talk", "look": {"robe": "#3a5a7a", "trim": "#9ad0e8", "skin": "#cd8c51", "hair": "#d8d0c0", "hat": "none", "build": "dwarf", "beard": true}, "lines": ["I keep the Heartwood Spring, as my father did. Every spring has its keeper. That was the old way.", "My father swore it took an Amber Draught to wake a spring. It doesn't. It takes someone to clear the spout. I'm too old to go in."]},
-	"trunk_keeper_glad": {"lines_cleared": ["The Tree drinks from all three now. I sit here and listen to it. A keeper's work is mostly listening."], "name": "Odran", "role": "talk", "look": {"robe": "#3a5a7a", "trim": "#9ad0e8", "skin": "#cd8c51", "hair": "#d8d0c0", "hat": "none", "build": "dwarf", "beard": true}, "lines": ["Hear that? First water in the trunk since the glass dammed it. It'll be in Hearthroot's fountain by dark.", "There are two more springs, higher up, and two more keepers waiting at them. Tell them Odran sent you."]},
-	"mist_keeper": {"lines_cleared": ["The Tree blooms even with my spring choked. Clear it all the same. The fog has no right to it."], "name": "Ilka", "role": "talk", "look": {"robe": "#34506a", "trim": "#c9d8e0", "skin": "#d9b08c", "hair": "#8a8a8a", "hat": "hood"}, "lines": ["You beat the thing that coiled round it. I watched from the cistern stair for a year.", "I keep the Haar Spring. The tanks are full again, but the spout is still choked with bone. Clear it."]},
-	"mist_keeper_glad": {"lines_cleared": ["Three springs, three keepers, and a Tree in bloom. Odran owes me a drink."], "name": "Ilka", "role": "talk", "look": {"robe": "#34506a", "trim": "#c9d8e0", "skin": "#d9b08c", "hair": "#8a8a8a", "hat": "hood"}, "lines": ["There. The fog is already thinning. Lampwick will see its own boardwalks by morning.", "One spring left, up in the sky where the elves drew the rain. Its keeper is a sleeper. Be patient."]},
+	"heartwood_keeper": {"lines_cleared": ["The Tree blooms, and my spring still sleeps. Two of three will do, they say. Clear the spout anyway, for an old dwarf."], "name": "Odran", "role": "talk", "look": {"robe": "#3a5a7a", "trim": "#9ad0e8", "skin": "#cd8c51", "hair": "#d8d0c0", "hat": "none", "build": "dwarf", "beard": true}, "lines": ["I keep the Heartwood Spring, as my father did. Every spring has its keeper. That was the old way.", "My father swore it took an Amber Draught to wake a spring. It doesn't. It takes someone to clear the spout. I'm too old to go in."]},
+	"heartwood_keeper_glad": {"lines_cleared": ["The Tree drinks from all three now. I sit here and listen to it. A keeper's work is mostly listening."], "name": "Odran", "role": "talk", "look": {"robe": "#3a5a7a", "trim": "#9ad0e8", "skin": "#cd8c51", "hair": "#d8d0c0", "hat": "none", "build": "dwarf", "beard": true}, "lines": ["Hear that? First water in the trunk since the glass dammed it. It'll be in Hearthroot's fountain by dark.", "There are two more springs, higher up, and two more keepers waiting at them. Tell them Odran sent you."]},
+	"haar_keeper": {"lines_cleared": ["The Tree blooms even with my spring choked. Clear it all the same. The fog has no right to it."], "name": "Ilka", "role": "talk", "look": {"robe": "#34506a", "trim": "#c9d8e0", "skin": "#d9b08c", "hair": "#8a8a8a", "hat": "hood"}, "lines": ["You beat the thing that coiled round it. I watched from the cistern stair for a year.", "I keep the Haar Spring. The tanks are full again, but the spout is still choked with bone. Clear it."]},
+	"haar_keeper_glad": {"lines_cleared": ["Three springs, three keepers, and a Tree in bloom. Odran owes me a drink."], "name": "Ilka", "role": "talk", "look": {"robe": "#34506a", "trim": "#c9d8e0", "skin": "#d9b08c", "hair": "#8a8a8a", "hat": "hood"}, "lines": ["There. The fog is already thinning. Lampwick will see its own boardwalks by morning.", "One spring left, up in the sky where the elves drew the rain. Its keeper is a sleeper. Be patient."]},
 	"sky_keeper": {"lines_cleared": ["Petals on the wind, and still my spring is dry. Clear it, and I'll go back to sleeping in the rain."], "name": "Arel", "role": "talk", "look": {"robe": "#4a6a9a", "trim": "#e8f1ff", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true}, "lines": ["Mm? Oh. A visitor. Forgive me. With the roc on the spring there was nothing to keep, so I slept.", "I keep the Sky Spring. The roc is gone, so clear the spring and the rain will run to the Tree again."]},
 	"sky_keeper_glad": {"lines_cleared": ["The rain falls soft now. I've a mind to stay awake for it."], "name": "Arel", "role": "talk", "look": {"robe": "#4a6a9a", "trim": "#e8f1ff", "skin": "#efd6b8", "hair": "#e8e2d0", "hat": "hood", "ears": true}, "lines": ["Water on my face. That woke me better than you did. The storm is breaking.", "Below us, under the clouds, lies Vorrhallow, the dwarf king's city. No rain has reached it in years."]},
-	"mascon_barmaid": {"name": "Barmaid Brigid", "role": "talk", "look": {"robe": "#5a2e2a", "trim": "#e0b060", "skin": "#e8c8a8", "hair": "#b0502a", "hat": "none"}, "lines": ["Sit, dry your boots. Every barge-hand who comes through the Black Water tells me something, and I tell the next one for free.", "The Matriarch took an Acorn Charm off a drowned knight. It lies in the far corner of her mire, past our east door, where no one looks. Wear it and your blade bites a little deeper.", "The Haar Wyrm lies coiled round the Haar Spring, past the Dry Cistern. Nobody in Polesend has tasted that water since it came."], "lines_cleared": ["The spring runs, the fog's lifting, and the bargemen drink to you every night. I've stopped charging them for it.", "Someone has to keep the lamps lit in here. It may as well be me, and it may as well be forever."]},
-	"mascon_drinker": {"name": "Old Cormac", "role": "talk", "look": {"robe": "#3e4a3a", "trim": "#8a7a4a", "skin": "#c89a78", "hair": "#d0d0c8", "hat": "cap"}, "lines": ["I poled the king's ore barges forty years. Ask me anything. I'll answer something.", "Lampwick's elves sent their letters by wing. One messenger left her boots on the perch at Feather Hollow, by Lampwick. Wear them and the air holds a second step for you.", "The Sunken Chapel, down the Marsh Road. The dwarves drowned in it kept lanterns burning on the altar. Don't go to pray."], "lines_cleared": ["The water went down and took forty years of my stories with it. Now I have to make new ones up.", "Barges again, by spring. I'll pole the first one myself, if Brigid doesn't hide my hat."]}
+	"polesend_barmaid": {"name": "Barmaid Brigid", "role": "talk", "look": {"robe": "#5a2e2a", "trim": "#e0b060", "skin": "#e8c8a8", "hair": "#b0502a", "hat": "none"}, "lines": ["Sit, dry your boots. Every barge-hand who comes through the Black Water tells me something, and I tell the next one for free.", "The Matriarch took an Acorn Charm off a drowned knight. It lies in the far corner of her mire, past our east door, where no one looks. Wear it and your blade bites a little deeper.", "The Haar Wyrm lies coiled round the Haar Spring, past the Dry Cistern. Nobody in Polesend has tasted that water since it came."], "lines_cleared": ["The spring runs, the fog's lifting, and the bargemen drink to you every night. I've stopped charging them for it.", "Someone has to keep the lamps lit in here. It may as well be me, and it may as well be forever."]},
+	"polesend_drinker": {"name": "Old Cormac", "role": "talk", "look": {"robe": "#3e4a3a", "trim": "#8a7a4a", "skin": "#c89a78", "hair": "#d0d0c8", "hat": "cap"}, "lines": ["I poled the king's ore barges forty years. Ask me anything. I'll answer something.", "Lampwick's elves sent their letters by wing. One messenger left her boots on the perch at Feather Hollow, by Lampwick. Wear them and the air holds a second step for you.", "The Sunken Chapel, down the Marsh Road. The dwarves drowned in it kept lanterns burning on the altar. Don't go to pray."], "lines_cleared": ["The water went down and took forty years of my stories with it. Now I have to make new ones up.", "Barges again, by spring. I'll pole the first one myself, if Brigid doesn't hide my hat."]}
 }

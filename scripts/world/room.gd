@@ -5,15 +5,15 @@ extends Node2D
 
 const TILE := TilesetFactory.TILE
 ## Props that lay a find, once: the World catalog counts them as treasures (pass 187).
-const FOUND_PROPS := ["joker_key", "battle_helmet", "pendant", "magical_rod"]
+const FOUND_PROPS := ["glass_key", "elven_helm", "pendant", "briar_wand"]
 ## One screen in tiles (640x360 px). Map cells and room sizes count in screens.
 const SCREEN_TILES := Vector2(40, 22.5)
 const DOOR_CHARS := "123456789"
 ## What each zone's ground is made of, for footsteps (design bible 11). A room's
 ## `surface:` header overrides it; platforms are planks and sap pools are sap.
-const ZONE_SURFACES := {"gym": "stone", "eolis": "stone", "trunk": "moss", "tower": "iron", "mist": "mud", "branches": "plank", "daybreak": "stone", "dartmoor": "stone", "zenis": "moss", "sunken": "stone", "trials": "stone"}
+const ZONE_SURFACES := {"gym": "stone", "hearthroot": "stone", "heartwood": "moss", "tower": "iron", "haar": "mud", "boughs": "plank", "spires": "stone", "vorrhallow": "stone", "evercrown": "moss", "sunken": "stone", "trials": "stone"}
 
-## Room id: its path under res://levels without the extension, e.g. "eolis/gate".
+## Room id: its path under res://levels without the extension, e.g. "hearthroot/gate".
 var id := ""
 var title := ""
 var zone := ""
@@ -260,7 +260,7 @@ func build(text: String) -> void:
 	for spec: String in lists.get("label", []):
 		_add_label(spec)
 	# Several sign lines on one cell are one tablet that reads whichever holds
-	# when it is read (pass 251): "[spring:trunk] The falls have set." first.
+	# when it is read (pass 251): "[spring:heartwood] The falls have set." first.
 	var tablets := {}
 	for spec: String in lists.get("sign", []):
 		var parts := spec.split(",", true, 2)
@@ -280,7 +280,7 @@ func build(text: String) -> void:
 		var parts := spec.split(",")
 		# An optional fourth field shows the person only once a world flag is set,
 		# or ("!flag") only until it is. Several, space-separated, must all hold
-		# (pass 178: "boss:king_grieve !boss:clockwork_alpha").
+		# (pass 178: "boss:thane_vorrund !boss:clockwork_alpha").
 		if parts.size() == 4:
 			if not flags_hold(parts[3]):
 				continue
@@ -325,18 +325,18 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 	match kind:
 		"fountain":
 			_spawn(Fountain.new(), pos)
-		"spring_trunk":
+		"spring_heartwood":
 			var spring := Spring.new()
-			spring.spring_id = "trunk"
+			spring.spring_id = "heartwood"
 			spring.spring_name = "Heartwood Spring"
 			_spawn(spring, pos)
-		"spring_mist":
+		"spring_haar":
 			# the Haar Wyrm lies coiled around it: it can be cleared once he is beaten.
 			var spring := Spring.new()
-			spring.spring_id = "mist"
+			spring.spring_id = "haar"
 			spring.spring_name = "Haar Spring"
 			spring.text = "The fog thins. Water returns to Hearthroot."
-			spring.needs_flag = "boss:zorugeriru"
+			spring.needs_flag = "boss:haar_wyrm"
 			_spawn(spring, pos)
 		"spring_sky":
 			# The roc nested on it: it can be cleared once Skyrend falls.
@@ -344,13 +344,13 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			spring.spring_id = "sky"
 			spring.spring_name = "Sky Spring"
 			spring.text = "The storm breaks. Hearthroot's fountain runs full."
-			spring.needs_flag = "boss:borabohra"
+			spring.needs_flag = "boss:skyrend"
 			_spawn(spring, pos)
 		"house":
 			var house := HouseFront.new()
-			if zone == "mist":
+			if zone == "haar":
 				# Lampwick's boardwalk houses: its people never left, so they are lit.
-				house.style = "mist"
+				house.style = "haar"
 				house.lit_flag = ""
 			_spawn(house, pos)
 		"lamp":
@@ -370,11 +370,11 @@ func _add_prop(kind: String, pos: Vector2) -> void:
 			_spawn(DrownedStatue.new(), pos)
 		"aqueduct_spill":
 			_spawn(AqueductSpill.new(), pos)
-		"zenis_gate":
+		"evercrown_gate":
 			_spawn(CrownGate.new(), pos)
 		"trial_goal":
 			_spawn(TrialGoal.new(), pos)
-		"joker_key", "battle_helmet", "pendant", "magical_rod":
+		"glass_key", "elven_helm", "pendant", "briar_wand":
 			# Found once, never sold: the one Glass Key, the Elven Helm and the
 			# original's two relics, the Acorn Charm and the Briar Wand (pass 201;
 			# FOUND_PROPS: the World catalog counts them as treasures).
@@ -459,7 +459,7 @@ func _beside_pit(at: Vector2, col_from: int, col_to: int, row: int) -> float:
 
 
 func _amber_on() -> bool:
-	return zone == "trunk" and GameState.flag("spring:trunk")
+	return zone == "heartwood" and GameState.flag("spring:heartwood")
 
 
 const _NEIGHBOURS := [
@@ -677,7 +677,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 		"x":
 			var vein := LightVein.new()
 			# Once the core is starved its veins stay dark.
-			vein.is_cut = GameState.flag("boss:evil_veins")
+			vein.is_cut = GameState.flag("boss:everbloom_veins")
 			_spawn(vein, center)
 		"P":
 			spawn_position = bottom_center
@@ -793,7 +793,7 @@ func _spawn_enemy(enemy: Enemy, pos: Vector2) -> void:
 	_foes += 1
 	enemy.respawn_time = float(header.get("enemy_respawn", "0"))
 	# Everything that lives in the Everbloom is grown through with its crystal.
-	enemy.corrupted = str(header.get("corrupted", "true" if zone == "zenis" else "false")) == "true"
+	enemy.corrupted = str(header.get("corrupted", "true" if zone == "evercrown" else "false")) == "true"
 	_spawn(enemy, pos)
 
 

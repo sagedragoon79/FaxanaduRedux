@@ -7,7 +7,7 @@ prop: 50, 15, winch
 door: 1, tower/foot, 2
 door: 2, tower/ore_chute, 2
 door: 3, tower/gear_shaft, 2
-door: 4, tower/forepaw_stair, 1
+door: 4, tower/kettleforge_stair, 1
 door: 5, tower/gear_pit, 2
 door: 6, tower/cistern, 1
 chest: 50, 7, 220

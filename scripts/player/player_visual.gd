@@ -14,18 +14,18 @@ const SHEET := "res://assets/sprites/player.png"
 const ARMOR_SHEETS := {
 	"": "hero_base",
 	"leather_armor": "hero_leather",
-	"studded_mail": "hero_studded",
+	"riveted_coat": "hero_riveted",
 	"full_plate": "hero_plate",
-	"battle_suit": "hero_battle",
+	"elven_plate": "hero_battle",
 }
 ## Armor and helmet worn together that have a body set of their own, drawn with
 ## the helmet on (Sean's Elven Plate + Elven Helm character): the helmet
 ## layer is not drawn over it.
-const HELMED_SHEETS := {"battle_suit": "hero_battle_helm"}
+const HELMED_SHEETS := {"elven_plate": "hero_battle_helm"}
 ## Swords are drawn into the attack clips (design bible 13.5): each body set has
 ## its attacks again with every blade but the Short Sword, as the sheet
 ## "<set>_<suffix>" (hero_plate_long_sword). The Short Sword is the set's own.
-const BLADE_SHEETS := {"long_sword": "long_sword", "dwarvish_broad_sword": "broad_sword", "dragon_slayer": "dragon_slayer"}
+const BLADE_SHEETS := {"long_sword": "long_sword", "dwarvish_broad_sword": "broad_sword", "severance": "severance"}
 ## The clips a blade sheet holds: the attacks and the Rune Dagger flicked from the left
 ## hand (its idle is only the importer's reference for scale).
 const BLADE_CLIPS := ["slash1", "slash2", "slash3", "slash_up", "throw", "throw_up"]
@@ -47,7 +47,7 @@ const OINTMENT := Color("f0c02e")
 const POISON := Color("8fd14f")
 ## The Elven Helm layer: the helm of the PixelLab helmed elf (tools/art/helmetgen.py), drawn
 ## at the sheets' 2x density with its top-left this far from the frame's crown.
-const HELMET := preload("res://assets/sprites/battle_helmet.png")
+const HELMET := preload("res://assets/sprites/elven_helm.png")
 const HELMET_OFFSET := Vector2(-5.5, -4)
 ## In a body set's run the head leans into the stride, so the helmet tips
 ## forward with it (radians) and sits this far from the crown instead; upright,
@@ -243,7 +243,7 @@ static func armor_sheet() -> String:
 	var worn := String(GameState.data.equipment.get("armor", ""))
 	var name: String = ARMOR_SHEETS.get(worn, "")
 	var helmed: String = HELMED_SHEETS.get(worn, "")
-	if helmed != "" and String(GameState.data.equipment.get("helmet", "")) == "battle_helmet" and Sheet.exists(helmed):
+	if helmed != "" and String(GameState.data.equipment.get("helmet", "")) == "elven_helm" and Sheet.exists(helmed):
 		return helmed
 	return name if name != "" and Sheet.exists(name) else ""
 
@@ -372,7 +372,7 @@ func _draw() -> void:
 	if player.cloak and player.cloak.shown():
 		player.cloak.draw_hood(self, info, tint)
 	var hand := Vector2(info.hand[0], info.hand[1])
-	if String(GameState.data.equipment.get("helmet", "")) == "battle_helmet" and not sheet in HELMED_SHEETS.values():
+	if String(GameState.data.equipment.get("helmet", "")) == "elven_helm" and not sheet in HELMED_SHEETS.values():
 		# Its own layer over the head (paper-doll): the hero's sheet is bare-headed.
 		var crown: Array = info.get("head", [info.neck[0], info.neck[1] - 16])
 		_draw_helmet(Vector2(crown[0], crown[1]), tint)

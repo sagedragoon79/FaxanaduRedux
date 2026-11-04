@@ -6,7 +6,7 @@ extends StaticBody2D
 ## turns again (design bible 4.4), the louvers stand open and the flue can be
 ## climbed. Drawn at 2x render density: `_px` takes half-pixels.
 
-const FLAG := "boss:zoradohna"
+const FLAG := "boss:durgan"
 const OPEN_TIME := 0.5
 const OUTLINE := Color("120f19")
 const IRON := Color("4a4560")

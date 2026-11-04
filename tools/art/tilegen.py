@@ -398,19 +398,19 @@ def cap_girder(img, ox, oy, seed, x0, x1, ramp="stone"):
 ZONES = {
     "gym": {"painter": paint_bricks, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": None,
             "under": "stone-1", "outline": "night-0"},
-    "eolis": {"painter": paint_bricks, "ramp": "stone", "cap": "stone", "light": "leaf", "glow": None,
+    "hearthroot": {"painter": paint_bricks, "ramp": "stone", "cap": "stone", "light": "leaf", "glow": None,
               "under": "stone-1", "outline": "night-0"},
-    "trunk": {"painter": paint_wood, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": "sky-6", "cap_top": 4,
+    "heartwood": {"painter": paint_wood, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": "sky-6", "cap_top": 4,
               "under": "bark-1", "outline": "night-0"},
     "tower": {"painter": paint_plates, "ramp": "stone", "cap": "girder", "light": "leaf", "glow": None,
               "under": "night-1", "outline": "night-0"},
-    "mist": {"painter": paint_limb, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-5", "cap_top": 3,
+    "haar": {"painter": paint_limb, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-5", "cap_top": 3,
              "under": "night-1", "outline": "night-0"},
-    "branches": {"painter": paint_bough, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": None, "cap_top": 6,
+    "boughs": {"painter": paint_bough, "ramp": "bark", "cap": "moss", "light": "leaf", "glow": None, "cap_top": 6,
                  "under": "bark-2", "outline": "night-0"},
-    "dartmoor": {"painter": paint_drowned, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "crystal-6", "cap_top": 4,
+    "vorrhallow": {"painter": paint_drowned, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "crystal-6", "cap_top": 4,
                  "under": "night-1", "outline": "night-0"},
-    "zenis": {"painter": paint_meteor, "ramp": "night", "cap": "moss", "light": "crystal", "glow": "sky-6", "cap_top": 4,
+    "evercrown": {"painter": paint_meteor, "ramp": "night", "cap": "moss", "light": "crystal", "glow": "sky-6", "cap_top": 4,
               "under": "night-0", "outline": "night-0"},
     "sunken": {"painter": paint_spring, "ramp": "stone", "cap": "moss", "light": "sky", "glow": "sky-6", "cap_top": 3,
                "under": "night-1", "outline": "night-0"},
@@ -418,7 +418,7 @@ ZONES = {
     # no warmth, a place made of nothing but footholds.
     "trials": {"painter": paint_bricks, "ramp": "stone", "cap": "stone", "light": "stone", "glow": None,
                "under": "night-1", "outline": "night-0"},
-    "daybreak": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
+    "spires": {"painter": paint_shrine, "ramp": "stone", "cap": "moss", "light": "leaf", "glow": "gold-6", "cap_top": 5,
                  "under": "night-1", "outline": "night-0"},
 }
 
@@ -426,7 +426,7 @@ ZONES = {
 def paint_tile(img, ox, oy, mask, zone, seed):
     z = ZONES[zone]
     z["painter"](img, ox, oy, seed, z["ramp"])
-    if zone == "dartmoor" and (mask & (N | E | S | W)) != (N | E | S | W):
+    if zone == "vorrhallow" and (mask & (N | E | S | W)) != (N | E | S | W):
         crystal_vein(img, ox, oy, seed)
     ramp = z["ramp"]
     out = c(z["outline"])
@@ -573,10 +573,10 @@ def paint_slope(img, ox, oy, zone, rising_east, seed):
 # a side-scroller tileset for the edges, a seamless fill texture for wall interiors
 # (copied to assets/tiles/<zone>_fill.png for GroundFill) and a one-way ledge piece.
 PIXELLAB_SETS = {
-    "eolis": {
-        "set": "eolis/tilesets/town_ground",
-        "fill": ROOT / "art/pixellab/eolis/textures/wall1/tile_4.png",
-        "ledge": ROOT / "art/pixellab/eolis/ledge/mid.png",
+    "hearthroot": {
+        "set": "hearthroot/tilesets/town_ground",
+        "fill": ROOT / "art/pixellab/hearthroot/textures/wall1/tile_4.png",
+        "ledge": ROOT / "art/pixellab/hearthroot/ledge/mid.png",
     },
 }
 
@@ -647,7 +647,7 @@ def glow_dot(img, x, y, core, rim, r=1):
                 put(img, x + dx, y + dy, c(rim))
 
 
-def trunk_far():
+def heartwood_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "bark-0")
     rng = random.Random(5)
@@ -676,7 +676,7 @@ def trunk_far():
     return img
 
 
-def trunk_mid():
+def heartwood_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(9)
     # Hanging roots from the top, rooted columns from the bottom.
@@ -726,7 +726,7 @@ def trunk_mid():
     return img
 
 
-def eolis_far():
+def hearthroot_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "night-1")
     rng = random.Random(3)
@@ -771,7 +771,7 @@ def eolis_far():
     return img
 
 
-def eolis_mid():
+def hearthroot_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(4)
     # Great roots arching overhead, and hanging lanterns.
@@ -959,7 +959,7 @@ def dead_limb(img, x0, y0, length, w, ang, col, rng, depth=0):
             dead_limb(img, x, y, length // 2, max(1, ww - 1), ang + rng.choice([-0.8, 0.7]), col, rng, depth + 1)
 
 
-def mist_far():
+def haar_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-1"))
     gradient(img, "night-1", "stone-1")
     # Steep the whole sky in a green murk.
@@ -982,7 +982,7 @@ def mist_far():
     return img
 
 
-def mist_mid():
+def haar_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(32)
     # Limbs reaching in from the sides, hung with moss.
@@ -1056,7 +1056,7 @@ def leaf_shape(img, cx, cy, length, width, ang, col, vein, rng):
             put(img, x, y, c(vein if d == 0 or (half and abs(d) == half) else col))
 
 
-def branches_far():
+def boughs_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("sky-6"))
     gradient(img, "sky-5", "sky-7")
     rng = random.Random(41)
@@ -1074,7 +1074,7 @@ def branches_far():
     return img
 
 
-def branches_mid():
+def boughs_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(42)
     # Boughs crossing in from the sides, hung with enormous leaves.
@@ -1134,7 +1134,7 @@ def island(img, cx, cy, w, rng, top="leaf-3", rock="stone-2", dark="stone-1"):
             put(img, x, y, c(top))
 
 
-def daybreak_far():
+def spires_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("crystal-1"))
     gradient(img, "night-1", "crystal-2")
     rng = random.Random(51)
@@ -1153,7 +1153,7 @@ def daybreak_far():
     return img
 
 
-def daybreak_mid():
+def spires_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(52)
     # Sky islands adrift at middle distance, a ruined spire on one or two.
@@ -1173,7 +1173,7 @@ def daybreak_mid():
     return img
 
 
-def dartmoor_far():
+def vorrhallow_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "sky-1")
     rng = random.Random(61)
@@ -1219,7 +1219,7 @@ def dartmoor_far():
     return img
 
 
-def dartmoor_mid():
+def vorrhallow_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(62)
     # Broken colonnades and toppled statues of dwarf kings, nearer and darker,
@@ -1255,7 +1255,7 @@ def dartmoor_mid():
     return img
 
 
-def zenis_far():
+def evercrown_far():
     img = Image.new("RGBA", (BG_W, BG_H), c("night-0"))
     gradient(img, "night-0", "crystal-1")
     rng = random.Random(77)
@@ -1289,7 +1289,7 @@ def zenis_far():
     return img
 
 
-def zenis_mid():
+def evercrown_mid():
     img = Image.new("RGBA", (BG_W, BG_H), CLEAR)
     rng = random.Random(78)
     # Nearer: tendrils of stillglass flesh hanging and rising, crystal growing on them.
@@ -1418,14 +1418,14 @@ def gym_far():
 
 
 BACKGROUNDS = {
-    "trunk": (trunk_far, trunk_mid),
-    "eolis": (eolis_far, eolis_mid),
+    "heartwood": (heartwood_far, heartwood_mid),
+    "hearthroot": (hearthroot_far, hearthroot_mid),
     "tower": (tower_far, tower_mid),
-    "mist": (mist_far, mist_mid),
-    "branches": (branches_far, branches_mid),
-    "daybreak": (daybreak_far, daybreak_mid),
-    "dartmoor": (dartmoor_far, dartmoor_mid),
-    "zenis": (zenis_far, zenis_mid),
+    "haar": (haar_far, haar_mid),
+    "boughs": (boughs_far, boughs_mid),
+    "spires": (spires_far, spires_mid),
+    "vorrhallow": (vorrhallow_far, vorrhallow_mid),
+    "evercrown": (evercrown_far, evercrown_mid),
     "sunken": (sunken_far, sunken_mid),
     "trials": (trials_far, trials_mid),
     "gym": (gym_far, None),

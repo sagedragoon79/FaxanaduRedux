@@ -67,7 +67,7 @@ const WALL_SCRAPE := 0.24
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
 ## Deep Wither (pass 134): what share of its MP the Wither spell costs.
-const MANTRA_OF_DEATH_MULT := 0.5
+const RING_OF_DEATH_MULT := 0.5
 ## Wanderer's Grace (pass 142): seconds of harm passing through you added to
 ## every dash, on top of `MovementTuning.dash_invuln`.
 const GRACE_INVULN := 0.1
@@ -88,7 +88,7 @@ const WALL_NORMAL := 0.9
 @export var combat: CombatTuning = CombatTuning.new()
 
 var input := PlayerInput.new()
-var abilities := {"glove": true, "mattock": true, "boots": true, "stride": true, "deluge": true, "fire": true, "thunder": true, "tilte": true, "onyx": true, "hourglass": true}
+var abilities := {"glove": true, "delvers_pick": true, "boots": true, "stride": true, "torrent": true, "fire": true, "thunder": true, "wisplight": true, "seers_lens": true, "stillstone": true}
 
 var max_hp := 100
 ## Heartbeats played at low health (tests).
@@ -102,7 +102,7 @@ var mp := 60.0
 var gold := 0
 var flask_max := 2
 var flask_charges := 2
-var equipped_spell := "deluge"
+var equipped_spell := "torrent"
 
 # Derived from gear and skills by GameState.refresh_stats. Defaults are the
 # Short Sword with a shield and no skills, which is what the gym uses.
@@ -142,7 +142,7 @@ var down_strike_mult := 1.0
 var spell_pierce := false
 var drink_mult := 1.0
 ## Wisp Swarm (skill): Wisplight throws three orbs.
-var tilte_swarm := false
+var wisplight_swarm := false
 var bonus_air_dashes := 0
 ## Riposte: a parry answers with a heavy counter-cut. Bloodletting: hits on a
 ## staggered foe heal. Thrift scales spell costs; Forked Storm lets Stormcall leap;
@@ -161,7 +161,7 @@ var throws := 0
 var spell_cost_mult := 1.0
 var chain_thunder := false
 var time_thief := false
-var mantra_of_death := false
+var ring_of_death := false
 var last_stand := false
 var second_wind := false
 ## Wanderer's Grace (skill): longer dash invulnerability, and a kill gives the
@@ -450,7 +450,7 @@ func _physics_process(delta: float) -> void:
 	_try_dash(on_floor)
 	_try_cycle_spell()
 	_try_cast()
-	_try_hourglass()
+	_try_stillstone()
 	_try_throw(delta)
 	_try_attack(on_floor)
 	_try_thrust(on_floor, delta)
@@ -1046,7 +1046,7 @@ func _try_attack(on_floor: bool) -> void:
 	_attack_buffer_timer = 0.0
 	is_heavy_swing = false
 	_swing_damage = roundi(slash_damage * blade_mult())
-	if not on_floor and input.down and abilities.mattock:
+	if not on_floor and input.down and abilities.delvers_pick:
 		attack_kind = "down"
 		combo_index = 0
 		_swing_damage = roundi(slash_damage * blade_mult() * down_strike_mult)
@@ -1185,7 +1185,7 @@ func _process_attack_hits() -> void:
 		if _attack_hits.has(id):
 			continue
 		_attack_hits[id] = true
-		if collider.is_in_group("breakable") and abilities.mattock:
+		if collider.is_in_group("breakable") and abilities.delvers_pick:
 			collider.break_block()
 			hit_something = true
 			cut = true
@@ -1468,13 +1468,13 @@ func _try_cycle_spell() -> void:
 
 
 ## The Stillstone (design bible A8): stop time for a moment.
-func _try_hourglass() -> void:
-	if not input.hourglass_pressed or not abilities.get("hourglass", false):
+func _try_stillstone() -> void:
+	if not input.stillstone_pressed or not abilities.get("stillstone", false):
 		return
 	if not TimeStop.start(TIME_THIEF_EXTRA if time_thief else 0.0):
 		Sfx.play("fizzle")
 		return
-	Sfx.play("hourglass")
+	Sfx.play("stillstone")
 	Feel.add_trauma(0.1)
 	_spawn_dust(Vector2(0, -24), "parry")
 
@@ -1594,8 +1594,8 @@ func blade_turned() -> void:
 ## halves Wither on top.
 func spell_cost(id: String) -> float:
 	var cost := Spells.cost(id) * spell_cost_mult
-	if id == "death" and mantra_of_death:
-		cost *= MANTRA_OF_DEATH_MULT
+	if id == "death" and ring_of_death:
+		cost *= RING_OF_DEATH_MULT
 	return cost
 
 

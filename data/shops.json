@@ -1,6 +1,6 @@
 {
-	"eolis_dyes": {"name": "Ilse's Dyeworks", "greeting": "A cloak says who you are before you do. What color are you today?", "stock": [{"item": "warden_dye", "price": 0}, {"item": "ember_dye", "price": 300}, {"item": "tide_dye", "price": 500}, {"item": "dusk_dye", "price": 800}, {"item": "ash_dye", "price": 1200}, {"item": "saffron_dye", "price": 1800}, {"item": "night_dye", "price": 2500}, {"item": "slate_dye", "price": 0, "requires": "dye:slate_dye"}, {"item": "coral_dye", "price": 0, "requires": "dye:coral_dye"}, {"item": "thorn_dye", "price": 0, "requires": "dye:thorn_dye"}, {"item": "jade_dye", "price": 0, "requires": "dye:jade_dye"}, {"item": "frost_dye", "price": 0, "requires": "dye:frost_dye"}, {"item": "plummet_dye", "price": 0, "requires": "dye:plummet_dye"}, {"item": "lord_dye", "price": 0, "requires": "lord"}]},
-	"eolis_arms": {
+	"hearthroot_dyes": {"name": "Ilse's Dyeworks", "greeting": "A cloak says who you are before you do. What color are you today?", "stock": [{"item": "warden_dye", "price": 0}, {"item": "ember_dye", "price": 300}, {"item": "tide_dye", "price": 500}, {"item": "dusk_dye", "price": 800}, {"item": "ash_dye", "price": 1200}, {"item": "saffron_dye", "price": 1800}, {"item": "night_dye", "price": 2500}, {"item": "slate_dye", "price": 0, "requires": "dye:slate_dye"}, {"item": "coral_dye", "price": 0, "requires": "dye:coral_dye"}, {"item": "thorn_dye", "price": 0, "requires": "dye:thorn_dye"}, {"item": "jade_dye", "price": 0, "requires": "dye:jade_dye"}, {"item": "frost_dye", "price": 0, "requires": "dye:frost_dye"}, {"item": "plummet_dye", "price": 0, "requires": "dye:plummet_dye"}, {"item": "lord_dye", "price": 0, "requires": "lord"}]},
+	"hearthroot_arms": {
 		"name": "Hearthroot Arms",
 		"greeting": "Steel for the roots, wanderer. Pick what keeps you breathing.",
 		"stock": [
@@ -10,90 +10,90 @@
 			{"item": "dwarvish_broad_sword", "price": 2800, "requires": "spring:sky"}
 		]
 	},
-	"eolis_items": {
+	"hearthroot_items": {
 		"name": "Hearthroot Sundries",
 		"greeting": "Keys, fruit and dew. All honest, mostly.",
 		"stock": [
-			{"item": "jack_key", "price": 150},
+			{"item": "copper_key", "price": 150},
 			{"item": "mana_dew", "price": 500, "once": true},
 			{"item": "life_fruit", "price": 800, "once": true},
 			{"item": "ointment", "price": 300}
 		]
 	},
-	"apolune_armor": {
+	"amberlee_armor": {
 		"name": "Amberlee Armory",
 		"greeting": "Back from the dark, are we? Then you'll want thicker skin.",
 		"stock": [
-			{"item": "studded_mail", "price": 1100},
+			{"item": "riveted_coat", "price": 1100},
 			{"item": "large_shield", "price": 900}
 		]
 	},
-	"apolune_items": {
+	"amberlee_items": {
 		"name": "Amberlee Provisions",
 		"greeting": "The sap's gone hard and so have my prices. Mostly.",
 		"stock": [
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
-			{"item": "jack_key", "price": 150},
-			{"item": "queen_key", "price": 400},
+			{"item": "copper_key", "price": 150},
+			{"item": "silver_key", "price": 400},
 			{"item": "mana_dew", "price": 800, "once": true},
 			{"item": "life_fruit", "price": 1200, "once": true}
 		]
 	},
-	"forepaw_smith": {
+	"kettleforge_smith": {
 		"name": "Kettleforge Forge",
 		"greeting": "Free hands make good steel. Show me that blade of yours, elf.",
 		"stock": [
 			{"item": "temper_1", "price": 700},
 			{"item": "temper_2", "price": 1600, "shards": 1},
 			{"item": "ointment", "price": 300},
-			{"item": "jack_key", "price": 150}
+			{"item": "copper_key", "price": 150}
 		]
 	},
-	"forepaw_items": {
+	"kettleforge_items": {
 		"name": "The Kettleforge Larder",
 		"greeting": "Dried meat for the climb and a Silver Key for the vaults. The deep galleries kept everything but our appetite.",
 		"stock": [
 			{"item": "elixir", "price": 1500},
-			{"item": "queen_key", "price": 400}
+			{"item": "silver_key", "price": 400}
 		]
 	},
-	"eolis_charts": {
+	"hearthroot_charts": {
 		"name": "Maps and Charts",
 		"greeting": "Lost already? Every tunnel I have walked is on these, and a few I only heard about.",
 		"stock": [
-			{"item": "chart_eolis", "price": 40},
-			{"item": "chart_trunk", "price": 250}
+			{"item": "chart_hearthroot", "price": 40},
+			{"item": "chart_heartwood", "price": 250}
 		]
 	},
-	"forepaw_charts": {
+	"kettleforge_charts": {
 		"name": "Kettleforge Survey",
 		"greeting": "Dwarves chart what they dig. Three years in hiding, and I drew every gallery from memory.",
 		"stock": [
 			{"item": "chart_tower", "price": 400}
 		]
 	},
-	"conflate_items": {
+	"sylvarre_items": {
 		"name": "Sylvarre Provisions",
 		"greeting": "Dew and fruit from the high boughs, and ointment the wardens swear by.",
 		"stock": [
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
-			{"item": "jack_key", "price": 150},
-			{"item": "king_key", "price": 900},
+			{"item": "copper_key", "price": 150},
+			{"item": "gold_key", "price": 900},
 			{"item": "mana_dew", "price": 1000, "once": true},
 			{"item": "life_fruit", "price": 1600, "once": true}
 		]
 	},
-	"conflate_charts": {
+	"sylvarre_charts": {
 		"name": "Skywatch Charts",
 		"greeting": "From the boughs you can see half the Tree. I drew what I saw, and a bit of what the fog let me.",
 		"stock": [
-			{"item": "chart_mist", "price": 500},
-			{"item": "chart_branches", "price": 650}
+			{"item": "chart_haar", "price": 500},
+			{"item": "chart_boughs", "price": 650}
 		]
 	},
-	"daybreak_armor": {
+	"spires_armor": {
 		"name": "Stormward Armory",
 		"greeting": "Plate for the sky road. The lightning finds iron, so we forge ours from elf-silver.",
 		"stock": [
@@ -101,82 +101,82 @@
 			{"item": "magic_shield", "price": 3600}
 		]
 	},
-	"daybreak_scrolls": {
+	"spires_scrolls": {
 		"name": "The Bell-Tower Scriptorium",
 		"greeting": "Every scroll here was copied by lamplight while the storm rang the bells.",
 		"stock": [
 			{"item": "fire_scroll", "price": 1200},
-			{"item": "tilte_scroll", "price": 2500}
+			{"item": "wisplight_scroll", "price": 2500}
 		]
 	},
-	"daybreak_items": {
+	"spires_items": {
 		"name": "Carillon Stores",
 		"greeting": "Dry bread, dry wicks, and ointment for the hail.",
 		"stock": [
 			{"item": "elixir", "price": 1500},
 			{"item": "ointment", "price": 300},
-			{"item": "jack_key", "price": 150},
-			{"item": "ace_key", "price": 1800},
+			{"item": "copper_key", "price": 150},
+			{"item": "thorn_key", "price": 1800},
 			{"item": "mana_dew", "price": 1200, "once": true},
 			{"item": "life_fruit", "price": 2000, "once": true, "requires": "spring:sky"}
 		]
 	},
-	"daybreak_charts": {
+	"spires_charts": {
 		"name": "Bell-Ringer's Charts",
 		"greeting": "From the bell loft you can see every isle the wind has not hidden.",
 		"stock": [
-			{"item": "chart_daybreak", "price": 700}
+			{"item": "chart_spires", "price": 700}
 		]
 	},
-	"dartmoor_charts": {
+	"vorrhallow_charts": {
 		"name": "Sounding-Line Charts",
 		"greeting": "Forty years I swam these halls by memory. Now the water's down, I can draw them dry.",
 		"stock": [
-			{"item": "chart_dartmoor", "price": 750},
+			{"item": "chart_vorrhallow", "price": 750},
 			{"item": "chart_sunken", "price": 800}
 		]
 	},
-	"victim_keys": {
+	"lampwick_keys": {
 		"name": "Odo's Keys and Sundries",
 		"greeting": "Every lock in the Haar, I have cut a key for. Most of them still turn.",
 		"stock": [
-			{"item": "jack_key", "price": 150},
-			{"item": "queen_key", "price": 400},
+			{"item": "copper_key", "price": 150},
+			{"item": "silver_key", "price": 400},
 			{"item": "ointment", "price": 300},
 			{"item": "elixir", "price": 1500}
 		]
 	},
-	"victim_charts": {
+	"lampwick_charts": {
 		"name": "Fogwalker's Charts",
 		"greeting": "I walked the Haar blind for thirty years. Here is what my feet remember.",
 		"stock": [
-			{"item": "chart_mist", "price": 500}
+			{"item": "chart_haar", "price": 500}
 		]
 	},
-	"mascon_scrolls": {
+	"polesend_scrolls": {
 		"name": "Orla's Scrolls",
 		"greeting": "Kindle, wanderer. It dries the bramble and the damp alike. Few in Polesend can afford to be without it.",
 		"stock": [
 			{"item": "fire_scroll", "price": 1200}
 		]
 	},
-	"mascon_items": {
+	"polesend_items": {
 		"name": "Brannagh's Stores",
 		"greeting": "Smoked eel, salve, and keys off the drowned. Don't ask whose.",
 		"stock": [
 			{"item": "ointment", "price": 300},
 			{"item": "elixir", "price": 1500},
-			{"item": "jack_key", "price": 150}
+			{"item": "copper_key", "price": 150}
 		]
 	},
-	"dartmoor_keys": {
+	"vorrhallow_keys": {
 		"name": "Sigrun's Locks",
 		"greeting": "Every door in the king's city had its key, and every key passed through my hands. The water kept them bright.",
 		"stock": [
-			{"item": "jack_key", "price": 150},
-			{"item": "queen_key", "price": 400},
-			{"item": "king_key", "price": 900},
-			{"item": "ace_key", "price": 1800},
+			{"item": "copper_key", "price": 150},
+			{"item": "silver_key", "price": 400},
+			{"item": "gold_key", "price": 900},
+			{"item": "thorn_key", "price": 1800},
 			{"item": "ointment", "price": 300},
 			{"item": "elixir", "price": 1500}
 		]

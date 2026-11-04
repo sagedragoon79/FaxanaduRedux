@@ -11,18 +11,18 @@ date,asset,operation,credits,result,notes
 2026-10-23,elf HD jump/dash/hurt/death/cast/block/wall slide/drink,generate_spritesheet pro 4s 64f@256 ultra bg x8,80,queued (videos cmvkf1inp cmvkf1iyy cmvkf1j16 cmvkf1ixy cmvkf1ivz cmvkf1iuk cmvkf1iot cmvkf1itg),rest of the player set; balance 367 after
 2026-10-23,elf HD sword quick_strike + triple_combo,generate_attack_moves 48f@256 ultra bg,10,queued (videos cmvkf1le0 cmvkf1lf7),slash1-3 source; balance 357 after
 2026-10-23,elf HD clips (all 12),regenerate_single_spritesheet full rate@256 (512 for moves) ultra bg,0,ok (art/autosprite/elf/*.png),free re-cuts; all 17 player animations imported; balance 357
-2026-10-23,monodron / hornet / rot_dwarf bases,upload_character x3 (code sprite x10),0,ok,free; characters cmvkflv42004bo6z1qxtzm2oa cmvkfmj6a000dwo890qejq1rh cmvkfnlkq0045w257vo76fzki
-2026-10-23,monodron / hornet / rot_dwarf HD side poses,generate_pose x3,9,queued,HD base recipe (13.2); balance 348 after
-2026-10-23,monodron HD base + breathe/crouch/hop clip,upload_character (free) + generate_spritesheet pro 4s custom,10,queued (character cmvkfqkun004l12am4kegb7n4; video cmvkfqrfh0018wo89kt45j63w),one clip feeds idle windup hop; balance 344 after
+2026-10-23,blinkhop / hornet / rot_dwarf bases,upload_character x3 (code sprite x10),0,ok,free; characters cmvkflv42004bo6z1qxtzm2oa cmvkfmj6a000dwo890qejq1rh cmvkfnlkq0045w257vo76fzki
+2026-10-23,blinkhop / hornet / rot_dwarf HD side poses,generate_pose x3,9,queued,HD base recipe (13.2); balance 348 after
+2026-10-23,blinkhop HD base + breathe/crouch/hop clip,upload_character (free) + generate_spritesheet pro 4s custom,10,queued (character cmvkfqkun004l12am4kegb7n4; video cmvkfqrfh0018wo89kt45j63w),one clip feeds idle windup hop; balance 344 after
 2026-10-23,hornet / rot_dwarf HD side poses,generate_pose x2,0,failed (refunded; balance 344 by get_account),first prompts failed silently
 2026-10-23,hornet / rot_dwarf HD side poses (retry),generate_pose x2 shorter prompts,6,queued,balance 338 after
-2026-10-23,monodron breathe/crouch/hop (pro),result,0,rejected,pro clip invented a second creature and morphed into a front-facing legged design; code sprite stays
-2026-10-23,monodron hop,generate_spritesheet turbo reference 48f@256 ultra bg,5,queued (video cmvkfv6ad00ujnplm8c68pp0x),turbo reference mode is the most consistent for a simple blob; balance 339 reported after (a pose refund)
+2026-10-23,blinkhop breathe/crouch/hop (pro),result,0,rejected,pro clip invented a second creature and morphed into a front-facing legged design; code sprite stays
+2026-10-23,blinkhop hop,generate_spritesheet turbo reference 48f@256 ultra bg,5,queued (video cmvkfv6ad00ujnplm8c68pp0x),turbo reference mode is the most consistent for a simple blob; balance 339 reported after (a pose refund)
 2026-10-23,hornet / rot_dwarf HD bases,create_character pro x2,6,ok (characters cmvkfz6gb001yko85s4qp0fqp cmvkfzkmx002gko85dkbb8fdz),generate_pose kept failing on these two (refunded); prompt-made pro bases instead
 2026-10-23,hornet fly + sting attack,generate_spritesheet turbo reference 48f@256 ultra bg x2,10,queued (videos cmvkg04lt000p13ab90h0s5p4 cmvkg04fd000i13abxm3o974y),turbo for non-humanoids: the pro Monodron clip morphed off-model while turbo reference stayed exact
 2026-10-23,rot_dwarf walk + axe chop + hurt,generate_spritesheet pro 4s 64f@256 ultra bg x3,30,queued (videos cmvkg06w8000eq907m4cxr9do cmvkg06yt000mq9078irtffp9 cmvkg073h000rq907xus4qvgj),pro for humanoids (as the elf); balance 293 after
 2026-10-23,hero redesign concepts A/B/C,create_character pro x3,9,ok (cmvkg2sdk0031ko85cfj6bjtl cmvkg34i40047ko85w6he6m30 cmvkg3gqf004pko85m5hq2xbv),Sean: the elf looks too much like Link; balance 284 after
-2026-10-23,monodron / hornet / rot_dwarf clips,regenerate none; download + import,0,ok (art/autosprite/{monodron,hornet,rot_dwarf}),all three enemies imported; balance 284
+2026-10-23,blinkhop / hornet / rot_dwarf clips,regenerate none; download + import,0,ok (art/autosprite/{blinkhop,hornet,rot_dwarf}),all three enemies imported; balance 284
 2026-10-23,hero base from Sean reference (hooded ranger),upload_character free + generate_pose,3,queued (ref cmvkgcyl7006two89klukb557),Sean sent a halfling reference; asking for a taller slender elf; balance 281 after
 2026-10-23,elf hero v2 base,upload_character (pose image),0,ok (cmvkgfgy8007pwo89gj71xqcp),tall slender hooded ranger from Sean reference; balance 281
 2026-10-23,elf hero v2 idle + run,generate_spritesheet pro 4s 64f@256 ultra bg x2,20,queued (videos cmvkgpcd5009eko85q90bh5p6 cmvkgpcec009gko85h0qsxawh),Sean chose 2x detail; balance 261 after
@@ -34,8 +34,8 @@ date,asset,operation,credits,result,notes
 2026-10-23,Rokusutahn head base,create_character pro,3,ok (cmvki2qv700ikcjben0qxn2ke),boss key part: face-on spiky maw; balance 145 after
 2026-10-23,Rokusutahn plate base,create_character pro,3,ok (cmvki8kzw00xy8p8adn82rk5v),bark plate segment to match the HD head; balance 142 after
 2026-10-23,Rokusutahn tail base,create_character pro,3,ok (cmvki8x2y00941g8yjbshrtxp),glowing weak-point tail; balance 139 after
-2026-10-23,Rokusutahn head/plate/tail,import (spin + state frames by code),0,ok (art/autosprite/rokusutahn),HD boss parts at 2x density; balance 139
-2026-10-23,monodron / hornet / rot_dwarf at 2x,re-import (density 2 + own palette),0,ok,free: same clips at double detail; balance 139
+2026-10-23,Rokusutahn head/plate/tail,import (spin + state frames by code),0,ok (art/autosprite/gnarlmaw),HD boss parts at 2x density; balance 139
+2026-10-23,blinkhop / hornet / rot_dwarf at 2x,re-import (density 2 + own palette),0,ok,free: same clips at double detail; balance 139
 2026-10-23,hero rim light,re-import (rim on top/back edges),0,ok,free: readability against brown trees; balance 139
 2026-10-23,Iron Dwarf base,create_character pro,3,ok (cmvkkcpj00080ou6emvc2qffu),tower enemy (PR #31 gameplay); balance 136 after
 2026-10-23,Iron Dwarf walk,generate_spritesheet pro 4s,10,queued (video cmvkkd3ni008lou6ezjbyvfd0),hammer on shoulder; balance 126 after
@@ -64,7 +64,7 @@ date,asset,operation,credits,result,notes
 2026-10-23,Zoradohna slam tell,generate_pose,3,queued (cf_bad35bd4-4c5e-40a0-a713-4bde85ef7282),reared up 30 deg; balance 52 after
 2026-10-23,Zoradohna slam,generate_pose,3,queued (cf_c2e5b395-9cbf-4d18-bb99-4d8f97b30736),crouched, nose down 18 deg; balance 49 after
 2026-10-23,Zoradohna open hatch,generate_pose,3,queued (cf_f3d546fe-dca7-4e1a-aa69-44b9ff9db3c8),phase 3 look: hatch open, pink crystal harness; balance 46 after
-2026-10-23,Zoradohna import,import (packed poses + transplanted open hatch + screw-slid drill),0,ok (art/autosprite/zoradohna),15 animations incl. open_ twins and freed; balance 46
+2026-10-23,Zoradohna import,import (packed poses + transplanted open hatch + screw-slid drill),0,ok (art/autosprite/durgan),15 animations incl. open_ twins and freed; balance 46
 2026-10-23,Ripasheiku base,create_character pro,3,ok (cmvl0t02101zkmg612urh0dfl),Lantern Widow boss (PR #53 gameplay); balance 43 after
 2026-10-23,Ripasheiku walk A,generate_pose,3,queued (cf_bec155a5-783f-43ae-87bc-c4606a3ed408),legs 1+3 forward; balance 40 after
 2026-10-23,Ripasheiku walk B,generate_pose,3,queued (cf_905f0723-3841-41ac-91f3-1803de13b89f),legs 2+4 forward; balance 37 after
@@ -73,13 +73,13 @@ date,asset,operation,credits,result,notes
 2026-10-23,Ripasheiku pounce tell,generate_pose,3,queued (cf_3030626b-2778-4a64-943d-5ff112b71dd6),low crouch; balance 28 after
 2026-10-23,Ripasheiku pounce,generate_pose,3,queued (cf_4df692de-0bf0-4f88-a301-103fd946eef3),airborne, legs flung wide; balance 25 after
 2026-10-23,Ripasheiku dropped,generate_pose,3,queued (cf_47c59c69-0652-4e01-9bca-36aae9efc991),on her back, legs curled; balance 22 after
-2026-10-23,Ripasheiku import,import (packed poses rest=1; castgen placeholder rig),0,ok (art/autosprite/ripasheiku),7 animations; other states borrow the nearest; balance 22
+2026-10-23,Ripasheiku import,import (packed poses rest=1; castgen placeholder rig),0,ok (art/autosprite/gloamweaver),7 animations; other states borrow the nearest; balance 22
 2026-10-23,hero drink fix,re-import (manifest spill: paint over the potion dripping down his chest in frames 40 and 20),0,ok,Sean spotted the spill; balance 22
 2026-10-23,Iron Dwarf walk fix,re-import (walk pick 25..47: the clip's frames 10-22 let go of the hammer),0,ok,Sean spotted the floating hammer; also refreshed Ripasheiku's stale 2-frame walk; balance 22
 2026-10-23,Iron Dwarf walk grip (2nd fix),re-import (manifest graft: frames 33-45 take the gripping upper body of frames 23-32),0,ok,Sean: hand still left the haft (it lets go for half the stride); balance 22
 2026-10-23,hero drink arm gap,re-import (manifest clear: grey background closed in between arm and face in frames 40 and 20),0,ok,Sean spotted it; balance 22
 2026-10-23,Foreman walk face,re-import (manifest face: frame 2's face pasted on every walk frame, aligned on the helmet),0,ok,Sean: mouth moved as if talking; balance 22
 2026-10-23,hero wall slide fleck,re-import (manifest paint: pale blot on the boot in all six frames),0,ok,Sean spotted it; balance 22
-2026-10-27,hero body sets (HeroStranger_Base + Leather/Chain/Plate/ElvenPlate characters by Sean),download idle/walk/run sheets (list_characters/get_spritesheet),0,ok,import check of Sean's 5 armor sets: hero_base/leather/studded/plate/battle in art/autosprite/; custom clips (a second run) left out
+2026-10-27,hero body sets (HeroStranger_Base + Leather/Chain/Plate/ElvenPlate characters by Sean),download idle/walk/run sheets (list_characters/get_spritesheet),0,ok,import check of Sean's 5 armor sets: hero_base/leather/riveted/plate/battle in art/autosprite/; custom clips (a second run) left out
 2026-10-28,hero Battle Suit + helmet (HeroStranger_ElvenPlateArmor_ElvenBattleHelm by Sean),download idle/walk/run sheets (list_characters/get_spritesheet),0,ok,128 px cells x16 frames as generated; a free full-rate re-cut (regenerate_single_spritesheet) was blocked by the session permission check
 2026-10-28,hero Battle Suit + helmet + cloak (HeroStranger_ElvenPlateArmor_ElvenBattleHelm by Sean; regenerated with a drawn cloak),download idle/walk/run sheets (get_spritesheet),0,ok,512 px cells x56 frames; replaces the 128 px sheets in art/autosprite/hero_battle_helm/

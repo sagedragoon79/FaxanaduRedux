@@ -19,7 +19,7 @@ const OUTLINE := Color("120f19")
 ## Bites on the root: (height above the floor, side, radius).
 const BITES := [[210.0, 1, 26.0], [128.0, -1, 20.0], [70.0, 1, 16.0]]
 
-var healed_flag := "spring:trunk"
+var healed_flag := "spring:heartwood"
 var _t := 0.0
 
 

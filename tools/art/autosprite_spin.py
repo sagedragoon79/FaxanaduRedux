@@ -9,7 +9,7 @@ autosprite_import.py (square cells, left to right).
 
 Usage: python3 tools/art/autosprite_spin.py SRC DEST --center X,Y --radius R --hub R
                                             [--frames 24] [--size 512] [--mirror]
-       SRC and DEST are paths under art/autosprite/, e.g. rokusutahn/base.png rokusutahn/head.png.
+       SRC and DEST are paths under art/autosprite/, e.g. gnarlmaw/base.png gnarlmaw/head.png.
        The still's plain light background is keyed out from the borders inward. --mirror
        replaces the lower half of the turning ring with the upper half flipped, for a still whose
        part overlaps something below it (the head drawn on top of the grub's body); the hub

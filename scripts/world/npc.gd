@@ -42,13 +42,13 @@ func interact(p: Player) -> void:
 				GameState.say(info.name, lines(info, "lines_treated"))
 			else:
 				GameState.say(info.name, lines(info, "lines"))
-		"guru":
+		"ringreader":
 			var world := get_tree().get_first_node_in_group("world") as World
 			if world != null and world.room != null:
-				GameState.meet_guru(world.room.id, global_position)
+				GameState.meet_ringreader(world.room.id, global_position)
 			if GameState.unnamed_title() != "":
 				await _name_title()
-			Menus.open_guru(get_tree(), info.get("greeting", ""), p, self)
+			Menus.open_ringreader(get_tree(), info.get("greeting", ""), p, self)
 		_:
 			GameState.say(info.get("name", ""), lines(info, "lines"))
 
@@ -130,7 +130,7 @@ func rest(p: Player) -> void:
 	get_parent().add_child(d)
 	d.global_position = global_position + Vector2(0, -20)
 	Sfx.play("save", 0.0)
-	GameState.toast.emit("Rested. Your mark in the wood: " + GameState.mantra() if saved else SaveShrine.NOT_SAVED)
+	GameState.toast.emit("Rested. Your mark in the wood: " + GameState.carved_mark() if saved else SaveShrine.NOT_SAVED)
 
 
 func _face(p: Player) -> void:

@@ -10,7 +10,7 @@ extends Node2D
 ##
 ## Command-line options after `--`:
 ## With no options it shows the title menu (continue or new game).
-##   --room=ID|PATH             start a fresh game in a room: an id like "eolis/plaza",
+##   --room=ID|PATH             start a fresh game in a room: an id like "hearthroot/plaza",
 ##                              "gym/gym" for the movement gym, or a .room path
 ##   --continue                 load the journey last rested in and skip the title
 ##   --journeys                 with --title: open the three flasks (--cursor=N focuses one)
@@ -30,7 +30,7 @@ extends Node2D
 ##   --xp=N                     earn N experience first
 ##                              open a menu before the screenshot
 ##   --cursor=N                 with --open: put the menu's cursor on row N
-##   --carry=A,B                carry rings (elf), keys (jack_key) and shards (potion_shard), for screenshots
+##   --carry=A,B                carry rings (elf), keys (copper_key) and shards (potion_shard), for screenshots
 ##   --gold=N                   start with N gold (for screenshots)
 ##   --dye=ID                   wear a cloak dye (data/items.json, kind "dye")
 ##   --hair=ID                  color the hair (PlayerVisual.HAIR, e.g. copper)
@@ -45,7 +45,7 @@ extends Node2D
 ##   --shot-thrust=N            thrust (the Blade skill) on frame N
 ##   --damage-numbers           show damage numbers (the option) for this run
 ##   --poisoned                 start poisoned
-##   --flags=A,B                set world flags first, e.g. spring:trunk
+##   --flags=A,B                set world flags first, e.g. spring:heartwood
 ##   --trial=ID[,SECONDS]       run that Ringreader Trial's clock from here (SECONDS on it), e.g. walls,12.3
 ##   --rush=N[,SECONDS]         be on boss N (from 0) of a boss rush begun at the Ringreader (SECONDS on its clock)
 ##   --title                    with --shot: capture the title screen
@@ -58,7 +58,7 @@ extends Node2D
 ##                              epilogue, credits or thanks to start there)
 ##   --secret                   with --ending: the secret ending (no deaths, the Elven Plate)
 
-const NEW_GAME_ROOM := "eolis/west_gate"
+const NEW_GAME_ROOM := "hearthroot/west_gate"
 ## The three journeys' save slots (Sean, 2026-10-31; bible 14). The title shows
 ## them as three flasks, never by number.
 const SAVE_SLOTS := [1, 2, 3]
@@ -305,7 +305,7 @@ func _process(_delta: float) -> void:
 	if _args.has("ending") and _frames == 2:
 		var parts: PackedStringArray = String(_args["ending"]).split(",")
 		if _args.has("secret"):
-			GameState.data.equipment.armor = "battle_suit"
+			GameState.data.equipment.armor = "elven_plate"
 			GameState.data.deaths = 0
 		GameState.begin_ending()
 		if parts.size() > 1 and parts[1] == "thanks":
@@ -325,7 +325,7 @@ func _process(_delta: float) -> void:
 		for a: String in String(_args["give"]).split(","):
 			player.abilities[a] = true
 	if _args.has("carry") and _frames == 2:
-		# Screenshots: rings, keys and shards (e.g. --carry=elf,ruby,jack_key,jack_key,potion_shard).
+		# Screenshots: rings, keys and shards (e.g. --carry=elf,ruby,copper_key,copper_key,potion_shard).
 		for c: String in String(_args["carry"]).split(","):
 			if c.ends_with("_key"):
 				GameState.add_key(c.trim_suffix("_key"))
@@ -349,11 +349,11 @@ func _process(_delta: float) -> void:
 		GameState.data.equipment.armor = String(_args["armor"])
 		GameState.refresh_stats(world.player)
 	if _args.has("wear") and _frames == 2:
-		# Screenshots: own and wear gear (e.g. --wear=battle_suit,magic_shield,battle_helmet).
+		# Screenshots: own and wear gear (e.g. --wear=elven_plate,magic_shield,elven_helm).
 		for id: String in String(_args["wear"]).split(","):
 			GameState.obtain_gear(id, world.player)
 	if _args.has("skills") and _frames == 2:
-		# Screenshots: learn skills (e.g. --skills=tilte_swarm).
+		# Screenshots: learn skills (e.g. --skills=wisplight_swarm).
 		for id: String in String(_args["skills"]).split(","):
 			GameState.data.skills.append(id)
 		GameState.refresh_stats(player)
@@ -580,11 +580,11 @@ func _debug_open() -> void:
 		Menus.open_shop(get_tree(), what.trim_prefix("shop:"), player)
 	elif what == "trials":
 		Menus.open_trials(get_tree(), player)
-	elif what == "guru":
-		Menus.open_guru(get_tree(), GameData.npc("guru").greeting, player, null)
+	elif what == "ringreader":
+		Menus.open_ringreader(get_tree(), GameData.npc("ringreader").greeting, player, null)
 	elif what == "title":
 		for n in get_tree().get_nodes_in_group("interactable"):
-			if n is Npc and n.info.get("role", "") == "guru":
+			if n is Npc and n.info.get("role", "") == "ringreader":
 				n.interact(player)
 				break
 	elif what == "skills":
@@ -615,14 +615,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("debug_glove"):
 		_toggle("glove")
-	elif event.is_action_pressed("debug_mattock"):
-		_toggle("mattock")
+	elif event.is_action_pressed("debug_delvers_pick"):
+		_toggle("delvers_pick")
 	elif event.is_action_pressed("debug_boots"):
 		_toggle("boots")
 	elif event.is_action_pressed("debug_stride"):
 		_toggle("stride")
-	elif event.is_action_pressed("debug_deluge"):
-		_toggle("deluge")
+	elif event.is_action_pressed("debug_torrent"):
+		_toggle("torrent")
 	elif event.is_action_pressed("debug_reset"):
 		player.hp = player.max_hp
 		player.mp = player.max_mp

@@ -54,14 +54,23 @@ jobs:
   mix:
     # The mix check (design bible 13): no sound or track clips or strays from its group.
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
+      # A slow apt mirror once hung this step until the job's 10 minutes ran
+      # out (PR #506): each try now gets 4 minutes, and a stalled one is retried.
       - name: Install ffmpeg and numpy
+        timeout-minutes: 9
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg >/dev/null
+          for try in 1 2; do
+            if timeout 240 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update -qq \
+              && timeout 240 sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y -qq --no-install-recommends ffmpeg >/dev/null; then
+              break
+            fi
+            echo "apt try $try stalled or failed; retrying"
+          done
+          command -v ffmpeg
           pip install -q numpy
 
       - name: Check the mix

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Captures a screenshot of a room under a virtual display (needs xvfb-run).
 # Usage: tools/screenshot.sh OUT.png [TILE_X,TILE_Y or -] [ROOM_ID]
-#   ROOM_ID is a room under levels/ such as eolis/plaza (default gym/gym).
+#   ROOM_ID is a room under levels/ such as hearthroot/plaza (default gym/gym).
 #   "-" (or no tile) puts the player at the room's spawn or first door.
 #   Extra Godot game options can follow, e.g. --open=skills or --map.
 set -euo pipefail
