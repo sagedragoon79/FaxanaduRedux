@@ -524,6 +524,77 @@ func test_rising_cut_launches_small_foes_only() -> void:
 	spitter.free()
 
 
+## Pass 458 (bible 9): the Blade skills, by the buttons. Fourth Strike, Rising
+## Cut and Riposte were proved with scripted intents only. Real Attack taps, each a tap after the last swing's cooldown,
+## run the learned ground combo to a fourth, heavy hit on a dummy; real Up with
+## Attack throws a Monodron into the air; a real Block pressed as a Rot Dwarf's
+## blade comes down parries it and the Riposte answers with one heavy cut.
+func test_the_blade_skills_answer_the_real_controller() -> void:
+	var w := make_world(_town({Vector2i(9, 19): "E", Vector2i(30, 19): "M"}), "test/town", cell_feet(7, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	GameState.data.skill_points = 8
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte"]:
+		check(Skills.learn(id, p), "learned %s" % id)
+	await frames(6)
+	var dummy: TrainingDummy = _find(w.room, TrainingDummy)
+	var seen: Array[int] = []
+	var heavy: Array[bool] = []
+	# With four hits the first three each cool for the light cooldown.
+	var light_cool: float = p.combat.combo_cooldowns[0]
+	for i in 4:
+		Input.action_press("attack")
+		await frames(2)
+		seen.append(p.combo_index)
+		heavy.append(p.is_heavy_swing)
+		Input.action_release("attack")
+		await frames(int(light_cool * 60.0))
+	check(seen == [1, 2, 3, 4], "four real taps of Attack run the combo to a fourth hit (%s)" % [seen])
+	check(heavy == [false, false, false, true], "and only the fourth is heavy (%s)" % [heavy])
+	var light := roundi(8 * p.blade_mult())
+	var big := roundi(14 * p.blade_mult())
+	check(dummy.hp == TrainingDummy.HP - light * 3 - big, "each with Keen Edge's damage (dummy hp %d)" % dummy.hp)
+	await frames(40)
+	# Rising Cut: Up with Attack, both through the real controller.
+	var m: Monodron = _find(w.room, Monodron)
+	m.hp = 999
+	m.global_position = p.global_position + Vector2(0, -Player.BODY_SIZE.y - 6)
+	m.velocity = Vector2.ZERO
+	var y0 := m.global_position.y
+	Input.action_press("move_up")
+	Input.action_press("attack")
+	var top := y0
+	for i in 30:
+		await frames(1)
+		if i == 2:
+			Input.action_release("attack")
+		top = minf(top, m.global_position.y)
+	Input.action_release("move_up")
+	check(y0 - top > 30.0, "real Up with Attack throws a Monodron up (%.0f px)" % (y0 - top))
+	w.free()
+	await frames(2)
+	# Riposte: a real Block as the Rot Dwarf's blade comes down.
+	var w2 := make_world(_town({Vector2i(9, 19): "D"}), "test/town", cell_feet(6, 19))
+	var q := w2.player
+	q.input = PlayerInput.new()
+	GameState.data.skill_points = 8
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "mattock_mastery", "riposte"]:
+		Skills.learn(id, q)
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(q)
+	var dwarf: RotDwarf = _find(w2.room, RotDwarf)
+	for i in 180:
+		if dwarf.state == "windup" and dwarf.state_time >= RotDwarf.WINDUP - 4 / 60.0:
+			break
+		await frames(1)
+	var hp0 := dwarf.hp
+	Sfx.recent.clear()
+	await _tap_for_real("block")
+	await frames(6)
+	check(q.hp == q.max_hp and dwarf.is_staggered(), "a real Block parries the blade (hp %d)" % q.hp)
+	check(q.ripostes == 1 and Sfx.recent.has("parry") and Sfx.recent.has("heavy"), "and the Riposte answers once, heard (%d, %s)" % [q.ripostes, Sfx.recent])
+	check(hp0 - dwarf.hp == roundi(q.heavy_damage * q.blade_mult()) or dwarf.dead, "for a heavy cut (%d -> %d)" % [hp0, dwarf.hp])
+
 ## Holds the foe just over the player's head, up-slashes, and returns how far
 ## above that spot it flew.
 func _rise_after_up_slash(p: Player, foe: Enemy) -> float:
