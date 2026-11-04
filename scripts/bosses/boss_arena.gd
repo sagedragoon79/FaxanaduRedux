@@ -384,6 +384,15 @@ func falling() -> bool:
 
 
 ## Any arena whose guardian is falling.
+## Whether a guardian's fight is going on anywhere (pass 455): its doors
+## sealed and the guardian up or falling.
+static func any_fighting(tree: SceneTree) -> bool:
+	for a: Node in tree.get_nodes_in_group("boss_arena"):
+		if (a as BossArena).fighting:
+			return true
+	return false
+
+
 static func any_falling(tree: SceneTree) -> bool:
 	for a: Node in tree.get_nodes_in_group("boss_arena"):
 		if (a as BossArena).falling():

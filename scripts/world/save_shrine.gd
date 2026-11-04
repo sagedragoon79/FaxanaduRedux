@@ -29,11 +29,22 @@ func _process(delta: float) -> void:
 	_glow = move_toward(_glow, 0.0, delta * 0.8)
 
 
+## Said by a shrine pressed while a guardian's fight goes on (pass 455).
+const NO_REST_IN_FIGHT := "The shrine is silent while the guardian stands."
+
+
 func interact(p: Player) -> void:
 	if BossRush.active():
 		# The rush allows no rest: a shrine on the way would refill you and
 		# save in the middle of it.
 		GameState.toast.emit("The mantra allows no rest in the rush.")
+		return
+	if BossArena.any_fighting(get_tree()):
+		# Nor while a guardian stands (bible 8, pass 455): Shadow Eura's gate
+		# has a shrine inside her arena, and a rest there mid-fight made you
+		# whole, refilled the flask and saved with her still up.
+		Sfx.play("menu_refuse", 0.0, -4.0)
+		GameState.toast.emit(NO_REST_IN_FIGHT)
 		return
 	p.restore()
 	_glow = 1.0
