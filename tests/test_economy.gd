@@ -1014,6 +1014,58 @@ func test_the_king_and_the_guru_answer_the_real_controller() -> void:
 	check(bible.contains("`test_the_king_and_the_guru_answer_the_real_controller`"), "11 names the test")
 
 
+## Pass 449 (bible 5.4): the original starts you again at the last Guru you
+## rested with. Rest by the buttons, walk off by the buttons into the spikes,
+## rise at his side, and walk back by the buttons to the purse.
+func test_a_death_raises_you_at_the_guru_you_rested_with() -> void:
+	var was := GameState.slot
+	GameState.slot = 9
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 30, 19, "^", 3)
+	put_tiles(rows, 3, 19, "P")
+	var w := make_world({"test/town": room_text(["name: Town", "zone: test", "npc: 8, 19, guru"], rows)}, "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	await _tap_for_real("move_up")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap_for_real("jump")
+	check(not menu.is_open and GameState.data.save_room == "test/town", "rested and saved at the Guru")
+	var guru_x := float(GameState.data.save_pos[0])
+	p.gold = 100
+	p.hp = 1
+	Input.action_press("move_right")
+	var waited := 0
+	while not p.dead and waited < 240:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	check(p.dead, "Right walks him into the spikes and he falls (%d frames)" % waited)
+	check(p.gold == 40 and is_instance_valid(p.purse) and p.purse.value == 60, "60 of his 100 gold lie in a purse (%d)" % p.gold)
+	var purse_x := p.purse.global_position.x if is_instance_valid(p.purse) else 0.0
+	check(purse_x > 20 * 16 and purse_x < 30 * 16, "on the safe ground short of the spikes (%.0f)" % purse_x)
+	await frames(int(p.combat.respawn_delay * 60.0) + 10)
+	check(not p.dead and w.room.id == "test/town", "he rises again")
+	check(absf(p.global_position.x - guru_x) < 2.0, "at the Guru's side (%.0f, Guru %.0f)" % [p.global_position.x, guru_x])
+	check(p.hp == p.max_hp, "made whole")
+	Input.action_press("move_right")
+	waited = 0
+	while p.gold < 100 and waited < 240:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	await frames(2)
+	check(p.gold == 100 and not is_instance_valid(p.purse), "Right walks him back to the purse and the gold is his again (%d)" % p.gold)
+	check(not p.dead, "and he stops short of the spikes")
+	menu.free()
+	GameState.delete_save(9)
+	GameState.slot = was
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_a_death_raises_you_at_the_guru_you_rested_with`"), "5.4 names the test")
+
+
 func _tap_for_real(action: String) -> void:
 	Input.action_press(action)
 	await frames(2)
