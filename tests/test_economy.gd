@@ -1470,6 +1470,58 @@ func test_forepaws_physician_mends_you_and_its_larder_sells() -> void:
 	check(stock.map(func(e: Dictionary) -> String: return e.item) == ["elixir", "queen_key"], "the Larder sells an Elixir and the Queen Key")
 
 
+## Pass 457 (bible 10.3): the original's hospital, by the buttons. Right walks
+## the hero over a Tower foe's poison flask and on to Physician Halvar; one real
+## Up opens his treatment as a dialog that holds the world, so the poison takes
+## no tick while he works; Jump turns his pages, and the Jump that closes the
+## last one does not leap. He leaves the hero whole, unpoisoned and as rich as
+## he came.
+func test_the_hospital_cures_poison_through_the_buttons() -> void:
+	var w := make_world(_town({}, ["npc: 12, 19, forepaw_physician"]), "test/town", cell_feet(3, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var box := DialogBox.new()
+	arena.add_child(box)
+	await frames(3)
+	Drop.make(w.room, cell_feet(6, 19), "poison")
+	p.hp = 30
+	var gold := p.gold
+	Input.action_press("move_right")
+	var waited := 0
+	while p.poison_left <= 0.0 and waited < 120:
+		await frames(1)
+		waited += 1
+	check(p.poison_left > 0.0, "Right walks him over the flask and he is poisoned (%d frames)" % waited)
+	while p.global_position.x < 11.5 * Room.TILE and waited < 300:
+		await frames(1)
+		waited += 1
+	Input.action_release("move_right")
+	await frames(roundi(Player.POISON_TICK * 60.0) + 2)
+	check(p.hp < 30 and p.poison_left > 0.0, "the poison bites on the way (%d)" % p.hp)
+	await frames(8)
+	Sfx.recent.clear()
+	await _tap_for_real("move_up")
+	check(box.is_open and arena.get_tree().paused and p.frozen, "one real Up at Halvar opens his treatment and holds the world")
+	check(p.hp == p.max_hp and is_equal_approx(p.mp, p.max_mp) and p.poison_left <= 0.0, "health and magic made whole, poison drawn out (hp %d)" % p.hp)
+	check(Sfx.recent.has("heal"), "to the mending sound (%s)" % [Sfx.recent])
+	check(box.pages == GameData.npc("forepaw_physician").lines_treated, "and he says what he did")
+	var pages := box.pages.size()
+	var presses := 0
+	while box.is_open and presses < pages * 3:
+		await frames(int(DialogBox.INPUT_GRACE * 60.0) + 2)
+		await _tap_for_real("jump")
+		presses += 1
+	check(not box.is_open and not arena.get_tree().paused and not p.frozen, "Jump turns his pages and closes them (%d presses)" % presses)
+	var leapt := false
+	for i in 20:
+		await frames(1)
+		leapt = leapt or p.velocity.y < -1.0
+	check(not leapt, "the Jump that closes the last page does not leap")
+	await frames(roundi(Player.POISON_TICK * 60.0 * 2.0) + 2)
+	check(p.hp == p.max_hp and p.gold == gold, "no tick follows him out, and he paid nothing (hp %d, gold %d)" % [p.hp, p.gold])
+	box.free()
+
+
 func test_the_forepaw_smith_tempers_a_blade_twice() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
