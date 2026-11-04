@@ -2411,6 +2411,63 @@ func test_a_fight_lost_beside_its_own_shrine_starts_over() -> void:
 	check(note.contains("`test_a_fight_lost_beside_its_own_shrine_starts_over`"), "bible 8 names the test")
 
 
+## Pass 455 (bible 8): no rest while a guardian stands. The Zenis Gate's
+## shrine lies inside Shadow Eura's arena, and Up at it mid-fight made the
+## hero whole, refilled his magic and saved with her still up. Now the real Up
+## there mid-fight says no and changes nothing; before the fight, and once the
+## doors open again, it rests as any shrine does.
+func test_no_rest_while_a_guardian_stands() -> void:
+	var was := GameState.slot
+	GameState.slot = 9
+	var w := make_world({}, "dartmoor/zenis_gate")
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(3)
+	var shrine: SaveShrine = null
+	for c in w.room.get_children():
+		if c is SaveShrine:
+			shrine = c
+	var arena := _arena(w)
+	p.teleport(shrine.global_position)
+	await frames(2)
+	p.hp = 10
+	await _tap_up()
+	check(p.hp == p.max_hp and GameState.data.save_room == "dartmoor/zenis_gate", "before the fight, Up at the shrine rests and saves")
+	GameState.data.save_room = ""
+	p.teleport(cell_feet(14, 19))
+	var woke := await _until(func() -> bool: return arena.fighting, 60)
+	check(woke and get_tree_boss() != null, "Shadow Eura wakes and the doors seal")
+	p.hp = 10
+	p.mp = 0
+	p.teleport(shrine.global_position)
+	await frames(2)
+	var toasts: Array[String] = []
+	var hear := func(text: String) -> void: toasts.append(text)
+	GameState.toast.connect(hear)
+	Sfx.recent.clear()
+	await _tap_up()
+	GameState.toast.disconnect(hear)
+	check(p.hp == 10 and p.mp < 1.0, "mid-fight, Up at the shrine mends nothing (%d HP, %.0f MP)" % [p.hp, p.mp])
+	check(GameState.data.save_room == "", "and saves nothing (%s)" % GameState.data.save_room)
+	check(Sfx.recent.has("menu_refuse") and not Sfx.recent.has("save"), "heard as a refusal, not the save chime (%s)" % [Sfx.recent])
+	check(toasts == [SaveShrine.NO_REST_IN_FIGHT], "and says why (%s)" % [toasts])
+	arena._open_doors()
+	await frames(2)
+	await _tap_up()
+	check(p.hp == p.max_hp and GameState.data.save_room == "dartmoor/zenis_gate", "once the doors open again, it rests and saves")
+	GameState.delete_save(9)
+	GameState.slot = was
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n## 8. Bosses", 1).get_slice("\n### 8.1 ", 0)
+	check(note.contains("`test_no_rest_while_a_guardian_stands`"), "bible 8 names the test")
+
+
+func _tap_up() -> void:
+	Input.action_press("move_up")
+	await frames(2)
+	Input.action_release("move_up")
+	await frames(2)
+
+
 func test_shadow_eura_waits_before_the_gate_as_your_reflection() -> void:
 	var setup := await _eura_world()
 	var w: World = setup[0]
