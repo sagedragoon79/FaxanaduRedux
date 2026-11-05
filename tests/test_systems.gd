@@ -578,6 +578,76 @@ func test_the_game_plays_the_ending_then_returns_to_the_title() -> void:
 
 
 
+## Pass 469: the whole game, played to its end and begun again in one run, by
+## the buttons. The ending had only been driven with `skip`, `tick` and
+## `advance`, and no test took a new journey up after it. Here Jump turns the
+## epilogue's cards, Pause skips to the thanks card without opening the pause
+## menu, Jump inside the thanks card's grace does nothing and after it goes to
+## the title; the title does not take that Jump, and Jump, Jump takes a new
+## journey up from an empty flask, where the hero walks with a real Right.
+func test_the_game_is_ended_and_begun_again_with_the_buttons() -> void:
+	Settings.path = TEMP_SETTINGS
+	var slot_was := GameState.slot
+	for slot: int in [97, 98, 99]:
+		GameState.delete_save(slot)
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.picker.slots = [97, 98, 99]
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("evercrown/heart")
+	g.world.use_game_state = false
+	await frames(5)
+	GameState.begin_ending()
+	await frames(2)
+	var e: EndingScreen = g.ending
+	check(e.visible and e.phase == "epilogue" and e.card == 0, "the ending opens on its first card")
+	await _tap("jump")
+	check(e.card == 1, "Jump turns to the next card (%d)" % e.card)
+	await _tap("attack")
+	check(e.card == 2, "and so does Attack (%d)" % e.card)
+	await _tap("pause")
+	check(e.phase == "thanks" and not g.menu.is_open, "Pause skips to the thanks card, and opens no pause menu")
+	await _tap("jump")
+	check(e.visible and e.phase == "thanks", "Jump inside the card's grace does nothing")
+	await frames(int(EndingScreen.THANKS_GRACE * 60.0) + 2)
+	check(e.visible and e.phase == "thanks", "the card waits for a press")
+	await _tap("jump")
+	await frames(2)
+	check(not e.visible and g.world == null and g.title_screen.visible, "Jump after it goes back to the title")
+	check(g.menu.is_open and g.menu.title == "A wanderer returns" and not g.picker.is_open,
+		"where the title's menu is up, and the Jump that closed the ending did not open the flasks")
+	check(Music.track == "title" and Music.ambience_track == "", "to the title's theme (%s, %s)" % [Music.track, Music.ambience_track])
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("jump")
+	check(g.picker.is_open and not g.menu.is_open, "Jump on Journeys opens the shelf")
+	await frames(int(SlotPicker.INPUT_GRACE * 60.0) + 2)
+	await _tap("jump")
+	await frames(5)
+	check(g.world != null and g.world.room.id == "hearthroot/west_gate" and GameState.slot == 97 and not arena.get_tree().paused,
+		"Jump uncorks the first empty flask and a new journey begins at the West Gate")
+	check(not GameState.flag("cleared") and g.hud.visible and g.hud.player == g.player and not e.visible,
+		"a fresh one, with the HUD on its own hero and the ending gone")
+	check(Music.track == "hearthroot" and Music.ambience_track == "amb_hearthroot", "under Hearthroot's theme and bed (%s, %s)" % [Music.track, Music.ambience_track])
+	await frames(30)
+	var x0: float = g.player.global_position.x
+	Input.action_press("move_right")
+	await frames(30)
+	Input.action_release("move_right")
+	await frames(2)
+	check(g.player.global_position.x - x0 > 40.0, "and the hero walks on with a real Right (%.0f px)" % (g.player.global_position.x - x0))
+	g.queue_free()
+	await frames(2)
+	for slot: int in [97, 98, 99]:
+		GameState.delete_save(slot)
+	GameState.slot = slot_was
+	GameState.new_game()
+	_restore()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("Ended and begun again, by the buttons (pass 469)"), "the bible says so")
+
 ## Bible 11: the secret ending counts every death of the run.
 func test_deaths_are_counted_and_kept_in_the_save() -> void:
 	var slot_was := GameState.slot
