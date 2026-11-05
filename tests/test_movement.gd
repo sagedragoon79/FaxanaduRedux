@@ -2658,3 +2658,43 @@ func test_the_dash_keeps_its_stride_at_every_game_speed() -> void:
 	Feel.set_game_speed(1.0)
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.5 ", 1).get_slice("\n### ", 0)
 	check(line.contains("The dash at every game speed (pass 470)"), "bible 6.5 says so")
+
+
+
+## Pass 478: passes 470 and 472 found the dash and combat at every game speed,
+## and pass 400 held coyote time and the jump buffer through the real controller,
+## but only at full speed. Game speed (14) is an assist, so a window counted in
+## frames on screen may only widen as the game slows.
+func test_the_timing_windows_only_widen_as_the_game_slows() -> void:
+	var t := MovementTuning.new()
+	var coyote: Array[int] = []
+	var buffer: Array[int] = []
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		var last := 0
+		for k in range(4, 14):
+			if await _real_jump_after_ledge(k):
+				last = k
+		coyote.append(last)
+		var room := make_room(FLAT)
+		var p := make_player(room, Vector2i(10, 4), {"boots": false})
+		var land := 0
+		for i in 120:
+			await frames(1)
+			if p.is_on_floor():
+				land = i + 1
+				break
+		room.free()
+		var early := 0
+		for e in range(1, 16):
+			if await _real_buffered_landing(e, land):
+				early = e
+		buffer.append(early)
+		var steps := 60.0 / speed
+		check(absf(last - t.coyote_time * steps) <= 1.0, "at %d%% a ledge jump counts up to the %dth frame (%.1f frames of 0.10 s)" % [roundi(speed * 100.0), last, t.coyote_time * steps])
+		check(absf(early - t.jump_buffer_time * steps) <= 1.0, "at %d%% a jump pressed %d frames before landing is kept (%.1f frames of 0.12 s)" % [roundi(speed * 100.0), early, t.jump_buffer_time * steps])
+	Feel.set_game_speed(1.0)
+	for i in range(1, coyote.size()):
+		check(coyote[i] >= coyote[i - 1] and buffer[i] >= buffer[i - 1], "neither window narrows as the game slows (coyote %s, buffer %s)" % [coyote, buffer])
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
+	check(line.contains("Timing windows at every game speed (pass 478)"), "bible 6.7's Input line says so")
