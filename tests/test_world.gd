@@ -108,6 +108,64 @@ func test_cracked_wall_needs_delvers_pick() -> void:
 	check(intact < 3, "slash with the Delver's Pick breaks cracked stone")
 
 
+## Pass 465 (bible 11): a hidden room found with the buttons. Every secret test
+## counted covers or set flags; none walked into one. Right held walks the hero
+## through the fake wall: the cover fades, the find chimes and is kept. Walking
+## out brings the wall back. The chime marks a find, so it rang again every time
+## the room was entered; now a room already found fades in silence.
+func test_a_hidden_room_is_found_with_the_buttons() -> void:
+	GameState.new_game()
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 5, 19, "P")
+	var rooms := {"test/town": room_text(["name: Town", "zone: test", "secret: 20, 16, 26, 19"], rows)}
+	var w := make_world(rooms, "test/town", cell_feet(14, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	await frames(5)
+	check(w.room.secrets != null and w.room.secrets.modulate.a == 1.0, "the cover stands whole")
+	var inside := func() -> bool: return w.room.is_secret_at(p.global_position + Vector2(0, -12))
+	var chimes: int = await _walk_counting_chimes("move_right", 90, inside)
+	check(chimes == 1 and GameState.flag("secret:test/town"), "Right walks him through the fake wall: it chimes once and is kept (%d)" % chimes)
+	check(inside.call() and w.room.secrets.modulate.a < 0.5, "and the cover fades (%.2f)" % w.room.secrets.modulate.a)
+	await _walk_counting_chimes("move_left", 40)
+	await frames(30)
+	check(w.room.secrets.modulate.a == 1.0, "Left walks him out, and the wall stands again")
+	chimes = await _walk_counting_chimes("move_right", 60, inside)
+	check(w.room.secrets.modulate.a < 0.5 and chimes == 0, "in again: it fades without a second chime (%d)" % chimes)
+	# Leave and come back: a fresh room, a find already made. He steps out of
+	# the cover first, so the new room meets him outside it.
+	await _walk_counting_chimes("move_left", 40)
+	check(not inside.call(), "out of the cover again")
+	w._enter("test/town")
+	await frames(5)
+	p.teleport(cell_feet(14, 19))
+	await frames(5)
+	chimes = await _walk_counting_chimes("move_right", 90, inside)
+	check(w.room.secrets.modulate.a < 0.5, "back in the room, the cover still fades")
+	check(chimes == 0, "but a room already found does not chime again (%d)" % chimes)
+
+
+## Holds `action` for real for up to `steps` frames and counts the find chimes
+## heard. Footsteps fill the sound log, so it is read and cleared every frame.
+## With `stop`, it lets go once `stop` holds and stands a third of a second.
+func _walk_counting_chimes(action: String, steps: int, stop := Callable()) -> int:
+	var chimes := 0
+	Sfx.recent.clear()
+	Input.action_press(action)
+	for i in steps:
+		await frames(1)
+		chimes += Sfx.recent.count("secret")
+		Sfx.recent.clear()
+		if stop.is_valid() and stop.call():
+			break
+	Input.action_release(action)
+	for i in 20:
+		await frames(1)
+		chimes += Sfx.recent.count("secret")
+		Sfx.recent.clear()
+	return chimes
+
+
 ## Pass 427: cracked stone, through the real controller. The two tests above
 ## break it with a scripted intent that lasts one step; every large zone hides
 ## something behind it (pass 135). Here the buttons do it: Attack held with no

@@ -1409,6 +1409,8 @@ Target: **at least 3 secrets per zone room-cluster**, about 70 total.
 
 **Secrets per zone, as built (pass 379).** The target above was the plan's, and nothing counted it. Counted the way the completion card counts (below): a hidden room is a room with a `secret:` cover, and a treasure is any item or chest the map's catalog lists for a room (`World.catalog`, the `treasures` Treasure Sense marks). Some of those treasures sit in plain sight; the rest lie behind cracked stone, fake walls, card doors and hard climbs. The world holds **12 hidden rooms and 128 treasures, 140 in all**: twice the plan's "about 70". Every zone but the Evercrown holds at least three. The Evercrown holds two by design, its hidden pocket in the Threshold with the Elven Helm in it: it is the last climb, and it keeps no side treasure in its rooms (pass 135). The Sunken Spring hides no room, but its four rooms hold five finds. The Inner Rings are off the map and hold one Grain Shard each, rung from the bell (3.2). `test_every_zone_holds_the_secrets_the_bible_counts` holds every row to the rooms.
 
+**A hidden room, found with the buttons (pass 465).** Walking into a `secret:` cover fades it to a quarter, chimes (`secret`) and keeps the find (`secret:<room>`). Walking out brings the wall back. The chime marks a find, but it rang every time the room was entered, as if the room were found again. Now it rings once in a journey, and a hidden room already found fades in silence. `test_a_hidden_room_is_found_with_the_buttons` walks through a cover with the real Right, out with Left, in again, and in once more after leaving the room.
+
 | Zone | Rooms | Hidden rooms | Treasures | In all |
 | --- | --- | --- | --- | --- |
 | Hearthroot | 7 | 2 | 4 | 6 |

@@ -77,8 +77,11 @@ func _physics_process(delta: float) -> void:
 	secrets.modulate.a = move_toward(secrets.modulate.a, target, delta * 4.0)
 	if inside and not _secret_revealed:
 		_secret_revealed = true
-		Sfx.play("secret", 0.0)
-		GameState.set_flag("secret:" + id)
+		# The find chimes once in a journey (pass 465): coming back to a hidden
+		# room you already know fades its cover as before, in silence.
+		if not GameState.flag("secret:" + id):
+			Sfx.play("secret", 0.0)
+			GameState.set_flag("secret:" + id)
 
 
 static func from_file(path: String, room_id := "") -> Room:
