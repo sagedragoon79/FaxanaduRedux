@@ -5222,3 +5222,33 @@ func test_a_guardian_stands_still_through_hitstop() -> void:
 	check(drift < 0.01, "frozen, the Gloamweaver's lanterns stay put (%.2f px)" % drift)
 	widow[0].queue_free()
 	await frames(2)
+
+
+## A guardian's reward banner, and a toast, are words to read: they last as
+## long in real time at a slower Game speed or in a boss's slow motion as at
+## full speed (pass 482).
+func test_a_guardians_banner_reads_in_real_time_at_every_game_speed() -> void:
+	for mode: String in ["full", "speed 0.7", "slowmo 0.3"]:
+		var hud := GameHud.new()
+		arena.add_child(hud)
+		await frames(2)
+		if mode == "speed 0.7":
+			Feel.set_game_speed(0.7)
+		elif mode == "slowmo 0.3":
+			Feel.slowmo(0.3, 60.0)
+		hud.show_banner("The Haar Wyrm", "The tide returns")
+		hud.show_toast("Gold +40")
+		await frames(int(GameHud.TOAST_TIME * 60.0) - 12)
+		check(hud._toast_t > 0.0, "%s: the toast is still up near its end (%.2f s left)" % [mode, hud._toast_t])
+		await frames(24)
+		check(hud._toast_t == 0.0, "%s: and gone on time (%.2f s left)" % [mode, hud._toast_t])
+		await frames(int((GameHud.BANNER_TIME - GameHud.TOAST_TIME) * 60.0) - 24)
+		check(hud._banner_t > 0.0, "%s: the banner is still up near its end (%.2f s left)" % [mode, hud._banner_t])
+		await frames(24)
+		check(hud._banner_t == 0.0, "%s: and gone on time, %.1f s of real time (%.2f s left)" % [mode, GameHud.BANNER_TIME, hud._banner_t])
+		Feel.reset()
+		Feel.set_game_speed(1.0)
+		hud.queue_free()
+		await frames(2)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_a_guardians_banner_reads_in_real_time_at_every_game_speed"), "the bible names this test")
