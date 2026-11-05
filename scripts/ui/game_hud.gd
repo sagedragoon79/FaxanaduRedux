@@ -68,8 +68,12 @@ func show_toast(text: String) -> void:
 
 
 func _process(delta: float) -> void:
-	_banner_t = maxf(_banner_t - delta, 0.0)
-	_toast_t = maxf(_toast_t - delta, 0.0)
+	# Words on screen are read in real time (pass 482): a guardian's reward
+	# banner or a toast lasts as long at a slower Game speed, in a boss's slow
+	# motion or through hitstop as at full speed.
+	var real := Feel.unscaled(delta)
+	_banner_t = maxf(_banner_t - real, 0.0)
+	_toast_t = maxf(_toast_t - real, 0.0)
 	_flash = maxf(_flash - delta * 1.6, 0.0)
 	hurt = maxf(hurt - delta * HURT_FADE, 0.0)
 	_pulse_t += delta
