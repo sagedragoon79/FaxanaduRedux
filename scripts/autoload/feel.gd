@@ -39,6 +39,9 @@ var _slowmo_scale := 1.0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
 var _last_usec := 0
+## The last frame's length in real time (see `_process`), for clocks that
+## must not stop in hitstop.
+var real_delta := 1.0 / 60.0
 
 
 func _ready() -> void:
@@ -84,6 +87,12 @@ func _ramped_scale(now: int) -> float:
 	return lerpf(_slowmo_scale, game_speed, t * t)
 
 
+## A frame's `delta` as real time: undoes the Game speed option and slow
+## motion, and in hitstop (no game time at all) gives the real frame (pass 475).
+func unscaled(delta: float) -> float:
+	return delta / Engine.time_scale if Engine.time_scale > 0.0 else real_delta
+
+
 ## Ends any hitstop or slow motion at once (tests, room resets).
 func reset() -> void:
 	_hitstop_until_usec = 0
@@ -119,7 +128,7 @@ func rumble(weak: float, strong: float, seconds: float) -> void:
 
 func _process(_delta: float) -> void:
 	var now := Time.get_ticks_usec()
-	var real_delta := float(now - _last_usec) / 1_000_000.0
+	real_delta = float(now - _last_usec) / 1_000_000.0
 	_last_usec = now
 	# With --fixed-fps (tests, captures) real time is meaningless; fall back to a frame step.
 	if real_delta <= 0.0 or real_delta > 0.25:

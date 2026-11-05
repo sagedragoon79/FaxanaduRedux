@@ -2755,6 +2755,29 @@ func test_the_time_played_stops_while_the_game_is_paused() -> void:
 	check(note.contains("`test_the_time_played_stops_while_the_game_is_paused`"), "the bible names the test")
 
 
+## Pass 475: the time played counted game time, so at 70% Game speed three
+## seconds of play showed as 2.1 on the flask and the ending's card, and a
+## boss's slow motion all but stopped it. It is the player's time now.
+func test_the_time_played_is_real_time_at_every_game_speed() -> void:
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		await frames(2)
+		var t0 := GameState.play_time
+		await frames(180)
+		var played := GameState.play_time - t0
+		check(absf(played - 3.0) < 0.05, "at %d%% three seconds of play count as three (%.2f s)" % [roundi(speed * 100.0), played])
+	Feel.set_game_speed(1.0)
+	Feel.slowmo(0.3, 30.0)
+	await frames(1)
+	var t1 := GameState.play_time
+	await frames(60)
+	var slow := GameState.play_time - t1
+	Feel.reset()
+	check(absf(slow - 1.0) < 0.05, "a second of a boss's slow motion counts as a second (%.2f s)" % slow)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_time_played_is_real_time_at_every_game_speed`"), "the bible names the test")
+
+
 ## Pass 439: a sign and the other screens, one at a time. Since pass 436 a
 ## sign pauses the game as the pause menu and the map do, so three screens
 ## now hold the same pause, and each lets it go as it closes. A press that
