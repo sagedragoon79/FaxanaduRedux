@@ -33,6 +33,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not visible:
 		return
+	# Screens are read in real time (pass 483): the Game speed option, slow
+	# motion and hitstop slow the game, not its words and menus.
+	delta = Feel.unscaled(delta)
 	_t += delta
 	for s: Array in _spores:
 		s[0].y += s[1] * delta

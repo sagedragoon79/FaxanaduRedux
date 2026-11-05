@@ -84,7 +84,8 @@ static func shown(room_id: String, info: Dictionary, here_id: String) -> String:
 
 func _process(delta: float) -> void:
 	if is_open:
-		_t += delta
+		# In real time, like every screen (pass 483).
+		_t += Feel.unscaled(delta)
 		queue_redraw()
 
 

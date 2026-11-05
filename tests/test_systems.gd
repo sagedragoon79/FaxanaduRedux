@@ -3826,3 +3826,54 @@ func test_the_music_moves_in_real_time_at_every_game_speed() -> void:
 	await frames(2)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_the_music_moves_in_real_time_at_every_game_speed`"), "the bible names the test")
+
+
+## Words and menus are read in real time (pass 483): the Game speed option,
+## a boss's slow motion and hitstop slow the game, never the text typing out,
+## a menu's input grace or the ending's cards.
+func test_the_screens_run_in_real_time_at_every_game_speed() -> void:
+	var line := "The roots remember every hand that ever tended the old tree."
+	for mode: String in ["full", "speed 0.7", "slowmo 0.3"]:
+		if mode == "speed 0.7":
+			Feel.set_game_speed(0.7)
+		elif mode == "slowmo 0.3":
+			Feel.slowmo(0.3, 60.0)
+		var box := DialogBox.new()
+		arena.add_child(box)
+		await frames(2)
+		box.open("Elder", [line])
+		var typed_at := -1
+		for f in 120:
+			await frames(1)
+			if box.shown >= line.length():
+				typed_at = f + 1
+				break
+		var want := int(ceil(line.length() / DialogBox.CHARS_PER_SECOND * 60.0))
+		check(absi(typed_at - want) <= 3, "%s: a line types out in real time (%d frames, %d at full speed)" % [mode, typed_at, want])
+		box.close()
+		box.queue_free()
+		var menu := ListMenu.new()
+		arena.add_child(menu)
+		await frames(2)
+		menu.open("Test", "", func() -> Array: return [{"label": "One"}], func(_i: int) -> void: pass)
+		await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+		check(menu._grace <= 0.0, "%s: a menu takes input after its grace in real time (%.3f s left)" % [mode, menu._grace])
+		menu.close()
+		menu.queue_free()
+		var e := EndingScreen.new()
+		arena.add_child(e)
+		await frames(1)
+		e.start("Heartwood", 3725.0)
+		await frames(int(EndingScreen.CARD_TIME * 60.0) + 4)
+		check(e.card == 1, "%s: the ending's first card turns after %.0f s of real time (card %d)" % [mode, EndingScreen.CARD_TIME, e.card])
+		e.queue_free()
+		get_tree_paused_off()
+		Feel.reset()
+		Feel.set_game_speed(1.0)
+		await frames(2)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_the_screens_run_in_real_time_at_every_game_speed"), "the bible names this test")
+
+
+func get_tree_paused_off() -> void:
+	runner.get_tree().paused = false
