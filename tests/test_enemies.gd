@@ -928,6 +928,8 @@ func test_spire_sentinel_plays_an_animation_for_every_state() -> void:
 	check(SpireSentinel.HEAD_X < s.slam_rect().size.x, "the shock starts at the halberd's head, inside the slam")
 	check(s.shock_reach() >= s.slam_rect().size.x, "the shock reaches the end of slam_rect (%.0f of %.0f)" % [s.shock_reach(), s.slam_rect().size.x])
 	check(SpireSentinel.SHOCK_FADE >= SpireSentinel.SLAM, "the shock lasts as long as the blow is live")
+
+
 ## Art loop pass 3 (docs/art/enemy-style-guide.md 4): the Haar's four foes, remade in
 ## PixelLab, play an animation from their sheet in every state, with a tell that is
 ## its own pose, a flinch, and a collapse under the dissolve.
