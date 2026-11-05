@@ -580,7 +580,7 @@ func test_wisplight_swarm_fans_three_orbs() -> void:
 	check(dummy.hp == TrainingDummy.HP - 30, "each strikes for 10 (hp %d)" % dummy.hp)
 
 
-## Witherbloom (bible 4.1, pass 132): a ring of black light strikes every foe around
+## Witherbloom (bible 4.1, pass 132): a ring of blight strikes every foe around
 ## you once, through walls; bosses take half.
 func test_death_strikes_every_foe_around_through_walls() -> void:
 	var rows := ARENA.duplicate()

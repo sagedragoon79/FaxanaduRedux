@@ -11,7 +11,7 @@ const DARK := Color("2a5d9c")
 
 var damage := 12
 var velocity := Vector2.ZERO
-## Deluge Pierce (skill tree): pass through foes, striking each one once.
+## Undertow (skill tree): pass through foes, striking each one once.
 var pierce := false
 
 var _struck := {}
