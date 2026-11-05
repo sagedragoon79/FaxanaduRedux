@@ -74,13 +74,15 @@ ENEMY_SHEETS = {
                      (("idle", "idle_g"), ("walk", "walk_g"), ("thrust", "thrust_g"), ("cut", "cut_g"),
                       ("winded", "winded_g"), ("stagger", "stagger"), ("death", "death"))},
     # Art loop batch 1 (art pass 2): each from its base character's east view, one model per foe.
-    "sap_spitter": {f"{c}.png": f"enemies/sap_spitter/{c}" for c in ("idle", "spit", "death")},
-    "grub_lump": {f"{c}.png": f"enemies/grub_lump/{c}" for c in ("crawl", "rear", "death")},
+    # Art pass 7: these five foes' "east" views turned their backs to the camera, so their clips
+    # (the *_s folders) were remade from base/guard.png, the base's west view mirrored.
+    "sap_spitter": {f"{c}.png": f"enemies/sap_spitter/{c}_s" for c in ("idle", "spit", "death")},
+    "grub_lump": {f"{c}.png": f"enemies/grub_lump/{c}_s" for c in ("crawl", "rear", "death")},
     # The roost is the folded-wing clip turned upside down (roost_hang): it hangs from the ceiling.
     "gear_bat": {f"{c}.png": f"enemies/gear_bat/{f}" for c, f in
                  (("fly", "fly"), ("windup", "windup"), ("roost", "roost_hang"), ("death", "death"))},
     "minecart_rider": {f"{c}.png": f"enemies/minecart_rider/{c}" for c in ("roll", "rev", "charge", "crash", "death")},
-    "silt_adder": {f"{c}.png": f"enemies/silt_adder/{c}" for c in ("float", "strike", "death")},
+    "silt_adder": {f"{c}.png": f"enemies/silt_adder/{c}_s" for c in ("float", "strike", "death")},
     # Art loop batch 4 (Carillon): each foe's clips start from one frame of its base so every
     # state shares one model. The Thunder Beetle's spent is made from its charge's open-cased frame.
     "thunder_beetle": {f"{c}.png": f"enemies/thunder_beetle/{f}" for c, f in
@@ -102,7 +104,8 @@ ENEMY_SHEETS = {
     "bark_knight": {f"{c}.png": f"enemies/bark_knight/{c}" for c in
                     ("idle", "walk", "hurt", "death", "bare_idle", "bare_walk", "bare_hurt", "bare_death")},
     "seed_bomber": {f"{c}.png": f"enemies/seed_bomber/{c}" for c in ("fly", "squeeze", "downed", "hurt", "death")},
-    "mothling": {f"{c}.png": f"enemies/mothling/{c}" for c in ("fly_r", "screech", "dive", "hurt", "death")},
+    "mothling": {f"{c}.png": f"enemies/mothling/{f}" for c, f in
+                 (("fly_r", "fly_s"), ("screech", "screech_s"), ("dive", "dive_s"), ("hurt", "hurt_s"), ("death", "death_s"))},
     # Art loop pass 6 (Vorrhallow and the Sunken Spring). Clips from each base's own east view
     # (the Spring Eel's from its south view, which PixelLab drew as the level side profile).
     "clockwork_hound": {f"{clip}.png": f"enemies/clockwork_hound/{folder}" for clip, folder in
@@ -124,7 +127,7 @@ ENEMY_SHEETS = {
                          ("idle", "walk", "heave", "stagger", "death")},
                       "sunk.png": "enemies/drowned_dwarf/mire_sunk", "rise.png": "enemies/drowned_dwarf/mire_rise",
                       "sink_mire.png": "enemies/drowned_dwarf/mire_sink"},
-    "marsh_hag": {f"{clip}.png": f"enemies/marsh_hag/{clip}" for clip in ("idle", "walk", "hex", "fumble", "death")},
+    "marsh_hag": {f"{clip}.png": f"enemies/marsh_hag/{clip}_s" for clip in ("idle", "walk", "hex", "fumble", "death")},
 }
 NO_SLAB_CLEANING = set()
 # Art pass 6: the Glass Slug's grey-violet foot is a flat dull grey the cleaner would eat.

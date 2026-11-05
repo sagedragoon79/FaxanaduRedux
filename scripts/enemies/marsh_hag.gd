@@ -38,8 +38,8 @@ var _wisp: HagWisp
 var _died_at := -1.0
 ## Where the crook of her staff is in each animation (world px from her feet, facing
 ## right), where the wisp is drawn; the light it casts stays at the wisp node.
-const CROOK := {"idle": Vector2(2, -34), "walk": Vector2(4, -34), "hex": Vector2(-11, -34),
-	"cast": Vector2(11, -34), "stagger": Vector2(9, -33), "hurt": Vector2(9, -33)}
+const CROOK := {"idle": Vector2(2, -35), "walk": Vector2(4, -34), "hex": Vector2(8, -34),
+	"cast": Vector2(6, -34), "stagger": Vector2(12, -34), "hurt": Vector2(10, -34)}
 
 
 ## The marsh-wisp in the crook of her staff, lighting the fog.

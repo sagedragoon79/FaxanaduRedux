@@ -1059,11 +1059,11 @@
   "height": 22,
   "reference": "idle",
   "animations": {
-   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac pulsing"},
-   "windup": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac swollen bright, held"},
-   "spit": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [10, 11, 12], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the lurch after the glob leaves (the clip's own glob frame left out)"},
-   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the death's first recoil"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [6, 7, 8, 10, 12], "fps": 12, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac burst, the stump slumped (burst spray frames left out)"}
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the sac pulsing"},
+   "windup": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "fps": 8, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the sac swollen bright, held"},
+   "spit": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [9, 10, 11], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the lurch after the glob leaves (the clip's own glob frame left out)"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the death's first recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 7, 8, 10, 12], "fps": 12, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the sac burst, the stump slumped (burst spray frames left out)"}
   }
  },
  "grub_lump": {
@@ -1074,12 +1074,12 @@
   "height": 14,
   "reference": "crawl",
   "animations": {
-   "crawl": {"file": "crawl.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, rippling crawl"},
-   "windup": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, bunched and reared, shivering"},
-   "drop": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [12], "fps": 1, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, curled into an armoured ball"},
-   "land": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 4, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, flipped on its back, legs up: stunned and open"},
-   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2], "fps": 10, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, the flinch (the clip's slash frame left out)"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5], "fps": 10, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, rolled onto its back"}
+   "crawl": {"file": "crawl.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), rippling crawl"},
+   "windup": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), bunched and reared, shivering"},
+   "drop": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [12], "fps": 1, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), curled into an armoured ball"},
+   "land": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7], "fps": 4, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), flipped on its back, legs up: stunned and open"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2], "fps": 10, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the flinch (the clip's slash frame left out)"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6], "fps": 10, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), rolled onto its back"}
   }
  },
  "gear_bat": {
@@ -1127,12 +1127,12 @@
   "height": 44,
   "reference": "float",
   "animations": {
-   "float": {"file": "float.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, swaying S, tongue flicking"},
-   "coil": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, head drawn back, hood flared"},
-   "strike": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the lunge, jaws wide"},
-   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, recoiling (the clip's slash frame left out)"},
-   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the recoil"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, drooping into a heap"}
+   "float": {"file": "float.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), swaying S, tongue flicking"},
+   "coil": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), head drawn back, hood flared"},
+   "strike": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the lunge, jaws wide"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), recoiling (the clip's slash frame left out)"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 7, 9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), drooping into a heap"}
   }
  },
  "thunder_beetle": {
@@ -1262,11 +1262,11 @@
   "height": 18,
   "reference": "fly",
   "animations": {
-   "fly": {"file": "fly_r.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 18, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, full wingbeat (the retake)"},
-   "windup": {"file": "screech.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings flared, screeching"},
-   "dive": {"file": "dive.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings swept back"},
-   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, the flinch"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings crumpling"}
+   "fly": {"file": "fly_r.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 18, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), full wingbeat (the retake)"},
+   "windup": {"file": "screech.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), wings flared, screeching"},
+   "dive": {"file": "dive.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), wings swept back"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the flinch"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), wings crumpling"}
   }
  },
  "clockwork_hound": {
@@ -1408,14 +1408,14 @@
   "gain": 1.2,
   "rim": {"color": [236, 222, 160], "mix": 0.3},
   "animations": {
-   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, leaning on her staff"},
-   "walk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, hobbling with the staff ahead"},
-   "hex": {"file": "hex.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, the staff raised to hex (the tell)"},
-   "cast": {"file": "hex.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [10, 11, 12], "fps": 10, "loop": false, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, the staff planted, her hand thrust out"},
-   "fumble": {"file": "fumble.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8, 7, 6, 5], "fps": 4, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, the staff dropped, groping for it"},
-   "stagger": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 3, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, the death clip's reel back"},
-   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "fps": 10, "loop": false, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, the death clip's reel back"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 10, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east, collapsing forward"}
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), leaning on her staff"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), hobbling with the staff ahead"},
+   "hex": {"file": "hex.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the staff raised to hex (the tell)"},
+   "cast": {"file": "hex.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [9, 10, 11], "fps": 10, "loop": false, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the staff planted, her hand thrust out"},
+   "fumble": {"file": "fumble.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8, 7, 6, 5], "fps": 4, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the staff dropped, groping for it"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 3, "loop": true, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the death clip's reel back"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "fps": 10, "loop": false, "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), the death clip's reel back"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 10, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character b1815b20 (create-character-v3, side view), pixminimax east from its west view mirrored (base/guard.png), collapsing forward"}
   }
  }
 }

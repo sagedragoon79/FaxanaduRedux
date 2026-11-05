@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "3de6e64b-0f7e-4077-861f-9d39a1c00a01",
+ "status": "completed",
+ "created_at": "2026-11-05T19:40:36.819406+00:00",
+ "last_response": {
+  "seed": 253606802,
+  "type": "done",
+  "action": "stands in place leaning on her staff, breathing slowly, her reed shawl stirring, loops seamlessly. She stays in strict side profile facing right the whole time, head on the right, and never turns toward or away from the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.10187003838257772,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "f7cab512-bafa-4803-8bfe-9de007a7363f",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f7cab512-bafa-4803-8bfe-9de007a7363f/east/8.png"
+   ],
+   "input_frames_digest": "bec4b8c4aecdc88a25846c8365d359e88cb1e74a7c048569eda1658fddc2446c"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "03443414-ec60-465f-8468-f0d4b4497ce0",
+  "animation_name": "custom-stands in place leaning on her",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "8caba8d7-07e2-4a3a-bb95-3c97274b8b89",
+  "input_frames_digest": "bec4b8c4aecdc88a25846c8365d359e88cb1e74a7c048569eda1658fddc2446c",
+  "generation_started_at": "2026-11-05T19:41:03.266897+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

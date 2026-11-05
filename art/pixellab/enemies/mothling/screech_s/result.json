@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "54bae569-d6e5-4b49-80aa-64c7ec5c419b",
+ "status": "completed",
+ "created_at": "2026-11-05T19:41:32.591493+00:00",
+ "last_response": {
+  "seed": 35238250,
+  "type": "done",
+  "action": "stops and flares its petal wings wide, mouth open, screeching and trembling. It stays in strict side profile facing right the whole time, head on the right, and never turns toward or away from the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.22211464561430327,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "c5db6037-b71e-495d-9143-d6d73f1d40ed",
+  "character_id": "05c30138-6f67-428e-9ed4-64992cc0bbf6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/c5db6037-b71e-495d-9143-d6d73f1d40ed/east/8.png"
+   ],
+   "input_frames_digest": "5212ffe136a9392fe284b36c13e30160bc9b4dac042c417b8d963218f2620f12"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "d32a5951-cfbd-49e5-b38b-45d67468ce80",
+  "animation_name": "custom-stops and flares its petal win",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "cff71a49-fcdd-4ba7-a5a7-94ccd08ca1a9",
+  "input_frames_digest": "5212ffe136a9392fe284b36c13e30160bc9b4dac042c417b8d963218f2620f12",
+  "generation_started_at": "2026-11-05T19:41:58.808194+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

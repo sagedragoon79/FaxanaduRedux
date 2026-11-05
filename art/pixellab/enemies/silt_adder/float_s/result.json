@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "03a9f72f-ab34-4607-a610-76ace7f18db8",
+ "status": "completed",
+ "created_at": "2026-11-05T19:42:37.519477+00:00",
+ "last_response": {
+  "seed": 1395787283,
+  "type": "message_done",
+  "action": "floats in place, its S-shaped body swaying gently, tongue flicking, loops seamlessly. It stays in strict side profile facing right the whole time, head on the right, and never turns toward or away from the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9639130434782608,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "45ef8fce-53f0-4f14-a3f7-461e3999c5b1",
+  "character_id": "8da69d2d-99f7-4308-b978-4ecf6adb544d",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/45ef8fce-53f0-4f14-a3f7-461e3999c5b1/east/8.png"
+   ],
+   "input_frames_digest": "e1fadfafcb38bec0e18841cb985f2b48361c158c7b3a971421e900906c70fce6"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "2dce86dd-f1b5-4a6f-9d4c-6e9133fb719d",
+  "animation_name": "custom-floats in place, its S-shaped ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "48f05273-b67e-485d-aeb5-3a32de7d957b",
+  "input_frames_digest": "e1fadfafcb38bec0e18841cb985f2b48361c158c7b3a971421e900906c70fce6",
+  "generation_started_at": "2026-11-05T19:43:05.564445+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
