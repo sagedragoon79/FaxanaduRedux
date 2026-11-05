@@ -3797,3 +3797,32 @@ func test_old_saves_come_over_to_the_new_name() -> void:
 			DirAccess.remove_absolute(d.path_join(f))
 		DirAccess.remove_absolute(d)
 	DirAccess.remove_absolute(root)
+
+
+## Pass 476: the music's fades, ducks and phase lifts were tweens on game time,
+## so at 70% Game speed a 1.2 s fade took 1.7 s, a boss's slow motion (30%)
+## stretched the fade after its death blow to four, and hitstop stalled them.
+func test_the_music_moves_in_real_time_at_every_game_speed() -> void:
+	for speed: float in [0.7, 0.3]:
+		Feel.set_game_speed(speed)
+		Music.play("hearthroot", 1.0)
+		await frames(64)
+		var p: AudioStreamPlayer = Music._players[Music._active]
+		check(absf(p.volume_db - Music.MUSIC_DB) < 0.01, "at %d%% a 1 s fade in is whole after 1 s (%.1f dB)" % [roundi(speed * 100.0), p.volume_db])
+		Music.intensify(1)
+		await frames(roundi(Music.PHASE_SHIFT_TIME * 60.0) + 4)
+		check(is_equal_approx(p.pitch_scale, Music.pitch_for(1)), "at %d%% the phase lift is whole in %.1f s (%.3f)" % [roundi(speed * 100.0), Music.PHASE_SHIFT_TIME, p.pitch_scale])
+		Music.play("", 0.0)
+		Music.intensity = 0
+		await frames(2)
+	Feel.set_game_speed(1.0)
+	Music.play("hearthroot", 0.5)
+	Engine.time_scale = 0.0
+	await frames(36)
+	Engine.time_scale = 1.0
+	var q: AudioStreamPlayer = Music._players[Music._active]
+	check(absf(q.volume_db - Music.MUSIC_DB) < 0.01, "hitstop does not stall a fade (%.1f dB)" % q.volume_db)
+	Music.play("", 0.0)
+	await frames(2)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_the_music_moves_in_real_time_at_every_game_speed`"), "the bible names the test")
