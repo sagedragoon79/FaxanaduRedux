@@ -2824,7 +2824,9 @@ func test_a_blow_throws_you_as_far_at_every_game_speed() -> void:
 		for i in 600:
 			await frames(1)
 			high = maxf(high, y0 - p.global_position.y)
-			flew = flew or not p.is_on_floor()
+			# Off the ground for real: a frozen step (no game time) can read as
+			# off the floor, so the throw must have lifted the hero first.
+			flew = flew or (not p.is_on_floor() and high > 6.0 and not Feel.is_frozen())
 			if flew and p.is_on_floor():
 				landed = true
 				break
