@@ -66,7 +66,7 @@ const WALL_SCRAPE := 0.24
 ## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
-## Deep Wither (pass 134): what share of its MP the Wither spell costs.
+## Deep Witherbloom (pass 134): what share of its MP the Witherbloom spell costs.
 const RING_OF_DEATH_MULT := 0.5
 ## Wanderer's Grace (pass 142): seconds of harm passing through you added to
 ## every dash, on top of `MovementTuning.dash_invuln`.
@@ -145,7 +145,7 @@ var drink_mult := 1.0
 var wisplight_swarm := false
 var bonus_air_dashes := 0
 ## Riposte: a parry answers with a heavy counter-cut. Bloodletting: hits on a
-## staggered foe heal. Thrift scales spell costs; Forked Storm lets Stormcall leap;
+## staggered foe heal. Thrift scales spell costs; Forked Storm lets Tempest Lance leap;
 ## Time Thief lengthens the Stillstone (Treasure Sense lives on the map); Last
 ## Stand cuts damage at low health; Second Wind survives one killing blow per rest.
 var riposte := false
@@ -1602,7 +1602,7 @@ func _field_cues(delta: float) -> void:
 
 ## A foe's guard turned a blow (`Enemy._on_blocked`). Only the blade's own
 ## blow pushes you back, harder than a landed cut (pass 442): until then the
-## push met every turned blow, so a Torrent cast at a Rot Dwarf's shield across
+## push met every turned blow, so a Deluge cast at a Rot Dwarf's shield across
 ## the room shoved the caster, while a turned slash was pushed only by its
 ## ordinary recoil, which overwrote it.
 func blade_turned() -> void:
@@ -1611,8 +1611,8 @@ func blade_turned() -> void:
 		_turned_now = true
 
 
-## The MP a spell costs you now: Thrift for every spell, and Deep Wither
-## halves Wither on top.
+## The MP a spell costs you now: Thrift for every spell, and Deep Witherbloom
+## halves Witherbloom on top.
 func spell_cost(id: String) -> float:
 	var cost := Spells.cost(id) * spell_cost_mult
 	if id == "death" and ring_of_death:

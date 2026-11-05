@@ -23,9 +23,9 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
-	"torrent": {"title": "Torrent", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
-	"death": {"title": "Wither", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
-	"thunder": {"title": "Stormcall", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
+	"torrent": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"death": {"title": "Witherbloom", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
+	"thunder": {"title": "Tempest Lance", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
 	"stillstone": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
 	"seers_lens": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
@@ -39,7 +39,7 @@ const INFO := {
 	"glass_key": {"title": "Glass Key", "text": "Opens the Glass door. There is only one.", "color": Color("9a6ad8")},
 	"rune_dagger": {"title": "Rune Dagger", "text": "Throw (B) flicks it from your off hand; Up throws it high. It takes the shield's hand: choose one on the Equipment page.", "color": Color("7ff0e0")},
 	"pendant": {"title": "Acorn Charm", "text": "An old charm of the Tree's folk. Your blade strikes a tenth harder.", "color": Color("e8c06a")},
-	"briar_wand": {"title": "Briar Wand", "text": "Torrent's bolts strike half again as hard.", "color": Color("6ac8f0")},
+	"briar_wand": {"title": "Briar Wand", "text": "Deluge's bolts strike half again as hard.", "color": Color("6ac8f0")},
 	"severance": {"title": "Severance", "text": "The only blade that can wound the Everbloom. Stillglass flesh parts before it.", "color": Color("8af0e8")},
 }
 

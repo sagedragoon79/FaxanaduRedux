@@ -37,7 +37,7 @@ static func uses_name(uses: String) -> String:
 		"wisplight":
 			return "Wisplight scroll"
 		"death":
-			return "Wither scroll"
+			return "Witherbloom scroll"
 	return String(ItemPickup.INFO[uses].title)
 
 

@@ -27,7 +27,7 @@ const BOOT_GATES := [["boughs/windloft", 24, 11]]
 ## Pickups only the High Boughs' wind reaches once the Sky Spring turns it
 ## (bible 6.9, the "sky_spring" ability): the elves' wind-niche over the Thicket Road.
 const WIND_SECRETS := [["boughs/thicket_road", 38, 8]]
-## Pickups behind bramble, which only the Kindle spell burns away (bible 4.5).
+## Pickups behind bramble, which only the Emberfall spell burns away (bible 4.5).
 const FIRE_SECRETS := [["spires/spires", 76, 19]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Delver's Pick,
 ## or above the flue damper, open once Durgan falls (the "winch" ability),
@@ -45,7 +45,7 @@ const DELVERS_PICK_ROOMS := ["tower/old_flue", "tower/rafters", "tower/kettlefor
 ## Windloft's veil bars the Crown-Leaf, so Snapcrown's arena and the way on to
 ## Carillon (the Storm Ledge and the Sky Steps) need it too (bible 8.5).
 const STRIDE_ROOMS := ["boughs/crown_leaf", "spires/storm_ledge", "spires/sky_steps", "spires/broken_shrine", "spires/fallen_bridge", "spires/spires", "spires/spire_foot"]
-## Rooms past a conduit gate: open only once Stormcall wakes the conduits (bible 4.1, A6).
+## Rooms past a conduit gate: open only once Tempest Lance wakes the conduits (bible 4.1, A6).
 const THUNDER_ROOMS := ["spires/spire_stair", "spires/roost", "spires/sky_spring", "vorrhallow/upper_stair", "vorrhallow/gate_hall", "vorrhallow/flooded_hall", "vorrhallow/sunken_stair", "vorrhallow/seers_lens_crypt", "vorrhallow/drowned_nave", "vorrhallow/waterfall_stair", "vorrhallow/drowned_market", "vorrhallow/kings_stair", "vorrhallow/kings_kennels", "vorrhallow/alpha_den", "vorrhallow/throne_hall", "vorrhallow/meteor_rise", "vorrhallow/evercrown_gate", "evercrown/threshold", "evercrown/heart_stair", "evercrown/drift_well", "evercrown/heart_gate", "evercrown/proving_scar", "evercrown/throne", "evercrown/veins", "evercrown/heart", "sunken/spring_gate", "sunken/drowned_aqueduct", "sunken/source_hall", "sunken/wellspring"]
 
 
@@ -292,18 +292,18 @@ func test_featherstep_boots_reach_the_high_perch() -> void:
 
 
 func test_fire_seal_and_dry_basin_hold_until_torrent() -> void:
-	# Bible 4.1 (A4) and 4.5: the Torrent scroll lies on the Marsh Road before
+	# Bible 4.1 (A4) and 4.5: the Deluge scroll lies on the Marsh Road before
 	# the fire seal, and the seal keeps the Scorched Hall shut until water douses it.
 	var set := {"glove": true, "delvers_pick": true, "amber": true, "winch": true, "lantern": true}
 	var dry := Reach.new(_texts(), set, true)
 	var nodes := dry.reachable(dry.spot_of(START_ROOM, "P"))
 	var rooms := _rooms_reached(nodes)
-	check(rooms.has("haar/marsh_road") and dry.touchable(nodes, "haar/marsh_road", 21, 14), "the Torrent scroll can be reached without it")
+	check(rooms.has("haar/marsh_road") and dry.touchable(nodes, "haar/marsh_road", 21, 14), "the Deluge scroll can be reached without it")
 	check(not rooms.has("haar/scorched_hall"), "but the fire seal keeps the Scorched Hall shut")
 	set["torrent"] = true
 	var wet := Reach.new(_texts(), set, true)
 	var wet_nodes := wet.reachable(wet.spot_of(START_ROOM, "P"))
-	check(_rooms_reached(wet_nodes).has("haar/scorched_hall"), "with Torrent the road east opens")
+	check(_rooms_reached(wet_nodes).has("haar/scorched_hall"), "with Deluge the road east opens")
 	check(wet.touchable(wet_nodes, "haar/dry_cistern", 18, 7), "and the raft floats up to the cistern shelf")
 
 
@@ -323,7 +323,7 @@ func test_checker_floats_the_basin_raft_only_with_torrent() -> void:
 		var dry := Reach.new(texts, kit)
 		check(not dry.touchable(dry.reachable(dry.spot_of("t/tank", "P")), "t/tank", 18, 7), "the shelf is out of reach while the tank is dry (%s)" % [kit.keys()])
 	var wet := Reach.new(texts, {"glove": true, "torrent": true})
-	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Torrent the raft floats up to it")
+	check(wet.touchable(wet.reachable(wet.spot_of("t/tank", "P")), "t/tank", 18, 7), "with Deluge the raft floats up to it")
 
 
 func test_checker_stands_on_drowned_boardwalks_only_after_the_spring() -> void:
@@ -557,7 +557,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	check(STRIDE_ROOMS.all(func(id: String) -> bool: return rooms.has(id)), "and the Stride reaches the sky islands")
 	# Carillon's spell gates (bible 4.5), checked on the same flood to keep the suite quick.
 	check(reach.touchable(strided, "spires/spires", 66, 13), "the bell-ringer on the gallery can be reached")
-	check(reach.touchable(strided, "spires/spire_foot", 16, 19), "the Stormcall scroll can be reached without it")
+	check(reach.touchable(strided, "spires/spire_foot", 16, 19), "the Tempest Lance scroll can be reached without it")
 	for s: Array in FIRE_SECRETS:
 		check(not reach.touchable(strided, s[0], s[1], s[2]), "%s is out of reach behind the bramble" % [s])
 	check(THUNDER_ROOMS.all(func(id: String) -> bool: return not rooms.has(id)), "the conduit gate keeps the Spire Stair shut")
@@ -566,7 +566,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 
 
 func test_fire_and_thunder_open_the_spires_gates() -> void:
-	# Bible 4.5: bramble holds until Kindle, conduit gates until Stormcall. The
+	# Bible 4.5: bramble holds until Emberfall, conduit gates until Tempest Lance. The
 	# without-spell side is checked in the Stride test's flood.
 	var set := {"glove": true, "delvers_pick": true, "amber": true, "winch": true, "lantern": true, "torrent": true, "stride": true,
 		"fire": true, "thunder": true, "sky_key": true, "stillstone": true, "severance": true, "boots": true}
@@ -575,7 +575,7 @@ func test_fire_and_thunder_open_the_spires_gates() -> void:
 	for s: Array in FIRE_SECRETS:
 		check(reach.touchable(lit, s[0], s[1], s[2]), "%s is reachable once the bramble burns" % [s])
 	var opened := _rooms_reached(lit)
-	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Stormcall the Spire Stair opens, and with the Sky Key the stair down to Vorrhallow")
+	check(THUNDER_ROOMS.all(func(id: String) -> bool: return opened.has(id)), "with Tempest Lance the Spire Stair opens, and with the Sky Key the stair down to Vorrhallow")
 	check(reach.touchable(lit, "spires/spire_stair", 24, 8), "and its top landing's chest can be reached")
 	var missing: Array = []
 	for p: Array in _pickups(reach):
@@ -583,7 +583,7 @@ func test_fire_and_thunder_open_the_spires_gates() -> void:
 			missing.append(p)
 	check(missing.is_empty(), "every pickup past the conduit gate (Vorrhallow too, with the Stillstone) is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(lit, _save_spots(reach))
-	check(stuck.is_empty(), "with Kindle and Stormcall, no soft-locks: %s" % [stuck.slice(0, 6)])
+	check(stuck.is_empty(), "with Emberfall and Tempest Lance, no soft-locks: %s" % [stuck.slice(0, 6)])
 
 
 func test_dartmoors_upper_gate_needs_the_sky_key() -> void:
@@ -770,9 +770,9 @@ func test_every_guardian_is_met_with_the_ability_it_tests() -> void:
 	var fights := [
 		["Gnarlmaw", "heartwood/root_chamber", "glove", "**Tests:** wall jumping"],
 		["Durgan", "tower/kettleforge_lift", "delvers_pick", "**Tests:** pogo"],
-		["The Haar Wyrm", "haar/spring_of_haar", "torrent", "**Tests:** Torrent"],
+		["The Haar Wyrm", "haar/spring_of_haar", "torrent", "**Tests:** Deluge"],
 		["Snapcrown", "boughs/crown_leaf", "stride", "**Tests:** air dash"],
-		["Skyrend", "spires/roost", "thunder", "**Tests:** Stormcall"],
+		["Skyrend", "spires/roost", "thunder", "**Tests:** Tempest Lance"],
 		["Thane Vorrund", "vorrhallow/throne_hall", "stillstone", "**Tests:** Stillstone"],
 	]
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")

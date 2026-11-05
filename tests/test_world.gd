@@ -519,8 +519,8 @@ func test_elven_stride_grants_the_dash() -> void:
 	check(not again, "it doesn't come back")
 
 
-## Bible 4.1 (A4) and 4.5: the Torrent scroll grants the spell, the fire seal
-## burns whoever touches it, and one Torrent bolt douses the whole seal for good.
+## Bible 4.1 (A4) and 4.5: the Deluge scroll grants the spell, the fire seal
+## burns whoever touches it, and one Deluge bolt douses the whole seal for good.
 func test_torrent_douses_the_fire_seal_for_good() -> void:
 	var w := make_world({}, "haar/marsh_road")
 	await frames(3)
@@ -529,7 +529,7 @@ func test_torrent_douses_the_fire_seal_for_good() -> void:
 	p.hp = 9999
 	var seals := runner.get_tree().get_nodes_in_group("fire_seal")
 	check(seals.size() == 3, "three tiles of fire seal the road east (%d)" % seals.size())
-	check(not p.abilities.torrent, "the run starts without Torrent")
+	check(not p.abilities.torrent, "the run starts without Deluge")
 	var scroll: ItemPickup = null
 	for c in w.room.get_children():
 		if c is ItemPickup and (c as ItemPickup).kind == "torrent":
@@ -539,7 +539,7 @@ func test_torrent_douses_the_fire_seal_for_good() -> void:
 		return
 	p.teleport(scroll.global_position + Vector2(0, 12))
 	await frames(3)
-	check(p.abilities.torrent and GameState.data.abilities.torrent, "taking it grants Torrent and the save remembers")
+	check(p.abilities.torrent and GameState.data.abilities.torrent, "taking it grants Deluge and the save remembers")
 	# Touching the flames burns.
 	var hp := p.hp
 	var seal := seals[1] as FireSeal
@@ -568,7 +568,7 @@ func test_torrent_douses_the_fire_seal_for_good() -> void:
 	check(not again.is_empty() and (again[0] as FireSeal).doused, "back in the room the seal is still out")
 
 
-## Bible 4.5: a Torrent bolt cast across a dry basin fills it, and a raft floats
+## Bible 4.5: a Deluge bolt cast across a dry basin fills it, and a raft floats
 ## up to the water-line stain, standing as a one-way platform for good.
 func test_drowned_boardwalks_rise_with_the_spring_of_haar() -> void:
 	for id: String in ["haar/lampwick_causeway", "haar/fog_cut"]:
@@ -672,14 +672,14 @@ func test_fire_burns_the_bramble_for_good() -> void:
 	check(again.size() == 4 and left.is_empty(), "it doesn't grow back (%d unburnt)" % left.size())
 
 
-## Bible 4.1 (A6) and 4.5: the Stormcall scroll grants the spell; a bolt cast near
+## Bible 4.1 (A6) and 4.5: the Tempest Lance scroll grants the spell; a bolt cast near
 ## a dead conduit leaps to it and wakes it, and when the room's last conduit
 ## wakes its gate slides open for good.
 func test_thunder_wakes_the_conduit_and_opens_the_gate() -> void:
 	var w := make_world({}, "spires/spire_foot")
 	await frames(3)
 	var p := w.player
-	check(not p.abilities.thunder, "the run starts without Stormcall")
+	check(not p.abilities.thunder, "the run starts without Tempest Lance")
 	var scroll: ItemPickup = null
 	for c in w.room.get_children():
 		if c is ItemPickup and (c as ItemPickup).kind == "thunder":
@@ -689,7 +689,7 @@ func test_thunder_wakes_the_conduit_and_opens_the_gate() -> void:
 		return
 	p.teleport(scroll.global_position + Vector2(0, 12))
 	await frames(3)
-	check(p.abilities.thunder and GameState.data.abilities.thunder, "taking it grants Stormcall")
+	check(p.abilities.thunder and GameState.data.abilities.thunder, "taking it grants Tempest Lance")
 	check(p.equipped_spell == "thunder", "and, with no other spell, puts it on the Spell button")
 	var conduits := runner.get_tree().get_nodes_in_group("conductor")
 	var gates := runner.get_tree().get_nodes_in_group("conduit_gate")

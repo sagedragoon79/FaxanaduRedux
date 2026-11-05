@@ -1,5 +1,5 @@
 {
-	"_about": "The names retired when the game stopped being a remake and became Yldenfall (pass 461, 2026-11-04; design bible 1 and 2). \"checked\" names must not appear in any game file (test_no_retired_name_is_left); \"generic\" ones are also ordinary words, so they are listed for the record only. \"user_dir_before\" is the game's old user-data folder: on first start the game copies saves and settings from it (GameState.bring_old_saves).",
+	"_about": "The names retired when the game stopped being a remake and became Yldenfall (pass 461, 2026-11-04; design bible 1 and 2). \"checked\" names must not appear in any game file (test_no_retired_name_is_left); \"generic\" ones are also ordinary words, so they are listed for the record only. The spells were renamed again on 2026-11-05 at Sean's choice (Emberfall, Tempest Lance, Witherbloom), and he kept \"Deluge\" for the water spell: it is an ordinary word, so it is no longer checked; the internal id stays `torrent`. \"user_dir_before\" is the game's old user-data folder: on first start the game copies saves and settings from it (GameState.bring_old_saves).",
 	"checked": {
 		"Faxanadu": "Yldenfall",
 		"World Tree": "Ylden",
@@ -43,7 +43,6 @@
 		"Mattock": "Delver's Pick",
 		"Black Onyx": "Seer's Lens",
 		"Magical Rod": "Briar Wand",
-		"Deluge": "Torrent",
 		"Tilte": "Wisplight",
 		"Tower of Trunk": "Hollin Tower",
 		"Trunk Hollows": "Heartwood",
@@ -53,9 +52,9 @@
 		"Temple of Mantras": "Hall of Rings"
 	},
 	"generic": {
-		"Fire": "Kindle",
-		"Thunder": "Stormcall",
-		"Death": "Wither",
+		"Fire": "Emberfall",
+		"Thunder": "Tempest Lance",
+		"Death": "Witherbloom",
 		"Novice": "Seedling",
 		"Aspirant": "Sprout",
 		"Battler": "Sapling",

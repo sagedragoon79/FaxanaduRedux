@@ -35,12 +35,12 @@ From source:
 | Attack (hold down in the air to pogo) | X / J | X |
 | Dash | C / L / Shift | B / RB / RT |
 | Block (tap to parry) | V / I | LB |
-| Cast spell (Torrent) | F / U | Y |
+| Cast spell (Deluge) | F / U | Y |
 | Drink Sapflask | Q / H | LT |
 | Drop through a platform | Down + Jump | Down + A |
 | Talk, read, use doors, rest at shrines | Up | Up |
 | Map | Tab / M | Back |
-| Toggle Glove, Delver's Pick, Featherstep Boots, Elven Stride, Torrent (debug builds) | F1 to F4, F7 | |
+| Toggle Glove, Delver's Pick, Featherstep Boots, Elven Stride, Deluge (debug builds) | F1 to F4, F7 | |
 | Reset to spawn | R / F5 | Back |
 | Toggle debug HUD | F6 | |
 | Fullscreen | F11 / Alt+Enter | |

@@ -4,7 +4,7 @@ extends Enemy
 ## on the highest spire, its wings made of rain clouds. Code-drawn at 2x.
 ##
 ## In the air it is mostly cloud: blows land at a third. Three dead conduits
-## stand on the roost's islands; wake all three with Stormcall and the lightning
+## stand on the roost's islands; wake all three with Tempest Lance and the lightning
 ## grounds the bird. It crashes onto the cloud-stone floor and lies stunned,
 ## and every blow lands in full. Then it shakes the charge off, the conduits
 ## go dead, and it climbs back into the storm.

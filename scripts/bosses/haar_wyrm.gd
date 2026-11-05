@@ -9,7 +9,7 @@ extends Enemy
 ## breathes a bank of fog that rolls along the floor (jump it, or get up on the
 ## tank walls).
 ## Phase 2 (below 60%): all three turn to mist and keep breathing. A fourth head
-## hides in the coil, and shows only once all three tanks are full: Torrent each
+## hides in the coil, and shows only once all three tanks are full: Deluge each
 ## one and its raft floats up, the high ground to reach it from. The dry tanks
 ## shimmer, and each full one douses the head above it: it sags, dims and stops
 ## breathing, so the player sees each tank count (playtest).
@@ -56,7 +56,7 @@ const FAST := 0.75
 const DOUSED_SAG := 44.0
 ## Phase 2: the hint repeats if the tanks are still dry after this long.
 const HINT_EVERY := 14.0
-const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Torrent."
+const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Deluge."
 const INTRO_TIME := 1.6
 const DYING_TIME := 1.6
 
@@ -315,7 +315,7 @@ func _fight(delta: float) -> void:
 				if not basin.filled:
 					dry += 1
 			if dry > 0:
-				GameState.toast.emit("%d dry tank%s still shimmer below. Torrent fills them." % [dry, "" if dry == 1 else "s"])
+				GameState.toast.emit("%d dry tank%s still shimmer below. Deluge fills them." % [dry, "" if dry == 1 else "s"])
 		var h4 := heads[3]
 		if h4.coiled and tanks_full():
 			h4.coiled = false

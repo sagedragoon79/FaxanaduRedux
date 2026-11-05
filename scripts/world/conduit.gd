@@ -1,7 +1,7 @@
 class_name Conduit
 extends Node2D
 ## A dead lightning conduit (room legend `c`, design bible 4.5): a copper coil
-## on a stone plinth, a dim blue spark at its crown. A Stormcall bolt that passes
+## on a stone plinth, a dim blue spark at its crown. A Tempest Lance bolt that passes
 ## near leaps to it (group "conductor") and wakes it for good: the coil glows,
 ## arcs crawl up it, and it lights the fog. Once every conduit in the room is
 ## awake, the room's conduit gates slide open (flag "conduits:<room id>").
@@ -39,7 +39,7 @@ func spark_point() -> Vector2:
 	return global_position + Vector2(0, -28)
 
 
-## A Stormcall bolt woke it.
+## A Tempest Lance bolt woke it.
 func power() -> void:
 	if powered:
 		return

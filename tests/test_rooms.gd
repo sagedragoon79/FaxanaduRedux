@@ -276,7 +276,7 @@ func test_act_two_state_survives_a_save_round_trip() -> void:
 	check(GameState.flag("boss:haar_wyrm") and GameState.flag("spring:haar"), "boss and spring flags survive")
 	check((GameState.data.rings as Array) == ["thaw", "sun", "fall"], "the three rings survive")
 	check(GameState.key_count("lantern") == 1, "the Lantern Key survives")
-	check(GameState.has_ability("boots") and GameState.has_ability("torrent"), "the Featherstep Boots and Torrent survive")
+	check(GameState.has_ability("boots") and GameState.has_ability("torrent"), "the Featherstep Boots and Deluge survive")
 	var found := {}
 	for stop: Array in [["haar/lantern_landing", MistCurtain], ["haar/marsh_road", FireSeal], ["haar/dry_cistern", DryBasin],
 			["haar/spring_of_haar", DryBasin]]:

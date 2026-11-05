@@ -165,7 +165,7 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 	return ceili(damage * GUARD)
 
 
-## Kindle burns his whole bark coat off at once (pass 177), as it does his
+## Emberfall burns his whole bark coat off at once (pass 177), as it does his
 ## knights'; a plate still regrows each time he pulls free.
 func burn_bark() -> void:
 	if bark <= 0 or dead or state in ["dormant", "intro", "dying"]:

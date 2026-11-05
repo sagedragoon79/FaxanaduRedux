@@ -4,11 +4,11 @@ extends RefCounted
 ## Spells are unlocked through `Player.abilities` (the key matches the spell id).
 
 const DATA := {
-	"torrent": {"name": "Torrent", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
-	"thunder": {"name": "Stormcall", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
-	"fire": {"name": "Kindle", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
+	"torrent": {"name": "Deluge", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
+	"thunder": {"name": "Tempest Lance", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
+	"fire": {"name": "Emberfall", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
 	"wisplight": {"name": "Wisplight", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
-	"death": {"name": "Wither", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
+	"death": {"name": "Witherbloom", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
 }
 ## The order the Next Spell button cycles through.
 const ORDER := ["torrent", "thunder", "fire", "wisplight", "death"]
@@ -56,7 +56,7 @@ static func cast(id: String, caster: Player) -> Node2D:
 			var bolt := TorrentBolt.new()
 			bolt.damage = DATA[id]["damage"]
 			if caster.abilities.get("briar_wand", false):
-				# The original's Briar Wand (pass 201): Torrent half again as hard.
+				# The original's Briar Wand (pass 201): Deluge half again as hard.
 				bolt.damage = roundi(bolt.damage * caster.combat.rod_torrent_mult)
 			bolt.velocity = Vector2(caster.facing * DATA[id]["speed"], 0)
 			bolt.pierce = caster.spell_pierce

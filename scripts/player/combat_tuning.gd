@@ -87,10 +87,10 @@ const ZONE_THREAT := {
 
 @export_group("Relics")
 ## The original's Acorn Charm and Briar Wand (design bible 5.2, pass 201), found
-## once and kept: every blade hit, and every Torrent bolt, lands this much more.
+## once and kept: every blade hit, and every Deluge bolt, lands this much more.
 @export var pendant_mult := 1.1
 @export var rod_torrent_mult := 1.5
 
-@export_group("Wither")
+@export_group("Witherbloom")
 @export var death_gold_fraction := 0.6
 @export var respawn_delay := 1.2

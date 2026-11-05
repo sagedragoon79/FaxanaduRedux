@@ -383,14 +383,14 @@ func test_the_inventory_page_lists_what_you_have_found() -> void:
 	GameState.data.potion_shards = 4
 	GameState.data.meteor_shards = 1
 	var rows := Menus.inventory_rows(p)
-	check(labels.call() == ["Abilities", "Climbing Glove", "Delver's Pick", "Spells", "Torrent", "Kindle", "Relics", "Acorn Charm",
+	check(labels.call() == ["Abilities", "Climbing Glove", "Delver's Pick", "Spells", "Deluge", "Emberfall", "Relics", "Acorn Charm",
 		"Rings, 2 of 4", "Thaw Seed", "Fall Seed", "Keys", "Copper Key", "Lantern Key", "Shards", "Potion Shards", "Stillglass Shards"],
 		"each find under its group, in order (%s)" % [labels.call()])
 	var by := {}
 	for r: Dictionary in rows:
 		by[r.label] = r
-	check(by["Kindle"].right == "Ready" and by["Torrent"].right == "", "the readied spell is marked")
-	check(String(by["Kindle"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Kindle"].detail)
+	check(by["Emberfall"].right == "Ready" and by["Deluge"].right == "", "the readied spell is marked")
+	check(String(by["Emberfall"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Emberfall"].detail)
 	check(by["Copper Key"].right == "x2" and by["Lantern Key"].right == "x1", "keys show how many you carry")
 	check(by["Potion Shards"].right == "1 of 3", "shards count toward their next whole")
 	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")

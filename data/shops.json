@@ -155,7 +155,7 @@
 	},
 	"polesend_scrolls": {
 		"name": "Orla's Scrolls",
-		"greeting": "Kindle, wanderer. It dries the bramble and the damp alike. Few in Polesend can afford to be without it.",
+		"greeting": "A scroll of Emberfall, wanderer? It dries the bramble and the damp alike. Few in Polesend can afford to be without it.",
 		"stock": [
 			{"item": "fire_scroll", "price": 1200}
 		]
