@@ -196,7 +196,7 @@ func test_torrent_costs_mp_and_hits() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(p.mp < mp0 - Spells.cost("torrent") + 0.5, "Torrent costs %.0f MP" % Spells.cost("torrent"))
+	check(p.mp < mp0 - Spells.cost("torrent") + 0.5, "Deluge costs %.0f MP" % Spells.cost("torrent"))
 	await frames(40)
 	check(dummy.hits_taken == 1, "water bolt hits the dummy")
 
@@ -319,7 +319,7 @@ func test_camera_renders_at_detail() -> void:
 
 
 func test_fire_arcs_bursts_and_scorches_foes_in_reach() -> void:
-	# Bible 4.1: Kindle is thrown in an arc and bursts on what it meets.
+	# Bible 4.1: Emberfall is thrown in an arc and bursts on what it meets.
 	var room := _arena_with("E", Vector2i(10, 6))
 	var p := make_player(room, Vector2i(3, 6))
 	await frames(6)
@@ -328,7 +328,7 @@ func test_fire_arcs_bursts_and_scorches_foes_in_reach() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("fire"))) < 0.5, "Kindle costs %.0f MP" % Spells.cost("fire"))
+	check(absf(p.mp - (mp0 - Spells.cost("fire"))) < 0.5, "Emberfall costs %.0f MP" % Spells.cost("fire"))
 	var balls := runner.get_tree().get_nodes_in_group("projectile")
 	check(balls.size() == 1 and balls[0] is Fireball, "a fireball is thrown")
 	if balls.is_empty():
@@ -352,14 +352,14 @@ func test_next_spell_cycles_only_through_spells_you_own() -> void:
 	p.equipped_spell = "torrent"
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "torrent", "with only Torrent, Next Spell keeps it")
+	check(p.equipped_spell == "torrent", "with only Deluge, Next Spell keeps it")
 	p.abilities["fire"] = true
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "fire", "with Kindle owned it switches to Kindle")
+	check(p.equipped_spell == "fire", "with Emberfall owned it switches to Emberfall")
 	p.input.spell_next_pressed = true
 	await frames(1)
-	check(p.equipped_spell == "torrent", "and back round to Torrent")
+	check(p.equipped_spell == "torrent", "and back round to Deluge")
 	p.abilities["torrent"] = false
 	p.input.spell_next_pressed = true
 	await frames(1)
@@ -375,7 +375,7 @@ func test_thunder_bolt_strikes_a_foe() -> void:
 	var mp0 := p.mp
 	p.input.spell_pressed = true
 	await frames(1)
-	check(absf(p.mp - (mp0 - Spells.cost("thunder"))) < 0.5, "Stormcall costs %.0f MP" % Spells.cost("thunder"))
+	check(absf(p.mp - (mp0 - Spells.cost("thunder"))) < 0.5, "Tempest Lance costs %.0f MP" % Spells.cost("thunder"))
 	var bolts := runner.get_tree().get_nodes_in_group("projectile")
 	check(bolts.size() == 1 and bolts[0] is ThunderBolt, "a bolt flies")
 	await frames(20)
@@ -580,7 +580,7 @@ func test_wisplight_swarm_fans_three_orbs() -> void:
 	check(dummy.hp == TrainingDummy.HP - 30, "each strikes for 10 (hp %d)" % dummy.hp)
 
 
-## Wither (bible 4.1, pass 132): a ring of black light strikes every foe around
+## Witherbloom (bible 4.1, pass 132): a ring of black light strikes every foe around
 ## you once, through walls; bosses take half.
 func test_death_strikes_every_foe_around_through_walls() -> void:
 	var rows := ARENA.duplicate()
@@ -607,7 +607,7 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 	p.input.spell_pressed = true
 	await frames(1)
 	p.input.spell_pressed = false
-	check(absf(p.mp - (60.0 - Spells.cost("death"))) < 0.5, "Wither costs %.0f MP" % Spells.cost("death"))
+	check(absf(p.mp - (60.0 - Spells.cost("death"))) < 0.5, "Witherbloom costs %.0f MP" % Spells.cost("death"))
 	check(Spells.cost("death") >= 40.0 and Spells.ORDER.has("death"), "the dearest spell, on the Next Spell cycle")
 	check(Sfx.recent.has("death_wave"), "it tolls (%s)" % [Sfx.recent])
 	await frames(int(DeathWave.DURATION * 60.0) + 4)
@@ -624,7 +624,7 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 
 
 func test_the_death_scroll_is_a_late_secret() -> void:
-	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Wither scroll")
+	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Witherbloom scroll")
 	var text := FileAccess.get_file_as_string("res://levels/vorrhallow/kings_kennels.room")
 	check(text.contains("{"), "it lies in the Thane's Kennels' loft, up the hidden planks")
 	GameState.new_game()
@@ -971,12 +971,12 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 	check(c.flask_charges == 2 and c.flask_heal == 40, "Sapflask: 2 charges of 40")
 	check_near(c.drink_time, 0.7, 0.0001, "0.7 s to drink")
 	var torrent: Dictionary = Spells.DATA.torrent
-	check(torrent.cost == 15.0 and torrent.damage == 12 and torrent.speed == 300.0, "Torrent: 15 MP, 12 damage, 300 px/s")
+	check(torrent.cost == 15.0 and torrent.damage == 12 and torrent.speed == 300.0, "Deluge: 15 MP, 12 damage, 300 px/s")
 	check(c.war_glove_mult == 1.5 and c.war_glove_time == 15.0, "War Glove: x1.5 for 15 s")
 	check_near(c.thrust_charge, 0.4, 0.0001, "Thrust: hold 0.4 s")
 	check_near(c.thrust_mult, 1.5, 0.0001, "Thrust: heavy hit x1.5")
 	check(c.thrust_speed == 320.0 and c.thrust_time == 0.16 and c.thrust_cooldown == 0.35, "Thrust: 320 px/s for 0.16 s, 0.35 s cooldown")
-	check(c.pendant_mult == 1.1 and c.rod_torrent_mult == 1.5, "relics: the Acorn Charm x1.1, the Briar Wand's Torrent x1.5")
+	check(c.pendant_mult == 1.1 and c.rod_torrent_mult == 1.5, "relics: the Acorn Charm x1.1, the Briar Wand's Deluge x1.5")
 	check(Coin.MAGNET_DELAY == 0.4 and Coin.MAGNET_RANGE == 100.0, "coins: magnet after 0.4 s within 100 px")
 	check_near(c.death_gold_fraction, 0.6, 0.0001, "death drops 60% of the purse (5.4)")
 	check(c.hazard_damage == 20 and c.hazard_damage == GameHud.MASK_HP, "spikes and thorns cost a mask, 20 (pass 282)")
@@ -988,12 +988,12 @@ func test_the_starting_combat_values_match_bible_5_3() -> void:
 
 ## Pass 330: the test above copies each number, so a tuning change made in
 ## both the tuning and that test passed with the bible left behind, and four of
-## the five spells (Stormcall, Kindle, Wisplight, Wither) were only read back from
+## the five spells (Tempest Lance, Emberfall, Wisplight, Witherbloom) were only read back from
 ## `Spells.DATA`. These read the bible: every combat number is written in 5.3,
 ## and each spell's row names its own cost, damage and speed.
 ## Pass 370 (bible 5.3): every spell's row gave its cost, damage and speed,
 ## but not how far it carries: a bolt's life was a constant in its own class,
-## and Stormcall (0.7 s) reaches only about two thirds as far as Torrent (1.2 s).
+## and Tempest Lance (0.7 s) reaches only about two thirds as far as Deluge (1.2 s).
 ## Each is cast by the real player across an empty hall and measured.
 func test_every_spell_carries_as_far_as_5_3_says() -> void:
 	var rows := ["#".repeat(60)]
@@ -1035,11 +1035,11 @@ func test_every_spell_carries_as_far_as_5_3_says() -> void:
 		if float(said[2]) > 0.0:
 			check(absf(float(got[1]) - float(said[2])) <= 0.05, "for its %.1f s (%.2f)" % [said[2], got[1]])
 		check(written_exactly_in(row, float(said[1])), "the row writes %s's %d px" % [said[0], said[1]])
-	check(float(flown.thunder[0]) < float(flown.torrent[0]) * 0.8, "Stormcall pays for its speed in reach")
+	check(float(flown.thunder[0]) < float(flown.torrent[0]) * 0.8, "Tempest Lance pays for its speed in reach")
 	# The numbers the classes keep.
-	var kept := {"Torrent's life": TorrentBolt.LIFE, "Stormcall's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
-		"Kindle's burst": Fireball.BURST, "Kindle's life": Fireball.LIFE, "Wisplight's life": WispOrb.LIFE, "Wisplight's speed": WispOrb.SPEED,
-		"Wisplight's seek": WispOrb.SEEK, "Wither's ring": DeathWave.RADIUS, "Wither's roll": DeathWave.DURATION,
+	var kept := {"Deluge's life": TorrentBolt.LIFE, "Tempest Lance's life": ThunderBolt.LIFE, "a conduit's leap": ThunderBolt.ARC,
+		"Emberfall's burst": Fireball.BURST, "Emberfall's life": Fireball.LIFE, "Wisplight's life": WispOrb.LIFE, "Wisplight's speed": WispOrb.SPEED,
+		"Wisplight's seek": WispOrb.SEEK, "Witherbloom's ring": DeathWave.RADIUS, "Witherbloom's roll": DeathWave.DURATION,
 		"the dagger's range": RuneDagger.RANGE, "the dagger's speed": RuneDagger.SPEED}
 	for what: String in kept:
 		check(written_exactly_in(row, float(kept[what])), "the row writes %s, %s" % [what, String.num(float(kept[what]))])
@@ -2208,7 +2208,7 @@ func test_every_combat_button_answers_on_its_frame() -> void:
 				check(mp0 - p.mp > p.spell_cost("torrent") - 0.5 and _find(room, TorrentBolt) != null,
 					"Spell casts on its frame (MP %.1f -> %.1f)" % [mp0, p.mp])
 			"spell_next":
-				check(p.equipped_spell == "thunder", "Next Spell turns from Torrent to Stormcall on its frame (%s)" % p.equipped_spell)
+				check(p.equipped_spell == "thunder", "Next Spell turns from Deluge to Tempest Lance on its frame (%s)" % p.equipped_spell)
 			"heal":
 				check(p.is_drinking, "Sapflask starts the drink on its frame")
 			"stillstone":
@@ -2452,7 +2452,7 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	p.has_shield = true
 	var dwarf: RotDwarf = _find(room, RotDwarf)
 	await frames(6)
-	# Torrent, pressed for real, meets the dwarf's shield across the room.
+	# Deluge, pressed for real, meets the dwarf's shield across the room.
 	var hp0 := dwarf.hp
 	var mp0 := p.mp
 	var x0 := p.global_position.x
@@ -2461,7 +2461,7 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	release_for_real(["spell"])
 	var bolt: TorrentBolt = _find(room, TorrentBolt)
 	check(bolt != null and absf(mp0 - p.mp - p.spell_cost("torrent")) < 0.5,
-		"Spell casts the Torrent and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("torrent"), mp0, p.mp])
+		"Spell casts the Deluge and pays %.0f MP (%.1f -> %.1f)" % [p.spell_cost("torrent"), mp0, p.mp])
 	var dmg := bolt.damage if bolt != null else -1
 	var most := 0.0
 	for i in 60:
@@ -2483,9 +2483,9 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 		await frames(1)
 		if dwarf.hp < hp0:
 			break
-	check(hp0 - dwarf.hp == dmg, "cast then, the Torrent strikes him for its %d (%d -> %d)" % [dmg, hp0, dwarf.hp])
+	check(hp0 - dwarf.hp == dmg, "cast then, the Deluge strikes him for its %d (%d -> %d)" % [dmg, hp0, dwarf.hp])
 	room.free()
-	# Next Spell turns to Stormcall; Spell then casts it, and a press inside
+	# Next Spell turns to Tempest Lance; Spell then casts it, and a press inside
 	# the cooldown casts nothing, then or once the cooldown is over.
 	room = make_room(ARENA)
 	p = make_player(room, Vector2i(3, 6), {"thunder": true})
@@ -2493,12 +2493,12 @@ func test_spells_answer_the_real_controller_at_a_real_foe() -> void:
 	await frames(6)
 	await press_for_real(p, ["spell_next"])
 	release_for_real(["spell_next"])
-	check(p.equipped_spell == "thunder", "Next Spell readies Stormcall (%s)" % p.equipped_spell)
+	check(p.equipped_spell == "thunder", "Next Spell readies Tempest Lance (%s)" % p.equipped_spell)
 	mp0 = p.mp
 	await press_for_real(p, ["spell"])
 	release_for_real(["spell"])
 	check(_find(room, ThunderBolt) != null and absf(mp0 - p.mp - p.spell_cost("thunder")) < 0.5,
-		"Spell now casts Stormcall for %.0f MP (%.1f -> %.1f)" % [p.spell_cost("thunder"), mp0, p.mp])
+		"Spell now casts Tempest Lance for %.0f MP (%.1f -> %.1f)" % [p.spell_cost("thunder"), mp0, p.mp])
 	await frames(4)
 	var mp1 := p.mp
 	await press_for_real(p, ["spell"])

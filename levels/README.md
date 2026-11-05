@@ -68,13 +68,13 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `]` | Spire Sentinel (Carillon: a stone knight that moves only while your back is turned and turns every blow; raises its halberd, then slams in front of it, parryable; cracked open after a parry or a miss) |
 | `q` | Crystal Dwarf (Vorrhallow: trudges toward you; raises his crystal fist, then drives it into the floor and a chain of crystal spikes erupts toward you (unparryable: jump them); his crystal back turns blows from behind except from above; rooted after, he takes every blow) |
 | `R` | Root-gate tile (solid roots; a column of three is usual) |
-| `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Torrent bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |
-| `c` | Dead conduit (a copper coil, not solid; a Stormcall bolt passing within 72 px wakes it for good) |
+| `Z` | Fire seal tile (red runic flames: solid, burns on touch; one Deluge bolt douses every seal in the room for good. Wall it in above, or it can be jumped) |
+| `c` | Dead conduit (a copper coil, not solid; a Tempest Lance bolt passing within 72 px wakes it for good) |
 | `k` | Conduit gate tile (solid; slides open for good once every conduit in the room is awake) |
-| `h` | The Stormcall scroll |
-| `w` | Bramble wall tile (dry thorn-vine: solid; a Kindle spell burns the whole knot to ash for good. Kindle is optional, so hide only secrets behind it) |
+| `h` | The Tempest Lance scroll |
+| `w` | Bramble wall tile (dry thorn-vine: solid; a Emberfall spell burns the whole knot to ash for good. Emberfall is optional, so hide only secrets behind it) |
 | `u` | Dry basin mud bed (solid ground, cracked) |
-| `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Torrent bolt across the tank fills it and the run becomes a one-way raft for good |
+| `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Deluge bolt across the tank fills it and the run becomes a one-way raft for good |
 | `b` | Drowned boardwalk (the Haar): nothing until the Haar Spring flows (`spring:haar`), then a one-way platform. Lay it over a spiked dip |
 | `@` | Bounce-pod (High Boughs): stands on the floor of its cell; land on it and it throws you about nine tiles up. Not solid |
 | `r` | Stride seed (bible 6.4): floats at the cell's center; touched in the air with a double jump or dash spent, it bursts and gives both back, and grows again after 2.5 s. Seeds only help: the checker ignores them, so never make one the only way to a pickup or exit |
@@ -95,7 +95,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `l` | Spring Eel (the Sunken Spring), in a cell of water: it never leaves the water; it coils, then darts and bites |
 | `x` | Light vein (the Veins, the Everbloom's second phase): a lit vein of stillglass flesh feeding the core. One cut or pogo severs it, and the core's health is the veins still lit (bible 8) |
 | `+` | Heart seal (the Evercrown): living flesh across a passage, a wall to every blade but the Severance, which tears it open for good |
-| `{` | The Wither scroll (spell pickup, bible 4.1): a late secret |
+| `{` | The Witherbloom scroll (spell pickup, bible 4.1): a late secret |
 | `&` | The Severance (bible A10): found, it goes straight into your hand. Unused since pass 217: Thane Vorrund gives it up |
 | `}` | The Rune Dagger (bible 5.2): the Throw button hurls it; it reforms at your hip. In the Heartwood's Hornet Gallery |
 | `z` | Stillstone (ability pickup) |
@@ -109,7 +109,7 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `$` | Treasure chest (gold, opens once) |
 | `G` | Climbing Glove (ability pickup) |
 | `X` | Featherstep Boots (ability pickup: double jump; glows in the fog) |
-| `O` | Torrent scroll (spell pickup; glows in the fog) |
+| `O` | Deluge scroll (spell pickup; glows in the fog) |
 | `d` | Elven Stride (a warden's feather; grants the dash) |
 | `L` | Life Fruit (+1 mask) |
 | `W` | Mana Dew (+10 max MP) |

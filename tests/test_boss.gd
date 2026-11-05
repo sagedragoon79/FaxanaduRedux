@@ -1156,7 +1156,7 @@ func test_each_full_tank_douses_its_head() -> void:
 	for b: DryBasin in basins:
 		heads[z.head_over(b)] = true
 	check(heads.size() == 3, "each tank has its own head above it")
-	# A real Torrent bolt from the floor beside the first tank fills it.
+	# A real Deluge bolt from the floor beside the first tank fills it.
 	var p := w.player
 	p.abilities.torrent = true
 	p.equipped_spell = "torrent"
@@ -1172,7 +1172,7 @@ func test_each_full_tank_douses_its_head() -> void:
 		if b.x0 < first.x0:
 			first = b
 	var full := await _until(func() -> bool: return first.filled and first.level >= 1.0, 120)
-	check(full, "a Torrent cast from the floor fills the nearest tank")
+	check(full, "a Deluge cast from the floor fills the nearest tank")
 	var h := z.head_over(first)
 	var doused := await _until(func() -> bool: return h.doused, 10)
 	check(doused and not first.beckon, "and douses the head over it, and stops shimmering")
@@ -3901,7 +3901,7 @@ func test_the_captains_bough_holds_your_weight_until_he_pulls_free() -> void:
 		"he pulls it free and you drop to the floor, not caught in it (feet %.1f, floor %.1f)" % [p.global_position.y, floor_y])
 
 
-## Pass 177: Kindle burns the Captain's bark off whole, as it does his knights';
+## Pass 177: Emberfall burns the Captain's bark off whole, as it does his knights';
 ## a plate still grows back when he pulls his lance free.
 func test_fire_burns_the_captains_bark_off_at_once() -> void:
 	var r := await _captain_world()

@@ -199,16 +199,16 @@ func _solid_char(room_id: String, c: String) -> bool:
 		# Bound fog parts for the Lantern Key (Gloamweaver's reward).
 		return not abilities.get("lantern", false)
 	if c == "Z":
-		# A fire seal goes out for good once a Torrent bolt strikes it.
+		# A fire seal goes out for good once a Deluge bolt strikes it.
 		return not abilities.get("torrent", false)
 	if c == "k":
-		# A conduit gate slides open once Stormcall powers the room's conduits.
+		# A conduit gate slides open once Tempest Lance powers the room's conduits.
 		return not abilities.get("thunder", false)
 	if c == "+":
 		# The heart's flesh parts only for the Severance.
 		return not abilities.get("severance", false)
 	if c == "w":
-		# A bramble wall burns away for good under a Kindle spell.
+		# A bramble wall burns away for good under a Emberfall spell.
 		return not abilities.get("fire", false)
 	if c == "~":
 		# Sap hardens into solid amber once the Heartwood Spring is restored.

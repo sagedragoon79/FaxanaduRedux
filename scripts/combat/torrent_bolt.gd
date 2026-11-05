@@ -1,6 +1,6 @@
 class_name TorrentBolt
 extends Node2D
-## The Torrent spell: a fast water bolt. Damages enemies, splashes on walls, and
+## The Deluge spell: a fast water bolt. Damages enemies, splashes on walls, and
 ## calls `douse()` on anything in the "water_target" group (fire seals, basins).
 
 const SIZE := Vector2(12, 8)
@@ -11,7 +11,7 @@ const DARK := Color("2a5d9c")
 
 var damage := 12
 var velocity := Vector2.ZERO
-## Torrent Pierce (skill tree): pass through foes, striking each one once.
+## Deluge Pierce (skill tree): pass through foes, striking each one once.
 var pierce := false
 
 var _struck := {}

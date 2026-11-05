@@ -1,6 +1,6 @@
 class_name ThunderBolt
 extends Node2D
-## The Stormcall spell (design bible 4.1, A6): a fast crackling bolt. Before it
+## The Tempest Lance spell (design bible 4.1, A6): a fast crackling bolt. Before it
 ## touches anything, it leaps to any dead conduit (group "conductor") within
 ## ARC of it ahead or beside, and wakes it. Otherwise it strikes the first foe
 ## or wall it meets.

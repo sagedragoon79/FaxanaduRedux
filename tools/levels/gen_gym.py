@@ -81,7 +81,7 @@ label(157, 26, "Ladder: Up/Down climb, Jump leaves")
 g[39][118] = 'M'
 g[33][132] = 'H'
 g[39][152] = 'D'
-label(112, 36, "Combat: combo X X X, parry V, Torrent F, potion Q")
+label(112, 36, "Combat: combo X X X, parry V, Deluge F, potion Q")
 
 rows = ["".join(r) for r in g]
 hdr = ["name: Movement Gym", "zone: gym", "music: none", "enemy_respawn: 5"] + labels + ["---"]

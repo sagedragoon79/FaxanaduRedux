@@ -1598,7 +1598,7 @@ func test_bark_knight_bark_guards_until_stripped_and_regrows_as_he_uproots() -> 
 	check(k.bark == BarkKnight.BARK, "a plate grows back as he pulls free (%d)" % k.bark)
 
 
-## Pass 177: Kindle catches living bark. A fireball's burst burns the whole coat
+## Pass 177: Emberfall catches living bark. A fireball's burst burns the whole coat
 ## off at once and lands in full on the heartwood beneath.
 func test_a_thrown_dagger_splits_no_bark_and_breaks_no_hex() -> void:
 	var room := _room_with({Vector2i(22, 6): "!"})

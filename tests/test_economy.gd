@@ -457,8 +457,8 @@ func test_skill_rules() -> void:
 ## skill that names one in its text without a "uses" is caught.
 func test_the_skill_tree_says_what_a_skill_waits_on() -> void:
 	GameState.new_game()
-	var names := {"delvers_pick": "Delver's Pick", "torrent": "Torrent", "wisplight": "Wisplight", "thunder": "Stormcall", "stillstone": "Stillstone",
-		"death": "Wither", "stride": "Stride", "boots": "Featherstep Boots", "fire": "Kindle"}
+	var names := {"delvers_pick": "Delver's Pick", "torrent": "Deluge", "wisplight": "Wisplight", "thunder": "Tempest Lance", "stillstone": "Stillstone",
+		"death": "Witherbloom", "stride": "Stride", "boots": "Featherstep Boots", "fire": "Emberfall"}
 	var untagged := []
 	var users := []
 	for node: Dictionary in Skills.nodes():
@@ -545,7 +545,7 @@ func test_act_two_skills_chain_and_apply() -> void:
 	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "delvers_pick_mastery", "clear_mind", "siphon",
 			"torrent_pierce", "deep_pockets", "gold_sense", "quick_draught", "second_stride"]:
 		check(Skills.learn(id, p), "learned " + id)
-	check(p.rising_cut and p.spell_pierce, "Rising Cut and Torrent Pierce switch on")
+	check(p.rising_cut and p.spell_pierce, "Rising Cut and Deluge Pierce switch on")
 	check(is_equal_approx(p.down_strike_mult, 1.5), "Pick Mastery: the down strike hits 50% harder")
 	check(is_equal_approx(p.drink_mult, 0.6), "Quick Draught: drinking takes 60% as long")
 	check(p.bonus_air_dashes == 1, "Second Stride: one more air dash")
@@ -2170,7 +2170,7 @@ func test_lampwick_has_a_ringreader_a_keymaster_and_a_fogwalker() -> void:
 
 
 ## Polesend (pass 148): the stilt town on the black water, under the Scorched
-## Hall. Bible 10.2 puts a spell-scroll shop there: Kindle, a zone before Carillon.
+## Hall. Bible 10.2 puts a spell-scroll shop there: Emberfall, a zone before Carillon.
 func test_polesend_has_a_ringreader_a_scribe_and_stores() -> void:
 	GameState.set_flag("spring:haar")
 	var w := make_world({}, "haar/polesend")
@@ -2189,7 +2189,7 @@ func test_polesend_has_a_ringreader_a_scribe_and_stores() -> void:
 	var p := w.player
 	p.gold = 1500
 	var scroll: Dictionary = GameData.shop("polesend_scrolls").stock[0]
-	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Kindle for 1,200 g, as Carillon's does")
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Emberfall for 1,200 g, as Carillon's does")
 	check(Shop.buy("polesend_scrolls", 0, p) and p.abilities.fire, "and the scroll teaches it")
 	check(Shop.status("spires_scrolls", 0, p) == "owned", "so Carillon's scroll shows as owned")
 	var ringreader: Npc = null
@@ -2201,7 +2201,7 @@ func test_polesend_has_a_ringreader_a_scribe_and_stores() -> void:
 
 
 func test_spires_sells_plate_charts_and_the_fire_scroll() -> void:
-	# Bible 10.2: Carillon has a Ringreader, an armorer, the spell-scroll shop (Kindle,
+	# Bible 10.2: Carillon has a Ringreader, an armorer, the spell-scroll shop (Emberfall,
 	# 1,200 g), a grocer and a cartographer.
 	var w := make_world({}, "spires/spires")
 	await frames(2)
@@ -2214,12 +2214,12 @@ func test_spires_sells_plate_charts_and_the_fire_scroll() -> void:
 		check(Sheet.exists("npc_" + id), "and has a sheet (npc_%s)" % id)
 	var p := w.player
 	p.gold = 6100
-	check(not p.abilities.get("fire", false), "the run starts without Kindle")
+	check(not p.abilities.get("fire", false), "the run starts without Emberfall")
 	var scroll: Dictionary = GameData.shop("spires_scrolls").stock[0]
-	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Kindle for 1,200 g")
+	check(scroll.item == "fire_scroll" and int(scroll.price) == 1200, "the scribe sells Emberfall for 1,200 g")
 	check(Shop.buy("spires_scrolls", 0, p), "and you can buy it")
-	check(p.abilities.fire and GameState.data.abilities.fire, "the scroll teaches Kindle for good")
-	check(p.equipped_spell == "fire", "with no other spell, Kindle goes on the Spell button")
+	check(p.abilities.fire and GameState.data.abilities.fire, "the scroll teaches Emberfall for good")
+	check(p.equipped_spell == "fire", "with no other spell, Emberfall goes on the Spell button")
 	check(Shop.status("spires_scrolls", 0, p) == "owned", "and the scroll shows as owned")
 	check(Shop.buy("spires_armor", 0, p), "the armorer sells Knight's Plate")
 	check(is_equal_approx(p.defense, 0.45), "which takes 45%% off a hit (%.2f)" % p.defense)
@@ -2530,7 +2530,7 @@ func test_thrift_and_time_thief() -> void:
 	p.equipped_spell = "torrent"
 	p.input.spell_pressed = true
 	await frames(1)
-	check_near(p.max_mp - p.mp, Spells.cost("torrent") * 0.85, 0.2, "Thrift: a Torrent costs 15% less")
+	check_near(p.max_mp - p.mp, Spells.cost("torrent") * 0.85, 0.2, "Thrift: a Deluge costs 15% less")
 	TimeStop.reset()
 	p.input.stillstone_pressed = true
 	await frames(1)
@@ -2538,17 +2538,17 @@ func test_thrift_and_time_thief() -> void:
 	TimeStop.reset()
 
 
-## Deep Wither (pass 134), the Arcana branch's last node: Wither costs half.
+## Deep Witherbloom (pass 134), the Arcana branch's last node: Witherbloom costs half.
 func test_ring_of_death_halves_the_death_spell() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
 	p.abilities["death"] = true
 	p.abilities["torrent"] = true
 	_learn_all(p, ARCANA_TO.slice(0, 6))
-	check(Skills.status("ring_of_death") == "locked", "Deep Wither waits on Time Thief")
+	check(Skills.status("ring_of_death") == "locked", "Deep Witherbloom waits on Time Thief")
 	_learn_all(p, ARCANA_TO + ["ring_of_death"])
 	check(p.ring_of_death and int(GameData.skill("ring_of_death").cost) == 3, "it costs 3 points and switches on")
-	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.RING_OF_DEATH_MULT, 0.01, "Wither costs half, after Thrift (%.1f)" % p.spell_cost("death"))
+	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.RING_OF_DEATH_MULT, 0.01, "Witherbloom costs half, after Thrift (%.1f)" % p.spell_cost("death"))
 	check_near(p.spell_cost("torrent"), Spells.cost("torrent") * 0.85, 0.01, "other spells only get Thrift")
 	await frames(3)
 	p.mp = p.max_mp
@@ -2557,7 +2557,7 @@ func test_ring_of_death_halves_the_death_spell() -> void:
 	await frames(1)
 	check_near(p.max_mp - p.mp, 17.0, 0.2, "a cast takes 17 MP, not 34 (%.1f)" % (p.max_mp - p.mp))
 	p.gold = 1000
-	check(Skills.respec(p) and is_equal_approx(p.spell_cost("death"), Spells.cost("death")), "a respec puts Wither back at 40")
+	check(Skills.respec(p) and is_equal_approx(p.spell_cost("death"), Spells.cost("death")), "a respec puts Witherbloom back at 40")
 
 
 func test_chain_thunder_leaps_to_two_more_foes() -> void:
@@ -3062,7 +3062,7 @@ func test_every_town_keeps_the_originals_shops() -> void:
 ## Pass 201: the source game's Acorn Charm (the end of the Tower of Suffer, in the
 ## corner of its guardian's room) and Briar Wand (Sylvarre, up a ladder to the
 ## right). The Acorn Charm was meant to raise the blade's power (a slip in the
-## original's code lowered it instead); the Rod raised Torrent from 6 to 9.
+## original's code lowered it instead); the Rod raised Deluge from 6 to 9.
 func test_the_pendant_and_the_briar_wand() -> void:
 	GameState.new_game()
 	check(_rooms_with_prop(_all_rooms(), "pendant") == ["haar/hag_mire"], "the Acorn Charm lies in the Matriarch's Mire")
@@ -3074,7 +3074,7 @@ func test_the_pendant_and_the_briar_wand() -> void:
 	await frames(2)
 	var plain := p.blade_mult()
 	var bolt := Spells.cast("torrent", p) as TorrentBolt
-	check(bolt.damage == Spells.DATA.torrent.damage, "without the Rod, Torrent hits for %d" % bolt.damage)
+	check(bolt.damage == Spells.DATA.torrent.damage, "without the Rod, Deluge hits for %d" % bolt.damage)
 	bolt.free()
 	for kind: String in ["pendant", "briar_wand"]:
 		var item := ItemPickup.new()
@@ -3087,7 +3087,7 @@ func test_the_pendant_and_the_briar_wand() -> void:
 			"touching the %s takes it, for good" % kind)
 	check_near(p.blade_mult(), plain * p.combat.pendant_mult, 0.0001, "the Acorn Charm: every blade hit a tenth harder")
 	bolt = Spells.cast("torrent", p) as TorrentBolt
-	check(bolt.damage == roundi(Spells.DATA.torrent.damage * 1.5), "the Rod: Torrent half again as hard (%d)" % bolt.damage)
+	check(bolt.damage == roundi(Spells.DATA.torrent.damage * 1.5), "the Rod: Deluge half again as hard (%d)" % bolt.damage)
 	bolt.free()
 	room.free()
 	GameState.new_game()
@@ -3508,7 +3508,7 @@ func test_every_shelf_asks_the_shop_tables_price() -> void:
 	var at := bible.find("### 10.2 Shops")
 	var table := bible.substr(at, bible.find("\n\n", bible.find("| Shop |", at)) - at)
 	for said: String in ["Barkbalm (10 s invulnerability, 300 g", "Amber Draught (auto-revive, max 1, 1,500 g)", "Copper (150 g), Silver (400 g), Gold (900 g), Thorn (1,800 g)",
-			"Kindle (1,200 g), Wisplight (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
+			"Emberfall (1,200 g), Wisplight (2,500 g)", "Mana Dew (one per shop, 500 to 1,200 g)", "Life Fruit (one per shop, 800 to 2,000 g)",
 			"| Cartographer | Hearthroot, Kettleforge, Lampwick, Sylvarre, Carillon, Vorrhallow | each zone's chart (40 to 800 g"]:
 		check(table.contains(said), "the table says it: %s" % said)
 

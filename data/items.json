@@ -29,7 +29,7 @@
 	"chart_spires": {"name": "Chart of the Storm Spires", "kind": "chart", "zone": "spires", "desc": "The sky isles of Carillon outlined on your map, as the bell-ringers see them. Rooms you have not seen show dimmed."},
 	"chart_vorrhallow": {"name": "Chart of Vorrhallow", "kind": "chart", "zone": "vorrhallow", "desc": "The drowned capital outlined on your map, sounded hall by hall now the water has gone down. Rooms you have not seen show dimmed."},
 	"chart_sunken": {"name": "Chart of the Sunken Spring", "kind": "chart", "zone": "sunken", "desc": "The flooded deeps under Vorrhallow outlined on your map, as far as a sounding line reaches. Rooms you have not seen show dimmed."},
-	"fire_scroll": {"name": "Kindle Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Kindle: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."},
+	"fire_scroll": {"name": "Emberfall Scroll", "kind": "spell", "spell": "fire", "desc": "Teaches Emberfall: a fireball thrown in an arc that bursts on what it meets and burns away bramble. The Next Spell button switches spells."},
 	"wisplight_scroll": {"name": "Wisplight Scroll", "kind": "spell", "spell": "wisplight", "desc": "Teaches Wisplight: a spirit orb that wakes, chooses the nearest foe and flies to it. The Next Spell button switches spells."},
 	"warden_dye": {"name": "Warden Green", "kind": "dye", "color": "", "desc": "The deep green the Elven wardens wove. The cloak you set out in."},
 	"ember_dye": {"name": "Ember Red", "kind": "dye", "color": "d0453f", "desc": "Red as the forge-coals of Kettleforge."},
