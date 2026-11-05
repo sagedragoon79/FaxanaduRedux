@@ -437,6 +437,9 @@ func _play_ending() -> void:
 	menu.close()
 	hud.visible = false
 	Music.play("ending", 2.0)
+	# The last room's bed (the Everbloom's heartbeat) does not play on under the
+	# ending and the title (pass 468).
+	Music.ambience("", 2.0)
 	ending.start(GameState.rank_name(), GameState.total_play_time(), GameState.secret_ending(), int(GameState.data.get("deaths", 0)),
 		_completion())
 
