@@ -2234,3 +2234,66 @@ func test_the_soak_floor_is_the_one_the_bible_gives() -> void:
 		if String(m.name).begins_with("test_"):
 			soaks += 1
 	check(note.contains("A full run's %d soaks" % soaks), "15.3 counts the soaks (%d)" % soaks)
+
+
+## The gym soak at the slowest Game speed (70%), with a boss's slow motion and
+## hitstop dropped in as the mash goes (pass 485). Every soak above runs at
+## full speed, and a slower game takes shorter physics steps: no escapes, no
+## embedding and no invalid position at 70% either, and Feel comes back to
+## the Game speed when each burst ends.
+func test_random_input_soak_at_the_slowest_game_speed() -> void:
+	var problems: Array[String] = []
+	var bursts := 0
+	Feel.set_game_speed(0.7)
+	for seed in RUNS:
+		var room := Room.from_file("res://levels/gym/gym.room")
+		arena.add_child(room)
+		var p := Player.new()
+		p.input.scripted = true
+		p.position = room.spawn_position
+		room.add_child(p)
+		p.spawn_point = room.spawn_position
+		var rng := RandomNumberGenerator.new()
+		rng.seed = seed
+		var hold := {"move": 0, "down": 0, "up": 0, "jump": 0, "block": 0}
+		var bounds := room.pixel_rect().grow(8.0)
+		for f in FRAMES_PER_RUN:
+			_mash(p, rng, hold)
+			if f % 150 == 75:
+				Feel.slowmo(0.3, 0.25)
+				bursts += 1
+			elif f % 150 == 0 and f > 0:
+				Feel.hitstop(0.06)
+				bursts += 1
+			await frames(1)
+			var pos := p.global_position
+			if not (is_finite(pos.x) and is_finite(pos.y)):
+				problems.append("seed %d frame %d: invalid position" % [seed, f])
+				break
+			if p.dead:
+				continue
+			if not bounds.has_point(pos):
+				problems.append("seed %d frame %d: left the room at %s" % [seed, f, pos])
+				break
+			if _embedded(room, p):
+				await frames(3)
+				if _embedded(room, p):
+					problems.append("seed %d frame %d: embedded at %s" % [seed, f, p.global_position])
+					break
+		room.queue_free()
+		await frames(1)
+	# Every burst ends on its own and gives the game back its 70%.
+	await _until_real(0.4)
+	check(is_equal_approx(Engine.time_scale, 0.7), "after the bursts the game runs at 70%% again (%.2f)" % Engine.time_scale)
+	Feel.reset()
+	Feel.set_game_speed(1.0)
+	check(bursts >= 30, "slow motion and hitstop dropped in %d times" % bursts)
+	check(problems.is_empty(), "the 70%% soak found no problems: %s" % [problems])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_random_input_soak_at_the_slowest_game_speed"), "the bible names this test")
+
+
+func _until_real(seconds: float) -> void:
+	var end := Time.get_ticks_msec() + int(seconds * 1000.0)
+	while Time.get_ticks_msec() < end:
+		await frames(1)
