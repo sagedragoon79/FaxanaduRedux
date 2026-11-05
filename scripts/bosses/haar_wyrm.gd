@@ -374,7 +374,7 @@ func _move_heads(delta: float) -> void:
 		var k := 1.0 - exp(-5.0 * delta)
 		match h.mode:
 			"idle":
-				var t := Time.get_ticks_msec() * 0.001
+				var t := game_time
 				var sway := Vector2(sin(t * 1.3 + h.index * 2.0) * 6.0, sin(t * 2.1 + h.index) * 4.0)
 				h.global_position = h.global_position.lerp(rest_point(h) + sway, k)
 			"rear":

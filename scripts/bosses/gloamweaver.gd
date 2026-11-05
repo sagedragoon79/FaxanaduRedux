@@ -378,7 +378,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _place_lanterns() -> void:
-	var t := Time.get_ticks_msec() * 0.001
+	var t := game_time
 	for i in lanterns.size():
 		var spot: Vector2 = LANTERN_SPOTS[i]
 		var o := Vector2(spot.x * facing, spot.y * (-1.0 if on_ceiling else 1.0))

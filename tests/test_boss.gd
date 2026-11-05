@@ -5162,3 +5162,59 @@ func test_a_guardians_guard_turns_the_blade_back() -> void:
 		await frames(1)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("A guardian's guard, too (pass 444)"), "5.3 says so")
+
+
+## Pass 474: a guardian's idle sway moved its hurtboxes by the wall clock, so in
+## hitstop (the whole game frozen) the Snapcrown's head, the Haar Wyrm's heads and
+## the Gloamweaver's lanterns kept drifting, and under a slower Game speed they
+## swayed at full speed. They follow the foe's own game time now.
+func _frozen_drift(nodes: Array) -> float:
+	await frames(3)
+	Engine.time_scale = 0.0
+	await frames(1)
+	var before: Array[Vector2] = []
+	for n: Node2D in nodes:
+		before.append(n.global_position)
+	for i in 6:
+		OS.delay_msec(70)
+		await frames(1)
+	Engine.time_scale = 1.0
+	var most := 0.0
+	for i in nodes.size():
+		most = maxf(most, (nodes[i] as Node2D).global_position.distance_to(before[i]))
+	return most
+
+
+func test_a_guardian_stands_still_through_hitstop() -> void:
+	var bloom := await _bloom_world()
+	var k: Snapcrown = bloom[2]
+	await _until(func() -> bool: return k.state == "idle", 180)
+	check(k.state == "idle", "the Snapcrown sways at rest (%s)" % k.state)
+	var drift := await _frozen_drift([k.head])
+	check(drift < 0.01, "frozen, the Snapcrown's head stays put (%.2f px)" % drift)
+	var t0 := k.game_time
+	Feel.set_game_speed(0.7)
+	await frames(60)
+	Feel.set_game_speed(1.0)
+	check(absf(k.game_time - t0 - 0.7) < 0.02, "at 70%% its sway clock runs 0.7 s a second (%.3f)" % (k.game_time - t0))
+	bloom[0].queue_free()
+	await frames(2)
+	var hydra := await _hydra_world()
+	var z: HaarWyrm = hydra[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	var heads: Array = []
+	for h in z.heads:
+		if is_instance_valid(h) and h.mode == "idle":
+			heads.append(h)
+	check(not heads.is_empty(), "a head of the Haar Wyrm sways at rest")
+	drift = await _frozen_drift(heads)
+	check(drift < 0.01, "frozen, its heads stay put (%.2f px)" % drift)
+	hydra[0].queue_free()
+	await frames(2)
+	var widow := await _widow_world()
+	var r: Gloamweaver = widow[2]
+	await _until(func() -> bool: return r.state == "stalk", 120)
+	drift = await _frozen_drift(r.lanterns)
+	check(drift < 0.01, "frozen, the Gloamweaver's lanterns stay put (%.2f px)" % drift)
+	widow[0].queue_free()
+	await frames(2)

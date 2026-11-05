@@ -230,7 +230,7 @@ func _think(delta: float) -> void:
 		"idle":
 			face_player()
 			open = move_toward(open, 0.1, delta * 3.0)
-			var t := Time.get_ticks_msec() * 0.001
+			var t := game_time
 			head.global_position = rest_point() + Vector2(sin(t * 1.3) * 6.0, sin(t * 2.1) * 4.0)
 			if phase == 3 and not uprooted:
 				_from = head.global_position
