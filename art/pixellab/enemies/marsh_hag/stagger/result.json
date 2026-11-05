@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "d76a7083-905c-4f18-9443-20cf93f9ba7f",
+ "status": "completed",
+ "created_at": "2026-11-05T01:06:04.062605+00:00",
+ "last_response": {
+  "seed": 2113252140,
+  "type": "done",
+  "action": "The crone is knocked off balance: she reels backward, her free arm flung out, the staff swaying, and stumbles. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/31ac3ab6-6fa8-404e-ad2a-67ef1a6d07d0/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "f3441213-3905-4f0e-b839-abc26b544d07",
+  "animation_name": "custom-The crone is knocked off balan",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "7e38ceda-eb62-4c34-8b7a-faf8c84d8bc9",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T01:06:18.145259+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -930,6 +930,42 @@ func test_spire_sentinel_plays_an_animation_for_every_state() -> void:
 	check(SpireSentinel.SHOCK_FADE >= SpireSentinel.SLAM, "the shock lasts as long as the blow is live")
 
 
+## Art loop pass 3 (docs/art/enemy-style-guide.md 4): the Haar's four foes, remade in
+## PixelLab, play an animation from their sheet in every state, with a tell that is
+## its own pose, a flinch, and a collapse under the dissolve.
+func test_the_haars_foes_play_an_animation_for_every_state() -> void:
+	var foes := {
+		"lantern_ghost": [LanternGhost, "A", ["idle", "drift", "return", "windup", "lunge", "fade"], "windup", "lunge_tell"],
+		"bog_puffcap": [BogPuffcap, "V", ["idle", "windup", "burst", "spent"], "windup", "windup"],
+		"drowned_dwarf": [DrownedDwarf, "p", ["sunk", "rise", "walk", "windup", "slam", "mired", "sink"], "windup", "heave"],
+		"marsh_hag": [MarshHag, "?", ["idle", "walk", "withdraw", "windup", "cast", "fumble"], "windup", "hex"],
+	}
+	for sheet: String in foes:
+		var f: Array = foes[sheet]
+		var room := _room_with({Vector2i(20, 6): f[1]})
+		make_player(room, Vector2i(3, 6))
+		var e: Enemy = _find(room, f[0])
+		await frames(2)
+		check(Sheet.exists(sheet) and Sheet.get_sheet(sheet).get("own_palette", false), "%s has its own HD sheet" % sheet)
+		for st: String in f[2]:
+			e.set_state(st)
+			var a: String = e.anim_now()[0]
+			check(Sheet.has_anim(sheet, a), "%s in %s plays %s, which the sheet has" % [sheet, st, a])
+		e.set_state(f[3])
+		check(e.anim_now()[0] == f[4] and f[4] != "idle", "%s's tell is its own pose (%s)" % [sheet, f[4]])
+		if sheet != "drowned_dwarf":
+			e.set_state("idle")
+		else:
+			e.set_state("walk")
+		e._hitstun = Enemy.HITSTUN
+		check(e.anim_now()[0] == "hurt" and Sheet.has_anim(sheet, "hurt"), "a blow makes %s flinch" % sheet)
+		e._hitstun = 0.0
+		e.die()
+		check(e.anim_now()[0] == "death" and Sheet.has_anim(sheet, "death"), "%s collapses as it dissolves" % sheet)
+		room.queue_free()
+		await frames(1)
+
+
 ## The art loop, pass 6 (docs/art/enemy-style-guide.md 4): each foe of Vorrhallow and the
 ## Sunken Spring plays an animation of its PixelLab sheet in every state it takes, its tell a
 ## pose of its own, a flinch while a blow stuns it, its stagger when parried, and its death.

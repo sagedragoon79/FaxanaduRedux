@@ -33,6 +33,7 @@ const CONTACT := 10
 
 var _slammed := false
 var _lost := 0.0
+var _died_at := -1.0
 
 
 func _init() -> void:
@@ -159,21 +160,43 @@ func _floor_ahead() -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the fall playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what he is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if state in ["sunk", "rise", "sink", "slam", "mired"]:
+		return [state, state_time]
+	if state == "windup":
+		return ["heave", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	if absf(velocity.x) < 1.0:
+		return ["idle", Time.get_ticks_msec() * 0.001]
+	return ["walk", Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "walk"
-	var t := state_time
-	if is_staggered():
-		anim = "stagger"
-	elif state in ["sunk", "rise", "sink", "windup", "slam", "mired"]:
-		anim = "heave" if state == "windup" else state
-	elif absf(velocity.x) < 1.0:
-		t = 0.0
-	draw_sheet("drowned_dwarf", anim, t, white)
+	var now := anim_now()
+	draw_sheet("drowned_dwarf", now[0], now[1], white)
 	if state == "sunk":
 		# A trickle of bubbles off the crest gives him away, even in the fog.
-		var now := Time.get_ticks_msec() * 0.001
+		var clock := Time.get_ticks_msec() * 0.001
 		for i in 3:
-			var k := fmod(now * 0.8 + i / 3.0, 1.0)
-			var p := Vector2(-2.0 + sin(now * 3.0 + i * 2.0) * 2.0 + i * 2.0, -5.0 - k * 18.0)
+			var k := fmod(clock * 0.8 + i / 3.0, 1.0)
+			var p := Vector2(-2.0 + sin(clock * 3.0 + i * 2.0) * 2.0 + i * 2.0, -5.0 - k * 18.0)
 			draw_arc(p, 1.6 + i * 0.5, 0.0, TAU, 10, Color(0.82, 0.95, 0.95, 0.9 * (1.0 - k)), 1.0)

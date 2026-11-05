@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "24945ae9-05cc-473f-8c61-d517a7f98e49",
+ "status": "completed",
+ "created_at": "2026-11-05T00:59:21.624320+00:00",
+ "last_response": {
+  "seed": 3371785710,
+  "type": "done",
+  "action": "The dwarf stands hunched in place, breathing heavily, his shoulders heaving and his body swaying slightly, the anchor held low. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.29597983655997295,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "bce3928f-cd3d-4f3a-b90c-7460b1368c8f",
+  "character_id": "33561819-c58b-408e-a846-7b1388ace757",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/bce3928f-cd3d-4f3a-b90c-7460b1368c8f/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "5f2260d5-e002-4ea2-9907-c1ec165907cb",
+  "animation_name": "custom-The dwarf stands hunched in pl",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "94ccd5cf-a013-44d1-b03d-b4303fc40ae6",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:59:47.537313+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
