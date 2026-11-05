@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "65b140a3-772d-4fb3-9fc2-f6c20e1e643a",
+ "status": "completed",
+ "created_at": "2026-11-05T00:48:40.082105+00:00",
+ "last_response": {
+  "seed": 4160889530,
+  "type": "done",
+  "action": "lowers itself flat onto the branch, folds its scythes and legs tight under its body and tucks its head down until it looks like a cluster of leaves, then stays still It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9552173913043478,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "24411d01-d00e-4885-a243-e074af6d4c0a",
+  "character_id": "35317da8-36e3-4a6b-9f28-095f05c86561",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/24411d01-d00e-4885-a243-e074af6d4c0a/east/8.png"
+   ],
+   "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "4c513ef6-943b-423e-8de5-250edda12b0b",
+  "animation_name": "custom-lowers itself flat onto the br",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "8a3cd89a-d4d0-4926-a854-fa0f2277139d",
+  "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8",
+  "generation_started_at": "2026-11-05T00:49:05.842172+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

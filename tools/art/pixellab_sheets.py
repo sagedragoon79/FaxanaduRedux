@@ -91,6 +91,18 @@ ENEMY_SHEETS = {
     # The Spire Sentinel's base came out as steel plate; base/guard.png is it recoloured to pale
     # lilac shrine stone (tools/art/stone_tint.py), and its clips were made from that frame.
     "spire_sentinel": {f"{c}.png": f"enemies/spire_sentinel/{c}" for c in ("stalk", "slam", "stagger", "death")},
+    # Art loop pass 4, the High Boughs foes. The Leaf Mantis's clips start from its north-east
+    # view (base/guard.png: its true side profile; the base's east view faces the camera); the
+    # rear of strike_r is the retake of strike's, which turned toward the camera.
+    "leaf_mantis": {f"{c}.png": f"enemies/leaf_mantis/{c}" for c in
+                    ("idle", "walk", "fold", "strike", "strike_r", "recover", "hurt", "death")},
+    # The Bark Knight's clips start from his guard pose (base/guard.png, the lance laid in his hand);
+    # bare heartwood is a character state of him (bare_base). His thrust and rooted clips are
+    # lengthened to the lance's full reach by tools/art/bark_lance.py, which writes its own strips.
+    "bark_knight": {f"{c}.png": f"enemies/bark_knight/{c}" for c in
+                    ("idle", "walk", "hurt", "death", "bare_idle", "bare_walk", "bare_hurt", "bare_death")},
+    "seed_bomber": {f"{c}.png": f"enemies/seed_bomber/{c}" for c in ("fly", "squeeze", "downed", "hurt", "death")},
+    "mothling": {f"{c}.png": f"enemies/mothling/{c}" for c in ("fly_r", "screech", "dive", "hurt", "death")},
 }
 NO_SLAB_CLEANING = set()
 

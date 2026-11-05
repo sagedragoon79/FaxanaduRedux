@@ -1186,5 +1186,86 @@
    "hurt": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, the stagger's first recoil"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6, 7, 8, 10, 12], "fps": 14, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, crumbles to rubble"}
   }
+ },
+ "leaf_mantis": {
+  "dir": "../pixellab/sheets/leaf_mantis",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "leaf", "gold"],
+  "height": 34,
+  "reference": "idle",
+  "rim": {"color": [190, 230, 250], "mix": 0.25},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png)"},
+   "stalk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 12, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), stalking"},
+   "hide": {"file": "fold.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [6, 7, 8, 7], "fps": 2, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), folded flat on the bough like a leaf cluster"},
+   "unfold": {"file": "strike_r.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1, 2, 3, 3], "fps": 8, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), the rear of the retake, scythes raised"},
+   "lunge": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 14, "loop": false, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), the lunge, scythes slashing forward"},
+   "recover": {"file": "recover.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 5, 4], "fps": 5, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), overreached, scythes hanging low"},
+   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [7, 8], "fps": 3, "loop": true, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), reeling back"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [7, 8], "fps": 10, "loop": false, "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), the flinch"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 12, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 5c38aea8 (create-character-v3, side view), pixminimax east, from its side profile (base/guard.png), collapsing flat"}
+  }
+ },
+ "bark_knight": {
+  "dir": "../pixellab/sheets/bark_knight",
+  "colors": 52,
+  "density": 2,
+  "ramps": ["night", "bark", "leaf", "gold"],
+  "height": 36,
+  "reference": "idle",
+  "rim": {"color": [170, 215, 245], "mix": 0.3},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png)"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png)"},
+   "brace": {"file": "thrust_lance.png", "frame_size": 640, "columns": 13, "count": 13, "pick": [3, 4, 5, 4], "fps": 8, "loop": true, "feet_x": 140, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png), the lance drawn back level (lance lengthened by tools/art/bark_lance.py)"},
+   "thrust": {"file": "thrust_lance.png", "frame_size": 640, "columns": 13, "count": 13, "pick": [10, 12], "fps": 14, "loop": false, "feet_x": 140, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png), the drive (lance lengthened by tools/art/bark_lance.py)"},
+   "rooted": {"file": "rooted_lance.png", "frame_size": 640, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": false, "feet_x": 140, "pixellab": "PixelLab character 35317da8, pixminimax east, from the thrust's last frame: roots grow from his feet (lance lengthened by tools/art/bark_lance.py)"},
+   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 3, "loop": true, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png), reeling back"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2], "fps": 10, "loop": false, "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png), the flinch"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 14, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 35317da8 (create-character-v3, side view), pixminimax east, from his guard pose (base/guard.png), toppling"},
+   "bare_idle": {"file": "bare_idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png)"},
+   "bare_walk": {"file": "bare_walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png)"},
+   "bare_brace": {"file": "bare_thrust_lance.png", "frame_size": 640, "columns": 13, "count": 13, "pick": [3, 4, 5, 4], "fps": 8, "loop": true, "feet_x": 88, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png), the lance drawn back level (the retake) (lance lengthened by tools/art/bark_lance.py)"},
+   "bare_thrust": {"file": "bare_thrust_lance.png", "frame_size": 640, "columns": 13, "count": 13, "pick": [10, 12], "fps": 14, "loop": false, "feet_x": 88, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png), the drive (the retake) (lance lengthened by tools/art/bark_lance.py)"},
+   "bare_rooted": {"file": "bare_rooted_lance.png", "frame_size": 640, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": false, "feet_x": 88, "pixellab": "PixelLab character state 1ca41b38, pixminimax east, from the bare thrust's last frame (lance lengthened by tools/art/bark_lance.py)"},
+   "bare_stagger": {"file": "bare_hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 3, "loop": true, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png), reeling back"},
+   "bare_hurt": {"file": "bare_hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 10, "loop": false, "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png), the flinch"},
+   "bare_death": {"file": "bare_death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 14, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character state 1ca41b38 (bare heartwood), pixminimax east, from its guard pose (bare_base/guard.png), toppling"}
+  }
+ },
+ "seed_bomber": {
+  "dir": "../pixellab/sheets/seed_bomber",
+  "colors": 48,
+  "density": 2,
+  "ramps": ["night", "bark", "leaf", "sky", "gold"],
+  "height": 26,
+  "reference": "fly",
+  "animations": {
+   "fly": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 14, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, wingbeat"},
+   "empty": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 14, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, wingbeat (the husk's opening is the code's seed)"},
+   "windup": {"file": "squeeze.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, wings up, squeezing the husk (its white flash frames left out)"},
+   "drop": {"file": "squeeze.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [11, 12], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, the husk letting go"},
+   "fall": {"file": "downed.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, knocked out of the air, tumbling"},
+   "downed": {"file": "downed.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [5, 6, 7, 8], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, dazed on its back"},
+   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 3, "loop": true, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, reeling"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, the flinch"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 05c30138 (create-character-v3, side view), pixminimax east, wings folding as it drops"}
+  }
+ },
+ "mothling": {
+  "dir": "../pixellab/sheets/mothling",
+  "colors": 40,
+  "density": 2,
+  "ramps": ["night", "crystal", "ember", "gold"],
+  "height": 18,
+  "reference": "fly",
+  "animations": {
+   "fly": {"file": "fly_r.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 18, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, full wingbeat (the retake)"},
+   "windup": {"file": "screech.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings flared, screeching"},
+   "dive": {"file": "dive.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings swept back"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, the flinch"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 231a7a98 (create-character-v3, side view), pixminimax east, wings crumpling"}
+  }
  }
 }

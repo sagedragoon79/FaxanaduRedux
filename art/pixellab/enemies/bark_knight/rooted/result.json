@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "22ccc18b-dccd-4217-b772-d8dc989e4d6c",
+ "status": "completed",
+ "created_at": "2026-11-05T01:00:14.660880+00:00",
+ "last_response": {
+  "seed": 141710364,
+  "type": "done",
+  "action": "holds the long lance thrust straight out level at chest height, braced and still, while roots grow out of his feet and grip the ground, straining, then the roots pull free It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.23763635886786186,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "44a43a9d-5753-46aa-a354-e1b01aa24994",
+  "character_id": "5c38aea8-acca-4989-aea2-0e265a51cc13",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/44a43a9d-5753-46aa-a354-e1b01aa24994/east/8.png"
+   ],
+   "input_frames_digest": "e08fc8898bbbc4268f4258f9f20ab9c1c2756b4b96903fe24735a22bd6d5cc4c"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "edc7b9bf-81a0-4ec6-b563-420b66182d0d",
+  "animation_name": "custom-holds the long lance thrust st",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "e1dd368b-149a-4602-821e-d633458536be",
+  "input_frames_digest": "e08fc8898bbbc4268f4258f9f20ab9c1c2756b4b96903fe24735a22bd6d5cc4c",
+  "generation_started_at": "2026-11-05T01:00:50.658333+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

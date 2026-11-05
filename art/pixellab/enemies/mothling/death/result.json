@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "edcb0f7e-7041-495f-90e1-3cc37d25b87c",
+ "status": "completed",
+ "created_at": "2026-11-05T00:53:34.817355+00:00",
+ "last_response": {
+  "seed": 893086830,
+  "type": "done",
+  "action": "is struck dead, its petal wings crumple and it falls, curling up It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.37004220995114917,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "34488767-1f61-4340-84f1-75c459850a6c",
+  "character_id": "05c30138-6f67-428e-9ed4-64992cc0bbf6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/34488767-1f61-4340-84f1-75c459850a6c/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "d23d83e7-9f5a-47d2-b57c-f2bb2f847085",
+  "animation_name": "custom-is struck dead, its petal wing",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "08275ae0-75c3-4bf2-b7ed-c7768b120edc",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:54:02.080637+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -36,8 +36,8 @@ World pixels; sheets are drawn at 2x (`"density": 2`), two sheet pixels per worl
 | Class | Figure height (world px) | Examples |
 |-------|--------------------------|----------|
 | Small (fliers, crawlers) | 14 to 28 | Blinkhop, Hornet, Gear Bat, Mothling, Grub Lump |
-| Standard | 30 to 48 (the hero is 46) | Rot Dwarf, Shade Knight, Marsh Hag, Storm Harpy, Spire Sentinel |
-| Large | 48 to 64 | Iron Dwarf, Bark Knight |
+| Standard | 30 to 48 (the hero is 46) | Rot Dwarf, Shade Knight, Bark Knight, Leaf Mantis, Marsh Hag, Storm Harpy, Spire Sentinel |
+| Large | 48 to 64 | Iron Dwarf |
 | Mini-boss | 64 to 96 | the Foreman, the Bark Captain |
 | Guardian | 80 and up; past about 120, built of parts | Durgan, Gloamweaver, the Haar Wyrm, Skyrend |
 
@@ -48,6 +48,11 @@ World pixels; sheets are drawn at 2x (`"density": 2`), two sheet pixels per worl
   pixels. A PixelLab character canvas is 256 px at most, so a figure up to about 110 world px
   is one sheet; anything taller is a rigged set of parts, each from its own 256 px source
   (bible 13.3, Bosses).
+- **A weapon the game measures fixes the scale.** Where a weapon is also a hitbox or a ledge
+  (the Bark Knight's rooted lance at `LANCE_Y`), pick the height that puts the drawn weapon on
+  it (art pass 4: the knight is 36, his hitbox 32, so he sits in Standard, not Large). A weapon
+  longer than the 256 px canvas is drawn out from the clip's own pixels on a wider frame
+  (`tools/art/bark_lance.py`), never code-drawn over the art.
 
 ## 3. Rendering
 

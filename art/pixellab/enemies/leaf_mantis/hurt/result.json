@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "e82bd8f9-083e-45de-bc00-185c0a81e2f8",
+ "status": "completed",
+ "created_at": "2026-11-05T00:49:21.494831+00:00",
+ "last_response": {
+  "seed": 4025073901,
+  "type": "message_done",
+  "action": "reels backward from a hard blow, scythes flung wide, staggering on its legs It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.29597983655997295,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "50aa4428-edca-4c51-82a4-3df2f969ecfe",
+  "character_id": "35317da8-36e3-4a6b-9f28-095f05c86561",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/50aa4428-edca-4c51-82a4-3df2f969ecfe/east/8.png"
+   ],
+   "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "9df8e204-068d-4aa1-9103-1bb620430938",
+  "animation_name": "custom-reels backward from a hard blo",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "460fe778-0c44-4333-ae99-ff4aab02b57a",
+  "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8",
+  "generation_started_at": "2026-11-05T00:49:49.20518+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "b957a9c7-d216-4fde-aeec-fe614409d318",
+ "status": "completed",
+ "created_at": "2026-11-05T00:48:19.268542+00:00",
+ "last_response": {
+  "seed": 1041316073,
+  "type": "message_done",
+  "action": "stands still, swaying gently like a leaf in the wind, scythes folded at its chest, antennae twitching It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.3316856263198622,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "793f54e9-1fc0-4e1c-87c1-b5edf66de75e",
+  "character_id": "35317da8-36e3-4a6b-9f28-095f05c86561",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/animations/793f54e9-1fc0-4e1c-87c1-b5edf66de75e/east/8.png"
+   ],
+   "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "bde49a8a-7868-4440-8889-245ad86a5187",
+  "animation_name": "custom-stands still, swaying gently l",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "7eecda9c-f1f2-4d38-9595-a1bcc90c285c",
+  "input_frames_digest": "c83b10d78b8990c4ed03c9393a205d1440dcf90f18c6eef82d84e2344c8a1ab8",
+  "generation_started_at": "2026-11-05T00:48:45.716166+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -7,10 +7,35 @@
   72,
   122
  ],
- "columns": 4,
+ "columns": 8,
  "animations": {
   "walk": {
    "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 10,
+   "loop": true
+  },
+  "brace": {
+   "row": 1,
    "frames": [
     {},
     {},
@@ -22,19 +47,6 @@
     1,
     2,
     3
-   ],
-   "fps": 5,
-   "loop": true
-  },
-  "brace": {
-   "row": 1,
-   "frames": [
-    {},
-    {}
-   ],
-   "seq": [
-    0,
-    1
    ],
    "fps": 8,
    "loop": true
@@ -49,11 +61,36 @@
     0,
     1
    ],
-   "fps": 16,
+   "fps": 14,
    "loop": false
   },
   "rooted": {
    "row": 3,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 8,
+   "loop": false
+  },
+  "stagger": {
+   "row": 4,
    "frames": [
     {},
     {}
@@ -65,19 +102,33 @@
    "fps": 3,
    "loop": true
   },
-  "stagger": {
-   "row": 4,
+  "bare_walk": {
+   "row": 5,
    "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
-    0
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
    ],
-   "fps": 1,
-   "loop": false
+   "fps": 10,
+   "loop": true
   },
-  "bare_walk": {
-   "row": 5,
+  "bare_brace": {
+   "row": 6,
    "frames": [
     {},
     {},
@@ -89,19 +140,6 @@
     1,
     2,
     3
-   ],
-   "fps": 5,
-   "loop": true
-  },
-  "bare_brace": {
-   "row": 6,
-   "frames": [
-    {},
-    {}
-   ],
-   "seq": [
-    0,
-    1
    ],
    "fps": 8,
    "loop": true
@@ -116,11 +154,36 @@
     0,
     1
    ],
-   "fps": 16,
+   "fps": 14,
    "loop": false
   },
   "bare_rooted": {
    "row": 8,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 8,
+   "loop": false
+  },
+  "bare_stagger": {
+   "row": 9,
    "frames": [
     {},
     {}
@@ -132,17 +195,129 @@
    "fps": 3,
    "loop": true
   },
-  "bare_stagger": {
-   "row": 9,
+  "idle": {
+   "row": 10,
    "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
-    0
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
    ],
-   "fps": 1,
+   "fps": 6,
+   "loop": true
+  },
+  "hurt": {
+   "row": 11,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 12,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "fps": 14,
+   "loop": false
+  },
+  "bare_idle": {
+   "row": 13,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 6,
+   "loop": true
+  },
+  "bare_hurt": {
+   "row": 14,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "bare_death": {
+   "row": 15,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "fps": 14,
    "loop": false
   }
  },
- "density": 2
+ "density": 2,
+ "own_palette": true
 }

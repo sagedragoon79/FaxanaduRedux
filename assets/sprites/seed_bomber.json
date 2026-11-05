@@ -7,10 +7,35 @@
   56,
   44
  ],
- "columns": 4,
+ "columns": 8,
  "animations": {
   "fly": {
    "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 14,
+   "loop": true
+  },
+  "windup": {
+   "row": 1,
    "frames": [
     {},
     {},
@@ -23,11 +48,11 @@
     2,
     3
    ],
-   "fps": 10,
+   "fps": 8,
    "loop": true
   },
-  "windup": {
-   "row": 1,
+  "drop": {
+   "row": 2,
    "frames": [
     {},
     {}
@@ -36,22 +61,36 @@
     0,
     1
    ],
-   "fps": 16,
-   "loop": true
-  },
-  "drop": {
-   "row": 2,
-   "frames": [
-    {}
-   ],
-   "seq": [
-    0
-   ],
-   "fps": 1,
+   "fps": 10,
    "loop": false
   },
   "empty": {
    "row": 3,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 14,
+   "loop": true
+  },
+  "downed": {
+   "row": 4,
    "frames": [
     {},
     {},
@@ -64,11 +103,11 @@
     2,
     3
    ],
-   "fps": 10,
+   "fps": 4,
    "loop": true
   },
-  "downed": {
-   "row": 4,
+  "stagger": {
+   "row": 5,
    "frames": [
     {},
     {}
@@ -80,17 +119,58 @@
    "fps": 3,
    "loop": true
   },
-  "stagger": {
-   "row": 5,
+  "fall": {
+   "row": 6,
    "frames": [
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
-    0
+    0,
+    1,
+    2,
+    3
    ],
-   "fps": 1,
+   "fps": 10,
+   "loop": true
+  },
+  "hurt": {
+   "row": 7,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 8,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "fps": 12,
    "loop": false
   }
  },
- "density": 2
+ "density": 2,
+ "own_palette": true
 }
