@@ -112,11 +112,11 @@ static func locked_doors(info: Dictionary) -> Array[Dictionary]:
 	return shut
 
 
-## The color a shut door shows on the map: its card's panel, or the sky gate's stone.
+## The color a shut door shows on the map: its door's panel, or the sky gate's stone.
 static func lock_color(kind: String) -> Color:
 	if kind == "sky":
 		return KeyDoor.SHRINE
-	return KeyDoor.CARDS.get(kind, KeyDoor.CARDS.copper).panel
+	return KeyDoor.DOORS.get(kind, KeyDoor.DOORS.copper).panel
 
 
 static func room_rect(info: Dictionary) -> Rect2:
@@ -216,7 +216,7 @@ func _draw() -> void:
 		lx -= 14
 
 
-## A shut key door: a little upright slab in its card's color with a gold band,
+## A shut key door: a little upright slab in its door's color with a gold band,
 ## standing on the door's floor cell.
 func _draw_lock(foot: Vector2, kind: String) -> void:
 	var rect := Rect2(foot - Vector2(1.5, 5), Vector2(3, 5))
@@ -258,10 +258,10 @@ func _text(pos: Vector2, s: String, size: int, color: Color) -> void:
 	PixelFont.draw(self, pos, s, size, color, OUTLINE)
 
 
-## The card keys you hold, by name ("Keys: Copper 2, Silver 1"), or "Keys: none".
+## The door keys you hold, by name ("Keys: Copper 2, Silver 1"), or "Keys: none".
 static func key_line() -> String:
 	var held: Array[String] = []
-	for kind: String in KeyDoor.CARDS:
+	for kind: String in KeyDoor.DOORS:
 		if GameState.key_count(kind) > 0:
 			held.append("%s %d" % [KeyDoor.label(kind), GameState.key_count(kind)])
 	return "Keys: " + (", ".join(held) if not held.is_empty() else "none")

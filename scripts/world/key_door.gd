@@ -1,13 +1,15 @@
 class_name KeyDoor
 extends StaticBody2D
 ## A locked door (three tiles tall). Walk into it holding the right key and it
-## unlocks for good; without one it tells you what it needs. The card doors of
-## the original (design bible 3, "Key doors"), each with its suit: Copper (oak,
-## a spade; legend `J`), and, set by a `lock: x, y, kind` header line on a `J`,
-## Silver (red lacquer, a heart), King (blackened iron, a club), Thorn (elf-silver,
-## a diamond) and Glass (violet, a jester's star). Card doors guard treasure,
-## never the way on. "sky" is Vorrhallow's upper gate (pale shrine stone with a
-## gold lightning glyph, legend `g`: Skyrend's Sky Key).
+## unlocks for good; without one it tells you what it needs. The key doors
+## (design bible 3, "Key doors"), each with a mark of Yldenfall's own (pass 471:
+## they had worn the card suits of the game this one began as): Copper (oak, an
+## acorn; legend `J`), and, set by a `lock: x, y, kind` header line on a `J`,
+## Silver (red lacquer, an Ylden leaf), Gold (blackened iron, the Reeve's crown),
+## Thorn (elf-silver, a barbed thorn) and Glass (violet, a stillglass shard that
+## glints). Key doors guard treasure, never the way on. "sky" is Vorrhallow's
+## upper gate (pale shrine stone with a gold lightning glyph, legend `g`:
+## Skyrend's Sky Key).
 
 const IRON := Color("6b6380")
 const GLYPH := Color("ffd24a")
@@ -15,8 +17,7 @@ const SIZE := Vector2(16, 48)
 const SHRINE := Color("c9c4d6")
 const SHRINE_DARK := Color("8d84a3")
 const SKY := Color("b8a8ff")
-## The card doors: their panel, its shade, the bands and the suit's glyph.
-## What each card key is called in the game (pass 461): ids stay, names are the metal's.
+## What each key is called in the game (pass 461): ids stay, names are the metal's.
 const NAMES := {"copper": "Copper", "silver": "Silver", "gold": "Gold", "thorn": "Thorn", "glass": "Glass"}
 
 ## A key's name for the player: "copper" is "Copper".
@@ -24,12 +25,13 @@ static func label(kind: String) -> String:
 	return String(NAMES.get(kind, kind.capitalize()))
 
 
-const CARDS := {
-	"copper": {"panel": Color("8a5a34"), "dark": Color("5e3b22"), "band": Color("6b6380"), "glyph": Color("ffd24a"), "suit": "spade"},
-	"silver": {"panel": Color("a8323e"), "dark": Color("6a1e28"), "band": Color("d8b060"), "glyph": Color("ffe6ea"), "suit": "heart"},
-	"gold": {"panel": Color("3a3848"), "dark": Color("1e1c28"), "band": Color("d8b060"), "glyph": Color("ffd24a"), "suit": "club"},
-	"thorn": {"panel": Color("b8c4d8"), "dark": Color("7a86a0"), "band": Color("eef4ff"), "glyph": Color("4aa3df"), "suit": "diamond"},
-	"glass": {"panel": Color("5a3a8a"), "dark": Color("34205a"), "band": Color("8af0b0"), "glyph": Color("ffd24a"), "suit": "star"},
+## The key doors: their panel, its shade, the bands and the mark's glyph.
+const DOORS := {
+	"copper": {"panel": Color("8a5a34"), "dark": Color("5e3b22"), "band": Color("6b6380"), "glyph": Color("ffd24a"), "mark": "acorn"},
+	"silver": {"panel": Color("a8323e"), "dark": Color("6a1e28"), "band": Color("d8b060"), "glyph": Color("ffe6ea"), "mark": "leaf"},
+	"gold": {"panel": Color("3a3848"), "dark": Color("1e1c28"), "band": Color("d8b060"), "glyph": Color("ffd24a"), "mark": "crown"},
+	"thorn": {"panel": Color("b8c4d8"), "dark": Color("7a86a0"), "band": Color("eef4ff"), "glyph": Color("4aa3df"), "mark": "thorn"},
+	"glass": {"panel": Color("5a3a8a"), "dark": Color("34205a"), "band": Color("8af0b0"), "glyph": Color("ffd24a"), "mark": "shard"},
 }
 
 var kind := "copper"
@@ -86,42 +88,51 @@ func _draw() -> void:
 	if kind == "sky":
 		_draw_sky_gate()
 		return
-	var card: Dictionary = CARDS.get(kind, CARDS.copper)
-	draw_rect(Rect2(-8, -48, 16, 48), card.dark)
-	draw_rect(Rect2(-7, -47, 14, 47), card.panel)
+	var door: Dictionary = DOORS.get(kind, DOORS.copper)
+	draw_rect(Rect2(-8, -48, 16, 48), door.dark)
+	draw_rect(Rect2(-7, -47, 14, 47), door.panel)
 	for y in [-40, -24, -8]:
-		draw_rect(Rect2(-8, y, 16, 3), card.band)
-	_draw_suit(String(card.suit), Vector2(0, -31), card.glyph)
+		draw_rect(Rect2(-8, y, 16, 3), door.band)
+	draw_mark(self, String(door.mark), Vector2(0, -31), door.glyph)
 
 
-## The suit's glyph, about 8 px across, centered on `c`.
-func _draw_suit(suit: String, c: Vector2, col: Color) -> void:
-	match suit:
-		"spade":
-			draw_circle(c + Vector2(-2, 1), 2.0, col)
-			draw_circle(c + Vector2(2, 1), 2.0, col)
-			draw_colored_polygon(PackedVector2Array([c + Vector2(-4, 1), c + Vector2(0, -4), c + Vector2(4, 1)]), col)
-			draw_rect(Rect2(c + Vector2(-1, 2), Vector2(2, 3)), col)
-		"heart":
-			draw_circle(c + Vector2(-2, -1), 2.2, col)
-			draw_circle(c + Vector2(2, -1), 2.2, col)
-			draw_colored_polygon(PackedVector2Array([c + Vector2(-4.2, -0.5), c + Vector2(4.2, -0.5), c + Vector2(0, 4)]), col)
-		"club":
-			draw_circle(c + Vector2(0, -2.5), 1.9, col)
-			draw_circle(c + Vector2(-2.3, 0.6), 1.9, col)
-			draw_circle(c + Vector2(2.3, 0.6), 1.9, col)
-			draw_rect(Rect2(c + Vector2(-1, 0), Vector2(2, 5)), col)
-		"diamond":
-			draw_colored_polygon(PackedVector2Array([c + Vector2(0, -5), c + Vector2(3.5, 0), c + Vector2(0, 5), c + Vector2(-3.5, 0)]), col)
-		_:
-			# The Glass's star: five points, and a glint that winks.
+## A door's mark, about 8 px across, centered on `c`, drawn on `ci`. Each has a
+## shape of its own, so the doors are told apart without their colors (14).
+static func draw_mark(ci: CanvasItem, mark: String, c: Vector2, col: Color) -> void:
+	match mark:
+		"acorn":
+			# A nut under a cap, with its stalk.
+			ci.draw_circle(c + Vector2(0, 1.5), 3.0, col)
+			ci.draw_rect(Rect2(c + Vector2(-4, -3), Vector2(8, 3)), col)
+			ci.draw_rect(Rect2(c + Vector2(-0.5, -5), Vector2(1, 2)), col)
+		"leaf":
+			# An Ylden leaf: broad and pointed, on its stalk, with its midrib dark.
 			var pts := PackedVector2Array()
-			for i in 10:
-				var r := 4.5 if i % 2 == 0 else 2.0
-				pts.append(c + Vector2.from_angle(-PI / 2 + i * PI / 5) * r)
-			draw_colored_polygon(pts, col)
+			for i in 12:
+				var a := TAU * i / 12.0
+				var r := Vector2(3.6, 4.2) * (1.0 - 0.35 * maxf(0.0, -sin(a)))
+				pts.append(c + Vector2(cos(a) * r.x, sin(a) * r.y - 1.0))
+			pts[9] = c + Vector2(0, -5.5)
+			ci.draw_colored_polygon(pts, col)
+			ci.draw_line(c + Vector2(0, -4), c + Vector2(0, 5), col.darkened(0.5), 1.0)
+			ci.draw_line(c + Vector2(0, 3), c + Vector2(0, 5.5), col, 1.0)
+		"crown":
+			# The Reeve's crown: a band and three points.
+			ci.draw_rect(Rect2(c + Vector2(-4, 1), Vector2(8, 3)), col)
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-4, 1), c + Vector2(-4, -4), c + Vector2(-2, -1),
+				c + Vector2(0, -5), c + Vector2(2, -1), c + Vector2(4, -4), c + Vector2(4, 1)]), col)
+		"thorn":
+			# A thorn off a bramble: a broad base curving up to a hooked point.
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-3.5, 5), c + Vector2(3.5, 5), c + Vector2(1, 1),
+				c + Vector2(-0.5, -2), c + Vector2(-3, -5.5), c + Vector2(-2, -1), c + Vector2(-2.5, 2)]), col)
+		_:
+			# Stillglass: a tall crystal with a short one at its side, and a glint that winks.
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(-2.5, 5), c + Vector2(-2.5, -2.5), c + Vector2(-0.5, -6),
+				c + Vector2(1.5, -2.5), c + Vector2(1.5, 5)]), col)
+			ci.draw_colored_polygon(PackedVector2Array([c + Vector2(2, 5), c + Vector2(2, 0), c + Vector2(3.5, -2),
+				c + Vector2(5, 0), c + Vector2(5, 5)]), col)
 			var a := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.005)
-			draw_circle(c + Vector2(2, -3), 1.0, Color(1, 1, 1, a))
+			ci.draw_circle(c + Vector2(-1, -2), 1.0, Color(1, 1, 1, a))
 
 
 func _draw_sky_gate() -> void:
