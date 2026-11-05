@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "9f628b0e-84fa-4d97-b987-edfed9e4378c",
+ "status": "completed",
+ "created_at": "2026-11-05T00:59:52.250135+00:00",
+ "last_response": {
+  "seed": 4205070867,
+  "type": "message_done",
+  "action": "The dwarf is struck down: he lets go of the anchor, falls to his knees and topples forward face down onto the ground. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.3573778100227557,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "32aac644-5071-4040-bc39-d39193439ca1",
+  "character_id": "33561819-c58b-408e-a846-7b1388ace757",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/32aac644-5071-4040-bc39-d39193439ca1/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "3d5e0597-145e-4232-8ccd-06e70178ce45",
+  "animation_name": "custom-The dwarf is struck down: he l",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "013b6f33-e124-4355-9792-3ccc26cc1bd1",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T01:00:18.731102+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "a3c74c23-325f-43a6-ae5b-caeb53191542",
+ "status": "completed",
+ "created_at": "2026-11-05T00:41:50.731815+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "243c33da-5517-4c3e-9619-4121c4817af9",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/243c33da-5517-4c3e-9619-4121c4817af9/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Marsh Hag",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Marsh Hag: a bent old crone of a drowned marsh village, deeply hunched, wrapped in a ragged shawl of dry straw-yellow reeds, long stringy moss-green hair, pale grey-green wrinkled skin, a long hooked nose, bony bare feet, leaning on a crooked dark willow staff taller than her that ends in an empty curled crook, side-scroller game enemy, full body"
+ }
+}

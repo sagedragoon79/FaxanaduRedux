@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "631bc70d-fa28-4034-9fb5-6b28ad0d7bb2",
+ "status": "completed",
+ "created_at": "2026-11-05T00:45:31.551366+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f06b9f95-a38e-44bf-95a4-8d6f2f75e1d1/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Bog Puffcap",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Bog Puffcap: a living marsh fungus, one squat fat mushroom with a wide bulbous dull grey-green cap speckled with pale bone-white warts, glowing lantern-yellow gills under the cap rim, a thick short pale bone-coloured stalk with a sullen face on the stalk (two small dark eyes and a frowning mouth), pale roots gripping the ground at its foot, it is only a mushroom, no animal, no arms, no legs, side-scroller game enemy, full body"
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "d843b906-62e2-4268-a924-f815f5af0460",
+ "status": "completed",
+ "created_at": "2026-11-05T01:04:31.903146+00:00",
+ "last_response": {
+  "seed": 1342803517,
+  "type": "done",
+  "action": "The crone draws herself up tall and thrusts her staff high up above her head with one arm, the crook raised to the sky, holding it there, then stabs the staff's foot down hard into the ground in front of her. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9797142857142856,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "7092a54e-6f63-4bf0-b233-9964d09a0231",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/7092a54e-6f63-4bf0-b233-9964d09a0231/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "5e2ed968-cf12-4fa3-9a83-ec2d0593b4f9",
+  "animation_name": "custom-The crone draws herself up tal",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "88e9a735-286b-42d4-bf30-8678f0fd4e47",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T01:04:57.746203+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

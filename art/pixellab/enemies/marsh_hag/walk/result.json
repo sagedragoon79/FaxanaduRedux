@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "a14d7731-3713-4e9d-a012-ab00c5fb7fc2",
+ "status": "completed",
+ "created_at": "2026-11-05T01:05:32.587303+00:00",
+ "last_response": {
+  "seed": 277856939,
+  "type": "message_done",
+  "action": "The crone hobbles forward with slow shuffling steps, planting her staff ahead of her with each step, a complete walk cycle. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.15599247609010558,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "d1f42156-c9a9-421c-bd56-86e5dc045a2b",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d1f42156-c9a9-421c-bd56-86e5dc045a2b/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "8d0f864e-c576-4d98-b32d-bdb405714cfc",
+  "animation_name": "custom-The crone hobbles forward with",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "e82b64ae-f3eb-4a2a-899b-774caf08925e",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T01:05:48.988441+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

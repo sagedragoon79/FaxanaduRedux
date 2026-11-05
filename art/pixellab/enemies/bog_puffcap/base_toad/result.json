@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "b1b0299a-4859-498f-9da4-b3648110654f",
+ "status": "completed",
+ "created_at": "2026-11-05T00:41:50.645496+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "b2737f63-4cf6-449a-8157-ea78d2de1aef",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b2737f63-4cf6-449a-8157-ea78d2de1aef/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Bog Puffcap",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Bog Puffcap: a squat swollen marsh toadstool creature rooted in black mud, a wide bulbous dull grey-green cap speckled with pale bone-white warts, faintly glowing lantern-yellow gills under the cap rim, a short fat pale bone stalk with a sullen face of two small dark eyes and a frowning mouth, root tendrils spreading at its base, no arms and no legs, side-scroller game enemy, full body"
+ }
+}

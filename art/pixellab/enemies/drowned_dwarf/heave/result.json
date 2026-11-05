@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "3a241074-fd9e-443c-8569-af20c360be18",
+ "status": "completed",
+ "created_at": "2026-11-05T00:59:21.584737+00:00",
+ "last_response": {
+  "seed": 764860254,
+  "type": "message_done",
+  "action": "The dwarf lifts the heavy anchor high above his head with both hands and holds it there, then slams it down hard into the ground in front of him and stays bent over it, the anchor stuck in the ground. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9637142857142856,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "49553a93-625f-431c-ac1d-8b5c86674e06",
+  "character_id": "33561819-c58b-408e-a846-7b1388ace757",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/33561819-c58b-408e-a846-7b1388ace757/animations/49553a93-625f-431c-ac1d-8b5c86674e06/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "8de42baf-de05-4ea3-83b2-10738381b587",
+  "animation_name": "custom-The dwarf lifts the heavy anch",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "9a3f6f25-1404-41b3-a06d-7847d772c83e",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:59:47.371672+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

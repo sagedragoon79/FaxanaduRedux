@@ -21,17 +21,22 @@ const WINDUP_ALPHA := 0.75
 const LUNGE_DAMAGE := 18
 const TOUCH_DAMAGE := 10
 
-const OUTLINE := Color("2c3a36")
-const BODY := Color("b9cbbd")
-const BODY_LIGHT := Color("e2ecdc")
-const BODY_DARK := Color("7d958a")
-const FACE := Color("17201e")
+const SHEET := "lantern_ghost"
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {
+	"idle": "idle", "drift": "idle", "return": "idle", "windup": "lunge_tell",
+	"lunge": "lunge", "fade": "fade",
+}
+## Its eyes in the hood (world px from its middle, facing right), where the
+## wind-up's flare is drawn, per animation.
+const EYES := {"idle": Vector2(0, -8), "lunge_tell": Vector2(-2, -8)}
 const EYE := Color("f4e48c")
 
 var _dir := Vector2.ZERO
 var _cooldown := 0.0
 ## How visible it is now, 0..1.
 var seen := 1.0
+var _died_at := -1.0
 
 
 func _init() -> void:
@@ -109,66 +114,42 @@ func _process(_delta: float) -> void:
 		seen = maxf(seen, WINDUP_ALPHA)
 	elif state == "fade":
 		seen *= 1.0 - 0.6 * clampf(state_time / FADE_TIME, 0.0, 1.0)
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+## The animation and its time for what it is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "idle")
+	return [a, state_time if a != "idle" else Time.get_ticks_msec() * 0.001]
 
 
 func _draw() -> void:
-	var t := Time.get_ticks_msec() * 0.001
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var a := seen
-	var lean := -4 if state == "lunge" else 0
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
-	# The tattered tail, streaming back and down, waving.
-	for i in 6:
-		var k := i / 5.0
-		var x := roundi(-2 - k * 14.0 + sin(t * 4.0 + i) * 2.0)
-		var y := roundi(8 + k * 16.0)
-		var w := roundi(lerpf(14.0, 3.0, k))
-		_px(x - w / 2 - 1, y - 1, w + 2, 6, OUTLINE, a * (1.0 - k * 0.5))
-		_px(x - w / 2, y, w, 4, BODY_DARK if i % 2 else BODY, a * (1.0 - k * 0.6))
-	# The shroud, row by row: a peaked hood that falls into a wide, ragged hem.
-	for y in range(-21, 10):
-		var half := _half_width(y)
-		var x0 := -half + lean
-		var hem := y >= 6 and (posmod(y * 3 + int(t * 6.0) + roundi(float(x0)), 4) == 0)
-		_px(x0 - 1, y, half * 2 + 2, 1, OUTLINE, a)
-		if not hem:
-			_px(x0, y, half * 2, 1, BODY, a)
-			_px(x0, y, 2, 1, BODY_LIGHT, a)
-			_px(x0 + half * 2 - 2, y, 2, 1, BODY_DARK, a)
-	# Hem tatters: three ragged points below the shroud.
-	for k in 3:
-		var hx := -9 + k * 8 + lean + roundi(sin(t * 3.0 + k) * 1.5)
-		_px(hx - 1, 10, 4, 3, OUTLINE, a)
-		_px(hx, 10, 2, 2, BODY_DARK, a)
-	# The dark face inside the hood.
-	for y in range(-14, -3):
-		var fw := 5 if y < -12 or y > -6 else 6
-		_px(-fw + 1 + lean, y, fw * 2 - 1, 1, FACE, a)
-	# Eyes, which flare in the wind-up.
-	var eye := EYE if state != "windup" else Color(1, 1, 0.85)
-	var big := 3 if state == "windup" else 2
-	_px(-4 + lean, -9, big, big, eye, maxf(a, 0.35 if state == "windup" else 0.0))
-	_px(2 + lean, -9, big, big, eye, maxf(a, 0.35 if state == "windup" else 0.0))
-	# Wisps of arms reaching forward.
-	var reach := 6 if state == "lunge" else (2 if state == "windup" else 0)
-	_px(8 + lean, -2, 6 + reach, 3, OUTLINE, a)
-	_px(9 + lean, -1, 4 + reach, 1, BODY_LIGHT, a)
+	var now := anim_now()
+	var f := Sheet.frame_at(SHEET, now[0], now[1])
+	# A ghost: drawn as faint as the fog lets it be seen.
+	var a := seen if not dead else 1.0
 	_sheet_white = white
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
+	Sheet.draw(self, SHEET, now[0], f, Color(1, 1, 1, a))
 	if white:
-		for y in range(-21, 10):
-			_px(-_half_width(y) + lean, y, _half_width(y) * 2, 1, Color(1, 1, 1), 0.6 * maxf(a, 0.5))
+		Sheet.draw(self, SHEET, now[0], f, Color(1, 1, 1, 0.85 * maxf(a, 0.5)), true)
+	if state == "windup" and EYES.has(now[0]):
+		# The eyes flare in the wind-up, bright even in the murk.
+		var e: Vector2 = EYES[now[0]]
+		var k := 0.6 + 0.4 * absf(sin(state_time * 12.0))
+		draw_circle(e, 3.0, Color(EYE, 0.3 * k))
+		draw_circle(e, 1.0, Color(1, 1, 0.85, k))
 	draw_set_transform(Vector2.ZERO)
-
-
-## Half the shroud's width on row `y` (half-pixels): a peaked hood, shoulders,
-## then a hem that flares out.
-static func _half_width(y: int) -> int:
-	if y < -15:
-		return [2, 4, 6, 7, 8, 9][y + 21]
-	if y < 0:
-		return 10
-	return 10 + (y + 2) / 3
-
-
-func _px(x: int, y: int, w: int, h: int, color: Color, alpha: float) -> void:
-	draw_rect(Rect2(x * 0.5, y * 0.5, w * 0.5, h * 0.5), Color(color, color.a * alpha))

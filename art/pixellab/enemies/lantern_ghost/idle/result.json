@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "866dffbc-a307-423a-8fad-da0bc26111a0",
+ "status": "completed",
+ "created_at": "2026-11-05T00:49:56.941933+00:00",
+ "last_response": {
+  "seed": 2104796083,
+  "type": "done",
+  "action": "The ghost hovers in place, bobbing gently up and down while its ragged hem and sleeves ripple slowly as if under water. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.13840131773520073,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "60b4c440-5b58-4963-b84d-279205c939c1",
+  "character_id": "f4138cfa-47d4-40c4-bc82-56057d61cce7",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/60b4c440-5b58-4963-b84d-279205c939c1/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "4b2ce756-da2c-4be6-b92a-c91d802ebedd",
+  "animation_name": "custom-The ghost hovers in place, bob",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "d8fc93dd-b04d-46d7-92df-d7eae9a7b14f",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:50:23.211553+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

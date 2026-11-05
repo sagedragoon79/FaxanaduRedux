@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "9061c74c-c563-42fa-9ffc-2062a10eab07",
+ "status": "completed",
+ "created_at": "2026-11-05T01:06:04.622649+00:00",
+ "last_response": {
+  "seed": 1409716902,
+  "type": "message_done",
+  "action": "The crone stands in place leaning on her staff, breathing slowly, her hunched shoulders rising and falling and her reed shawl stirring. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.17314877015987368,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "d42c6184-0f46-4b93-b7fb-637e52188f5f",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/d42c6184-0f46-4b93-b7fb-637e52188f5f/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "5d4f1886-177b-4914-9c5d-c2a4c1c21e70",
+  "animation_name": "custom-The crone stands in place lean",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "10e48fb2-b967-4f57-bc0f-448c9acb2a03",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T01:06:22.382828+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

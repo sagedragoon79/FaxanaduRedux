@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "74c2e2cd-76be-4c43-9691-cffd6bd6a97d",
+ "status": "completed",
+ "created_at": "2026-11-05T00:41:50.679815+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "f4138cfa-47d4-40c4-bc82-56057d61cce7",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Lantern Ghost",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Lantern Ghost: the floating hooded ghost of a drowned dwarf miner, a tattered pale grey-green burial shroud with a deep peaked hood, a pitch-dark empty face with two small glowing lantern-yellow eyes, ragged hem dissolving into wisps with no legs, two thin wispy arms reaching forward, bone-white highlights on the hood, side-scroller game enemy, full body, hovering"
+ }
+}

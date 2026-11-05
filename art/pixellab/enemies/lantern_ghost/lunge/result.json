@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "d10a858b-4711-4e7e-83a0-e64325bd370a",
+ "status": "completed",
+ "created_at": "2026-11-05T00:47:23.113893+00:00",
+ "last_response": {
+  "seed": 1421688767,
+  "type": "message_done",
+  "action": "The ghost rears back and up, drawing its clawed hands back beside its hood for a moment, then lunges hard forward and slightly down, both clawed hands thrust far out in front, its shroud streaming out behind it. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.39348887784159226,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "a72ef717-4e1c-4cdc-872d-f1d238761c0c",
+  "character_id": "f4138cfa-47d4-40c4-bc82-56057d61cce7",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/f4138cfa-47d4-40c4-bc82-56057d61cce7/animations/a72ef717-4e1c-4cdc-872d-f1d238761c0c/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "eac49013-6f36-4325-879b-664b768ef50b",
+  "animation_name": "custom-The ghost rears back and up, d",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "a3227e46-2d25-497a-a1d3-969cc82e686a",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:47:49.112834+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

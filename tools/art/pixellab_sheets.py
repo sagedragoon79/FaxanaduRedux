@@ -114,6 +114,15 @@ ENEMY_SHEETS = {
                     ("idle", "crawl", "swell", "heave", "hurt", "death")},
     "spring_eel": {f"{clip}.png": f"enemies/spring_eel/{clip}" for clip in
                    ("swim", "coil", "dart", "slack", "hurt", "death")},
+    # The Haar's foes (art loop pass 3): every clip from the base character's east view.
+    "lantern_ghost": {f"{clip}.png": f"enemies/lantern_ghost/{clip}" for clip in ("idle", "lunge", "fade", "death")},
+    "bog_puffcap": {f"{clip}.png": f"enemies/bog_puffcap/{clip}" for clip in ("idle", "swell", "spent", "death")},
+    # The mire frames are cut from the sink clip by tools/art/mire_frames.py.
+    "drowned_dwarf": {**{f"{clip}.png": f"enemies/drowned_dwarf/{clip}" for clip in
+                         ("idle", "walk", "heave", "stagger", "death")},
+                      "sunk.png": "enemies/drowned_dwarf/mire_sunk", "rise.png": "enemies/drowned_dwarf/mire_rise",
+                      "sink_mire.png": "enemies/drowned_dwarf/mire_sink"},
+    "marsh_hag": {f"{clip}.png": f"enemies/marsh_hag/{clip}" for clip in ("idle", "walk", "hex", "fumble", "death")},
 }
 NO_SLAB_CLEANING = set()
 # Art pass 6: the Glass Slug's grey-violet foot is a flat dull grey the cleaner would eat.

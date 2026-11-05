@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight, thunder_beetle, storm_harpy, spire_sentinel, leaf_mantis, mothling, clockwork_hound, crystal_dwarf, meteor_slug and spring_eel (PixelLab clips only; bark_knight and seed_bomber take PixelLab clips over their rigs); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight, thunder_beetle, storm_harpy, spire_sentinel, leaf_mantis, mothling, clockwork_hound, crystal_dwarf, meteor_slug, spring_eel and lantern_ghost (PixelLab clips only; bark_knight and seed_bomber take PixelLab clips over their rigs); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
 the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1543,6 +1543,15 @@ LEAF_MANTIS = [(a, [None] * 2, [0, 1], fps, loop) for a, fps, loop in (
     ("recover", 5, True), ("stagger", 3, True), ("hurt", 10, False), ("death", 12, False))]
 MOTHLING = [(a, [None] * 2, [0, 1], fps, loop) for a, fps, loop in (
     ("fly", 18, True), ("windup", 8, True), ("dive", 10, True), ("hurt", 10, False), ("death", 12, False))]
+# The Lantern Ghost (art loop pass 3, docs/art/enemy-style-guide.md): PixelLab clips only.
+LANTERN_GHOST = [
+    ("idle", [None] * 2, [0, 1], 7, True),
+    ("lunge_tell", [None] * 2, [0, 1], 8, True),
+    ("lunge", [None] * 2, [0, 1], 12, False),
+    ("fade", [None] * 2, [0, 1], 7, False),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 12, False),
+]
 
 
 # Art loop pass 6 (Vorrhallow and the Sunken Spring): PixelLab clips only.
@@ -1585,6 +1594,7 @@ def main():
     write_sheet("crystal_dwarf", (72, 56), (36, 53), CRYSTAL_DWARF, autosprite_only, density=2)
     write_sheet("meteor_slug", (64, 44), (32, 41), METEOR_SLUG, autosprite_only, density=2)
     write_sheet("spring_eel", (56, 40), (28, 20), SPRING_EEL, autosprite_only, density=2)
+    write_sheet("lantern_ghost", (80, 64), (40, 32), LANTERN_GHOST, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

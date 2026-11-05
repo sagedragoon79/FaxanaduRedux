@@ -35,6 +35,11 @@ var _cool := 0.6
 var _backed := 0.0
 var _mark: MireGrasp
 var _wisp: HagWisp
+var _died_at := -1.0
+## Where the crook of her staff is in each animation (world px from her feet, facing
+## right), where the wisp is drawn; the light it casts stays at the wisp node.
+const CROOK := {"idle": Vector2(2, -34), "walk": Vector2(4, -34), "hex": Vector2(-11, -34),
+	"cast": Vector2(11, -34), "stagger": Vector2(9, -33), "hurt": Vector2(9, -33)}
 
 
 ## The marsh-wisp in the crook of her staff, lighting the fog.
@@ -87,7 +92,15 @@ func _modify_damage(damage: int, _dir: Vector2) -> int:
 
 func die() -> void:
 	_fizzle()
+	_died_at = Time.get_ticks_msec() * 0.001
 	super()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the fall playing under it.
+	if dead and dissolving():
+		queue_redraw()
 
 
 func _respawn() -> void:
@@ -198,26 +211,33 @@ func _can_step(dir: int) -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
+## The animation and its time for what she is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if state == "windup":
+		return ["hex", state_time]
+	if state in ["cast", "fumble"]:
+		return [state, state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	if absf(velocity.x) < 1.0:
+		return ["idle", Time.get_ticks_msec() * 0.001]
+	return ["walk", Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "walk"
-	var t := state_time
-	if is_staggered():
-		anim = "stagger"
-	elif state == "windup":
-		anim = "hex"
-	elif state in ["cast", "fumble"]:
-		anim = state
-	elif absf(velocity.x) < 1.0:
-		anim = "idle"
-		t = Time.get_ticks_msec() * 0.001
-	draw_sheet("marsh_hag", anim, t, white)
+	var now := anim_now()
+	draw_sheet("marsh_hag", now[0], now[1], white)
 	# The wisp in the crook of the staff: a pale green flame that flares as she hexes.
-	if _wisp != null and not is_fumbling():
-		var w := _wisp.position
-		var now := Time.get_ticks_msec() * 0.001
+	if _wisp != null and not dead and CROOK.has(now[0]):
+		var w: Vector2 = CROOK[now[0]] * Vector2(facing, 1)
+		var clock := Time.get_ticks_msec() * 0.001
 		var hot := state == "windup"
-		var r := (3.0 if hot else 2.0) + sin(now * 9.0) * 0.5
+		var r := (3.0 if hot else 2.0) + sin(clock * 9.0) * 0.5
 		draw_circle(w, r * 3.0, Color(0.55, 1.0, 0.6, 0.12 if not hot else 0.25))
 		draw_circle(w, r + 1.0, Color("2e5a3a"))
 		draw_circle(w, r, Color("8af0a0"))
