@@ -465,7 +465,7 @@ func _scroll(old_view: Texture2D, edge: String) -> void:
 	new_sprite.texture = _snapshot()
 	new_sprite.position = offset - dir * size
 	curtain.add_child(new_sprite)
-	var tw := create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	var tw := create_tween().set_ignore_time_scale(true).set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_property(old_sprite, "position", offset + dir * size, SCROLL_TIME)
 	tw.tween_property(new_sprite, "position", offset, SCROLL_TIME)
 	await tw.finished
@@ -512,8 +512,10 @@ func _clear_arrival(body: Rect2) -> void:
 			c.break_block(true)
 
 
+## A door's fade and scroll take real time (pass 477): the Game speed option, a
+## boss's slow motion and hitstop never stretch or stall a way between rooms.
 func _fade(to: float, time: float) -> void:
-	var tw := create_tween()
+	var tw := create_tween().set_ignore_time_scale(true)
 	tw.tween_property(fader, "color:a", to, time)
 	await tw.finished
 
