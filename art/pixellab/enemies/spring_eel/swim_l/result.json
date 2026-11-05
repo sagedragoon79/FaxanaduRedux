@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "e0fe6f1e-28a7-445a-9c5b-e9df30892196",
+ "status": "completed",
+ "created_at": "2026-11-05T18:55:38.298730+00:00",
+ "last_response": {
+  "seed": 489042532,
+  "type": "message_done",
+  "action": "The eel swims forward, its long body undulating in a smooth horizontal S-wave from head to tail, staying level, the lure orb bobbing gently. The lure stalk stays attached to its head and the glowing orb stays at its tip. A seamless swim loop in place. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.22211464561430327,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "7fd6361f-6aeb-41a0-adbf-ba695ef9846c",
+  "character_id": "0729c5ff-1c8e-46e6-8979-8ed24703c6d7",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/0729c5ff-1c8e-46e6-8979-8ed24703c6d7/animations/7fd6361f-6aeb-41a0-adbf-ba695ef9846c/east/8.png"
+   ],
+   "input_frames_digest": "16fafae73f65aa835806c2c1d0c64362f5febf98f6c514fb425f18573c0bede0"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "574460d2-dd91-46bb-b307-b325bbb5ec64",
+  "animation_name": "custom-The eel swims forward, its lon",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "5c219c4b-e267-4f31-a8f1-d52011f1cfc2",
+  "input_frames_digest": "16fafae73f65aa835806c2c1d0c64362f5febf98f6c514fb425f18573c0bede0",
+  "generation_started_at": "2026-11-05T18:56:03.98491+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

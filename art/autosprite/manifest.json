@@ -1329,18 +1329,18 @@
   "colors": 48,
   "density": 2,
   "ramps": ["night", "sky", "stone"],
-  "height": 10,
+  "height": 7,
   "reference": "swim",
   "gain": 1.5,
   "rim": {"color": [210, 255, 245], "mix": 0.5},
   "animations": {
-   "swim": {"file": "swim.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, the swim wave"},
-   "coil": {"file": "coil.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, drawn back into an S, jaw open"},
-   "dart": {"file": "dart.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5], "fps": 16, "loop": false, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, stretched straight, jaw gaping (frame 2's streak left out)"},
-   "slack": {"file": "slack.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8, 7, 6, 5, 4], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, hanging slack"},
-   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, the flinch"},
-   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 2, 1], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, the flinch held"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 18, "loop": false, "anchor": "center", "pixellab": "PixelLab character ca0abb11 (create-character-v3, 256x96 so it lies level, no skeleton), pixminimax east from its south view, goes limp, lamp dark"}
+   "swim": {"file": "swim.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, the swim wave, the lure bobbing"},
+   "coil": {"file": "coil.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, drawn back into an S, jaw open"},
+   "dart": {"file": "dart.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 16, "loop": false, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, stretched straight, jaw gaping (frame 1's streak left out)"},
+   "slack": {"file": "slack.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [8], "fps": 2, "loop": true, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, the slack clip's last frame held still: mouth open, lure dangling, waiting (Sean)"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, the flinch"},
+   "stagger": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 3], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, the flinch held"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "fps": 18, "loop": false, "anchor": "center", "pixellab": "PixelLab character 0729c5ff (create-character-v3, 256x96 so it lies level, with an anglerfish lure, no skeleton), pixminimax east from its south view, goes limp, the orb goes dark"}
   }
  },
  "lantern_ghost": {

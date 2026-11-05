@@ -1,8 +1,8 @@
 class_name SpringEel
 extends Enemy
 ## A Spring Eel of the Sunken Spring (design bible 7): a long pale eel gone
-## blind in the dark water, with a lamp of the spring's light grown on its
-## brow. It never leaves the water. It weaves back and forth near where it
+## blind in the dark water, with a lamp of the spring's light grown at the tip
+## of a lure that arches from its brow over its snout. It never leaves the water. It weaves back and forth near where it
 ## lives; come within about seven tiles and it draws back into an S, its lamp
 ## blazing, for 0.5 s (the telegraph), then darts straight at where you were
 ## and bites for 14. The dart stops dead at the water's edge, so the bank is
@@ -20,8 +20,8 @@ const COOLDOWN := 1.0
 const BITE := 14
 ## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
 const ANIMS := {"idle": "swim", "swim": "swim", "coil": "coil", "dart": "dart", "slack": "slack"}
-## The lamp on its brow in each animation (world px from its middle, facing right).
-const LAMP_AT := {"swim": Vector2(15, -4), "coil": Vector2(9, -7.5), "dart": Vector2(15.5, -4.5), "slack": Vector2(15, -5)}
+## The orb at the tip of its lure in each animation (world px from its middle, facing right).
+const LAMP_AT := {"swim": Vector2(19, 1.5), "coil": Vector2(8.5, -2), "dart": Vector2(19.5, 1), "slack": Vector2(19, 2)}
 
 const LAMP := Color("8af0e8")
 const LAMP_CORE := Color("f0fff8")
@@ -156,7 +156,7 @@ func _draw() -> void:
 	Sheet.draw(self, "spring_eel", a, f)
 	if white:
 		Sheet.draw(self, "spring_eel", a, f, Color(1, 1, 1, 0.85), true)
-	# The lamp on its brow: a dim glow while it weaves, blazing as it coils.
+	# The orb at the tip of its lure: a dim glow while it weaves, blazing as it coils.
 	if LAMP_AT.has(a) and not dead:
 		var lamp := 0.45 + 0.15 * sin(t * 3.0)
 		if state == "coil":

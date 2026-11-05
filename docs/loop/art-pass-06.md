@@ -61,3 +61,14 @@ batch's share of about 130.
 ## Rubric
 
 Art cohesion moves for four more foes of about 40; the score stays as the gameplay loop last set it.
+
+## Retake: the Spring Eel's lure (2026-11-05, Sean)
+
+Sean saw the Eel's lamp as a light bulb stuck on its head, not an anglerfish's lure. The new base
+(0729c5ff; two takes, the slimmer one kept, `base3b`) grows a thin stalk from its brow that
+arches over its snout to a small glowing orb, and every clip was made again from its south view
+(`*_l` folders). The code glow now sits on the orb in each animation. Sean also read the slack as
+the Eel lying in wait, as still as it can be, with its mouth open and the lure dangling, so the
+slack holds one frame (the end of the slack clip) instead of wiggling and opening and closing its
+mouth. Bible 7 and the script's header now describe the lure. Height 7 (it is slimmer, about 40 long).
+PixelLab: 25 more generations (two bases at 9, six clips).
