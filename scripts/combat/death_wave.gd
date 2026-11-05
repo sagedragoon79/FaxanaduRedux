@@ -1,7 +1,7 @@
 class_name DeathWave
 extends Node2D
 ## The Witherbloom spell (design bible 4.1, pass 132), the original's darkest magic:
-## a ring of black light rolls out from the caster through walls and all, and
+## a ring of blight rolls out from the caster through walls and all, and
 ## every foe it passes takes one blow. Bosses take half. It costs most of a
 ## full flask of MP, so it is a last resort, not a weapon to lead with.
 

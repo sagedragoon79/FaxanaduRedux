@@ -545,7 +545,7 @@ func test_act_two_skills_chain_and_apply() -> void:
 	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "delvers_pick_mastery", "clear_mind", "siphon",
 			"torrent_pierce", "deep_pockets", "gold_sense", "quick_draught", "second_stride"]:
 		check(Skills.learn(id, p), "learned " + id)
-	check(p.rising_cut and p.spell_pierce, "Rising Cut and Deluge Pierce switch on")
+	check(p.rising_cut and p.spell_pierce, "Rising Cut and Undertow switch on")
 	check(is_equal_approx(p.down_strike_mult, 1.5), "Pick Mastery: the down strike hits 50% harder")
 	check(is_equal_approx(p.drink_mult, 0.6), "Quick Draught: drinking takes 60% as long")
 	check(p.bonus_air_dashes == 1, "Second Stride: one more air dash")
@@ -2538,14 +2538,14 @@ func test_thrift_and_time_thief() -> void:
 	TimeStop.reset()
 
 
-## Deep Witherbloom (pass 134), the Arcana branch's last node: Witherbloom costs half.
+## Deep Blight (pass 134), the Arcana branch's last node: Witherbloom costs half.
 func test_ring_of_death_halves_the_death_spell() -> void:
 	var w := make_world(_town(), "test/town")
 	var p := w.player
 	p.abilities["death"] = true
 	p.abilities["torrent"] = true
 	_learn_all(p, ARCANA_TO.slice(0, 6))
-	check(Skills.status("ring_of_death") == "locked", "Deep Witherbloom waits on Time Thief")
+	check(Skills.status("ring_of_death") == "locked", "Deep Blight waits on Time Thief")
 	_learn_all(p, ARCANA_TO + ["ring_of_death"])
 	check(p.ring_of_death and int(GameData.skill("ring_of_death").cost) == 3, "it costs 3 points and switches on")
 	check_near(p.spell_cost("death"), Spells.cost("death") * 0.85 * Player.RING_OF_DEATH_MULT, 0.01, "Witherbloom costs half, after Thrift (%.1f)" % p.spell_cost("death"))

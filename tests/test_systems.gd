@@ -390,7 +390,7 @@ func test_the_inventory_page_lists_what_you_have_found() -> void:
 	for r: Dictionary in rows:
 		by[r.label] = r
 	check(by["Emberfall"].right == "Ready" and by["Deluge"].right == "", "the readied spell is marked")
-	check(String(by["Emberfall"].detail).begins_with("A fireball"), "a spell learned from a scroll says what it does (%s)" % by["Emberfall"].detail)
+	check(String(by["Emberfall"].detail).begins_with("An ember"), "a spell learned from a scroll says what it does (%s)" % by["Emberfall"].detail)
 	check(by["Copper Key"].right == "x2" and by["Lantern Key"].right == "x1", "keys show how many you carry")
 	check(by["Potion Shards"].right == "1 of 3", "shards count toward their next whole")
 	var blank := rows.filter(func(r: Dictionary) -> bool: return not r.get("header", false) and String(r.get("detail", "")) == "")
@@ -3877,3 +3877,31 @@ func test_the_screens_run_in_real_time_at_every_game_speed() -> void:
 
 func get_tree_paused_off() -> void:
 	runner.get_tree().paused = false
+
+
+## The spells are told in the words of their names (pass 487). Sean chose the
+## names on 2026-11-05 (bible 4.1), and the lines a player reads when a spell is
+## found, bought or looked up had been written for the old plain ones: Deluge
+## was "a bolt of water", Tempest Lance "a bolt of lightning", Emberfall "a
+## fireball" and Witherbloom "a ring of black light". Each now speaks its name's
+## picture, on the pickup, the scroll and the Inventory page alike, and the two
+## Arcana skills named after spells read as names of their own.
+func test_each_spell_is_told_in_the_words_of_its_name() -> void:
+	var pictures := {"torrent": ["Deluge", "flood"], "thunder": ["Tempest Lance", "lance"], "fire": ["Emberfall", "ember"],
+		"wisplight": ["Wisplight", "spirit orb"], "death": ["Witherbloom", "Blight blooms"]}
+	for id: String in pictures:
+		var want: Array = pictures[id]
+		check(String(Spells.DATA[id].name) == want[0], "%s is called %s" % [id, Spells.DATA[id].name])
+		var info := Menus.ability_info(id)
+		check(info[0] == want[0] and String(info[1]).to_lower().contains(String(want[1]).to_lower()), "%s's line speaks of its %s (%s)" % [want[0], want[1], info[1]])
+		var scroll := GameData.item(id + "_scroll")
+		if not scroll.is_empty():
+			check(String(scroll.name) == "%s Scroll" % want[0] and String(scroll.desc).contains(String(want[1])), "the %s Scroll says so too (%s)" % [want[0], scroll.desc])
+	var names: Array[String] = []
+	for s: Dictionary in Skills.nodes():
+		names.append(String(s.name))
+	check("Undertow" in names and "Deep Blight" in names, "the water and blight skills have names of their own (%s)" % [names])
+	for n: String in names:
+		check(not (n.contains("Deluge") or n.contains("Witherbloom") or n.contains("Tempest Lance") or n.contains("Emberfall")), "no skill wears a whole spell's name (%s)" % n)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_each_spell_is_told_in_the_words_of_its_name"), "the bible names this test")

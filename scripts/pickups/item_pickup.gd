@@ -23,9 +23,9 @@ const KIND_BY_CHAR := {
 
 const INFO := {
 	"glove": {"title": "Climbing Glove", "text": "Slide down walls. Jump to leap off them.", "color": Color("c08a5a")},
-	"torrent": {"title": "Deluge", "text": "A bolt of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
-	"death": {"title": "Witherbloom", "text": "A ring of black light that strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
-	"thunder": {"title": "Tempest Lance", "text": "A bolt of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
+	"torrent": {"title": "Deluge", "text": "A surging flood of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
+	"death": {"title": "Witherbloom", "text": "Blight blooms out in a ring and strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
+	"thunder": {"title": "Tempest Lance", "text": "A lance of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
 	"stillstone": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
 	"seers_lens": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},

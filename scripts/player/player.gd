@@ -66,7 +66,7 @@ const WALL_SCRAPE := 0.24
 ## Seconds before a wind or wrong-gravity cue may sound again, so the edge of a
 ## field does not chatter.
 const FIELD_CUE_GAP := 0.3
-## Deep Witherbloom (pass 134): what share of its MP the Witherbloom spell costs.
+## Deep Blight (pass 134): what share of its MP the Witherbloom spell costs.
 const RING_OF_DEATH_MULT := 0.5
 ## Wanderer's Grace (pass 142): seconds of harm passing through you added to
 ## every dash, on top of `MovementTuning.dash_invuln`.
@@ -1611,7 +1611,7 @@ func blade_turned() -> void:
 		_turned_now = true
 
 
-## The MP a spell costs you now: Thrift for every spell, and Deep Witherbloom
+## The MP a spell costs you now: Thrift for every spell, and Deep Blight
 ## halves Witherbloom on top.
 func spell_cost(id: String) -> float:
 	var cost := Spells.cost(id) * spell_cost_mult
