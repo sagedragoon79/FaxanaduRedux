@@ -70,11 +70,34 @@ func _spit() -> void:
 	Sfx.play("pogo", 0.1, -6.0)
 
 
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered() or _hitstun > 0.0:
+		return ["hurt", 0.0]
+	if state in ["windup", "spit"]:
+		return [state, state_time]
+	return ["idle", Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "idle"
-	if state == "windup":
-		anim = "windup"
-	elif state == "spit":
-		anim = "spit"
-	draw_sheet(SHEET, anim, state_time if anim != "idle" else Time.get_ticks_msec() * 0.001, white)
+	var now := anim_now()
+	draw_sheet(SHEET, now[0], now[1], white)

@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "7f9879cd-c552-4724-835a-16b56fd7f56c",
+ "status": "completed",
+ "created_at": "2026-11-05T00:44:37.232156+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "b3bd2341-976e-4702-9f90-5e0422f19f68",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Gear Bat",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Gear Bat: a clockwork bat built of riveted dark iron and rusty plates, wide membrane wings of stretched dark leather on thin iron struts, pointed iron ears, two glowing lamp-orange eyes, a small brass axle socket on its back, small hooked iron feet, flying with wings spread, side-scroller game enemy, full body, strict side view facing right"
+ }
+}

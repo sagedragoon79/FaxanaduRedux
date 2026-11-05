@@ -1,17 +1,21 @@
 {
  "cell": [
-  32,
-  24
+  64,
+  48
  ],
  "origin": [
-  16,
-  21
+  32,
+  42
  ],
- "columns": 4,
+ "columns": 8,
  "animations": {
   "crawl": {
    "row": 0,
    "frames": [
+    {},
+    {},
+    {},
+    {},
     {},
     {},
     {},
@@ -21,20 +25,32 @@
     0,
     1,
     2,
-    3
+    3,
+    4,
+    5,
+    6,
+    7
    ],
-   "fps": 6,
+   "fps": 10,
    "loop": true
   },
   "windup": {
    "row": 1,
    "frames": [
     {},
+    {},
+    {},
+    {},
+    {},
     {}
    ],
    "seq": [
     0,
-    1
+    1,
+    2,
+    3,
+    4,
+    5
    ],
    "fps": 10,
    "loop": true
@@ -49,6 +65,47 @@
    ],
    "fps": 1,
    "loop": false
+  },
+  "land": {
+   "row": 3,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 4,
+   "loop": true
+  },
+  "hurt": {
+   "row": 4,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 5,
+   "frames": [
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2
+   ],
+   "fps": 10,
+   "loop": false
   }
- }
+ },
+ "density": 2,
+ "own_palette": true
 }

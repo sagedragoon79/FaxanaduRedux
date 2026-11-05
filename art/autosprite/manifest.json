@@ -1050,5 +1050,89 @@
    "hurt": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the stagger's first recoil"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9, 10, 12], "fps": 16, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, from the base's east view"}
   }
+ },
+ "sap_spitter": {
+  "dir": "../pixellab/sheets/sap_spitter",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "bark", "gold", "sky"],
+  "height": 22,
+  "reference": "idle",
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac pulsing"},
+   "windup": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac swollen bright, held"},
+   "spit": {"file": "spit.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [10, 11, 12], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the lurch after the glob leaves (the clip's own glob frame left out)"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [1], "fps": 10, "loop": false, "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the death's first recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [6, 7, 8, 10, 12], "fps": 12, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 37110aa8 (create-character-v3, side view), pixminimax east, the sac burst, the stump slumped (burst spray frames left out)"}
+  }
+ },
+ "grub_lump": {
+  "dir": "../pixellab/sheets/grub_lump",
+  "colors": 40,
+  "density": 2,
+  "ramps": ["night", "bark", "gold", "sky"],
+  "height": 14,
+  "reference": "crawl",
+  "animations": {
+   "crawl": {"file": "crawl.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, rippling crawl"},
+   "windup": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9], "fps": 10, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, bunched and reared, shivering"},
+   "drop": {"file": "rear.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [12], "fps": 1, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, curled into an armoured ball"},
+   "land": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5], "fps": 4, "loop": true, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, flipped on its back, legs up: stunned and open"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2], "fps": 10, "loop": false, "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, the flinch (the clip's slash frame left out)"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5], "fps": 10, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character ebb496fe (create-character-v3, side view), pixminimax east, rolled onto its back"}
+  }
+ },
+ "gear_bat": {
+  "dir": "../pixellab/sheets/gear_bat",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "stone", "ember", "gold"],
+  "height": 28,
+  "reference": "fly",
+  "rim": {"color": [255, 178, 96], "mix": 0.5},
+  "gain": 1.8,
+  "animations": {
+   "fly": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [8, 1, 2, 3, 4, 5, 6, 7], "fps": 16, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, wingbeat; the gear on its back is drawn in code"},
+   "bare": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [8, 1, 2, 3, 4, 5, 6, 7], "fps": 16, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, the same wingbeat, its gear away"},
+   "windup": {"file": "windup.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 12, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, hunched, wings high"},
+   "roost": {"file": "roost.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, wings folded, the clip turned upside down to hang"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, jerked back, wings flung wide"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, jerked back"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [5, 6, 7, 8], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, crumpling, wings limp"}
+  }
+ },
+ "minecart_rider": {
+  "dir": "../pixellab/sheets/minecart_rider",
+  "colors": 48,
+  "density": 2,
+  "ramps": ["night", "stone", "ember", "bark", "gold"],
+  "height": 38,
+  "reference": "roll",
+  "animations": {
+   "roll": {"file": "roll.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, wheels turning"},
+   "rev": {"file": "rev.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, leaning back on the brake, cart rocked back"},
+   "charge": {"file": "charge.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 16, "loop": true, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, ducked low, wheels racing"},
+   "crash": {"file": "crash.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 8, 9, 10, 11, 12], "fps": 6, "loop": true, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, tipped forward, the rider slumped dazed over the rim"},
+   "recover": {"file": "crash.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [12], "fps": 1, "loop": false, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, still tipped, the rider gathering himself"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4], "fps": 4, "loop": true, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, rocked back by the blow"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3], "fps": 10, "loop": false, "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, the flinch (the clip's smear frames left out)"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 9, 12], "fps": 12, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 60abc386 (create-character-v3, side view), pixminimax east, slumped down into the cart"}
+  }
+ },
+ "silt_adder": {
+  "dir": "../pixellab/sheets/silt_adder",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "leaf", "sky", "ember", "stone"],
+  "height": 44,
+  "reference": "float",
+  "animations": {
+   "float": {"file": "float.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, swaying S, tongue flicking"},
+   "coil": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, head drawn back, hood flared"},
+   "strike": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the lunge, jaws wide"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, recoiling (the clip's slash frame left out)"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, drooping into a heap"}
+  }
  }
 }

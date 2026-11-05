@@ -219,15 +219,37 @@ func _respawn() -> void:
 	_attach()
 
 
+## The animation and its time for what it is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered() or _hitstun > 0.0:
+		return ["hurt", 0.0]
+	if state in ["windup", "drop", "land"]:
+		return [state, state_time]
+	return ["crawl", Time.get_ticks_msec() * 0.001]
+
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "crawl"
-	var t := Time.get_ticks_msec() * 0.001
-	if state in ["windup", "drop"]:
-		anim = state
-		t = state_time
-	elif state == "land":
-		t = 0.0
+	var now := anim_now()
+	var anim: String = now[0]
+	var t: float = now[1]
 	var shiver := Vector2(randf_range(-0.6, 0.6), 0) if state == "windup" else Vector2.ZERO
 	# The sheet draws it on a floor with its feet at the origin; turn it so its
 	# feet are on whatever it clings to.

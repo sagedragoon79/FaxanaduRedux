@@ -122,26 +122,32 @@ func _spark() -> void:
 
 
 func _draw() -> void:
-	draw_set_transform(Vector2.ZERO, _spin)
+	draw_gear(self, Vector2.ZERO, _spin)
+	if phase in ["out", "reflected"]:
+		# A faint motion smear behind it.
+		var back := -velocity.normalized() * 6.0
+		draw_line(back, back * 2.0, Color(GOLD, 0.35), 3.0)
+
+
+## Draws the gear on `ci` at `at`, turned by `spin`: in flight, and on the Gear Bat's back
+## (the bat's art leaves its axle bare, so the gear it throws is the one it wore).
+static func draw_gear(ci: CanvasItem, at: Vector2, spin: float, size := 1.0) -> void:
+	ci.draw_set_transform(at, spin, Vector2(size, size))
 	var r := RADIUS - 0.5
 	for i in 8:
 		var a := i * TAU / 8.0
 		var u := Vector2(cos(a), sin(a))
 		var v := Vector2(-u.y, u.x)
 		var tooth := PackedVector2Array([u * (r - 1.5) - v * 1.3, u * (r + 1.3) - v * 1.0, u * (r + 1.3) + v * 1.0, u * (r - 1.5) + v * 1.3])
-		draw_colored_polygon(tooth, OUTLINE)
-	draw_circle(Vector2.ZERO, r, OUTLINE)
+		ci.draw_colored_polygon(tooth, OUTLINE)
+	ci.draw_circle(Vector2.ZERO, r, OUTLINE)
 	for i in 8:
 		var a := i * TAU / 8.0
 		var u := Vector2(cos(a), sin(a))
 		var v := Vector2(-u.y, u.x)
 		var tooth := PackedVector2Array([u * (r - 1.5) - v * 0.8, u * (r + 0.8) - v * 0.5, u * (r + 0.8) + v * 0.5, u * (r - 1.5) + v * 0.8])
-		draw_colored_polygon(tooth, GOLD_DARK)
-	draw_circle(Vector2.ZERO, r - 0.5, GOLD)
-	draw_circle(Vector2(-1.2, -1.2), r - 2.5, GOLD_LIGHT)
-	draw_circle(Vector2.ZERO, 1.5, HUB)
-	draw_set_transform(Vector2.ZERO)
-	if phase in ["out", "reflected"]:
-		# A faint motion smear behind it.
-		var back := -velocity.normalized() * 6.0
-		draw_line(back, back * 2.0, Color(GOLD, 0.35), 3.0)
+		ci.draw_colored_polygon(tooth, GOLD_DARK)
+	ci.draw_circle(Vector2.ZERO, r - 0.5, GOLD)
+	ci.draw_circle(Vector2(-1.2, -1.2), r - 2.5, GOLD_LIGHT)
+	ci.draw_circle(Vector2.ZERO, 1.5, HUB)
+	ci.draw_set_transform(Vector2.ZERO)

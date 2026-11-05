@@ -1476,7 +1476,8 @@ An arena you have not entered is never named, so the page spoils nothing. The wo
   hero, the Blinkhop, Hornet and Rot Dwarf (re-imported free from their clips), Gnarlmaw, the Iron Dwarf, the Foreman,
   Durgan, Gloamweaver and the zone tiles (the small Gear Bat stays code-drawn at 2x).
   The art loop (2026-11-05) carries on foe by foe to `docs/art/enemy-style-guide.md`, starting with the Shade Knight
-  (PixelLab, the guide's reference foe).
+  (PixelLab, the guide's reference foe). Batch 1 (art pass 2) remade the Sap Spitter, Grub Lump, Gear Bat (its
+  gear still drawn in code), Minecart Rider and Silt Adder in PixelLab.
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.

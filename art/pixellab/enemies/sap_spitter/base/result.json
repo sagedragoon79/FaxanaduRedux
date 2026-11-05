@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 3.0
+ },
+ "id": "fb422631-7184-45ef-ad37-d4e64fad921f",
+ "status": "completed",
+ "created_at": "2026-11-05T00:44:16.868014+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "37110aa8-ffc7-4b4f-992b-9b896b04f387",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 3.0
+  },
+  "character_name": "Sap Spitter",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Sap Spitter: a rooted Heartwood plant turret, a squat gnarled brown bark bulb gripping the ground with thick twisted roots, a swollen glossy translucent amber sap sac on its back, a short curved bark spout mouth pointing forward and up to the right, glowing cyan fungus specks on the bark, one narrow glowing orange eye, side-scroller game enemy, full body, strict side view facing right"
+ }
+}

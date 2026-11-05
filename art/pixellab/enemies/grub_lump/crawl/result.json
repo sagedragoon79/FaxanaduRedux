@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "0645c683-7f6e-48ac-b964-8a7434ce5507",
+ "status": "completed",
+ "created_at": "2026-11-05T00:50:07.990598+00:00",
+ "last_response": {
+  "seed": 938439803,
+  "type": "message_done",
+  "action": "crawls forward in place with a rippling caterpillar motion, its segments bunching and stretching, little legs stepping, loops seamlessly. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.10187003838257772,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "961c1151-31c9-4db9-b85c-df17e64d4212",
+  "character_id": "ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ebb496fe-632b-4e7c-9ead-5aa4d8efaf0e/animations/961c1151-31c9-4db9-b85c-df17e64d4212/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "1c15a861-1375-4567-b076-447bb97d924e",
+  "animation_name": "custom-crawls forward in place with a",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "0f054d20-1787-4f72-82c1-12ffac8434c9",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:50:35.139743+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

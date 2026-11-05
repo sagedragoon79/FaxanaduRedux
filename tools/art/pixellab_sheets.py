@@ -73,6 +73,14 @@ ENEMY_SHEETS = {
     "shade_knight": {f"{clip}.png": f"enemies/shade_knight/{folder}" for clip, folder in
                      (("idle", "idle_g"), ("walk", "walk_g"), ("thrust", "thrust_g"), ("cut", "cut_g"),
                       ("winded", "winded_g"), ("stagger", "stagger"), ("death", "death"))},
+    # Art loop batch 1 (art pass 2): each from its base character's east view, one model per foe.
+    "sap_spitter": {f"{c}.png": f"enemies/sap_spitter/{c}" for c in ("idle", "spit", "death")},
+    "grub_lump": {f"{c}.png": f"enemies/grub_lump/{c}" for c in ("crawl", "rear", "death")},
+    # The roost is the folded-wing clip turned upside down (roost_hang): it hangs from the ceiling.
+    "gear_bat": {f"{c}.png": f"enemies/gear_bat/{f}" for c, f in
+                 (("fly", "fly"), ("windup", "windup"), ("roost", "roost_hang"), ("death", "death"))},
+    "minecart_rider": {f"{c}.png": f"enemies/minecart_rider/{c}" for c in ("roll", "rev", "charge", "crash", "death")},
+    "silt_adder": {f"{c}.png": f"enemies/silt_adder/{c}" for c in ("float", "strike", "death")},
 }
 NO_SLAB_CLEANING = set()
 

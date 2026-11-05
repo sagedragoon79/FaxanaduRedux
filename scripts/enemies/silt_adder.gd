@@ -7,7 +7,7 @@ extends Enemy
 ## tiles, it draws its head back and flares its hood with a hiss (telegraph),
 ## then strikes straight out along that level, and glides back to its column.
 ## The strike is a bite, and a shield's parry meets it like any blade's: no
-## harm, and the serpent reels (pass 274). Code-drawn at 2x.
+## harm, and the serpent reels (pass 274). Drawn from its PixelLab sheet (art pass 2).
 ## As in the original, a slain Silt Adder always leaves the largest bread there is,
 ## a great loaf (pass 281).
 
@@ -31,14 +31,7 @@ const COOLDOWN := 2.0
 const TOUCH_DAMAGE := 8
 const BITE_DAMAGE := 16
 
-const OUTLINE := Color("10201c")
-const SCALE := Color("3c8a6a")
-const SCALE_DARK := Color("24604a")
-const BELLY := Color("d8e8b0")
-const HOOD := Color("2c7458")
-const HOOD_MARK := Color("e0c050")
-const EYE := Color("f0e040")
-const TONGUE := Color("e04050")
+const SHEET := "silt_adder"
 
 var _dir := Vector2.ZERO
 var _cooldown := 0.0
@@ -130,51 +123,36 @@ func _think(delta: float) -> void:
 			set_state("return")
 
 
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", 0.0]
+	if state in ["coil", "strike"]:
+		return [state, state_time]
+	return ["float", Time.get_ticks_msec() * 0.001 + _phase * 5.0]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "coil" and telegraph_pulse())
-	var t := Time.get_ticks_msec() * 0.001 + _phase * 5.0
+	var now := anim_now()
 	var jitter := Vector2(randf_range(-1, 1), 0).round() if state == "coil" else Vector2.ZERO
-	# Drawn at 2x, like the rest of the cast.
-	draw_set_transform(jitter, 0.0, Vector2(facing * 2, 2))
-	var coil := state == "coil"
-	var strike := state == "strike"
-	# The body: an S from the tail tip below up to the neck, waving as it floats.
-	var pts := PackedVector2Array()
-	for i in 9:
-		var k := i / 8.0
-		var y := lerpf(13.0, -5.0, k)
-		var x := sin(t * 3.0 + k * 4.5) * 3.0 * (1.0 - k)
-		if coil:
-			x -= k * k * 4.0
-		elif strike:
-			x += k * k * 6.0
-			y += k * 3.0
-		pts.append(Vector2(x, y))
-	for i in pts.size() - 1:
-		var w := lerpf(2.0, 5.0, i / 8.0)
-		draw_line(pts[i], pts[i + 1], OUTLINE, w + 2.0)
-	for i in pts.size() - 1:
-		var w := lerpf(2.0, 5.0, i / 8.0)
-		draw_line(pts[i], pts[i + 1], SCALE if i % 2 == 0 else SCALE_DARK, w)
-		draw_line(pts[i] + Vector2(1, 0), pts[i + 1] + Vector2(1, 0), BELLY, maxf(1.0, w * 0.35))
-	# The head, with the hood behind it: flared wide in the coil.
-	var neck := pts[pts.size() - 1]
-	var head := neck + Vector2(2, -3)
-	var flare := 7.0 if coil else 4.0
-	var hood := PackedVector2Array([neck + Vector2(-2, 3), neck + Vector2(-flare, -2), head + Vector2(-1, -4), neck + Vector2(flare - 1.0, -2)])
-	draw_colored_polygon(hood, OUTLINE)
-	draw_colored_polygon(PackedVector2Array([hood[0] + Vector2(0, -1), hood[1] + Vector2(1, 0), hood[2] + Vector2(0, 1), hood[3] + Vector2(-1, 0)]), HOOD)
-	if coil:
-		draw_rect(Rect2(neck + Vector2(-4, -2), Vector2(2, 1)), HOOD_MARK)
-		draw_rect(Rect2(neck + Vector2(3, -2), Vector2(2, 1)), HOOD_MARK)
-	draw_circle(head, 3.0, OUTLINE)
-	draw_circle(head, 2.2, SCALE)
-	draw_rect(Rect2(head + Vector2(1, -1), Vector2(1, 1)), EYE)
-	# The tongue flickers; in the strike the jaw is wide.
-	if strike:
-		draw_line(head + Vector2(2, 0), head + Vector2(6, 2), OUTLINE, 1.0)
-		draw_line(head + Vector2(2, -1), head + Vector2(6, -3), OUTLINE, 1.0)
-	elif int(t * 5.0) % 3 == 0 or coil:
-		draw_line(head + Vector2(3, 0), head + Vector2(6, 0), TONGUE, 1.0)
-	wash(white)
-	draw_set_transform(Vector2.ZERO)
+	draw_sheet(SHEET, now[0], now[1], white, jitter)

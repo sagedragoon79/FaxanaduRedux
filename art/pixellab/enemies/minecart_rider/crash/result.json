@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "0567ec2c-421b-44ac-ba95-f297c85c4459",
+ "status": "completed",
+ "created_at": "2026-11-05T00:51:29.371479+00:00",
+ "last_response": {
+  "seed": 4255570656,
+  "type": "done",
+  "action": "the cart slams to a stop and tips forward onto its front wheels, the dwarf thrown forward over the front rim, then he hangs slumped and dazed over the edge, holding the tipped pose. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.99,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "fba7ad2c-b0b5-42ad-ad13-020658dd9a2d",
+  "character_id": "60abc386-e44e-44c7-984c-946ab89e9c74",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fba7ad2c-b0b5-42ad-ad13-020658dd9a2d/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "dcf9fa37-99ac-4d7f-b089-ac54b3633809",
+  "animation_name": "custom-the cart slams to a stop and t",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "e005223c-9f70-4df4-a9a7-af968ad2f7ca",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:52:01.115064+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

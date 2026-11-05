@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "b680a948-e193-4379-a6fa-1a17abf529c4",
+ "status": "completed",
+ "created_at": "2026-11-05T00:50:01.906078+00:00",
+ "last_response": {
+  "seed": 1347070188,
+  "type": "done",
+  "action": "the amber sap sac swells up big and bright while the stump leans back and coils, holding the swollen pose, then the stump lurches forward and up as if coughing hard and the sac squeezes flat, then it settles back. Its roots stay planted. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.2061995001480152,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "b9f7f457-1fda-451c-a5c2-4c6c311daa08",
+  "character_id": "37110aa8-ffc7-4b4f-992b-9b896b04f387",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/b9f7f457-1fda-451c-a5c2-4c6c311daa08/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "60eb8ae0-c545-4ae6-9cf6-16075e2f0bd7",
+  "animation_name": "custom-the amber sap sac swells up bi",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "1a6c2219-3c4d-4f81-abbd-5ea61540905b",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:50:29.518524+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

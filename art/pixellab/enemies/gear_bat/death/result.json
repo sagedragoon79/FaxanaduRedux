@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "b7b846b7-b115-47f3-be9d-55ab076fe0d3",
+ "status": "completed",
+ "created_at": "2026-11-05T00:52:21.251480+00:00",
+ "last_response": {
+  "seed": 2375572348,
+  "type": "message_done",
+  "action": "jerks back from a blow with its wings flung wide, then crumples and drops downward, wings limp. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.13840131773520073,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "7bcaa8c3-87b7-47d5-8391-376f7b27f845",
+  "character_id": "b3bd2341-976e-4702-9f90-5e0422f19f68",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/7bcaa8c3-87b7-47d5-8391-376f7b27f845/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "104fa2c1-6d29-49ae-8226-afa6c82e8e95",
+  "animation_name": "custom-jerks back from a blow with it",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "bd41d9f7-5a0c-44fa-bc0f-2fccdab03e3a",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:52:47.676022+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
