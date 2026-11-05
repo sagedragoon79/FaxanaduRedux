@@ -80,7 +80,7 @@ func duck(time: float, depth_db := 14.0) -> void:
 	var p := _players[_active]
 	if not p.playing:
 		return
-	var tw := create_tween()
+	var tw := create_tween().set_ignore_time_scale(true)
 	tw.tween_property(p, "volume_db", MUSIC_DB - depth_db, 0.15)
 	tw.tween_interval(maxf(time - 0.8, 0.0))
 	tw.tween_property(p, "volume_db", MUSIC_DB, 0.65)
@@ -92,7 +92,7 @@ func intensify(level: int) -> void:
 	if level == intensity:
 		return
 	intensity = level
-	var tw := create_tween()
+	var tw := create_tween().set_ignore_time_scale(true)
 	tw.tween_property(_players[_active], "pitch_scale", pitch_for(level), PHASE_SHIFT_TIME)
 
 
@@ -194,8 +194,11 @@ func stream_for(name: String) -> AudioStream:
 	return stream
 
 
+## Music moves in real time (pass 476): its fades, ducks and phase lifts
+## ignore the game's time scale, so the Game speed option, a boss's slow
+## motion and hitstop never stretch or stall them.
 func _fade(p: AudioStreamPlayer, to_db: float, time: float, stop_after: bool) -> void:
-	var tw := create_tween()
+	var tw := create_tween().set_ignore_time_scale(true)
 	tw.tween_property(p, "volume_db", to_db, maxf(time, 0.01))
 	if stop_after:
 		tw.tween_callback(p.stop)
