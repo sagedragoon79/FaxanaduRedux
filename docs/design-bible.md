@@ -304,6 +304,7 @@ Each has a word once the Tree blooms. Deviation: the keepers don't wake the spri
 ### 4.5 Gate visual language
 
 Every gate has a consistent, readable look so players remember it:
+- **The spell gates by the buttons, at the slowest speed (pass 489):** each spell gate's test cast with a scripted intent at full speed, and the bramble's set a fireball down by hand. `test_the_spell_gates_open_by_the_buttons_at_the_slowest_game_speed` readies each spell and presses the real Spell button at 70% Game speed: Deluge douses the Marsh Road's seal and fills the Dry Cistern's basin, Tempest Lance wakes the Spire Foot's conduit, and Emberfall, thrown from the floor, sets the bell cellar's bramble alight. All held: no bug.
 - **Cracked stone:** pale crack lines, small pebbles fall when you are near (Delver's Pick).
 - **Thorn bulbs:** red glowing pods on spike vines (pogo targets).
 - **Fog (the Haar):** a grey-green murk over every Haar room hides all but a pocket of sight around you (about 7 tiles), the lanterns hung through the zone (about 4 tiles each) and the glow of a shrine. The fog drifts and bands like dithered pixel fog. Restoring the Haar Spring thins it by half and widens your sight by half. A room can set its own density with `fog:`. Lights that matter to play (a boss's lanterns, a Marsh Hag's wisp and her mark, spells, abilities) are lit before the decor's lanterns, so a room crowded with lanterns can never leave a foe dark (pass 120).

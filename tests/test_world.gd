@@ -1208,3 +1208,67 @@ func test_every_turn_of_the_story_is_told_in_the_game() -> void:
 	check(" ".join(PackedStringArray(EndingScreen.FAREWELL)).contains("Leaffall festival"), "the ending names the Leaffall festival")
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_every_turn_of_the_story_is_told_in_the_game`"), "the bible names the test")
+
+
+## The spell gates by the real Spell button at the slowest Game speed (pass
+## 489). The gates' tests cast with a scripted intent at full speed, or set a
+## fireball down by hand. Here each spell is readied and cast with the real
+## Spell button at 70%: Deluge douses the Marsh Road's seal and fills the Dry
+## Cistern's basin, Tempest Lance wakes the Spire Foot's conduit, and Emberfall,
+## thrown from the floor, sets the bell cellar's bramble alight.
+func test_the_spell_gates_open_by_the_buttons_at_the_slowest_game_speed() -> void:
+	Feel.set_game_speed(0.7)
+	var cases := [
+		["haar/marsh_road", "torrent", "fire_seal", Vector2(-80, 24)],
+		["haar/dry_cistern", "torrent", "dry_basin", Vector2.ZERO],
+		["spires/spire_foot", "thunder", "conductor", Vector2(-64, 0)],
+		["spires/spires", "fire", "bramble", Vector2(-80, 8)],
+	]
+	for c: Array in cases:
+		var room_id: String = c[0]
+		var spell: String = c[1]
+		var group: String = c[2]
+		var w := make_world({}, room_id)
+		await frames(3)
+		var p := w.player
+		p.max_hp = 9999
+		p.hp = 9999
+		p.abilities[spell] = true
+		GameState.data.abilities[spell] = true
+		p.equipped_spell = spell
+		var targets := runner.get_tree().get_nodes_in_group(group)
+		if not check(not targets.is_empty(), "%s: the gate is there" % room_id):
+			w.queue_free()
+			await frames(2)
+			continue
+		var t: Node2D = targets[0] if group != "bramble" else targets[targets.size() - 1]
+		if group == "dry_basin":
+			var b := t as DryBasin
+			p.teleport(cell_feet(b.x0 - 1, b.water_row - 1))
+		elif group == "fire_seal":
+			p.teleport((targets[1] as Node2D).global_position + c[3])
+		else:
+			p.teleport(t.global_position + c[3])
+		p.mp = p.max_mp
+		await frames(30)
+		p.facing = 1
+		var mp0 := p.mp
+		await press_for_real(p, ["spell"])
+		release_for_real(["spell"])
+		var opened := false
+		for i in 240:
+			await frames(1)
+			match group:
+				"fire_seal": opened = (t as FireSeal).doused
+				"dry_basin": opened = (t as DryBasin).filled
+				"conductor": opened = (t as Conduit).powered
+				"bramble": opened = (t as BrambleWall).burning or (t as BrambleWall).burnt
+			if opened:
+				break
+		check(p.mp < mp0 - 1.0, "%s: the Spell button casts %s at 70%% (%.0f -> %.0f MP)" % [room_id, Spells.DATA[spell].name, mp0, p.mp])
+		check(opened, "%s: and %s opens the gate" % [room_id, Spells.DATA[spell].name])
+		w.queue_free()
+		await frames(2)
+	Feel.set_game_speed(1.0)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_the_spell_gates_open_by_the_buttons_at_the_slowest_game_speed"), "the bible names this test")
