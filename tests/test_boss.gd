@@ -5252,3 +5252,100 @@ func test_a_guardians_banner_reads_in_real_time_at_every_game_speed() -> void:
 		await frames(2)
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("test_a_guardians_banner_reads_in_real_time_at_every_game_speed"), "the bible names this test")
+
+
+# --- Pass 490: the spell guardians at the slowest Game speed ------------------
+
+## Presses the real Spell button facing right and waits up to 4 s for `done`.
+func _cast_until(p: Player, done: Callable) -> bool:
+	p.mp = p.max_mp
+	p.facing = 1
+	await press_for_real(p, ["spell"])
+	release_for_real(["spell"])
+	return await _until(done, 240)
+
+
+## The death blow at `game_speed`: a freeze, then slow motion easing back up to
+## the Game speed, never past it, all in real time (hitstop runs on the wall
+## clock, so the wait is real time too, pass 488).
+func _watch_death_blow(label: String) -> void:
+	var froze := false
+	var lowest := 9.0
+	var highest := 0.0
+	var start := Time.get_ticks_usec()
+	while Time.get_ticks_usec() - start < 2_500_000:
+		await frames(1)
+		var s := Engine.time_scale
+		if s == 0.0:
+			froze = true
+		else:
+			lowest = minf(lowest, s)
+			highest = maxf(highest, s)
+	check(froze, "%s: the death blow freezes the game" % label)
+	check(lowest < 0.7 * Feel.BOSS_KILL_SLOWMO + 0.05, "%s: then slows it to 0.3 of 70%% (%.2f)" % [label, lowest])
+	check(highest <= 0.7 + 0.001, "%s: and never runs faster than 70%% (%.2f)" % [label, highest])
+	check(Engine.time_scale == 0.7, "%s: then the game is back at 70%% (%.2f)" % [label, Engine.time_scale])
+
+
+func test_the_spell_guardians_fall_to_the_buttons_at_the_slowest_game_speed() -> void:
+	Feel.set_game_speed(0.7)
+	# The Haar Wyrm: Deluge fills his three tanks and brings the fourth head out.
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: HaarWyrm = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 300)
+	z.hp = roundi(z.max_hp * 0.61)
+	z.heads[z.solid_index].take_hit(10, Vector2.RIGHT)
+	check(z.phase == 2, "the Haar Wyrm: phase 2 at 70%")
+	var p := w.player
+	p.abilities.torrent = true
+	GameState.data.abilities.torrent = true
+	p.equipped_spell = "torrent"
+	for b: DryBasin in _basins(w):
+		p.teleport(cell_feet(b.x0 - 1, b.water_row - 1))
+		# Past the 0.35 s cooldown, which is 0.5 s at 70% (a press inside it
+		# casts nothing, bible 5.3, pass 442).
+		await frames(40)
+		var full := await _cast_until(p, func() -> bool: return b.filled)
+		check(full, "the Haar Wyrm: the Spell button fills the tank at %d with Deluge at 70%%" % b.x0)
+	var h4 := z.heads[3]
+	var out := await _until(func() -> bool: return not h4.coiled and h4.solid, 300)
+	check(out, "the Haar Wyrm: with all three full, the fourth head comes out at 70%")
+	z.hp = 1
+	Feel.hitstop_enabled = true
+	h4.take_hit(5, Vector2.RIGHT)
+	check(z.state == "dying", "the Haar Wyrm: the last blow ends him")
+	await _watch_death_blow("the Haar Wyrm")
+	Feel.hitstop_enabled = false
+	Feel.reset()
+	w.queue_free()
+	await frames(2)
+	# Skyrend: Tempest Lance wakes the roost's three conduits and grounds it.
+	setup = await _roc_world()
+	w = setup[0]
+	var b2: Skyrend = setup[2]
+	p = w.player
+	p.abilities.thunder = true
+	GameState.data.abilities.thunder = true
+	p.equipped_spell = "thunder"
+	var cs := _conduits(w)
+	check(cs.size() == 3, "Skyrend: three conduits in the roost")
+	for c: Conduit in cs:
+		p.teleport(c.global_position + Vector2(-48, 0))
+		# Past the 0.35 s cooldown, which is 0.5 s at 70% (a press inside it
+		# casts nothing, bible 5.3, pass 442).
+		await frames(40)
+		var lit := await _cast_until(p, func() -> bool: return c.powered or b2.grounded())
+		check(lit, "Skyrend: the Spell button wakes the conduit at x %.0f with Tempest Lance at 70%%" % c.global_position.x)
+	var down := await _until(func() -> bool: return b2.grounded(), 120)
+	check(down, "Skyrend: the three conduits ground it at 70%% (%s)" % b2.state)
+	b2.hp = 1
+	Feel.hitstop_enabled = true
+	b2.take_hit(5, Vector2.RIGHT)
+	check(b2.state == "dying", "Skyrend: the last blow ends it")
+	await _watch_death_blow("Skyrend")
+	Feel.hitstop_enabled = false
+	Feel.set_game_speed(1.0)
+	Feel.reset()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_the_spell_guardians_fall_to_the_buttons_at_the_slowest_game_speed"), "the bible names this test")
