@@ -24,7 +24,7 @@ const BOSSES := {
 		"text": "The storm breaks over the Spires. Its key opens Vorrhallow's upper gate.", "music": "skyrend"},
 	"thane_vorrund": {"ring": "frost", "ring_name": "Frost Seed", "skill_points": 1, "music": "vorrund",
 		"blade": "severance", "title": "Severance",
-		"text": "His grafting blade, the one edge that can part the bloom from the tree. With it, the Frost Seed."},
+		"text": "Thane Vorrund weeps at last, and gives up his grafting blade. With it, the Frost Seed."},
 	"likeness": {"title": "The Mirror Breaks", "skill_points": 1, "music": "likeness",
 		"text": "Your shadow is gone from the glass. Nothing now stands before the gate of the Evercrown but its four sockets."},
 	"everbloom_avatar": {"title": "The Avatar Shatters", "skill_points": 1, "music": "everbloom",
