@@ -2818,6 +2818,11 @@ func test_a_blow_throws_you_as_far_at_every_game_speed() -> void:
 		p.take_damage(10, false, -1)
 		Feel.hitstop_enabled = false
 		var frozen := Feel.is_frozen()
+		# The freeze ends on the wall clock (0.15 s), which a fast machine can
+		# take hundreds of frames to reach: wait it out in real time first.
+		var until := Time.get_ticks_msec() + 2000
+		while Feel.is_frozen() and Time.get_ticks_msec() < until:
+			await frames(1)
 		var high := 0.0
 		var landed := false
 		var flew := false
