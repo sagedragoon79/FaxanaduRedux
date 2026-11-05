@@ -2795,3 +2795,56 @@ func test_the_red_edge_swells_on_the_heartbeat_at_every_game_speed() -> void:
 		await frames(2)
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("test_the_red_edge_swells_on_the_heartbeat_at_every_game_speed"), "the bible names this test")
+
+
+## A blow throws you as far at every game speed, through its own freeze
+## (pass 488). Being hurt sets the knockback (160 px/s back, 220 up) and
+## freezes the game for 0.15 s; the hurt pose lets go after 0.25 s of game
+## time. With hitstop on (the runner turns it off), the throw is measured at
+## 100, 85 and 70% Game speed: as far back and as high each time, within a step.
+func test_a_blow_throws_you_as_far_at_every_game_speed() -> void:
+	var throws := {}
+	for speed: float in [1.0, 0.85, 0.7]:
+		Feel.set_game_speed(speed)
+		var room := make_room(ARENA)
+		var p := make_player(room, Vector2i(6, 6))
+		p.max_hp = 999
+		p.hp = 999
+		for i in 20:
+			await frames(1)
+		var x0 := p.global_position.x
+		var y0 := p.global_position.y
+		Feel.hitstop_enabled = true
+		p.take_damage(10, false, -1)
+		Feel.hitstop_enabled = false
+		var frozen := Feel.is_frozen()
+		# The freeze ends on the wall clock (0.15 s), which a fast machine can
+		# take hundreds of frames to reach: wait it out in real time first.
+		var until := Time.get_ticks_msec() + 2000
+		while Feel.is_frozen() and Time.get_ticks_msec() < until:
+			await frames(1)
+		var high := 0.0
+		var landed := false
+		var flew := false
+		for i in 600:
+			await frames(1)
+			high = maxf(high, y0 - p.global_position.y)
+			# Off the ground for real: a frozen step (no game time) can read as
+			# off the floor, so the throw must have lifted the hero first.
+			flew = flew or (not p.is_on_floor() and high > 6.0 and not Feel.is_frozen())
+			if flew and p.is_on_floor():
+				landed = true
+				break
+		throws[speed] = Vector2(x0 - p.global_position.x, high)
+		check(frozen and landed, "%d%%: the blow freezes the game, then you land (%s)" % [int(speed * 100), throws[speed]])
+		Feel.reset()
+		Feel.set_game_speed(1.0)
+		room.queue_free()
+		await frames(2)
+	var full: Vector2 = throws[1.0]
+	check(full.x > 20.0 and full.y > 12.0, "a blow throws you back and up (%s)" % full)
+	for speed: float in [0.85, 0.7]:
+		var got: Vector2 = throws[speed]
+		check(absf(got.x - full.x) <= 4.0 and absf(got.y - full.y) <= 4.0, "%d%%: as far back and as high (%s, at full speed %s)" % [int(speed * 100), got, full])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_a_blow_throws_you_as_far_at_every_game_speed"), "the bible names this test")
