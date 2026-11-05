@@ -20,20 +20,16 @@ const SPIKES := 6
 const SPIKE_GAP := 20.0
 const SPIKE_STEP := 0.09
 const FIST_DAMAGE := 16
-const SKIN := Color("8d84a3")
-const SKIN_DARK := Color("5a5470")
-const TUNIC := Color("2e5a64")
-const TUNIC_DARK := Color("1d3a44")
-const BEARD := Color("c9c4d6")
-const HELM := Color("6b6380")
-const CRYSTAL := Color("c050c8")
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {"idle": "idle", "walk": "walk", "windup": "windup", "rooted": "rooted", "recover": "recover"}
+## The raised crystal fist in the windup (world px from his feet, facing right), where it blazes.
+const FIST_AT := Vector2(6, -30)
 const CRYSTAL_LIGHT := Color("f0a0f0")
-const CRYSTAL_DARK := Color("6a2a78")
-const OUTLINE := Color("13101f")
 
 var _struck := false
 var _behind_time := 0.0
 var _cool := 0.0
+var _died_at := -1.0
 
 
 func _init() -> void:
@@ -126,19 +122,6 @@ func _erupt() -> void:
 		s.global_position = at
 
 
-## One crystal shard: a long diamond from `base` along `dir`, lit down one face.
-func _shard(base: Vector2, dir: Vector2, length: float, half_width: float) -> void:
-	var side := dir.orthogonal() * half_width
-	var tip := base + dir * length
-	var tail := base - dir * 2.0
-	var pts := PackedVector2Array([tail, base + side, tip, base - side])
-	var rim := PackedVector2Array([tail - dir, base + side * 1.35, tip + dir * 1.5, base - side * 1.35])
-	draw_colored_polygon(rim, OUTLINE)
-	draw_colored_polygon(pts, CRYSTAL)
-	draw_colored_polygon(PackedVector2Array([tail, base + side, tip]), CRYSTAL_DARK)
-	draw_line(base, tip, CRYSTAL_LIGHT, 1.0)
-
-
 func _wall_ahead() -> bool:
 	return test_move(global_transform, Vector2(facing * 4, 0))
 
@@ -148,52 +131,36 @@ func _floor_ahead() -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what he is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "idle")
+	if a == "walk" and absf(velocity.x) < 1.0:
+		a = "idle"
+	return [a, state_time if a != "idle" and a != "walk" else Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
-	var t := Time.get_ticks_msec() * 0.001
 	var glow := state == "windup" and telegraph_pulse()
-	var white := flashing() or glow
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
-	var step := roundf(sin(t * 7.0)) if state == "walk" and absf(velocity.x) > 1.0 else 0.0
-	# Legs: short and thick, in iron boots.
-	draw_rect(Rect2(-8, -7 + step, 6, 7 - step), OUTLINE)
-	draw_rect(Rect2(2, -7 - step, 6, 7 + step), OUTLINE)
-	draw_rect(Rect2(-7, -6 + step, 4, 5 - step), HELM)
-	draw_rect(Rect2(3, -6 - step, 4, 5 + step), HELM)
-	# The crystal shell over his back: three great shards.
-	for k in 3:
-		var base := Vector2(-7 - k, -24 + k * 6)
-		var dir := Vector2(-0.75 - k * 0.1, -1.0 + k * 0.35).normalized()
-		_shard(base, dir, 15.0 - k * 2.0, 4.5 - k * 0.5)
-	# Body: a squat teal tunic, a belt.
-	draw_rect(Rect2(-9, -22, 18, 16), OUTLINE)
-	draw_rect(Rect2(-8, -21, 16, 14), TUNIC)
-	draw_rect(Rect2(-8, -12, 16, 2), TUNIC_DARK)
-	draw_rect(Rect2(-1, -12, 3, 2), CRYSTAL_DARK)
-	# Head: grey stone skin, a horned helm, a long pale beard, glowing eyes.
-	draw_rect(Rect2(-6, -30, 12, 9), OUTLINE)
-	draw_rect(Rect2(-5, -29, 10, 7), SKIN)
-	draw_rect(Rect2(-6, -32, 12, 4), HELM)
-	draw_line(Vector2(-6, -31), Vector2(-9, -35), BEARD, 1.5)
-	draw_rect(Rect2(-4, -24, 10, 8), BEARD)
-	draw_rect(Rect2(-2, -17, 6, 3), BEARD)
-	draw_rect(Rect2(2, -27, 2, 1.5), CRYSTAL_LIGHT)
-	# The crystal fist: raised and blazing in the windup, buried while rooted.
-	var fist := Vector2(10, -16)
-	match state:
-		"windup":
-			fist = Vector2(6, -34 - minf(state_time / WINDUP, 1.0) * 4.0)
-		"rooted":
-			fist = Vector2(14, -4)
-		"recover":
-			fist = Vector2(12, -10)
-	draw_line(Vector2(5, -18), fist, OUTLINE, 6.0)
-	draw_line(Vector2(5, -18), fist, SKIN_DARK, 4.0)
-	var r := 6.0
-	var gem := PackedVector2Array([fist + Vector2(0, -r - 2), fist + Vector2(r, -1), fist + Vector2(r - 1, r), fist + Vector2(-r + 1, r), fist + Vector2(-r, -1)])
-	draw_colored_polygon(PackedVector2Array(Array(gem).map(func(v: Vector2) -> Vector2: return fist + (v - fist) * 1.25)), OUTLINE)
-	draw_colored_polygon(gem, CRYSTAL_LIGHT if glow else CRYSTAL)
-	draw_line(fist + Vector2(-2, -r), fist + Vector2(2, r - 2), CRYSTAL_LIGHT if not glow else Color.WHITE, 1.0)
-	wash(white)
-	draw_set_transform(Vector2.ZERO)
-	if state == "windup":
-		draw_circle(Vector2(6 * facing, -36), 8.0 + 3.0 * sin(state_time * 30.0), Color(CRYSTAL_LIGHT, 0.25))
+	var now := anim_now()
+	draw_sheet("crystal_dwarf", now[0], now[1], flashing() or glow)
+	if state == "windup" and not dead:
+		# The raised fist brightens: the tell.
+		draw_circle(FIST_AT * Vector2(facing, 1), 8.0 + 3.0 * sin(state_time * 30.0), Color(CRYSTAL_LIGHT, 0.25))

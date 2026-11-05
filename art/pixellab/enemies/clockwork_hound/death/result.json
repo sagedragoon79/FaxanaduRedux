@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "a291485b-dee5-4896-8a88-a36eeef300c4",
+ "status": "completed",
+ "created_at": "2026-11-05T00:54:30.869079+00:00",
+ "last_response": {
+  "seed": 2101385912,
+  "type": "message_done",
+  "action": "The hound breaks down: its legs buckle, springs and small gears burst loose, and it collapses onto its side, lying flat and motionless on the ground at the end. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9557142857142856,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "394a36ee-2d3a-4fad-a7e3-8f106d4b28ee",
+  "character_id": "2742be26-02a7-4788-9e8c-a57aadb305e1",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/394a36ee-2d3a-4fad-a7e3-8f106d4b28ee/east/12.png"
+   ],
+   "input_frames_digest": "3245fa2aff90706b7743e826f532627d053a49bdbc92fb52131c06fd285aaad3"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "48f5ccf1-7362-4876-b72a-b840abcae333",
+  "animation_name": "custom-The hound breaks down: its leg",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "4c30a4ac-f2ce-4829-9fb9-b721c2bf7e47",
+  "input_frames_digest": "3245fa2aff90706b7743e826f532627d053a49bdbc92fb52131c06fd285aaad3",
+  "generation_started_at": "2026-11-05T00:54:56.584587+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

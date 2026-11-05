@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "4dbbdeaf-b119-4366-9eed-bb24f736902e",
+ "status": "completed",
+ "created_at": "2026-11-05T01:01:06.525444+00:00",
+ "last_response": {
+  "seed": 3669577571,
+  "type": "done",
+  "action": "The eel dies: it goes limp, rolls over belly up and sinks slowly downward, the lamp on its brow going dark, ending motionless. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.43766681810688807,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "c538b0db-2fa5-465f-851b-da6023d3bfd0",
+  "character_id": "ca0abb11-888a-49db-b1ff-242303703223",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/c538b0db-2fa5-465f-851b-da6023d3bfd0/east/12.png"
+   ],
+   "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "8f166bae-7d95-4c9d-82ac-c3ee6df582c7",
+  "animation_name": "custom-The eel dies: it goes limp, ro",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "41526f53-00c5-4b82-8508-47323750b6c4",
+  "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493",
+  "generation_started_at": "2026-11-05T01:01:32.308373+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

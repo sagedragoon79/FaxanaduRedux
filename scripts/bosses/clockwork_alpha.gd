@@ -92,6 +92,9 @@ func _init() -> void:
 func _ready() -> void:
 	super._ready()
 	add_to_group("boss")
+	# Its pack's sprite sheet, loaded now so the first hound it calls doesn't hitch the fight.
+	if Sheet.exists("clockwork_hound"):
+		Sheet.get_sheet("clockwork_hound")
 
 
 ## Starts the fight (called by the arena once the player is inside).

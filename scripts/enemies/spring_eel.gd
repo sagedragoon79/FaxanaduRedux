@@ -18,14 +18,11 @@ const DART_TIME := 0.45
 const SLACK := 0.8
 const COOLDOWN := 1.0
 const BITE := 14
-## The drawing is laid out small and drawn this much larger.
-const SCALE := 2.0
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {"idle": "swim", "swim": "swim", "coil": "coil", "dart": "dart", "slack": "slack"}
+## The lamp on its brow in each animation (world px from its middle, facing right).
+const LAMP_AT := {"swim": Vector2(15, -4), "coil": Vector2(9, -7.5), "dart": Vector2(15.5, -4.5), "slack": Vector2(15, -5)}
 
-const OUTLINE := Color("0c1a22")
-const SKIN := Color("9ab8b0")
-const SKIN_LIGHT := Color("d0e8e0")
-const SKIN_DARK := Color("4e6e70")
-const FIN := Color("6a9a98")
 const LAMP := Color("8af0e8")
 const LAMP_CORE := Color("f0fff8")
 
@@ -33,6 +30,7 @@ var water: SwimWater
 var _cool := 0.6
 var _dir := Vector2.ZERO
 var _bit := false
+var _died_at := -1.0
 
 
 func _init() -> void:
@@ -119,72 +117,56 @@ func _think(delta: float) -> void:
 				set_state("swim")
 
 
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "swim")
+	return [a, state_time if a != "swim" else Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var t := Time.get_ticks_msec() * 0.001
+	var now := anim_now()
+	var a: String = now[0]
+	# Coiled or darting, it points along its strike.
 	var ang := 0.0
-	if state in ["coil", "dart"] and _dir != Vector2.ZERO:
+	if a in ["coil", "dart"] and _dir != Vector2.ZERO:
 		ang = atan2(_dir.y, absf(_dir.x))
+	var white := flashing() or (state == "coil" and telegraph_pulse())
+	var f := Sheet.frame_at("spring_eel", a, now[1])
+	_sheet_white = white
 	draw_set_transform(Vector2.ZERO, ang * facing, Vector2(facing, 1))
-	# The body is a chain of segments along a wave; coiling bunches it into an S.
-	var segs := 9
-	var amp := 2.5
-	var speed := 6.0
-	var length := 15.0
-	match state:
-		"coil":
-			amp = 5.0 + 3.0 * minf(1.0, state_time / COIL)
-			length = 11.0
-			speed = 14.0
-		"dart":
-			amp = 0.8
-			length = 17.0
-		"slack":
-			amp = 1.2
-			speed = 1.5
-	var pts: Array[Vector2] = []
-	for i in segs:
-		var k := float(i) / (segs - 1)
-		var x := length * 0.5 - k * length
-		var y := sin(t * speed - k * 5.0) * amp * k
-		pts.append(Vector2(x, y))
-	for pass_i in 2:
-		for i in segs:
-			var k := float(i) / (segs - 1)
-			var r := lerpf(3.4, 1.2, k)
-			if pass_i == 0:
-				_dot(pts[i], r + 0.6, OUTLINE)
-			else:
-				_dot(pts[i], r, SKIN)
-				_dot(pts[i] + Vector2(0, -r * 0.4), r * 0.45, SKIN_LIGHT)
-				_dot(pts[i] + Vector2(0, r * 0.45), r * 0.35, SKIN_DARK)
-	# A ribbon of fin along the back and a tail fluke.
-	for i in range(2, segs):
-		var r := lerpf(3.4, 1.2, float(i) / (segs - 1))
-		_dot(pts[i] + Vector2(0, -r - 0.6), 0.6, FIN)
-	_dot(pts[segs - 1] + Vector2(-1.2, 0), 1.3, FIN)
-	# The head: a blunt snout with a jaw that gapes while it darts.
-	var head := pts[0]
-	var gape := 1.6 if state == "dart" else (0.8 if state == "coil" else 0.2)
-	_dot(head + Vector2(2.6, -0.6), 2.0, OUTLINE)
-	_dot(head + Vector2(2.4, -0.6), 1.5, SKIN)
-	_dot(head + Vector2(3.2, 1.0 + gape), 1.4, OUTLINE)
-	_dot(head + Vector2(3.0, 0.9 + gape), 1.0, SKIN_DARK)
+	Sheet.draw(self, "spring_eel", a, f)
+	if white:
+		Sheet.draw(self, "spring_eel", a, f, Color(1, 1, 1, 0.85), true)
 	# The lamp on its brow: a dim glow while it weaves, blazing as it coils.
-	var lamp := 0.45 + 0.15 * sin(t * 3.0)
-	if state == "coil":
-		lamp = 0.6 + 0.4 * absf(sin(state_time * 18.0))
-	elif state == "dart":
-		lamp = 1.0
-	elif state == "slack":
-		lamp = 0.2
-	var lp := head + Vector2(1.0, -3.6)
-	draw_circle(lp * SCALE, (2.4 + 2.0 * lamp) * SCALE, Color(LAMP, 0.16 * lamp))
-	_dot(head + Vector2(0.2, -2.6), 0.5, OUTLINE)
-	_dot(lp, 1.2, Color(LAMP, lamp))
-	_dot(lp, 0.55, Color(LAMP_CORE, lamp))
-	wash(flashing() or (state == "coil" and telegraph_pulse()))
+	if LAMP_AT.has(a) and not dead:
+		var lamp := 0.45 + 0.15 * sin(t * 3.0)
+		if state == "coil":
+			lamp = 0.6 + 0.4 * absf(sin(state_time * 18.0))
+		elif state == "dart":
+			lamp = 1.0
+		elif state == "slack":
+			lamp = 0.2
+		var lp: Vector2 = LAMP_AT[a]
+		draw_circle(lp, 2.4 + 2.0 * lamp, Color(LAMP, 0.16 * lamp))
+		draw_circle(lp, 1.0, Color(LAMP, lamp))
+		draw_circle(lp, 0.5, Color(LAMP_CORE, lamp))
 	draw_set_transform(Vector2.ZERO)
-
-
-func _dot(p: Vector2, r: float, c: Color) -> void:
-	draw_circle((p * SCALE).round(), maxf(1.0, r * SCALE), c)

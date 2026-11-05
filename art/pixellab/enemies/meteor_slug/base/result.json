@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "531b1d85-cea3-4baf-ab85-18087b23d686",
+ "status": "completed",
+ "created_at": "2026-11-05T00:45:13.936792+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "a1e66369-d4bc-433d-ba11-1c04a4de690c",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Meteor Slug",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Side-scroller game enemy, full body, side view: a huge grey-violet slug with a long low soft body that hugs the ground, two eye stalks at the front with pale yellow eyes, carrying a lumpy dome shell of dark purple-black glassy rock on its back, the shell cracked with glowing orange molten seams, a few small magenta crystal shards poking out of the shell. Slimy, heavy, menacing."
+ }
+}

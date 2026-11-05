@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "25314d60-6185-47e5-8352-de9a6496272e",
+ "status": "completed",
+ "created_at": "2026-11-05T00:43:36.292072+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "c009b806-0343-496f-8283-553173c81afe",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c009b806-0343-496f-8283-553173c81afe/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Crystal Dwarf",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Side-scroller game enemy, full body, side view: a stocky hunched dwarf from a drowned underground kingdom, grey stone-like skin, a long pale lavender beard, a dented dark iron helm with two short horns, a dark teal tunic with an iron belt, heavy iron boots. Jagged magenta crystal shards have grown out of his back like a shell, and his right arm has turned into a huge faceted glowing magenta crystal fist. Small glowing magenta eyes."
+ }
+}

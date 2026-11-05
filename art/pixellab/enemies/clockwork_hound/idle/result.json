@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "ec163e52-9d01-42f8-a34f-aacbebb338f4",
+ "status": "completed",
+ "created_at": "2026-11-05T00:53:52.712784+00:00",
+ "last_response": {
+  "seed": 1957341354,
+  "type": "done",
+  "action": "The hound stands on all fours breathing slowly, chest plates rising and falling, the winding key on its back turning slowly, head steady. A seamless idle loop. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9621739130434782,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2",
+  "character_id": "2742be26-02a7-4788-9e8c-a57aadb305e1",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/2742be26-02a7-4788-9e8c-a57aadb305e1/animations/1a84410b-6ba3-42fc-978f-d8ce6c8ae8e2/east/8.png"
+   ],
+   "input_frames_digest": "3245fa2aff90706b7743e826f532627d053a49bdbc92fb52131c06fd285aaad3"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "a1273ee9-4131-4deb-a984-c27373c94157",
+  "animation_name": "custom-The hound stands on all fours ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "4d6eb9c5-e13e-4bd2-b46d-1d2fc338b870",
+  "input_frames_digest": "3245fa2aff90706b7743e826f532627d053a49bdbc92fb52131c06fd285aaad3",
+  "generation_started_at": "2026-11-05T00:54:18.482248+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

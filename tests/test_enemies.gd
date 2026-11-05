@@ -930,6 +930,44 @@ func test_spire_sentinel_plays_an_animation_for_every_state() -> void:
 	check(SpireSentinel.SHOCK_FADE >= SpireSentinel.SLAM, "the shock lasts as long as the blow is live")
 
 
+## The art loop, pass 6 (docs/art/enemy-style-guide.md 4): each foe of Vorrhallow and the
+## Sunken Spring plays an animation of its PixelLab sheet in every state it takes, its tell a
+## pose of its own, a flinch while a blow stuns it, its stagger when parried, and its death.
+func _plays_its_own_sheet(k: Enemy, sheet: String, states: Array, tell: String, tell_anim: String) -> void:
+	check(Sheet.exists(sheet), "%s's sheet is in the game" % sheet)
+	for s: String in states:
+		k.set_state(s)
+		var a: String = k.call("anim_now")[0]
+		check(Sheet.has_anim(sheet, a), "%s: %s plays %s, which the sheet has" % [sheet, s, a])
+	k.set_state(tell)
+	check(k.call("anim_now")[0] == tell_anim, "%s: the tell is its own pose, not the idle" % sheet)
+	k.set_state(states[0])
+	k.take_hit(1, Vector2(-k.facing, 0))
+	check(k.call("anim_now")[0] == "hurt" and Sheet.has_anim(sheet, "hurt"), "%s: a blow that lands makes it flinch" % sheet)
+	k._hitstun = 0.0
+	k.stagger()
+	check(k.call("anim_now")[0] == "stagger" and Sheet.has_anim(sheet, "stagger"), "%s: a parry sends it reeling" % sheet)
+	k._stagger = 0.0
+	k.die()
+	check(k.call("anim_now")[0] == "death" and Sheet.has_anim(sheet, "death"), "%s: it collapses as it dissolves" % sheet)
+
+
+func test_vorrhallow_foes_play_an_animation_for_every_state() -> void:
+	var room := _room_with({Vector2i(12, 6): "j", Vector2i(18, 6): "q", Vector2i(25, 6): "s"})
+	make_player(room, Vector2i(3, 6))
+	await frames(3)
+	_plays_its_own_sheet(_find(room, ClockworkHound), "clockwork_hound", ["idle", "trot", "wind", "pounce", "skid"], "wind", "wind")
+	_plays_its_own_sheet(_find(room, CrystalDwarf), "crystal_dwarf", ["idle", "walk", "windup", "rooted", "recover"], "windup", "windup")
+	_plays_its_own_sheet(_find(room, GlassSlug), "meteor_slug", ["idle", "crawl", "swell", "recover"], "swell", "swell")
+
+
+func test_spring_eel_plays_an_animation_for_every_state() -> void:
+	var room := _eel_pool(Vector2i(14, 8))
+	make_player(room, Vector2i(3, 10))
+	await frames(3)
+	_plays_its_own_sheet(_find(room, SpringEel), "spring_eel", ["swim", "coil", "dart", "slack"], "coil", "coil")
+
+
 func test_shade_knight_ripostes_when_you_batter_his_shield() -> void:
 	var room := _room_with({Vector2i(20, 6): "e"})
 	make_player(room, Vector2i(3, 6))
