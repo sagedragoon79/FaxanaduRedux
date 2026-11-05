@@ -661,6 +661,66 @@ func test_the_blade_skills_answer_the_real_controller() -> void:
 	check(q.ripostes == 1 and Sfx.recent.has("parry") and Sfx.recent.has("heavy"), "and the Riposte answers once, heard (%d, %s)" % [q.ripostes, Sfx.recent])
 	check(hp0 - dwarf.hp == roundi(q.heavy_damage * q.blade_mult()) or dwarf.dead, "for a heavy cut (%d -> %d)" % [hp0, dwarf.hp])
 
+## Pass 464 (bible 9): Bloodletting by the buttons. It was tested only by a
+## scripted Attack on a foe staggered by a call. Here the opening is made the
+## way a player makes it: a real Block parries a Rot Dwarf's blade, and real
+## Attack taps cut him while he reels, each heal 2 HP with its sound; once he
+## is back on his feet, the same tap heals nothing.
+func test_bloodletting_answers_the_real_controller() -> void:
+	var w := make_world(_town({Vector2i(9, 19): "D"}), "test/town", cell_feet(6, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	GameState.data.skill_points = 20
+	for id: String in BLADE_TO:
+		check(Skills.learn(id, p), "learned %s" % id)
+	GameState.data.equipment.shield = "small_shield"
+	GameState.refresh_stats(p)
+	check(p.bloodletting, "Bloodletting is on")
+	var dwarf: RotDwarf = _find(w.room, RotDwarf)
+	dwarf.max_hp = 999
+	dwarf.hp = 999
+	for i in 180:
+		if dwarf.state == "windup" and dwarf.state_time >= RotDwarf.WINDUP - 4 / 60.0:
+			break
+		await frames(1)
+	await _tap_for_real("block")
+	await frames(4)
+	check(dwarf.is_staggered() and dwarf.punishable(), "a real Block parries him open")
+	p.hp = 20
+	Sfx.recent.clear()
+	var healed := 0
+	for i in 2:
+		await _close_in_for_real(p, dwarf)
+		var before := p.hp
+		await _tap_for_real("attack")
+		await frames(int(p.combat.combo_cooldowns[0] * 60.0))
+		healed += p.hp - before
+	check(healed == 2 * Player.BLOODLETTING_HEAL, "two real cuts while he reels heal %d HP (%d)" % [2 * Player.BLOODLETTING_HEAL, healed])
+	check(Sfx.recent.count(Player.BLOODLET_SOUND) == 2, "each with its sound (%s)" % [Sfx.recent])
+	var waited := 0
+	while dwarf.punishable() and waited < 180:
+		await frames(1)
+		waited += 1
+	await frames(30)
+	await _close_in_for_real(p, dwarf)
+	var hp := p.hp
+	var dhp := dwarf.hp
+	Sfx.recent.clear()
+	await _tap_for_real("attack")
+	await frames(6)
+	check(dwarf.hp < dhp, "on his feet again, the next cut still lands (%d -> %d)" % [dhp, dwarf.hp])
+	check(p.hp <= hp and not Sfx.recent.has(Player.BLOODLET_SOUND), "but heals nothing (%d -> %d)" % [hp, p.hp])
+
+## Walks the hero with the real Right until he stands within a cut of `foe`.
+func _close_in_for_real(p: Player, foe: Node2D, reach := 22.0) -> void:
+	Input.action_press("move_right")
+	for i in 90:
+		if foe.global_position.x - p.global_position.x <= reach:
+			break
+		await frames(1)
+	Input.action_release("move_right")
+	await frames(1)
+
 ## Holds the foe just over the player's head, up-slashes, and returns how far
 ## above that spot it flew.
 func _rise_after_up_slash(p: Player, foe: Enemy) -> float:
