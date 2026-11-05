@@ -64,6 +64,18 @@ for _set in ("leather", "battle"):
     SHEETS[f"hero_{_set}_magic_shield"]["block.png"] = f"hero/{_set}_cloak/magic_shield/block_r1"
 SHEETS["hero_base_magic_shield"]["block.png"] = "hero/base_cloak/magic_shield/block_r2"
 
+# Foes and guardians (the art loop, docs/art/enemy-style-guide.md): sheet -> {strip: clip folder}.
+# The slab cleaner runs on them too; a foe whose hide or armour is a flat dull grey goes in
+# NO_SLAB_CLEANING (check a frame's opaque pixel count before and after when adding one).
+ENEMY_SHEETS = {
+    # Clips made from his guard pose (shield up in front, base/guard.png) so every state shares
+    # one model; the stagger and the death are from the base character's own east view.
+    "shade_knight": {f"{clip}.png": f"enemies/shade_knight/{folder}" for clip, folder in
+                     (("idle", "idle_g"), ("walk", "walk_g"), ("thrust", "thrust_g"), ("cut", "cut_g"),
+                      ("winded", "winded_g"), ("stagger", "stagger"), ("death", "death"))},
+}
+NO_SLAB_CLEANING = set()
+
 
 def frames_of(folder):
     return sorted(p for p in (SOURCES / folder).glob("[0-9][0-9].png"))
@@ -137,10 +149,12 @@ def clear_flat(im):
                     px[q] = (0, 0, 0, 0)
 
 
-def pack(paths):
+def pack(paths, slabs=True):
     strip = Image.new("RGBA", (CELL * len(paths), CELL))
     for i, p in enumerate(paths):
-        im = clear_slabs(Image.open(p).convert("RGBA"))
+        im = Image.open(p).convert("RGBA")
+        if slabs:
+            clear_slabs(im)
         if p.parent.relative_to(SOURCES).as_posix() in FLAT_SLABS:
             clear_flat(im)
         # PixelLab clips are 256 px canvases; a smaller one is centred on the cell's floor.
@@ -149,7 +163,7 @@ def pack(paths):
 
 
 def main():
-    for sheet, strips in SHEETS.items():
+    for sheet, strips in [*SHEETS.items(), *ENEMY_SHEETS.items()]:
         dest = OUT / sheet
         dest.mkdir(parents=True, exist_ok=True)
         for name, folder in strips.items():
@@ -157,7 +171,7 @@ def main():
             if not paths:
                 print(f"{sheet}/{name}: no frames in art/pixellab/{folder}, skipped")
                 continue
-            pack(paths).save(dest / name)
+            pack(paths, sheet not in NO_SLAB_CLEANING).save(dest / name)
             print(f"{sheet}/{name}: {len(paths)} frames")
 
 

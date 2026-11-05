@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "ca8a7aa4-e9d3-4f88-b1d7-a636c59454d3",
+ "status": "completed",
+ "created_at": "2026-11-05T00:15:40.406723+00:00",
+ "last_response": {
+  "seed": 153334155,
+  "type": "done",
+  "action": "subtle breathing idle, standing guarded behind his shield, armour rising and falling slightly, faint mist swirling around his feet, loops seamlessly. He stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3",
+  "character_id": "405f1125-1903-4604-ae98-ed61efc48b22",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/37ba7849-f7a7-4098-9a12-3ba8fd9dc9c3/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "b9cb528e-1275-4d2c-91a8-2e8676b68f86",
+  "animation_name": "custom-subtle breathing idle, standin",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "2d4ce55e-459d-42a4-98b3-aed34161251d",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:16:08.933981+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

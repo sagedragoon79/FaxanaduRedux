@@ -1,0 +1,54 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "84c6653d-4b16-4ab0-a5b7-402f7cda9f1a",
+ "status": "completed",
+ "created_at": "2026-11-05T00:15:40.406773+00:00",
+ "last_response": {
+  "seed": 3571025016,
+  "type": "done",
+  "action": "flinches backward sharply as if struck, head snapping back, then recovers. He stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9827272727272727,
+  "direction": "east",
+  "frame_count": 5,
+  "animation_id": "c1666b44-efe1-4114-941e-6bbd000a9e1b",
+  "character_id": "405f1125-1903-4604-ae98-ed61efc48b22",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/c1666b44-efe1-4114-941e-6bbd000a9e1b/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/c1666b44-efe1-4114-941e-6bbd000a9e1b/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/c1666b44-efe1-4114-941e-6bbd000a9e1b/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/c1666b44-efe1-4114-941e-6bbd000a9e1b/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/c1666b44-efe1-4114-941e-6bbd000a9e1b/east/4.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "14c9c5a3-04c2-4144-9748-08302db1e025",
+  "animation_name": "custom-flinches backward sharply as i",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "a196614e-76f7-460b-8900-31812b4fd64e",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:15:47.989165+00:00",
+  "requested_frame_count": 4,
+  "estimated_wait_seconds": 0
+ }
+}
