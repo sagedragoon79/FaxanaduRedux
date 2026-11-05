@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "290ce7fa-f8be-4cfb-a222-80192e37b34c",
+ "status": "completed",
+ "created_at": "2026-11-05T01:07:46.028666+00:00",
+ "last_response": {
+  "seed": 2117173101,
+  "type": "done",
+  "action": "lowers the long lance level at chest height and draws it far back, crouching and bracing his feet wide, holds the brace, then drives the lance straight forward level at chest height with both hands to full reach, leaning into it. His body stays pale bare wood the whole time It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9705714285714285,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1",
+  "character_id": "1ca41b38-a7de-4e65-81bb-bb9bafd41ea5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/1ca41b38-a7de-4e65-81bb-bb9bafd41ea5/animations/258c1aa9-0d99-40c1-9fb0-40cbb77cb0c1/east/12.png"
+   ],
+   "input_frames_digest": "af5e374f1f8c3002fa55e629ab6aec893296793e18162e603eb48c8e96a18c30"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "db610321-5d0c-4d07-9757-bfaeb9151655",
+  "animation_name": "custom-lowers the long lance level at",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "142b6c6e-4227-47c8-a412-d5487f85055e",
+  "input_frames_digest": "af5e374f1f8c3002fa55e629ab6aec893296793e18162e603eb48c8e96a18c30",
+  "generation_started_at": "2026-11-05T01:08:12.166097+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

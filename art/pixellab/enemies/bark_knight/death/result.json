@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "d2a21a41-f76e-4827-9fe1-d85cf90f8063",
+ "status": "completed",
+ "created_at": "2026-11-05T00:57:02.469114+00:00",
+ "last_response": {
+  "seed": 221806275,
+  "type": "done",
+  "action": "is struck down, drops the lance, his knees buckle and he topples over and collapses on the ground It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9639130434782608,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "2d2c83dd-9aab-41d1-8157-e0d498cb7e7e",
+  "character_id": "5c38aea8-acca-4989-aea2-0e265a51cc13",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/5c38aea8-acca-4989-aea2-0e265a51cc13/animations/2d2c83dd-9aab-41d1-8157-e0d498cb7e7e/east/8.png"
+   ],
+   "input_frames_digest": "0ae6e593fd8e93b3ab76f5d2fda16e1b6d143f69dc76810da4f048b1b38650a1"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "ef86cfc2-ad34-419e-b46f-66ae260a971d",
+  "animation_name": "custom-is struck down, drops the lanc",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "11dbee95-129c-448d-989d-d0a3a8f7413d",
+  "input_frames_digest": "0ae6e593fd8e93b3ab76f5d2fda16e1b6d143f69dc76810da4f048b1b38650a1",
+  "generation_started_at": "2026-11-05T00:57:28.937786+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -2731,3 +2731,81 @@ func test_batch_one_foes_play_an_animation_for_every_state() -> void:
 		check(e.anim_now()[0] == "death" and Sheet.has_anim(sheet, "death"), "%s: it collapses as it dissolves" % sheet)
 		room.queue_free()
 		await frames(1)
+
+
+## Art loop pass 4 (docs/art/enemy-style-guide.md 4): `foe` plays an animation its sheet has
+## in each of `states`, the tell's pose is not the idle's, and a blow, a parry and death
+## each show their own.
+func _plays_every_state(foe: Enemy, sheet: String, states: Array, tell: String, idle: String) -> void:
+	check(Sheet.exists(sheet), "%s's sheet is in the game" % sheet)
+	for s: String in states:
+		foe.set_state(s)
+		var a: String = foe.anim_now()[0]
+		check(Sheet.has_anim(sheet, a), "%s: %s plays %s, which the sheet has" % [sheet, s, a])
+	foe.set_state(tell)
+	check(foe.anim_now()[0] != idle, "%s: the tell (%s) is its own pose, not the %s" % [sheet, tell, idle])
+	foe.set_state(states[0])
+	foe.take_hit(1, Vector2(-1, 0))
+	var hurt: String = foe.anim_now()[0]
+	check(hurt.ends_with("hurt") and Sheet.has_anim(sheet, hurt), "%s flinches from a blow (%s)" % [sheet, hurt])
+	foe._hitstun = 0.0
+	foe.stagger()
+	var reel: String = foe.anim_now()[0]
+	check(Sheet.has_anim(sheet, reel) and reel != idle, "%s reels when parried (%s)" % [sheet, reel])
+	foe.die()
+	var death: String = foe.anim_now()[0]
+	check(death.ends_with("death") and Sheet.has_anim(sheet, death), "%s collapses as it dissolves" % sheet)
+
+
+func test_leaf_mantis_plays_an_animation_for_every_state() -> void:
+	var room := _room_with({Vector2i(20, 6): "m"})
+	make_player(room, Vector2i(3, 6))
+	var m: LeafMantis = _find(room, LeafMantis)
+	await frames(3)
+	_plays_every_state(m, "leaf_mantis", ["stalk", "hide", "unfold", "lunge", "recover"], "unfold", "idle")
+	m.set_state("hide")
+
+
+func test_bark_knight_plays_an_animation_for_every_state_in_bark_and_bare() -> void:
+	var room := _room_with({Vector2i(20, 6): "!"})
+	make_player(room, Vector2i(3, 6))
+	var k: BarkKnight = _find(room, BarkKnight)
+	await frames(3)
+	var states := ["walk", "windup", "thrust", "rooted"]
+	for s: String in states:
+		k.set_state(s)
+		check(Sheet.has_anim("bark_knight", k.anim_now()[0]), "in bark, %s plays %s" % [s, k.anim_now()[0]])
+	k.bark = 0
+	for s: String in states:
+		k.set_state(s)
+		var a: String = k.anim_now()[0]
+		check(a.begins_with("bare_") and Sheet.has_anim("bark_knight", a), "bare, %s plays %s" % [s, a])
+	k.set_state("windup")
+	check(k.anim_now()[0] == "bare_brace", "bare, he still braces before the thrust")
+	k.bark = BarkKnight.BARK
+	_plays_every_state(k, "bark_knight", states, "windup", "idle")
+
+
+func test_seed_bomber_plays_an_animation_for_every_state() -> void:
+	var room := _room_with({Vector2i(20, 3): ";"})
+	make_player(room, Vector2i(3, 6))
+	var b: SeedBomber = _find(room, SeedBomber)
+	await frames(3)
+	_plays_every_state(b, "seed_bomber", ["hover", "windup", "drop", "rise"], "windup", "fly")
+	var b2 := SeedBomber.new()
+	room.add_child(b2)
+	b2.global_position = Vector2(200, 40)
+	b2.set_state("downed")
+	check(b2.anim_now()[0] == "fall", "knocked out of the sky, it tumbles")
+	b2._landed = true
+	check(b2.anim_now()[0] == "downed", "landed, it lies dazed on its back")
+
+
+func test_mothling_plays_an_animation_for_every_state() -> void:
+	var room := _room_with({})
+	make_player(room, Vector2i(3, 6))
+	var m := Mothling.new()
+	room.add_child(m)
+	m.global_position = Vector2(200, 40)
+	await frames(3)
+	_plays_every_state(m, "mothling", ["rise", "hover", "windup", "dive"], "windup", "fly")

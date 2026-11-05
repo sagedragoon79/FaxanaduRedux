@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight, thunder_beetle, storm_harpy and spire_sentinel (PixelLab clips only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight, thunder_beetle, storm_harpy, spire_sentinel, leaf_mantis and mothling (PixelLab clips only; bark_knight and seed_bomber take PixelLab clips over their rigs); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
 the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1537,6 +1537,14 @@ SPIRE_SENTINEL = [
 ]
 
 
+# Art loop pass 4, the High Boughs foes (docs/art/enemy-style-guide.md): PixelLab clips only.
+LEAF_MANTIS = [(a, [None] * 2, [0, 1], fps, loop) for a, fps, loop in (
+    ("idle", 6, True), ("stalk", 12, True), ("hide", 2, True), ("unfold", 8, True), ("lunge", 14, False),
+    ("recover", 5, True), ("stagger", 3, True), ("hurt", 10, False), ("death", 12, False))]
+MOTHLING = [(a, [None] * 2, [0, 1], fps, loop) for a, fps, loop in (
+    ("fly", 18, True), ("windup", 8, True), ("dive", 10, True), ("hurt", 10, False), ("death", 12, False))]
+
+
 def main():
     write_sheet("blinkhop", (40, 32), (20, 30), BLINKHOP, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
@@ -1560,6 +1568,8 @@ def main():
     write_sheet("thunder_beetle", (64, 44), (32, 42), THUNDER_BEETLE, autosprite_only, density=2)
     write_sheet("storm_harpy", (72, 64), (36, 32), STORM_HARPY, autosprite_only, density=2)
     write_sheet("spire_sentinel", (96, 64), (44, 62), SPIRE_SENTINEL, autosprite_only, density=2)
+    write_sheet("leaf_mantis", (96, 56), (48, 53), LEAF_MANTIS, autosprite_only, density=2)
+    write_sheet("mothling", (40, 36), (20, 18), MOTHLING, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

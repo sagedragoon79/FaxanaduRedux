@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "294dae07-dc9a-420f-b0dc-1bb63c3e0428",
+ "status": "completed",
+ "created_at": "2026-11-05T00:42:03.542029+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "35317da8-36e3-4a6b-9f28-095f05c86561",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/35317da8-36e3-4a6b-9f28-095f05c86561/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Leaf Mantis",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Leaf Mantis: a large praying mantis grown from the leaves of a giant tree, slender body of layered leaf-green plates with pale yellow-green veins, long abdomen shaped like a big pointed leaf, two long scythe forelegs held folded at the chest with pale bone-white hooked blades, triangular head with big glowing amber eyes, swept-back antennae, four thin walking legs, standing on a branch, side-scroller game enemy, full body, strict side profile facing right"
+ }
+}

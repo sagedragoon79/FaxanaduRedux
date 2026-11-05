@@ -131,20 +131,44 @@ func _drop_seed() -> void:
 	Sfx.play("seed_drop", 0.08, -2.0)
 
 
-func _draw() -> void:
-	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "fly"
-	var t := Time.get_ticks_msec() * 0.001
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# Keep its fall playing under the dissolve.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	var now := Time.get_ticks_msec() * 0.001
+	if dead:
+		return ["death", now - _died_at]
 	if is_staggered():
-		anim = "stagger"
-	elif state == "windup":
-		anim = "windup"
-		t = state_time
-	elif state == "drop":
-		anim = "drop"
-	elif state == "downed":
-		anim = "downed"
-	elif _cool > COOLDOWN * 0.4:
+		return ["stagger", state_time]
+	match state:
+		"windup":
+			return ["windup", state_time]
+		"drop":
+			return ["drop", state_time]
+		"downed":
+			# Tumbling out of the sky, then dazed on its back once it lands.
+			return ["downed", state_time] if _landed else ["fall", now]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	if _cool > COOLDOWN * 0.4:
 		# The husk hangs open a moment after a drop.
-		anim = "empty"
-	draw_sheet("seed_bomber", anim, t, white)
+		return ["empty", now]
+	return ["fly", now]
+
+
+func _draw() -> void:
+	var now := anim_now()
+	var white := flashing() or (state == "windup" and telegraph_pulse())
+	draw_sheet("seed_bomber", now[0], now[1], white)

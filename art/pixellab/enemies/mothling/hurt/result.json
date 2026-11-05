@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "07fcd863-aa66-440a-a7c2-f0589d113347",
+ "status": "completed",
+ "created_at": "2026-11-05T00:49:50.171865+00:00",
+ "last_response": {
+  "seed": 2668490533,
+  "type": "done",
+  "action": "flinches back from a blow, wings crumpled, then recovers It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.15599247609010558,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "9439760e-7107-426c-abd0-2e7f6ef99916",
+  "character_id": "05c30138-6f67-428e-9ed4-64992cc0bbf6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/9439760e-7107-426c-abd0-2e7f6ef99916/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "b228981f-42b1-4cdb-86cf-276319b2f2f3",
+  "animation_name": "custom-flinches back from a blow, win",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "0cf3a66f-593b-40be-bdf0-744921080ba2",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:50:22.573433+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

@@ -118,6 +118,7 @@ func _respawn() -> void:
 
 
 func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
 	_set_bough(false)
 	super()
 
@@ -193,20 +194,42 @@ func _floor_ahead() -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
-func _draw() -> void:
-	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var anim := "walk"
-	var t := state_time
+var _died_at := -1.0
+
+
+func _process(_delta: float) -> void:
+	# Keep his fall playing under the dissolve.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what he is doing now (docs/art/enemy-style-guide.md 4):
+## bare heartwood once his bark is gone, the brace (lance back, the tell), the thrust and
+## the rooted lance, a flinch in hitstun, reeling when parried, and his fall.
+func anim_now() -> Array:
+	var now := Time.get_ticks_msec() * 0.001
+	var pre := "" if bark > 0 else "bare_"
+	if dead:
+		return [pre + "death", now - _died_at]
 	if is_staggered():
-		anim = "stagger"
-	elif state == "windup":
-		anim = "brace"
-	elif state in ["thrust", "rooted"]:
-		anim = state
-	elif absf(velocity.x) < 1.0:
-		t = 0.0
-	draw_sheet("bark_knight", ("" if bark > 0 else "bare_") + anim, t, white)
-	if bark > 0 and bark < BARK:
+		return [pre + "stagger", state_time]
+	if _hitstun > 0.0 and not state in ["windup", "thrust", "rooted"]:
+		return [pre + "hurt", HITSTUN - _hitstun]
+	match state:
+		"windup":
+			return [pre + "brace", state_time]
+		"thrust", "rooted":
+			return [pre + state, state_time]
+	if absf(velocity.x) < 1.0:
+		return [pre + "idle", now]
+	return [pre + "walk", now]
+
+
+func _draw() -> void:
+	var now := anim_now()
+	var white := flashing() or (state == "windup" and telegraph_pulse())
+	draw_sheet("bark_knight", now[0], now[1], white)
+	if bark > 0 and bark < BARK and not dead:
 		# Pale scars where plates came off.
 		for i in BARK - bark:
 			draw_rect(Rect2(Vector2(-4.0 + i * 4.0 * facing, -30.0 + i * 6.0), Vector2(3, 3)), Color(0.87, 0.74, 0.52, 0.9))

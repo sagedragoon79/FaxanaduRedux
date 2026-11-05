@@ -5,7 +5,7 @@ extends Enemy
 ## petals as in the original. It flutters up out of the bulb, hangs above and
 ## to one side of you, screeches with its wings flared (telegraph), then dives
 ## at where you were and climbs back. It never comes back once struck down, and
-## the brood dies with the Bloom. Code-drawn at 2x.
+## the brood dies with the Bloom. Drawn from its PixelLab sheet (art loop pass 4).
 
 ## Fluttering up out of the bulb, harmless until it is clear of the petals.
 const RISE := 0.5
@@ -16,13 +16,6 @@ const DIVE_SPEED := 250.0
 const DIVE_TIME := 0.45
 const TOUCH_DAMAGE := 8
 
-const OUTLINE := Color("1e0f1e")
-const BODY := Color("6a3a8a")
-const BODY_LIGHT := Color("9a62b8")
-const FACE := Color("f0d8e0")
-const EYE := Color("f0d040")
-const WING := Color("d0508a")
-const WING_LIGHT := Color("f08ab8")
 
 ## Which side of the player this one hangs on, and how far it sits from the
 ## others in its brood (each of the three keeps its own place).
@@ -81,45 +74,39 @@ func _think(delta: float) -> void:
 			set_state("hover")
 
 
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4): its wingbeat
+## rising and hovering, wings flared in the screech (the tell), swept back in the dive.
+const ANIMS := {"rise": "fly", "hover": "fly", "windup": "windup", "dive": "dive"}
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# Keep the crumple playing under the dissolve.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now.
+func anim_now() -> Array:
+	var now := Time.get_ticks_msec() * 0.001
+	if dead:
+		return ["death", now - _died_at]
+	if _hitstun > 0.0 or is_staggered():
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "fly")
+	# Each of the brood beats its wings out of step with the others.
+	return [a, now + slot * 0.13 if a == "fly" else state_time]
+
+
 func _draw() -> void:
+	var now := anim_now()
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var t := Time.get_ticks_msec() * 0.001 + slot
+	# It trembles as it screeches.
 	var jitter := Vector2(randf_range(-1, 1), 0).round() if state == "windup" else Vector2.ZERO
-	draw_set_transform(jitter, 0.0, Vector2(facing, 1))
-	# Wings: flared wide and still in the screech, beating fast otherwise.
-	var beat := 0.9 if state == "windup" else 0.35 + 0.45 * absf(sin(t * 18.0))
-	for s in [-1, 1]:
-		var root := Vector2(s * 1.5, -2)
-		var tip := root + Vector2(s * 9.0, -4.0 - beat * 6.0)
-		var low := root + Vector2(s * 7.0, 2.0 - beat * 2.0)
-		var wing := PackedVector2Array([root, tip, low])
-		draw_colored_polygon(_grow(wing, 1.0), OUTLINE)
-		draw_colored_polygon(wing, WING_LIGHT if s > 0 else WING)
-	# A curling tail.
-	draw_line(Vector2(-2, 3), Vector2(-5, 7), OUTLINE, 2.0)
-	draw_line(Vector2(-5, 7), Vector2(-3, 9), OUTLINE, 2.0)
-	# Body and head.
-	draw_circle(Vector2(0, 1), 4.0, OUTLINE)
-	draw_circle(Vector2(0, 1), 3.0, BODY)
-	draw_circle(Vector2(1, -3), 3.5, OUTLINE)
-	draw_circle(Vector2(1, -3), 2.6, FACE)
-	draw_circle(Vector2(-1, 0), 1.2, BODY_LIGHT)
-	# Two little horns and a glinting eye; the mouth opens in the screech.
-	draw_line(Vector2(0, -5), Vector2(-1, -8), OUTLINE, 1.0)
-	draw_line(Vector2(2, -5), Vector2(3, -8), OUTLINE, 1.0)
-	draw_rect(Rect2(2, -4, 1, 1), EYE)
-	if state == "windup":
-		draw_rect(Rect2(2, -2, 2, 1), OUTLINE)
-	wash(white)
-	draw_set_transform(Vector2.ZERO)
-
-
-func _grow(poly: PackedVector2Array, by: float) -> PackedVector2Array:
-	var c := Vector2.ZERO
-	for v in poly:
-		c += v
-	c /= poly.size()
-	var out := PackedVector2Array()
-	for v in poly:
-		out.append(v + (v - c).normalized() * by)
-	return out
+	draw_sheet("mothling", now[0], now[1], white, jitter)

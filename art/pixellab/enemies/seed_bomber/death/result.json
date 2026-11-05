@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "10eb6aa4-9878-4df3-b453-5f7ffd50541c",
+ "status": "completed",
+ "created_at": "2026-11-05T00:52:33.848094+00:00",
+ "last_response": {
+  "seed": 2019607108,
+  "type": "message_done",
+  "action": "is struck dead in the air, its wings go limp and fold, it drops and crumples into a heap on the ground It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.2061995001480152,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "64a10192-c539-48db-a00c-a8372e649e10",
+  "character_id": "231a7a98-132b-444b-9991-7b69e263e6ce",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/231a7a98-132b-444b-9991-7b69e263e6ce/animations/64a10192-c539-48db-a00c-a8372e649e10/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "31a8e791-2144-4d45-a4b5-3f68b4d7b498",
+  "animation_name": "custom-is struck dead in the air, its",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "a12d17e3-6c38-44bc-b967-66a32daba572",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:53:07.170439+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

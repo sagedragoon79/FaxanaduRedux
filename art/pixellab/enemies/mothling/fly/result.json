@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "bcb934d4-50d7-488f-82ac-676a55e5797f",
+ "status": "completed",
+ "created_at": "2026-11-05T00:53:33.553649+00:00",
+ "last_response": {
+  "seed": 4073185142,
+  "type": "message_done",
+  "action": "hovers in the air beating its petal wings very fast, body bobbing up and down It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.925,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "f77e40b0-9846-49ca-acf8-5ca04b7d9fee",
+  "character_id": "05c30138-6f67-428e-9ed4-64992cc0bbf6",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/05c30138-6f67-428e-9ed4-64992cc0bbf6/animations/f77e40b0-9846-49ca-acf8-5ca04b7d9fee/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "afcd5bb7-9ec8-4242-850a-aceefc26691f",
+  "animation_name": "custom-hovers in the air beating its ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "29afc611-1cb7-4ce9-8e67-cd730acc4b64",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:54:00.297733+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
