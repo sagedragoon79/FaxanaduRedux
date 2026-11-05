@@ -2698,3 +2698,69 @@ func test_the_timing_windows_only_widen_as_the_game_slows() -> void:
 		check(coyote[i] >= coyote[i - 1] and buffer[i] >= buffer[i - 1], "neither window narrows as the game slows (coyote %s, buffer %s)" % [coyote, buffer])
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("Timing windows at every game speed (pass 478)"), "bible 6.7's Input line says so")
+
+
+
+## A press in hitstop is kept, once (pass 486). A blow, a pogo or a hit freezes
+## the game for 45 to 150 ms, and a player's thumb does not wait for it: Jump
+## held, or Dash tapped, with the real buttons while the game is frozen does
+## exactly what it does in play (never lost and never twice), and Jump tapped
+## and let go inside the freeze is the shortest hop in play, never a lower one.
+func test_a_press_in_hitstop_is_kept_once() -> void:
+	var seen := {}
+	for when: String in ["play", "hitstop", "slowmo"]:
+		for press: String in ["jump flick", "jump tap", "jump hold", "dash tap"]:
+			if press == "jump flick" and when != "play":
+				continue
+			var room := make_room(FLAT)
+			var p := make_player(room, Vector2i(3, 11))
+			p.input = PlayerInput.new()
+			await _settle(p)
+			var y0 := p.global_position.y
+			var x0 := p.global_position.x
+			if when == "hitstop":
+				Feel.hitstop_enabled = true
+				Feel.hitstop(30.0)
+				Feel.hitstop_enabled = false
+				check(Feel.is_frozen(), "%s: the game is frozen" % press)
+			elif when == "slowmo":
+				Feel.slowmo(0.3, 30.0)
+			await frames(2)
+			var act := press.get_slice(" ", 0)
+			Input.action_press(act)
+			await frames(1 if press.ends_with("flick") else 3)
+			if not press.ends_with("hold"):
+				Input.action_release(act)
+			await frames(3)
+			if when == "hitstop":
+				Feel.reset()
+			var rose := 0.0
+			var moved := 0.0
+			for i in (100 if when == "slowmo" else 30):
+				await frames(1)
+				rose = maxf(rose, y0 - p.global_position.y)
+				moved = maxf(moved, absf(p.global_position.x - x0))
+			Input.action_release(act)
+			Feel.reset()
+			seen["%s %s" % [when, press]] = Vector2(moved, rose)
+			room.queue_free()
+			await frames(2)
+	for press: String in ["jump hold", "dash tap"]:
+		var want: Vector2 = seen["play " + press]
+		check(want.length() > 20.0, "in play, %s goes somewhere (%s)" % [press, want])
+		var got: Vector2 = seen["hitstop " + press]
+		check(got.distance_to(want) <= 1.0, "%s in hitstop does what it does in play (%s, %s)" % [press, got, want])
+	# A tap begun and let go inside the freeze had no game time to rise: it is
+	# the shortest hop in play, the one-frame flick, never lower (pass 486).
+	var flick: float = seen["play jump flick"].y
+	var tap: float = seen["hitstop jump tap"].y
+	check(flick > 10.0 and flick < seen["play jump tap"].y, "in play a flick is the shortest hop (%.1f px, a tap %.1f)" % [flick, seen["play jump tap"].y])
+	check(absf(tap - flick) <= 1.0, "a tap in hitstop is that hop, no lower (%.1f px, a flick %.1f)" % [tap, flick])
+	# In slow motion a held jump and a dash still go as far, within a step;
+	# a tap there is shorter in game time, so it is a lower hop, never none.
+	for press: String in ["jump hold", "dash tap"]:
+		var got: Vector2 = seen["slowmo " + press]
+		check(got.distance_to(seen["play " + press]) <= 4.0, "%s in slow motion goes as far (%s, %s)" % [press, got, seen["play " + press]])
+	check(seen["slowmo jump tap"].y > 10.0, "a tap in slow motion is still a hop (%.1f px)" % seen["slowmo jump tap"].y)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_a_press_in_hitstop_is_kept_once"), "the bible names this test")
