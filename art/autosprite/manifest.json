@@ -1089,8 +1089,8 @@
   "ramps": ["night", "stone", "ember", "gold"],
   "height": 28,
   "reference": "fly",
-  "rim": {"color": [255, 178, 96], "mix": 0.35},
-  "gain": 1.6,
+  "rim": {"color": [255, 178, 96], "mix": 0.5},
+  "gain": 1.8,
   "animations": {
    "fly": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [8, 1, 2, 3, 4, 5, 6, 7], "fps": 16, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, wingbeat; the gear on its back is drawn in code"},
    "bare": {"file": "fly.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [8, 1, 2, 3, 4, 5, 6, 7], "fps": 16, "loop": true, "anchor": "center", "pixellab": "PixelLab character b3bd2341 (create-character-v3, side view), pixminimax east, the same wingbeat, its gear away"},

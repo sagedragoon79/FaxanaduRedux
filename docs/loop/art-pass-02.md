@@ -33,7 +33,7 @@ cart, 192 for the serpent (each source at least twice its world height).
   whirring fast in the tell. So `bare` is the same wingbeat with no gear, one model throughout.
 - **The roost is the folded-wing clip turned upside down** (`gear_bat/roost_hang`, no PixelLab
   call): it hangs from the ceiling by its feet.
-- **Rim and gain** on the Gear Bat (lamp orange), the only dark foe of the five, so it stands off
+- **Rim and gain** on the Gear Bat (lamp orange, rim mix 0.5, gain 1.8 after review), the only dark foe of the five, so it stands off
   the Tower's dark walls.
 - **The Grub Lump's drop** is the clip's curled ball; its face turns a little toward the camera in
   that one frame. It shows for the half second of the fall only.
