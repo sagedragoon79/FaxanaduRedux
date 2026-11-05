@@ -107,25 +107,54 @@ func catch_blade() -> void:
 
 
 func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
 	if is_instance_valid(blade):
 		blade.drop()
 	blade = null
 	super.die()
 
 
+## Where the gear sits on the brass axle under its body in each animation (world px from
+## its middle, facing right): the art draws the axle bare, the code the gear it throws.
+const GEAR_AT := {"fly": Vector2(-4, 6), "windup": Vector2(-3, 5), "roost": Vector2(-2, -5)}
+## The gear it carries is drawn a little smaller than the thrown one, so the bat stays the shape.
+const GEAR_WORN := 0.85
+
+var _died_at := -1.0
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", 0.0]
+	if state == "roost":
+		return ["roost", Time.get_ticks_msec() * 0.001]
+	if state == "windup":
+		return ["windup", state_time]
+	return ["fly" if has_gear() else "bare", Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "windup" and telegraph_pulse())
-	var t := Time.get_ticks_msec() * 0.001
-	var anim := "fly"
-	var jitter := Vector2.ZERO
-	if is_staggered():
-		anim = "stagger"
-	elif state == "roost":
-		anim = "roost"
-	elif state == "windup":
-		anim = "windup"
-		t = state_time
-		jitter = Vector2(randf_range(-1, 1), 0).round()
-	elif not has_gear():
-		anim = "bare"
-	draw_sheet(SHEET, anim, t, white, jitter)
+	var now := anim_now()
+	var anim: String = now[0]
+	var jitter := Vector2(randf_range(-1, 1), 0).round() if anim == "windup" else Vector2.ZERO
+	draw_sheet(SHEET, anim, now[1], white, jitter)
+	# The gear rides on its axle until it is thrown; in the tell it whirs up.
+	if has_gear() and GEAR_AT.has(anim):
+		var at: Vector2 = (GEAR_AT[anim] + jitter) * Vector2(facing, 1)
+		var spin := Time.get_ticks_msec() * 0.001 * (30.0 if anim == "windup" else 3.0)
+		GearBlade.draw_gear(self, at, spin, GEAR_WORN)
+		if white:
+			draw_circle(at, (GearBlade.RADIUS + 0.5) * GEAR_WORN, Color(1, 1, 1, 0.85))

@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "433bb068-6e7d-4c5e-9a17-fcd28bfe69fd",
+ "status": "completed",
+ "created_at": "2026-11-05T00:51:30.544351+00:00",
+ "last_response": {
+  "seed": 2406017273,
+  "type": "message_done",
+  "action": "folds its wings tight around its body and hangs still, breathing slowly, loops seamlessly. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.17314877015987368,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "9330ad37-0a95-448c-8b5e-efa220fa75ee",
+  "character_id": "b3bd2341-976e-4702-9f90-5e0422f19f68",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b3bd2341-976e-4702-9f90-5e0422f19f68/animations/9330ad37-0a95-448c-8b5e-efa220fa75ee/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "8367dfb8-281f-4782-b03d-4e0b9967eec2",
+  "animation_name": "custom-folds its wings tight around i",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "22530c7a-952c-45df-a7a0-1f45be1ee87f",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:52:03.921452+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

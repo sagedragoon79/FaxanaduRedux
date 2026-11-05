@@ -1,0 +1,70 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "526f1d38-a95e-41ad-87c6-66a9b5241317",
+ "status": "completed",
+ "created_at": "2026-11-05T00:50:47.078008+00:00",
+ "last_response": {
+  "seed": 1756729756,
+  "type": "done",
+  "action": "draws its head back and flares its hood wide, holding the reared pose, then lunges its head straight forward to the right with its jaws wide open, then pulls back. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9568571428571429,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "d4b5cfae-a5a8-41c2-93f9-321f11a5bbef",
+  "character_id": "8da69d2d-99f7-4308-b978-4ecf6adb544d",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/d4b5cfae-a5a8-41c2-93f9-321f11a5bbef/east/12.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "206f52f5-f11d-4e1c-b69e-bf672abb92fb",
+  "animation_name": "custom-draws its head back and flares",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "374d9af3-7af7-472f-a372-2d17f6699cba",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:51:14.405368+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

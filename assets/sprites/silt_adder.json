@@ -1,0 +1,117 @@
+{
+ "cell": [
+  128,
+  144
+ ],
+ "origin": [
+  64,
+  72
+ ],
+ "columns": 8,
+ "animations": {
+  "float": {
+   "row": 0,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "fps": 7,
+   "loop": true
+  },
+  "coil": {
+   "row": 1,
+   "frames": [
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "fps": 8,
+   "loop": true
+  },
+  "strike": {
+   "row": 2,
+   "frames": [
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2
+   ],
+   "fps": 8,
+   "loop": false
+  },
+  "stagger": {
+   "row": 3,
+   "frames": [
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1
+   ],
+   "fps": 4,
+   "loop": true
+  },
+  "hurt": {
+   "row": 4,
+   "frames": [
+    {}
+   ],
+   "seq": [
+    0
+   ],
+   "fps": 10,
+   "loop": false
+  },
+  "death": {
+   "row": 5,
+   "frames": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "seq": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "fps": 12,
+   "loop": false
+  }
+ },
+ "density": 2,
+ "own_palette": true
+}

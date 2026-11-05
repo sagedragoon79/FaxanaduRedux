@@ -2647,3 +2647,37 @@ func test_every_foes_tell_flashes_it_white() -> void:
 	check(seen >= 27, "found the foes' tells (%d: %s)" % [seen, named])
 	check(dark.is_empty(), "every foe's tell washes it white (%s)" % [dark])
 	p.queue_free()
+
+
+## Art pass 2 (docs/art/enemy-style-guide.md 4): the Heartwood and Hollin Tower foes remade in
+## PixelLab play an animation of their own sheet for every state, flinch when hit, reel when
+## staggered and collapse under the dissolve.
+func test_batch_one_foes_play_an_animation_for_every_state() -> void:
+	var foes := [
+		[SapSpitter, "T", Vector2i(20, 6), "sap_spitter", ["idle", "windup", "spit"], {"windup": "windup", "spit": "spit"}],
+		[GrubLump, "U", Vector2i(20, 6), "grub_lump", ["crawl", "windup", "drop", "land"], {"windup": "windup", "drop": "drop", "land": "land"}],
+		[GearBat, "B", Vector2i(20, 1), "gear_bat", ["roost", "wake", "hover", "windup", "bare"], {"roost": "roost", "windup": "windup", "hover": "fly"}],
+		[MinecartRider, "K", Vector2i(20, 6), "minecart_rider", ["roll", "rev", "charge", "crash", "recover"], {"rev": "rev", "charge": "charge", "crash": "crash"}],
+		[SiltAdder, ")", Vector2i(20, 4), "silt_adder", ["float", "coil", "strike", "return"], {"coil": "coil", "strike": "strike", "float": "float"}],
+	]
+	for f: Array in foes:
+		var room := _room_with({f[2]: f[1]})
+		make_player(room, Vector2i(3, 6))
+		var e: Enemy = _find(room, f[0])
+		await frames(3)
+		var sheet: String = f[3]
+		check(Sheet.exists(sheet), "%s: its sheet is in the game" % sheet)
+		for s: String in f[4]:
+			e.set_state(s)
+			var a: String = e.anim_now()[0]
+			check(Sheet.has_anim(sheet, a), "%s: %s plays %s, which the sheet has" % [sheet, s, a])
+			if f[5].has(s):
+				check(a == f[5][s], "%s: %s plays its own pose, %s (got %s)" % [sheet, s, f[5][s], a])
+		e.set_state(f[4][0])
+		e.take_hit(1, Vector2(-1, 0))
+		check(Sheet.has_anim(sheet, e.anim_now()[0]) and e.anim_now()[0] == "hurt", "%s: a blow makes it flinch" % sheet)
+		e._hitstun = 0.0
+		e.die()
+		check(e.anim_now()[0] == "death" and Sheet.has_anim(sheet, "death"), "%s: it collapses as it dissolves" % sheet)
+		room.queue_free()
+		await frames(1)

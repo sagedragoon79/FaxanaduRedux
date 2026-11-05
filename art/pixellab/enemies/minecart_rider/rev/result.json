@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "340c9d3f-e09c-4d81-87f9-d3d94490e1fe",
+ "status": "completed",
+ "created_at": "2026-11-05T00:52:28.682158+00:00",
+ "last_response": {
+  "seed": 2504845098,
+  "type": "message_done",
+  "action": "the dwarf leans back hard and hauls the brake lever back with both hands, the cart rocking back onto its rear wheels, then holds that pose, straining. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9604347826086956,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "fb250eae-a0ea-481d-a1ce-1d67b2f14feb",
+  "character_id": "60abc386-e44e-44c7-984c-946ab89e9c74",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/60abc386-e44e-44c7-984c-946ab89e9c74/animations/fb250eae-a0ea-481d-a1ce-1d67b2f14feb/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "e57063a5-f449-437b-bfb6-0411625cd03f",
+  "animation_name": "custom-the dwarf leans back hard and ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "36aab8d1-fa0d-422b-b43a-1523e5925987",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:52:58.715425+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

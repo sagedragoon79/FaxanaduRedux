@@ -144,14 +144,35 @@ func _floor_ahead() -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what he is doing now (docs/art/enemy-style-guide.md 4).
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", 0.0]
+	if state in ["rev", "charge", "crash", "recover"]:
+		return [state, state_time]
+	return ["roll", state_time if absf(velocity.x) >= 1.0 else 0.0]
+
+
 func _draw() -> void:
 	var white := flashing() or (state == "rev" and telegraph_pulse())
-	var anim := "roll"
-	var t := state_time
-	if is_staggered():
-		anim = "stagger"
-	elif state in ["rev", "charge", "crash"]:
-		anim = state
-	elif absf(velocity.x) < 1.0:
-		t = 0.0
-	draw_sheet(SHEET, anim, t, white)
+	var now := anim_now()
+	draw_sheet(SHEET, now[0], now[1], white)

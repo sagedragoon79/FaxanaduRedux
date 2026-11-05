@@ -1495,6 +1495,17 @@ SHADE_KNIGHT = [
 ]
 
 
+# The Silt Adder (art loop pass 2): PixelLab clips only, drawn centred on its body.
+SILT_ADDER = [
+    ("float", [None] * 2, [0, 1], 7, True),
+    ("coil", [None] * 2, [0, 1], 8, True),
+    ("strike", [None] * 2, [0, 1], 8, False),
+    ("stagger", [None] * 2, [0, 1], 4, True),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 12, False),
+]
+
+
 def main():
     write_sheet("blinkhop", (40, 32), (20, 30), BLINKHOP, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
@@ -1514,6 +1525,7 @@ def main():
     write_sheet("marsh_hag", (56, 52), (24, 49), MARSH_HAG, lambda r: r(None), density=MH_SCALE)
     write_sheet("gloamweaver", (104, 76), (52, 74), GLOAMWEAVER, autosprite_only, density=2)
     write_sheet("shade_knight", (80, 56), (40, 53), SHADE_KNIGHT, autosprite_only, density=2)
+    write_sheet("silt_adder", (64, 72), (32, 36), SILT_ADDER, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 6.0
+ },
+ "id": "d176dd2c-225d-4f65-a885-24c3d024e5d9",
+ "status": "completed",
+ "created_at": "2026-11-05T00:45:38.303886+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "8da69d2d-99f7-4308-b978-4ecf6adb544d",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 6.0
+  },
+  "character_name": "Silt Adder",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Silt Adder: a long hooded serpent floating upright in an S curve with its tail hanging below, verdigris sea-green scales with dull copper bands, pale bone-coloured belly scales, a narrow hood folded behind its head, two glowing lamp-orange eyes, head pointing right, side-scroller game enemy, full body, strict side view facing right"
+ }
+}

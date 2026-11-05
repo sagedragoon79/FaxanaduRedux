@@ -1,0 +1,62 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "95347a91-17a0-4545-b365-c114a00f55f9",
+ "status": "completed",
+ "created_at": "2026-11-05T00:49:59.496359+00:00",
+ "last_response": {
+  "seed": 2459891100,
+  "type": "message_done",
+  "action": "the amber sap sac slowly pulses and the bark stump breathes gently, its roots staying planted in the ground, loops seamlessly. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.13840131773520073,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "8d838b90-bda2-408a-9650-7f2c849b27c5",
+  "character_id": "37110aa8-ffc7-4b4f-992b-9b896b04f387",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/37110aa8-ffc7-4b4f-992b-9b896b04f387/animations/8d838b90-bda2-408a-9650-7f2c849b27c5/east/8.png"
+   ]
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "f571212a-bde8-46a9-a55f-07b29602b9bc",
+  "animation_name": "custom-the amber sap sac slowly pulse",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "661c095f-cad4-4e34-8536-108f0fb2dd30",
+  "input_frames_digest": null,
+  "generation_started_at": "2026-11-05T00:50:26.9098+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
