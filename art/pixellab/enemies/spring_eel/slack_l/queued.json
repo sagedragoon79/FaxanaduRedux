@@ -1,0 +1,12 @@
+{
+ "background_job_ids": [
+  "8d3983e0-d3d1-4d9f-b3a3-cf6ba9869d4f"
+ ],
+ "directions": [
+  "east"
+ ],
+ "animation_group_id": "ca6be81d-0ff8-4976-9ab6-169688550c5f",
+ "status": "processing",
+ "enhanced_prompt": null,
+ "enhance_usage": null
+}

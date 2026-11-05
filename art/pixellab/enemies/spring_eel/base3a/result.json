@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "7c595177-7c79-4a05-9bbd-f4bddd2dff73",
+ "status": "completed",
+ "created_at": "2026-11-05T18:50:49.333225+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "98e5ca8d-22c3-4720-9f1f-62083e648f49",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/98e5ca8d-22c3-4720-9f1f-62083e648f49/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Spring Eel",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Side-scroller game enemy, full body, side view: a long pale blind cave eel stretched out horizontally, swimming level, its body lying flat along a straight horizontal line from snout on the right to tail on the left, with only a gentle wave. Pale sea-green white belly and darker teal back, milky blind eyes, a ribbon fin along its back, a small tail fluke, a blunt snout with needle teeth. Like an anglerfish, a long thin flexible stalk grows from the top of its head and arches forward and down over its snout, ending in a small round glowing cyan orb that dangles in front of its mouth."
+ }
+}

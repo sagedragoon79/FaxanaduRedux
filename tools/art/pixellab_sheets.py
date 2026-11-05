@@ -112,7 +112,9 @@ ENEMY_SHEETS = {
                       ("idle", "walk", "slam", "hurt", "death")},
     "meteor_slug": {f"{clip}.png": f"enemies/meteor_slug/{clip}" for clip in
                     ("idle", "crawl", "swell", "heave", "hurt", "death")},
-    "spring_eel": {f"{clip}.png": f"enemies/spring_eel/{clip}" for clip in
+    # The Spring Eel was remade with an anglerfish lure, a stalk arching to a glowing orb
+    # (Sean, 2026-11-05): base3b, clips in the *_l folders.
+    "spring_eel": {f"{clip}.png": f"enemies/spring_eel/{clip}_l" for clip in
                    ("swim", "coil", "dart", "slack", "hurt", "death")},
     # The Haar's foes (art loop pass 3): every clip from the base character's east view.
     "lantern_ghost": {f"{clip}.png": f"enemies/lantern_ghost/{clip}" for clip in ("idle", "lunge", "fade", "death")},

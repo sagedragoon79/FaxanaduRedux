@@ -1482,3 +1482,19 @@ date,endpoint,out_dir,cost,result,notes
 2026-11-05,characters/animations,enemies/marsh_hag/death,1.0 generations,"done d3e4c400-8498-48cf-841d-40545d47b050, 9 image(s)","marsh_hag death clip, pixminimax east"
 2026-11-05,characters/animations,enemies/marsh_hag/idle,1.0 generations,"done 9061c74c-c563-42fa-9ffc-2062a10eab07, 9 image(s)","marsh_hag idle clip, pixminimax east"
 2026-11-05,characters/animations,enemies/marsh_hag/stagger,1.0 generations,"done d76a7083-905c-4f18-9443-20cf93f9ba7f, 9 image(s)","marsh_hag stagger clip, pixminimax east"
+2026-11-05,create-character-v3,enemies/spring_eel/base3b,?,queued 7981c3a6-988a-4f5d-bbf9-f29f0875ef5a,spring_eel base retake: anglerfish lure (Sean)
+2026-11-05,create-character-v3,enemies/spring_eel/base3a,?,queued 7c595177-7c79-4a05-9bbd-f4bddd2dff73,spring_eel base retake: anglerfish lure (Sean)
+2026-11-05,create-character-v3,enemies/spring_eel/base3a,9.0 generations,"done 7c595177-7c79-4a05-9bbd-f4bddd2dff73, 0 image(s)",spring_eel base retake: anglerfish lure (Sean)
+2026-11-05,create-character-v3,enemies/spring_eel/base3b,9.0 generations,"done 7981c3a6-988a-4f5d-bbf9-f29f0875ef5a, 0 image(s)",spring_eel base retake: anglerfish lure (Sean)
+2026-11-05,characters/animations,enemies/spring_eel/slack_l,?,queued 8d3983e0-d3d1-4d9f-b3a3-cf6ba9869d4f,"art pass 6: spring_eel slack clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/death_l,?,queued 888689b7-565a-4fb3-b13a-53611fb555b6,"art pass 6: spring_eel death clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/swim_l,?,queued e0fe6f1e-28a7-445a-9c5b-e9df30892196,"art pass 6: spring_eel swim clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/coil_l,?,queued 58e80a54-06f2-4734-a783-4700fe9536de,"art pass 6: spring_eel coil clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/dart_l,?,queued ac1990cb-66ce-4ed7-b9da-2daffa02187b,"art pass 6: spring_eel dart clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/hurt_l,?,queued 6c5dc3d7-4dd4-4425-a05d-daa33e23622b,"art pass 6: spring_eel hurt clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/dart_l,1.0 generations,"done ac1990cb-66ce-4ed7-b9da-2daffa02187b, 9 image(s)","art pass 6: spring_eel dart clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/swim_l,1.0 generations,"done e0fe6f1e-28a7-445a-9c5b-e9df30892196, 9 image(s)","art pass 6: spring_eel swim clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/coil_l,1.0 generations,"done 58e80a54-06f2-4734-a783-4700fe9536de, 9 image(s)","art pass 6: spring_eel coil clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/hurt_l,1.0 generations,"done 6c5dc3d7-4dd4-4425-a05d-daa33e23622b, 9 image(s)","art pass 6: spring_eel hurt clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/slack_l,1.0 generations,"done 8d3983e0-d3d1-4d9f-b3a3-cf6ba9869d4f, 9 image(s)","art pass 6: spring_eel slack clip, pixminimax east"
+2026-11-05,characters/animations,enemies/spring_eel/death_l,2.0 generations,"done 888689b7-565a-4fb3-b13a-53611fb555b6, 13 image(s)","art pass 6: spring_eel death clip, pixminimax east"
