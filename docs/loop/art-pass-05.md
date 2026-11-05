@@ -38,14 +38,15 @@ All three play their death under the dissolve (`die` keeps redrawing, as the Sha
 `test_<foe>_plays_an_animation_for_every_state` checks every state maps to an animation of its sheet,
 that the tell is not the idle, and the hurt, reel and death.
 
-## Notes for review
+## Review (lead art thread)
 
-- The guide's scale table lists the Spire Sentinel as large (48 to 64). Its hitbox is 38 px tall and the
-  guide's rule is that the art matches the body, so it is drawn at 42 with the halberd: about the hero's
-  height. Raising it means a taller hitbox, which is a gameplay change for another pass.
-- The slam's art reaches about 20 px in front of its feet; its hitbox (`slam_rect`) reaches 52. Unchanged
-  here (numbers are out of scope); a later gameplay pass can shorten the rect or the art can be retaken
-  with a longer lunge.
+- Size: the hitbox wins. The Sentinel is drawn at 42 px for its 38 px body, so the guide's scale table now
+  lists it as standard, not large.
+- Reach: the slam's art reaches about 20 px in front of its feet (`HEAD_X`), its hitbox (`slam_rect`) 52.
+  So the blow is never invisible (guide 5), a stone shock is drawn along the floor from the halberd's head
+  to the far edge of `slam_rect`: a jagged crack and a low wave of dust, bright on the impact and gone in
+  0.2 s (`SHOCK_FADE`), with a faint line marking its path during the tell. Numbers unchanged. The
+  Sentinel's animation test checks that the drawn reach covers `slam_rect`.
 
 ## Cost
 

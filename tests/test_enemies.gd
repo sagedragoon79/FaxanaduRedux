@@ -919,6 +919,15 @@ func test_storm_harpy_plays_an_animation_for_every_state() -> void:
 
 func test_spire_sentinel_plays_an_animation_for_every_state() -> void:
 	await _plays_its_sheet("]", "spire_sentinel", SpireSentinel, ["stone", "stalk", "raise", "slam", "spent"], "raise")
+	# Guide 5: the slam's art reaches HEAD_X; the stone shock drawn along the floor carries
+	# it to the far edge of slam_rect, so no part of the blow lands where nothing is drawn.
+	var room := _room_with({Vector2i(20, 6): "]"})
+	make_player(room, Vector2i(3, 6))
+	var s: SpireSentinel = _find(room, SpireSentinel)
+	await frames(2)
+	check(SpireSentinel.HEAD_X < s.slam_rect().size.x, "the shock starts at the halberd's head, inside the slam")
+	check(s.shock_reach() >= s.slam_rect().size.x, "the shock reaches the end of slam_rect (%.0f of %.0f)" % [s.shock_reach(), s.slam_rect().size.x])
+	check(SpireSentinel.SHOCK_FADE >= SpireSentinel.SLAM, "the shock lasts as long as the blow is live")
 
 
 func test_shade_knight_ripostes_when_you_batter_his_shield() -> void:

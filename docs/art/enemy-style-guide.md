@@ -36,8 +36,8 @@ World pixels; sheets are drawn at 2x (`"density": 2`), two sheet pixels per worl
 | Class | Figure height (world px) | Examples |
 |-------|--------------------------|----------|
 | Small (fliers, crawlers) | 14 to 28 | Blinkhop, Hornet, Gear Bat, Mothling, Grub Lump |
-| Standard | 30 to 48 (the hero is 46) | Rot Dwarf, Shade Knight, Marsh Hag, Storm Harpy |
-| Large | 48 to 64 | Iron Dwarf, Bark Knight, Spire Sentinel |
+| Standard | 30 to 48 (the hero is 46) | Rot Dwarf, Shade Knight, Marsh Hag, Storm Harpy, Spire Sentinel |
+| Large | 48 to 64 | Iron Dwarf, Bark Knight |
 | Mini-boss | 64 to 96 | the Foreman, the Bark Captain |
 | Guardian | 80 and up; past about 120, built of parts | Durgan, Gloamweaver, the Haar Wyrm, Skyrend |
 

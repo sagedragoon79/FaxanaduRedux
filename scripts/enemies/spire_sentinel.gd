@@ -153,6 +153,11 @@ const ANIMS := {"stone": "idle", "stalk": "stalk", "raise": "raise", "slam": "sl
 ## facing right), for the gold light that wakes in them.
 const EYE := Vector2(5, -33)
 const GLYPH_AT := Vector2(6, -25)
+## Where the halberd's head meets the floor in the slam (world px in front of its feet).
+## The art's reach ends here; the stone shock carries the blow out to the end of slam_rect.
+const HEAD_X := 20.0
+## How long the shock along the floor takes to fade after the impact (s).
+const SHOCK_FADE := 0.2
 
 var _died_at := -1.0
 
@@ -205,6 +210,17 @@ func _draw() -> void:
 	if exposed():
 		for seam: Rect2 in SEAMS:
 			draw_rect(Rect2(seam.position * f - Vector2(seam.size.x if facing < 0 else 0.0, 0), seam.size), Color(CRACK, 0.9))
+	# The slam's reach, drawn: a stone shock along the floor from the halberd's head to the
+	# far edge of slam_rect, bright on the impact and gone in SHOCK_FADE. During the tell a
+	# faint line marks where it will run.
+	if state == "slam" or (state == "spent" and state_time < SHOCK_FADE - SLAM):
+		var k := clampf((state_time + (SLAM if state == "spent" else 0.0)) / SHOCK_FADE, 0.0, 1.0)
+		_draw_shock(1.0 - k, t)
+	elif state == "raise":
+		var x0 := HEAD_X * facing
+		var x1 := shock_reach() * facing
+		for i in int((shock_reach() - HEAD_X) / 4.0):
+			draw_rect(Rect2(lerpf(x0, x1, i / ((shock_reach() - HEAD_X) / 4.0)), -1, 2, 1), Color(GLYPH, 0.25))
 	# Grit kicked up while it grinds along.
 	if state == "stalk":
 		for k in 3:
@@ -213,4 +229,29 @@ func _draw() -> void:
 
 
 ## The seams that glow when it cracks open (world px from its feet, facing right).
-const SEAMS: Array[Rect2] = [Rect2(0, -30, 1, 4), Rect2(1, -26, 3, 1), Rect2(7, -22, 1, 4), Rect2(1, -14, 1, 4)]
+const SEAMS: Array[Rect2] = [Rect2(3, -30, 1, 4), Rect2(4, -26, 3, 1), Rect2(9, -22, 1, 4), Rect2(4, -14, 1, 4)]
+
+
+## How far in front of its feet the drawn shock reaches: the far edge of slam_rect.
+func shock_reach() -> float:
+	return slam_rect().size.x
+
+
+## The shock: a jagged crack along the floor and a low wave of stone dust over it.
+func _draw_shock(a: float, t: float) -> void:
+	if a <= 0.0:
+		return
+	var pts := PackedVector2Array()
+	var x := HEAD_X
+	var i := 0
+	while x <= shock_reach():
+		pts.append(Vector2(x * facing, -1.0 - float((i + int(t * 20.0)) % 3 == 0)))
+		x += 3.0
+		i += 1
+	pts.append(Vector2(shock_reach() * facing, -1.0))
+	draw_polyline(pts, Color(CRACK, a), 1.0)
+	var span := shock_reach() - HEAD_X
+	for j in 6:
+		var dx := HEAD_X + span * (j + 0.5) / 6.0
+		var h := 2.0 + 3.0 * (1.0 - a) * (1.0 - j / 6.0) + float(j % 2)
+		draw_rect(Rect2(dx * facing - 2.0, -h - 1.0, 4.0, h), Color(STONE_DARK, 0.7 * a))
