@@ -582,6 +582,13 @@ func is_low_health() -> bool:
 	return not dead and hp > 0 and hp <= combat.low_health
 
 
+
+## How far through the heartbeat we are: 0 as it sounds, rising to 1 by the
+## next. The HUD's red edge reads it, so it swells on the beat (pass 484).
+func heartbeat_phase() -> float:
+	return clampf(1.0 - _heartbeat_timer / combat.heartbeat_interval, 0.0, 1.0)
+
+
 func _tick_heartbeat(delta: float) -> void:
 	if not is_low_health():
 		_heartbeat_timer = 0.0
