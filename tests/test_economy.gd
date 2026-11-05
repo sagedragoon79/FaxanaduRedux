@@ -1203,6 +1203,41 @@ func test_a_death_raises_you_at_the_ringreader_you_rested_with() -> void:
 	check(bible.contains("`test_a_death_raises_you_at_the_ringreader_you_rested_with`"), "5.4 names the test")
 
 
+## Pass 463 (bible 2, Act I): the Ringreader reads the glass leaf. The story's
+## first beat had no line in the game: the stranger's leaf turned to glass, and
+## the Ringreader reads in it the Heartwood Spring dammed with stillglass. The
+## first Ringreader met says so over his menu, once, and from then on greets
+## as before. Played with the real Up and Dash, and kept through a save.
+func test_the_first_ringreader_reads_the_glass_leaf() -> void:
+	GameState.new_game()
+	var info := GameData.npc("ringreader")
+	var reading := String(info.get("greeting_leaf", ""))
+	check(reading.contains("glass") and reading.contains("Heartwood Spring") and reading.contains("stillglass"), "the reading names the glass leaf, the Heartwood Spring and the stillglass (%s)" % reading)
+	var w := make_world(_town({}, ["npc: 8, 19, ringreader"]), "test/town", cell_feet(8, 19))
+	var p := w.player
+	p.input = PlayerInput.new()
+	var menu := ListMenu.new()
+	arena.add_child(menu)
+	await frames(3)
+	check(not GameState.flag(Npc.LEAF_READ), "a new journey has had no reading")
+	await _tap_for_real("move_up")
+	check(menu.is_open and menu.subtitle == reading, "Up at the first Ringreader: he reads the leaf over his menu (%s)" % menu.subtitle)
+	check(GameState.flag(Npc.LEAF_READ), "and it is marked read")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap_for_real("dash")
+	check(not menu.is_open, "Dash steps away")
+	await frames(10)
+	await _tap_for_real("move_up")
+	check(menu.is_open and menu.subtitle == String(info.greeting), "Up again: the usual greeting (%s)" % menu.subtitle)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap_for_real("dash")
+	var kept: Dictionary = JSON.parse_string(JSON.stringify(GameState.data))
+	check(bool(kept.flags.get(Npc.LEAF_READ, false)), "the reading is kept in the journey")
+	menu.free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("`test_the_first_ringreader_reads_the_glass_leaf`"), "the bible names the test")
+
+
 ## Pass 453 (bible 9): a skill learned and unlearned at a Ringreader by the buttons.
 ## Up opens his menu, Down and Jump open Learn skills, and Jump on the first
 ## row learns it: the points are paid and the blade cuts harder at once. Dash

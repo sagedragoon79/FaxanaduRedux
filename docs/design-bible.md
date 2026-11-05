@@ -53,6 +53,8 @@ This is the single source of truth for the game. Every thread that builds code, 
 
 **Restoration as feedback.** Each spring you restore visibly changes Hearthroot (the fountain fills by a third, NPCs return, shops stock new items) and changes the world (see section 4.4).
 
+**The glass leaf, read (pass 463).** The first Ringreader the stranger meets reads the leaf before anything else, over his menu: "A leaf of the Ylden, turned to glass. Its grain shows me the Heartwood Spring, stopped by a dam of stillglass. Go down, wanderer. Rest here when you need to." It is said once (flag `leaf_read`, kept in the save), and from then on every Ringreader greets as usual. `test_the_first_ringreader_reads_the_glass_leaf`.
+
 **Ringreaders.** Every town has one. They read the Ylden's growth rings and carve your mark into the wood when you rest (the save). They teach skills, raise your rank, and walk you along the Grain Road (fast travel). Their oldest rings open into the Inner Rings, the trial space (3.2).
 
 ---

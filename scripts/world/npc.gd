@@ -6,6 +6,8 @@ extends Interactable
 ## you for free, without a save; pass 175).
 
 const KING_GOLD := 1500
+## Set once the first Ringreader has read the glass leaf (design bible 2).
+const LEAF_READ := "leaf_read"
 const OUTLINE := Color("1d1a2b")
 
 var npc_id := ""
@@ -48,9 +50,19 @@ func interact(p: Player) -> void:
 				GameState.meet_ringreader(world.room.id, global_position)
 			if GameState.unnamed_title() != "":
 				await _name_title()
-			Menus.open_ringreader(get_tree(), info.get("greeting", ""), p, self)
+			Menus.open_ringreader(get_tree(), ringreader_greeting(info), p, self)
 		_:
 			GameState.say(info.get("name", ""), lines(info, "lines"))
+
+
+## What a Ringreader says over the menu. The first one you meet reads the
+## glass leaf the stranger carries (design bible 2, Act I) and sees the
+## Heartwood Spring dammed with stillglass; after that, the usual greeting.
+static func ringreader_greeting(npc: Dictionary) -> String:
+	if not GameState.flag(LEAF_READ) and npc.has("greeting_leaf"):
+		GameState.set_flag(LEAF_READ)
+		return String(npc.greeting_leaf)
+	return String(npc.get("greeting", ""))
 
 
 ## The original's town hospital (Kettleforge's, in Yldenfall): health and magic

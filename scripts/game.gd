@@ -581,7 +581,7 @@ func _debug_open() -> void:
 	elif what == "trials":
 		Menus.open_trials(get_tree(), player)
 	elif what == "ringreader":
-		Menus.open_ringreader(get_tree(), GameData.npc("ringreader").greeting, player, null)
+		Menus.open_ringreader(get_tree(), Npc.ringreader_greeting(GameData.npc("ringreader")), player, null)
 	elif what == "title":
 		for n in get_tree().get_nodes_in_group("interactable"):
 			if n is Npc and n.info.get("role", "") == "ringreader":
