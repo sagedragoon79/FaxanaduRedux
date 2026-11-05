@@ -1174,3 +1174,37 @@ func test_a_door_fades_in_real_time_at_every_game_speed() -> void:
 		await frames(2)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_door_fades_in_real_time_at_every_game_speed`"), "the bible names the test")
+
+
+## Pass 479: bible 2 tells the story in turns, and the Story and world row of the
+## rubric asks that each shows in the game. No test held them, and one did not
+## show: Thane Vorrund was meant to weep at last as he gave up Severance, and no
+## one saw it. Each turn is held here to the words the game speaks and to the
+## room where they are spoken.
+func test_every_turn_of_the_story_is_told_in_the_game() -> void:
+	var says := func(id: String, room: String, words: Array) -> void:
+		var lines := " ".join(PackedStringArray(GameData.npc(id).get("lines", [])))
+		for w: String in words:
+			check(lines.contains(w), "%s says \"%s\"" % [GameData.npc(id).get("name", id), w])
+		var text := FileAccess.get_file_as_string("res://levels/%s.room" % room)
+		var placed := false
+		for line in text.split("\n"):
+			if line.begins_with("npc:") and line.get_slice(",", 2).strip_edges() == id:
+				placed = true
+		check(placed, "and stands in %s" % room)
+	# Act I: the Reeve's doubt, and the turn in Amberlee.
+	says.call("king", "hearthroot/king_hall", ["strangers since the leaves stopped falling", "a stranger is one more mouth"])
+	says.call("amberlee_miner", "heartwood/amberlee", ["We did. The Hollin. Our Thane gave the word"])
+	# Act II: Carillon's oldest record, and the name it keeps.
+	says.call("spires_mayor", "spires/spires", ["the year of the Withering", "Thane Vorrund, who planted the flower"])
+	# Act III: beaten, Vorrund weeps at last and gives up Severance.
+	var vorrund: Dictionary = BossArena.BOSSES.thane_vorrund
+	check(vorrund.blade == "severance" and String(vorrund.text).contains("weeps at last") and String(vorrund.text).contains("grafting blade"),
+		"Thane Vorrund weeps at last and gives up his blade (%s)" % vorrund.text)
+	var kennels := FileAccess.get_file_as_string("res://levels/vorrhallow/kings_kennels.room")
+	check(kennels.contains("[boss:thane_vorrund]") and kennels.get_slice("[boss:thane_vorrund]", 1).get_slice("\n", 0).contains("wept there at last"),
+		"and the sign to his throne says so after him")
+	# The ending: the leaves fall, and Hearthroot keeps the Leaffall.
+	check(" ".join(PackedStringArray(EndingScreen.FAREWELL)).contains("Leaffall festival"), "the ending names the Leaffall festival")
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_every_turn_of_the_story_is_told_in_the_game`"), "the bible names the test")

@@ -2313,7 +2313,10 @@ func test_thane_vorrund_defeat_gives_the_frost_seed_and_the_severance() -> void:
 	var b: ThaneVorrund = setup[2]
 	var points := int(GameState.data.skill_points)
 	var banners: Array = []
-	var on_banner := func(title: String, _text: String) -> void: banners.append(title)
+	var said: Array = []
+	var on_banner := func(title: String, text: String) -> void:
+		banners.append(title)
+		said.append(text)
 	GameState.banner.connect(on_banner)
 	check(not w.player.abilities.get("severance", false), "no one holds the Severance before him")
 	b.hp = 1
@@ -2328,6 +2331,7 @@ func test_thane_vorrund_defeat_gives_the_frost_seed_and_the_severance() -> void:
 	check(GameState.data.equipment.blade == "severance" and Array(GameState.data.gear).has("severance"), "and it goes straight into your hand")
 	check(w.player.slash_damage == int(GameData.item("severance").slash), "it cuts as the Severance (%d)" % w.player.slash_damage)
 	check(banners.has("Severance"), "and the banner names it (%s)" % [banners])
+	check(said.any(func(t: String) -> bool: return t.contains("weeps at last")), "and says he weeps at last (pass 479; %s)" % [said])
 	await frames(90)
 	w._enter("vorrhallow/throne_hall")
 	await frames(10)
