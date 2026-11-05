@@ -1425,3 +1425,53 @@ func test_the_windloft_veil_keeps_the_bloom_for_the_stride() -> void:
 				"without the Stride the veil stops you short of the door (x %.0f)" % p.global_position.x)
 		w.queue_free()
 		await frames(1)
+
+
+## Pass 473: the critical path's stride gap, by the real controller at every
+## game speed. The Sky Steps' exit (bible 3.2, 8.5) is the one gap on the way
+## that only an air dash crosses (through its elven veil), and it had only been
+## crossed by a scripted intent at full speed. Pass 470 found the dash 4 px
+## short at 70% game speed. Here Right is held, Jump pressed at the island's
+## edge and Dash at the jump's top, all for real, at 100, 90, 80 and 70%: the
+## hero lands on the exit ledge every time. Without the Stride, the same
+## presses never reach it.
+func test_the_sky_steps_gap_is_crossed_with_the_buttons_at_every_game_speed() -> void:
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		var pct := roundi(speed * 100.0)
+		check(await _real_sky_steps_leap(true, speed), "at %d%% game speed, a real jump and Dash cross to the exit ledge" % pct)
+		check(not await _real_sky_steps_leap(false, speed), "at %d%%, without the Stride the same presses fall short" % pct)
+	Feel.set_game_speed(1.0)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("The Sky Steps' gap at every game speed (pass 473)"), "the bible says so")
+
+
+func _real_sky_steps_leap(stride: bool, speed: float) -> bool:
+	var w := make_world({}, "spires/sky_steps", cell_feet(24, 12))
+	for e in w.room.get_children():
+		if e is Enemy:
+			e.queue_free()
+	var p := w.player
+	p.abilities["boots"] = true
+	p.abilities["stride"] = stride
+	await frames(3)
+	p.input = PlayerInput.new()
+	Input.action_press("move_right")
+	var jumped := -1
+	var dash_at := roundi(20.0 / speed)
+	var got := false
+	for i in roundi(140.0 / speed):
+		if jumped < 0 and p.is_on_floor() and p.global_position.x >= 27.8 * Room.TILE:
+			Input.action_press("jump")
+			jumped = i
+		elif jumped >= 0 and i == jumped + dash_at:
+			Input.action_press("dash")
+		elif jumped >= 0 and i == jumped + dash_at + 2:
+			Input.action_release("dash")
+		await frames(1)
+		if p.is_on_floor() and p.global_position.y <= 10 * Room.TILE + 1 and p.global_position.x >= 34 * Room.TILE:
+			got = true
+	release_for_real(["move_right", "jump", "dash"])
+	w.queue_free()
+	await frames(1)
+	return got
