@@ -18,7 +18,8 @@
 	"ringreader": {
 		"name": "Ringreader", "role": "ringreader",
 		"look": {"robe": "#d8cfb4", "trim": "#7ee0d6", "skin": "#c9a27a", "hair": "#f1ead2", "hat": "hood"},
-		"greeting": "Rest, wanderer. Let me read your ring into the wood, or teach your body what your mind already knows."
+		"greeting": "Rest, wanderer. Let me read your ring into the wood, or teach your body what your mind already knows.",
+		"greeting_leaf": "A leaf of the Ylden, turned to glass. Its grain shows me the Heartwood Spring, stopped by a dam of stillglass. Go down, wanderer. Rest here when you need to."
 	},
 	"arms_dealer": {
 		"name": "Arms Dealer", "role": "shop", "shop": "hearthroot_arms",

@@ -451,7 +451,7 @@ func test_every_npc_line_fits_the_dialog_box() -> void:
 		var said: Array = []
 		for key: String in info:
 			var v: Variant = info[key]
-			if v is String and key in ["greeting"]:
+			if v is String and key.begins_with("greeting"):
 				said.append(v)
 			elif v is Array and key.contains("lines"):
 				said.append_array(v)
@@ -2851,11 +2851,12 @@ func test_the_boss_rush_is_entered_and_left_with_the_buttons() -> void:
 	await frames(30)
 	p.teleport(cell_feet(21, 19))
 	await frames(10)
-	var flags_before: Dictionary = GameState.data.flags.duplicate()
 	var by_ringreader := p.global_position
 	p.hp = 5
 	await _tap("move_up")
 	check(menu.is_open, "Up at the Ringreader opens his menu")
+	# Taken once he has spoken: the first Ringreader's reading of the glass leaf sets a flag.
+	var flags_before: Dictionary = GameState.data.flags.duplicate()
 	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
 	var downs := 0
 	while String(menu.rows[menu.cursor].label) != "Boss Rush" and downs < 10:
