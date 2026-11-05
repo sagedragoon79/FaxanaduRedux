@@ -1352,10 +1352,10 @@
   "reference": "idle",
   "animations": {
    "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, hovering"},
-   "lunge_tell": {"file": "lunge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 6, 5], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the draw-back of the lunge clip"},
+   "lunge_tell": {"file": "lunge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [7, 8, 8, 7], "fps": 6, "loop": true, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the deep rear-back of the lunge clip"},
    "lunge": {"file": "lunge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [9, 10, 11, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the lunge"},
    "fade": {"file": "fade.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6], "fps": 7, "loop": false, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, drifting back, arms limp"},
-   "hurt": {"file": "lunge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the rear-back of the lunge clip as a flinch"},
+   "hurt": {"file": "fade.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the fade clip's slump as a flinch"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [4, 5, 6, 7, 8], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character f4138cfa (create-character-v3, side view), pixminimax east, the empty shroud crumpling"}
   }
  },

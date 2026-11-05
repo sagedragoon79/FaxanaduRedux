@@ -17,8 +17,8 @@ lantern yellow, with one hostile accent each.
 
 | Foe | Height | Base canvas | Animations |
 |-----|--------|-------------|------------|
-| Lantern Ghost | 26 (small, flier, anchored on its middle) | 128 | idle 8, lunge_tell 6 (claws drawn back by the hood), lunge 4, fade 6, hurt 1, death 5 |
-| Bog Puffcap | 26 | 128 | idle 6 (gills dark), windup 4 (cap swollen, gills lit: the tell), burst 2, spent 8 (cap sagging open), hurt 1, death 5 |
+| Lantern Ghost | 26 (small, flier, anchored on its middle) | 128 | idle 8, lunge_tell 4 (reared back, claws drawn to the hood), lunge 4, fade 6, hurt 1 (the fade's slump), death 5 |
+| Bog Puffcap | 26 | 128 | idle 6 (gills dark), windup 4 (cap swollen, gills lit: the tell), burst 2, spent 8 (cap sagging open), hurt 1 (the fade's slump), death 5 |
 | Drowned Dwarf | 32 | 256 | idle 8, walk 8, sunk 2, rise 8, sink 8, heave 6 (anchor hoisted: the tell), slam 2, mired 4, stagger 5, hurt 1, death 7 |
 | Marsh Hag | 36 to the crook | 128 | idle 8, walk 7, hex 4 (staff raised: the tell), cast 3, fumble 8 (staff dropped, groping), stagger 2, hurt 1, death 6 |
 

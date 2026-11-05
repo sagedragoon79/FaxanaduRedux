@@ -29,7 +29,7 @@ const ANIMS := {
 }
 ## Its eyes in the hood (world px from its middle, facing right), where the
 ## wind-up's flare is drawn, per animation.
-const EYES := {"idle": Vector2(0, -8), "lunge_tell": Vector2(-2, -8)}
+const EYES := {"idle": Vector2(0, -8), "lunge_tell": Vector2(-3, -8)}
 const EYE := Color("f4e48c")
 
 var _dir := Vector2.ZERO
