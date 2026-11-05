@@ -854,6 +854,33 @@ func test_shade_knight_shield_turns_blows_from_the_front() -> void:
 	check(hp0 - k.hp == 10, "reeling from a parry, he is open (%d)" % (hp0 - k.hp))
 
 
+## The art loop (docs/art/enemy-style-guide.md 4): every state the Shade Knight
+## takes plays an animation of his sheet that fits it: hurt while a blow stuns him,
+## stagger while he reels, and his collapse once he dies.
+func test_shade_knight_plays_an_animation_for_every_state() -> void:
+	var room := _room_with({Vector2i(20, 6): "e"})
+	make_player(room, Vector2i(3, 6))
+	var k: ShadeKnight = _find(room, ShadeKnight)
+	await frames(3)
+	check(Sheet.exists("shade_knight"), "his sheet is in the game")
+	for s: String in ["idle", "walk", "thrust_tell", "cut_tell", "riposte_tell", "thrust", "cut", "winded"]:
+		k.set_state(s)
+		var a: String = k.anim_now()[0]
+		check(Sheet.has_anim("shade_knight", a), "%s plays %s, which the sheet has" % [s, a])
+	k.set_state("thrust_tell")
+	check(k.anim_now()[0] == "thrust_tell", "the thrust's tell is its own pose, not the idle")
+	k.set_state("riposte_tell")
+	check(k.anim_now()[0] == "thrust_tell", "the riposte draws back as the thrust does")
+	k.set_state("walk")
+	k.take_hit(1, Vector2(-1, 0))
+	check(k.anim_now()[0] == "hurt" and Sheet.has_anim("shade_knight", "hurt"), "a blow that lands makes him flinch")
+	k._hitstun = 0.0
+	k.stagger()
+	check(k.anim_now()[0] == "stagger" and Sheet.has_anim("shade_knight", "stagger"), "a parry sends him reeling")
+	k.die()
+	check(k.anim_now()[0] == "death" and Sheet.has_anim("shade_knight", "death"), "he collapses as he dissolves")
+
+
 func test_shade_knight_ripostes_when_you_batter_his_shield() -> void:
 	var room := _room_with({Vector2i(20, 6): "e"})
 	make_player(room, Vector2i(3, 6))

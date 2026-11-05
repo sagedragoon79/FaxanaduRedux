@@ -1029,5 +1029,26 @@
    "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0, 1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab, battle helm set of Sean's elf with the key-green cloak, pixminimax"},
    "block": {"file": "block.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4], "fps": 14, "loop": false, "pixellab": "PixelLab, battle helm set with the key-green cloak holding the Magic Shield up to guard, pixminimax"}
   }
+ },
+ "shade_knight": {
+  "dir": "../pixellab/sheets/shade_knight",
+  "colors": 48,
+  "density": 2,
+  "ramps": ["night", "stone", "sky"],
+  "height": 40,
+  "reference": "idle",
+  "rim": {"color": [127, 240, 224], "mix": 0.3},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, from his guard pose"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 8, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, from his guard pose"},
+   "thrust_tell": {"file": "thrust.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 4], "fps": 8, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the draw-back of the thrust clip"},
+   "thrust": {"file": "thrust.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [6, 7, 8, 10], "fps": 16, "loop": false, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the lunge (grey slabs cleared by pixellab_sheets.py)"},
+   "cut_tell": {"file": "cut.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 4], "fps": 8, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the raise of the cut clip"},
+   "cut": {"file": "cut.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [6, 7, 8, 9], "fps": 16, "loop": false, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the cut, 6 its smear"},
+   "winded": {"file": "winded.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8, 7, 6, 5, 4], "fps": 5, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, shield and point sagging"},
+   "stagger": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, from the base's east view"},
+   "hurt": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, the stagger's first recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 9, 10, 12], "fps": 16, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character 405f1125 (create-character-v3, side view), pixminimax east, from the base's east view"}
+  }
  }
 }

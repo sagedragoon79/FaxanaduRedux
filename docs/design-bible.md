@@ -1473,6 +1473,8 @@ An arena you have not entered is never named, so the page spoils nothing. The wo
   polish passes: hero first, then enemies and bosses, then NPCs, tiles and decor. Done so far (2026-10-23): the
   hero, the Blinkhop, Hornet and Rot Dwarf (re-imported free from their clips), Gnarlmaw, the Iron Dwarf, the Foreman,
   Durgan, Gloamweaver and the zone tiles (the small Gear Bat stays code-drawn at 2x).
+  The art loop (2026-11-05) carries on foe by foe to `docs/art/enemy-style-guide.md`, starting with the Shade Knight
+  (PixelLab, the guide's reference foe).
 - **Smooth camera with crisp pixels:** render the world into a SubViewport of 642x362 world pixels (1 px margin) at
   render density, upscale with a sharp-bilinear shader (`shaders/sharp_pixels.gdshader`: nearest at integer scales,
   a one-pixel edge blend at 1.5x for 1080p), then offset the image by the camera's remainder below one render pixel.
@@ -1633,8 +1635,13 @@ idle (8 frames), run (10), run-start (3), turn (3), jump-rise (3), jump-apex (2)
 #### NPCs (AS idle + talk; portraits CODE from the sprite, then APP)
 Reeve Aldous, Ringreader (re-skinned per town by CODE), Hearthroot townsfolk (4), dwarf smith, Key master, Cartographer, Shopkeeper (2 variants), Kettleforge dwarf (3 variants by recolor), Princess/King's daughter (story).
 
-#### Enemies (AS; variants CODE recolor)
+#### Enemies (PixelLab or AS; variants CODE recolor)
 About 30 families from section 7, each with idle/move, attack telegraph, attack, hurt, death. Mini-bosses: 4 (AS).
+**The art loop (Sean, 2026-11-05):** foes and guardians are remade to one guide, `docs/art/enemy-style-guide.md`
+(scale, palette, outline, the animation set with frame counts and rates, telegraph rules, the PixelLab recipe and a
+review checklist), so foes made in parallel keep one look. `tools/art/lineup.tscn` draws every foe in every state for
+review. The Shade Knight is the reference: a PixelLab base (`create-character-v3`, side view) and pixminimax clips
+made from one guard pose, so every state shares the model.
 
 #### Bosses
 Each boss is built as a **rigged multi-part sprite** (separate head, limbs, segments) animated with Godot's Skeleton2D and AnimationPlayer. That keeps credit cost low and gives smooth, huge motion.

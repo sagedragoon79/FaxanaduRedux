@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight (PixelLab clips only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
 the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1480,6 +1480,21 @@ GLOAMWEAVER = [
 ]
 
 
+# The Shade Knight (art loop pass 1, docs/art/enemy-style-guide.md): PixelLab clips only.
+SHADE_KNIGHT = [
+    ("idle", [None] * 2, [0, 1], 6, True),
+    ("walk", [None] * 2, [0, 1], 8, True),
+    ("thrust_tell", [None] * 2, [0, 1], 8, True),
+    ("thrust", [None] * 2, [0, 1], 16, False),
+    ("cut_tell", [None] * 2, [0, 1], 8, True),
+    ("cut", [None] * 2, [0, 1], 16, False),
+    ("winded", [None] * 2, [0, 1], 4, True),
+    ("stagger", [None] * 2, [0, 1], 6, True),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 10, False),
+]
+
+
 def main():
     write_sheet("blinkhop", (40, 32), (20, 30), BLINKHOP, lambda r: r(None))
     write_sheet("hornet", (40, 32), (20, 16), HORNET, lambda r: r(None))
@@ -1498,6 +1513,7 @@ def main():
     write_sheet("seed_bomber", (56, 44), (28, 22), SEED_BOMBER, lambda r: r(None), density=SB_SCALE)
     write_sheet("marsh_hag", (56, 52), (24, 49), MARSH_HAG, lambda r: r(None), density=MH_SCALE)
     write_sheet("gloamweaver", (104, 76), (52, 74), GLOAMWEAVER, autosprite_only, density=2)
+    write_sheet("shade_knight", (80, 56), (40, 53), SHADE_KNIGHT, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

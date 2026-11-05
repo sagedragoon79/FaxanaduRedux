@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "9c3f2fcd-b518-4391-8154-ffc5391321e4",
+ "status": "completed",
+ "created_at": "2026-11-05T00:19:31.680132+00:00",
+ "last_response": {
+  "seed": 411529214,
+  "type": "done",
+  "action": "slow heavy walk forward, stepping one armoured boot in front of the other, shield held up in front of him, sword low, loops seamlessly. He stays in strict side profile facing right the whole time, the shield stays in front of him, and he never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.38858391184190133,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "b8138a27-8875-45ca-ab61-4af93ac11660",
+  "character_id": "405f1125-1903-4604-ae98-ed61efc48b22",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/405f1125-1903-4604-ae98-ed61efc48b22/animations/b8138a27-8875-45ca-ab61-4af93ac11660/east/8.png"
+   ],
+   "input_frames_digest": "3f1cdae2d7bb0a252bdf2696af83ededc3ab9f92c46c6d98edc5821e2320a420"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "60c29b11-3ec4-417b-9cb4-06dd56d77b4e",
+  "animation_name": "custom-slow heavy walk forward, stepp",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "71bd9199-8618-4a67-890a-d68800901e77",
+  "input_frames_digest": "3f1cdae2d7bb0a252bdf2696af83ededc3ab9f92c46c6d98edc5821e2320a420",
+  "generation_started_at": "2026-11-05T00:19:57.367921+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

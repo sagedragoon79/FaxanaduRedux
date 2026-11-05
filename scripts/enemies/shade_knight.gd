@@ -27,18 +27,6 @@ const CUT_DAMAGE := 14
 const RIPOSTE_AFTER := 2
 ## His blade's reach in front of the body.
 const BLADE_REACH := 30.0
-## The drawing is laid out small and drawn this much larger.
-const SCALE := 1.7
-
-const OUTLINE := Color("0c1418")
-const ARMOR := Color("4f7f88")
-const ARMOR_LIGHT := Color("8fc8c8")
-const ARMOR_DARK := Color("2c4a54")
-const SHIELD := Color("3a5f66")
-const SHIELD_RIM := Color("a8b8a0")
-const GLOW := Color("7ff0e0")
-const BLADE := Color("d8f8f0")
-const EYES := Color("b8fff0")
 
 var _struck := false
 var _cool := 0.0
@@ -155,112 +143,54 @@ func _edge_ahead() -> bool:
 	return not test_move(t, Vector2(0, 6))
 
 
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {
+	"idle": "idle", "walk": "walk", "thrust_tell": "thrust_tell", "riposte_tell": "thrust_tell",
+	"cut_tell": "cut_tell", "thrust": "thrust", "cut": "cut", "winded": "winded",
+}
+## Where his blade's point is, in each tell (world px from his feet, facing right),
+## for the cold light that gathers there.
+const TIP := {"thrust_tell": Vector2(-10, -5), "cut_tell": Vector2(-23, -39)}
+const GLOW := Color("7ff0e0")
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what he is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "idle")
+	if a == "walk" and absf(velocity.x) < 1.0:
+		a = "idle"
+	return [a, state_time if a != "idle" and a != "walk" else Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
-	var t := Time.get_ticks_msec() * 0.001
 	var telling := state.ends_with("_tell")
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
-	# A shade: he wavers a little, and his edges fray into mist below the knees.
-	var a := 0.82 + 0.08 * sin(t * 3.0)
-	var bob := roundi(sin(t * 2.0) * 1.0)
-	var lean := 0
-	var shield_x := 6
-	var shield_low := 0
-	match state:
-		"thrust":
-			lean = 4
-		"cut":
-			lean = 2
-		"winded":
-			shield_low = 8
-			shield_x = 3
-		"stagger":
-			shield_low = 4
-			shield_x = -10
-			lean = -3
-	# Haar trailing at his feet.
-	for i in 4:
-		var mx := -10 + i * 6 + roundi(sin(t * 2.5 + i) * 2.0)
-		_px(mx, -4, 6, 4, Color(GLOW, 0.25), a)
-	# Legs: greaves fading into the mist.
-	_px(-7, -12, 6, 10, OUTLINE, a)
-	_px(1, -12, 6, 10, OUTLINE, a)
-	_px(-6, -11, 4, 8, ARMOR_DARK, a * 0.8)
-	_px(2, -11, 4, 8, ARMOR_DARK, a * 0.8)
-	# Body: a squat breastplate.
-	var bx := -9 + lean
-	var by := -28 + bob
-	_px(bx - 1, by - 1, 20, 18, OUTLINE, a)
-	_px(bx, by, 18, 16, ARMOR, a)
-	_px(bx, by, 18, 3, ARMOR_LIGHT, a)
-	_px(bx + 2, by + 6, 14, 2, ARMOR_DARK, a)
-	_px(bx + 8, by + 3, 2, 12, ARMOR_DARK, a)
-	# Helm: a dwarf's great helm with a slit; the eyes glow inside.
-	var hx := -7 + lean
-	var hy := by - 12
-	_px(hx - 1, hy - 1, 16, 14, OUTLINE, a)
-	_px(hx, hy, 14, 12, ARMOR, a)
-	_px(hx, hy, 14, 3, ARMOR_LIGHT, a)
-	_px(hx + 4, hy + 5, 10, 2, OUTLINE, a)
-	_px(hx + 7, hy + 5, 2, 2, EYES, 1.0)
-	_px(hx + 11, hy + 5, 2, 2, EYES, 1.0)
-	_px(hx + 2, hy - 3, 10, 2, ARMOR_DARK, a)
-	# The blade, by state: held low, drawn back glowing, thrust, or swept down.
-	var sx := bx + 14
-	var sy := by + 8
-	var glow := telling and telegraph_pulse()
-	var blade := BLADE if not glow else Color(1, 1, 1)
-	var tip := Vector2i.ZERO
-	match state:
-		"thrust_tell", "riposte_tell":
-			tip = _blade(sx - 16, sy - 2, 18, 0, blade, a)
-		"cut_tell":
-			tip = _blade(sx - 2, sy - 6, 6, -20, blade, a)
-		"thrust":
-			tip = _blade(sx, sy, 30, 0, blade, a)
-		"cut":
-			tip = _blade(sx, sy - 6, 24, 18, blade, a)
-		"winded", "stagger":
-			tip = _blade(sx, sy + 4, 12, 10, blade, a)
-		_:
-			tip = _blade(sx, sy + 2, 14, 6, blade, a)
-	if telling:
+	var now := anim_now()
+	var white := flashing() or (telling and telegraph_pulse())
+	draw_sheet("shade_knight", now[0], now[1], white)
+	if telling and TIP.has(ANIMS[state]):
 		# The drawn blade gathers a cold light at its point: the tell.
+		var tip: Vector2 = TIP[ANIMS[state]] * Vector2(facing, 1)
 		var k := 0.5 + 0.5 * absf(sin(state_time * 14.0))
-		_px(tip.x - 4, tip.y - 4, 10, 10, Color(GLOW, 0.25 * k), 1.0)
-		_px(tip.x - 1, tip.y - 6, 4, 14, Color(GLOW, 0.8 * k), 1.0)
-		_px(tip.x - 6, tip.y - 1, 14, 4, Color(GLOW, 0.8 * k), 1.0)
-	# The tower shield in front: tall, iron-rimmed, a drowned crown on it.
-	var shx := shield_x + lean
-	var shy := by - 6 + shield_low
-	_px(shx - 1, shy - 1, 9, 30, OUTLINE, a)
-	_px(shx, shy, 7, 28, SHIELD, a)
-	_px(shx, shy, 7, 2, SHIELD_RIM, a)
-	_px(shx, shy + 26, 7, 2, SHIELD_RIM, a)
-	_px(shx + 5, shy, 2, 28, SHIELD_RIM, a)
-	_px(shx + 2, shy + 10, 3, 4, GLOW, a * 0.7)
-	_px(shx + 1, shy + 9, 1, 2, GLOW, a * 0.7)
-	_px(shx + 5, shy + 9, 1, 2, GLOW, a * 0.7)
-	wash(flashing() or (telling and telegraph_pulse()))
-	draw_set_transform(Vector2.ZERO)
-
-
-## A blade from (x, y) along (dx, dy), outlined, with a bright edge.
-func _blade(x: int, y: int, dx: int, dy: int, color: Color, a: float) -> Vector2i:
-	var steps := maxi(absi(dx), absi(dy))
-	for i in steps + 1:
-		_px(x + roundi(dx * float(i) / steps) - 1, y + roundi(dy * float(i) / steps) - 1, 4, 4, OUTLINE, a)
-	for i in steps + 1:
-		_px(x + roundi(dx * float(i) / steps), y + roundi(dy * float(i) / steps), 2, 2, color, a)
-	# The hilt.
-	_px(x - 2, y - 2, 3, 6, ARMOR_DARK, a)
-	return Vector2i(x + dx, y + dy)
-
-
-## Draws a rect of the design (laid out in units of 1/SCALE half-pixels),
-## snapped to the half-pixel grid so neighbouring rects still tile.
-func _px(x: int, y: int, w: int, h: int, color: Color, alpha: float) -> void:
-	var x0 := floorf(x * SCALE)
-	var y0 := floorf(y * SCALE)
-	var x1 := maxf(floorf((x + w) * SCALE), x0 + 1.0)
-	var y1 := maxf(floorf((y + h) * SCALE), y0 + 1.0)
-	draw_rect(Rect2(x0 * 0.5, y0 * 0.5, (x1 - x0) * 0.5, (y1 - y0) * 0.5), Color(color, color.a * alpha))
+		draw_circle(tip, 5.0, Color(GLOW, 0.25 * k))
+		draw_rect(Rect2(tip.x - 0.5, tip.y - 4, 1, 8), Color(GLOW, 0.8 * k))
+		draw_rect(Rect2(tip.x - 4, tip.y - 0.5, 8, 1), Color(GLOW, 0.8 * k))
