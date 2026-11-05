@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "dd672c4c-5221-4984-95c6-adca42eb9289",
+ "status": "completed",
+ "created_at": "2026-11-05T00:59:27.202829+00:00",
+ "last_response": {
+  "seed": 3109949145,
+  "type": "message_done",
+  "action": "its wing cases hang open and droop down to the sides, the body sags low to the ground, exhausted, legs splayed. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "6007e9e3-2f2f-4ae6-a661-e9cff12d4e91",
+  "character_id": "a6a044b4-ba9e-49d8-b1f9-ca0616b28645",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a6a044b4-ba9e-49d8-b1f9-ca0616b28645/animations/6007e9e3-2f2f-4ae6-a661-e9cff12d4e91/east/8.png"
+   ],
+   "input_frames_digest": "da68c222b628f11f8b53df8b3adf76c2d4b45cb32a5b05f0759be55e8d3a9f31"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "43d133a7-18aa-4547-8b0c-1fc84d1cf78b",
+  "animation_name": "custom-its wing cases hang open and d",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "fb10a9b5-782b-4f7f-a905-a2e5bee28d94",
+  "input_frames_digest": "da68c222b628f11f8b53df8b3adf76c2d4b45cb32a5b05f0759be55e8d3a9f31",
+  "generation_started_at": "2026-11-05T00:59:53.103925+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

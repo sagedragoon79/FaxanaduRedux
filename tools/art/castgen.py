@@ -2,7 +2,7 @@
 """Generates the enemy and NPC sprite sheets in the player's style (design
 bible 12.3 and 13.3), with tools/art/pixelrig.py.
 
-Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight (PixelLab clips only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
+Enemies: blinkhop, hornet, rot_dwarf, sap_spitter, grub_lump, iron_dwarf, gear_bat, minecart_rider, bog_puffcap, drowned_dwarf, bark_knight, seed_bomber, marsh_hag, foreman and durgan (drawn at 2x); gloamweaver (Autosprite poses only); shade_knight, thunder_beetle, storm_harpy and spire_sentinel (PixelLab clips only); the parts of the boss Gnarlmaw. Each frame's metadata gives the points
 the game draws on top (the Blinkhop's eye, which tracks the player).
 NPCs: one sheet per person in data/npcs.json, "npc_<id>", built from their
 "look" (robe, trim, skin, hair, hat, plus optional beard, ears and build), with every
@@ -1505,6 +1505,37 @@ SILT_ADDER = [
     ("death", [None] * 2, [0, 1], 12, False),
 ]
 
+# Art loop batch 4 (Carillon, docs/art/enemy-style-guide.md): PixelLab clips only.
+THUNDER_BEETLE = [
+    ("idle", [None] * 2, [0, 1], 7, True),
+    ("walk", [None] * 2, [0, 1], 10, True),
+    ("charge", [None] * 2, [0, 1], 10, False),
+    ("discharge", [None] * 2, [0, 1], 14, False),
+    ("spent", [None] * 2, [0, 1], 8, False),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 14, False),
+]
+
+STORM_HARPY = [
+    ("hover", [None] * 2, [0, 1], 16, True),
+    ("windup", [None] * 2, [0, 1], 8, False),
+    ("throw", [None] * 2, [0, 1], 15, False),
+    ("recover", [None] * 2, [0, 1], 9, False),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 16, False),
+]
+
+SPIRE_SENTINEL = [
+    ("idle", [None] * 2, [0, 1], 1, True),
+    ("stalk", [None] * 2, [0, 1], 12, True),
+    ("raise", [None] * 2, [0, 1], 7, False),
+    ("slam", [None] * 2, [0, 1], 15, False),
+    ("spent", [None] * 2, [0, 1], 5, False),
+    ("stagger", [None] * 2, [0, 1], 6, True),
+    ("hurt", [None] * 2, [0, 1], 10, False),
+    ("death", [None] * 2, [0, 1], 14, False),
+]
+
 
 def main():
     write_sheet("blinkhop", (40, 32), (20, 30), BLINKHOP, lambda r: r(None))
@@ -1526,6 +1557,9 @@ def main():
     write_sheet("gloamweaver", (104, 76), (52, 74), GLOAMWEAVER, autosprite_only, density=2)
     write_sheet("shade_knight", (80, 56), (40, 53), SHADE_KNIGHT, autosprite_only, density=2)
     write_sheet("silt_adder", (64, 72), (32, 36), SILT_ADDER, autosprite_only, density=2)
+    write_sheet("thunder_beetle", (64, 44), (32, 42), THUNDER_BEETLE, autosprite_only, density=2)
+    write_sheet("storm_harpy", (72, 64), (36, 32), STORM_HARPY, autosprite_only, density=2)
+    write_sheet("spire_sentinel", (96, 64), (44, 62), SPIRE_SENTINEL, autosprite_only, density=2)
     npcs = json.loads((ROOT / "data" / "npcs.json").read_text())
     for npc_id, info in npcs.items():
         look = info.get("look", {})

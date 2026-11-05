@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "679d9948-39eb-4d7a-87e0-f5b06b1c1304",
+ "status": "completed",
+ "created_at": "2026-11-05T00:53:07.368316+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "fe2abc15-3f41-4279-9b88-35d28884bba2",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/fe2abc15-3f41-4279-9b88-35d28884bba2/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Spire Sentinel",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Spire Sentinel: a tall living statue of a knight, carved entirely from pale lilac-grey stone like a cathedral statue, strict side profile facing right, crested stone great helm with a narrow slit visor, heavy stone pauldrons, a stone breastplate with a gold lightning glyph inlaid in it, no cloth and no cape, cracks and chips in the matte stone, holding an upright stone halberd with a broad axe blade in its front hand, side-scroller game enemy, full body"
+ }
+}
