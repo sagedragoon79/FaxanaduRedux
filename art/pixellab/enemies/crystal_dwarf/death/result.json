@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "a87a1fdf-a3fc-4a0d-9ee4-1993954148b0",
+ "status": "completed",
+ "created_at": "2026-11-05T01:01:29.465135+00:00",
+ "last_response": {
+  "seed": 3448774640,
+  "type": "done",
+  "action": "The dwarf dies: he drops to his knees, then topples forward onto the floor, lying face down and motionless at the end. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.95,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "256fba74-5018-4044-be97-53c6af0e701f",
+  "character_id": "36bb2e01-4bdc-4199-9c48-8afc71799bdd",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/256fba74-5018-4044-be97-53c6af0e701f/east/12.png"
+   ],
+   "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "e407faee-92fa-44ff-9672-8ab7d0bdfc33",
+  "animation_name": "custom-The dwarf dies: he drops to hi",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "2fbbc279-e2b5-4634-a634-137a1c58fba9",
+  "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225",
+  "generation_started_at": "2026-11-05T01:01:55.383073+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}

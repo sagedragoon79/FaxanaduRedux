@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "2f8af8b5-dded-4108-928d-174a9c7470e4",
+ "status": "completed",
+ "created_at": "2026-11-05T00:57:38.924307+00:00",
+ "last_response": {
+  "seed": 3922089524,
+  "type": "done",
+  "action": "The slug rests, its soft body pulsing gently, eye stalks swaying slowly, molten cracks in the shell glowing softly. A seamless idle loop. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.3697495440547985,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "094a41ec-12ca-4fb9-ac34-2209824c6ca8",
+  "character_id": "a1e66369-d4bc-433d-ba11-1c04a4de690c",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/094a41ec-12ca-4fb9-ac34-2209824c6ca8/east/8.png"
+   ],
+   "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "3f61ccec-c5d3-4014-aebd-d3f51430ec2b",
+  "animation_name": "custom-The slug rests, its soft body ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "2fb6483a-e0aa-4d34-a3d5-d9b3ad3b07d0",
+  "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0",
+  "generation_started_at": "2026-11-05T00:58:05.165244+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

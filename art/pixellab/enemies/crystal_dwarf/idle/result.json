@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "06c88590-847d-4b9a-b40f-c5db181d212b",
+ "status": "completed",
+ "created_at": "2026-11-05T01:02:27.453501+00:00",
+ "last_response": {
+  "seed": 1838563753,
+  "type": "message_done",
+  "action": "The dwarf stands breathing heavily, shoulders rising and falling, the crystal fist swaying slightly. A seamless idle loop. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.30967555673172154,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "b9c66c88-433a-4a18-9ba7-9f4be4416279",
+  "character_id": "36bb2e01-4bdc-4199-9c48-8afc71799bdd",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9c66c88-433a-4a18-9ba7-9f4be4416279/east/8.png"
+   ],
+   "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "8c84c727-0438-4a2a-aabc-9397b600f047",
+  "animation_name": "custom-The dwarf stands breathing hea",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "4a98b836-0dc9-40cd-a4eb-c2d459e3e400",
+  "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225",
+  "generation_started_at": "2026-11-05T01:02:53.354236+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

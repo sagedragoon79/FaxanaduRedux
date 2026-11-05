@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "c5e3d0d6-23ac-4a5e-bbe3-ffe3cdc79a5f",
+ "status": "completed",
+ "created_at": "2026-11-05T00:54:11.943951+00:00",
+ "last_response": {
+  "seed": 278439886,
+  "type": "done",
+  "action": "The slug flinches from a blow, eye stalks pulling back and body squashing down, then recovers. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9639130434782608,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "c039236f-5b10-4e15-b141-c30cdae11cdf",
+  "character_id": "a1e66369-d4bc-433d-ba11-1c04a4de690c",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/c039236f-5b10-4e15-b141-c30cdae11cdf/east/8.png"
+   ],
+   "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "75c3d486-de26-4fc6-b8b0-f9b5c0ab2482",
+  "animation_name": "custom-The slug flinches from a blow,",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "3970c497-2159-4b7d-9908-22e0e6fe37d2",
+  "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0",
+  "generation_started_at": "2026-11-05T00:54:37.862582+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

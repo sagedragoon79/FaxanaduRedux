@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "cf117143-b9cb-4ac2-97db-c3082db2b101",
+ "status": "completed",
+ "created_at": "2026-11-05T01:02:36.531821+00:00",
+ "last_response": {
+  "seed": 265580136,
+  "type": "done",
+  "action": "The eel flinches from a blow, body jerking and kinking back, then straightens. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.9639130434782608,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "fb010208-2927-4a2c-b99d-53d66d631c29",
+  "character_id": "ca0abb11-888a-49db-b1ff-242303703223",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/fb010208-2927-4a2c-b99d-53d66d631c29/east/8.png"
+   ],
+   "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "aea1d39e-50b1-4a5a-9b20-fa239335ac6a",
+  "animation_name": "custom-The eel flinches from a blow, ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "8c5b4e45-d4c7-4136-bc34-6d2119cffb20",
+  "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493",
+  "generation_started_at": "2026-11-05T01:03:02.363246+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

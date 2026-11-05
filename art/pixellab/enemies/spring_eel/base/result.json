@@ -1,0 +1,32 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 9.0
+ },
+ "id": "603c1075-4541-439a-b464-c4869ac26ad7",
+ "status": "completed",
+ "created_at": "2026-11-05T00:49:00.076890+00:00",
+ "last_response": {
+  "status": "completed",
+  "character_id": "c6962eef-5b20-4e76-9ac8-1188a1c4177f",
+  "storage_urls": {
+   "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/east.png",
+   "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/west.png",
+   "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/north.png",
+   "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/south.png",
+   "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/north-east.png",
+   "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/north-west.png",
+   "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/south-east.png",
+   "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/c6962eef-5b20-4e76-9ac8-1188a1c4177f/rotations/south-west.png"
+  },
+  "billing_usage": {
+   "type": "generations",
+   "generations": 9.0
+  },
+  "character_name": "Spring Eel",
+  "directions_type": "8-directions",
+  "generation_mode": "pixen_v3",
+  "directions_count": 8,
+  "character_description": "Side-scroller game enemy, full body, side view: a long pale blind cave eel swimming horizontally, pale sea-green white skin with darker teal back, milky blind eyes, a ribbon fin along its back and a small tail fluke, a blunt snout with a jaw of needle teeth, and a small glowing cyan lamp bulb on a short stalk growing from its brow. Sinuous and menacing."
+ }
+}

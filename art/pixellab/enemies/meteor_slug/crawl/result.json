@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "4ca3518c-6d64-44fa-854d-310520bb47f8",
+ "status": "completed",
+ "created_at": "2026-11-05T00:56:45.897281+00:00",
+ "last_response": {
+  "seed": 2585514264,
+  "type": "done",
+  "action": "The slug creeps forward, its foot rippling in waves along the ground, eye stalks swaying, shell rocking slightly. A seamless crawl loop in place. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.346843510619439,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3",
+  "character_id": "a1e66369-d4bc-433d-ba11-1c04a4de690c",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/a1e66369-d4bc-433d-ba11-1c04a4de690c/animations/eed69f3a-9cc2-42e8-bbe3-a76c40a56fa3/east/8.png"
+   ],
+   "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "38e470f1-1714-405d-84ca-10de8b12a4d6",
+  "animation_name": "custom-The slug creeps forward, its f",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "ddecc463-771b-40da-b7c7-490143645c73",
+  "input_frames_digest": "670fa49eab57ad4cf96ac54695b82eb893744c1c0978a1379511e0baab0f0ac0",
+  "generation_started_at": "2026-11-05T00:57:11.897372+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

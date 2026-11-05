@@ -103,8 +103,21 @@ ENEMY_SHEETS = {
                     ("idle", "walk", "hurt", "death", "bare_idle", "bare_walk", "bare_hurt", "bare_death")},
     "seed_bomber": {f"{c}.png": f"enemies/seed_bomber/{c}" for c in ("fly", "squeeze", "downed", "hurt", "death")},
     "mothling": {f"{c}.png": f"enemies/mothling/{c}" for c in ("fly_r", "screech", "dive", "hurt", "death")},
+    # Art loop pass 6 (Vorrhallow and the Sunken Spring). Clips from each base's own east view
+    # (the Spring Eel's from its south view, which PixelLab drew as the level side profile).
+    "clockwork_hound": {f"{clip}.png": f"enemies/clockwork_hound/{folder}" for clip, folder in
+                        (("idle", "idle"), ("trot", "trot"), ("wind", "wind_r1"), ("pounce", "pounce"),
+                         ("flipped", "flipped"), ("hurt", "hurt"), ("death", "death"))},
+    "crystal_dwarf": {f"{clip}.png": f"enemies/crystal_dwarf/{clip}" for clip in
+                      ("idle", "walk", "slam", "hurt", "death")},
+    "meteor_slug": {f"{clip}.png": f"enemies/meteor_slug/{clip}" for clip in
+                    ("idle", "crawl", "swell", "heave", "hurt", "death")},
+    "spring_eel": {f"{clip}.png": f"enemies/spring_eel/{clip}" for clip in
+                   ("swim", "coil", "dart", "slack", "hurt", "death")},
 }
 NO_SLAB_CLEANING = set()
+# Art pass 6: the Glass Slug's grey-violet foot is a flat dull grey the cleaner would eat.
+NO_SLAB_CLEANING |= {"meteor_slug"}
 
 
 def frames_of(folder):

@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "e6c2ec75-2220-4a03-9ea5-1aba22241d40",
+ "status": "completed",
+ "created_at": "2026-11-05T01:04:18.610737+00:00",
+ "last_response": {
+  "seed": 3082715667,
+  "type": "done",
+  "action": "The eel hangs limp and slack, its body drooping in a loose curve, drifting slowly, jaw hanging open. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.2061995001480152,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5",
+  "character_id": "ca0abb11-888a-49db-b1ff-242303703223",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/ca0abb11-888a-49db-b1ff-242303703223/animations/3bed0bd0-dfbe-4acd-bf30-42c2e92f8fe5/east/8.png"
+   ],
+   "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "c4ec5414-d800-4da9-a630-70105bb0ee28",
+  "animation_name": "custom-The eel hangs limp and slack, ",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "a771266f-e544-4673-a4bf-5b0f8fe741dc",
+  "input_frames_digest": "a6bdf7429f04f50846304ea3371752476662864fac948d9919c89edbbee96493",
+  "generation_started_at": "2026-11-05T01:04:44.890299+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}

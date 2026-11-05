@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 2.0
+ },
+ "id": "0886ac26-9885-423d-b548-c8e9d8e2cd03",
+ "status": "completed",
+ "created_at": "2026-11-05T01:01:45.690778+00:00",
+ "last_response": {
+  "seed": 1277648521,
+  "type": "done",
+  "action": "The dwarf raises the huge crystal fist high above his head, holds it there, then drives it straight down and smashes it into the floor just in front of his feet, ending crouched with the fist buried in the ground. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.966,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "b9a340a3-9362-45fd-a514-3ee9a4fc95fa",
+  "character_id": "36bb2e01-4bdc-4199-9c48-8afc71799bdd",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/36bb2e01-4bdc-4199-9c48-8afc71799bdd/animations/b9a340a3-9362-45fd-a514-3ee9a4fc95fa/east/12.png"
+   ],
+   "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 2
+  },
+  "generation_id": "f9fe52a4-bec5-448d-9c7a-b3cba42baac2",
+  "animation_name": "custom-The dwarf raises the huge crys",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "b22f4938-98f2-4b70-8e53-596b858ca1bc",
+  "input_frames_digest": "d5a5f62def337bdbde8fe0f2dc291d09bed2a2d3d9dc2981117c3c1c89669225",
+  "generation_started_at": "2026-11-05T01:02:11.483881+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
