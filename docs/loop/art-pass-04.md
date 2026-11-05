@@ -55,7 +55,7 @@ the tell to a pose of its own, and the hurt, stagger and death to theirs.
 - The Mantis's reared tell turns partly toward the camera (both takes did). It reads as a rear
   and spreads the scythes clear of the body, so it stays; a third take is cheap if the lead wants it.
 - The Mothling keeps the Bloom's violet and pink (it is Snapcrown's brood, not a canopy native).
-- The Bark Knight in profile is narrow and dark; a sky-blue rim (0.3) lifts him off the boughs.
+- The Bark Knight in profile is narrow and dark: a gain of 1.2 and a sky-blue rim (0.35) lift him off the boughs (the lead review asked for a touch more).
 
 Images: `/mnt/project-files/art-loop/<foe>/` (before and after lineups, every animation, the
 foes in Thicket Road and Canopy Bridge) and `batch3-high-boughs-lineup.png`.
