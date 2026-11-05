@@ -3,11 +3,11 @@
   "type": "generations",
   "generations": 1.0
  },
- "id": "00fc0bbd-9410-4e2f-915a-6af77582f846",
+ "id": "f2741f5f-e661-4b87-a6f6-7a1bf3abcfa3",
  "status": "completed",
- "created_at": "2026-11-05T00:51:07.762268+00:00",
+ "created_at": "2026-11-05T18:49:35.565451+00:00",
  "last_response": {
-  "seed": 4111987883,
+  "seed": 3653163054,
   "type": "done",
   "action": "floats in place, its body swaying in a slow S wave, its tongue flicking, loops seamlessly. It stays in strict side profile facing right the whole time and never turns toward the camera.",
   "images": [
@@ -22,22 +22,22 @@
    "08.png"
   ],
   "status": "initializing",
-  "progress": 0.21869745569478952,
+  "progress": 0.17145240116278063,
   "direction": "east",
   "frame_count": 9,
-  "animation_id": "34523337-a81f-4f2c-a411-b959bb8fde1f",
-  "character_id": "8da69d2d-99f7-4308-b978-4ecf6adb544d",
+  "animation_id": "d12919f8-6404-44b7-aa80-85005f234719",
+  "character_id": "bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee",
   "storage_urls": {
    "frames": [
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/0.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/1.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/2.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/3.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/4.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/5.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/6.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/7.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/34523337-a81f-4f2c-a411-b959bb8fde1f/east/8.png"
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/d12919f8-6404-44b7-aa80-85005f234719/east/8.png"
    ]
   },
   "billing_usage": {
@@ -45,7 +45,7 @@
    "type": "generations",
    "generations": 1
   },
-  "generation_id": "12f00de0-6bba-4a3e-b33f-a0c1e11389cb",
+  "generation_id": "67df9845-e724-4232-9199-270b5965d794",
   "animation_name": "custom-floats in place, its body sway",
   "queue_position": 0,
   "target_palette": null,
@@ -53,9 +53,9 @@
   "generation_model": "pixminimax",
   "keep_first_frame": true,
   "saved_to_storage": true,
-  "animation_group_id": "018fdaf7-1eb2-4ea4-8294-d76a7014bb82",
+  "animation_group_id": "96011502-8cef-42f5-b027-90d3c7d3ddb6",
   "input_frames_digest": null,
-  "generation_started_at": "2026-11-05T00:51:37.725439+00:00",
+  "generation_started_at": "2026-11-05T18:50:02.389516+00:00",
   "requested_frame_count": 8,
   "estimated_wait_seconds": 0
  }

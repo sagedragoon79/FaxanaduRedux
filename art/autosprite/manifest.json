@@ -1127,12 +1127,12 @@
   "height": 44,
   "reference": "float",
   "animations": {
-   "float": {"file": "float.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, swaying S, tongue flicking"},
-   "coil": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, head drawn back, hood flared"},
-   "strike": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the lunge, jaws wide"},
-   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, recoiling (the clip's slash frame left out)"},
-   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the recoil"},
-   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, drooping into a heap"}
+   "float": {"file": "float.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, swaying S, tongue flicking"},
+   "coil": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7], "fps": 8, "loop": true, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, head drawn back, hood flared"},
+   "strike": {"file": "strike.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [8, 9, 10], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, the lunge, jaws wide"},
+   "stagger": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3], "fps": 4, "loop": true, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, recoiling (the clip's slash frame left out)"},
+   "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, the recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [5, 6, 7, 8, 10, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character bf6df4fc (Sean regenerated it) (create-character-v3, side view), pixminimax east, drooping into a heap"}
   }
  },
  "thunder_beetle": {

@@ -3,12 +3,12 @@
   "type": "generations",
   "generations": 2.0
  },
- "id": "c84019ff-cbad-4e5b-89f0-8b623a0dc099",
+ "id": "a272a006-ac98-4601-b33e-a6574c25bf7e",
  "status": "completed",
- "created_at": "2026-11-05T00:51:59.562325+00:00",
+ "created_at": "2026-11-05T18:49:39.562778+00:00",
  "last_response": {
-  "seed": 4004780539,
-  "type": "done",
+  "seed": 4048852387,
+  "type": "message_done",
   "action": "recoils back from a blow, then goes limp and droops down, its body sagging into a heap low down. It stays in strict side profile facing right the whole time and never turns toward the camera.",
   "images": [
    "00.png",
@@ -26,26 +26,26 @@
    "12.png"
   ],
   "status": "initializing",
-  "progress": 0.9545714285714285,
+  "progress": 0.95,
   "direction": "east",
   "frame_count": 13,
-  "animation_id": "e255d1f4-2775-406c-aa87-c1fde471cc6f",
-  "character_id": "8da69d2d-99f7-4308-b978-4ecf6adb544d",
+  "animation_id": "c72bb418-ef78-4032-b0ba-b299616c85fa",
+  "character_id": "bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee",
   "storage_urls": {
    "frames": [
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/0.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/1.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/2.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/3.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/4.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/5.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/6.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/7.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/8.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/9.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/10.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/11.png",
-    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/8da69d2d-99f7-4308-b978-4ecf6adb544d/animations/e255d1f4-2775-406c-aa87-c1fde471cc6f/east/12.png"
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/animations/c72bb418-ef78-4032-b0ba-b299616c85fa/east/12.png"
    ]
   },
   "billing_usage": {
@@ -53,7 +53,7 @@
    "type": "generations",
    "generations": 2
   },
-  "generation_id": "24a2a10d-78d2-41c8-8957-931e98b4a7ce",
+  "generation_id": "59b2ea6b-7b19-42db-a690-6aff0f05c70f",
   "animation_name": "custom-recoils back from a blow, then",
   "queue_position": 0,
   "target_palette": null,
@@ -61,9 +61,9 @@
   "generation_model": "pixminimax",
   "keep_first_frame": true,
   "saved_to_storage": true,
-  "animation_group_id": "ab6aeceb-2c11-44bb-960c-1bd7c3b6c93b",
+  "animation_group_id": "f01416ce-0163-4485-b318-a5686248d4a5",
   "input_frames_digest": null,
-  "generation_started_at": "2026-11-05T00:52:30.260407+00:00",
+  "generation_started_at": "2026-11-05T18:50:06.219234+00:00",
   "requested_frame_count": 12,
   "estimated_wait_seconds": 0
  }

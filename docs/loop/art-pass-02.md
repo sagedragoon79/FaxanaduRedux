@@ -57,3 +57,10 @@ animated sheet of every animation) and `/mnt/project-files/art-loop/batch1-lineu
 ## Rubric
 
 Art cohesion moves for five foes of about forty; the score stays as the gameplay loop last set it.
+
+## Follow-up: the Silt Adder remade from Sean's base (2026-11-05)
+
+Sean found the first Silt Adder's hood read as a clothing hood and regenerated the character in
+PixelLab himself (bf6df4fc, a cobra's hood, 172 px canvas). Its float, strike and death clips were
+made again from his base's east view (5 generations) and the old sources replaced; picks are the
+same but the death's (5, 6, 7, 8, 10, 12). The script, the animation names and the test are unchanged.
