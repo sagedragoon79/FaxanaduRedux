@@ -67,7 +67,8 @@ gets them the same way:
   a `"rim"` in its zone's light colour, as the Iron Dwarf has, so it stands off dark walls.
 - **No dithering** and no painted motion blur on bodies. A smear frame for a fast strike is
   allowed (bible 12.4), one frame, the body's own colours.
-- **Facing:** sources face right (east, strict side profile). The game mirrors for left.
+- **Facing:** sources face right (east, strict side profile, the face or mouth showing on the
+  right; never a back turned to the camera). The game mirrors for left. See 6, step 1a.
 - **Effects stay out of the art.** Projectiles, spells, mist, sparks, glows that pulse,
   shockwaves and the tell's white flash are code or shader, drawn over the sheet. If a clip
   bakes one in, cut it at import (`"erase"`, `pick` around it). A glow that is part of the
@@ -116,6 +117,16 @@ What worked for the hero and the Shade Knight, cheapest first:
    materials and the weapon; say "side-scroller game enemy, full body". Use the `east`
    rotation: that is the profile. Download the rotations with `GET characters/<id>/zip` (the
    rotation URLs it lists are refused through the proxy).
+1a. **Check the facing before any clip.** PixelLab's rotation names are not to be trusted:
+   on many bases the image saved as `east` is a three-quarter view turned away from the camera
+   (we see the back, the hood or the shell, not the face), and the true side profile is under
+   another name (`south`, `south-east`, `north-east`) or only in `west`. A clip asked for
+   "east" from such a base walks away into the screen (the Grub Lump, Marsh Hag, Mothling, Sap
+   Spitter and Silt Adder shipped that way and were remade in art pass 7). Lay all eight
+   rotations side by side with `west` mirrored and pick the one that shows the face (or mouth,
+   spout, eye) in profile on the right. If none does, mirror `west` (it is usually the cleanest
+   profile). Save that as `base/guard.png` and start every clip from it (step 2a). A
+   three-quarter view toward the camera is fine; one turned away is not.
 2a. **One model for every state.** Clips made from the base can drift to a second model (the Shade
    Knight's shield jumped from behind his body to in front). Pick the frame that best shows the
    foe as it fights, save it as `base/guard.png`, and make the clips from it
@@ -153,6 +164,8 @@ Before a foe merges, check it in the lineup and in its room:
   other foes: same outline weight, same pixel size, palette in the zone's mood.
 - `tools/screenshot.sh` in a room where it lives: it must read against the zone's walls
   (grayscale check, bible 12.3).
+- Every animation faces right with the face in view: compare its first frame with the base's
+  `west` view mirrored (6, step 1a).
 - Every state in the foe's script shows an animation that fits it; no state falls back to a
   frame that contradicts it (a strike drawn during a tell).
 - Before and after images go in the project files, `art-loop/<foe>/`.

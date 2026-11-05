@@ -1,0 +1,71 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "c482a270-2b8d-464d-8161-21e626d142b6",
+ "status": "completed",
+ "created_at": "2026-11-05T19:40:37.211596+00:00",
+ "last_response": {
+  "seed": 2980004528,
+  "type": "done",
+  "action": "draws herself up tall and raises the staff high over her head with the crook forward and holds it there, then plants the staff and thrusts her free hand out in front. She stays in strict side profile facing right the whole time, head on the right, and never turns toward or away from the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png"
+  ],
+  "status": "initializing",
+  "progress": 0.99,
+  "direction": "east",
+  "frame_count": 13,
+  "animation_id": "f39666f8-54e9-4a02-91b1-ada7c23d3b8d",
+  "character_id": "b1815b20-e686-4cab-a319-25f7306664b5",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/8.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/9.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/10.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/11.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/b1815b20-e686-4cab-a319-25f7306664b5/animations/f39666f8-54e9-4a02-91b1-ada7c23d3b8d/east/12.png"
+   ],
+   "input_frames_digest": "bec4b8c4aecdc88a25846c8365d359e88cb1e74a7c048569eda1658fddc2446c"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "2143f730-5d8c-4d8f-b694-9754635bff99",
+  "animation_name": "custom-draws herself up tall and rais",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "b7f78287-f4b2-4bea-9cc3-41500c791545",
+  "input_frames_digest": "bec4b8c4aecdc88a25846c8365d359e88cb1e74a7c048569eda1658fddc2446c",
+  "generation_started_at": "2026-11-05T19:40:53.151551+00:00",
+  "requested_frame_count": 12,
+  "estimated_wait_seconds": 0
+ }
+}
