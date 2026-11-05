@@ -174,7 +174,8 @@ func _process(delta: float) -> void:
 		skip()
 	elif Input.is_action_just_pressed("jump") or Input.is_action_just_pressed("attack"):
 		advance()
-	tick(delta)
+	# The ending is read in real time (pass 483), whatever the Game speed.
+	tick(Feel.unscaled(delta))
 
 
 ## Moves time on by `delta` seconds.

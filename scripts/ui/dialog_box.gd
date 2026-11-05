@@ -92,6 +92,9 @@ func _set_frozen(on: bool) -> void:
 func _process(delta: float) -> void:
 	if not is_open:
 		return
+	# Screens are read in real time (pass 483): the Game speed option, slow
+	# motion and hitstop slow the game, not its words and menus.
+	delta = Feel.unscaled(delta)
 	_grace -= delta
 	var line: String = pages[page]
 	if shown < line.length():

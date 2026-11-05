@@ -155,6 +155,9 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if not is_open:
 		return
+	# Screens are read in real time (pass 483): the Game speed option, slow
+	# motion and hitstop slow the game, not its words and menus.
+	delta = Feel.unscaled(delta)
 	_grace -= delta
 	_flash = maxf(_flash - delta, 0.0)
 	if _grace <= 0.0 and not capture.is_valid():
