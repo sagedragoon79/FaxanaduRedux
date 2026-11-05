@@ -1475,3 +1475,43 @@ func _real_sky_steps_leap(stride: bool, speed: float) -> bool:
 	w.queue_free()
 	await frames(1)
 	return got
+
+
+## Pass 481: the High Boughs' bounce-pods are a gate (bible 3.2): a ledge nine
+## tiles up is reached only by the pod's throw. The pod catches the feet by their
+## step through its top, and a step is shorter at a slower game speed, so the
+## catch and the throw had only been seen at full speed. A hop on the spot with
+## the real Jump, at every step of the Game speed option.
+func test_a_bounce_pod_throws_as_high_at_every_game_speed() -> void:
+	var rises: Array[float] = []
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		var room := make_room(POD_FLOOR)
+		var p := make_player(room, Vector2i(4, 16), {})
+		p.teleport(Vector2(9 * 16 + 8, 17 * 16))
+		await frames(6)
+		await press_for_real(p, ["jump"])
+		await frames(1)
+		release_for_real(["jump"])
+		var launched := false
+		var base_y := 0.0
+		for i in 120:
+			await frames(1)
+			if p.velocity.y < -540.0:
+				launched = true
+				base_y = p.global_position.y
+				break
+		var top := base_y
+		for i in 200:
+			await frames(1)
+			top = minf(top, p.global_position.y)
+			if p.velocity.y > 0.0:
+				break
+		var rise := base_y - top if launched else 0.0
+		rises.append(rise)
+		check(launched and rise >= 8.5 * 16, "at %d%% a real hop on the pod throws the hero up (%.0f px)" % [roundi(speed * 100.0), rise])
+		room.free()
+	Feel.set_game_speed(1.0)
+	check(rises.max() - rises.min() <= 6.0, "as high at every speed, within 6 px (%s)" % [rises])
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_bounce_pod_throws_as_high_at_every_game_speed`"), "the bible names the test")
