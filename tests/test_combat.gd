@@ -2636,3 +2636,67 @@ func test_a_turned_blade_is_heard_as_a_guard() -> void:
 	room.free()
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_turned_blade_is_heard_as_a_guard`"), "the bible names the test")
+
+
+## Pass 472: combat under the Game speed option, by the real controller.
+## Pass 470 found the dash's timer cut its stride at 70%. Combat's timers were
+## never run at any speed but 100%. Game speed is an assist, so slowing the
+## game must never make a window tighter to hit: counted in frames on screen,
+## the parry window and a slash's cutting time only grow as the game slows,
+## each stays within a step of its game time, and the Thrust's lunge carries
+## at least its stated reach at every speed.
+func test_combat_windows_only_widen_as_the_game_slows() -> void:
+	var c := CombatTuning.new()
+	var t := MovementTuning.new()
+	var last_parry := 0
+	var last_slash := 0
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		var step := speed / 60.0
+		var pct := roundi(speed * 100.0)
+		var room := _arena_with(".", Vector2i(30, 6))
+		var p := make_player(room, Vector2i(3, 6))
+		p.has_shield = true
+		p.thrust = true
+		await frames(6)
+		p.facing = 1
+		p.input = PlayerInput.new()
+		var count := func(action: String, live: Callable) -> int:
+			Input.action_press(action)
+			var n := 0
+			for i in 40:
+				await frames(1)
+				if live.call():
+					n += 1
+			Input.action_release(action)
+			await frames(20)
+			return n
+		var parry: int = await count.call("block", func() -> bool: return p._parry_timer > 0.0)
+		var slash: int = await count.call("attack", func() -> bool: return p.is_attacking and p.attack_kind != "thrust")
+		check(parry >= last_parry and slash >= last_slash,
+			"at %d%%, the parry (%d frames) and a slash (%d frames) are no tighter than at a faster speed (%d, %d)" % [pct, parry, slash, last_parry, last_slash])
+		check(absf(parry * step - c.parry_window) <= step + 0.0001 and absf(slash * step - t.slash_active) <= step + 0.0001,
+			"at %d%%, each holds its game time within a step (parry %.3f s of %.2f, slash %.3f s of %.2f)" % [pct, parry * step, c.parry_window, slash * step, t.slash_active])
+		last_parry = parry
+		last_slash = slash
+		# The Thrust: Attack held to charge, let go to lunge.
+		Input.action_press("attack")
+		for i in ceili(c.thrust_charge / step) + 4:
+			await frames(1)
+		var x0 := p.global_position.x
+		Input.action_release("attack")
+		var lunged := false
+		var reach := -1.0
+		for i in 40:
+			await frames(1)
+			if p.is_attacking and p.attack_kind == "thrust":
+				lunged = true
+			elif lunged and reach < 0.0:
+				reach = p.global_position.x - x0
+		var stated := c.thrust_speed * c.thrust_time
+		check(lunged and reach >= stated - 0.01 and reach <= stated + c.thrust_speed * step + 0.01,
+			"at %d%%, a real Thrust lunges its %.0f px (%.1f px)" % [pct, stated, reach])
+		room.free()
+	Feel.set_game_speed(1.0)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
+	check(note.contains("Combat at every game speed (pass 472)"), "5.3 says so")
