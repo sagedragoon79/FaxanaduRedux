@@ -44,6 +44,10 @@ var dead := false
 var facing := -1
 var state := "idle"
 var state_time := 0.0
+## Seconds of game time this foe has lived: it slows with the Game speed option
+## and stands still through hitstop (pass 474). Idle sways that move a hurtbox
+## read it, never the wall clock.
+var game_time := 0.0
 var home := Vector2.ZERO
 var body_size := Vector2(18, 18)
 var body_centered := false
@@ -128,6 +132,7 @@ func _physics_process(delta: float) -> void:
 			if _respawn_timer <= 0.0:
 				_respawn()
 		return
+	game_time += delta
 	state_time += delta
 	_flash -= delta
 	if _stagger > 0.0:
