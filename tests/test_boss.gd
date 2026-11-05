@@ -2156,6 +2156,59 @@ func test_thane_vorrund_is_parried_through_the_real_controller() -> void:
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("`test_thane_vorrund_is_parried_through_the_real_controller`"), "bible 8 names the test")
 
+## Pass 466 (bible 9): Executioner on a guardian, by the buttons. Its test cut a
+## Rot Dwarf put in the "boss" group and staggered by a call. Here it is played
+## as a player meets it: Thane Vorrund's chop parried with the real Block, then
+## a real Attack tap into his reeling. With Executioner the cut lands for 35%
+## more, with its own sound; without it, plain. Returns [opened, damage the cut
+## did, the execute sound heard].
+func _real_cut_into_vorrunds_opening(executioner: bool) -> Array:
+	var setup := await _king_world()
+	var w: World = setup[0]
+	var b: ThaneVorrund = setup[2]
+	var p := w.player
+	GameState.obtain_gear("small_shield", p)
+	GameState.data.skill_points = 40
+	# The Blade branch to the Thrust either way, so both cuts share every
+	# multiplier but Executioner.
+	for id: String in ["keen_edge", "fourth_strike", "rising_cut", "delvers_pick_mastery", "riposte", "keener_edge", "bloodletting", "thrust"] + (["executioner"] if executioner else []):
+		check(Skills.learn(id, p), "learned %s" % id)
+	check(p.executioner == executioner, "Executioner is %s" % ("on" if executioner else "off"))
+	b.max_hp = 99999
+	b.hp = 99999
+	p.input = PlayerInput.new()
+	p.teleport(Vector2(b.global_position.x - 40.0, b.floor_y()))
+	p.facing = 1
+	await frames(2)
+	await _until(func() -> bool: return b.state == "chop_tell", 200)
+	var press_at := b.tell(ThaneVorrund.CHOP_TELL) - 3 / 60.0
+	await _until(func() -> bool: return b.state != "chop_tell" or b.state_time >= press_at, 120)
+	Input.action_press("block")
+	var opened: bool = await _until(func() -> bool: return b.open(), 40)
+	release_for_real(["block"])
+	await frames(2)
+	Input.action_press("move_right")
+	await _until(func() -> bool: return b.global_position.x - p.global_position.x <= 30.0 or not b.open(), 60)
+	Input.action_release("move_right")
+	var hp0 := b.hp
+	Sfx.recent.clear()
+	Input.action_press("attack")
+	await frames(2)
+	Input.action_release("attack")
+	await frames(4)
+	var out := [opened and b.open(), hp0 - b.hp, Sfx.recent.has("execute")]
+	w.queue_free()
+	await frames(1)
+	return out
+
+
+func test_executioner_cuts_into_a_parried_guardian_by_the_buttons() -> void:
+	var plain: Array = await _real_cut_into_vorrunds_opening(false)
+	var exe: Array = await _real_cut_into_vorrunds_opening(true)
+	check(plain[0] and exe[0], "a real Block parries the chop and he reels for the cut (%s, %s)" % [plain, exe])
+	check(plain[1] > 0 and not plain[2], "without Executioner a real cut into the opening lands plain (%d)" % plain[1])
+	check(exe[1] == roundi(plain[1] * CombatTuning.new().executioner_mult) and exe[2], "with it, the same cut lands for 35%% more, with its sound (%d against %d)" % [exe[1], plain[1]])
+
 
 ## Pass 428 (bible 8): a guardian's blow dodged with the buttons. The parry
 ## above is the one boss defence ever played through `Input`; a jump over a
