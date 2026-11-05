@@ -2755,3 +2755,43 @@ func test_thrown_and_cast_reach_holds_at_every_game_speed() -> void:
 			check(int(slow[1]) >= int(full[1]), "and comes home no sooner on screen (%d frames, %d)" % [full[1], slow[1]])
 	var sec := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
 	check(sec.contains("Thrown and cast at every game speed (pass 480)"), "bible 5.3 says so")
+
+
+## The red edge swells on the heartbeat itself (pass 484): brightest in the
+## frame the beat sounds, at every game speed, however long the HUD had been up.
+func test_the_red_edge_swells_on_the_heartbeat_at_every_game_speed() -> void:
+	for speed: float in [1.0, 0.7]:
+		Feel.set_game_speed(speed)
+		var room := make_room(ARENA)
+		var p := make_player(room, Vector2i(3, 6))
+		var hud := GameHud.new()
+		hud.player = p
+		arena.add_child(hud)
+		# An odd wait first, so a clock of the HUD's own would be out of step.
+		await frames(17)
+		p.hp = p.combat.low_health
+		# Past the hurt flash the drop in health shows, to the pulse alone.
+		await frames(int(1.0 / speed * 60.0))
+		var beats := p.heartbeats
+		var on_beat: Array[float] = []
+		var most := 0.0
+		var least := 1.0
+		for i in int(p.combat.heartbeat_interval / speed * 60.0 * 3.0) + 4:
+			await frames(1)
+			var s := hud.edge_strength()
+			most = maxf(most, s)
+			least = minf(least, s)
+			if p.heartbeats != beats:
+				beats = p.heartbeats
+				on_beat.append(s)
+		check(on_beat.size() >= 3, "%d%%: the heart beats (%d)" % [int(speed * 100), on_beat.size()])
+		var ok := most - least > 0.08
+		for s: float in on_beat:
+			ok = ok and s >= most - 0.01
+		check(ok, "%d%%: the edge is at its brightest as each beat sounds (%s, %.2f to %.2f)" % [int(speed * 100), on_beat, least, most])
+		hud.queue_free()
+		room.queue_free()
+		Feel.set_game_speed(1.0)
+		await frames(2)
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_the_red_edge_swells_on_the_heartbeat_at_every_game_speed"), "the bible names this test")

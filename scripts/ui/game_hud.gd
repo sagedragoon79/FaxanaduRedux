@@ -164,7 +164,8 @@ func _draw_trial() -> void:
 func edge_strength() -> float:
 	var s := hurt * HURT_EDGE
 	if player and player.is_low_health():
-		var beat := 0.5 + 0.5 * cos(_pulse_t * TAU / player.combat.heartbeat_interval)
+		# Locked to the heartbeat itself (pass 484): brightest as it sounds.
+		var beat := 0.5 + 0.5 * cos(player.heartbeat_phase() * TAU)
 		s = maxf(s, LOW_EDGE * (0.4 + 0.6 * beat) * maxf(Feel.flash_scale, 0.5))
 	return s
 
