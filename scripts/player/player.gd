@@ -288,6 +288,8 @@ var _last_step := -1
 var _control_blend_timer := 0.0
 var _jump_cut_available := false
 var _dash_timer := 0.0
+## The run a dash's blended last step settles to after its move (pass 470); 0 when none.
+var _dash_settle := 0.0
 var _dash_cooldown := 0.0
 var _dash_dir := 1
 ## The dash began on the ground: it follows the floor down a slope (bible 6.5).
@@ -523,6 +525,11 @@ func _physics_process(delta: float) -> void:
 	floor_snap_length = tuning.ground_dash_snap if hugging else FLOOR_SNAP
 	collision_mask = LAYER_WORLD if passes_veils() else LAYER_WORLD | LAYER_VEIL
 	move_and_slide()
+	if _dash_settle != 0.0:
+		# A wall that stopped the last step keeps the stop.
+		if signf(velocity.x) == signf(_dash_settle):
+			velocity.x = _dash_settle
+		_dash_settle = 0.0
 	if pull != Vector2.ZERO and not is_dashing:
 		move_and_collide(pull * delta)
 	pull = Vector2.ZERO
@@ -1009,9 +1016,16 @@ func _dash_step(delta: float) -> void:
 		var ghost := Afterimage.new()
 		get_parent().add_child(ghost)
 		ghost.setup(self)
+	var left := _dash_timer
 	_dash_timer -= delta
 	if _dash_timer <= 0.0:
 		_finish_dash()
+		# The last step is part dash, part run (pass 470), so a dash covers
+		# dash_speed * dash_time at any step. At 70% game speed a step is 0.7 of
+		# a frame, and a whole last step at a run had cut the dash 4 px short.
+		if left > 0.0 and delta > 0.0:
+			_dash_settle = velocity.x
+			velocity.x = (_dash_dir * tuning.dash_speed * left + _dash_settle * (delta - left)) / delta
 
 
 ## Whether elven veils let the player through this frame: while dashing, and
