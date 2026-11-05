@@ -78,8 +78,11 @@ func _process(delta: float) -> void:
 	# The time played is time in play (pass 437): a pause menu left open, the
 	# map, a sign being read or the flask shelf stops the clock, as the game
 	# does. This node runs while paused, so until then all of it counted.
+	# It is the player's time (pass 475): at a slower Game speed or in a
+	# boss's slow motion a second of play is still a second, so the frame's
+	# game-time delta is turned back into real time.
 	if not get_tree().paused:
-		play_time += delta
+		play_time += Feel.unscaled(delta)
 
 
 static func fresh() -> Dictionary:
