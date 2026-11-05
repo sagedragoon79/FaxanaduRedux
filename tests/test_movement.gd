@@ -2620,3 +2620,41 @@ func test_swimming_through_the_real_controller() -> void:
 	room.free()
 	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.7 ", 1).get_slice("- **Input", 1).get_slice("\n", 0)
 	check(line.contains("Swimming, too (pass 424)"), "bible 6.7's Input line says so")
+
+
+## Pass 470: the dash under the Game speed option, by the real controller.
+## Game speed (bible 14, 70% to 100%) slows the game by shortening each
+## physics step, so "everything slows evenly". The dash ran on a timer that
+## moved a whole last step at a run, so at 70% (a step of 0.7 of a frame) it
+## stopped 0.01 s early and fell 4 px short of its 57 px stride. Its last step
+## is now part dash, part run: at every speed the dash covers its stride, and
+## no more than one run step beyond it.
+func test_the_dash_keeps_its_stride_at_every_game_speed() -> void:
+	var t := MovementTuning.new()
+	var stride := t.dash_speed * t.dash_time
+	for speed: float in Settings.SPEED_STEPS:
+		Feel.set_game_speed(speed)
+		var step := speed / 60.0
+		var room := make_room(FLAT)
+		var p := make_player(room, Vector2i(3, 11))
+		await _settle(p)
+		p.input = PlayerInput.new()
+		await frames(10)
+		var x0 := p.global_position.x
+		Input.action_press("dash")
+		var dashed := false
+		var reach := -1.0
+		for i in 40:
+			await frames(1)
+			if i == 1:
+				Input.action_release("dash")
+			if p.is_dashing:
+				dashed = true
+			elif dashed and reach < 0.0:
+				reach = p.global_position.x - x0
+		check(dashed and reach >= stride - 0.01 and reach <= stride + t.run_speed * step + 0.01,
+			"at %d%% game speed, a real Dash covers its %.0f px stride (%.2f px, no more than %.2f)" % [roundi(speed * 100.0), stride, reach, stride + t.run_speed * step])
+		room.free()
+	Feel.set_game_speed(1.0)
+	var line := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 6.5 ", 1).get_slice("\n### ", 0)
+	check(line.contains("The dash at every game speed (pass 470)"), "bible 6.5 says so")
