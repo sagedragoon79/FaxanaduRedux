@@ -81,6 +81,16 @@ ENEMY_SHEETS = {
                  (("fly", "fly"), ("windup", "windup"), ("roost", "roost_hang"), ("death", "death"))},
     "minecart_rider": {f"{c}.png": f"enemies/minecart_rider/{c}" for c in ("roll", "rev", "charge", "crash", "death")},
     "silt_adder": {f"{c}.png": f"enemies/silt_adder/{c}" for c in ("float", "strike", "death")},
+    # Art loop batch 4 (Carillon): each foe's clips start from one frame of its base so every
+    # state shares one model. The Thunder Beetle's spent is made from its charge's open-cased frame.
+    "thunder_beetle": {f"{c}.png": f"enemies/thunder_beetle/{f}" for c, f in
+                       (("idle", "idle"), ("walk", "walk"), ("charge", "charge"), ("spent", "spent2"),
+                        ("hurt", "hurt"), ("death", "death"))},
+    "storm_harpy": {f"{c}.png": f"enemies/storm_harpy/{c}" for c in
+                    ("hover", "windup", "throw", "recover", "hurt", "death")},
+    # The Spire Sentinel's base came out as steel plate; base/guard.png is it recoloured to pale
+    # lilac shrine stone (tools/art/stone_tint.py), and its clips were made from that frame.
+    "spire_sentinel": {f"{c}.png": f"enemies/spire_sentinel/{c}" for c in ("stalk", "slam", "stagger", "death")},
 }
 NO_SLAB_CLEANING = set()
 

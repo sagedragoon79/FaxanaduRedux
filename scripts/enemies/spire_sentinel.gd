@@ -23,16 +23,9 @@ const SPENT := 1.2
 const COOLDOWN := 1.0
 const SLAM_DAMAGE := 16
 const CONTACT := 8
-## Design units per half-pixel (2.0: one unit is one world pixel).
-const SCALE := 2.0
 
-const OUTLINE := Color("1e1a2a")
 const STONE_DARK := Color("8d84a3")
-const STONE := Color("c9c4d6")
-const STONE_LIGHT := Color("e8e4f0")
 const GLYPH := Color("ffd24a")
-const GLYPH_DIM := Color("8a6a2a")
-const HAFT := Color("6b6380")
 const CRACK := Color("fff0a0")
 
 var _cool := 0.6
@@ -154,78 +147,64 @@ func _can_step(dir: int) -> bool:
 	return test_move(t, Vector2(0, 6))
 
 
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {"stone": "idle", "stalk": "stalk", "raise": "raise", "slam": "slam", "spent": "spent"}
+## Where its eye slit and the glyph on its breastplate are (world px from its feet,
+## facing right), for the gold light that wakes in them.
+const EYE := Vector2(5, -33)
+const GLYPH_AT := Vector2(6, -25)
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what it is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if is_staggered():
+		return ["stagger", state_time]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	var a: String = ANIMS.get(state, "idle")
+	if a == "stalk" and absf(velocity.x) < 1.0:
+		a = "idle"
+	return [a, state_time if a != "stalk" else Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
 	var t := Time.get_ticks_msec() * 0.001
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
+	var now := anim_now()
+	draw_sheet("spire_sentinel", now[0], now[1], flashing() or (state == "raise" and telegraph_pulse()))
+	if dead:
+		return
+	var f := Vector2(facing, 1)
 	var hot := state == "raise" or state == "slam"
 	var awake := _unwatched or state in ["stalk", "raise", "slam"]
-	# Plinth feet and greaves.
-	_px(-8, -3, 16, 3, OUTLINE)
-	_px(-7, -2, 14, 2, STONE_DARK)
-	_px(-6, -12, 5, 10, OUTLINE)
-	_px(1, -12, 5, 10, OUTLINE)
-	_px(-5, -11, 3, 9, STONE)
-	_px(2, -11, 3, 9, STONE_DARK)
-	# Tabard of stone over the hips.
-	_px(-7, -18, 14, 7, OUTLINE)
-	_px(-6, -17, 12, 5, STONE_DARK)
-	_px(-2, -17, 4, 5, STONE)
-	# Breastplate with the gold lightning glyph.
-	_px(-8, -29, 16, 12, OUTLINE)
-	_px(-7, -28, 14, 10, STONE)
-	_px(-7, -28, 3, 10, STONE_LIGHT)
-	var gl := GLYPH if hot or exposed() else (GLYPH if awake else GLYPH_DIM)
-	_px(1, -27, 2, 3, gl)
-	_px(-1, -25, 3, 2, gl)
-	_px(-2, -23, 2, 3, gl)
-	# Pauldrons.
-	_px(-10, -30, 5, 4, OUTLINE)
-	_px(5, -30, 5, 4, OUTLINE)
-	_px(-9, -29, 3, 2, STONE_LIGHT)
-	_px(6, -29, 3, 2, STONE)
-	# The helm: a tall crest, a slit visor, eyes that glow when it wakes.
-	_px(-5, -37, 10, 9, OUTLINE)
-	_px(-4, -36, 8, 7, STONE)
-	_px(-1, -41, 3, 5, OUTLINE)
-	_px(0, -40, 1, 4, STONE_LIGHT)
-	_px(-3, -33, 7, 1, OUTLINE)
-	if awake or hot or exposed():
-		_px(1, -33, 2, 1, GLYPH)
-		_px(-2, -33, 1, 1, GLYPH)
-	# The halberd: upright at its side, raised overhead in the telegraph,
-	# swung down in front in the slam, buried in the floor while spent.
-	match state:
-		"raise":
-			var lift := minf(state_time / RAISE, 1.0)
-			var top := -50 - roundi(lift * 6.0)
-			_px(8, top, 2, -top - 20, HAFT)
-			_px(6, top - 1, 7, 5, OUTLINE)
-			_px(7, top, 5, 3, STONE_LIGHT)
-			_px(9, -27, 3, 4, STONE)
-		"slam", "spent":
-			# The haft swept down forward, the blade in the floor ahead.
-			for i in 7:
-				_px(10 + i * 4, -26 + i * 3, 4, 2, HAFT)
-			_px(36, -10, 7, 10, OUTLINE)
-			_px(37, -9, 5, 8, STONE_LIGHT)
-			_px(9, -27, 3, 4, STONE)
-		_:
-			_px(9, -44, 2, 43, HAFT)
-			_px(7, -49, 6, 6, OUTLINE)
-			_px(8, -48, 4, 4, STONE_LIGHT)
-			_px(11, -46, 3, 2, STONE)
-			_px(8, -27, 3, 4, STONE)
+	# Its eyes wake behind the visor while you are not looking, and blaze with the glyph
+	# as it raises the halberd (the telegraph's light; the pose is the art's).
+	if (awake or exposed()) and now[0] in ["idle", "stalk", "raise"]:
+		var e := EYE * f
+		draw_rect(Rect2(e.x - 1.5, e.y - 0.5, 3, 1), GLYPH)
+		draw_circle(e, 2.5, Color(GLYPH, 0.3))
+	if state == "raise":
+		var r := 3.0 + sin(t * 30.0)
+		draw_circle(GLYPH_AT * f, r * 2.0, Color(GLYPH, 0.25))
 	# Cracked open: bright seams across the stone.
 	if exposed():
-		_px(-5, -26, 1, 4, CRACK)
-		_px(-4, -22, 3, 1, CRACK)
-		_px(3, -20, 1, 4, CRACK)
-		_px(-3, -9, 1, 4, CRACK)
-	if hot and state == "raise":
-		var r := 3.0 + sin(t * 30.0)
-		draw_circle(Vector2(1, -25), r * 2.0, Color(GLYPH, 0.25))
-	wash(flashing() or (state == "raise" and telegraph_pulse()))
-	draw_set_transform(Vector2.ZERO)
+		for seam: Rect2 in SEAMS:
+			draw_rect(Rect2(seam.position * f - Vector2(seam.size.x if facing < 0 else 0.0, 0), seam.size), Color(CRACK, 0.9))
 	# Grit kicked up while it grinds along.
 	if state == "stalk":
 		for k in 3:
@@ -233,11 +212,5 @@ func _draw() -> void:
 			draw_rect(Rect2(gx, -2.0 - k, 1, 1), Color(STONE_DARK, 0.8))
 
 
-## Draws a rect of the design (in units of 1/SCALE half-pixels), snapped to
-## the half-pixel grid so neighbouring rects still tile.
-func _px(x: int, y: int, w: int, h: int, color: Color, alpha := 1.0) -> void:
-	var x0 := floorf(x * SCALE)
-	var y0 := floorf(y * SCALE)
-	var x1 := maxf(floorf((x + w) * SCALE), x0 + 1.0)
-	var y1 := maxf(floorf((y + h) * SCALE), y0 + 1.0)
-	draw_rect(Rect2(x0 * 0.5, y0 * 0.5, (x1 - x0) * 0.5, (y1 - y0) * 0.5), Color(color, color.a * alpha))
+## The seams that glow when it cracks open (world px from its feet, facing right).
+const SEAMS: Array[Rect2] = [Rect2(0, -30, 1, 4), Rect2(1, -26, 3, 1), Rect2(7, -22, 1, 4), Rect2(1, -14, 1, 4)]

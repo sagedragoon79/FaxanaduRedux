@@ -22,17 +22,6 @@ const FAN := 0.26
 ## How far she sags while winded.
 const SAG := 34.0
 const TOUCH_DAMAGE := 12
-## Design units per half-pixel (2.0: one unit is one world pixel).
-const SCALE := 2.0
-
-const OUTLINE := Color("13101f")
-const WING_DARK := Color("2e2a4a")
-const WING := Color("4e4a78")
-const WING_LIGHT := Color("8a84b8")
-const SKIN := Color("d9c2b0")
-const HAIR := Color("c8c4dc")
-const TALON := Color("e8c04a")
-const EYE := Color("ffe070")
 
 var _cool := 0.6
 var _side := 1
@@ -104,81 +93,36 @@ func _volley() -> void:
 	Sfx.play("feather", 0.08)
 
 
+## The sheet's animation for each state (docs/art/enemy-style-guide.md 4).
+const ANIMS := {"hover": "hover", "windup": "windup", "throw": "throw", "recover": "recover"}
+
+var _died_at := -1.0
+
+
+func die() -> void:
+	_died_at = Time.get_ticks_msec() * 0.001
+	super.die()
+
+
+func _process(_delta: float) -> void:
+	# The dissolve runs after death, when the body no longer redraws itself: keep
+	# the collapse playing under it.
+	if dead and dissolving():
+		queue_redraw()
+
+
+## The animation and its time for what she is doing now.
+func anim_now() -> Array:
+	if dead:
+		return ["death", Time.get_ticks_msec() * 0.001 - _died_at]
+	if _hitstun > 0.0:
+		return ["hurt", HITSTUN - _hitstun]
+	if is_staggered():
+		return ["recover", state_time]
+	var a: String = ANIMS.get(state, "hover")
+	return [a, state_time if a != "hover" else Time.get_ticks_msec() * 0.001]
+
+
 func _draw() -> void:
-	var t := Time.get_ticks_msec() * 0.001
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(facing, 1))
-	var flap := 0.0
-	match state:
-		"windup":
-			flap = -0.55
-		"throw":
-			flap = 0.6
-		"recover":
-			flap = 0.35 + sin(t * 18.0) * 0.15
-		_:
-			flap = sin(t * 9.0) * 0.45
-	# The far wing, behind her.
-	_wing(-1, flap - 0.15, WING_DARK)
-	# Legs and talons.
-	_px(-3, 6, 3, 6, OUTLINE)
-	_px(2, 6, 3, 6, OUTLINE)
-	_px(-2, 7, 1, 4, WING_DARK)
-	_px(3, 7, 1, 4, WING_DARK)
-	_px(-4, 11, 4, 2, TALON)
-	_px(2, 11, 4, 2, TALON)
-	# A feathered body.
-	_px(-6, -6, 12, 14, OUTLINE)
-	_px(-5, -5, 10, 12, WING)
-	_px(-4, -4, 4, 9, WING_LIGHT)
-	_px(-5, 5, 10, 2, WING_DARK)
-	# Head: pale face, wild storm-white hair streaming back, gold eyes.
-	_px(-1, -15, 9, 10, OUTLINE)
-	_px(0, -14, 7, 8, SKIN)
-	_px(-5, -16, 9, 5, OUTLINE)
-	_px(-4, -15, 7, 3, HAIR)
-	_px(-7, -13, 5, 6, HAIR)
-	_px(-8, -10, 3, 3, HAIR)
-	_px(4, -12, 2, 1, EYE if state != "recover" else OUTLINE)
-	_px(6, -9, 1, 1, OUTLINE)
-	# The near wing, in front.
-	_wing(1, flap, WING)
-	wash(flashing() or (state == "windup" and telegraph_pulse()))
-	draw_set_transform(Vector2.ZERO)
-
-
-## The scalloped outline of a wing, from the shoulder (0, 0), swept up and back.
-const WING_SHAPE := [Vector2(0, 0), Vector2(-4, -10), Vector2(-12, -19), Vector2(-21, -22), Vector2(-27, -18),
-	Vector2(-23, -15), Vector2(-28, -10), Vector2(-23, -8), Vector2(-27, -3), Vector2(-20, -2), Vector2(-22, 3),
-	Vector2(-12, 2), Vector2(-6, 4)]
-
-
-## A wing from the shoulder, turned by `angle` (negative raises it). `layer` -1
-## is the far wing, drawn behind and darker.
-func _wing(layer: int, angle: float, col: Color) -> void:
-	var shoulder := Vector2(-2, -4) if layer > 0 else Vector2(1, -6)
-	var fill := PackedVector2Array()
-	var edge := PackedVector2Array()
-	for v: Vector2 in WING_SHAPE:
-		fill.append(shoulder + v.rotated(angle))
-		edge.append(shoulder + (v * 1.12 + Vector2(1, 0)).rotated(angle))
-	draw_colored_polygon(edge, OUTLINE)
-	draw_colored_polygon(fill, col)
-	# The leading edge catches the light; the flight feathers darken.
-	var lead := PackedVector2Array()
-	for k in 5:
-		lead.append(shoulder + WING_SHAPE[k].rotated(angle))
-	draw_polyline(lead, WING_LIGHT if layer > 0 else col.lightened(0.15), 1.0)
-	for k in [6, 8, 10]:
-		var a: Vector2 = shoulder + (WING_SHAPE[k] * 0.55).rotated(angle)
-		var b: Vector2 = shoulder + WING_SHAPE[k].rotated(angle)
-		draw_line(a, b, col.darkened(0.3), 1.0)
-
-
-## Draws a rect of the design (in units of 1/SCALE half-pixels), snapped to
-## the half-pixel grid so neighbouring rects still tile.
-func _px(x: int, y: int, w: int, h: int, color: Color, alpha := 1.0) -> void:
-	var x0 := floorf(x * SCALE)
-	var y0 := floorf(y * SCALE)
-	var x1 := maxf(floorf((x + w) * SCALE), x0 + 1.0)
-	var y1 := maxf(floorf((y + h) * SCALE), y0 + 1.0)
-	draw_rect(Rect2(x0 * 0.5, y0 * 0.5, (x1 - x0) * 0.5, (y1 - y0) * 0.5), Color(color, color.a * alpha))
+	var now := anim_now()
+	draw_sheet("storm_harpy", now[0], now[1], flashing() or (state == "windup" and telegraph_pulse()))

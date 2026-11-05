@@ -1134,5 +1134,57 @@
    "hurt": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, the recoil"},
    "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [4, 5, 6, 7, 8, 12], "fps": 12, "loop": false, "anchor": "center", "pixellab": "PixelLab character 8da69d2d (create-character-v3, side view), pixminimax east, drooping into a heap"}
   }
+ },
+ "thunder_beetle": {
+  "dir": "../pixellab/sheets/thunder_beetle",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "gold", "ember"],
+  "height": 24,
+  "reference": "idle",
+  "rim": {"color": [184, 168, 255], "mix": 0.25},
+  "animations": {
+   "idle": {"file": "idle.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 7, "loop": true, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame"},
+   "walk": {"file": "walk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 10, "loop": true, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame"},
+   "charge": {"file": "charge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7, 8], "fps": 10, "loop": false, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame, the wing cases lifting (the tell)"},
+   "discharge": {"file": "charge.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [9, 10, 11, 12], "fps": 14, "loop": false, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame, the wing cases wide and the wings fanned"},
+   "spent": {"file": "spent.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5, 6, 7, 8], "fps": 8, "loop": false, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame, made from the charge's open frame: cases hanging open"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2], "fps": 10, "loop": false, "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6, 8, 10], "fps": 14, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character a6a044b4 (create-character-v3, side view), pixminimax east, from its side-profile frame, rolls onto its back"}
+  }
+ },
+ "storm_harpy": {
+  "dir": "../pixellab/sheets/storm_harpy",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "sky", "gold"],
+  "height": 40,
+  "reference": "hover",
+  "animations": {
+   "hover": {"file": "hover.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 16, "loop": true, "anchor": "center", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile)"},
+   "windup": {"file": "windup.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4], "fps": 8, "loop": false, "anchor": "center", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile), wings flung wide (the tell)"},
+   "throw": {"file": "throw.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [3, 4, 5], "fps": 15, "loop": false, "anchor": "center", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile), the wingbeat that flings the feathers"},
+   "recover": {"file": "recover.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 9, "loop": false, "anchor": "center", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile), winded, wings drooping"},
+   "hurt": {"file": "hurt.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "anchor": "center", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile)"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [3, 4, 5, 6, 7, 8, 9, 10], "fps": 16, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character df3d623a (create-character-v3, side view), pixminimax east, from her south-east view (the side profile), tumbles down (the first two frames bake in a slash, left out)"}
+  }
+ },
+ "spire_sentinel": {
+  "dir": "../pixellab/sheets/spire_sentinel",
+  "colors": 44,
+  "density": 2,
+  "ramps": ["night", "stone", "gold"],
+  "height": 42,
+  "reference": "idle",
+  "animations": {
+   "idle": {"file": "stalk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [0], "fps": 1, "loop": true, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, held still: a statue"},
+   "stalk": {"file": "stalk.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [1, 2, 3, 4, 5, 6, 7, 8], "fps": 12, "loop": true, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame"},
+   "raise": {"file": "slam.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5], "fps": 7, "loop": false, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, the halberd lifted overhead (the tell)"},
+   "slam": {"file": "slam.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [6, 7, 8], "fps": 15, "loop": false, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, the slam, 6 its smear"},
+   "spent": {"file": "slam.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [9, 10, 11, 12], "fps": 5, "loop": false, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, the blade buried in the floor"},
+   "stagger": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3, 4, 5, 6, 7, 8], "fps": 6, "loop": true, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame"},
+   "hurt": {"file": "stagger.png", "frame_size": 256, "columns": 9, "count": 9, "pick": [2, 3], "fps": 10, "loop": false, "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, the stagger's first recoil"},
+   "death": {"file": "death.png", "frame_size": 256, "columns": 13, "count": 13, "pick": [2, 3, 4, 5, 6, 7, 8, 10, 12], "fps": 14, "loop": false, "anchor": "fixed", "pixellab": "PixelLab character fe2abc15 (create-character-v3, side view), pixminimax east, from its stone-tinted guard frame, crumbles to rubble"}
+  }
  }
 }

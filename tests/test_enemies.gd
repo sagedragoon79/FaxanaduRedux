@@ -881,6 +881,46 @@ func test_shade_knight_plays_an_animation_for_every_state() -> void:
 	check(k.anim_now()[0] == "death" and Sheet.has_anim("shade_knight", "death"), "he collapses as he dissolves")
 
 
+## The art loop, batch 4 (docs/art/enemy-style-guide.md 4): a Carillon foe plays an
+## animation of its own sheet for every state it takes, a tell that is not its idle, a
+## flinch while a blow stuns it, and its collapse once it dies.
+func _plays_its_sheet(legend: String, sheet: String, type: Variant, states: Array, tell: String) -> void:
+	var room := _room_with({Vector2i(20, 6): legend})
+	make_player(room, Vector2i(3, 6))
+	var e: Enemy = _find(room, type)
+	await frames(3)
+	e.set_physics_process(false)
+	check(Sheet.exists(sheet), "the %s's sheet is in the game" % sheet)
+	for s: String in states:
+		e.set_state(s)
+		var a: String = e.call("anim_now")[0]
+		check(Sheet.has_anim(sheet, a), "%s: %s plays %s, which the sheet has" % [sheet, s, a])
+	e.set_state(tell)
+	var told: String = e.call("anim_now")[0]
+	check(told not in ["idle", "walk", "hover"], "%s: the %s is its own pose (%s)" % [sheet, tell, told])
+	e.set_state(states[0])
+	e._hitstun = Enemy.HITSTUN
+	check(e.call("anim_now")[0] == "hurt" and Sheet.has_anim(sheet, "hurt"), "%s: a blow that lands makes it flinch" % sheet)
+	e._hitstun = 0.0
+	e.stagger()
+	var reel: String = e.call("anim_now")[0]
+	check(Sheet.has_anim(sheet, reel), "%s: reeling plays %s" % [sheet, reel])
+	e.die()
+	check(e.call("anim_now")[0] == "death" and Sheet.has_anim(sheet, "death"), "%s: it collapses as it dissolves" % sheet)
+
+
+func test_thunder_beetle_plays_an_animation_for_every_state() -> void:
+	await _plays_its_sheet("t", "thunder_beetle", ThunderBeetle, ["walk", "charge", "discharge", "spent"], "charge")
+
+
+func test_storm_harpy_plays_an_animation_for_every_state() -> void:
+	await _plays_its_sheet("y", "storm_harpy", StormHarpy, ["hover", "windup", "throw", "recover"], "windup")
+
+
+func test_spire_sentinel_plays_an_animation_for_every_state() -> void:
+	await _plays_its_sheet("]", "spire_sentinel", SpireSentinel, ["stone", "stalk", "raise", "slam", "spent"], "raise")
+
+
 func test_shade_knight_ripostes_when_you_batter_his_shield() -> void:
 	var room := _room_with({Vector2i(20, 6): "e"})
 	make_player(room, Vector2i(3, 6))
@@ -2156,18 +2196,19 @@ func test_a_flash_whitens_the_foe_not_a_box() -> void:
 	var room := make_room(rows)
 	make_player(room, Vector2i(8, 12))
 	var h: StormHarpy = _find(room, StormHarpy)
+	# She is drawn from her sheet (art pass 5): her flash is her own sprite drawn white.
 	await frames(2)
-	check(not h.washed(), "a harpy at rest is drawn in her own colours")
+	check(not h.drawn_white(), "a harpy at rest is drawn in her own colours")
 	h.take_hit(1, Vector2(1, 0))
 	await frames(1)
-	check(h.washed(), "a hit washes her white")
+	check(h.drawn_white(), "a hit washes her white")
 	await frames(10)
-	check(not h.washed(), "and the wash fades with the flash")
+	check(not h.drawn_white(), "and the wash fades with the flash")
 	h.set_state("windup")
 	var pulsed := false
 	for i in 12:
 		await frames(1)
-		pulsed = pulsed or h.washed()
+		pulsed = pulsed or h.drawn_white()
 	check(pulsed, "her screech tell pulses white")
 	h.take_hit(999, Vector2(1, 0))
 	await frames(2)

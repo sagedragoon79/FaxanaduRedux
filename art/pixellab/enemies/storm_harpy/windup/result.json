@@ -1,0 +1,63 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 1.0
+ },
+ "id": "86e94f1e-4ab6-4aa0-ab70-23ba20b86c33",
+ "status": "completed",
+ "created_at": "2026-11-05T00:58:02.078594+00:00",
+ "last_response": {
+  "seed": 3196196831,
+  "type": "message_done",
+  "action": "rears back in the air and spreads her wings wide open as far as they go, head thrown back screeching, and holds that pose. She stays high in the air. It stays in strict side profile facing right the whole time and never turns toward the camera.",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png",
+   "08.png"
+  ],
+  "status": "initializing",
+  "progress": 0.326406657367424,
+  "direction": "east",
+  "frame_count": 9,
+  "animation_id": "9421a56c-1574-4b87-9de1-0e05be918612",
+  "character_id": "df3d623a-eb48-4f0f-ade8-afd197b16735",
+  "storage_urls": {
+   "frames": [
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/0.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/1.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/2.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/3.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/4.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/5.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/6.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/7.png",
+    "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/df3d623a-eb48-4f0f-ade8-afd197b16735/animations/9421a56c-1574-4b87-9de1-0e05be918612/east/8.png"
+   ],
+   "input_frames_digest": "3ae388044885947535f56940368ac776cb191166d4e43b72f0cd2471d1078f94"
+  },
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 1
+  },
+  "generation_id": "8da4b5f5-644d-458a-82fa-5f2ebf78350f",
+  "animation_name": "custom-rears back in the air and spre",
+  "queue_position": 0,
+  "target_palette": null,
+  "billing_charged": true,
+  "generation_model": "pixminimax_custom_frames",
+  "keep_first_frame": true,
+  "saved_to_storage": true,
+  "animation_group_id": "d538ab7f-c31d-464a-ace3-1ec0146358ab",
+  "input_frames_digest": "3ae388044885947535f56940368ac776cb191166d4e43b72f0cd2471d1078f94",
+  "generation_started_at": "2026-11-05T00:58:27.792336+00:00",
+  "requested_frame_count": 8,
+  "estimated_wait_seconds": 0
+ }
+}
