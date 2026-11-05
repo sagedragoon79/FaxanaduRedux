@@ -262,8 +262,38 @@ func test_card_doors_take_only_their_own_key() -> void:
 	check(MapScreen.key_line() == "Keys: Copper 1, Gold 1", "the map lists the keys you hold (%s)" % MapScreen.key_line())
 	# Every card has its look; an unknown kind falls back to the Copper's.
 	for kind in ["copper", "silver", "gold", "thorn", "glass"]:
-		check(KeyDoor.CARDS.has(kind), "%s door has a look" % kind)
+		check(KeyDoor.DOORS.has(kind), "%s door has a look" % kind)
 
+
+
+## Pass 471 (bible 1, 3): the key doors had worn the card suits (spade, heart,
+## club, diamond, and a jester's star) of the game Yldenfall began as. Each now
+## bears a mark of this world, of a shape of its own (bible 14 tells the gates
+## apart by shape): an acorn, an Ylden leaf, the Reeve's crown, a thorn and a
+## stillglass shard. Each door is drawn, and no suit is left in its script.
+func test_the_key_doors_wear_marks_of_their_own() -> void:
+	var want := {"copper": "acorn", "silver": "leaf", "gold": "crown", "thorn": "thorn", "glass": "shard"}
+	var seen := {}
+	for kind: String in want:
+		check(String(KeyDoor.DOORS[kind].mark) == want[kind], "the %s door bears %s (%s)" % [KeyDoor.label(kind), want[kind], KeyDoor.DOORS[kind].mark])
+		seen[KeyDoor.DOORS[kind].mark] = true
+	check(seen.size() == want.size(), "five doors, five marks, none shared")
+	var src := FileAccess.get_file_as_string("res://scripts/world/key_door.gd").to_lower()
+	for suit: String in ["spade", "\"heart\"", "club", "diamond", "jester", "suit\""]:
+		check(not src.contains(suit), "no card suit is left on the doors (%s)" % suit)
+	# Each door stands and draws its mark without an error.
+	var shapes := {}
+	for kind: String in want:
+		var door := KeyDoor.new()
+		door.kind = kind
+		arena.add_child(door)
+		shapes[kind] = door
+	await frames(2)
+	for kind: String in want:
+		check(shapes[kind].is_inside_tree(), "the %s door stands" % kind)
+		shapes[kind].free()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("Marks of their own (pass 471)") and not bible.contains("card-suit glyph"), "the bible says so")
 
 func test_the_card_keys_are_sold_and_the_joker_is_found() -> void:
 	var rooms := _town({}, ["prop: 12, 19, glass_key"])
@@ -2578,7 +2608,7 @@ func test_the_map_marks_key_doors_still_shut() -> void:
 	var shut := MapScreen.locked_doors(info)
 	check(shut.size() == 2, "the catalog lists both doors (%s)" % [shut])
 	check(shut[0].kind == "silver" and shut[0].id == "test/town:12,19" and shut[1].kind == "copper", "with their card and pickup id")
-	check(MapScreen.lock_color("silver") == KeyDoor.CARDS.silver.panel and MapScreen.lock_color("sky") == KeyDoor.SHRINE, "each marked in its own door's color")
+	check(MapScreen.lock_color("silver") == KeyDoor.DOORS.silver.panel and MapScreen.lock_color("sky") == KeyDoor.SHRINE, "each marked in its own door's color")
 	GameState.collect("test/town:12,19")
 	shut = MapScreen.locked_doors(info)
 	check(shut.size() == 1 and shut[0].kind == "copper", "an opened door leaves the map")

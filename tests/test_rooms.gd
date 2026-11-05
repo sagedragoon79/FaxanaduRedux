@@ -2578,7 +2578,7 @@ func test_every_gates_number_is_written_in_bible_4_5() -> void:
 	var water: String = said.call("Time-locked water")
 	check(water.contains("bears down at %d px/s" % Waterfall.PUSH), "4.5 gives time-locked water's push (%d px/s)" % Waterfall.PUSH)
 	check(water.contains("footholds every %s rows" % ["", "one", "two", "three", "four"][mini(Waterfall.STEP, 4)]), "4.5 gives the frozen footholds' spacing (%d rows)" % Waterfall.STEP)
-	check(said.call("Key doors").contains("every card door is %s tiles tall" % ["", "one", "two", "three", "four"][mini(roundi(KeyDoor.SIZE.y / tile), 4)]), "4.5 gives a card door's height (%d px)" % KeyDoor.SIZE.y)
+	check(said.call("Key doors").contains("every key door is %s tiles tall" % ["", "one", "two", "three", "four"][mini(roundi(KeyDoor.SIZE.y / tile), 4)]), "4.5 gives a key door's height (%d px)" % KeyDoor.SIZE.y)
 	# The Haar's towns (3.2): the marsh's fog, each town's fog and lamp posts,
 	# and the pocket each lamp clears.
 	var lamp := TownLamp.new()
