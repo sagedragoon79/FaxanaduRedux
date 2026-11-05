@@ -212,13 +212,19 @@ func _title() -> void:
 				menu.close()
 				_journeys()
 			1:
-				Menus.open_options(get_tree(), _title)
+				Menus.open_options(get_tree(), _title_on.bind(1))
 			2:
-				Menus.open_controls(get_tree(), _title)
+				Menus.open_controls(get_tree(), _title_on.bind(2))
 			3:
 				get_tree().quit()
 	menu.open("A wanderer returns", "The Ylden's springs have run dry.", rows, pick)
 	menu.cursor = 0
+
+
+## Back to the title from Options or Controls, on the row that opened it (pass 467).
+func _title_on(row: int) -> void:
+	_title()
+	menu.cursor = row
 
 
 ## The three flasks (bible 14): take a journey up, or begin one.

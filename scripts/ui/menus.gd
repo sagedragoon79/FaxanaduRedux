@@ -336,8 +336,14 @@ static func open_pause(tree: SceneTree, p: Player, on_quit: Callable) -> bool:
 			{"label": "Quit game", "detail": "Anything since your last rest at a shrine is lost."},
 		] + ([{"label": "Leave the trial", "detail": "Stop the clock and return to the Ringreader."}] if Trials.active() else []) \
 			+ ([{"label": "Leave the rush", "detail": "Stop the clock and return to the Ringreader."}] if BossRush.active() else [])
-	var reopen := func() -> void: open_pause(tree, p, on_quit)
+	# Backing out of a page lands on the row that opened it (pass 467), so the
+	# next Jump does not resume the game from Resume.
+	var back_to := func(row: int) -> Callable:
+		return func() -> void:
+			if open_pause(tree, p, on_quit):
+				menu.cursor = row
 	var on_select := func(i: int) -> void:
+		var reopen: Callable = back_to.call(i)
 		match i:
 			0:
 				menu.close()

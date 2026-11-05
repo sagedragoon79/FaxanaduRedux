@@ -3226,6 +3226,115 @@ func test_the_pause_menu_answers_the_real_controller() -> void:
 	check(bible.contains("The pause menu by the buttons (pass 421)"), "the bible says so")
 
 
+## Pass 467: Options by the buttons, kept through a restart. Pass 421 pressed
+## Pause in play, but the Options and Controls pages were only reached with
+## `confirm()` and `adjust()`, and no test changed an option with the buttons,
+## quit, and started the game again. Here the whole game runs: Pause, Down to
+## Options, Jump; Right turns the shake up, Jump on the mercy row turns it on,
+## Left three times lowers the sound; Dash back, Down to Controls, Jump on Map,
+## and a real key press (N) rebinds it. Then the game is quit and a new one
+## starts from the file alone, with every value and the key back.
+func test_options_are_changed_with_the_buttons_and_kept_through_a_restart() -> void:
+	Settings.path = TEMP_SETTINGS
+	for suffix: String in ["", ".bak", ".tmp"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEMP_SETTINGS + suffix))
+	GameState.new_game()
+	var g: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(g)
+	await frames(2)
+	g.menu.close()
+	g.title_screen.visible = false
+	g._start("hearthroot/west_gate")
+	g.world.use_game_state = false
+	await frames(5)
+	var menu: ListMenu = g.menu
+	await _tap("pause")
+	check(menu.is_open and menu.title == "Paused", "Pause opens the pause menu")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	for i in 4:
+		await _tap("move_down")
+	check(String(menu.rows[menu.cursor].label) == "Options", "Down four times to Options (%s)" % menu.rows[menu.cursor].label)
+	await _tap("jump")
+	check(menu.title == "Options" and menu.cursor == 0, "Jump opens Options on Screen shake")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_right")
+	check(Settings.shake == 1 and Feel.shake_scale == Settings.SHAKE_STEPS[1], "Right turns the shake one step and applies it (%s)" % Feel.shake_scale)
+	for i in 4:
+		await _tap("move_down")
+	check(String(menu.rows[menu.cursor].label) == "Assist: mercy", "Down to the mercy assist (%s)" % menu.rows[menu.cursor].label)
+	await _tap("jump")
+	check(Settings.mercy and menu.title == "Options", "Jump turns mercy on, and Options stays up")
+	await _tap("move_down")
+	await _tap("move_down")
+	check(String(menu.rows[menu.cursor].label) == "Sound volume", "Down to Sound volume (%s)" % menu.rows[menu.cursor].label)
+	for i in 3:
+		await _tap("move_left")
+	check(Settings.sound_volume == 5, "Left three times lowers the sound to 5 (%d)" % Settings.sound_volume)
+	await _tap("dash")
+	check(menu.title == "Paused" and String(menu.rows[menu.cursor].label) == "Options", "Dash goes back to the pause menu, on Options, not Resume (%d)" % menu.cursor)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_down")
+	await _tap("jump")
+	check(menu.title == "Controls", "Down and Jump open Controls")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	var map_row := Settings.REBINDABLE.find("map")
+	for i in map_row:
+		await _tap("move_down")
+	check(menu.cursor == map_row, "Down to the Map row (%d)" % menu.cursor)
+	await _tap("jump")
+	check(menu.capture.is_valid(), "Jump waits for the new key")
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_N
+	key.pressed = true
+	Input.parse_input_event(key)
+	Input.flush_buffered_events()
+	await frames(1)
+	key = key.duplicate()
+	key.pressed = false
+	Input.parse_input_event(key)
+	Input.flush_buffered_events()
+	await frames(2)
+	check(not menu.capture.is_valid() and Settings.keys.get("map", 0) == KEY_N, "N is pressed, and Map is on N (%s)" % [Settings.keys])
+	check(String(menu.rows[map_row].right).begins_with(Controls.key_name("map")) and Controls.key_name("map") == "N", "the row shows N (%s)" % menu.rows[map_row].right)
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("dash")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("dash")
+	check(not menu.is_open and not arena.get_tree().paused, "Dash twice and the game runs on")
+	# Quit. Nothing but the file carries over: the options go back to their
+	# defaults in memory before the next game starts and reads it.
+	g.queue_free()
+	await frames(2)
+	Settings.reset()
+	Settings.apply()
+	check(Settings.shake == 0 and not Settings.mercy and Controls.key_name("map") != "N", "quit: the options in memory are the defaults")
+	GameState.new_game()
+	var again: Node2D = load("res://scripts/game.gd").new()
+	arena.add_child(again)
+	await frames(2)
+	check(Settings.shake == 1 and Feel.shake_scale == Settings.SHAKE_STEPS[1], "started again: the shake is still one step up")
+	check(Settings.mercy and Settings.sound_volume == 5, "mercy is still on and the sound still at 5")
+	var bus := AudioServer.get_bus_index("Sfx")
+	check(bus >= 0 and is_equal_approx(AudioServer.get_bus_volume_db(bus), (5 - Settings.VOLUME_MAX) * 3.0), "and the sound bus is set from it (%.1f dB)" % AudioServer.get_bus_volume_db(bus))
+	check(Controls.key_name("map") == "N", "and Map is still on N")
+	# The title's Options backs out onto Options too, not onto Journeys.
+	var title: ListMenu = again.menu
+	check(title.is_open and title.cursor == 0, "the title menu is up, on Journeys")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("move_down")
+	await _tap("jump")
+	check(title.title == "Options", "Down and Jump open Options from the title")
+	await frames(int(ListMenu.INPUT_GRACE * 60.0) + 2)
+	await _tap("dash")
+	check(title.is_open and String(title.rows[title.cursor].label) == "Options", "Dash goes back to the title, on Options (%d)" % title.cursor)
+	title.close()
+	again.queue_free()
+	await frames(2)
+	GameState.new_game()
+	_restore()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("Options by the buttons, kept through a restart (pass 467)"), "the bible says so")
+
 ## Pass 398: each press of the real controller in a menu is heard as the
 ## bible says (13.3): the cursor blips, a value blips, a row you can't choose
 ## says no, backing out is quiet; on the shelf of flasks a step blips, Block
