@@ -1148,3 +1148,29 @@ func test_no_room_is_far_from_a_rest() -> void:
 		var deep := float(CombatTuning.ZONE_THREAT.get(zones[id], 1.0)) >= 2.0
 		var reach := DEEP_SAVE_REACH if deep else SAVE_REACH
 		check(dist.has(id) and int(dist[id]) <= reach, "%s is within %d rooms of a rest (%s)" % [id, reach, dist.get(id, "none")])
+
+
+## Pass 477: a door's fade ran on game time, so at 70% Game speed it took 1.4
+## times as long, and walking out of an arena in a guardian's slow motion
+## (30%) more than three times as long. It is real time at every speed.
+func test_a_door_fades_in_real_time_at_every_game_speed() -> void:
+	for speed: float in [1.0, 0.7, 0.3]:
+		var w := make_world({}, "hearthroot/east_gate")
+		w.fader = ColorRect.new()
+		w.fader.color = Color(0, 0, 0, 0)
+		w.add_child(w.fader)
+		w.instant = false
+		await frames(2)
+		Feel.set_game_speed(speed)
+		w.use_door(2)
+		var n := 0
+		while w.busy and n < 300:
+			await frames(1)
+			n += 1
+		Feel.set_game_speed(1.0)
+		var whole := int((World.FADE_OUT + World.FADE_IN) * 60.0)
+		check(w.room.id == "heartwood/entrance" and n <= whole + 4, "at %d%% the door's fade takes %d frames (at most %d)" % [roundi(speed * 100.0), n, whole + 4])
+		w.queue_free()
+		await frames(2)
+	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(note.contains("`test_a_door_fades_in_real_time_at_every_game_speed`"), "the bible names the test")
