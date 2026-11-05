@@ -2700,3 +2700,58 @@ func test_combat_windows_only_widen_as_the_game_slows() -> void:
 	Feel.set_game_speed(1.0)
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("\n### 5.3 ", 1).get_slice("\n### 5.4 ", 0)
 	check(note.contains("Combat at every game speed (pass 472)"), "5.3 says so")
+
+
+## Pass 480: passes 470 and 472 ran the dash and the blade at every game speed;
+## the Rune Dagger and the spells were only thrown and cast at full speed. Their
+## reach is a distance in the world, so it must not change with the Game speed
+## option (14), and their cooldowns run on game time, so a slower game is never
+## a faster one. Thrown and cast with the real buttons at 100 and 70%.
+func _reach_at(speed: float, id: String) -> Array:
+	Feel.set_game_speed(speed)
+	var rows := ["#".repeat(60)]
+	for y in 10:
+		rows.append("#" + ".".repeat(58) + "#")
+	rows.append("#".repeat(60))
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 9), {"rune_dagger": id == "dagger", id: true})
+	p.input = PlayerInput.new()
+	await frames(6)
+	var shield_was := String(GameState.data.equipment.get("shield", ""))
+	if id == "dagger":
+		GameState.data.equipment.shield = ""
+	else:
+		p.equipped_spell = id
+		p.mp = p.combat.max_mp
+	await press_for_real(p, ["throw" if id == "dagger" else "spell"])
+	release_for_real(["throw", "spell"])
+	var shots := runner.get_tree().get_nodes_in_group("projectile")
+	var shot: Node2D = p.rune_dagger if id == "dagger" else (shots[0] if shots.size() == 1 else null)
+	var far := 0.0
+	var start := shot.global_position if shot != null else Vector2.ZERO
+	var n := 0
+	while shot != null and is_instance_valid(shot) and n < 600:
+		far = maxf(far, absf(shot.global_position.x - start.x))
+		await frames(1)
+		n += 1
+	var back := 0
+	if id == "dagger":
+		while not p.dagger_ready() and back < 600:
+			await frames(1)
+			back += 1
+	GameState.data.equipment.shield = shield_was
+	Feel.set_game_speed(1.0)
+	room.free()
+	return [far, back]
+
+
+func test_thrown_and_cast_reach_holds_at_every_game_speed() -> void:
+	for id: String in ["dagger", "torrent", "thunder", "fire"]:
+		var full: Array = await _reach_at(1.0, id)
+		var slow: Array = await _reach_at(0.7, id)
+		check(full[0] > 40.0 and absf(float(slow[0]) - float(full[0])) <= 8.0,
+			"%s carries as far at 70%% as at full speed (%.0f px, %.0f px)" % [id, full[0], slow[0]])
+		if id == "dagger":
+			check(int(slow[1]) >= int(full[1]), "and comes home no sooner on screen (%d frames, %d)" % [full[1], slow[1]])
+	var sec := FileAccess.get_file_as_string("res://docs/design-bible.md").get_slice("### 5.3 Combat moves", 1).get_slice("\n### 5.4 ", 0)
+	check(sec.contains("Thrown and cast at every game speed (pass 480)"), "bible 5.3 says so")
