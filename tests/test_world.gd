@@ -276,6 +276,33 @@ func test_gym_enemies_stay_put() -> void:
 ## Pass 390: a door that fades is heard. Tests skip fades (`World.instant`), so
 ## no whole run had ever played the door's creak: a door into another zone fades
 ## out on it, and the creak plays once, as the fade begins.
+## A save whose room still stands but whose rested spot now sits in solid — a
+## build that reshaped the room, or one hand-edited — must not wake the hero
+## embedded in a wall, a soft-lock. He falls back to the room's own spawn; a
+## still-valid saved spot is left where it is (pass 495).
+func test_a_restored_position_in_solid_wakes_at_the_spawn() -> void:
+	var rows := grid_rows(40, 23)
+	put_tiles(rows, 5, 19, "P")
+	put_tiles(rows, 20, 4, "#", 3, 6)
+	var text := room_text(["name: Reshaped", "zone: hearthroot"], rows)
+	# Rested in a spot the build has since walled over (deep inside the block).
+	var in_solid := cell_center(21, 7)
+	var w := make_world({"test/reshaped": text}, "test/reshaped", in_solid)
+	check(w.room.is_solid_at(in_solid), "the old rested spot is now solid (%s)" % in_solid)
+	check(w.player.global_position == w.room.spawn_position, "the hero wakes at the spawn, not in the wall (%s, spawn %s)" % [w.player.global_position, w.room.spawn_position])
+	check(not w._embedded_at(w.player.global_position), "and his body is clear of solid")
+	await frames(30)
+	check(w.player.is_on_floor() and w.player.hp == w.player.max_hp, "he stands safely and can play on")
+	w.queue_free()
+	await frames(2)
+	# A still-valid saved spot is honoured, not thrown away.
+	var on_floor := cell_feet(14, 19)
+	var w2 := make_world({"test/reshaped": text}, "test/reshaped", on_floor)
+	check(w2.player.global_position == on_floor, "a valid restored spot is kept (%s, wanted %s)" % [w2.player.global_position, on_floor])
+	w2.queue_free()
+	await frames(2)
+
+
 func test_a_door_that_fades_is_heard() -> void:
 	var w := make_world({}, "hearthroot/east_gate")
 	w.fader = ColorRect.new()
