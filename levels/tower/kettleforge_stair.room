@@ -1,7 +1,7 @@
 name: Kettleforge Stair
 zone: tower
 map: 17, -4
-sign: 3, 41, Spikes, to keep the stair for those who carry a delvers_pick.|Strike down as you fall, and the iron throws you up again.
+sign: 3, 41, Spikes, to keep the stair for those who carry a Delver's Pick.|Strike down as you fall, and the iron throws you up again.
 door: 1, tower/winch_hall, 4
 door: 2, tower/kettleforge_gate, 1
 ---

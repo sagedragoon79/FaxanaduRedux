@@ -1982,7 +1982,7 @@ func test_every_guardians_hall_answers_its_fall() -> void:
 					missing.append("%s/%s (%s)" % [zone, f.get_basename(), cell])
 	check(missing.is_empty(), "every arena sign has a word for after its guardian (missing: %s)" % [missing])
 	# The doorways, read for real: before and after.
-	for case: Array in [["haar/lantern_landing", "gloamweaver", "sings in there", "Nothing sings"], ["tower/foreman_gate", "foreman", "foreman's delvers_pick", "delvers_pick is yours"], ["haar/sunken_chapel", "gloamweaver", "still burn", "gone out"]]:
+	for case: Array in [["haar/lantern_landing", "gloamweaver", "sings in there", "Nothing sings"], ["tower/foreman_gate", "foreman", "foreman's Delver's Pick", "Delver's Pick is yours"], ["haar/sunken_chapel", "gloamweaver", "still burn", "gone out"]]:
 		var w := make_world({}, case[0])
 		await frames(2)
 		var tablet: LoreTablet = null
@@ -2818,6 +2818,39 @@ func test_no_retired_name_is_left() -> void:
 		check(GameState.rename_id(String(pair[0])) == String(pair[1]).to_lower() or String(pair[0]).contains("_"), "the save migration reads the same table (%s)" % pair[0])
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("`data/rename_map.json`") and bible.contains("`test_no_retired_name_is_left`"), "bible 1 names the map and this test")
+
+
+## Pass 496 (bible 2, 4.1): signs and labels are prose the player reads, so an
+## ability or item must be named, never written as its internal id. Five Tower
+## signs had shown the Delver's Pick's id, "delvers_pick", where the name
+## belongs (the gym label and the Amberlee miner already wrote it in full).
+## This walks every room's sign and label lines, strips the x,y cell and any
+## leading [flags] block, and fails on a lowercase_with_underscore token left in
+## the prose: English has none, so such a token is always a leaked id.
+func test_no_sign_shows_a_raw_ability_id() -> void:
+	var token := RegEx.create_from_string("(?<![A-Za-z0-9])[a-z][a-z0-9]*_[a-z0-9_]+")
+	var lead_flags := RegEx.create_from_string("^\\[[^\\]]*\\]\\s*")
+	var leaks: Array[String] = []
+	var lines := 0
+	for zone: String in DirAccess.get_directories_at("res://levels"):
+		for f: String in DirAccess.get_files_at("res://levels/" + zone):
+			if not f.ends_with(".room"):
+				continue
+			for raw: String in FileAccess.get_file_as_string("res://levels/%s/%s" % [zone, f]).split("\n"):
+				var line := raw.strip_edges()
+				if not (line.begins_with("sign:") or line.begins_with("label:")):
+					continue
+				# Drop "sign:"/"label:" then the "x, y," cell; the prose follows.
+				var parts := line.split(":", true, 1)[1].split(",", true, 2)
+				if parts.size() < 3:
+					continue
+				var prose: String = lead_flags.sub(parts[2].strip_edges(), "")
+				lines += 1
+				var m := token.search(prose)
+				if m != null:
+					leaks.append("%s/%s: %s" % [zone, f.get_basename(), m.get_string()])
+	check(lines > 150, "the signs and labels are read (%d lines)" % lines)
+	check(leaks.is_empty(), "no sign shows a raw id (%s)" % ", ".join(leaks.slice(0, 12)))
 
 
 func _read_texts(dir: String, out: Dictionary) -> void:
