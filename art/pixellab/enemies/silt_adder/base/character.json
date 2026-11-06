@@ -1,0 +1,37 @@
+{
+ "id": "bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee",
+ "name": "Silt Adder: a long cobra-style",
+ "state_name": "Idle",
+ "prompt": "Silt Adder: a long cobra-style hooded serpent floating upright in an S curve with its tail hanging below, verdigris sea-green scales with dull copper bands, pale bone-coloured belly scales, a narrow hood folded behind its head, two glowing lamp-orange eyes, head pointing right, side-scroller game enemy, full body, strict side view facing right",
+ "size": {
+  "width": 172,
+  "height": 172
+ },
+ "directions": 8,
+ "created_at": "2026-11-05T18:36:45.580171+00:00",
+ "updated_at": "2026-11-05T18:42:58.117442+00:00",
+ "animation_count": 0,
+ "template_id": "custom",
+ "view": "side",
+ "status": "completed",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/south.png?t=1793904178",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/west.png?t=1793904178",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/east.png?t=1793904178",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/north.png?t=1793904178",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/south-east.png?t=1793904178",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/north-east.png?t=1793904178",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/north-west.png?t=1793904178",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/ba149b34-c2af-4153-a797-fffbb7d80131/bf6df4fc-9e9f-4d87-b7ab-14446a3e30ee/rotations/south-west.png?t=1793904178"
+ },
+ "style_settings": {
+  "detail": "medium detail",
+  "generation_mode": "pixen_v3"
+ },
+ "guidance": null,
+ "ai_freedom": null,
+ "tags": [],
+ "group_id": "cc5c2fb2-cc4f-4a72-b91d-1d3e128f4137",
+ "skeletons": null,
+ "animations": []
+}

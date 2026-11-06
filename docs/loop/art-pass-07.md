@@ -40,3 +40,11 @@ animation's first frame is compared with the base's `west` view mirrored. A thre
 toward the camera is fine; one turned away is not.
 
 Images: `/mnt/project-files/art-loop/facing/` (before and after, the lineup).
+
+## The Silt Adder, again
+
+Sean regenerated the Silt Adder himself (character bf6df4fc, a cobra hood instead of a cloth one),
+and its clips had been remade from the new base's `east` view in an open PR (#537). That view turns
+the hood's back to the camera too, and this pass's first fix had used the old character. The adder's
+`float_s`, `strike_s` and `death_s` are now made from Sean's base, its `west` view mirrored
+(3 generations), and #537 is closed in favour of this.
