@@ -18,7 +18,7 @@ Final art and music come next. The movement and combat gym is still there:
 ## Running
 
 **Playtest build:** every push to `main` exports a Windows build to the rolling
-[playtest release](https://github.com/sagedragoon79/faxanaduredux/releases/tag/playtest)
+[playtest release](https://github.com/sagedragoon79/Yldenfall/releases/tag/playtest)
 (see [docs/playtest.md](docs/playtest.md) for controls, debug keys and launch options).
 To export locally: `godot --headless --path . --export-debug "Windows Desktop" builds/windows/Yldenfall.exe`
 (needs the 4.7.2 export templates).

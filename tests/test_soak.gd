@@ -173,15 +173,16 @@ func test_random_input_soak_in_every_trial_room() -> void:
 	check(not Trials.active(), "no trial run is left open after the soak")
 
 
-## Carillon's storm: rain streaks on the wind over the lightning backdrop,
-## the player running and dashing about. The rain stays on screen, keeps its
-## count, and the frame stays well inside budget.
+## Carillon's storm: the PixelLab rain sheet (SheetRain, pass 498) tiled screen-wide
+## in two parallax layers over the lightning backdrop, the player running and dashing
+## about. The sheet keeps falling and the frame stays well inside budget.
 func test_spires_rain_stays_cheap() -> void:
 	var w := make_world({}, "spires/sky_steps")
 	var p := w.player
 	p.abilities["stride"] = true
 	await frames(2)
-	check(w.motes.zone == "spires" and w.motes._motes.size() == int(Motes.ZONES["spires"][0]), "the rain is falling (%d drops)" % w.motes._motes.size())
+	check(w.sheet_rain.active and w.sheet_rain._frames.size() == SheetRain.FRAMES, "the rain sheet is falling (%d frames)" % w.sheet_rain._frames.size())
+	check(w.motes.zone != "spires", "and the code streak field is off while the sheet rains")
 	var total_usec := 0
 	var worst := 0
 	const RAIN_FRAMES := 600
@@ -197,16 +198,11 @@ func test_spires_rain_stays_cheap() -> void:
 		worst = maxi(worst, dt)
 	var avg_ms := total_usec / 1000.0 / RAIN_FRAMES
 	print("  Carillon rain: %.2f ms a frame on average, %.2f ms at worst" % [avg_ms, worst / 1000.0])
-	var inside := true
-	for m: Array in w.motes._motes:
-		var at: Vector2 = m[0]
-		inside = inside and at.x >= 0.0 and at.x < Motes.VIEW.x and at.y >= 0.0 and at.y < Motes.VIEW.y
-	check(inside, "every drop wraps back onto the screen")
-	check(w.motes._motes.size() == int(Motes.ZONES["spires"][0]), "and none are lost or added")
+	check(w.sheet_rain.active and w.sheet_rain.density() > 0.9, "the sheet rains hard the whole storm (density %.2f)" % w.sheet_rain.density())
 	check(avg_ms < 8.0, "a storm frame averages well under budget (%.2f ms)" % avg_ms)
 	w._enter("boughs/crown_leaf")
 	await frames(2)
-	check(w.motes.zone == "boughs", "back in the High Boughs the rain stops")
+	check(not w.sheet_rain.active, "back in the High Boughs the rain stops")
 	w.queue_free()
 	await frames(2)
 
