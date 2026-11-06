@@ -25,15 +25,15 @@ shutil.rmtree(PUB, ignore_errors=True); os.makedirs(PUB + '/clips')
 clips = []; D = at(CFG.get('clipDir', 'clips'))
 for x in st['clips']:
     f = urllib.parse.unquote(x['url'][6:]); p = os.path.join(D, f)
-    if f.lower().endswith('.gif') or os.path.getsize(p) > 15e6: continue   # the page plays video; GIFs and huge files only slow it
-    shutil.copy(p, PUB + '/clips/' + f); clips.append({'url': 'clips/' + urllib.parse.quote(f), 'name': f, 'video': True, 'age': 0})
+    if os.path.getsize(p) > 15e6: continue   # huge files only slow the page (GIFs are kept: this PC has no video encoder)
+    shutil.copy(p, PUB + '/clips/' + f); clips.append({'url': 'clips/' + urllib.parse.quote(f), 'name': f, 'video': not f.lower().endswith('.gif'), 'age': 0})
 json.dump({'cat': c, 'shots': shots, 'clips': clips, 'cfg': {k: CFG.get(k) for k in ('game', 'theme')}}, open(PUB + '/data.json', 'w'))
 t = open(os.path.join(HERE, 'index.html')).read(); shim = open(os.path.join(V, 'shim.html')).read()
 a = "const img = (p) => '/cat/' + encodeURI(p),"; assert a in t; t = t.replace(a, "const img = (p) => p,")
 i = t.index('<script>'); t = t[:i] + shim + t[i:]
 open(PUB + '/index.html', 'w').write(t)
 if '--build-only' in sys.argv: print('built', PUB, len(shots), 'shots,', len(clips), 'clips'); sys.exit(0)
-vc = ['npx', '-y', 'vercel@latest']
+vc = [shutil.which('npx') or 'npx', '-y', 'vercel@latest']   # Windows has npx.cmd, which subprocess can't find by its bare name
 subprocess.run(vc + ['deploy', '--prod', '--yes', '--no-color'], cwd=V, check=True, capture_output=True)
 ls = subprocess.run(vc + ['ls', '--no-color'], cwd=V, capture_output=True, text=True); host = urllib.parse.urlparse(CFG.get('site', '')).hostname or ''
 name = host.split('.')[0]; L = list(dict.fromkeys(re.findall(r'https://%s-\S+\.vercel\.app' % re.escape(name), ls.stdout + ls.stderr))) if name else []
