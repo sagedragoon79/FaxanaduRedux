@@ -5349,3 +5349,53 @@ func test_the_spell_guardians_fall_to_the_buttons_at_the_slowest_game_speed() ->
 	Feel.reset()
 	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(bible.contains("test_the_spell_guardians_fall_to_the_buttons_at_the_slowest_game_speed"), "the bible names this test")
+
+
+## Pass 492 (bible 13.3): a guardian's death blow heard at the slowest Game
+## speed. The roar goes off once, on the blow, inside the freeze; the win's
+## chime once, as the dying ends, in the same game time as at full speed; and
+## the guardian's theme is let go as the win sounds.
+func test_a_guardians_death_blow_is_heard_at_every_game_speed() -> void:
+	var game_times := {}
+	for speed: float in [1.0, 0.7]:
+		var label := "%d%%" % roundi(speed * 100.0)
+		Feel.set_game_speed(speed)
+		var setup := await _hydra_world()
+		var w: World = setup[0]
+		var z: HaarWyrm = setup[2]
+		await _until(func() -> bool: return z.state == "fight", 300)
+		z.phase = 3
+		z.hp = 1
+		Sfx.recent.clear()
+		Feel.hitstop_enabled = true
+		z.heads[z.solid_index].take_hit(5, Vector2.RIGHT)
+		check(Sfx.recent.count("hydra_roar") == 1 and Feel.is_frozen(), "%s: the roar goes off on the blow, inside the freeze (%s)" % [label, Sfx.recent])
+		var heard: Array[String] = []
+		heard.append_array(Sfx.recent)
+		Sfx.recent.clear()
+		var game_t := 0.0
+		var start := Time.get_ticks_usec()
+		var won := false
+		while Time.get_ticks_usec() - start < 12_000_000:
+			await frames(1)
+			game_t += Engine.time_scale / 60.0
+			heard.append_array(Sfx.recent)
+			if Sfx.recent.has(BossArena.WIN_SOUND):
+				won = true
+				Sfx.recent.clear()
+				break
+			Sfx.recent.clear()
+		check(won, "%s: the win's chime sounds" % label)
+		check(Music.track == "", "%s: and the guardian's theme is let go with it (%s)" % [label, Music.track])
+		game_times[speed] = game_t
+		await frames(30)
+		heard.append_array(Sfx.recent)
+		check(heard.count("hydra_roar") == 1 and heard.count(BossArena.WIN_SOUND) == 1, "%s: each once (%d roars, %d chimes)" % [label, heard.count("hydra_roar"), heard.count(BossArena.WIN_SOUND)])
+		Feel.hitstop_enabled = false
+		Feel.set_game_speed(1.0)
+		Feel.reset()
+		w.queue_free()
+		await frames(2)
+	check(absf(float(game_times[0.7]) - float(game_times[1.0])) < 0.1, "the chime comes after the same game time at 70%% as at full speed (%.2f s, %.2f s)" % [game_times[0.7], game_times[1.0]])
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_a_guardians_death_blow_is_heard_at_every_game_speed"), "the bible names this test")
