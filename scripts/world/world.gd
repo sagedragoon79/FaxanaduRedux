@@ -64,6 +64,11 @@ var backdrop: Backdrop
 var motes: Motes
 ## Blossom drifting through the Tree once the Everbloom is dead (Motes.BLOSSOM).
 var blossom: Motes
+## Trial (pass 498): the PixelLab rain sheet for Carillon. Off unless SheetRain.SHIPPED
+## or the --sheet-rain capture flag is set.
+var sheet_rain: SheetRain
+## Set from game.gd's --sheet-rain flag, so a capture can compare the two rains.
+static var sheet_rain_trial := false
 var fog: Fog
 ## The NES look over a `retro: true` room (Old Hearthroot, design bible 11).
 var retro: RetroFilter
@@ -82,6 +87,8 @@ func _ready() -> void:
 	blossom = Motes.new()
 	blossom.table = Motes.blossom_table()
 	add_child(blossom)
+	sheet_rain = SheetRain.new()
+	add_child(sheet_rain)
 	retro = RetroFilter.new()
 	add_child(retro)
 
@@ -314,7 +321,12 @@ func _enter(room_id: String) -> void:
 	room = next
 	add_child(room)
 	backdrop.set_zone(room.zone)
-	motes.set_zone(room.zone)
+	# Carillon's rain is either the code streak field (Motes) or the PixelLab sheet
+	# (SheetRain); never both. The sheet is off unless kept (SheetRain.SHIPPED) or a
+	# capture asks for it (--sheet-rain).
+	var sheet := room.zone == "spires" and (SheetRain.SHIPPED or sheet_rain_trial)
+	sheet_rain.set_active(sheet)
+	motes.set_zone("" if sheet else room.zone)
 	blossom.set_zone(room.zone if GameState.flag("cleared") else "")
 	Music.for_room(room)
 	if player.get_parent() != null:

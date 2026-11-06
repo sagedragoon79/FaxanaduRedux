@@ -102,6 +102,8 @@ func _ready() -> void:
 		_args[kv[0]] = kv[1] if kv.size() > 1 else ""
 	if _args.has("damage-numbers"):
 		Settings.damage_numbers = true
+	# Trial (pass 498): draw Carillon's rain from the PixelLab sheet for this capture.
+	World.sheet_rain_trial = _args.has("sheet-rain")
 
 	view = SubViewport.new()
 	view.size = (BASE_SIZE + Vector2i(MARGIN, MARGIN) * 2) * GameCamera.DETAIL

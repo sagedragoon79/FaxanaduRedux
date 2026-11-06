@@ -781,15 +781,31 @@ func test_spring_of_sky_waits_for_the_roc_and_breaks_the_storm() -> void:
 	var spring := _spring_in(w)
 	check(spring != null and spring.spring_id == "sky", "the Sky Spring stands past the roost")
 	check(not spring.is_in_group("interactable"), "it can't be cleared while Skyrend lives")
-	var rain := w.motes._motes.size()
-	check(rain == int(Motes.ZONES["spires"][0]), "the storm rains hard (%d drops)" % rain)
+	var rain := w.sheet_rain.density()
+	check(w.sheet_rain.active and rain > 0.9, "the storm rains hard (density %.2f)" % rain)
 	GameState.set_flag("boss:skyrend")
 	await frames(2)
 	check(spring.is_in_group("interactable"), "once the roc falls it can")
 	spring.interact(w.player)
 	check(GameState.flag("spring:sky"), "clearing it restores the Sky Spring")
 	check(Fountain.level() == 3, "and the Hearthroot fountain runs full")
-	check(w.motes._motes.size() < rain / 2, "the storm breaks: the rain thins to a drizzle (%d drops)" % w.motes._motes.size())
+	check(w.sheet_rain.density() < rain / 2, "the storm breaks: the rain thins to a drizzle (density %.2f)" % w.sheet_rain.density())
+
+
+## The rain sheet (SheetRain, pass 498) is Carillon's alone: it falls in the spires
+## and nowhere else, and a zone with its own motes keeps them.
+func test_rain_sheet_is_carillons_alone() -> void:
+	var w := make_world({}, "spires/sky_steps")
+	await frames(2)
+	check(w.sheet_rain.active, "the rain sheet falls in Carillon")
+	check(w.sheet_rain._frames.size() == SheetRain.FRAMES, "cut into its %d frames" % SheetRain.FRAMES)
+	check(w.motes.zone != "spires", "with the code streak field stood down")
+	w._enter("boughs/crown_leaf")
+	await frames(2)
+	check(not w.sheet_rain.active, "no sheet rain in the High Boughs")
+	check(w.motes.zone == "boughs", "which keeps its own motes")
+	w.queue_free()
+	await frames(2)
 
 
 func test_hearthroot_holds_a_festival_for_the_last_spring() -> void:
