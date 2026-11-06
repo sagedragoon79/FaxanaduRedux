@@ -1,1 +1,14 @@
-[]
+[
+ {
+  "id": "ce993265",
+  "at": "10:04 PM",
+  "ts": 1793937882.3202283,
+  "kind": "Question",
+  "on": "General",
+  "tab": "now",
+  "ref": "",
+  "text": "what do you need for the next queue item",
+  "status": "done",
+  "reply": "The headline queue item is the art pass: PixelLab art for the seven placeholder guardians, Haar Wyrm first. It needs one thing from you: set PIXELLAB_API_KEY in this PC's environment and restart the app. Everything else is ready: the budget (about 650 of your remaining generations), the order, and style-guide section 8. The key is still not set in any scope here, so this pass did the item below it instead, porting tools/screenshot.sh to run without xvfb."
+ }
+]

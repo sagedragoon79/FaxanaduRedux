@@ -17,6 +17,7 @@ same way (`ids` in that file; `GameState.migrate_ids` brings older saves over). 
 - Godot **4.7.2** (pinned in `tools/godot-version.txt`). GDScript with static typing.
 - Run tests: `GODOT=<godot binary> tools/run_tests.sh` (must pass before merging).
 - Screenshot a room: `GODOT=<godot binary> tools/screenshot.sh out.png [tileX,tileY] [room]`.
+  Uses `xvfb-run` where present (Linux, CI); elsewhere (Windows) it opens the window off-screen.
   Look at screenshots of anything visual you change.
 - Regenerate sound effects: `python3 tools/audio/sfxgen.py`. Placeholder music and ambience:
   `python3 tools/audio/musicgen.py` (needs ffmpeg). A file Sean supplies with the same name in
