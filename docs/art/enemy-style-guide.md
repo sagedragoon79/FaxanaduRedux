@@ -67,8 +67,13 @@ gets them the same way:
   a `"rim"` in its zone's light colour, as the Iron Dwarf has, so it stands off dark walls.
 - **No dithering** and no painted motion blur on bodies. A smear frame for a fast strike is
   allowed (bible 12.4), one frame, the body's own colours.
-- **Facing:** sources face right (east, strict side profile, the face or mouth showing on the
-  right; never a back turned to the camera). The game mirrors for left. See 6, step 1a.
+- **Facing (2026-11-06):** anything that **moves** — walk, run, every attack, jumps — is a
+  strict east/west profile: the source faces right (east, the face or mouth showing on the right,
+  never a back turned to the camera), and the game mirrors it for west. A **still** animation
+  (idle, rest, talk, a guardian's intro or taunt) may instead stand in the **south-east
+  three-quarter stance**, turned toward the camera, which reads warmer and shows the face. A
+  character that has a still three-quarter clip also gets a short **turn clip** that bridges the
+  two facings (see 6, step 1b). West is always east mirrored. See 6, step 1a.
 - **Effects stay out of the art.** Projectiles, spells, mist, sparks, glows that pulse,
   shockwaves and the tell's white flash are code or shader, drawn over the sheet. If a clip
   bakes one in, cut it at import (`"erase"`, `pick` around it). A glow that is part of the
@@ -126,7 +131,43 @@ What worked for the hero and the Shade Knight, cheapest first:
    rotations side by side with `west` mirrored and pick the one that shows the face (or mouth,
    spout, eye) in profile on the right. If none does, mirror `west` (it is usually the cleanest
    profile). Save that as `base/guard.png` and start every clip from it (step 2a). A
-   three-quarter view toward the camera is fine; one turned away is not.
+   three-quarter view **turned toward the camera** (south-east, south-west) is fine for a still
+   pose; one **turned away** (the back, hood or shell to us) is not, in any animation.
+1b. **Turn clips bridge a three-quarter still and the moving profile (2026-11-06).** When a
+   character rests or idles in the south-east three-quarter stance but moves in strict profile
+   (Facing, section 3), generate a short **turn clip** of 2 or 3 frames from the three-quarter
+   base (`characters/animations`, about one generation). The foe's `_draw` plays it forward
+   (still -> moving) as the character starts to act and backward (moving -> still) as it settles.
+   Do not hand-fix the drift PixelLab leaves in turn frames: Sean cleans those up. Copy each turn
+   clip's frames to `art/cleanup/<character>/turn/`, list the new ones on the workbench under
+   "done" as ready for his cleanup, and leave the raw frames where they are. The importer prefers
+   `art/cleanup/<folder>` over the raw PixelLab output (`tools/art/pixellab_sheets.py`), so a
+   cleaned frame ships the moment it lands; **never overwrite or regenerate anything already in
+   `art/cleanup`.**
+1c. **Prompt craft for props and glows (2026-11-06).** PixelLab misreads props badly — asked for
+   "a stalk with an orb on its end" on a figure's head, it once drew a light bulb growing out of
+   the head. Write prop prompts so it cannot:
+   - **Say what holds each prop and where it sits, one prop per sentence.** Sean's wording that
+     worked on the Spring Eel: "an anglerfish-style stalk with a dangling glowing orb".
+   - **Scope a comparison to the part, never the whole body.** Write "`<creature>`-style
+     `<part>`" (an "anglerfish-style stalk"), never "like a `<creature>`" or "like an anglerfish"
+     — that turns the whole figure into that creature (the eel came out a long skinny fish).
+   - **Keep a part's words physical** (dangling, curving, fleshy, bony), so the model reads a body
+     part and not an object.
+   - **Say what must stay clear** when a prop could stray onto it ("nothing on his head").
+   - **Give a glow a colour** (lantern yellow, cyan), never the words *light*, *lamp* or *bulb*.
+   - **Check every base and frame for stray or moved props** before anything goes to Sean. If a
+     prop still wanders after one retake, generate the figure **without** it and add it with
+     PixelLab's inpaint or the free `pixelart_workbench` — do not keep rerolling.
+1d. **Sean approves each base before animation (2026-11-06).** For a new or redesigned character,
+   make **only the base first** — the east profile and the south-east three-quarter stance, a few
+   generations — and generate no animations (turns included) until a workbench note from Sean
+   approves it. Save one review picture to `shots/<character>-base-for-approval.png` (both views at
+   1x and 4x, beside the current in-game sprite and the hero for scale), run
+   `python workbench/deploy.py` (`PYTHONUTF8=1`) so it shows on the hosted Shots tab, and put
+   "Waiting for Sean's OK on the `<character>` base" under `stuck`. A note asking for changes means
+   a retake and a new review picture. While waiting, make bases for the next characters in the
+   order (no more than three waiting at once) and otherwise do non-art work.
 2a. **One model for every state.** Clips made from the base can drift to a second model (the Shade
    Knight's shield jumped from behind his body to in front). Pick the frame that best shows the
    foe as it fights, save it as `base/guard.png`, and make the clips from it
