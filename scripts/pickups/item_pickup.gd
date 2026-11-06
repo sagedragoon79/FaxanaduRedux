@@ -9,6 +9,7 @@ const KIND_BY_CHAR := {
 	"O": "torrent",
 	"d": "stride",
 	"h": "thunder",
+	":": "fracture",
 	"n": "seers_lens",
 	"z": "stillstone",
 	"L": "life_fruit",
@@ -26,6 +27,7 @@ const INFO := {
 	"torrent": {"title": "Deluge", "text": "A surging flood of water: douses fire seals and fills dry basins. Costs MP.", "color": Color("4aa3df")},
 	"death": {"title": "Witherbloom", "text": "Blight blooms out in a ring and strikes every foe around you, through stone. Costs most of your MP.", "color": Color("8a4ad8")},
 	"thunder": {"title": "Tempest Lance", "text": "A lance of lightning: it leaps to dead conduits and wakes them. Costs MP.", "color": Color("b8a8ff")},
+	"fracture": {"title": "Lithic Fracture", "text": "A cascade of stone columns erupts along the floor, staggering and slowing what it strikes and shattering cracked stone seals. Costs MP.", "color": Color("9a8c7a")},
 	"stride": {"title": "Elven Stride", "text": "Press Dash to stride: on the ground, or once in the air. Harm passes through you as you go.", "color": Color("6fd08a")},
 	"stillstone": {"title": "Stillstone", "text": "Press Stillstone (T) to stop time for a moment: falling water freezes, and so do arrows and shards in flight.", "color": Color("e8c870")},
 	"seers_lens": {"title": "Seer's Lens", "text": "Illusory walls shimmer at their seams, and hidden planks show faintly.", "color": Color("8a6ad8")},
@@ -44,7 +46,7 @@ const INFO := {
 }
 
 ## Kinds that grant an ability rather than a stat.
-const ABILITIES := ["glove", "boots", "torrent", "stride", "thunder", "seers_lens", "stillstone", "death", "rune_dagger", "pendant", "briar_wand"]
+const ABILITIES := ["glove", "boots", "torrent", "stride", "thunder", "fracture", "seers_lens", "stillstone", "death", "rune_dagger", "pendant", "briar_wand"]
 
 var kind := "life_fruit"
 var pickup_id := ""
@@ -179,6 +181,18 @@ func _draw() -> void:
 			for i in 4:
 				_hp(o, -9 + i * 5, -2 + (2 if i % 2 else 0), 4, 2, Color(c, k))
 				_hp(o, -9 + i * 5, 3 + (2 if i % 2 else 0), 4, 2, Color(light, k))
+		"fracture":
+			# A spell scroll bound in stone-grey cord, a jagged fracture glyph lit
+			# amber on it.
+			_poly(o, [Vector2(-12, -10), Vector2(12, -10), Vector2(12, 10), Vector2(-12, 10)], Color("120f19"), 2.0)
+			_hp(o, -12, -10, 24, 20, Color("e4ddd0"))
+			_hp(o, -12, -10, 24, 2, Color("b4ac9c"))
+			_hp(o, -14, -12, 4, 24, Color("3a3444"))
+			_hp(o, 10, -12, 4, 24, Color("3a3444"))
+			var k := 0.55 + 0.45 * sin(_t * 4.0)
+			var amber := Color("e8c488")
+			for seg: Array in [[-5, -7, 3, 4], [-3, -4, 3, 3], [-1, -2, 3, 4], [1, 1, 3, 3], [3, 3, 3, 4]]:
+				_hp(o, seg[0], seg[1], seg[2], seg[3], Color(amber, k))
 		"boots":
 			# A messenger's boot, sky-blue leather with a gold cuff and a white
 			# wing at the heel that flutters.

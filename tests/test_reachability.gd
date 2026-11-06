@@ -4,7 +4,7 @@ extends TestSuite
 ## no reachable spot is a soft-lock.
 
 const START_ROOM := "hearthroot/west_gate"
-const PICKUPS := "GXOdhnzLWF*$SN&{(}"
+const PICKUPS := "GXOdhnzLWF*$SN&{(}:"
 ## Secrets that only open once the Heartwood Spring hardens the sap (bible 4.4):
 ## [room, tile x, tile y].
 const AMBER_SECRETS := [["heartwood/amber_falls", 31, 13]]
@@ -29,6 +29,10 @@ const BOOT_GATES := [["boughs/windloft", 24, 11]]
 const WIND_SECRETS := [["boughs/thicket_road", 38, 8]]
 ## Pickups behind bramble, which only the Emberfall spell burns away (bible 4.5).
 const FIRE_SECRETS := [["spires/spires", 76, 19]]
+## Caches behind cracked stone seals, which only a Lithic Fracture cast shatters
+## (bible 4.5, pass 497): [room, tile x, tile y]. Optional, off the critical path.
+const FRACTURE_SECRETS := [["hearthroot/west_gate", 24, 19], ["heartwood/dwarf_larder", 6, 19],
+	["tower/ore_vault", 20, 20], ["tower/old_flue", 35, 39]]
 ## Rooms beyond cracked stone, open only once the Foreman gives up the Delver's Pick,
 ## or above the flue damper, open once Durgan falls (the "winch" ability),
 ## and the Haar, reached by the ore road east of the Deep Workings (its rooms
@@ -131,7 +135,8 @@ func test_with_glove_everything_is_reachable() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not AMBER_SECRETS.has([p[0], p[2], p[3]]) and not DELVERS_PICK_ROOMS.has(p[0]) \
-				and not WIND_SECRETS.has([p[0], p[2], p[3]]) and not DELVERS_PICK_SECRETS.has([p[0], p[2], p[3]]):
+				and not WIND_SECRETS.has([p[0], p[2], p[3]]) and not DELVERS_PICK_SECRETS.has([p[0], p[2], p[3]]) \
+				and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "every pickup, chest and shrine is reachable: missing %s" % [missing])
 	var opened := DELVERS_PICK_ROOMS.filter(func(id: String) -> bool: return rooms.has(id))
@@ -155,6 +160,28 @@ func test_delvers_pick_secrets_need_the_delvers_pick() -> void:
 		check(dug.touchable(dug_nodes, s[0], s[1], s[2]), "%s opens to the Delver's Pick" % [s])
 
 
+## The caches behind cracked stone seals open only to a Lithic Fracture cast, and
+## the scroll that teaches it lies open in the Kettleforge tower (pass 497).
+func test_fracture_caches_need_the_fracture_spell() -> void:
+	var base := {"glove": true, "delvers_pick": true, "amber": true, "winch": true, "lantern": true, "torrent": true}
+	var reach := Reach.new(_texts(), base, true)
+	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
+	var cast := base.duplicate()
+	cast["fracture"] = true
+	var broken := Reach.new(_texts(), cast, true)
+	var broken_nodes := broken.reachable(broken.spot_of(START_ROOM, "P"))
+	check(not FRACTURE_SECRETS.is_empty() and FRACTURE_SECRETS.size() >= 4, "four to six caches across several zones (%d)" % FRACTURE_SECRETS.size())
+	for s: Array in FRACTURE_SECRETS:
+		check(not reach.touchable(nodes, s[0], s[1], s[2]), "%s waits behind a cracked stone seal" % [s])
+		check(broken.touchable(broken_nodes, s[0], s[1], s[2]), "%s opens to Lithic Fracture" % [s])
+	# The scroll itself is reachable without the spell, in the Kettleforge tower.
+	var scroll_ok := false
+	for p: Array in _pickups(reach):
+		if p[1] == ":":
+			scroll_ok = reach.touchable(nodes, p[0], p[2], p[3]) and p[0].begins_with("tower/")
+	check(scroll_ok, "the Lithic Fracture scroll can be reached without the spell, in the Kettleforge tower")
+
+
 func test_no_soft_locks_with_glove() -> void:
 	var reach := Reach.new(_texts(), {"glove": true}, true)
 	var nodes := reach.reachable(reach.spot_of(START_ROOM, "P"))
@@ -169,7 +196,7 @@ func test_amber_keeps_everything_reachable() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not DELVERS_PICK_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]) \
-				and not DELVERS_PICK_SECRETS.has([p[0], p[2], p[3]]):
+				and not DELVERS_PICK_SECRETS.has([p[0], p[2], p[3]]) and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with amber, every pickup is still reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -191,7 +218,8 @@ func test_with_the_delvers_pick_everything_is_reachable() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(nodes, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not BOOT_GATES.has([p[0], p[2], p[3]]) \
-				and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+				and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]) \
+				and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Delver's Pick every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(nodes, _save_spots(reach))
@@ -284,7 +312,7 @@ func test_featherstep_boots_reach_the_high_perch() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(with_boots, p[0], p[2], p[3]) and not STRIDE_SECRETS.has([p[0], p[2], p[3]]) and not STRIDE_ROOMS.has(p[0]) \
-				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]) and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Featherstep Boots every pickup is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(with_boots, _save_spots(reach))
@@ -427,7 +455,7 @@ func test_the_turned_wind_reaches_the_thicket_niche() -> void:
 	var turned := reach.reachable(reach.spot_of(START_ROOM, "P"))
 	var missing: Array = []
 	for p: Array in _pickups(reach):
-		if not reach.touchable(turned, p[0], p[2], p[3]):
+		if not reach.touchable(turned, p[0], p[2], p[3]) and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the wind turned, every pickup in the game is reachable: missing %s" % [missing])
 	var stuck := reach.stuck(turned, _save_spots(reach))
@@ -550,7 +578,7 @@ func test_elven_stride_crosses_the_gap_to_the_warden_cache() -> void:
 	var missing: Array = []
 	for p: Array in _pickups(reach):
 		if not reach.touchable(strided, p[0], p[2], p[3]) and not BOOT_SECRETS.has([p[0], p[2], p[3]]) and not FIRE_SECRETS.has([p[0], p[2], p[3]]) \
-				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]):
+				and not THUNDER_ROOMS.has(p[0]) and not WIND_SECRETS.has([p[0], p[2], p[3]]) and not FRACTURE_SECRETS.has([p[0], p[2], p[3]]):
 			missing.append(p)
 	check(missing.is_empty(), "with the Stride every other pickup is reachable: missing %s" % [missing])
 	var rooms := _rooms_reached(strided)

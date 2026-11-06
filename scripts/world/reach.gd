@@ -210,6 +210,9 @@ func _solid_char(room_id: String, c: String) -> bool:
 	if c == "w":
 		# A bramble wall burns away for good under a Emberfall spell.
 		return not abilities.get("fire", false)
+	if c == "[":
+		# A cracked stone seal shatters for good under a Lithic Fracture cast.
+		return not abilities.get("fracture", false)
 	if c == "~":
 		# Sap hardens into solid amber once the Heartwood Spring is restored.
 		return abilities.get("amber", false)

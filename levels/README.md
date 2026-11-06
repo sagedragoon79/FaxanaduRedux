@@ -72,7 +72,9 @@ camera: wide       (optional: the camera eases out to show 25% more each way, fo
 | `c` | Dead conduit (a copper coil, not solid; a Tempest Lance bolt passing within 72 px wakes it for good) |
 | `k` | Conduit gate tile (solid; slides open for good once every conduit in the room is awake) |
 | `h` | The Tempest Lance scroll |
+| `:` | The Lithic Fracture scroll (spell pickup, bible 4.1): an optional find in the Kettleforge tower |
 | `w` | Bramble wall tile (dry thorn-vine: solid; a Emberfall spell burns the whole knot to ash for good. Emberfall is optional, so hide only secrets behind it) |
+| `[` | Cracked stone seal tile (rune-bound stone: solid; a Lithic Fracture cast shatters every seal of the run in the room for good. Lithic Fracture is optional, so hide only secrets behind it) |
 | `u` | Dry basin mud bed (solid ground, cracked) |
 | `=` | Dry basin water-line stain: a run of these across a tank above its `u` bed. A Deluge bolt across the tank fills it and the run becomes a one-way raft for good |
 | `b` | Drowned boardwalk (the Haar): nothing until the Haar Spring flows (`spring:haar`), then a one-way platform. Lay it over a spiked dip |
