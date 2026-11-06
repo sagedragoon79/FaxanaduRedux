@@ -1,5 +1,26 @@
 [
  {
+  "title": "Test suite on Sean's PC (Windows, Godot 4.7.2), Nov 5",
+  "columns": [
+   "Measure",
+   "Result"
+  ],
+  "rows": [
+   [
+    "Tests",
+    "921 passed, 0 failed"
+   ],
+   [
+    "Checks",
+    "8295 passed, 0 failed"
+   ],
+   [
+    "Soak play",
+    "60.3 minutes of game (217,132 physics frames)"
+   ]
+  ]
+ },
+ {
   "title": "What is in the game (counted from data and rooms)",
   "columns": [
    "Kind",

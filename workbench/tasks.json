@@ -1,17 +1,7 @@
 {
  "owner": null,
- "doing": [
-  {
-   "t": "Checking every workbench tab in a browser",
-   "why": "You asked for the workbench; nothing counts as done until the page itself is checked."
-  },
-  {
-   "t": "Running the full test suite on this PC",
-   "why": "It must pass here before the local loop takes over from the cloud project."
-  }
- ],
+ "doing": [],
  "queue": [
-  "Open the workbench pull request",
   "Port tools/screenshot.sh to Windows (it needs xvfb-run, which this PC lacks)",
   "Art pass on the Haar Wyrm: the independent grade read it as placeholder circles and boxes",
   "Art pass on the code-drawn guardians (Bark Captain, Hag Matriarch, Drowned Warden, Thane Vorrund, Everbloom avatar)",
@@ -19,6 +9,9 @@
   "Pass 493: Stability (the next pass in the rotation)"
  ],
  "done": [
+  "Full test suite passes on this PC: 921 tests, 8295 checks",
+  "Opened the workbench pull request (#549)",
+  "Checked every workbench tab in a browser: sort, filter, drawer, and a note sent and taken back",
   "Independent grade vs Hollow Knight: 4.1 / 10 (the loop's own rubric says 96.8 / 100)",
   "Captured 127 rooms, 58 people, 41 foes and guardians, 12 gear pieces, 14 dyes, 19 finds and 21 shops from the running game",
   "Filmed four real clips: the title, a sword combo, Gnarlmaw and the Haar Wyrm",
