@@ -1,16 +1,23 @@
 {
  "owner": null,
- "doing": [],
+ "doing": [
+  {
+   "task": "Pass 493: Port tools/screenshot.sh to Windows (off-screen window where xvfb is absent)",
+   "why": "Top of queue; the only non-art item, and the capture loop can't shoot on this PC without it."
+  }
+ ],
  "queue": [
-  "Port tools/screenshot.sh to Windows (it needs xvfb-run, which this PC lacks)",
-  "Art pass on the Haar Wyrm: the independent grade read it as placeholder circles and boxes",
-  "Art pass on the code-drawn guardians (Bark Captain, Hag Matriarch, Drowned Warden, Thane Vorrund, Everbloom avatar)",
+  "Answered Sean's note (what do you need for the next queue item): the art pass needs PIXELLAB_API_KEY set on this PC + app restart; nothing else.",
+  "Art loop pass 8: PixelLab art for the seven placeholder guardians, about 650 of Sean's remaining generations (Haar Wyrm first) — blocked: PIXELLAB_API_KEY not set",
   "Evercrown: the cyan stillglass spikes read as stamped over foes; separate them from foe silhouettes",
-  "Pass 493: Stability (the next pass in the rotation)"
+  "Pass 494: Stability (the next pass in the rotation)"
  ],
  "done": [
+  "Pass 493: screenshot.sh runs on any machine — xvfb-run where present, an off-screen window elsewhere; verified with two live captures",
+  "Scheduled a local loop pass every 2 hours (the cloud loop has stopped: no pass 493 trigger)",
+  "Merged the workbench into main (#549)",
+  "Hosted the workbench at https://yldenfall-workbench.vercel.app behind a password; notes sync both ways",
   "Full test suite passes on this PC: 921 tests, 8295 checks",
-  "Opened the workbench pull request (#549)",
   "Checked every workbench tab in a browser: sort, filter, drawer, and a note sent and taken back",
   "Independent grade vs Hollow Knight: 4.1 / 10 (the loop's own rubric says 96.8 / 100)",
   "Captured 127 rooms, 58 people, 41 foes and guardians, 12 gear pieces, 14 dyes, 19 finds and 21 shops from the running game",
@@ -23,5 +30,7 @@
   "Pass 489: The spell gates by the buttons (World)",
   "Pass 488: A blow at every game speed (Combat)"
  ],
- "stuck": []
+ "stuck": [
+  "PixelLab key not set on this PC yet: Sean sets PIXELLAB_API_KEY and restarts the app; art passes wait for it"
+ ]
 }
