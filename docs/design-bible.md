@@ -1085,7 +1085,11 @@ The core (phase 2) has none: no blade reaches it, only the veins.
   - **Corrupted foes, as built (pass 78):** every foe spawned in an Evercrown room is `corrupted` (a room header
     `corrupted:` overrides it either way). Corruption is one remix applied to every family rather than new
     species: x1.5 health, double gold and experience, poison drops, a violet cast and stillglass grown out of
-    the back with red veins and a cyan eye that beat with the Everbloom's heart. When it dies it leaves a
+    the back with red veins and a cyan eye that beat with the Everbloom's heart. **The shards lift off the foe
+    (pass 494):** they had read as flat cyan decals stamped over the silhouette (a workbench note), so each shard
+    now casts the glass's own light onto the body around it (reaching `GLOW_MARGIN` past its width) and sinks into
+    a dark socket at the skin, reading as glass grown through the foe rather than painted on
+    (`CorruptionGrowth.shards`, `test_corrupted_shards_lift_off_the_foe_silhouette`). When it dies it leaves a
     **Stillglass Seed**: a crystal that hangs where it died and swells for 0.7 s, then bursts in a ring (30 px,
     10 damage, unparryable). One slash or a pogo cracks it harmlessly, so pressing forward is safer than
     backing off, and seeds give a corrupted fight a rhythm of pogo chains. The Stillstone holds seeds.

@@ -1204,6 +1204,25 @@ func test_evercrown_foes_are_corrupted_with_meteor_crystal() -> void:
 	check(not cslug.dead, "and the corrupted foes live and move (%s)" % cslug.state)
 
 
+## Pass 494 (workbench note): the cyan stillglass shards on a corrupted foe cast the
+## glass's own light onto its body and sink into a dark socket, so they read as glass
+## grown through the foe, not a flat decal stamped over its silhouette.
+func test_corrupted_shards_lift_off_the_foe_silhouette() -> void:
+	var growth := CorruptionGrowth.new()
+	var sh := growth.shards(Vector2(24, 20), 1.0, Vector2.ZERO)
+	check(sh.size() == 3, "a corrupted foe grows three back-shards (%d)" % sh.size())
+	for s in sh:
+		check(s["glow_radius"] > s["half_width"] + 0.5,
+			"the cast light reaches past the shard's own width, lifting it off the foe (r=%.1f w=%.1f)" % [s["glow_radius"], s["half_width"]])
+		check(s["glow_center"].y < s["base"].y and s["glow_center"].y > s["tip"].y,
+			"the light falls along the shard, between its base and tip")
+	check(CorruptionGrowth.GLOW_MARGIN > 0.0, "the separation margin is real")
+	check(CorruptionGrowth.GLOW_ALPHA > 0.0 and CorruptionGrowth.GLOW_ALPHA < 1.0,
+		"the cast light is translucent, not an opaque cyan patch")
+	check(CorruptionGrowth.SOCKET_ALPHA > 0.0, "a dark socket marks where the shard breaks the skin")
+	growth.free()
+
+
 ## Bible 8.9: a corrupted foe leaves a seed of crystal that tells, then bursts.
 func test_a_corrupted_foe_leaves_a_seed_that_bursts() -> void:
 	var room := Room.from_text("corrupted: true\n---\n" + "\n".join(PackedStringArray(_room_rows({Vector2i(14, 6): "M"}))))
