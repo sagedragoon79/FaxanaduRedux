@@ -21,5 +21,28 @@
    "Gnarlmaw's title card is faint and low-contrast.",
    "Characters are about 30 px tall on a 540 px frame with little presence against large empty backdrops."
   ]
+ },
+ {
+  "t": "Nov 6, 12:30 PM",
+  "overall": 5.3,
+  "note": "Independent reviewer, 12 stills (9 zone rooms, a shop, 2 guardians), target Hollow Knight, no hints. Up from 4.1 at pass 492. Reads as mid-tier indie, not hand-crafted: flat tile grids, flat lighting, a hero sprite far below the environment's fidelity. Fastest wins named: upgrade the player sprite, add contact shadows/AO where platforms meet walls, tile variants plus stronger atmospheric-perspective depth between the play layer and parallax. The loop's own rubric for pass 497 is 96.9/100.",
+  "areas": {
+   "Art and cohesion": 5.5,
+   "Environments": 5.5,
+   "Characters and foes": 4.0,
+   "Combat readability": 4.5,
+   "UI and menus": 6.5,
+   "Atmosphere and lighting": 5.5
+  },
+  "defects": [
+   "Player character fidelity gap: the hero is a small, soft, low-detail hooded figure with no readable silhouette or gear detail, far below the environment art.",
+   "Flat lighting with no ambient occlusion: walls meet floors and platforms meet backgrounds with hard, unshaded seams; light sources rarely cast gradient pools or contact shadows.",
+   "Visible tile repetition and grid banding: brick and wall fields tile obviously, with little tile variation, damage, or hand-placed detail to break the grid.",
+   "Foreground and background collapse to the same depth plane: trunks, mid platforms and the play layer share similar value and saturation, so the player can get lost against busy backdrops.",
+   "Boxy, framed rooms with dead space: many rooms are rectangles bounded by a thick wall border with large empty centers.",
+   "Over-reliance on halftone/dot-screen gradient fills standing in for real rendering, flattening large areas.",
+   "Generic, undersized foes with weak silhouettes.",
+   "Platforms are one uniform stamped plank sprite repeated across every biome."
+  ]
  }
 ]

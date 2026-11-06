@@ -15,6 +15,10 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = ROOT / "art" / "pixellab"
+# Sean's hand-cleaned frames. A clip folder here (same relative path as under art/pixellab/) wins
+# over the raw PixelLab output, so a frame he has cleaned ships without touching the raw frames.
+# Turn clips in particular land here for cleanup (enemy style guide, step 1b).
+CLEANUP = ROOT / "art" / "cleanup"
 OUT = SOURCES / "sheets"
 CELL = 256
 
@@ -135,7 +139,16 @@ NO_SLAB_CLEANING |= {"meteor_slug"}
 
 
 def frames_of(folder):
+    # Prefer Sean's cleaned frames (art/cleanup/<folder>) over the raw PixelLab output.
+    clean = sorted((CLEANUP / folder).glob("[0-9][0-9].png"))
+    if clean:
+        return clean
     return sorted(p for p in (SOURCES / folder).glob("[0-9][0-9].png"))
+
+
+def is_cleaned(path):
+    """A frame Sean has already cleaned: it must not be slab- or flat-cleaned again."""
+    return CLEANUP in path.parents
 
 
 # PixelLab sometimes leaves a flat grey slab behind a smear or a cloak: a big patch of dull grey,
@@ -210,6 +223,10 @@ def pack(paths, slabs=True):
     strip = Image.new("RGBA", (CELL * len(paths), CELL))
     for i, p in enumerate(paths):
         im = Image.open(p).convert("RGBA")
+        if is_cleaned(p):
+            # Sean cleaned it by hand; composite it as-is, no slab or flat pass.
+            strip.alpha_composite(im, (i * CELL + (CELL - im.width) // 2, CELL - im.height))
+            continue
         if slabs:
             clear_slabs(im)
         if p.parent.relative_to(SOURCES).as_posix() in FLAT_SLABS:

@@ -1487,6 +1487,18 @@ An arena you have not entered is never named, so the page spoils nothing. The wo
 
 ## 12. Art Style Guide (HD Pixel Art)
 
+### 12.0 Art goal (2026-11-06)
+
+Yldenfall should look **beautiful, on par with AAA pixel-art games**. The bar is Hollow Knight;
+also hold the art against Blasphemous, Dead Cells and Owlboy. The independent grade (workbench,
+`grades.json`) scores the whole game out of 10 against Hollow Knight, and the art loop chases that
+number. Art now **outranks the rubric rotation**: when the queue holds no fresh note from Sean, the
+next pass takes the art item that most lifts the independent grade, and every art change is judged by
+eye at 1x and 2x against `docs/art/enemy-style-guide.md` before it is kept. Sean gave full authority
+to spend the PixelLab budget (subscription generations plus the pay-as-you-go credits he added) on
+reaching this bar. The order of guardians to remake and the per-guardian generation budget are in
+the style guide, section 8.
+
 ### 12.1 Resolution and scale
 
 - **World resolution:** 640x360 world pixels. All gameplay numbers (movement, hitboxes, rooms, tiles) are in world pixels.
