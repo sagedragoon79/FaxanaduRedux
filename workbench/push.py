@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Keeps the hosted workbench current: live state up when it changes, the owner's notes down into notes.json, and a media deploy after commits.
 # python3 -u workbench/push.py   (leave it running beside server.py)
-import hashlib, json, os, subprocess, time, urllib.request
+import hashlib, json, os, subprocess, sys, time, urllib.request
 clock = lambda: time.strftime('%I:%M %p').lstrip('0')
 HERE = os.path.dirname(os.path.abspath(__file__)); CFG = json.load(open(os.path.join(HERE, 'config.json')))
 BASE = CFG['site'].rstrip('/'); PASS = open(os.path.join(HERE, '.wb_pass')).read().strip(); LOCAL = os.path.join(HERE, 'notes.json')
@@ -31,7 +31,7 @@ def media(st, m):
     if not m: return {'head': head, 'sig': sig, 'at': time.time()}
     gap = time.time() - m['at']
     if (head != m['head'] and gap > 300) or (sig != m['sig'] and gap > 1800):
-        r = subprocess.run(['python3', os.path.join(HERE, 'deploy.py')], capture_output=True, text=True); print(clock(), r.stdout.strip()[-120:], r.stderr.strip()[-200:], flush=True)
+        r = subprocess.run([sys.executable, os.path.join(HERE, 'deploy.py')], capture_output=True, text=True); print(clock(), r.stdout.strip()[-120:], r.stderr.strip()[-200:], flush=True)
         return {'head': head, 'sig': sig, 'at': time.time()}
     return m
 was = ''; m = None; n = 0
