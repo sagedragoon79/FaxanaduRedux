@@ -8,3 +8,15 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+# Workbench: the site password, Vercel state, and
+# the captured pictures and clips, which capture_all.py and make_clips.py rebuild
+workbench/.wb_pass
+workbench/vercel/.vercel
+workbench/vercel/.env.local
+workbench/vercel/public/
+workbench/vercel/node_modules/
+workbench/catalog/*/
+workbench/catalog/catalog.json
+workbench/clips/*
+!workbench/clips/.gdignore
+shots/

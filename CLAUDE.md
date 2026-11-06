@@ -60,3 +60,20 @@ same way (`ids` in that file; `GameState.migrate_ids` brings older saves over). 
 
 Each pass: build, run tests and screenshots, review against the bible, score the rubric
 (design bible 15.3), and record it in `docs/loop/pass-NN.md`. Fix the lowest categories next.
+
+## The workbench
+
+`workbench/` is Sean's live window into the build (it runs on his PC; the loop moved there from
+the claude.ai project on 2026-11-05). Start it with `python3 workbench/server.py` and open
+http://localhost:8977.
+
+- At the top of every pass, read `workbench/notes.json`. Set each `new` note to `seen` and put it
+  at the top of `queue` in `workbench/tasks.json`. Sean's notes outrank the rubric's next category.
+  When one is finished, set it to `done` with a short `reply`.
+- Keep `workbench/tasks.json` current at every step (`doing`, `queue`, `done` newest first, `stuck`).
+- When visuals change, refresh the pictures and catalogue (`GODOT` set as for the tests):
+  `python3 workbench/capture/capture_all.py --redo --only=rooms` (or `things`, `people`, `gear`,
+  `dyes`, `arenas`, `shops`), then `python3 workbench/capture/build_catalog.py`. Clips:
+  `python3 workbench/capture/make_clips.py`. Look at what they captured before trusting it.
+- After a meaningful pass, get an independent grade: 8 to 12 screenshots across the game to a
+  separate agent with no hints, scored out of 10 against Hollow Knight; add it to `workbench/grades.json`.

@@ -1,0 +1,25 @@
+[
+ {
+  "t": "Nov 5, 8:08 PM",
+  "overall": 4.1,
+  "note": "Independent reviewer, 12 stills (8 rooms, a shop, 3 fight frames), target Hollow Knight. Biggest lever: one character and foe art pass (matching hero, real boss creatures). Caveat: the 'beige hero' defect in the fight frames is the Barkbalm sheen the capture turned on, not the hero's normal look. The loop's own rubric for pass 492 is 96.8/100.",
+  "areas": {
+   "Art and cohesion": 4,
+   "Environments": 4,
+   "Characters and foes": 3.5,
+   "Combat readability": 4,
+   "UI and menus": 5,
+   "Atmosphere and lighting": 4.5
+  },
+  "defects": [
+   "Image 08 (Evercrown heart gate): cyan crystal spikes read as stamped over the foes and hide their silhouettes.",
+   "The Haar Wyrm reads as placeholder geometry: flat green circles with box heads on chains of discs.",
+   "Fight frames: the hero looks washed out next to exploration shots (partly the capture's Barkbalm sheen).",
+   "High Boughs: smooth high-resolution branches behind chunky pixel tiles look like two games layered.",
+   "The same domed hut repeats across biomes, and town rooms are flat corridors with townsfolk in a row.",
+   "Noisy checkerboard brick ceilings and floors frame every room in the same heavy rectangle.",
+   "Gnarlmaw's title card is faint and low-contrast.",
+   "Characters are about 30 px tall on a 540 px frame with little presence against large empty backdrops."
+  ]
+ }
+]
