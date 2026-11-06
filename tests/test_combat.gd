@@ -623,6 +623,145 @@ func test_death_strikes_every_foe_around_through_walls() -> void:
 	far.remove_from_group("boss")
 
 
+## Lithic Fracture (Sean's spell, pass 497): a bare foe on the floor, its hp set
+## before it enters the tree, so a strike can be read off its health.
+func _lithic_foe(room: Room, pos: Vector2, hp := 50) -> Enemy:
+	var e := Enemy.new()
+	e.max_hp = hp
+	e.position = pos
+	room.add_child(e)
+	return e
+
+
+## The wave is planned in tiles: six columns 32 px apart along the floor, stepping
+## down a ledge, stopping at a wall across the floor and at the edge of a pit.
+func test_lithic_fracture_cascades_along_the_floor() -> void:
+	var flat := make_room(ARENA)
+	await frames(4)
+	var origin := cell_feet(3, 6)
+	var plan := LithicWave.plan_columns(flat.get_world_2d().direct_space_state, origin, 1)
+	var cols: Array = plan.positions
+	check(cols.size() == LithicWave.COLUMNS, "six columns erupt over flat floor (%d)" % cols.size())
+	if cols.size() == LithicWave.COLUMNS:
+		check(absf(cols[0].x - (origin.x + LithicWave.FIRST)) < 0.5, "the first stands about 32 px ahead (%.0f)" % (cols[0].x - origin.x))
+		var even := true
+		for i in range(1, cols.size()):
+			if absf((cols[i].x - cols[i - 1].x) - LithicWave.STEP) > 0.5 or absf(cols[i].y - cols[0].y) > 0.5:
+				even = false
+		check(even, "each is 32 px on from the last, along the one floor")
+	# A wall across the floor stops the wave.
+	var walled := ARENA.duplicate()
+	walled[6] = "#........#.........#"
+	var wall_room := make_room(walled)
+	await frames(4)
+	check(LithicWave.plan_columns(wall_room.get_world_2d().direct_space_state, cell_feet(3, 6), 1).positions.size() == 2,
+		"a wall at cell 9 stops the wave after two columns")
+	# A gap in the floor stops the wave at the pit's edge.
+	var holed := ARENA.duplicate()
+	holed[7] = "#########.##########"
+	var pit_room := make_room(holed)
+	await frames(4)
+	check(LithicWave.plan_columns(pit_room.get_world_2d().direct_space_state, cell_feet(3, 6), 1).positions.size() == 2,
+		"a pit at cell 9 stops the wave at its edge")
+	# A ledge down: the wave follows the floor as it drops.
+	var ledge := make_room([
+		"####################", "#..................#", "#..................#", "#..................#",
+		"#..................#", "########...........#", "########...........#",
+		"####################", "####################"])
+	await frames(4)
+	var lcols: Array = LithicWave.plan_columns(ledge.get_world_2d().direct_space_state, cell_feet(3, 4), 1).positions
+	check(lcols.size() == LithicWave.COLUMNS, "six columns step down the ledge (%d)" % lcols.size())
+	if lcols.size() == LithicWave.COLUMNS:
+		check(lcols[0].y < lcols[5].y and lcols[5].y - lcols[0].y == 2 * Room.TILE, "they step down two tiles to follow the lower floor")
+
+
+func test_a_lithic_wave_staggers_and_slows_what_it_strikes() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"fracture": true})
+	p.equipped_spell = "fracture"
+	p.max_mp = 60.0
+	p.mp = 60.0
+	await frames(4)
+	var hit := _lithic_foe(room, cell_feet(7, 6), 50)  # on the second column
+	var miss := _lithic_foe(room, cell_feet(2, 6), 50)  # behind the caster, never reached
+	await frames(2)
+	var mp0 := p.mp
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	check(absf(p.mp - (mp0 - 24.0)) < 0.5, "a cast costs 24 MP (%.1f)" % (mp0 - p.mp))
+	await frames(24)
+	check(hit.hp == 50 - 6, "the wave strikes a foe for its 6 (hp %d)" % hit.hp)
+	check(hit.hits_taken == 1, "struck once per cast (%d)" % hit.hits_taken)
+	check(hit.is_staggered(), "and staggers it")
+	check(hit.is_slowed(), "and slows it")
+	check(miss.hp == 50 and miss.hits_taken == 0, "a foe the wave never reaches is untouched (hp %d)" % miss.hp)
+
+
+func test_a_boss_is_slowed_by_lithic_fracture_but_not_staggered() -> void:
+	var room := make_room(ARENA)
+	var p := make_player(room, Vector2i(3, 6), {"fracture": true})
+	p.equipped_spell = "fracture"
+	p.max_mp = 60.0
+	p.mp = 60.0
+	await frames(4)
+	var boss := _lithic_foe(room, cell_feet(7, 6), 80)
+	boss.add_to_group("boss")
+	await frames(2)
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	await frames(24)
+	check(boss.hp == 80 - 6, "a boss takes the 6 (hp %d)" % boss.hp)
+	check(boss.is_slowed(), "and is slowed")
+	check(not boss.is_staggered(), "but a boss is never staggered")
+
+
+## The slow runs a foe's clock at half, so a windup keyed to it can only lengthen:
+## no telegraph can drop below Enemy.MIN_TELEGRAPH while slowed.
+func test_a_slowed_foes_tell_never_drops_below_the_floor() -> void:
+	var room := make_room(ARENA)
+	var foe := _lithic_foe(room, cell_feet(7, 6), 50)
+	await frames(2)
+	foe.slow()
+	check(foe.is_slowed(), "the slow takes hold")
+	var t0 := foe.game_time
+	await frames(30)
+	check(absf((foe.game_time - t0) - 0.25) < 0.05, "a slowed foe's clock runs at half (%.2f s in 0.5 s)" % (foe.game_time - t0))
+	check(Enemy.SLOW_FACTOR < 1.0 and Enemy.MIN_TELEGRAPH / Enemy.SLOW_FACTOR >= Enemy.MIN_TELEGRAPH,
+		"so a tell at the %.2f s floor only stretches when slowed" % Enemy.MIN_TELEGRAPH)
+	await frames(170)
+	check(not foe.is_slowed(), "and the slow ends after its three seconds")
+
+
+func test_cracked_stone_seals_open_only_to_lithic_fracture() -> void:
+	var rows := ARENA.duplicate()
+	rows[6] = rows[6].substr(0, 5) + "[" + rows[6].substr(6)  # a seal two tiles ahead of the caster
+	var room := make_room(rows)
+	var p := make_player(room, Vector2i(3, 6), {"fracture": true, "torrent": true})
+	p.max_mp = 60.0
+	p.mp = 60.0
+	await frames(4)
+	var seal: StoneSeal = _find(room, StoneSeal)
+	check(seal != null, "the seal stands as a wall")
+	# A Deluge bolt leaves it whole.
+	p.equipped_spell = "torrent"
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	await frames(30)
+	check(is_instance_valid(seal) and not seal.is_broken(), "a Deluge bolt does not break it")
+	# A Lithic Fracture column shatters it.
+	p.equipped_spell = "fracture"
+	p.mp = 60.0
+	p.input.spell_pressed = true
+	await frames(1)
+	p.input.spell_pressed = false
+	await frames(20)
+	check(seal.is_broken(), "only a Lithic Fracture cast shatters the seal")
+	check("fracture" == ItemPickup.KIND_BY_CHAR.get(":", ""), "legend : is the Lithic Fracture scroll")
+
+
 func test_the_death_scroll_is_a_late_secret() -> void:
 	check(ItemPickup.KIND_BY_CHAR.get("{", "") == "death" and "death" in ItemPickup.ABILITIES, "legend { is the Witherbloom scroll")
 	var text := FileAccess.get_file_as_string("res://levels/vorrhallow/kings_kennels.room")

@@ -55,6 +55,12 @@ var uses_gravity := true
 ## Rising Cut launches: how hard, how long it hangs helpless, how big a foe it lifts.
 ## How long a hit stops a foe's thinking; the heavy finisher's lasts 1.8x (0.32 s).
 const HITSTUN := 0.18
+## A slow (Lithic Fracture, design bible 4, pass 497): while it holds, a foe's own
+## clock, its thinking and its movement all run at SLOW_FACTOR of real time for
+## SLOW_TIME seconds. It only ever lengthens a telegraph, never shortens one, so no
+## tell can drop below MIN_TELEGRAPH. Bosses take it too.
+const SLOW_FACTOR := 0.5
+const SLOW_TIME := 3.0
 const LAUNCH_SPEED := 330.0
 const LAUNCH_STUN := 0.5
 const LAUNCH_MAX_HP := 40
@@ -73,6 +79,7 @@ var thrown := false
 var _flash := 0.0
 var _hitstun := 0.0
 var _stagger := 0.0
+var _slow := 0.0
 var _respawn_timer := 0.0
 var _dissolver: Tween
 static var _wash_material: ShaderMaterial
@@ -132,8 +139,14 @@ func _physics_process(delta: float) -> void:
 			if _respawn_timer <= 0.0:
 				_respawn()
 		return
-	game_time += delta
-	state_time += delta
+	# A slow runs the foe's clock, its thinking and its movement at half time, but
+	# counts down in real time, so it lasts its SLOW_TIME seconds (pass 497).
+	var step := delta
+	if _slow > 0.0:
+		_slow -= delta
+		step = delta * SLOW_FACTOR
+	game_time += step
+	state_time += step
 	_flash -= delta
 	if _stagger > 0.0:
 		_stagger -= delta
@@ -146,7 +159,12 @@ func _physics_process(delta: float) -> void:
 		_hitstun -= delta
 		velocity = velocity.move_toward(Vector2(0, velocity.y if uses_gravity else 0.0), 700.0 * delta)
 	else:
-		_think(delta)
+		_think(step)
+		if _slow > 0.0:
+			# Half speed afoot, and in the air for a flier; gravity is left real.
+			velocity.x *= SLOW_FACTOR
+			if not uses_gravity:
+				velocity.y *= SLOW_FACTOR
 	if uses_gravity:
 		velocity.y = minf(velocity.y + GRAVITY * delta, MAX_FALL)
 	move_and_slide()
@@ -251,6 +269,19 @@ func stagger() -> void:
 
 func is_staggered() -> bool:
 	return _stagger > 0.0
+
+
+## Lithic Fracture's wave slows a foe (design bible 4, pass 497): for `duration`
+## seconds its clock, thinking and movement run at SLOW_FACTOR. A fresh cast
+## refreshes the time rather than stacking the factor.
+func slow(duration := SLOW_TIME) -> void:
+	if dead:
+		return
+	_slow = maxf(_slow, duration)
+
+
+func is_slowed() -> bool:
+	return _slow > 0.0
 
 
 ## The foe's opening: while it is true, its guard is down and blows land in full
@@ -362,6 +393,7 @@ func _respawn() -> void:
 	velocity = Vector2.ZERO
 	_stagger = 0.0
 	_hitstun = 0.0
+	_slow = 0.0
 	set_state("idle")
 	reset_physics_interpolation()
 

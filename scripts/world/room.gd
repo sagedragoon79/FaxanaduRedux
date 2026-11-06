@@ -647,6 +647,12 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			var seal := FireSeal.new()
 			seal.flag_id = "seal:" + id
 			_spawn(seal, center)
+		"[":
+			# A cracked stone seal: only a Lithic Fracture cast breaks it, and it
+			# only ever hides an optional cache. It stays broken once shattered.
+			var stone := StoneSeal.new()
+			stone.persist_id = _pickup_id(cell)
+			_spawn(stone, center)
 		"N":
 			var heart := RootHeart.new()
 			heart.room = self
@@ -670,7 +676,7 @@ func _place(ch: String, cell: Vector2i, grid: Array[String]) -> void:
 			chest.pickup_id = _pickup_id(cell)
 			chest.value = _chest_gold.get(cell, int(header.get("chest_gold", "100")))
 			_spawn(chest, bottom_center)
-		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*", "&", "{", "(", "}":
+		"G", "X", "O", "d", "h", "n", "z", "L", "W", "F", "*", "&", "{", "(", "}", ":":
 			var item_id := _pickup_id(cell)
 			if not GameState.is_collected(item_id):
 				var item := ItemPickup.new()

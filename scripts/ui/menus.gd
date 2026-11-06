@@ -533,7 +533,7 @@ static func open_journey(tree: SceneTree, back: Callable) -> bool:
 ## thing is never known only by its banner. Read only; Back returns.
 const INVENTORY_GROUPS := [
 	["Abilities", ["glove", "delvers_pick", "boots", "stride", "seers_lens", "stillstone", "rune_dagger"]],
-	["Spells", ["torrent", "fire", "wisplight", "thunder", "death"]],
+	["Spells", ["torrent", "fire", "fracture", "wisplight", "thunder", "death"]],
 	["Relics", ["pendant", "briar_wand"]],
 ]
 const RING_NAMES := {"thaw": "Thaw Seed", "sun": "Sun Seed", "fall": "Fall Seed", "frost": "Frost Seed"}

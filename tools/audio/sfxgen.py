@@ -127,6 +127,18 @@ def main():
     rumble = lowpass(noise(d), slide(1500, 150, d)) * env(int(RATE * d), 0.002, 1.3)
     save("break", mix(rumble, lowpass(osc(slide(120, 50, d), "square"), 800) * env(int(RATE * d)) * 0.5), 0.85)
 
+    # Lithic Fracture (pass 497): a deep grinding groan as the floor splits.
+    d = 0.3
+    grind = lowpass(noise(d), slide(900, 120, d)) * env(int(RATE * d), 0.008, 1.1)
+    groan = osc(slide(90, 150, d, 0.5), "square", 0.35) * env(int(RATE * d), 0.01, 1.3) * 0.6
+    save("lithic_cast", mix(grind, lowpass(groan, 1200)), 0.7)
+
+    # Each stone column's crack as it thrusts up.
+    d = 0.1
+    knock = osc(slide(150, 60, d), "square", 0.4) * env(int(RATE * d), 0.001, 1.4)
+    crack = lowpass(noise(d), slide(3500, 400, d)) * env(int(RATE * d), 0.001, 2.2)
+    save("lithic_hit", mix(lowpass(knock, 2000), crack * 0.7), 0.6)
+
     d = 0.14
     body = lowpass(osc(slide(140, 55, d), "square", 0.45), 2000) * env(int(RATE * d), 0.001, 1.0)
     swish = highpass(lowpass(noise(d), slide(6000, 900, d)), 500) * env(int(RATE * d), 0.004, 1.2)

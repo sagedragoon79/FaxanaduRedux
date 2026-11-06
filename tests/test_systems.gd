@@ -413,7 +413,7 @@ func test_the_inventory_page_lists_what_you_have_found() -> void:
 		if n > 3:
 			long.append("%s: %d lines" % [row.label, n])
 	check(long.is_empty(), "every line fits in three lines: %s" % [long])
-	check(Menus.inventory_rows(p).size() == 7 + 5 + 2 + 4 + 7 + 3 + 6, "and all of it is listed")
+	check(Menus.inventory_rows(p).size() == 7 + 6 + 2 + 4 + 7 + 3 + 6, "and all of it is listed")
 	_restore()
 
 ## The pixel font (bible 12): every printable ASCII character has a glyph, and

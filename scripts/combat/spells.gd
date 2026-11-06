@@ -7,11 +7,12 @@ const DATA := {
 	"torrent": {"name": "Deluge", "cost": 15.0, "damage": 12, "speed": 300.0, "color": Color("4aa3df")},
 	"thunder": {"name": "Tempest Lance", "cost": 18.0, "damage": 16, "speed": 380.0, "color": Color("b8a8ff")},
 	"fire": {"name": "Emberfall", "cost": 20.0, "damage": 18, "speed": 170.0, "lift": 150.0, "color": Color("f08a2a")},
+	"fracture": {"name": "Lithic Fracture", "cost": 24.0, "damage": 6, "color": Color("9a8c7a")},
 	"wisplight": {"name": "Wisplight", "cost": 22.0, "damage": 14, "swarm_damage": 10, "color": Color("9cf0d8")},
 	"death": {"name": "Witherbloom", "cost": 40.0, "damage": 36, "boss_damage": 18, "color": Color("8a4ad8")},
 }
 ## The order the Next Spell button cycles through.
-const ORDER := ["torrent", "thunder", "fire", "wisplight", "death"]
+const ORDER := ["torrent", "thunder", "fire", "fracture", "wisplight", "death"]
 ## How far apart (radians) Wisp Swarm fans its three orbs.
 const SWARM_SPREAD := 0.5
 
@@ -82,5 +83,12 @@ static func cast(id: String, caster: Player) -> Node2D:
 			var wave := DeathWave.new()
 			wave.damage = DATA[id]["damage"]
 			wave.boss_damage = DATA[id]["boss_damage"]
+			return wave
+		"fracture":
+			var wave := LithicWave.new()
+			wave.damage = DATA[id]["damage"]
+			wave.facing = caster.facing
+			# The cascade is planned from the caster's feet, before the wave is placed.
+			wave.origin = caster.global_position
 			return wave
 	return null
