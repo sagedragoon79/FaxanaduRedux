@@ -1515,3 +1515,54 @@ func test_a_bounce_pod_throws_as_high_at_every_game_speed() -> void:
 	check(rises.max() - rises.min() <= 6.0, "as high at every speed, within 6 px (%s)" % [rises])
 	var note := FileAccess.get_file_as_string("res://docs/design-bible.md")
 	check(note.contains("`test_a_bounce_pod_throws_as_high_at_every_game_speed`"), "the bible names the test")
+
+
+## Pass 491 (bible A8): the Stillstone by its button at the slowest Game speed.
+## The glass is game time, like everything it stops: at 70% its 2.5 s still
+## and 8 s to run back each last 1/0.7 as long on the clock, its three ticks
+## stay a quarter-second of game time apart, and a press while it runs back
+## fizzles and turns nothing.
+func test_the_stillstone_answers_its_button_at_the_slowest_game_speed() -> void:
+	Feel.set_game_speed(0.7)
+	TimeStop.reset()
+	var room := make_room(SHAFT)
+	var p := make_player(room, Vector2i(7, 18), {"stillstone": true})
+	await frames(5)
+	await press_for_real(p, ["stillstone"])
+	release_for_real(["stillstone"])
+	check(TimeStop.active(), "the Stillstone button turns the glass at 70%")
+	var held := 0
+	var ticks: Array[float] = []
+	Sfx.recent.clear()
+	while TimeStop.active() and held < 600:
+		await frames(1)
+		held += 1
+		for s: String in Sfx.recent:
+			if s == Player.GLASS_TICK_SOUND:
+				ticks.append(TimeStop.left)
+		Sfx.recent.clear()
+	var want := TimeStop.DURATION / 0.7 * 60.0
+	check(absf(held - want) <= 3.0, "time stays stopped %.1f s of game time, %.0f frames at 70%% (%d)" % [TimeStop.DURATION, want, held])
+	var spaced := ticks.size() == Player.GLASS_TICKS
+	for k in ticks.size():
+		spaced = spaced and absf(ticks[k] - (Player.GLASS_TICKS - k) * Player.GLASS_TICK) < 0.03
+	check(spaced, "its ticks keep a quarter-second of game time apart (%s)" % [ticks])
+	Sfx.recent.clear()
+	await press_for_real(p, ["stillstone"])
+	release_for_real(["stillstone"])
+	check(not TimeStop.active() and Sfx.recent.has("fizzle"), "pressed while it runs back, it fizzles (%s)" % [Sfx.recent])
+	var back := 0
+	while not TimeStop.ready_to_turn() and back < 1200:
+		await frames(1)
+		back += 1
+	var total := held + 2 + back
+	var want_back := TimeStop.COOLDOWN / 0.7 * 60.0
+	check(absf(total - want_back) <= 6.0, "it runs back in %.0f s of game time, %.0f frames at 70%% (%d)" % [TimeStop.COOLDOWN, want_back, total])
+	await press_for_real(p, ["stillstone"])
+	release_for_real(["stillstone"])
+	check(TimeStop.active(), "then the button turns it again")
+	TimeStop.reset()
+	Feel.set_game_speed(1.0)
+	Feel.reset()
+	var bible := FileAccess.get_file_as_string("res://docs/design-bible.md")
+	check(bible.contains("test_the_stillstone_answers_its_button_at_the_slowest_game_speed"), "the bible names this test")
