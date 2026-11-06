@@ -1,0 +1,153 @@
+[
+ {
+  "title": "Test suite on Sean's PC (Windows, Godot 4.7.2), Nov 5",
+  "columns": [
+   "Measure",
+   "Result"
+  ],
+  "rows": [
+   [
+    "Tests",
+    "921 passed, 0 failed"
+   ],
+   [
+    "Checks",
+    "8295 passed, 0 failed"
+   ],
+   [
+    "Soak play",
+    "60.3 minutes of game (217,132 physics frames)"
+   ]
+  ]
+ },
+ {
+  "title": "What is in the game (counted from data and rooms)",
+  "columns": [
+   "Kind",
+   "Count",
+   "With a real picture"
+  ],
+  "rows": [
+   [
+    "Zones",
+    "11",
+    "11"
+   ],
+   [
+    "Rooms",
+    "127",
+    "127"
+   ],
+   [
+    "People",
+    "58",
+    "58"
+   ],
+   [
+    "Foes",
+    "26",
+    "26"
+   ],
+   [
+    "Guardians",
+    "16",
+    "16"
+   ],
+   [
+    "Gear",
+    "12",
+    "12"
+   ],
+   [
+    "Cloak dyes",
+    "14",
+    "14"
+   ],
+   [
+    "Finds",
+    "19",
+    "19"
+   ],
+   [
+    "Goods",
+    "20",
+    "0"
+   ],
+   [
+    "Skills",
+    "27",
+    "0"
+   ],
+   [
+    "Shops",
+    "21",
+    "21"
+   ],
+   [
+    "Music",
+    "48",
+    "0"
+   ]
+  ]
+ },
+ {
+  "title": "The loop's own rubric, pass 492 (self-scored, not independent)",
+  "columns": [
+   "Category",
+   "Weight",
+   "Score"
+  ],
+  "rows": [
+   [
+    "Movement feel",
+    "20",
+    "99"
+   ],
+   [
+    "Combat and enemies",
+    "15",
+    "99"
+   ],
+   [
+    "World and level design",
+    "15",
+    "99"
+   ],
+   [
+    "Art cohesion",
+    "15",
+    "84.75"
+   ],
+   [
+    "Bosses",
+    "10",
+    "99"
+   ],
+   [
+    "Systems",
+    "10",
+    "99"
+   ],
+   [
+    "Audio",
+    "5",
+    "99"
+   ],
+   [
+    "Stability and performance",
+    "5",
+    "99"
+   ],
+   [
+    "Story and world",
+    "5",
+    "98"
+   ],
+   [
+    "Weighted",
+    "100",
+    "96.81"
+   ]
+  ]
+ }
+]

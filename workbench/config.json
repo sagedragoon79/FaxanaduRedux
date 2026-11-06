@@ -1,0 +1,42 @@
+{
+  "game": "Yldenfall",
+  "port": 8977,
+  "repo": "..",
+  "gitPaths": [
+    ".",
+    ":(exclude)workbench"
+  ],
+  "buildFile": "",
+  "shotDirs": [
+    "../shots",
+    "catalog/rooms",
+    "catalog/guardians"
+  ],
+  "clipDir": "clips",
+  "catalogDir": "catalog",
+  "running": "(?:[Gg]odot[^\\n]*?|python3?(?:\\.exe)?[^\\n]*?)(test_runner|shot\\.tscn|things\\.tscn|lineup\\.tscn|capture_all|build_catalog|make_clips)",
+  "site": "https://yldenfall-workbench.vercel.app",
+  "theme": {
+    "gold": "#ffd24a",
+    "goldDim": "#9a7d2c",
+    "bg": "#100e18",
+    "rail": "#15121f",
+    "panel": "#1d1a2b",
+    "panel2": "#252136",
+    "line": "#332d48",
+    "text": "#f1ead2",
+    "muted": "#8f87a6",
+    "soft": "#c9b98f",
+    "flavour": "#cec5d3",
+    "track": "#2a2540",
+    "well": "radial-gradient(circle at 50% 42%, #2c2742, #120f19)",
+    "sendHover": "#ffe28a",
+    "r0": "#cec5d3",
+    "r1": "#6fb0e0",
+    "r2": "#b58cff",
+    "r3": "#f0c02e",
+    "display": "Pixelify Sans",
+    "body": "Inter",
+    "fontUrl": "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+  }
+}
