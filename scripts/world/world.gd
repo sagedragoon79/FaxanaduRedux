@@ -261,6 +261,14 @@ func start(room_id: String, at := Vector2.INF) -> void:
 	else:
 		_enter(room_id)
 	var pos := room.spawn_position if at == Vector2.INF else at
+	# A restored position inside solid — a save from a build whose room has
+	# since changed shape, or one hand-edited — would wake the hero embedded in
+	# a wall, a soft-lock no rescue frees him from (the fall-rescue only catches
+	# a drop past the floor). Fall back to the room's own spawn, as if arriving
+	# fresh (pass 495).
+	if at != Vector2.INF and _embedded_at(pos):
+		at = Vector2.INF
+		pos = room.spawn_position
 	if at == Vector2.INF and room.spawn_position == Vector2.ZERO and not room.doors.is_empty():
 		# No spawn marker: arrive as if through the room's first door.
 		var first: int = room.doors.keys().min()
@@ -278,6 +286,20 @@ func start(room_id: String, at := Vector2.INF) -> void:
 		add_child(TimeTint.new())
 	camera.set_room_limits(room.pixel_rect(), room.wide_camera())
 	camera.snap_to_target()
+
+
+## True if the hero's body, placed at `pos`, would sit in solid tiles (pass 495).
+## Mirrors the soak's embed test (test_soak `_embedded`): the body drawn in 3 px,
+## its four corners and centre, so "embedded" means the same here as under test.
+func _embedded_at(pos: Vector2) -> bool:
+	var was := player.global_position
+	player.global_position = pos
+	var body := player.body_rect().grow(-3.0)
+	player.global_position = was
+	for corner in [body.position, Vector2(body.end.x, body.position.y), Vector2(body.position.x, body.end.y), body.end, body.get_center()]:
+		if room.is_solid_at(corner):
+			return true
+	return false
 
 
 func _enter(room_id: String) -> void:
