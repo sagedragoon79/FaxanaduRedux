@@ -5,8 +5,20 @@ extends Node2D
 ## the camera and repeating sideways.
 
 const DIR := "res://assets/bg/"
+const ATMOS_SHADER := preload("res://shaders/atmosphere.gdshader")
 ## Layer suffix -> scroll speed relative to the camera.
 const LAYERS := {"far": Vector2(0.15, 0.1), "mid": Vector2(0.4, 0.3)}
+## Atmospheric perspective per layer (design bible 12.5): the further-back layer
+## is pulled harder toward grey (desat) and toward the dark haze (fade), so it
+## reads as distance and the lit gameplay tiles pop against it. `far` always
+## sits further back than `mid`, so both knobs are stronger on `far`.
+const ATMOS := {
+	"far": {"desat": 0.55, "fade": 0.5},
+	"mid": {"desat": 0.3, "fade": 0.24},
+}
+## The dark zone haze the layers fade toward: night-1 from the master palette
+## (tools/art/palette.py), the deep blue-violet of every zone's shadows.
+const HAZE := Color8(44, 37, 65)
 const SIZE := Vector2(640, 480)
 ## Starts the layers a little above the room's top so vertical scrolling never shows a gap.
 const OFFSET := Vector2(0, -60)
@@ -39,8 +51,41 @@ func set_zone(next: String) -> void:
 		sprite.scale = SIZE / sprite.texture.get_size()
 		sprite.centered = false
 		sprite.position = OFFSET
+		sprite.material = atmos_material(suffix)
 		layer.add_child(sprite)
 		add_child(layer)
+
+
+## The atmospheric-perspective material for a layer, or null if the suffix has no
+## entry (then the layer draws as painted).
+static func atmos_material(suffix: String) -> ShaderMaterial:
+	if not ATMOS.has(suffix):
+		return null
+	var mat := ShaderMaterial.new()
+	mat.shader = ATMOS_SHADER
+	mat.set_shader_parameter("desat", ATMOS[suffix]["desat"])
+	mat.set_shader_parameter("fade", ATMOS[suffix]["fade"])
+	mat.set_shader_parameter("haze", HAZE)
+	return mat
+
+
+## The colour the atmosphere shader produces for one source pixel: pull toward
+## grey by `desat`, then toward the dark `haze` by `fade`. This mirrors
+## shaders/atmosphere.gdshader exactly, so the tests can drive the shader's maths.
+static func haze_color(src: Color, desat: float, fade: float, haze: Color) -> Color:
+	var lum := src.r * 0.299 + src.g * 0.587 + src.b * 0.114
+	var out := Color(
+		lerpf(src.r, lum, desat),
+		lerpf(src.g, lum, desat),
+		lerpf(src.b, lum, desat),
+		src.a,
+	)
+	return Color(
+		lerpf(out.r, haze.r, fade),
+		lerpf(out.g, haze.g, fade),
+		lerpf(out.b, haze.b, fade),
+		src.a,
+	)
 
 
 ## Parallax2D reads the camera scroll in render pixels, which is GameCamera.DETAIL

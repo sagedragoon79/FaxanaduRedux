@@ -1563,6 +1563,8 @@ the style guide, section 8.
 
 4 to 6 layers per zone: sky or deep background, far silhouette, mid background, gameplay tiles, foreground decor, foreground silhouettes. Plus particle layers (spores, mist, rain, leaves): most are the code `Motes` field, but Carillon's rain is a tiled PixelLab sheet in two parallax layers (`SheetRain`, 12.5-adjacent note under Carillon in 4.x; pass 498).
 
+**Atmospheric perspective (pass 501):** the two painted parallax layers (`<zone>_far.png`, `<zone>_mid.png`) are pushed back by a canvas shader (`shaders/atmosphere.gdshader`, applied in `Backdrop`), not by repainting the art. Each layer's colour is pulled toward grey (`desat`) and then toward the dark zone haze (`fade`, toward `night-1`), lowering its saturation and contrast so the lit gameplay tiles — bright, and rim-shaded by `EdgeShade` — stand clear of the busy backdrop instead of sharing its value and saturation. The further-back layer recedes harder: `far` (desat 0.55, fade 0.5) sits deeper than `mid` (desat 0.3, fade 0.24). The effect is GPU-only with no per-frame CPU cost; the maths live in `Backdrop.haze_color()`, which mirrors the shader and the tests drive. This fixes the "depth collapse / tile repetition" grade defect (trunks, mid platforms and the play layer reading at one depth).
+
 ---
 
 ## 13. Asset Production Plan
