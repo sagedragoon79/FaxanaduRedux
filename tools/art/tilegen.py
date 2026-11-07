@@ -312,23 +312,37 @@ def paint_bough(img, ox, oy, seed, ramp):
 
 
 def cap_moss(img, ox, oy, seed, x0, x1, light="leaf", glow=None, top=5):
-    """A ragged cap of moss over the top edge: blades of uneven height, a lit
-    fringe, and a dark under-edge where it meets the ground."""
+    """A ragged cap of moss over the top edge: blades of uneven height whose
+    tips catch the light, a body that deepens shade by shade into a dark root
+    line where it meets the ground, and a per-tile value shift so a run of
+    ground tiles never paints one flat bright band."""
+    def shade(k):
+        return c(f"{light}-{max(0, top - k)}")
+    # A per-tile value shift (lush / normal / sparse patches) breaks the uniform
+    # stripe that read as a single bright fringe across a whole floor: about half
+    # the tiles sit a shade deeper and a fifth two shades deeper.
+    t = hash2(seed, 0, 44)
+    tilt = 2 if t > 0.80 else 1 if t > 0.45 else 0
     for x in range(x0, x1):
         depth = 6 + (2 if hash2(x // 2, 0, seed) > 0.55 else 0) + (1 if hash2(x, 5, seed) > 0.85 else 0)
         blade = 1 if hash2(x, 6, seed) > 0.7 else 0
+        # Only taller, lit blades catch the brightest shade on their very tip.
+        tip_lit = blade and hash2(x, 8, seed) > 0.5
+        col_jit = 1 if hash2(x, 4, seed) > 0.78 else 0  # the odd deeper blade
         for y in range(depth):
             if y == 0 and blade == 0 and hash2(x, 7, seed) > 0.6:
                 continue  # a ragged top
-            if y <= 1:
-                col = f"{light}-{top}"
-            elif y < depth - 2:
-                col = f"{light}-{top - 1}" if (x + y) % 5 else f"{light}-{top}"
+            if y == 0 and tip_lit:
+                k = 0               # a lit tip, the only truly bright pixels
+            elif y <= 1:
+                k = 1               # upper blade
+            elif y < depth - 3:
+                k = 2 if (x + y) % 4 else 1   # mid body, mostly a shade down
             elif y < depth - 1:
-                col = f"{light}-{top - 2}"
+                k = 3               # lower body, in shadow
             else:
-                col = f"{light}-{top - 3}"
-            img.putpixel((ox + x, oy + y), c(col))
+                k = 4               # a dark root line into the soil
+            img.putpixel((ox + x, oy + y), shade(k + tilt + col_jit))
         if glow and hash2(x // 2, 3, seed) > 0.88:
             img.putpixel((ox + x, oy + depth), c(glow))
             if x % 2 == 0:
