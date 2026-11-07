@@ -1,14 +1,16 @@
 class_name HaarWyrm
 extends Enemy
-## the Haar Wyrm, the Haar Wyrm (design bible 8.4): a three-headed serpent of fog
-## and bone coiled around the Haar Spring. Only the head that is solid at the
-## moment can be hurt; the others are fog the blade passes through.
+## the Haar Wyrm, the Haar Wyrm (design bible 8.4): a three-headed serpent of
+## steam and bone coiled around the Haar Spring. It boiled the spring's three
+## tanks dry; the Haar's fog is its steam, cooled over the marsh. Only the head
+## that is solid at the moment can be hurt; the others are steam the blade passes
+## through.
 ##
 ## Phase 1: the heads take turns being solid. The solid one sinks low and bites
-## (it rears back first, then lies where it struck, open to blows); a mist head
-## breathes a bank of fog that rolls along the floor (jump it, or get up on the
+## (it rears back first, then lies where it struck, open to blows); a steam head
+## bellows a gout of steam that vents along the floor (jump it, or get up on the
 ## tank walls).
-## Phase 2 (below 60%): all three turn to mist and keep breathing. A fourth head
+## Phase 2 (below 60%): all three turn to steam and keep breathing. A fourth head
 ## hides in the coil, and shows only once all three tanks are full: Deluge each
 ## one and its raft floats up, the high ground to reach it from. The dry tanks
 ## shimmer, and each full one douses the head above it: it sags, dims and stops
@@ -22,14 +24,14 @@ extends Enemy
 signal defeated
 
 const DISPLAY_NAME := "The Haar Wyrm"
-const EPITHET := "Three Heads of Fog"
+const EPITHET := "Three Heads of Steam"
 const MAX_HP := 300
 const PHASES := [0.6, 0.3]
 ## The three lanes' x, from the coil's centre (over the three tanks).
 const LANES := [-256.0, 0.0, 256.0]
 ## How far a solid head drifts from its lane after the player.
 const LANE := 110.0
-## Heights in world y: a mist head hangs high, a solid head low.
+## Heights in world y: a steam head hangs high, a solid head low.
 const HAAR_Y := 96.0
 const SOLID_Y := 176.0
 ## The fourth head, hidden in the coil and out.
@@ -52,8 +54,10 @@ const BREATH_TELL := 0.7
 const BREATH_TIME := 0.5
 const EMERGE_TIME := 1.0
 const FAST := 0.75
-## Phase 2: a doused head hangs this much lower than a mist head.
+## Phase 2: a doused head hangs this much lower than a steam head.
 const DOUSED_SAG := 44.0
+## How long the last puff of steam rises as a head is doused.
+const DOUSE_PUFF := 0.6
 ## Phase 2: the hint repeats if the tanks are still dry after this long.
 const HINT_EVERY := 14.0
 const HINT := "The heads dissolve into mist. The dry tanks below shimmer: fill them with Deluge."
@@ -67,6 +71,9 @@ const SCALE_DARK := Color("2d3f3a")
 const BONE := Color("ddd5c0")
 const EYE := Color("f4e48c")
 const HAAR := Color("dfe8ee")
+## Steam at the jaws: hotter and whiter than the fog the heads drift in.
+const STEAM := Color("f4f7f6")
+const STEAM_HOT := Color("fff1dc")
 
 ## The arena's interior in pixels (the room sets it).
 var arena := Rect2(16, 64, 928, 256)
@@ -172,6 +179,8 @@ func _douse_heads() -> void:
 		if h != null and not h.doused:
 			h.doused = true
 			h.flash = 0.2
+			# It goes out with a hiss and a last puff of steam.
+			h.puff = DOUSE_PUFF
 			if h.mode != "idle":
 				h.set_mode("rise")
 			Sfx.play("douse", 0.1, 0.0)
@@ -337,7 +346,7 @@ func _fight(delta: float) -> void:
 		elif s.mode == "idle" and s.mode_time >= IDLE_BEFORE_BITE and absf(px - s.global_position.x) < BITE_RANGE:
 			_rear(s, ground_y() - 14.0)
 	if _breath >= BREATH_EVERY * (FAST if phase == 3 else 1.0):
-		# The mist head nearest the player breathes.
+		# The steam head nearest the player bellows.
 		var best: HydraHead = null
 		for i in 3:
 			var h := heads[i]
@@ -348,7 +357,8 @@ func _fight(delta: float) -> void:
 		if best != null:
 			_breath = 0.0
 			best.set_mode("breath_tell")
-			Sfx.play("swell", 0.1, -2.0)
+			# Pressure building at the jaws: a rising hiss under the tell.
+			Sfx.play("steam_hiss", 0.1, 0.0)
 
 
 ## Head `h` rears back to bite where the player is now (no lower than `low_y`).
@@ -371,6 +381,7 @@ func _move_heads(delta: float) -> void:
 			continue
 		h.mode_time += delta
 		h.flash -= delta
+		h.puff -= delta
 		var k := 1.0 - exp(-5.0 * delta)
 		match h.mode:
 			"idle":
@@ -418,9 +429,9 @@ func _bite_rect(h: HydraHead) -> Rect2:
 	return Rect2(h.global_position - Vector2(BITE_SIZE, BITE_SIZE) * 0.5, Vector2(BITE_SIZE, BITE_SIZE))
 
 
-## A bank of mist rolls out from under the head, toward the player.
+## A gout of steam vents from the head's jaws, toward the player.
 func _breathe(h: HydraHead) -> void:
-	var b := MistBreath.new()
+	var b := SteamBreath.new()
 	var p := player()
 	b.dir = signf(p.global_position.x - h.global_position.x) if p != null else 1.0
 	if b.dir == 0.0:
@@ -587,18 +598,31 @@ func _draw_head(h: HydraHead, t: float, fade: float) -> void:
 	else:
 		_px(4, -8, 5, 3, eye, maxf(a, 0.6) if h.solid else a)
 	if h.mode in ["breath_tell", "breath"]:
-		# Haar welling at the jaws.
-		draw_circle(Vector2(12, 4 + g * 0.5), 5.0 + sin(t * 20.0), Color(HAAR, 0.7 * fade))
+		# Hot steam welling and hissing at the jaws.
+		var swell := 5.0 + sin(t * 20.0)
+		draw_circle(Vector2(12, 4 + g * 0.5), swell, Color(STEAM, 0.75 * fade))
+		draw_circle(Vector2(12, 4 + g * 0.5), swell * 0.5, Color(STEAM_HOT, 0.8 * fade))
+	if h.mode == "breath_tell":
+		# Wisps of steam leak from the jaws as the pressure builds.
+		for i in 3:
+			var ph := fmod(t * 1.3 + i * 0.4, 1.0)
+			draw_circle(Vector2(11 + i - 1, 2 - ph * 14.0), 2.0 + ph * 2.0, Color(STEAM, (1.0 - ph) * 0.6 * fade))
+	if h.doused and h.puff > 0.0:
+		# The last puff of steam as it goes out.
+		var pf := h.puff / DOUSE_PUFF
+		for i in 3:
+			draw_circle(Vector2(2 + i * 5, -4 - (1.0 - pf) * 16.0), 3.0 + (1.0 - pf) * 3.0, Color(STEAM, pf * 0.6 * fade))
 	if white:
 		_px(-16, -12, 24, 22, Color.WHITE, 0.6 * maxf(a, 0.5))
 		_px(2, -6, 22, 10, Color.WHITE, 0.6 * maxf(a, 0.5))
 	draw_set_transform(Vector2.ZERO)
 	if h.mode == "breath_tell":
-		# The mist pools on the ground under the head before it rolls.
+		# Steam gathers at the ground under the head before it vents.
 		var gy := ground_y() - global_position.y
-		var w := 10.0 + 24.0 * clampf(h.mode_time / tell(BREATH_TELL), 0.0, 1.0)
+		var w := 8.0 + 22.0 * clampf(h.mode_time / tell(BREATH_TELL), 0.0, 1.0)
 		var hx := h.global_position.x - global_position.x
-		draw_rect(Rect2(hx - w, gy - 4.0, w * 2.0, 4.0), Color(HAAR, 0.6))
+		draw_rect(Rect2(hx - w, gy - 4.0, w * 2.0, 4.0), Color(STEAM, 0.6))
+		draw_rect(Rect2(hx - w * 0.6, gy - 4.0, w * 1.2, 4.0), Color(STEAM_HOT, 0.5))
 	elif h.mode == "rear":
 		# Where it will strike.
 		var to := h.to - global_position

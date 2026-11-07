@@ -129,6 +129,10 @@ func _draw() -> void:
 			for i in range(0, x1 - x0 + 1, 2):
 				var drop := fmod(t * 0.8 + i * 0.23, 1.0)
 				draw_rect(Rect2(i * Room.TILE + 7, 8 + drop * (depth - 12), 2, 2), Color(WATER_TOP, (1.0 - drop) * 0.7))
+			# The Haar Wyrm boiled this tank dry: a faint steam still rises from it.
+			for i in range(0, x1 - x0 + 1, 3):
+				var sp := fmod(t * 0.5 + i * 0.31, 1.0)
+				draw_circle(Vector2(i * Room.TILE + 6, 6 - sp * 18.0), 2.0 + sp * 2.0, Color(0.96, 0.97, 0.95, (1.0 - sp) * 0.22))
 		return
 	# Water up to the current level; the raft rides its surface until it stands.
 	var top := depth - (depth - 8.0) * level
