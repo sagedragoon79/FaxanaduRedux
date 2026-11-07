@@ -159,6 +159,12 @@ What worked for the hero and the Shade Knight, cheapest first:
    - **Check every base and frame for stray or moved props** before anything goes to Sean. If a
      prop still wanders after one retake, generate the figure **without** it and add it with
      PixelLab's inpaint or the free `pixelart_workbench` — do not keep rerolling.
+   - **Name only the part the sprite is, not the whole multi-part creature (2026-11-06).** The Haar
+     Wyrm is a three-headed serpent whose heads, necks and coil are drawn in code; a base prompt for
+     "a three-headed serpent's head" drew two and three heads fused together (art pass 9). Describe
+     the single part the sprite stands in for — "a single dragon-serpent head", "one head only, no
+     second head anywhere" — and state the count as one, or the model draws the whole beast. The same
+     holds for any limb or part a rig supplies: ask for the one piece, not the animal it belongs to.
 1d. **Sean approves each base before animation (2026-11-06).** For a new or redesigned character,
    make **only the base first** — the east profile and the south-east three-quarter stance, a few
    generations — and generate no animations (turns included) until a workbench note from Sean
