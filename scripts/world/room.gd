@@ -238,6 +238,12 @@ func build(text: String) -> void:
 	add_child(decor)
 	decor.build(id, zone, grid, covers)
 
+	# Ambient-occlusion rim shading where solid edges meet open air.
+	var shade := EdgeShade.new()
+	shade.name = "EdgeShade"
+	add_child(shade)
+	shade.setup(_solid_look, size_tiles)
+
 	var found := Room.scan_doors(grid)
 	for spec: String in lists.get("door", []):
 		var parts := spec.split(",")
