@@ -1,0 +1,68 @@
+{
+ "usage": {
+  "type": "generations",
+  "generations": 25.0
+ },
+ "id": "4dd8a452-cf39-427c-a878-6ce9ac47dad0",
+ "status": "completed",
+ "created_at": "2026-11-07T04:14:05.638192+00:00",
+ "last_response": {
+  "seed": 915498,
+  "type": "done",
+  "view": "side",
+  "action": "Removing background",
+  "images": [
+   "00.png",
+   "01.png",
+   "02.png",
+   "03.png",
+   "04.png",
+   "05.png",
+   "06.png",
+   "07.png"
+  ],
+  "status": "initializing",
+  "progress": 0.69375,
+  "canvas_size": 128,
+  "character_id": "5c81af92-84c9-4414-8fbd-92c16a4da9c2",
+  "n_directions": 8,
+  "billing_usage": {
+   "usd": 0.0,
+   "type": "generations",
+   "generations": 25
+  },
+  "character_name": "A broad, powerful dwarf king, side-scroller game boss, full body standing. He has a long braided grey beard reaching down to his belt. He wears a flood-rotted deep teal royal robe under a tattered gold-edged mantle across his shoulders. A dented dark iron crown rests on his head. Jagged glowing magenta crystal has grown across the whole back and right shoulder of his body and up through the crown. Both of his hands grip the long haft of a great two-handed battle-axe held upright at his side; the axe head is broad grey iron whose lower half has turned to glowing magenta crystal. Nothing floats around him. Tragic and regal, bone-pale weary face. Clean single color black outline, limited palette, top-left light, high detail.",
+  "billing_charged": true,
+  "directions_type": "8-directions",
+  "generation_mode": "pro",
+  "style_reference": "built-in placeholder set",
+  "style_selection": null,
+  "directions_count": 8,
+  "quantized_images": [
+   "08.png",
+   "09.png",
+   "10.png",
+   "11.png",
+   "12.png",
+   "13.png",
+   "14.png",
+   "15.png"
+  ],
+  "saved_to_storage": true,
+  "uploaded_directions": [
+   "south",
+   "south-east",
+   "east",
+   "north-east",
+   "north",
+   "north-west",
+   "west",
+   "south-west"
+  ],
+  "style_reference_path": "rotations/128x128/sidescroller/south.png",
+  "character_description": "A broad, powerful dwarf king, side-scroller game boss, full body standing. He has a long braided grey beard reaching down to his belt. He wears a flood-rotted deep teal royal robe under a tattered gold-edged mantle across his shoulders. A dented dark iron crown rests on his head. Jagged glowing magenta crystal has grown across the whole back and right shoulder of his body and up through the crown. Both of his hands grip the long haft of a great two-handed battle-axe held upright at his side; the axe head is broad grey iron whose lower half has turned to glowing magenta crystal. Nothing floats around him. Tragic and regal, bone-pale weary face. Clean single color black outline, limited palette, top-left light, high detail.",
+  "generation_started_at": "2026-11-07T04:14:05.8911+00:00",
+  "original_image_n_colors": 93,
+  "quantized_image_n_colors": 46
+ }
+}
