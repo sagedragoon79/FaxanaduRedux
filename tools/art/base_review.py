@@ -4,7 +4,11 @@
 Lays the east profile and the south-east three-quarter at 1x and 4x, with the hero at rough
 scale, so Sean can approve the base before any animation is made from it.
 
-  python3 tools/art/base_review.py <base_dir> <out.png> "<title>" "<zone colours>"
+  python3 tools/art/base_review.py <base_dir> <out.png> "<title>" ["<zone colours>"] \
+      ["<subtitle>"] ["<scale note>"]
+
+<subtitle> replaces the default "base only" line (say what the base is for); <scale note>
+is the two-line caption under the rough-scale swatch. Both are optional.
 
 <base_dir> holds the PixelLab rotations (east.png, south-east.png ...). Nearest-neighbour
 scaling throughout, so the pixels stay crisp.
@@ -66,6 +70,11 @@ def main():
     out = Path(sys.argv[2])
     title = sys.argv[3]
     zone = sys.argv[4] if len(sys.argv) > 4 else ""
+    subtitle = sys.argv[5] if len(sys.argv) > 5 else (
+        "For approval. Base only; no animation until you OK it.")
+    scale_note = sys.argv[6] if len(sys.argv) > 6 else (
+        "The guardian stands taller\nthan the hero.")
+    scale_note = scale_note.replace("\\n", "\n")
 
     east = trim(Image.open(base_dir / "east.png").convert("RGBA"))
     se = trim(Image.open(base_dir / "south-east.png").convert("RGBA"))
@@ -80,9 +89,7 @@ def main():
     f_tiny = font(11)
 
     d.text((14, 10), title, font=f_title, fill=INK)
-    d.text((14, 32), "For approval. Base only; no animation until you OK it. "
-                     "Would replace the drawn head in haar_wyrm.gd (_draw_head).",
-            font=f_s, fill=DIM)
+    d.text((14, 32), subtitle, font=f_s, fill=DIM)
 
     # --- East profile panel ---
     d.rectangle((14, 62, W - 14, 408), fill=PANEL)
@@ -105,10 +112,10 @@ def main():
         h2 = fit_height(hero, 150)
     img.alpha_composite(h2, (766, 118))
     d.text((766, 250), f"hero ~{h2.height}", font=f_tiny, fill=DIM)
-    headswatch = fit_height(east, 112)
-    img.alpha_composite(headswatch, (864, 150))
-    d.text((864, 250), f"head ~{headswatch.height}", font=f_tiny, fill=DIM)
-    d.text((760, 290), "A guardian head sits a\nlittle taller than the hero.", font=f_s, fill=DIM)
+    baseswatch = fit_height(east, 112)
+    img.alpha_composite(baseswatch, (864, 150))
+    d.text((864, 250), f"base ~{baseswatch.height}", font=f_tiny, fill=DIM)
+    d.text((760, 290), scale_note, font=f_s, fill=DIM)
 
     # --- South-east three-quarter panel ---
     d.rectangle((14, 420, W - 14, H - 12), fill=PANEL)
