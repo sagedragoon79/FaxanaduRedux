@@ -187,7 +187,7 @@ func test_sap_clump_hurts() -> void:
 
 
 ## Pass 228: the Stillstone holds every hazard a foe looses, not only the ones
-## that fly. Gnarlmaw's sap and the Haar Wyrm's mist breath (and a Puffcap's
+## that fly. Gnarlmaw's sap and the Haar Wyrm's steam breath (and a Puffcap's
 ## spores) went on falling, rolling and stinging in stopped time.
 func test_the_stillstone_holds_every_loosed_hazard() -> void:
 	var setup := _boss_world()
@@ -200,7 +200,7 @@ func test_the_stillstone_holds_every_loosed_hazard() -> void:
 	clump.room = w.room
 	clump.position = Vector2(p.global_position.x, 34)
 	w.room.add_child(clump)
-	var breath := MistBreath.new()
+	var breath := SteamBreath.new()
 	breath.ground_y = p.global_position.y
 	breath.left = 0.0
 	breath.right = 2000.0
@@ -213,7 +213,7 @@ func test_the_stillstone_holds_every_loosed_hazard() -> void:
 	await frames(90)
 	check(p.hp == p.max_hp, "in stopped time nothing loosed hurts (hp %d)" % p.hp)
 	check(clump.position == at[0], "the sap drip hangs on the ceiling")
-	check(breath.global_position == at[1], "the mist breath stands still")
+	check(breath.global_position == at[1], "the steam breath stands still")
 	check(cloud.global_position == at[2], "the spores hang in the air")
 	TimeStop.reset()
 	var hurt := await _until(func() -> bool: return p.hp < p.max_hp, 120)
@@ -1053,7 +1053,7 @@ func test_only_the_solid_head_takes_damage() -> void:
 	check(not haar.solid and haar.collision_layer == 0, "the others are mist the blade passes through")
 	var hp0 := z.hp
 	haar.take_hit(10, Vector2.RIGHT)
-	check(z.hp == hp0, "a blow on a mist head does nothing")
+	check(z.hp == hp0, "a blow on a steam head does nothing")
 	solid.take_hit(10, Vector2.RIGHT)
 	check(z.hp == hp0 - 10, "a blow on the solid head hurts him (%d)" % (hp0 - z.hp))
 	z._turn = HaarWyrm.SOLID_TIME
@@ -1085,13 +1085,13 @@ func test_haar_wyrm_bites_then_lies_open() -> void:
 	check(w.player.hp < 9999, "the bite lands on a player standing still")
 
 
-func test_haar_breath_rolls_along_the_floor() -> void:
+func test_steam_breath_vents_along_the_floor() -> void:
 	var setup := await _hydra_world()
 	var w: World = setup[0]
 	var z: HaarWyrm = setup[2]
 	await _until(func() -> bool: return z.state == "fight", 180)
 	z._breath = HaarWyrm.BREATH_EVERY
-	var breath: MistBreath = null
+	var breath: SteamBreath = null
 	var tell_frames := 0
 	for i in 200:
 		await frames(1)
@@ -1100,16 +1100,72 @@ func test_haar_breath_rolls_along_the_floor() -> void:
 				tell_frames += 1
 				break
 		for c in w.room.get_children():
-			if c is MistBreath:
+			if c is SteamBreath:
 				breath = c
 		if breath != null:
 			break
-	check(breath != null, "a mist head breathes a bank of fog")
+	check(breath != null, "a steam head bellows a gout of steam")
 	check(tell_frames / 60.0 >= Enemy.MIN_TELEGRAPH, "after a tell of at least %.2f s (%d frames)" % [Enemy.MIN_TELEGRAPH, tell_frames])
-	check(absf(breath.ground_y - z.arena.end.y) < 1.0, "it rolls along the floor")
+	check(absf(breath.ground_y - z.arena.end.y) < 1.0, "it vents along the floor")
 	var x0 := breath.global_position.x
 	await frames(10)
 	check(absf(breath.global_position.x - x0) > 10.0, "and moves")
+
+
+## The bellow is slow (about 95 px/s), narrow at the mouth and widening as it
+## rolls, and long-lived enough to cross a lane.
+func test_steam_breath_is_slow_and_billows() -> void:
+	var b := SteamBreath.new()
+	arena.add_child(b)
+	b.ground_y = 300.0
+	b.dir = 1.0
+	b.left = -2000.0
+	b.right = 2000.0
+	b.global_position = Vector2(0.0, 300.0)
+	var w0 := b.rect().size.x
+	await frames(60)
+	var moved := b.global_position.x
+	check(moved > 80.0 and moved < 115.0, "it vents at about 95 px/s (moved %.0f in a second)" % moved)
+	check(b.rect().size.x > w0 + 6.0, "and billows wider as it rolls (%.0f -> %.0f px)" % [w0, b.rect().size.x])
+	b.queue_free()
+	var reach := SteamBreath.LIFE * SteamBreath.SPEED
+	check(reach > 2.0 * HaarWyrm.LANE, "its run (%.0f px over %.1f s) crosses more than a lane" % [reach, SteamBreath.LIFE])
+
+
+## It is dodged by a jump (it stays under a single jump's apex) and by standing
+## up on the tank walls (it rolls below).
+func test_steam_breath_is_dodged_by_a_jump_or_the_walls() -> void:
+	var b := SteamBreath.new()
+	arena.add_child(b)
+	b.ground_y = 400.0
+	b._time = SteamBreath.LIFE  # fully billowed: its tallest
+	b.global_position = Vector2(100.0, 400.0)
+	var tall := b.rect().size.y
+	check(tall <= 48.0, "even fully billowed the gout is at most 48 px tall (%.0f)" % tall)
+	check(tall < 72.0, "under a single jump's 72 px apex (movement_tuning), so a jump clears it")
+	# A player standing on a tank wall, above the floor, is clear of it.
+	var feet := 400.0 - 56.0
+	var body := Rect2(100.0 - 6.0, feet - 40.0, 12.0, 40.0)
+	check(not b.rect().intersects(body), "a player up on the tank wall is above the gout")
+	b.queue_free()
+
+
+## In phase 2, the tank that fills douses the head over it: it goes out with a
+## last puff of steam.
+func test_a_doused_head_goes_out_with_a_puff() -> void:
+	var setup := await _hydra_world()
+	var w: World = setup[0]
+	var z: HaarWyrm = setup[2]
+	await _until(func() -> bool: return z.state == "fight", 180)
+	z.hp = roundi(z.max_hp * 0.61)
+	z.heads[z.solid_index].take_hit(10, Vector2.RIGHT)
+	check(z.phase == 2, "below 60%% he enters phase 2 (%d hp)" % z.hp)
+	var basins := _basins(w)
+	basins[0].douse()
+	var ok := await _until(func() -> bool: return z.head_over(basins[0]).doused, 120)
+	check(ok, "the head over the filled tank is doused once it fills")
+	var h := z.head_over(basins[0])
+	check(h.puff > 0.0, "and goes out with a last puff of steam (%.2f)" % h.puff)
 
 
 func test_fourth_head_shows_only_when_the_tanks_are_full() -> void:

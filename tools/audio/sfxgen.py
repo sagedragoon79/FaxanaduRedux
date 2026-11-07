@@ -451,12 +451,25 @@ def main():
     clack = highpass(noise(0.03), 1500) * env(int(RATE * 0.03), 0.0005, 2.5)
     save("hydra_bite", mix(growl, clack), 0.6)
 
-    # A head breathing haar: a long throaty exhale, darker than the spores.
-    d = 1.0
+    # A head bellowing steam: a pressurized steam-pipe hiss over a throaty
+    # breath. Hotter and sharper than the old fog breath. These two steam sounds
+    # draw from their own `hr` rng, and one discarded `noise(1.0)` keeps the
+    # shared stream exactly where the old one-draw fog breath left it, so adding
+    # them leaves every sound after this point byte-for-byte unchanged.
+    noise(1.0)
+    hr = np.random.default_rng(499)
+    d = 1.1
     n = int(RATE * d)
-    exhale = lowpass(highpass(noise(d), 200), slide(2400, 700, d, 0.6)) * 0.7
-    throat = lowpass(osc(np.full(n, 55.0), "square", 0.5), 300) * 0.25
-    save("haar_breath", mix(exhale, throat) * env(n, 0.15, 1.1), 0.5)
+    hiss = highpass(lowpass(hr.uniform(-1, 1, n), 6500), 2200) * 0.6
+    exhale = lowpass(highpass(hr.uniform(-1, 1, n), 200), slide(2600, 900, d, 0.6)) * 0.4
+    throat = lowpass(osc(np.full(n, 55.0), "square", 0.5), 300) * 0.22
+    save("haar_breath", mix(hiss, exhale, throat) * env(n, 0.06, 1.0), 0.5)
+
+    # Pressure building before the bellow (the breath tell): a rising steam hiss.
+    d = 0.7
+    n = int(RATE * d)
+    rise = highpass(lowpass(hr.uniform(-1, 1, n), slide(3000, 7000, d, 0.7)), slide(1400, 3200, d)) * slide(0.15, 0.6, d)
+    save("steam_hiss", rise * env(n, 0.2, 0.6), 0.4)
 
     # The coil bursting and the arena flooding: a rushing roar of water.
     d = 1.6

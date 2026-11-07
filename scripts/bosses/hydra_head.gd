@@ -1,7 +1,7 @@
 class_name HydraHead
 extends BossSegment
 ## One of the Haar Wyrm's heads: a hitbox the boss moves and a light in the fog.
-## Only a solid head has a hitbox; a mist head is fog the blade passes through.
+## Only a solid head has a hitbox; a steam head is vapour the blade passes through.
 ## The boss runs its moves (`mode`); the head only keeps the numbers.
 
 ## How far its glow clears the fog (see Fog): a solid head shows plainly.
@@ -21,6 +21,8 @@ var bit := false
 ## Phase 2: the tank under its lane is full, so the head hangs drenched, dim
 ## and silent (playtest: each tank shows what it did).
 var doused := false
+## Counts down a last puff of steam as the head is doused.
+var puff := 0.0
 
 
 func _ready() -> void:
