@@ -1,0 +1,36 @@
+{
+  "group_id": "1fbfc128-1285-4e5a-8635-6b139855487c",
+  "states": [
+    {
+      "character": {
+        "id": "dd60fb96-8abd-4355-ae75-cce3ecb45328",
+        "name": "Idle",
+        "prompt": "An ancient colossal stone guardian, a side-scroller game boss, standing upright at full height facing the side. Its towering body is carved from pale weathered limestone, cracked and stained with water. Thick plates of green verdigris bronze armor its chest, shoulders and forearms. A horned dwarf-king's iron helm rests on its head. Cyan lamp-light glows from deep within its hollow eye sockets. A round cyan lamp is set into the center of its chest. Both of its great hands grip the shaft of a tall three-pronged bronze trident, held upright at its side with the prongs pointing up. Nothing else floats around it; one single figure only.",
+        "size": {
+          "width": 112,
+          "height": 112
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "side",
+        "created_at": "2026-11-07T06:12:02.220647+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-11-07T06:14:54.822099"
+}
