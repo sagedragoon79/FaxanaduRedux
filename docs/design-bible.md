@@ -1565,6 +1565,10 @@ the style guide, section 8.
 
 **Atmospheric perspective (pass 501):** the two painted parallax layers (`<zone>_far.png`, `<zone>_mid.png`) are pushed back by a canvas shader (`shaders/atmosphere.gdshader`, applied in `Backdrop`), not by repainting the art. Each layer's colour is pulled toward grey (`desat`) and then toward the dark zone haze (`fade`, toward `night-1`), lowering its saturation and contrast so the lit gameplay tiles — bright, and rim-shaded by `EdgeShade` — stand clear of the busy backdrop instead of sharing its value and saturation. The further-back layer recedes harder: `far` (desat 0.55, fade 0.5) sits deeper than `mid` (desat 0.3, fade 0.24). The effect is GPU-only with no per-frame CPU cost; the maths live in `Backdrop.haze_color()`, which mirrors the shader and the tests drive. This fixes the "depth collapse / tile repetition" grade defect (trunks, mid platforms and the play layer reading at one depth).
 
+### 12.6 Backdrop gradients
+
+The sky of every painted far layer (`<zone>_far.png`) is a palette-locked vertical gradient from `tilegen.gradient(top, bottom)`. **Ramp, not a two-colour screen (pass 502):** the gradient is a ramp of several master-palette colours between `top` and `bottom` (`gradient_ramp`, each step the nearest palette match to an even RGB interpolation), and a pixel is dithered only across the thin seam between two *adjacent* ramp colours (`gradient_pixel`), using value noise (`hash2`), not a fixed ordered grid. Because the dither mixes near-identical neighbours from noise rather than a rigid 50/50 screen of the two far-apart endpoints, a transition reads as a soft grain — never the uniform dot/crosshatch dither grid that the independent grade flagged as flat moire across the midground (pass 497/500/501). This is code-first: no art is repainted, and the output stays deterministic (`hash2` is pure), so the committed PNGs do not churn.
+
 ---
 
 ## 13. Asset Production Plan

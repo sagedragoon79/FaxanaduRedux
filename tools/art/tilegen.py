@@ -621,13 +621,42 @@ def wrap_noise(x, y, seed, period):
     return a + (b - a) * fy
 
 
+def gradient_ramp(top, bottom, stops=8):
+    """A ramp of master-palette colours from `top` to `bottom`, each the nearest
+    palette match to an even RGB step between them. Several solid value steps mean
+    the gradient dithers only between adjacent, near-identical colours, so the mix
+    reads as a soft grain instead of a 50/50 screen of the two far-apart endpoints
+    — the moire dot-grid the independent grade flagged (pass 500/501, bible 12.6)."""
+    tr, br = c(top)[:3], c(bottom)[:3]
+    ramp = []
+    for s in range(stops):
+        t = s / (stops - 1)
+        target = tuple(tr[i] + (br[i] - tr[i]) * t for i in range(3))
+        name = min(PAL, key=lambda n: sum((PAL[n][i] - target[i]) ** 2 for i in range(3)))
+        if not ramp or ramp[-1] != name:
+            ramp.append(name)
+    return ramp
+
+
+def gradient_pixel(ramp, x, y, h, dither=True):
+    """The palette colour name for one pixel of a `ramp` gradient `h` tall. The
+    seam between two ramp steps is dithered from value noise (hash2), not a fixed
+    ordered grid, so a transition reads as grain and never as a rigid screen door."""
+    n = len(ramp)
+    if n == 1:
+        return ramp[0]
+    p = (y / (h - 1)) * (n - 1)
+    lo = min(int(p), n - 2)
+    frac = p - lo
+    thr = hash2(x, y, 9) if dither else 0.5
+    return ramp[lo + 1] if frac > thr else ramp[lo]
+
+
 def gradient(img, top, bottom, dither=True):
+    ramp = gradient_ramp(top, bottom) if dither else [top, bottom]
     for y in range(BG_H):
-        k = y / (BG_H - 1)
         for x in range(BG_W):
-            # Ordered dither between the two colors instead of blending.
-            threshold = ((x % 4) * 4 + (y % 4) * 7 % 16) / 16.0 if dither else 0.5
-            img.putpixel((x, y), c(bottom if k > threshold * 0.6 + 0.2 else top))
+            img.putpixel((x, y), c(gradient_pixel(ramp, x, y, BG_H, dither)))
 
 
 def put(img, x, y, col):
