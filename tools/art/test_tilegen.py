@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Guards for the backdrop gradient (design bible 12.6).
+"""Guards for the backdrop gradient (bible 12.6) and the moss cap (bible 12.7).
 
-These cover the pure gradient helpers in tilegen that shape every far layer's
-sky, so the moire dot-grid the independent grade flagged (pass 497/500/501) stays
-fixed. The game test suite is Godot-only and CI does not run Python unit tests;
-run this guard with `python tools/art/test_tilegen.py` after touching the
-gradient. Exit code is non-zero on the first failure, so it mutation-checks by a
-plain re-run.
+These cover the pure tilegen helpers that shape every far layer's sky (so the
+moire dot-grid the independent grade flagged at passes 497/500/501 stays fixed)
+and the grass fringe (`cap_moss`), so the flat bright-green band the pass-500
+grade flagged keeps its shaded ramp, dark root line and per-tile variation. The
+game test suite is Godot-only and CI does not run Python unit tests; run this
+guard with `python tools/art/test_tilegen.py` after touching either. Exit code
+is non-zero on the first failure, so it mutation-checks by a plain re-run.
 """
 import sys
 from pathlib import Path
@@ -75,6 +76,55 @@ def test_the_dither_is_noise_not_a_rigid_grid():
         matches = sum(1 for x in range(len(row) - shift) if row[x] == row[x + shift])
         rate = matches / (len(row) - shift)
         assert rate < 0.9, f"shift {shift}: {rate:.2f} of pixels repeat — reads as a grid, not grain"
+
+
+def _moss_indices(seed, light="leaf", top=5):
+    """Every (x, y, shade-index) of `light` painted by one cap_moss tile."""
+    img = tg.Image.new("RGBA", (tg.T, tg.T), tg.CLEAR)
+    tg.cap_moss(img, 0, 0, seed, 0, tg.T, light, None, top)
+    names = {v[:3]: k for k, v in tg.PAL.items()}
+    out = []
+    for x in range(tg.T):
+        for y in range(tg.T):
+            px = img.getpixel((x, y))
+            if px[3] == 0:
+                continue
+            name = names.get(px[:3])
+            if name is None:
+                continue
+            ramp, i = name.rsplit("-", 1)
+            if ramp == light:
+                out.append((x, y, int(i)))
+    return out
+
+
+def test_cap_moss_is_a_shaded_ramp():
+    # The fringe must span several shades, not paint one flat bright band
+    # (mutating the body to a single shade fails here).
+    idx = {k for _, _, k in _moss_indices(11)}
+    assert len(idx) >= 3, f"the moss cap ramps through >=3 shades, got {sorted(idx)}"
+
+
+def test_cap_moss_darkens_to_a_root_line():
+    # Grass is lit at the tips and dark where it roots into the soil: the lowest
+    # painted row is darker than the highest. (Flattening the ramp fails this.)
+    px = _moss_indices(11)
+    top_y = min(y for _, y, _ in px)
+    bot_y = max(y for _, y, _ in px)
+    top_mean = sum(k for _, y, k in px if y == top_y) / sum(1 for _, y, _ in px if y == top_y)
+    bot_mean = sum(k for _, y, k in px if y == bot_y) / sum(1 for _, y, _ in px if y == bot_y)
+    assert bot_mean < top_mean, f"the root line ({bot_mean:.1f}) is darker than the tips ({top_mean:.1f})"
+
+
+def test_cap_moss_varies_per_tile():
+    # The per-tile value shift must actually change a tile's overall brightness,
+    # so a run of ground tiles reads as patches, not one stripe. Across a dozen
+    # seeds the mean shade should span ~2 steps; setting tilt to 0 fails this.
+    means = []
+    for seed in range(11, 11 + 12):
+        px = _moss_indices(seed)
+        means.append(sum(k for _, _, k in px) / len(px))
+    assert max(means) - min(means) >= 1.0, f"per-tile brightness barely moves: {min(means):.2f}..{max(means):.2f}"
 
 
 def main():

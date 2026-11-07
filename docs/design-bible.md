@@ -1569,6 +1569,15 @@ the style guide, section 8.
 
 The sky of every painted far layer (`<zone>_far.png`) is a palette-locked vertical gradient from `tilegen.gradient(top, bottom)`. **Ramp, not a two-colour screen (pass 502):** the gradient is a ramp of several master-palette colours between `top` and `bottom` (`gradient_ramp`, each step the nearest palette match to an even RGB interpolation), and a pixel is dithered only across the thin seam between two *adjacent* ramp colours (`gradient_pixel`), using value noise (`hash2`), not a fixed ordered grid. Because the dither mixes near-identical neighbours from noise rather than a rigid 50/50 screen of the two far-apart endpoints, a transition reads as a soft grain — never the uniform dot/crosshatch dither grid that the independent grade flagged as flat moire across the midground (pass 497/500/501). This is code-first: no art is repainted, and the output stays deterministic (`hash2` is pure), so the committed PNGs do not churn.
 
+### 12.7 Grass fringe (moss cap)
+
+The green (or, for water zones, cyan) fringe on the top of every ground tile and ledge is the code-drawn `cap_moss` (`tools/art/tilegen.py`), used by all moss-capped zones (gym, heartwood, haar, boughs, vorrhallow, evercrown, sunken, spires). **Shaded, rooted and varied (pass 503):** the cap is not one flat bright band — the independent grade (pass 500) flagged the old version as "one flat bright-green band with no shading or variation," cheapening otherwise-moody rooms. It now reads as lit grass:
+
+- **A value ramp down each blade.** Only the taller, lit blades carry the brightest shade on their very tip; the body steps down shade by shade to a **dark root line** where the grass meets the soil, so the fringe has top-light and a shadowed base rather than a uniform top row.
+- **Per-tile variation.** Each tile takes a value shift (lush / normal / sparse, roughly 45% / 35% / 20%) from its seed, so a run of ground tiles reads as patches of deeper and brighter grass instead of one continuous stripe. A per-blade jitter deepens the odd column within a tile.
+
+Code-first and deterministic: only the eight moss-capped tilesets change, no art is repainted, and `tools/art/test_tilegen.py` guards the ramp, the root line and the per-tile shift.
+
 ---
 
 ## 13. Asset Production Plan
